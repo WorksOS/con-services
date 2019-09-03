@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
-using VSS.MasterData.Repositories;
+using VSS.Serilog.Extensions;
 
 namespace RepositoryTests.Internal
 {
@@ -48,20 +46,11 @@ namespace RepositoryTests.Internal
 
     public void SetupLogging()
     {
-      const string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
       ServiceProvider = new ServiceCollection()
-        .AddSingleton<ILoggerProvider, Log4NetProvider>()
-        .AddSingleton(loggerFactory)
-        .AddLogging()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .BuildServiceProvider();
+                        .AddLogging()
+                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("MasterDataConsumerTests.log")))
+                        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+                        .BuildServiceProvider();
 
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }

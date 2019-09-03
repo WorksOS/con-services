@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-#if RAPTOR
-using VLPDDecls;
-#endif
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
+#if RAPTOR
+using VLPDDecls;
+#endif
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {

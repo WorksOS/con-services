@@ -11,12 +11,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
+using Serilog;
 using VSS.Productivity3D.Common.Filters.Caching;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApiTests.Caching
 {
@@ -33,16 +33,15 @@ namespace VSS.Productivity3D.WebApiTests.Caching
     [TestInitialize]
     public void InitTest()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      var serviceCollection = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")));
 
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
       serviceCollection.TryAdd(ServiceDescriptor.Singleton<ObjectPoolProvider, DefaultObjectPoolProvider>());
       serviceCollection.AddTransient<IOptions<ResponseCachingOptions>, FakeResponseCacheOptions>();
       serviceCollection.AddTransient<IFilterServiceProxy, FakeFilterProxy>();
       serviceCollection.TryAdd(ServiceDescriptor.Singleton<IResponseCachingKeyProvider, CustomResponseCachingKeyProvider>());
+
       ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 

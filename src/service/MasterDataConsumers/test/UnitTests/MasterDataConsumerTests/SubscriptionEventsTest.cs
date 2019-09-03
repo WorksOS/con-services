@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -66,8 +66,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     {
       var now = DateTime.UtcNow;
 
-      return new Subscription()
-      {
+      return new Subscription
+             {
         SubscriptionUID = Guid.NewGuid().ToString(),
         CustomerUID = Guid.NewGuid().ToString(),
         ServiceTypeID = serviceTypeIDs[serviceType],
@@ -79,8 +79,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private CreateAssetSubscriptionEvent CopyAssetSubscriptionModel(Subscription subscription)
     {
-      return new CreateAssetSubscriptionEvent()
-      {
+      return new CreateAssetSubscriptionEvent
+             {
         SubscriptionUID = Guid.Parse(subscription.SubscriptionUID),
         CustomerUID = Guid.Parse(subscription.CustomerUID),
         SubscriptionType = serviceTypes[subscription.ServiceTypeID],
@@ -92,8 +92,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private Subscription CopyAssetSubscriptionModel(CreateAssetSubscriptionEvent kafkaSubcriptionEvent)
     {
-      return new Subscription()
-      {
+      return new Subscription
+             {
         SubscriptionUID = kafkaSubcriptionEvent.SubscriptionUID.ToString(),
         CustomerUID = kafkaSubcriptionEvent.CustomerUID.ToString(),
         ServiceTypeID = serviceTypeIDs[kafkaSubcriptionEvent.SubscriptionType],
@@ -105,8 +105,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private CreateCustomerSubscriptionEvent CopyCustomerSubscriptionModel(Subscription subscription)
     {      
-      return new CreateCustomerSubscriptionEvent()
-      {
+      return new CreateCustomerSubscriptionEvent
+             {
         SubscriptionUID = Guid.Parse(subscription.SubscriptionUID),
         CustomerUID = Guid.Parse(subscription.CustomerUID),
         SubscriptionType = serviceTypes[subscription.ServiceTypeID],
@@ -118,8 +118,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private Subscription CopyCustomerSubscriptionModel(CreateCustomerSubscriptionEvent kafkaSubcriptionEvent)
     {
-      return new Subscription()
-      {
+      return new Subscription
+             {
         SubscriptionUID = kafkaSubcriptionEvent.SubscriptionUID.ToString(),
         CustomerUID = kafkaSubcriptionEvent.CustomerUID.ToString(),
         ServiceTypeID = serviceTypeIDs[kafkaSubcriptionEvent.SubscriptionType],
@@ -131,8 +131,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private CreateProjectSubscriptionEvent CopyProjectSubscriptionModel(Subscription subscription)
     {
-      return new CreateProjectSubscriptionEvent()
-      {
+      return new CreateProjectSubscriptionEvent
+             {
         SubscriptionUID = Guid.Parse(subscription.SubscriptionUID),
         CustomerUID = Guid.Parse(subscription.CustomerUID),
         SubscriptionType = serviceTypes[subscription.ServiceTypeID],
@@ -144,8 +144,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private Subscription CopyProjectSubscriptionModel(CreateProjectSubscriptionEvent kafkaSubcriptionEvent)
     {
-      return new Subscription()
-      {
+      return new Subscription
+             {
         SubscriptionUID = kafkaSubcriptionEvent.SubscriptionUID.ToString(),
         CustomerUID = kafkaSubcriptionEvent.CustomerUID.ToString(),
         ServiceTypeID = serviceTypeIDs[kafkaSubcriptionEvent.SubscriptionType],

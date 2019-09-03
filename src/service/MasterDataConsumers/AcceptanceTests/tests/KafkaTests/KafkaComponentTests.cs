@@ -1,25 +1,26 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 /****
  *  temporarily ignored all but most recent test due to 
@@ -32,7 +33,7 @@ namespace KafkaTests
   [TestClass]
   public class KafkaComponentTests
   {
-    IServiceProvider _serviceProvider = null;
+    IServiceProvider _serviceProvider;
     private int _consumerWaitMs = 1000;
     private ILogger _log;
     private IConfigurationStore _configurationStore;
@@ -40,15 +41,6 @@ namespace KafkaTests
     [TestInitialize]
     public void InitTest()
     {
-      // setup Ilogger
-      const string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
       _serviceProvider = new ServiceCollection()
         .AddTransient<IKafka, RdKafkaDriver>()
         .AddTransient<IKafkaConsumer<IAssetEvent>, KafkaConsumer<IAssetEvent>>()
@@ -70,7 +62,7 @@ namespace KafkaTests
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("MasterDataConsumer.AcceptanceTests.log")))
         .BuildServiceProvider();
 
       _log = _serviceProvider.GetService<ILoggerFactory>().CreateLogger("KafkaComponentTests");
@@ -87,7 +79,7 @@ namespace KafkaTests
     ///    read earliest 
     /// </summary>
     [TestMethod]
-   // [Ignore]
+    // [Ignore]
     public void AssetConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -103,7 +95,7 @@ namespace KafkaTests
       var topicName = baseTopic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
-      string messagePayload = JsonConvert.SerializeObject(new {CreateAssetEvent = createAssetEvent});
+      string messagePayload = JsonConvert.SerializeObject(new { CreateAssetEvent = createAssetEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -117,7 +109,7 @@ namespace KafkaTests
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<IAssetEvent>>();
       consumer.OverrideLogger(_log);
-      consumer.SetTopic(baseTopic,Guid.NewGuid().ToString());
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var assetContext = new AssetRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Asset> dbReturn = null;
@@ -126,7 +118,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-     //   Thread.Sleep(_consumerWaitMs);
+        //   Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"AssetKafkaTest iteration {i} of 10");
 
         dbReturn = assetContext.GetAsset(createAssetEvent.AssetUID.ToString());
@@ -143,7 +135,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-   // [Ignore]
+    // [Ignore]
     public void CustomerConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -159,7 +151,7 @@ namespace KafkaTests
       var topicName = baseTopic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
-      string messagePayload = JsonConvert.SerializeObject(new {CreateCustomerEvent = createCustomerEvent});
+      string messagePayload = JsonConvert.SerializeObject(new { CreateCustomerEvent = createCustomerEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -173,16 +165,16 @@ namespace KafkaTests
 
       var consumer = _serviceProvider.GetService<IKafkaConsumer<ICustomerEvent>>();
       consumer.OverrideLogger(_log);
-      consumer.SetTopic(baseTopic,Guid.NewGuid().ToString());
+      consumer.SetTopic(baseTopic, Guid.NewGuid().ToString());
 
       var customerContext = new CustomerRepository(_configurationStore, _serviceProvider.GetService<ILoggerFactory>());
       Task<Customer> dbReturn = null;
       Thread.Sleep(_consumerWaitMs);
-      
+
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-       // Thread.Sleep(_consumerWaitMs);
+        // Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"CustomerKafkaTest iteration {i} of 10");
 
         dbReturn = customerContext.GetCustomer(createCustomerEvent.CustomerUID);
@@ -199,7 +191,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-   // [Ignore]
+    // [Ignore]
     public void DeviceConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -216,7 +208,7 @@ namespace KafkaTests
       var topicName = baseTopic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
-      string messagePayload = JsonConvert.SerializeObject(new {CreateDeviceEvent = createDeviceEvent});
+      string messagePayload = JsonConvert.SerializeObject(new { CreateDeviceEvent = createDeviceEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -256,7 +248,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-   // [Ignore]
+    // [Ignore]
     public void ProjectConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -279,7 +271,7 @@ namespace KafkaTests
       var topicName = baseTopic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
-      string messagePayload = JsonConvert.SerializeObject(new {CreateProjectEvent = createProjectEvent});
+      string messagePayload = JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -302,7 +294,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-       // Thread.Sleep(_consumerWaitMs);
+        // Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ProjectKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetProject_UnitTest(createProjectEvent.ProjectUID.ToString());
@@ -319,7 +311,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-   // [Ignore]
+    // [Ignore]
     public void ProjectConsumerWritesToDb_CreateProjectSettings()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -346,7 +338,7 @@ namespace KafkaTests
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
       string messagePayload =
-        JsonConvert.SerializeObject(new {UpdateProjectSettingsEvent = updateProjectSettingsEvent});
+        JsonConvert.SerializeObject(new { UpdateProjectSettingsEvent = updateProjectSettingsEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -369,7 +361,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-       //Thread.Sleep(_consumerWaitMs);
+        //Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ProjectSettingsKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetProjectSettings(updateProjectSettingsEvent.ProjectUID.ToString(), updateProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
@@ -412,7 +404,7 @@ namespace KafkaTests
       var topicName = baseTopic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
-      string messagePayload = JsonConvert.SerializeObject(new {CreateImportedFileEvent = createImportedFileEvent});
+      string messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -435,7 +427,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-     //   Thread.Sleep(_consumerWaitMs);
+        //   Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"ImportedFileKafkaTest iteration {i} of 10");
 
         dbReturn = projectContext.GetImportedFile(createImportedFileEvent.ImportedFileUID.ToString());
@@ -454,7 +446,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-   // [Ignore]
+    // [Ignore]
     public void SubscriptionConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -475,7 +467,7 @@ namespace KafkaTests
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
       string messagePayload =
-        JsonConvert.SerializeObject(new {CreateProjectSubscriptionEvent = createProjectSubscriptionEvent});
+        JsonConvert.SerializeObject(new { CreateProjectSubscriptionEvent = createProjectSubscriptionEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -499,7 +491,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-      //  Thread.Sleep(_consumerWaitMs);
+        //  Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"SubscriptionKafkaTest iteration {i} of 10");
 
         dbReturn =
@@ -519,7 +511,7 @@ namespace KafkaTests
     }
 
     [TestMethod]
-  //  [Ignore]
+    //  [Ignore]
     public void GeofenceConsumerWritesToDb()
     {
       DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
@@ -544,7 +536,7 @@ namespace KafkaTests
       var topicName = baseTopic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
-      string messagePayload = JsonConvert.SerializeObject(new {CreateGeofenceEvent = createGeofenceEvent});
+      string messagePayload = JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -567,7 +559,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-      //  Thread.Sleep(_consumerWaitMs);
+        //  Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"GeofenceKafkaTest iteration {i} of 10");
 
         dbReturn = geofenceContext.GetGeofence_UnitTest(createGeofenceEvent.GeofenceUID.ToString());
@@ -604,7 +596,7 @@ namespace KafkaTests
       var topicName = baseTopic + _configurationStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       _log.LogDebug($"BaseTopic: {baseTopic} topicName: {topicName}");
 
-      string messagePayload = JsonConvert.SerializeObject(new {CreateFilterEvent = createFilterEvent});
+      string messagePayload = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent });
 
       var producer = _serviceProvider.GetService<IKafka>();
       producer.InitProducer(_configurationStore);
@@ -627,7 +619,7 @@ namespace KafkaTests
       for (int i = 0; i < 10; i++)
       {
         consumer.StartProcessingSync();
-     //  Thread.Sleep(_consumerWaitMs);
+        //  Thread.Sleep(_consumerWaitMs);
         _log.LogDebug($"FilterKafkaTest iteration {i} of 10");
 
         dbReturn = filterContext.GetFilter(createFilterEvent.FilterUID.ToString());

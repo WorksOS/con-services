@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var mockConfigStore = new Mock<IConfigurationStore>();
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
       var getExtentsResults = true;
-      long[] excludedSsIds = new long[1]; // excluded surveyed surfaces
+      var excludedSsIds = new long[1]; // excluded surveyed surfaces
       excludedSsIds[0] = 1;
 
       // return results
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var trexCompactionDataProxy = new Mock<ITRexCompactionDataProxy>();
       var getExtentsResults = false;
-      long[] excludedSsIds = new long[1]; // excluded surveyed surfaces
+      var excludedSsIds = new long[1]; // excluded surveyed surfaces
       excludedSsIds[0] = 1;
 
       // return results

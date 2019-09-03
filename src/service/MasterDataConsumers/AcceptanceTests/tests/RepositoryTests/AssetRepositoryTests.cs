@@ -1,15 +1,16 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -18,31 +19,22 @@ namespace RepositoryTests
   [TestClass]
   public class AssetRepositoryTests
   {
-
-    IServiceProvider serviceProvider = null;
-    AssetRepository assetContext = null;
+    IServiceProvider serviceProvider;
+    AssetRepository assetContext;
 
     [TestInitialize]
     public void Init()
     {
-      string loggerRepoName = "UnitTestLogTest";
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4nettest.xml");
-
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
       serviceProvider = new ServiceCollection()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddLogging()
-        .AddSingleton<ILoggerFactory>(loggerFactory)
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("MasterDataConsumerTests.log")))
         .AddSingleton<IRepositoryFactory, RepositoryFactory>()
         .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
         .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
-        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()          
+        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
         .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .BuildServiceProvider();
@@ -50,7 +42,6 @@ namespace RepositoryTests
       var retrievedloggerFactory = serviceProvider.GetService<ILoggerFactory>();
       Assert.IsNotNull(retrievedloggerFactory);
 
-      // assetContext = new AssetRepository(serviceProvider.GetService<IConfigurationStore>(), serviceProvider.GetService<ILoggerFactory>());
       assetContext = serviceProvider.GetRequiredService<IRepositoryFactory>().GetRepository<IAssetEvent>() as AssetRepository;
     }
 
@@ -61,7 +52,7 @@ namespace RepositoryTests
     public void CreateAsset_HappyPath()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEvent = new CreateAssetEvent()
+      var assetEvent = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -115,7 +106,7 @@ namespace RepositoryTests
     public void CreateAssetFilterSingleProductFamily_HappyPath()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEvent1 = new CreateAssetEvent()
+      var assetEvent1 = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -129,7 +120,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEvent2 = new CreateAssetEvent()
+      var assetEvent2 = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -192,7 +183,7 @@ namespace RepositoryTests
     public void CreateAssetFilterMultipleProductFamily_HappyPath()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEvent1 = new CreateAssetEvent()
+      var assetEvent1 = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -206,7 +197,7 @@ namespace RepositoryTests
         ModelYear = null, // is this Yea
       };
 
-      var assetEvent2 = new CreateAssetEvent()
+      var assetEvent2 = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -267,11 +258,9 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateAssetProductFamily_CaseInsensitiveQuery()
     {
-      var assetEvent1 = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = "TRACK TYPE TRACTORS1" };
+      var assetEvent1 = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = "TRACK TYPE TRACTORS1" };
 
-      var assetEvent2 = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = "DRUM TYPE TRACTORS1" };
+      var assetEvent2 = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = "DRUM TYPE TRACTORS1" };
 
       assetContext.InRollbackTransactionAsync<object>(async o =>
       {
@@ -288,11 +277,9 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateAssetProductFamily_CaseInsensitiveDB()
     {
-      var assetEvent1 = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = "track type Tractors1" };
+      var assetEvent1 = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = "track type Tractors1" };
 
-      var assetEvent2 = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = "DRUM TYPE Tractors1" };
+      var assetEvent2 = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = "DRUM TYPE Tractors1" };
 
       assetContext.InRollbackTransactionAsync<object>(async o =>
       {
@@ -309,12 +296,9 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateAssetProductFamily_DefaultIsUnassigned()
     {
-      var assetEvent1 = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = "Unassigned" };
-      var assetEvent2 = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = "" };
-      var assetEvent3 = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = null };
+      var assetEvent1 = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = "Unassigned" };
+      var assetEvent2 = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = "" };
+      var assetEvent3 = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = null };
 
       assetContext.InRollbackTransactionAsync<object>(async o =>
       {
@@ -332,8 +316,7 @@ namespace RepositoryTests
     [TestMethod]
     public void UpdateAssetProductFamily_DefaultIsUnassigned()
     {
-      var assetEvent = new CreateAssetEvent()
-      { AssetUID = Guid.NewGuid(), AssetType = "Track type tractor2" };
+      var assetEvent = new CreateAssetEvent { AssetUID = Guid.NewGuid(), AssetType = "Track type tractor2" };
 
       assetContext.InRollbackTransactionAsync<object>(async o =>
       {
@@ -354,7 +337,7 @@ namespace RepositoryTests
     public void CreateAsset_MinimalData()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEvent = new CreateAssetEvent()
+      var assetEvent = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = null,
@@ -407,7 +390,7 @@ namespace RepositoryTests
     public void CreateAsset_ExistsFromMasterDataCreate()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEventOriginal = new CreateAssetEvent()
+      var assetEventOriginal = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = null,
@@ -423,7 +406,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventLater = new CreateAssetEvent()
+      var assetEventLater = new CreateAssetEvent
       {
         AssetUID = assetEventOriginal.AssetUID,
         AssetName = "AnAssetName",
@@ -433,7 +416,7 @@ namespace RepositoryTests
         Model = "D6RXL",
         AssetType = "TRACK TYPE TRACTORS",
         IconKey = 23,
-        ModelYear = 1980, 
+        ModelYear = 1980,
         ActionUTC = firstCreatedUTC
       };
 
@@ -445,7 +428,7 @@ namespace RepositoryTests
         SerialNumber = assetEventLater.SerialNumber,
         MakeCode = assetEventLater.MakeCode,
         Model = assetEventLater.Model,
-        ModelYear= assetEventOriginal.ModelYear,
+        ModelYear = assetEventOriginal.ModelYear,
         AssetType = assetEventLater.AssetType,
         IconKey = assetEventLater.IconKey,
         EquipmentVIN = assetEventOriginal.EquipmentVIN,
@@ -464,7 +447,7 @@ namespace RepositoryTests
 
         // these should be updated now
         asset.ModelYear = assetEventLater.ModelYear;
-        asset.Name = assetEventLater.AssetName; 
+        asset.Name = assetEventLater.AssetName;
         g = await assetContext.GetAsset(asset.AssetUID);
         Assert.IsNotNull(g, "Unable to retrieve Asset from AssetRepo");
         Assert.AreEqual(asset, g, "Asset details are incorrect from AssetRepo");
@@ -480,7 +463,7 @@ namespace RepositoryTests
     public void UpdateAsset_HappyPath()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEventCreate = new CreateAssetEvent()
+      var assetEventCreate = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -495,7 +478,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventUpdate = new UpdateAssetEvent()
+      var assetEventUpdate = new UpdateAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         AssetName = "AnAssetName changed",
@@ -542,7 +525,7 @@ namespace RepositoryTests
     public void UpdateAsset_IgnoreNullValues()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEventCreate = new CreateAssetEvent()
+      var assetEventCreate = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -554,21 +537,21 @@ namespace RepositoryTests
         Model = "D6RXL",
         ModelYear = 1880,
         OwningCustomerUID = Guid.NewGuid(),
-        SerialNumber = "S6T00561",       
+        SerialNumber = "S6T00561",
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventUpdate = new UpdateAssetEvent()
+      var assetEventUpdate = new UpdateAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         AssetName = null,
         AssetType = null,
         EquipmentVIN = null,
         IconKey = null,
-        LegacyAssetId = null,        
+        LegacyAssetId = null,
         Model = null,
         ModelYear = null,
-        OwningCustomerUID = null,       
+        OwningCustomerUID = null,
         ActionUTC = firstCreatedUTC.AddMinutes(10)
       };
 
@@ -579,7 +562,7 @@ namespace RepositoryTests
         AssetType = assetEventCreate.AssetType,
         EquipmentVIN = assetEventCreate.EquipmentVIN,
         IconKey = assetEventCreate.IconKey,
-        LegacyAssetID = assetEventCreate.LegacyAssetId,        
+        LegacyAssetID = assetEventCreate.LegacyAssetId,
         MakeCode = assetEventCreate.MakeCode,
         Model = assetEventCreate.Model,
         ModelYear = assetEventCreate.ModelYear,
@@ -611,7 +594,7 @@ namespace RepositoryTests
     public void UpdateAsset_IgnoreEmptyCustomerUID()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEventCreate = new CreateAssetEvent()
+      var assetEventCreate = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = null,
@@ -627,7 +610,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventUpdate = new UpdateAssetEvent()
+      var assetEventUpdate = new UpdateAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         AssetName = "AnAssetName changed",
@@ -696,7 +679,7 @@ namespace RepositoryTests
     public void UpdateAsset_ExistsFromMoreRecentUpdate()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEventCreate = new CreateAssetEvent()
+      var assetEventCreate = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -709,7 +692,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventUpdateEarlier = new UpdateAssetEvent()
+      var assetEventUpdateEarlier = new UpdateAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         AssetName = "AnAssetName changed",
@@ -720,7 +703,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC.AddMinutes(10)
       };
 
-      var assetEventUpdateLater = new UpdateAssetEvent()
+      var assetEventUpdateLater = new UpdateAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         AssetName = "AnAssetName changed even later",
@@ -767,7 +750,7 @@ namespace RepositoryTests
     public void CreateAsset_ExistsFromMasterDataUpdate()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEventCreate = new CreateAssetEvent()
+      var assetEventCreate = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -782,7 +765,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventUpdate = new UpdateAssetEvent()
+      var assetEventUpdate = new UpdateAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         AssetName = "AnAssetName changed",
@@ -829,7 +812,7 @@ namespace RepositoryTests
     public void DeleteAsset_HappyPath()
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
-      var assetEventCreate = new CreateAssetEvent()
+      var assetEventCreate = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -842,7 +825,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventDelete = new DeleteAssetEvent()
+      var assetEventDelete = new DeleteAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         ActionUTC = firstCreatedUTC.AddMinutes(10)
@@ -887,7 +870,7 @@ namespace RepositoryTests
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
 
-      var assetEventDelete = new DeleteAssetEvent()
+      var assetEventDelete = new DeleteAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUTC
@@ -930,7 +913,7 @@ namespace RepositoryTests
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
 
-      var assetEventCreate = new CreateAssetEvent()
+      var assetEventCreate = new CreateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -945,7 +928,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventDelete = new DeleteAssetEvent()
+      var assetEventDelete = new DeleteAssetEvent
       {
         AssetUID = assetEventCreate.AssetUID,
         ActionUTC = firstCreatedUTC.AddMinutes(10)
@@ -989,7 +972,7 @@ namespace RepositoryTests
     {
       DateTime firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
 
-      var assetEventUpdate = new UpdateAssetEvent()
+      var assetEventUpdate = new UpdateAssetEvent
       {
         AssetUID = Guid.NewGuid(),
         AssetName = "AnAssetName",
@@ -1002,7 +985,7 @@ namespace RepositoryTests
         ActionUTC = firstCreatedUTC
       };
 
-      var assetEventDelete = new DeleteAssetEvent()
+      var assetEventDelete = new DeleteAssetEvent
       {
         AssetUID = assetEventUpdate.AssetUID,
         ActionUTC = firstCreatedUTC.AddMinutes(10)

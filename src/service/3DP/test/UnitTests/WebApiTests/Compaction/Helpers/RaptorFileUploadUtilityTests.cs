@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
@@ -53,7 +54,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
       File.WriteAllBytes(Path.Combine(filePath, filename), new byte[20 * 1024 * 1024 + 1]);
 
-      var fileDescriptor = MasterData.Models.Models.FileDescriptor.CreateFileDescriptor("1", filePath, filename);
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor("1", filePath, filename);
 
       var allBytes = File.ReadAllBytes(Path.Combine(fileDescriptor.Path, fileDescriptor.FileName));
       (bool success, string message) = uploadUtility.UploadFile(fileDescriptor, allBytes);

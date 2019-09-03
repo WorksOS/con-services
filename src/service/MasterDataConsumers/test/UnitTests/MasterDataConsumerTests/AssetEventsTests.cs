@@ -12,8 +12,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     public void AssetEventsCopyModels()
     {
       DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-      var asset = new Asset()
-      {
+      var asset = new Asset
+                  {
         AssetUID = Guid.NewGuid().ToString(),
         Name = "The Asset Name",
         AssetType = "whatever",
@@ -29,8 +29,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     #region private
     private CreateAssetEvent CopyModel(Asset asset)
     {
-      return new CreateAssetEvent()
-      {
+      return new CreateAssetEvent
+             {
         AssetUID = Guid.Parse(asset.AssetUID),
         AssetName = asset.Name,
         AssetType = asset.AssetType,
@@ -40,8 +40,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private Asset CopyModel(CreateAssetEvent kafkaAssetEvent)
     {
-      return new Asset()
-      {
+      return new Asset
+             {
         AssetUID = kafkaAssetEvent.AssetUID.ToString(),
         Name = kafkaAssetEvent.AssetName,
         AssetType = kafkaAssetEvent.AssetType,

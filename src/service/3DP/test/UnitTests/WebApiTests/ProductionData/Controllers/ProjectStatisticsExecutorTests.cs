@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
@@ -15,6 +16,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 #if RAPTOR
 using BoundingExtents;
@@ -34,14 +36,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      serviceProvider = new ServiceCollection()
+                        .AddLogging()
+                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+                        .BuildServiceProvider();
 
-      var serviceCollection = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton(loggerFactory);
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       _customHeaders = new Dictionary<string, string>();
     }
@@ -49,7 +48,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void ProjectStatisticsExecutor_TRexValidation_Success()
     {
-      var excludedSurveyedSurfaceUids = new Guid[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+      var excludedSurveyedSurfaceUids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
       var request = new ProjectStatisticsTRexRequest(Guid.NewGuid(), excludedSurveyedSurfaceUids);
       request.Validate();
     }
@@ -57,7 +56,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void ProjectStatisticsExecutor_TRexValidation_ProjectUidFailure()
     {
-      var excludedSurveyedSurfaceUids = new Guid[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+      var excludedSurveyedSurfaceUids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
       var request = new ProjectStatisticsTRexRequest(Guid.Empty, excludedSurveyedSurfaceUids);
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
       Assert.IsNotNull(ex, "should be exception");
@@ -69,7 +68,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void ProjectStatisticsExecutor_TRexValidation_SSUidFailure()
     {
-      var excludedSurveyedSurfaceUids = new Guid[] { Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
+      var excludedSurveyedSurfaceUids = new[] { Guid.Empty, Guid.NewGuid(), Guid.NewGuid() };
       var request = new ProjectStatisticsTRexRequest(Guid.NewGuid(), excludedSurveyedSurfaceUids);
       var ex = Assert.ThrowsException<ServiceException>(() => request.Validate());
       Assert.IsNotNull(ex, "should be exception");
@@ -81,7 +80,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void ProjectStatisticsExecutor_TRex_Success()
     {
-      var excludedSurveyedSurfaceUids = new Guid[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+      var excludedSurveyedSurfaceUids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
       var excludedSurveyedSurfaceIds = new long[] { 444, 777, 888 };
       var request = new ProjectStatisticsMultiRequest(Guid.NewGuid(), 123, excludedSurveyedSurfaceUids, excludedSurveyedSurfaceIds);
 
@@ -148,12 +147,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     [TestMethod]
     public void ProjectStatisticsExecutor_Raptor_Success()
     {
-      var excludedSurveyedSurfaceUids = new Guid[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+      var excludedSurveyedSurfaceUids = new[] { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
       var excludedSurveyedSurfaceIds = new long[] { 444, 777, 888 };
       var request = new ProjectStatisticsMultiRequest(Guid.NewGuid(), 123, excludedSurveyedSurfaceUids, excludedSurveyedSurfaceIds);
 
-      var statistics = new TICDataModelStatistics()
-      {
+      var statistics = new TICDataModelStatistics
+                       {
         StartTime = DateTime.UtcNow.AddDays(-5),
         EndTime = DateTime.UtcNow.AddDays(-1),
         CellSize = 32.5,

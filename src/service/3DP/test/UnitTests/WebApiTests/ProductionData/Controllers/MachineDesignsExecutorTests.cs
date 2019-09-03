@@ -55,7 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, assetId)};
+      var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
@@ -116,7 +116,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, assetId)};
+      var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
@@ -204,8 +204,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       GetTRexMachineIdsMock(machines, projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>()
-      {
+      var assetMatches = new List<KeyValuePair<Guid, long>>
+                         {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
@@ -318,7 +318,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new List<AssetOnDesignPeriod>
         {
           new AssetOnDesignPeriod("The NameOf Design", designId, assetId, DateTime.UtcNow.AddDays(-5),
-            DateTime.UtcNow.AddDays(-1), null)
+            DateTime.UtcNow.AddDays(-1))
         }
       );
 
@@ -343,7 +343,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectId, raptorClient);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>() {new KeyValuePair<Guid, long>(assetUid, assetId)};
+      var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
       assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
      
@@ -393,17 +393,17 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new List<AssetOnDesignPeriod>
         {
           new AssetOnDesignPeriod("The NameOf Design1", designId, assetId1Good, DateTime.UtcNow.AddDays(-5),
-            DateTime.UtcNow.AddDays(-4), null),
+            DateTime.UtcNow.AddDays(-4)),
           new AssetOnDesignPeriod("The NameOf Design1", designId, assetId2Invalid, DateTime.UtcNow.AddDays(-3),
-            DateTime.UtcNow.AddDays(-2), null),
+            DateTime.UtcNow.AddDays(-2)),
           new AssetOnDesignPeriod("The NameOf Design1", designId, assetId3Good, DateTime.UtcNow.AddDays(-2),
-            DateTime.UtcNow.AddDays(-1), null),
+            DateTime.UtcNow.AddDays(-1)),
           new AssetOnDesignPeriod("The NameOf Design1", designId, assetId1Good, DateTime.UtcNow.AddDays(-10),
-            DateTime.UtcNow.AddDays(-9), null),
+            DateTime.UtcNow.AddDays(-9)),
           new AssetOnDesignPeriod("The NameOf Design1", designId, assetId2Invalid, DateTime.UtcNow.AddDays(-10),
-            DateTime.UtcNow.AddDays(-9), null),
+            DateTime.UtcNow.AddDays(-9)),
           new AssetOnDesignPeriod("The NameOf Design1", designId, assetId3Good, DateTime.UtcNow.AddDays(-10),
-            DateTime.UtcNow.AddDays(-9), null)
+            DateTime.UtcNow.AddDays(-9))
         }
       );
 
@@ -472,8 +472,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       GetRaptorMachineIdsMock(tMachines, projectIds.ProjectId, raptorClient);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>>()
-      {
+      var assetMatches = new List<KeyValuePair<Guid, long>>
+                         {
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid3Good, assetId3Good)
       };
@@ -524,7 +524,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new List<AssetOnDesignPeriod>
         {
           new AssetOnDesignPeriod(machineDesignName, designId, assetId, DateTime.UtcNow.AddDays(-5),
-            DateTime.UtcNow.AddDays(-1), null)
+            DateTime.UtcNow.AddDays(-1))
         }
       );
 

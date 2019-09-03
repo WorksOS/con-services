@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApiTests.Caching
 {
@@ -15,16 +17,11 @@ namespace VSS.Productivity3D.WebApiTests.Caching
     [TestInitialize]
     public void InitTest()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection
-        .AddTransient<IOptions<MemoryCacheOptions>, MemoryCacheOptions>();
-
-      ServiceProvider = serviceCollection.BuildServiceProvider();
+      ServiceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+        .AddTransient<IOptions<MemoryCacheOptions>, MemoryCacheOptions>()
+        .BuildServiceProvider();
     }
   }
 }

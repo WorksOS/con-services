@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         new Dictionary<string, object>(),
@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -131,7 +131,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -169,7 +169,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -206,7 +206,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -243,7 +243,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -280,7 +280,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -309,7 +309,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,
@@ -331,7 +331,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {
           HttpContext = httpContext,
           RouteData = new RouteData(),
-          ActionDescriptor = new ActionDescriptor(),
+          ActionDescriptor = new ActionDescriptor()
         },
         new List<IFilterMetadata>(),
         actionArguments,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,9 +10,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Gateway.Common.Abstractions;
-using System.IO;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 {
@@ -55,8 +55,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
 
-      var request = new QMTileRequest()
-      {
+      var request = new QMTileRequest
+                    {
         X = 0,
         Y = 0,
         Z = 0,
@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       };
 
       // make bad call
-      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse<QMTileRequest>(
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(
         It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrainNoValid"),
           It.IsAny<IDictionary<string, string>>()))
@@ -104,8 +104,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
 
-      var request = new QMTileRequest()
-      {
+      var request = new QMTileRequest
+                    {
         X = 0,
         Y = 0,
         Z = 0,
@@ -114,7 +114,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       };
 
 
-      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse<QMTileRequest>(
+      tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(
         It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>()))

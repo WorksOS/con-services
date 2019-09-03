@@ -1,11 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using VSS.Productivity3D.WebApi.Models.MapHandling;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
-using Point = VSS.MasterData.Models.Models.Point;
+using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApiTests.MapHandling
 {
@@ -69,7 +67,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(35.5, -116.0),
         new WGSPoint(35.5, -116.5),
         new WGSPoint(35.0, -116.5),
-        new WGSPoint(35.0, -116.0),
+        new WGSPoint(35.0, -116.0)
       };
       Assert.IsTrue(Outside(bbox, points));
     }
@@ -90,7 +88,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(36.3, -115.5),
         new WGSPoint(36.3, -115.7),
         new WGSPoint(36.1, -115.7),
-        new WGSPoint(36.1, -115.5),
+        new WGSPoint(36.1, -115.5)
       };
       Assert.IsFalse(Outside(bbox, points));
     }
@@ -111,7 +109,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(36.3, -115.5),
         new WGSPoint(36.3, -115.7),
         new WGSPoint(35.9, -115.7),
-        new WGSPoint(35.9, -115.5),
+        new WGSPoint(35.9, -115.5)
       };
       Assert.IsFalse(Outside(bbox, points));
     }
@@ -132,7 +130,7 @@ namespace VSS.Productivity3D.WebApiTests.MapHandling
         new WGSPoint(36.6, -116.0),
         new WGSPoint(36.6, -114.9),
         new WGSPoint(35.9, -114.9),
-        new WGSPoint(35.9, -116.0),
+        new WGSPoint(35.9, -116.0)
       };
       Assert.IsFalse(Outside(bbox, points));
     }

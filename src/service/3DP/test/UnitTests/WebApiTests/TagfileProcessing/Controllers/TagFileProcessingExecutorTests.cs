@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 #if RAPTOR
 using ShineOn.Rtl;
 using TAGProcServiceDecls;
@@ -27,6 +28,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
+using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 
@@ -42,20 +44,15 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection()
-        .AddLogging()
-        .AddSingleton(loggerFactory)
-        .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+      _serviceProvider = new ServiceCollection()
+                        .AddLogging()
+                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+                        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+                        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
 #if RAPTOR
         .AddTransient<IErrorCodesProvider, RaptorResult>()
 #endif
-  ;
-
-      _serviceProvider = serviceCollection.BuildServiceProvider();
+                        .BuildServiceProvider();
 
       _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
       _customHeaders = new Dictionary<string, string>();
@@ -66,8 +63,8 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       long legacyProjectId = 1;
-      var request = new CompactionTagFileRequest()
-      {
+      var request = new CompactionTagFileRequest
+                    {
         ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
@@ -153,8 +150,8 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       long legacyProjectId = 1;
-      var request = new CompactionTagFileRequest()
-      {
+      var request = new CompactionTagFileRequest
+                    {
         ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
@@ -205,8 +202,8 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       long legacyProjectId = 1;
-      var request = new CompactionTagFileRequest()
-      {
+      var request = new CompactionTagFileRequest
+                    {
         ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
@@ -254,8 +251,8 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
     {
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       long legacyProjectId = 1;
-      var request = new CompactionTagFileRequest()
-      {
+      var request = new CompactionTagFileRequest
+                    {
         ProjectId = legacyProjectId,
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
@@ -301,8 +298,8 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       long legacyProjectId = 1; //  todo projectID validation rejects  0 and -1. Also projectId or UID MUST have a valid value;
                                 //   VelociraptorConstants.NO_PROJECT_ID = -1
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
-      var request = new CompactionTagFileRequest()
-      {
+      var request = new CompactionTagFileRequest
+                    {
         ProjectId = legacyProjectId, 
         ProjectUid = null,
         FileName = "Machine Name--whatever --161230235959",
@@ -353,7 +350,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
       (
-        new CompactionTagFileRequest()
+        new CompactionTagFileRequest
         {
           ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,
@@ -404,7 +401,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
       (
-        new CompactionTagFileRequest()
+        new CompactionTagFileRequest
         {
           ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,
@@ -459,7 +456,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
       (
-        new CompactionTagFileRequest()
+        new CompactionTagFileRequest
         {
           ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,
@@ -510,7 +507,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
       (
-        new CompactionTagFileRequest()
+        new CompactionTagFileRequest
         {
           ProjectId  = resolvedLegacyProjectId,
           ProjectUid = projectUid,
@@ -575,7 +572,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       var tagFileContent = new byte[] {0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9};
       var request = CompactionTagFileRequestExtended.CreateCompactionTagFileRequestExtended
       (
-        new CompactionTagFileRequest()
+        new CompactionTagFileRequest
         {
           ProjectId = resolvedLegacyProjectId,
           ProjectUid = projectUid,

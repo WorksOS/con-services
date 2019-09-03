@@ -25,7 +25,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         $"GetAssetOnDesignLayerPeriodsExecutor: {JsonConvert.SerializeObject(projectIds)}, UseTRexGateway: {UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS")}");
 
       List<AssetOnDesignLayerPeriod> assetOnDesignLayerPeriods;
-      bool haveUids = true;
 
 #if RAPTOR
       if (UseTRexGateway("ENABLE_TREX_GATEWAY_LAYERS"))
@@ -41,7 +40,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
       else
       {
-        haveUids = false;
         raptorClient.GetOnMachineLayers(projectIds.ProjectId, out var layerList);
         if (layerList == null || layerList.Length == 0)
           return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
@@ -50,7 +48,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         if (raptorDesigns == null)
         {
           log.LogError(
-            $"GetAssetOnDesignLayerPeriodsExecutor: no raptor machineDesigns found to match with layers");
+            "GetAssetOnDesignLayerPeriodsExecutor: no raptor machineDesigns found to match with layers");
           return new AssetOnDesignLayerPeriodsExecutionResult(new List<AssetOnDesignLayerPeriod>());
         }
 
