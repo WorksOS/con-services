@@ -30,12 +30,23 @@ namespace VSS.MasterData.Proxies
         HeaderConstants.X_JWT_ASSERTION
       };
 
+      var prefixList = HeaderConstants.InternalHeaderPrefix;
+
       foreach (var key in keys)
       {
         if (headers.ContainsKey(key))
         {
           customHeaders.Add(key, headers[key]);
         }
+      }
+
+      foreach (var prefix in prefixList)
+      {
+        var match = headers.FirstOrDefault(h => h.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+        if (string.IsNullOrEmpty(match.Key) || string.IsNullOrEmpty(match.Value))
+          continue;
+
+        customHeaders.Add(match.Key, match.Value);
       }
 
       return customHeaders;
