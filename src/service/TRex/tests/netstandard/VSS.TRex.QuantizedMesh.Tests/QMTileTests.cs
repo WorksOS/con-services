@@ -264,7 +264,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
       request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK);
       var QMTileResponse = request.QMTileResponse;
-      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(4171);
+      QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(3591);
     }
 
     [Fact]

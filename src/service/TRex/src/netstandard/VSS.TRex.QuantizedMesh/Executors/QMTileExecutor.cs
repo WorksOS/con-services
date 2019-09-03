@@ -100,40 +100,31 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// <param name="minElev"></param>
     /// <param name="maxElev"></param>
     /// <returns></returns>
-    private bool ConvertGridToDEM(float minElev, float maxElev)
+    private void ConvertGridToDEM(float minElev, float maxElev)
     {
-      try
-      {
-        Log.LogDebug($"Tile.({TileX},{TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, GridSize:{TileGridSize}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
-        ElevData.MaximumHeight = maxElev;
-        ElevData.MinimumHeight = minElev;
-        var defaultElev = LowestElevation;
-        var yRange = TileBoundaryLL.North - TileBoundaryLL.South;
-        var xRange = TileBoundaryLL.East - TileBoundaryLL.West;
-        var xStep = xRange / (TileGridSize - 1);
-        var yStep = yRange / (TileGridSize - 1);
-        var k = 0;
-        for (int y = 0; y < TileGridSize; y++)
-          for (int x = 0; x < TileGridSize; x++)
-          {
-            // calculate LL position
-            var lat = TileBoundaryLL.South + (y * yStep);
-            var lon = TileBoundaryLL.West + (x * xStep);
-            var elev = GriddedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight ? defaultElev : GriddedElevDataArray[x, y].Elevation;
-            if (elev < ElevData.MinimumHeight)
-              ElevData.MinimumHeight = elev; // reset to base
-            ElevData.EcefPoints[k] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(lon), Y = MapUtils.Deg2Rad(lat), Z = elev });
-            if (ElevData.ElevGrid[k] != elev)
-              ElevData.ElevGrid[k] = elev; // missing data set to lowest
-            k++;
-          }
-      }
-      catch (Exception ex)
-      {
-        Log.LogError(ex, $"Tile.({TileX},{TileY}). Exception in ConvertGridToDEM");
-        return false;
-      }
-      return true;
+      Log.LogDebug($"Tile.({TileX},{TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, GridSize:{TileGridSize}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
+      ElevData.MaximumHeight = maxElev;
+      ElevData.MinimumHeight = minElev;
+      var defaultElev = LowestElevation;
+      var yRange = TileBoundaryLL.North - TileBoundaryLL.South;
+      var xRange = TileBoundaryLL.East - TileBoundaryLL.West;
+      var xStep = xRange / (TileGridSize - 1);
+      var yStep = yRange / (TileGridSize - 1);
+      var k = 0;
+      for (int y = 0; y < TileGridSize; y++)
+        for (int x = 0; x < TileGridSize; x++)
+        {
+          // calculate LL position
+          var lat = TileBoundaryLL.South + (y * yStep);
+          var lon = TileBoundaryLL.West + (x * xStep);
+          var elev = GriddedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight ? defaultElev : GriddedElevDataArray[x, y].Elevation;
+          if (elev < ElevData.MinimumHeight)
+            ElevData.MinimumHeight = elev; // reset to base
+          ElevData.EcefPoints[k] = CoordinateUtils.geo_to_ecef(new Vector3() { X = MapUtils.Deg2Rad(lon), Y = MapUtils.Deg2Rad(lat), Z = elev });
+          if (ElevData.ElevGrid[k] != elev)
+            ElevData.ElevGrid[k] = elev; // missing data set to lowest
+          k++;
+        }
     }
 
     /// <summary>
@@ -688,8 +679,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
         }
 
         // Transform gridded data into a format the mesh builder can use
-        if (!ConvertGridToDEM(minElev, maxElev))
-          return BuildEmptyTile();
+        ConvertGridToDEM(minElev, maxElev);
 
         // Build a quantized mesh from sampled elevations
         QMTileBuilder tileBuilder = new QMTileBuilder() { TileData = ElevData, GridSize = TileGridSize };
