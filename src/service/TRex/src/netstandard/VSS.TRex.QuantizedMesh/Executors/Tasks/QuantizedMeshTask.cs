@@ -35,8 +35,6 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
     public float MinElevation = float.PositiveInfinity;
     public float MaxElevation = float.NegativeInfinity;
     public float LowestElevation = 0;
-    public double TotalSampled = 0;
-    public double TotalUsed = 0;
     private int TileRangeMinX;
     private int TileRangeMinY;
     private int TileRangeMaxX;
@@ -48,16 +46,15 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
     /// <param name="subGrid"></param>
     private void ExtractRequiredValues(ClientHeightLeafSubGrid subGrid)
     {
-      var cnt = 0.0;
-      var cnt2 = 0.0;
-      // var eff = 0.0;
 
       // Calculate cell range we are interested in
       subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
 
+      // Top of subgrid
       var topX = subGridWorldOriginX + subGrid.CellSize * SubGridTreeConsts.SubGridTreeDimension;
       var topY = subGridWorldOriginY + subGrid.CellSize * SubGridTreeConsts.SubGridTreeDimension;
 
+      // Work out the x/y range across our grid we will lookup values
       double rangeMinX = (subGridWorldOriginX - TileMinX) / GridIntervalX;
       if (Math.Truncate(rangeMinX) != rangeMinX)
         TileRangeMinX = (int)(Math.Truncate(rangeMinX)) + 1;
@@ -82,18 +79,20 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
       if (TileRangeMaxY > GridSize - 1)
         TileRangeMaxY = GridSize - 1;
 
+      // Iterate over our grid and extract cell heights from subgrid
       for (int y = TileRangeMinY; y <= TileRangeMaxY; y++)
         for (int x = TileRangeMinX; x <= TileRangeMaxX; x++)
         {
-          cnt2++;
+          // based on grid position lookup cell value
+          // use grid's easting northing value to find subgrid cell we are interested in
           SubGridTree.CalculateIndexOfCellContainingPosition(GriddedElevDataArray[x, y].Easting, GriddedElevDataArray[x, y].Northing,
           subGrid.CellSize,
           subGrid.IndexOriginOffset,
           out int CellX, out int CellY);
           subGrid.GetOTGLeafSubGridCellIndex(CellX, CellY, out var subGridX, out var subGridY);
+          // if we have a valid height add it to our data grid
           if (subGrid.Cells[subGridX, subGridY] != CellPassConsts.NullHeight)
           {
-            cnt++;
             GriddedElevDataArray[x, y].Elevation = subGrid.Cells[subGridX, subGridY];
             if (GriddedElevDataArray[x, y].Elevation < MinElevation)
               MinElevation = GriddedElevDataArray[x, y].Elevation;
@@ -101,16 +100,6 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
               MaxElevation = GriddedElevDataArray[x, y].Elevation;
           }
         }
-
-      //  if (cnt2 > 0)
-      //  {
-      //    eff = (cnt / cnt2) * 100;
-      //    Log.LogDebug($"Processing Subgrid. TotalAvail:{subGrid.CountNonNullCells()}, Sampled:{cnt2}, Used:{cnt} Eff:{Math.Round(eff, 2)}");
-      //  }
-
-      // Statistics
-      TotalSampled = TotalSampled + cnt2;
-      TotalUsed = TotalUsed + cnt;
     }
 
 

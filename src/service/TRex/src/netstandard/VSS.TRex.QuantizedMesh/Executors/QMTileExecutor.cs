@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common.Models;
@@ -23,6 +22,8 @@ using VSS.TRex.Types.CellPasses;
 using VSS.TRex.QuantizedMesh.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Common;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace VSS.TRex.QuantizedMesh.Executors
 {
@@ -43,10 +44,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
     private double GridIntervalY;
     private ElevationData ElevData;
     private LLBoundingBox TileBoundaryLL;
-
+    private bool GridReductionRequired;
     // This will eventually be removed
     private static string DIMENSIONS_2012_DC_CSIB = "QM0G000ZHC4000000000800BY7SN2W0EYST640036P3P1SV09C1G61CZZKJC976CNB295K7W7G30DA30A1N74ZJH1831E5V0CHJ60W295GMWT3E95154T3A85H5CRK9D94PJM1P9Q6R30E1C1E4Q173W9XDE923XGGHN8JR37B6RESPQ3ZHWW6YV5PFDGCTZYPWDSJEFE1G2THV3VAZVN28ECXY7ZNBYANFEG452TZZ3X2Q1GCYM8EWCRVGKWD5KANKTXA1MV0YWKRBKBAZYVXXJRM70WKCN2X1CX96TVXKFRW92YJBT5ZCFSVM37ZD5HKVFYYYMJVS05KA6TXFY6ZE4H6NQX8J3VAX79TTF82VPSV1KVR8W9V7BM1N3MEY5QHACSFNCK7VWPNY52RXGC1G9BPBS1QWA7ZVM6T2E0WMDY7P6CXJ68RB4CHJCDSVR6000047S29YVT08000";
-
     private float LowestElevation = 0.0F;
     private IPipelineProcessor processor;
     private QuantizedMeshTask task;
@@ -57,6 +57,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     public QuantizedMeshResponse QMTileResponse { get; } = new QuantizedMeshResponse();
     public ElevationGridResponse GriddedElevationsResponse { get; } = new ElevationGridResponse();
     public GriddedElevDataRow[,] GriddedElevDataArray;
+    private GriddedElevDataRow[,] ReducedElevDataArray;
     public RequestErrorStatus ResultStatus = RequestErrorStatus.Unknown;
     public GridReportOption GridReportOption { get; set; }
     public double StartNorthing { get; set; }
@@ -103,7 +104,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     {
       try
       {
-        Log.LogDebug($"Tile.({TileX},{TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
+        Log.LogDebug($"Tile.({TileX},{TileY}) ConvertGridToDEM, MinElev:{minElev}, MaxElev:{maxElev}, GridSize:{TileGridSize}, FirstPos:{GriddedElevDataArray[0, 0].Easting},{GriddedElevDataArray[0, 0].Northing},{GriddedElevDataArray[0, 0].Elevation}");
         ElevData.MaximumHeight = maxElev;
         ElevData.MinimumHeight = minElev;
         var defaultElev = LowestElevation;
@@ -141,7 +142,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
     /// <returns></returns>
     private bool BuildEmptyTile()
     {
-      Log.LogDebug($"Tile.({TileX},{TileY}) Returning empty tile. (X:{TileX}, Y:{TileX},{TileY}, Z:{TileZ}), GridSize{QMConstants.FlatResolutionGridSize}");
+      Log.LogDebug($"#Tile#.({TileX},{TileY}) Execute End. Returning empty tile. Zoom:{TileZ}, GridSize{QMConstants.FlatResolutionGridSize}");
       // Even empty tiles must have header info correctly calculated 
       if (ElevData.GridSize == QMConstants.NoGridSize)
         ElevData = new ElevationData(LowestElevation, QMConstants.FlatResolutionGridSize); // elevation grid
@@ -257,6 +258,8 @@ namespace VSS.TRex.QuantizedMesh.Executors
           TileGridSize = QMConstants.FlatResolutionGridSize;
       }
 
+      GridReductionRequired = TileGridSize == QMConstants.MidResolutionGridSize;
+
       // Setup for return. In most cases you want to at least return an empty tile
       ElevData = new ElevationData(LowestElevation, TileGridSize); // elevation grid
     }
@@ -299,8 +302,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       NEECoords = conversionResult.NEECoordinates;
       GridIntervalX = (NEECoords[1].X - NEECoords[0].X) / (TileGridSize - 1);
-      GridIntervalY = (NEECoords[2].Y - NEECoords[0].Y) / (TileGridSize - 1);
-      Log.LogDebug($"Tile.({TileX},{TileY}) Zoom:{TileZ}, TileSize:{Math.Round(NEECoords[1].X - NEECoords[0].X,3)}m x {Math.Round(NEECoords[2].Y - NEECoords[0].Y,3)}m, GridInterval(m) X:{Math.Round(GridIntervalX,3)}, Y:{Math.Round(GridIntervalY,3)}");
+      GridIntervalY = (NEECoords[1].Y - NEECoords[0].Y) / (TileGridSize - 1);
+
+      Log.LogDebug($"#Tile#.({TileX},{TileY}) TileInfo: Zoom:{TileZ}, TileSizeXY:{Math.Round(NEECoords[1].X - NEECoords[0].X, 3)}m x {Math.Round(NEECoords[2].Y - NEECoords[0].Y, 3)}m, GridInterval(m) X:{Math.Round(GridIntervalX, 3)}, Y:{Math.Round(GridIntervalY, 3)}, GridSize:{TileGridSize}, GridReduction:{GridReductionRequired}");
 
       var WorldTileHeight = MathUtilities.Hypot(NEECoords[0].X - NEECoords[2].X, NEECoords[0].Y - NEECoords[2].Y);
       var WorldTileWidth = MathUtilities.Hypot(NEECoords[0].X - NEECoords[3].X, NEECoords[0].Y - NEECoords[3].Y);
@@ -413,6 +417,186 @@ namespace VSS.TRex.QuantizedMesh.Executors
     }
 
     /// <summary>
+    /// Reduces the size of the grid by half and smooths out the data
+    /// </summary>
+    private void ReduceAndSmoothGrid(ref float min, ref float max)
+    {
+      try
+      {
+
+        min = float.PositiveInfinity;
+        max = float.NegativeInfinity;
+        var newGridSize = (TileGridSize - 1) / 2 + 1; // halfing grid size
+        ReducedElevDataArray = new GriddedElevDataRow[newGridSize, newGridSize];
+        var rdGridIntervalX = GridIntervalX * 2;
+        var rdGridIntervalY = GridIntervalY * 2;
+        var midX = 0;
+        var midY = 0;
+        // build up grid coordinates and initialise height
+        for (int y = 0; y < newGridSize; y++)
+          for (int x = 0; x < newGridSize; x++)
+          {
+            midX = x * 2;
+            midY = y * 2;
+            var x1 = NEECoords[0].X + (rdGridIntervalX * x);
+            var y1 = NEECoords[0].Y + (rdGridIntervalY * y);
+            if (Rotating)
+              Rotate_point(x1, y1, out x1, out y1);
+            ReducedElevDataArray[x, y].Easting = x1;
+            ReducedElevDataArray[x, y].Northing = y1;
+            ReducedElevDataArray[x, y].Elevation = CellPassConsts.NullHeight; // default
+
+            // Smooth data. There are 9 possible values surrounding a point except for edges edges
+            // 4 points forward down
+            if (y < newGridSize && x < newGridSize)
+            {
+              // Center point
+              if (GriddedElevDataArray[midX, midY].Elevation != CellPassConsts.NullHeight)
+              {
+                if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                  ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX, midY].Elevation;
+                else
+                  ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX, midY].Elevation) / 2;
+              }
+
+              if (y < newGridSize - 1) // if not last row y
+              { // center down
+                if (GriddedElevDataArray[midX, midY + 1].Elevation != CellPassConsts.NullHeight)
+                {
+                  if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                    ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX, midY + 1].Elevation;
+                  else
+                    ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX, midY + 1].Elevation) / 2;
+                }
+              }
+
+              if (x < newGridSize - 1) // if not end of row x
+              { // center across
+                if (GriddedElevDataArray[midX + 1, midY].Elevation != CellPassConsts.NullHeight)
+                {
+                  if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                    ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX + 1, midY].Elevation;
+                  else
+                    ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX + 1, midY].Elevation) / 2;
+                }
+                // center down across
+                if (y < newGridSize - 1) // if not last row y
+                  if (GriddedElevDataArray[midX + 1, midY + 1].Elevation != CellPassConsts.NullHeight)
+                  {
+                    if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                      ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX + 1, midY + 1].Elevation;
+                    else
+                      ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX + 1, midY + 1].Elevation) / 2;
+                  }
+              }
+            }
+
+            if (x > 0) // 2 places back on x
+            { // center back
+              if (GriddedElevDataArray[midX - 1, midY].Elevation != CellPassConsts.NullHeight)
+              {
+                if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                  ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX - 1, midY].Elevation;
+                else
+                  ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX - 1, midY].Elevation) / 2;
+              } // center back, down
+              if (y < newGridSize - 1)
+                if (GriddedElevDataArray[midX - 1, midY + 1].Elevation != CellPassConsts.NullHeight)
+                {
+                  if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                    ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX - 1, midY + 1].Elevation;
+                  else
+                    ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX - 1, midY + 1].Elevation) / 2;
+                }
+            }
+
+            if (y > 0)
+            { // 3 points back on y
+              if (x > 0)
+              { // center back x, y
+                if (GriddedElevDataArray[midX - 1, midY - 1].Elevation != CellPassConsts.NullHeight)
+                {
+                  if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                    ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX - 1, midY - 1].Elevation;
+                  else
+                    ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX - 1, midY - 1].Elevation) / 2;
+                }
+              }
+              // center back y
+              if (GriddedElevDataArray[midX, midY - 1].Elevation != CellPassConsts.NullHeight)
+              {
+                if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                  ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX, midY - 1].Elevation;
+                else
+                  ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX, midY - 1].Elevation) / 2;
+              }
+              // center forward x back y
+              if (x < newGridSize - 1)
+                if (GriddedElevDataArray[midX + 1, midY - 1].Elevation != CellPassConsts.NullHeight)
+                {
+                  if (ReducedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+                    ReducedElevDataArray[x, y].Elevation = GriddedElevDataArray[midX + 1, midY - 1].Elevation;
+                  else
+                    ReducedElevDataArray[x, y].Elevation = (ReducedElevDataArray[x, y].Elevation + GriddedElevDataArray[midX + 1, midY - 1].Elevation) / 2;
+                }
+            }
+          }
+
+        // recalculate min max now data has been smoothed 
+        for (int y = 0; y < newGridSize; y++)
+          for (int x = 0; x < newGridSize; x++)
+          {
+            if (ReducedElevDataArray[x, y].Elevation != CellPassConsts.NullHeight)
+            {
+              if (ReducedElevDataArray[x, y].Elevation < min)
+                min = ReducedElevDataArray[x, y].Elevation;
+              if (ReducedElevDataArray[x, y].Elevation > max)
+                max = ReducedElevDataArray[x, y].Elevation;
+            }
+          }
+
+        Log.LogDebug($"#Tile#.({TileX},{TileY}) Data successfully reduced. GridSize:{newGridSize}, Min:{min}, Max:{max}, FirstElev:{ReducedElevDataArray[0, 0].Elevation}, LastElev:{ReducedElevDataArray[newGridSize - 1, newGridSize - 1].Elevation}, GridInterval(m) X:{Math.Round(rdGridIntervalX, 3)}, Y:{Math.Round(rdGridIntervalY, 3)}");
+
+      }
+      catch (Exception ex)
+      {
+        Log.LogError(ex, $"Tile.({TileX},{TileY}). Unexpected exception in ReduceAndSmoothGrid");
+      }
+
+    }
+
+    /// <summary>
+    /// Debug function for viewing output
+    /// </summary>
+    private void OutputDebugTile(string preFix)
+    {
+      // can only run in ide check
+      if (Debugger.IsAttached == false)
+        return;
+
+      var pathString = $"c:\\temp\\qmtiles";
+      System.IO.Directory.CreateDirectory(pathString);
+      var fileName = $"{preFix}Z{TileZ}X{TileX}Y{TileY}.txt";
+      pathString = System.IO.Path.Combine(pathString, fileName);
+      List<string> lines = new List<string>();
+      for (var y = TileGridSize - 1; y >= 0; y--)
+      {
+        var str = "";
+        for (var x = 0; x < TileGridSize; x++)
+        {
+          if (GriddedElevDataArray[x, y].Elevation == CellPassConsts.NullHeight)
+            str += "_";
+          else
+            str += "X";
+        }
+        lines.Add(str);
+      }
+
+      System.IO.File.WriteAllLines(pathString, lines.ToArray());
+
+    }
+
+    /// <summary>
     /// Executor that implements requesting and rendering grid information to create the grid rows
     /// </summary>
     /// <returns></returns>
@@ -420,9 +604,8 @@ namespace VSS.TRex.QuantizedMesh.Executors
     {
 
       // Get the lat lon boundary from xyz tile request
-
       TileBoundaryLL = MapGeo.TileXYZToRectLL(TileX, TileY, TileZ, out var yFlip);
-      Log.LogInformation($"#Tile.({TileX},{TileY}) Execute. Zoom:{TileZ} YFlip{yFlip}). TileBoundary:{TileBoundaryLL.ToDisplay()}, DataModel:{DataModelUid}, Mode:{DisplayMode}");
+      Log.LogInformation($"#Tile#.({TileX},{TileY}) Execute Start.  DMode:{DisplayMode}, Zoom:{TileZ} FlipY:{yFlip}. TileBoundary:{TileBoundaryLL.ToDisplay()}, DataModel:{DataModelUid}");
 
       if (TileZ == 0) // Send back default root tile
       {
@@ -471,15 +654,46 @@ namespace VSS.TRex.QuantizedMesh.Executors
           return BuildEmptyTile();
         }
 
+        Log.LogInformation($"#Tile#.({TileX},{TileY}) Data successfully sampled. GridSize:{TileGridSize} Min:{task.MinElevation}, Max:{task.MaxElevation} FirstElev:{GriddedElevDataArray[0, 0].Elevation}, LastElev:{GriddedElevDataArray[TileGridSize - 1, TileGridSize - 1].Elevation}");
+
         ElevData.HasData = !float.IsPositiveInfinity(task.MinElevation); // check for data
+
+        // Developer Debugging Only
+        //if (ElevData.HasData)
+        //  OutputDebugTile("Raw");
+
         if (!ElevData.HasData)
           return BuildEmptyTile();
 
-        if (!ConvertGridToDEM(task.MinElevation, task.MaxElevation))
+        var minElev = task.MinElevation;
+        var maxElev = task.MaxElevation;
+        if (GridReductionRequired)
+        {
+          ReduceAndSmoothGrid(ref minElev, ref maxElev);
+          if (minElev == float.PositiveInfinity || maxElev == float.NegativeInfinity)
+          {
+            Log.LogError($"Tile.({TileX},{TileY},{TileZ}) Min/Max not set. Unexpected result reducing grid. Empty tile returned");
+            return BuildEmptyTile();
+          }
+          GriddedElevDataArray = ReducedElevDataArray; // point to new grid
+          TileGridSize = (TileGridSize - 1) / 2 + 1;
+          if (ElevData.GridSize != TileGridSize) // resize
+            ElevData = new ElevationData(LowestElevation, TileGridSize);
+          ElevData.HasData = !float.IsPositiveInfinity(minElev);
+
+          // Developer Debugging only
+          //if (ElevData.HasData)
+          // OutputDebugTile("Reduced");
+
+        }
+
+        // Transform gridded data into a format the mesh builder can use
+        if (!ConvertGridToDEM(minElev, maxElev))
           return BuildEmptyTile();
 
         // Build a quantized mesh from sampled elevations
         QMTileBuilder tileBuilder = new QMTileBuilder() { TileData = ElevData, GridSize = TileGridSize };
+        Log.LogInformation($"Tile.({TileX},{TileY}) BuildQuantizedMeshTile. GridSize:{TileGridSize} Min:{ElevData.MinimumHeight}, Max:{ElevData.MaximumHeight}");
         if (!tileBuilder.BuildQuantizedMeshTile())
         {
           Log.LogError($"Tile.({TileX},{TileY}) BuildQuantizedMeshTile returned false with error code: {tileBuilder.BuildTileFaultCode}");
@@ -489,17 +703,20 @@ namespace VSS.TRex.QuantizedMesh.Executors
         QMTileResponse.data = tileBuilder.QuantizedMeshTile; // Make tile from mesh
         ResultStatus = RequestErrorStatus.OK;
         QMTileResponse.ResultStatus = ResultStatus;
-        Log.LogDebug($"Tile.({TileX},{TileY}) Returning production tile. (X:{TileX}, Y:{TileX},{TileY}, Z:{TileZ}), GridSize{TileGridSize}");
+        Log.LogDebug($"#Tile#.({TileX},{TileY}) Execute End. Returning production tile. CesiumY:{yFlip}, Zoom:{TileZ}, GridSize:{TileGridSize}");
 
-        // for debugging
-        // if (DisplayMode == QMConstants.DisplayModeDev)
-        //File.WriteAllBytes("c://temp//0.terrain", tileBuilder.QuantizedMeshTile);
+        // Debveloper debugging only
+        /*
+         if (Debugger.IsAttached) 
+           if (DisplayMode == QMConstants.DisplayModeDev)
+             File.WriteAllBytes("c://temp//0.terrain", tileBuilder.QuantizedMeshTile);
+        */
 
         return true;
       }
       catch (Exception ex)
       {
-        Log.LogError(ex, $"Tile.({TileX},{TileY}). Exception building QuantizedMesh tile: ");
+        Log.LogError(ex, $"#Tile#.({TileX},{TileY}). Exception building QuantizedMesh tile: ");
         return false;
       }
     }
