@@ -31,6 +31,17 @@ namespace VSS.Common.Abstractions.Http
     public const string X_VSS_REQUEST_ID = "X-VSS-Request-ID";
 
     /// <summary>
+    /// Used to override the Service Discovery name from the UI or external applications
+    /// To override the project-service value, you would need a header X-VSS-Override-project-service specified.
+    /// </summary>
+    public const string X_VSS_SERVICE_OVERRIDE_PREFIX = "X-VSS-Override-";
+
+    /// <summary>
+    /// If a header is prefixed with this, it will be considered a valid internal header
+    /// </summary>
+    public static List<string> InternalHeaderPrefix => new List<string> {X_VSS_SERVICE_OVERRIDE_PREFIX};
+
+    /// <summary>
     ///   Headers to be kept when we make a request to any services developed by our team (e.g Filter / Project)
     /// </summary>
     public static List<string> InternalHeaders => new List<string>

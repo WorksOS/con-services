@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Exceptions;
@@ -18,6 +19,12 @@ namespace VSS.Common.Abstractions.ServiceDiscovery.Interfaces
     /// </summary>
     /// <returns>Unknown result if not found, otherwise a service result outlining the endpoints</returns>
     Task<ServiceResult> ResolveService(string serviceName);
+
+    /// <summary>
+    /// Convert an internal service definition to a string representation
+    /// </summary>
+    /// <exception cref="ArgumentException">The Service requested is not defined. </exception>
+    string GetServiceName(ApiService service);
 
     /// <summary>
     /// Resolve a Service URL for a given Service that we know about (e.g project / filter)
