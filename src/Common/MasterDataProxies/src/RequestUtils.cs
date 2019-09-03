@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Internal;
 using VSS.Common.Abstractions.Http;
 
 namespace VSS.MasterData.Proxies
@@ -42,17 +43,27 @@ namespace VSS.MasterData.Proxies
 
     public static void StripHeaders(this IDictionary<string, string> headers, bool isInternal)
     {
+      if (headers == null)
+        return;
+
       // Depending of if we are internal, or external, we need different headers to persist or be removed
       var keysToKeep = isInternal
         ? HeaderConstants.InternalHeaders
         : HeaderConstants.ExternalHeaders;
 
+      var prefixList = isInternal
+        ? HeaderConstants.InternalHeaderPrefix
+        : new List<string>();
+
       // Have to store the keys here, or else we modify the dictionary while iterating
-      var keys = headers?.Keys.ToList() ?? new List<string>();
+      var keys = headers?.Keys.ToList();
 
       foreach (var headerKey in keys)
       {
         if (keysToKeep.Any(k => k.Equals(headerKey, StringComparison.OrdinalIgnoreCase)))
+          continue;
+
+        if(prefixList.Any(p => headerKey.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
           continue;
 
         headers.Remove(headerKey);
