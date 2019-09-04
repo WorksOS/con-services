@@ -311,7 +311,7 @@ namespace VSS.TRex.SurveyedSurfaces
 
         if (FilteredSurveyedSurfaces.Count > 0)
         {
-          ISubGridTreeBitMask surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
+          var surveyedSurfaceExistenceMap = GetExistenceMaps().GetCombinedExistenceMap(siteModelID,
             FilteredSurveyedSurfaces.Select(x => new Tuple<long, Guid>(Consts.EXISTENCE_SURVEYED_SURFACE_DESCRIPTOR, x.ID)).ToArray());
 
           if (OverallExistenceMap == null)
