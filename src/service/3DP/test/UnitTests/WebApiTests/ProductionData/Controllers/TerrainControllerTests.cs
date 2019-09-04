@@ -6,11 +6,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
@@ -18,37 +20,26 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
   [TestClass]
   public class TerrainControllerTests
   {
-
     private static IServiceProvider serviceProvider;
     private static ILoggerFactory logger;
     private static Dictionary<string, string> _customHeaders;
 
-
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection()
+      serviceProvider = new ServiceCollection()
         .AddLogging()
-        .AddSingleton(loggerFactory);
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+        .BuildServiceProvider();
 
-      serviceProvider = serviceCollection.BuildServiceProvider();
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       _customHeaders = new Dictionary<string, string>();
     }
 
-
     [TestMethod]
     public void PD_GetTerrainTile_TRex_Fail()
     {
-      var expectedResult = new QMTileResult
-      (
-        new byte[] { 0x41, 0x42, 0x42, 0x41} // may get compressed(gzip) later in part two
-      );
-
-      var resultStream = new MemoryStream(new byte[] 
+      var resultStream = new MemoryStream(new byte[]
         {
           0x41, 0x42, 0x42, 0x41
         });
@@ -56,12 +47,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
 
       var request = new QMTileRequest
-                    {
+      {
         X = 0,
         Y = 0,
         Z = 0,
         Filter = new FilterResult(),
-        ProjectUid = Guid.Empty	
+        ProjectUid = Guid.Empty
       };
 
       // make bad call
@@ -86,7 +77,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>())
       , Times.Once);
-      
+
     }
 
     [TestMethod]
@@ -105,12 +96,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
 
       var request = new QMTileRequest
-                    {
+      {
         X = 0,
         Y = 0,
         Z = 0,
         Filter = new FilterResult(),
-        ProjectUid = Guid.NewGuid	()
+        ProjectUid = Guid.NewGuid()
       };
 
 
@@ -141,15 +132,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       }
 
-
       tRexProxy.Verify(m => m.SendDataPostRequestWithStreamResponse(
         It.Is<QMTileRequest>(r => r.ProjectUid == request.ProjectUid),
           It.Is<string>(s => s == "/terrain"),
           It.IsAny<IDictionary<string, string>>())
       , Times.Once);
-
     }
-
-
   }
 }

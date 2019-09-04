@@ -25,15 +25,6 @@ namespace VSS.WebApi.Common
   /// </summary>
   public abstract class BaseStartup
   {
-    /// <summary>
-    /// Base constructor which setups up a configuration based on appsettings.json and Environment Variables
-    /// </summary>
-    /// <param name="env">Hosting Env</param>
-    /// <param name="loggerRepoName">Logger Repo Name for Log4Net</param>
-    /// <param name="useSerilog">If set then we're opting to use Serilog and not the default Log4Net</param>
-    protected BaseStartup(IHostingEnvironment env, string loggerRepoName, bool useSerilog = false)
-    { }
-
     //Backing field
     private ILogger _logger;
     private IConfigurationStore _configuration;

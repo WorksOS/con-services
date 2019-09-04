@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 #if RAPTOR
 using VLPDDecls;
@@ -31,14 +33,11 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
     protected static void Init()
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection()
+      serviceProvider = new ServiceCollection()
         .AddLogging()
-        .AddSingleton(loggerFactory);
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+        .BuildServiceProvider();
 
-      serviceProvider = serviceCollection.BuildServiceProvider();
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
       _customHeaders = new Dictionary<string, string>();
       tRexProxy = new Mock<ITRexCompactionDataProxy>();
