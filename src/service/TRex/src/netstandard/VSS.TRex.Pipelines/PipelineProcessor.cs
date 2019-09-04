@@ -246,6 +246,8 @@ namespace VSS.TRex.Pipelines
           var FilterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
           var FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
+          SurveyedSurfacesExcludedViaTimeFiltering = Filters.Filters.Length > 0;
+
           foreach (var filter in Filters.Filters)
           {
             if (!LocalSurveyedSurfaces.ProcessSurveyedSurfacesForFilter(DataModelID, filter,
@@ -255,7 +257,7 @@ namespace VSS.TRex.Pipelines
               return false;
             }
 
-            SurveyedSurfacesExcludedViaTimeFiltering |= FilterSurveyedSurfaces.Count > 0;
+            SurveyedSurfacesExcludedViaTimeFiltering &= FilterSurveyedSurfaces.Count == 0;
           }
         }
       }
