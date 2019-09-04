@@ -27,9 +27,6 @@ namespace VSS.TRex.Rendering.Displayers
     private int stepX;
     private int stepY;
 
-    //protected int stepXWorld; 
-    //protected int stepYWorld;
-
     private double stepXIncrement;
     private double stepYIncrement;
     private double stepXIncrementOverTwo;
@@ -42,9 +39,6 @@ namespace VSS.TRex.Rendering.Displayers
     private double currentEast;
 
     private double cellSize;
-    //protected double oneThirdCellSize;
-    //protected double halfCellSize;
-    //protected double twoThirdsCellSize;
 
     // accumulatingScanLine is a flag indicating we are accumulating cells together
     // to for a scan line of cells that we will display in one hit
@@ -235,8 +229,6 @@ namespace VSS.TRex.Rendering.Displayers
       }
     }
 
-    // property ICOptions : TSVOICOptions read FICOptions write FICOptions;
-
     public MapSurface MapView { get; set; }
 
     public bool HasRenderedSubGrid { get; set; }
@@ -260,7 +252,7 @@ namespace VSS.TRex.Rendering.Displayers
 
         HasRenderedSubGrid = true;
 
-      return DoRenderSubGrid(clientSubGrid);
+        return DoRenderSubGrid(clientSubGrid);
       }
 
       return result;

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
@@ -413,5 +411,32 @@ namespace VSS.TRex.Pipelines
         }
       }
     }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          Task?.Dispose();
+        }
+
+        Task = null;
+        Pipeline = null;
+        RequestAnalyser = null;
+        SiteModel = null;
+
+        disposedValue = true;
+      }
+    }
+
+    public void Dispose()
+    {
+      Dispose(true);
+    }
+    #endregion
   }
 }

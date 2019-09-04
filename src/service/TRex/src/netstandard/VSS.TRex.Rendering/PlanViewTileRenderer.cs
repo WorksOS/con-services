@@ -8,8 +8,10 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
+using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -179,7 +181,7 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.YPixelSize, 0, 0, 0);
 
       // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
-      processor.Pipeline.LiftParams  = liftParams;
+      processor.Pipeline.LiftParams = liftParams;
       // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
       // Perform the sub grid query and processing to render the tile
@@ -187,6 +189,9 @@ namespace VSS.TRex.Rendering
 
       if (processor.Response.ResultStatus == RequestErrorStatus.OK)
       {
+        // Render the collection of sub grids collected in the rendering task
+        ((IPVMRenderingTask)processor.Task).SubGridTree?.ScanAllSubGrids(leaf => ((IPVMRenderingTask) processor.Task).TileRenderer.Displayer.RenderSubGrid((IClientLeafSubGrid)leaf));
+
         PerformAnyRequiredDebugLevelDisplay();
 
         if (_debugDrawDiagonalCrossOnRenderedTilesDefault)
