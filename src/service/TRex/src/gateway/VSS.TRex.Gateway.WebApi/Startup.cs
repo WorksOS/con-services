@@ -88,8 +88,5 @@ namespace VSS.TRex.Gateway.WebApi
         app.UseDeveloperExceptionPage();
       }
     }
-
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
   }
 }
