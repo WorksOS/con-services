@@ -47,35 +47,30 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
     private void ExtractRequiredValues(ClientHeightLeafSubGrid subGrid)
     {
 
-      // Calculate cell range we are interested in
-      subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
-
-      // Top of subgrid
-      var topX = subGridWorldOriginX + subGrid.CellSize * SubGridTreeConsts.SubGridTreeDimension;
-      var topY = subGridWorldOriginY + subGrid.CellSize * SubGridTreeConsts.SubGridTreeDimension;
+      var worldExtents = subGrid.WorldExtents();
+      var subGridWorldOriginY = worldExtents.MinY;
+      var subGridWorldOriginX = worldExtents.MinX;
+      var topX = worldExtents.MaxX; 
+      var topY = worldExtents.MaxY; 
 
       // Work out the x/y range across our grid we will lookup values
       double rangeMinX = (subGridWorldOriginX - TileMinX) / GridIntervalX;
-      if (Math.Truncate(rangeMinX) != rangeMinX)
-        TileRangeMinX = (int)(Math.Truncate(rangeMinX)) + 1;
+      TileRangeMinX = (int)(Math.Truncate(rangeMinX)) + 1;
       if (TileRangeMinX < 0)
         TileRangeMinX = 0;
 
       double rangeMinY = (subGridWorldOriginY - TileMinY) / GridIntervalY;
-      if (Math.Truncate(rangeMinY) != rangeMinY)
-        TileRangeMinY = (int)(Math.Truncate(rangeMinY)) + 1;
+      TileRangeMinY = (int)(Math.Truncate(rangeMinY)) + 1;
       if (TileRangeMinY < 0)
         TileRangeMinY = 0;
 
       double rangeMaxX = (topX - TileMinX) / GridIntervalX;
-      if (Math.Truncate(rangeMaxX) != rangeMaxX)
-        TileRangeMaxX = (int)(Math.Truncate(rangeMaxX));
+      TileRangeMaxX = (int)(Math.Truncate(rangeMaxX));
       if (TileRangeMaxX > GridSize - 1)
         TileRangeMaxX = GridSize - 1;
 
       double rangeMaxY = (topY - TileMinY) / GridIntervalY;
-      if (Math.Truncate(rangeMaxY) != rangeMaxY)
-        TileRangeMaxY = (int)(Math.Truncate(rangeMaxY));
+      TileRangeMaxY = (int)(Math.Truncate(rangeMaxY));
       if (TileRangeMaxY > GridSize - 1)
         TileRangeMaxY = GridSize - 1;
 
