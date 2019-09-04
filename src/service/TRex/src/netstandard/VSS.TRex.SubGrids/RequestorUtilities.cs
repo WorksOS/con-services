@@ -117,7 +117,7 @@ namespace VSS.TRex.SubGrids
         return (gridDataType, 
           filter, 
           FilteredSurveyedSurfaces, 
-          SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, GridDataType.HeightAndTime, filter, FilteredSurveyedSurfacesAsArray))),
+          SurfaceElevationPatchRequestFactory(SubGridCache, SubGridCache.LocateOrCreateContext(siteModel.ID, surfaceElevationPatchArg.CacheFingerprint())),
           surfaceElevationPatchArg as ISurfaceElevationPatchArgument,
           SubGridCacheContext);
       }

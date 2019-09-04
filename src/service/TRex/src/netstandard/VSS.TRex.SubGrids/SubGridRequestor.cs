@@ -362,38 +362,38 @@ namespace VSS.TRex.SubGrids
           var SurveyedSurfaceCellHeight = SurfaceElevations.Cells[x, y];
           long SurveyedSurfaceCellTime = SurfaceElevations.Times[x, y];
 
-                  // If we got back a surveyed surface elevation...
-                  if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
+          // If we got back a surveyed surface elevation...
+          if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
           {
             ProdHeight = ClientGridAsHeightAndTime.Cells[x, y];
             ProdTime = ClientGridAsHeightAndTime.Times[x, y];
           }
           else // if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
-                  {
+          {
             ProdHeight = ClientGridAsCellProfile.Cells[x, y].Height;
             ProdTime = ClientGridAsCellProfile.Cells[x, y].LastPassTime.Ticks;
           }
 
-                  // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
-                  // the relative age of the measured surveyed surface elevation compared with a non-null production data height
-                  bool SurveyedSurfaceElevationWanted = SurveyedSurfaceCellHeight != Consts.NullHeight &&
-                       (ProdHeight == Consts.NullHeight || ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime > ProdTime);
+          // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
+          // the relative age of the measured surveyed surface elevation compared with a non-null production data height
+          bool SurveyedSurfaceElevationWanted = SurveyedSurfaceCellHeight != Consts.NullHeight &&
+          (ProdHeight == Consts.NullHeight || (ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime > ProdTime));
 
           if (!SurveyedSurfaceElevationWanted)
           {
-                    // We didn't get a surveyed surface elevation, so clear the bit so that the renderer won't render it as a surveyed surface
-                    ProcessingMap.ClearBit(x, y);
+            // We didn't get a surveyed surface elevation, so clear the bit so that the renderer won't render it as a surveyed surface
+            ProcessingMap.ClearBit(x, y);
             return;
           }
 
-                  // Check if there is an elevation range filter in effect and whether the surveyed surface elevation data matches it
-                  if (Filter.AttributeFilter.HasElevationRangeFilter)
+          // Check if there is an elevation range filter in effect and whether the surveyed surface elevation data matches it
+          if (Filter.AttributeFilter.HasElevationRangeFilter)
           {
             FilterAnnex.InitializeFilteringForCell(Filter.AttributeFilter, (byte)x, (byte)y);
             if (!FilterAnnex.FiltersElevation(SurveyedSurfaceCellHeight))
             {
-                      // We didn't get a surveyed surface elevation, so clear the bit so that ASNode won't render it as a surveyed surface
-                      ProcessingMap.ClearBit(x, y);
+              // We didn't get a surveyed surface elevation, so clear the bit so that ASNode won't render it as a surveyed surface
+              ProcessingMap.ClearBit(x, y);
               return;
             }
           }
@@ -404,11 +404,11 @@ namespace VSS.TRex.SubGrids
             ClientGridAsHeightAndTime.Times[x, y] = SurveyedSurfaceCellTime;
           }
           else // if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
-                    ClientGridAsCellProfile.Cells[x, y].Height = SurveyedSurfaceCellHeight;
+            ClientGridAsCellProfile.Cells[x, y].Height = SurveyedSurfaceCellHeight;
         });
 
-        if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
-          ClientGridAsHeightAndTime.SurveyedSurfaceMap.Assign(ProcessingMap);
+//        if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
+//          ClientGridAsHeightAndTime.SurveyedSurfaceMap.Assign(ProcessingMap);
 
         Result = ServerRequestResult.NoError;
       }

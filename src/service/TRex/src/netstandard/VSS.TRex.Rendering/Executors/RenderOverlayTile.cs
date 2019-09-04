@@ -412,7 +412,7 @@ namespace VSS.TRex.Rendering.Executors
       // given the project's coordinate system. If there is no coordinate system then exit.
 
       var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
-      Log.LogInformation($"Got Site model {DataModelID}, extents are {SiteModel.SiteModelExtent}");
+      Log.LogInformation($"Got Site model {DataModelID}, production data extents are {SiteModel.SiteModelExtent}");
 
       LLHCoords = new[]
       {
@@ -465,12 +465,15 @@ namespace VSS.TRex.Rendering.Executors
         try
         {
           // Intersect the site model extents with the extents requested by the caller
-          Log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{SiteModel.SiteModelExtent}");
-          RotatedTileBoundingExtents.Intersect(SiteModel.SiteModelExtent);
+          var adjustedSiteModelExtents = SiteModel.GetAdjustedDataModelSpatialExtents(null);
+
+          Log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{adjustedSiteModelExtents}");
+
+          RotatedTileBoundingExtents.Intersect(adjustedSiteModelExtents);
           if (!RotatedTileBoundingExtents.IsValidPlanExtent)
           {
             ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
-            Log.LogInformation($"Site model extents {SiteModel.SiteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
+            Log.LogInformation($"Site model extents {adjustedSiteModelExtents}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
 
             using (var mapView = new MapSurface())
             {
@@ -529,7 +532,7 @@ namespace VSS.TRex.Rendering.Executors
           if (!await processor.BuildAsync())
           {
             Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
-          ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
+            ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
             return null;
           }
 
@@ -559,7 +562,7 @@ namespace VSS.TRex.Rendering.Executors
           Renderer.WorldTileWidth = WorldTileWidth;
           Renderer.WorldTileHeight = WorldTileHeight;
 
-        ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
+          ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
 
           if (processor.Response.ResultStatus == RequestErrorStatus.OK)
           {

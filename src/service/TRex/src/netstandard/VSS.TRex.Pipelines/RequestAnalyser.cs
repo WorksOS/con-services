@@ -107,7 +107,7 @@ namespace VSS.TRex.Pipelines
       TotalNumberOfSubGridsAnalysed = 0;
       TotalNumberOfCandidateSubGrids = 0;
 
-      BoundingWorldExtent3D FilterRestriction = new BoundingWorldExtent3D();
+      var FilterRestriction = new BoundingWorldExtent3D();
 
       // Compute a filter spatial restriction on the world extents of the request
       if (WorldExtents.IsValidPlanExtent)
@@ -177,13 +177,11 @@ namespace VSS.TRex.Pipelines
       // Get the matching sub grid from the production data only bit mask sub grid tree and use this sub grid to be able to separate
       // the two sets of sub grids
 
-      SubGridTreeLeafBitmapSubGrid ProdDataSubGrid =
-        Pipeline.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as
-          SubGridTreeLeafBitmapSubGrid;
+      var ProdDataSubGrid = Pipeline.ProdDataExistenceMap.LocateSubGridContaining(SubGrid.OriginX, SubGrid.OriginY) as SubGridTreeLeafBitmapSubGrid;
 
       byte ScanMinXb, ScanMinYb, ScanMaxXb, ScanMaxYb;
       double OTGCellSize = SubGrid.Owner.CellSize / SubGridTreeConsts.SubGridTreeDimension;
-      SubGridTreeLeafBitmapSubGrid CastSubGrid = (SubGridTreeLeafBitmapSubGrid) SubGrid;
+      var CastSubGrid = (SubGridTreeLeafBitmapSubGrid) SubGrid;
 
       if (ScanningFullWorldExtent)
       {
@@ -246,11 +244,11 @@ namespace VSS.TRex.Pipelines
             // If there is a spatial filter in play then determine if the sub grid about to be requested intersects the spatial filter extent
 
             bool SubGridSatisfiesFilter = true;
-            foreach (ICombinedFilter filter in Pipeline.FilterSet.Filters)
+            foreach (var filter in Pipeline.FilterSet.Filters)
             {
               if (filter != null)
               {
-                ICellSpatialFilter spatialFilter = filter.SpatialFilter;
+                var spatialFilter = filter.SpatialFilter;
 
                 if (spatialFilter.IsSpatial && spatialFilter.Fence != null && spatialFilter.Fence.NumVertices > 0)
                 {

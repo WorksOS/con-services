@@ -784,19 +784,19 @@ return localVersionMap;
     public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
     {
 // Start with the data model extents
-      BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
+      var SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
       if ((SurveyedSurfaces?.Count ?? 0) > 0)
       {
 // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
         if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
         {
-          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+          foreach (var surveyedSurface in SurveyedSurfaces)
             SpatialExtents.Include(surveyedSurface.Extents);
         }
         else
         {
-          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+          foreach (var surveyedSurface in SurveyedSurfaces)
           {
             if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
               SpatialExtents.Include(surveyedSurface.Extents);
