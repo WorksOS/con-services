@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.705
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29209.152
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard", "netstandard", "{60739A56-DAB5-4BDD-B54E-1ACA0FF82092}"
 EndProject
@@ -294,6 +294,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Proxy", "..\TagFileAuth\Clients\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj", "{507CB1F3-5D23-4D8C-B2E4-81519EEC92B1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\Filter\Clients\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{09E9882B-37E6-4A45-9050-27E22F115B07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.TRex.ElevationSmoothing", "src\netstandard\VSS.TRex.ElevationSmoothing\VSS.TRex.ElevationSmoothing.csproj", "{C4C44744-CDE7-49A6-8768-EB712E7C2D16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1351,6 +1353,14 @@ Global
 		{09E9882B-37E6-4A45-9050-27E22F115B07}.Release|Any CPU.Build.0 = Release|Any CPU
 		{09E9882B-37E6-4A45-9050-27E22F115B07}.Release|x64.ActiveCfg = Release|Any CPU
 		{09E9882B-37E6-4A45-9050-27E22F115B07}.Release|x64.Build.0 = Release|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Debug|x64.Build.0 = Debug|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Release|x64.ActiveCfg = Release|Any CPU
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1495,6 +1505,7 @@ Global
 		{48255F98-E1D4-49F5-9D11-D510903457AC} = {6744917F-2721-41A6-AA92-4A1F37D80947}
 		{507CB1F3-5D23-4D8C-B2E4-81519EEC92B1} = {6744917F-2721-41A6-AA92-4A1F37D80947}
 		{09E9882B-37E6-4A45-9050-27E22F115B07} = {F420FDBD-E315-4636-B54C-0D27A2B2CFE4}
+		{C4C44744-CDE7-49A6-8768-EB712E7C2D16} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}
