@@ -1,5 +1,4 @@
-﻿using Apache.Ignite.Core.Compute;
-using Apache.Ignite.Core.Messaging;
+﻿using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -56,7 +55,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
         }
 
-        public void StartListening()
+        private void StartListening()
         {
             if (MsgGroup == null)
             {
@@ -66,11 +65,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
         }
 
-        public void StopListening()
+        private void StopListening()
         {
             // De-register the listener from the message group
-            MsgGroup?.StopLocalListen(Listener);
+            MsgGroup?.StopLocalListen(Listener, arg.MessageTopic);
             MsgGroup = null;
+
+            Listener = null;
         }
 
         private void PrepareForExecution()
