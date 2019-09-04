@@ -14,9 +14,9 @@
     <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\Common\TCCFileAccess\src\VSS.TCCFileAccess.csproj" />
     <ProjectReference Include="..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\service\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\..\service\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\service\Project\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\service\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
-    <ProjectReference Include="..\..\service\Project\src\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
   </ItemGroup>
 
   <ItemGroup>

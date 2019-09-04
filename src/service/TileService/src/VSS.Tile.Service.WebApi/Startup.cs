@@ -27,18 +27,21 @@ using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi
 {
+  /// <summary>
+  /// Application startup class.
+  /// </summary>
   public class Startup : BaseStartup
   {
-
-    // This method gets called by the runtime. Use this method to add services to the container.
-    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    /// <inheritdoc />
     public override string ServiceName => "Tiling service";
+
+    /// <inheritdoc />
     public override string ServiceDescription => "Provides tiling endpoints and tile generation";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       // Add framework services.
@@ -84,6 +87,7 @@ namespace VSS.Tile.Service.WebApi
       });
     }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<TileAuthentication>();

@@ -3,11 +3,11 @@
   public static class QMConstants
   {
     // Always make gridsize an odd number for best results
-    public const int FlatResolutionGridSize = 5;    // Tile GridSize
-    public const int MidResolutionGridSize = 131; //65;   // Tile GridSize
-    public const int HighResolutionGridSize = 33;   // Tile GridSize. Less triangles required 
+    public const int FlatResolutionGridSize = 5;    // Empty tile GridSize
+    public const int MidResolutionGridSize  = 61;   // Ideal for further out views.
+    public const int HighResolutionGridSize = 33;   // Ideal for closer up when close to cell size 
     public const int DemoResolutionGridSize = 65;   // Tile GridSize
-    public const int TileValueRange = 32768;        // 0 to 32767
+    public const int TileValueRange = 32768;        // 0 to 32767. All values in a QM tile are normalised to this range
     public const int DisplayModeStandard = 0; // Production mode
     public const int DisplayModeDemo     = 100; // Reserved for dev use
     public const int DisplayModeDev      = 101; // Reserved for dev use

@@ -5,8 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {
@@ -20,14 +22,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+        .BuildServiceProvider();
 
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       uploadUtility = new RaptorFileUploadUtility(logger);

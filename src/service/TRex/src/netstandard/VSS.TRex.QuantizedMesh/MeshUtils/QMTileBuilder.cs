@@ -67,7 +67,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric
     {
       try
       {
-        Log.LogInformation($"BuildQuantizedMeshTile. GridSize:{TileData.GridSize} Min:{TileData.MinimumHeight}, Max:{TileData.MaximumHeight}");
 
         ComputeHeaderInfo(); 
 
