@@ -215,13 +215,13 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void Execute_EmptySiteModel_ReturnEmptyTile()
+    public async void Execute_EmptySiteModel_ReturnEmptyTile()
     {
   
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var filter = new FilterSet(new CombinedFilter());
       var request = new QMTileExecutor(siteModel.ID, filter, 0, 0, 19, DisplayMode, "1");
-      request.ExecuteAsync();
+      await request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
       //QMTileResponse.data.Should().HaveCount(164); // Should return an empty tile
@@ -231,24 +231,24 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void Execute_RootTile_Expected()
+    public async void Execute_RootTile_Expected()
     {
       AddClusterComputeGridRouting();
       SetupTest();
       var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 0, DisplayMode, "1");
-      request.ExecuteAsync();
+      await request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().HaveCount(845); // Should return a root tile
     }
 
     [Fact]
-    public void Execute_TooFarOut_EmptyTile_Expected()
+    public async void Execute_TooFarOut_EmptyTile_Expected()
     {
       AddClusterComputeGridRouting();
       SetupTest();
       var request = new QMTileExecutor(siteModel.ID, filter, 0, 1, 10, DisplayMode, "1");
-      request.ExecuteAsync();
+      await request.ExecuteAsync();
       request.ResultStatus.Should().NotBe(RequestErrorStatus.Unknown);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(172);
@@ -256,25 +256,25 @@ namespace VSS.TRex.QuantizedMesh.Tests
     }
 
     [Fact]
-    public void Execute_ValidProductionTile_Expected()
+    public async void Execute_ValidProductionTile_Expected()
     {
       AddClusterComputeGridRouting();
       SetupTest();
       var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, DisplayMode, "1");
-      request.ExecuteAsync();
+      await request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK);
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(1000);
     }
 
     [Fact]
-    public void Execute_FailPipeLineSetup_EmptyTile_Expected()
+    public async void Execute_FailPipeLineSetup_EmptyTile_Expected()
     {
       AddClusterComputeGridRouting();
       SetupTest();
       // Missing coordinate system
       var request = new QMTileExecutor(siteModel.ID, filter, 47317, 12155, 17, 0, "1");
-      request.ExecuteAsync();
+      await request.ExecuteAsync();
       request.ResultStatus.Should().Be(RequestErrorStatus.OK); // Empty tile expected
       var QMTileResponse = request.QMTileResponse;
       QMTileResponse.data.Should().HaveCountGreaterOrEqualTo(172);
