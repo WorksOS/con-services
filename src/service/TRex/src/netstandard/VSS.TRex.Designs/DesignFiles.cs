@@ -105,14 +105,13 @@ end;
 
         if (!File.Exists(design.FileName))
         {
-          design.LoadFromStorage(dataModelID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true);
-         /* // TODO we need to take away this async code from the lock
+          // TODO we need to take away this async code from the lock
           loadResult = design.LoadFromStorage(dataModelID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).Result;
           if (loadResult != DesignLoadResult.Success)
           {
             designs.Remove(designUid);
             return null;
-          }*/
+          }
         }
 
         loadResult = design.LoadFromFile(design.FileName);
