@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM;
@@ -826,7 +827,7 @@ namespace VSS.TRex.Designs
       if (boundary != null)
         return true;
 
-      bool result = LoadBoundary(fileName);
+      var result = LoadBoundary(fileName);
 
       if (!result)
       {
@@ -862,8 +863,19 @@ namespace VSS.TRex.Designs
         {
           using (var reader = new BinaryReader(ms))
           {
-            foreach (var fence in boundary)
+            var version = reader.ReadInt32();
+            if (version != 1)
+              throw new TRexException($"Invalid version in TTM boundary file: {version}");
+
+            var count = reader.ReadInt32();
+
+            boundary = new List<Fence>();
+            for (var i = 0; i < count; i++)
+            {
+              var fence = new Fence();
               fence.Read(reader);
+              boundary.Add(fence);
+            }
           }
         }
 
@@ -889,11 +901,14 @@ namespace VSS.TRex.Designs
         if (File.Exists(fileName))
           return true;
 
-        // Write the boundary out to a file
+        // Write the boundaries out to a file
         using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
           using (var writer = new BinaryWriter(fs))
           {
+            writer.Write((int)1); // Version
+            writer.Write((int)(boundary.Count));
+
             foreach (var fence in boundary)
               fence.Write(writer);
           }
