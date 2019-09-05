@@ -69,12 +69,16 @@ namespace VSS.TRex.Tests.TestFixtures
           messagingDictionary.Add(topic, listener);
         });
 
+      mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()));
+     
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISiteModelAttributesChangedEvent> listener, object topic) =>
         {
           messagingDictionary.Add(topic, listener);
         });
+
+      mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()));
 
       mockMessaging
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))
@@ -204,6 +208,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the mocked cache for the site model segment retirement queue and any other cache using this signature
       AddMockedCacheToIgniteMock<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>();
+
+      // Create the subgrid spatial cache for the site model and any other cache using this signature
+      AddMockedCacheToIgniteMock<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>();
     }
 
     private static void TestIBinarizableSerializationForItem(object item)
