@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
@@ -212,7 +213,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the subgrid spatial data in the site model and any other cache using this signature
       AddMockedCacheToIgniteMock<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>();
 
-      // Create the mocked cahce for the site model machine change maps and any other cache using this signature
+      // Create the mocked cache for the site model machine change maps and any other cache using this signature
       AddMockedCacheToIgniteMock<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>();
     }
 
@@ -265,6 +266,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
         return task;
       });
+
+      // Mock out the use of the cancellation token by calling the ordinary non-cancellable mock
+      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>(), It.IsAny<CancellationToken>())).Returns((TCompute func, TArgument argument, CancellationToken token) => mockCompute.Object.ApplyAsync(func, argument));
     }
 
     public static void AddClusterComputeGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
