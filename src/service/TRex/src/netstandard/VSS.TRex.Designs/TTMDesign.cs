@@ -29,6 +29,8 @@ namespace VSS.TRex.Designs
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TTMDesign>();
 
+    private const int TTM_DESIGN_BOUNDARY_FILE_VERSION = 1;
+
     private double minHeight;
     private double maxHeight;
     private readonly double cellSize;
@@ -864,7 +866,7 @@ namespace VSS.TRex.Designs
           using (var reader = new BinaryReader(ms))
           {
             var version = reader.ReadInt32();
-            if (version != 1)
+            if (version != TTM_DESIGN_BOUNDARY_FILE_VERSION)
               throw new TRexException($"Invalid version in TTM boundary file: {version}");
 
             var count = reader.ReadInt32();
@@ -906,7 +908,7 @@ namespace VSS.TRex.Designs
         {
           using (var writer = new BinaryWriter(fs))
           {
-            writer.Write((int)1); // Version
+            writer.Write((int)TTM_DESIGN_BOUNDARY_FILE_VERSION); // Version
             writer.Write((int)(boundary.Count));
 
             foreach (var fence in boundary)
