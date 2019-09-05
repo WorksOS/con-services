@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using VSS.TRex.GridFabric.Interfaces;
 
@@ -17,6 +19,11 @@ namespace VSS.TRex.GridFabric.Requests
     public GenericASNodeRequest(string gridName, string role) : base(gridName, role)
     {
     }
+
+    /// <summary>
+    /// Time out any grid functions after this timeout
+    /// </summary>
+    public virtual TimeSpan Timeout => new TimeSpan(0, 0, 2, 0);
 
     /// <summary>
     /// Executes the generic request by instantiating the required ComputeFunc and sending it to 
@@ -44,6 +51,8 @@ namespace VSS.TRex.GridFabric.Requests
     {
       // Construct the function to be used
       var func = new TComputeFunc();
+
+//      var cts = new CancellationTokenSource(new TimeSpan(0, 0, 2, 0));
 
       // Send the request to the application service pool and retrieve the result
       return Compute.ApplyAsync(func, arg);
