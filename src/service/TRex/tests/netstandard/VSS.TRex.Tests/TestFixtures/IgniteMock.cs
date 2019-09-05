@@ -209,8 +209,11 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the site model segment retirement queue and any other cache using this signature
       AddMockedCacheToIgniteMock<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>();
 
-      // Create the subgrid spatial cache for the site model and any other cache using this signature
+      // Create the mocked cache for the subgrid spatial data in the site model and any other cache using this signature
       AddMockedCacheToIgniteMock<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>();
+
+      // Create the mocked cahce for the site model machine change maps and any other cache using this signature
+      AddMockedCacheToIgniteMock<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>();
     }
 
     private static void TestIBinarizableSerializationForItem(object item)
