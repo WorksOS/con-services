@@ -75,6 +75,8 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueString("AWS_BUCKET_NAME")).Returns("UnitTestAWSBucketKey");
           config.Setup(c => c.GetValueString("AWS_BUCKET_NAME", It.IsAny<string>())).Returns("UnitTestAWSBucketKey");
 
+          config.Setup(c => c.GetValueString("USE_LOCAL_S3_TRANSFER_PROXY_STORE", It.IsAny<string>())).Returns("true");
+          
           config.Setup(c => c.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY, It.IsAny<string>())).Returns("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0");
           config.Setup(c => c.GetValueString(CoordinatesServiceClient.COORDINATE_SERVICE_URL_ENV_KEY)).Returns("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0");
 

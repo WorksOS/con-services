@@ -25,7 +25,7 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
 
             try
             {
-                TRequest request = new TRequest();
+                var request = new TRequest();
 
                 Log.LogInformation("Executing AnalyticsComputeFunc_ApplicationService.Execute()");
 
