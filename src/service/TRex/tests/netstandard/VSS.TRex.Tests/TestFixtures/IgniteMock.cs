@@ -49,19 +49,19 @@ namespace VSS.TRex.Tests.TestFixtures
     public IgniteMock()
     {
       // Wire up Ignite Compute Apply and Broadcast apis on the Compute interface
-      mockCompute = new Mock<ICompute>();
+      mockCompute = new Mock<ICompute>(MockBehavior.Strict);
 
       // Pretend there is a single node in the cluster group
-      mockClusterNode = new Mock<IClusterNode>();
+      mockClusterNode = new Mock<IClusterNode>(MockBehavior.Strict);
       mockClusterNode.Setup(x => x.GetAttribute<string>("TRexNodeId")).Returns("UnitTest-TRexNodeId");
 
-      mockClusterNodes = new Mock<ICollection<IClusterNode>>();
+      mockClusterNodes = new Mock<ICollection<IClusterNode>>(MockBehavior.Strict);
       mockClusterNodes.Setup(x => x.Count).Returns(1);
 
       // Set up the Ignite message fabric mocks to plumb sender and receiver together
       var messagingDictionary = new Dictionary<object, object>(); // topic => listener
 
-      mockMessaging = new Mock<IMessaging>();
+      mockMessaging = new Mock<IMessaging>(MockBehavior.Strict);
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISerialisedByteArrayWrapper> listener, object topic) =>
@@ -100,14 +100,14 @@ namespace VSS.TRex.Tests.TestFixtures
             throw new TRexException("Type of listener not SubGridListener or SiteModelAttributesChangedEventListener as expected.");
         });
 
-      mockClusterGroup = new Mock<IClusterGroup>();
+      mockClusterGroup = new Mock<IClusterGroup>(MockBehavior.Strict);
       mockClusterGroup.Setup(x => x.GetNodes()).Returns(mockClusterNodes.Object);
       mockClusterGroup.Setup(x => x.GetCompute()).Returns(mockCompute.Object);
       mockClusterGroup.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
 
       mockCompute.Setup(x => x.ClusterGroup).Returns(mockClusterGroup.Object);
 
-      mockCluster = new Mock<ICluster>();
+      mockCluster = new Mock<ICluster>(MockBehavior.Strict);
       mockCluster.Setup(x => x.ForAttribute(It.IsAny<string>(), It.IsAny<string>())).Returns(mockClusterGroup.Object);
       mockCluster.Setup(x => x.GetLocalNode()).Returns(mockClusterNode.Object);
       mockCluster.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
@@ -116,11 +116,11 @@ namespace VSS.TRex.Tests.TestFixtures
       mockCluster.Setup(x => x.IsActive()).Returns(() => clusterActiveState);
       mockCluster.Setup(x => x.SetActive(It.IsAny<bool>())).Callback((bool state) => { /* Never change state from true... clusterActiveState = state; */ });
 
-      mockTransaction = new Mock<ITransaction>();
-      mockTransactions = new Mock<ITransactions>();
+      mockTransaction = new Mock<ITransaction>(MockBehavior.Strict);
+      mockTransactions = new Mock<ITransactions>(MockBehavior.Strict);
       mockTransactions.Setup(x => x.TxStart()).Returns(mockTransaction.Object);
 
-      mockIgnite = new Mock<IIgnite>();
+      mockIgnite = new Mock<IIgnite>(MockBehavior.Strict);
       mockIgnite.Setup(x => x.GetCluster()).Returns(mockCluster.Object);
       mockIgnite.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
       mockIgnite.Setup(x => x.Name).Returns(TRexGrids.ImmutableGridName);
@@ -132,7 +132,7 @@ namespace VSS.TRex.Tests.TestFixtures
       if (cacheDictionary.TryGetValue(cacheName, out var cache))
         return (ICache<TK, TV>)cache;
 
-      var mockCache = new Mock<ICache<TK, TV>>();
+      var mockCache = new Mock<ICache<TK, TV>>(MockBehavior.Strict);
       var mockCacheDictionary = new Dictionary<TK, TV>();
 
       mockCache.Setup(x => x.Get(It.IsAny<TK>())).Returns((TK key) =>
