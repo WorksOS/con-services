@@ -312,6 +312,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       foreach (var xyz in NEECoords)
         RotatedTileBoundingExtents.Include(xyz.X, xyz.Y);
 
+
       // Intersect the site model extents with the extents requested by the caller
       Log.LogDebug($"Tile.({TileX},{TileY}) Calculating intersection of bounding box and site model {DataModelUid}:{siteModelExtent}");
       RotatedTileBoundingExtents.Intersect(siteModelExtent);
@@ -463,12 +464,14 @@ namespace VSS.TRex.QuantizedMesh.Executors
         Log.LogError($"Tile.({TileX},{TileY}) Failed to obtain site model for {DataModelUid}");
         return false;
       }
-      Log.LogDebug($"Tile.({TileX},{TileY}) Site model extents are {SiteModel.SiteModelExtent}. TileBoundary:{TileBoundaryLL.ToDisplay()}");
-      if (!SiteModel.SiteModelExtent.IsValidPlanExtent) // No data return empty tile
+
+      var siteModelExtentWithSurveyedSurfaces = SiteModel.GetAdjustedDataModelSpatialExtents(null);
+      Log.LogDebug($"Tile.({TileX},{TileY}) Site model extents are {siteModelExtentWithSurveyedSurfaces}. TileBoundary:{TileBoundaryLL.ToDisplay()}");
+      if (!siteModelExtentWithSurveyedSurfaces.IsValidPlanExtent) // No data return empty tile
         return BuildEmptyTile();
 
       // We will draw all missing data just below lowest elevation for site
-      LowestElevation = (float)SiteModel.SiteModelExtent.MinZ - 1F;
+      LowestElevation = (float)siteModelExtentWithSurveyedSurfaces.MinZ - 1F;
 
       Initialise(); // setup tile requirements
 
@@ -481,7 +484,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       try
       {
 
-        var setupResult = await SetupPipelineTask(SiteModel.SiteModelExtent, SiteModel.CellSize);
+        var setupResult = await SetupPipelineTask(siteModelExtentWithSurveyedSurfaces, SiteModel.CellSize);
         if (!setupResult)
         {
           if (ResultStatus != RequestErrorStatus.InvalidCoordinateRange)
