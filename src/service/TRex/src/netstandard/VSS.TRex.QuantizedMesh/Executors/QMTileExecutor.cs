@@ -345,7 +345,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
         task: task,
         pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-        requireSurveyedSurfaceInformation: false, //Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+        requireSurveyedSurfaceInformation: true, //Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
         requestRequiresAccessToDesignFileExistenceMap: false,
         overrideSpatialCellRestriction: CellExtents,
         liftParams: LiftParams
