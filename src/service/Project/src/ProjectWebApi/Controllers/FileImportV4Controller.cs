@@ -180,7 +180,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var baseUrl = Request.Host.ToUriComponent(); 
     
       // The QueryString will have values in it, so it's safe to add extra queries with the & as opposed to ?, then &
-      var callbackUrl = $"{baseUrl}/internal/v4/importedfile{Request.QueryString}";
+      var callbackUrl = $"http://{baseUrl}/internal/v4/importedfile{Request.QueryString}";
       callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}&awsFilePath={WebUtility.UrlEncode(s3Path)}";
 
       Logger.LogInformation($"nameof(BackgroundUpload): baseUrl {callbackUrl}");

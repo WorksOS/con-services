@@ -171,7 +171,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
       
       var baseUrl = Request.Host.ToUriComponent(); 
-      var callbackUrl = $"{baseUrl}/internal/v4/project";  
+      var callbackUrl = $"http://{baseUrl}/internal/v4/project";  
       Logger.LogInformation($"nameof(RequestCreateProjectBackgroundJob): baseUrl {callbackUrl}");
 
       var request = new ScheduleJobRequest
@@ -261,7 +261,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       var baseUrl = Request.Host.ToUriComponent();
-      var callbackUrl = $"{baseUrl}/internal/v4/project";
+      var callbackUrl = $"http://{baseUrl}/internal/v4/project";
       Logger.LogInformation($"nameof(RequestUpdateProjectBackgroundJob): baseUrl {callbackUrl}");
 
       var request = new ScheduleJobRequest
