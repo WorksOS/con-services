@@ -30,7 +30,7 @@ namespace VSS.TRex.CoordinateSystems
     // Bug 81615 - We are adding a cahce to Coordinate system calls until CoreX is done, as we are hitting rate limits when generating tiles
     // When CoreX is implemented, this cache will not be needed (nor will this class)
     private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
-    private readonly TimeSpan _cacheTimeout = new TimeSpan(0, 0, 5, 0);
+    private readonly TimeSpan _cacheTimeout = new TimeSpan(0, 8, 0, 0);
 
     public CoordinatesServiceClient(HttpClient httpClient)
     {
