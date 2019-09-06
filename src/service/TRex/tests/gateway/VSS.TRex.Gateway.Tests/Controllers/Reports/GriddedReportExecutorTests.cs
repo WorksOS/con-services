@@ -99,7 +99,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null, null);
       request.Validate();
 
-      // Mock the CSV export request functionality to return a null CSV export reponse to stimulate the desired success
+      // Mock the export request functionality to return an empty gridded report reponse to stimulate the desired success
       var mockCompute = DIContext.Obtain<Mock<ICompute>>();
       mockCompute.Setup(x => x.ApplyAsync(It.IsAny<GriddedReportRequestComputeFunc>(), It.IsAny<GriddedReportRequestArgument>(), It.IsAny<CancellationToken>())).Returns((GriddedReportRequestComputeFunc func, GriddedReportRequestArgument argument, CancellationToken token) => Task.FromResult(new GriddedReportRequestResponse()));
 
