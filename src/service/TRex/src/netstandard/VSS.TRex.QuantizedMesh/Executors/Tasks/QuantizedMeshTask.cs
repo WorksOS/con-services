@@ -6,7 +6,6 @@ using VSS.TRex.QuantizedMesh.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.QuantizedMesh.Executors.Tasks
 {
@@ -51,16 +50,19 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
       var subGridWorldOriginY = worldExtents.MinY;
       var subGridWorldOriginX = worldExtents.MinX;
       var topX = worldExtents.MaxX; 
-      var topY = worldExtents.MaxY; 
+      var topY = worldExtents.MaxY;
+      float elev;
 
       // Work out the x/y range across our grid we will lookup values
       double rangeMinX = (subGridWorldOriginX - TileMinX) / GridIntervalX;
-      TileRangeMinX = (int)(Math.Truncate(rangeMinX)) + 1;
+      var posX = (int)(Math.Truncate(rangeMinX));
+      TileRangeMinX = (posX == (int)rangeMinX) ? (int)rangeMinX : posX + 1;
       if (TileRangeMinX < 0)
         TileRangeMinX = 0;
 
       double rangeMinY = (subGridWorldOriginY - TileMinY) / GridIntervalY;
-      TileRangeMinY = (int)(Math.Truncate(rangeMinY)) + 1;
+      var posY = (int)(Math.Truncate(rangeMinY));
+      TileRangeMinY = (posY == (int)rangeMinY) ? (int)rangeMinY : posY + 1;
       if (TileRangeMinY < 0)
         TileRangeMinY = 0;
 
@@ -88,11 +90,12 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
           // if we have a valid height add it to our data grid
           if (subGrid.Cells[subGridX, subGridY] != CellPassConsts.NullHeight)
           {
-            GriddedElevDataArray[x, y].Elevation = subGrid.Cells[subGridX, subGridY];
-            if (GriddedElevDataArray[x, y].Elevation < MinElevation)
-              MinElevation = GriddedElevDataArray[x, y].Elevation;
-            if (GriddedElevDataArray[x, y].Elevation > MaxElevation)
-              MaxElevation = GriddedElevDataArray[x, y].Elevation;
+            elev = subGrid.Cells[subGridX, subGridY];
+            GriddedElevDataArray[x, y].Elevation = elev;
+            if (elev < MinElevation)
+              MinElevation = elev;
+            if (elev > MaxElevation)
+              MaxElevation = elev;
           }
         }
     }

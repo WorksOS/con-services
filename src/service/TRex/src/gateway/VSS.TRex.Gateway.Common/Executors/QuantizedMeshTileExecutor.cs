@@ -49,6 +49,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
         DisplayMode = request.DisplayMode,
+        HasLighting = request.HasLighting,
         X = request.X,
         Y = request.Y,
         Z = request.Z

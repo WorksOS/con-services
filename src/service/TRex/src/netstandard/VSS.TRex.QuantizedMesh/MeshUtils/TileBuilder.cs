@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace VSS.TRex.QuantizedMesh.MeshUtils
 {
   public class TileBuilder
   {
-
     private int _TriangleCount;
     private int _GridSize;
     public TerrainTileHeader MeshHeader;
     public VertexData MeshVertexData;
     public IndexData16 MeshIndexData16;
     public EdgeIndices16 MeshEdgeIndices16; // todo seperate out
-
 
     private void MakeHeader(TerrainTileHeader headerRec)
     {
@@ -164,14 +158,16 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
     }
 
     /// <summary>
-    /// From the vertices passed in make quantized mesh tile
+    ///  From the vertices passed in make quantized mesh tile
     /// </summary>
     /// <param name="vertices"></param>
+    /// <param name="vertexNormals"></param>
     /// <param name="headerRec"></param>
     /// <param name="trianglesCount"></param>
-    /// <param name="tileSize"></param>
-    /// <returns></returns>
-    public byte[] MakeTile(VertexData vertices, TerrainTileHeader headerRec, int trianglesCount, int gridSize)
+    /// <param name="gridSize"></param>
+    /// <param name="hasLighting"></param>
+    /// <returns>Quantized Mesh Tile</returns>
+    public byte[] MakeTile(VertexData vertices, ref byte[] vertexNormals, TerrainTileHeader headerRec, int trianglesCount, int gridSize, bool hasLighting)
     {
       // Assemble tile data 
       _TriangleCount = trianglesCount;
@@ -237,7 +233,20 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         for (int i = 0; i < MeshEdgeIndices16.northVertexCount; i++)
           writer.Write(MeshEdgeIndices16.northIndices[i]);
 
-        // todo normals
+        if (hasLighting)
+        { // write normal map
+          writer.Write((byte)1);
+          writer.Write(vertexNormals.Length);
+          for (int i = 0; i < vertexNormals.Length; i++)
+            writer.Write((byte)vertexNormals[i]);
+        }
+
+        /* if we ever show animated water flow on tile. Watermask
+        writer.Write((byte)2);
+        writer.Write((int)1);
+        //        writer.Write((byte)255); // water
+        writer.Write((byte)0); // land
+        */
 
         return ms.ToArray();
       }
