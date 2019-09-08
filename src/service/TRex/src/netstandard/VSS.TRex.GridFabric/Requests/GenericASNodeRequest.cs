@@ -52,10 +52,10 @@ namespace VSS.TRex.GridFabric.Requests
       // Construct the function to be used
       var func = new TComputeFunc();
 
-//      var cts = new CancellationTokenSource(new TimeSpan(0, 0, 2, 0));
+      var cts = new CancellationTokenSource(Timeout);
 
       // Send the request to the application service pool and retrieve the result
-      return Compute.ApplyAsync(func, arg);
+      return Compute.ApplyAsync(func, arg, cts.Token);
     }
   }
 }
