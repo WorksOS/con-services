@@ -83,7 +83,6 @@ namespace VSS.TRex.Server.QuantizedMesh
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
         .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Build()
-        //.Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
         .Add(x => x.AddSingleton(new QuantizedMeshServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))

@@ -31,16 +31,15 @@ namespace LandfillService.WebApi.netcore
     /// </summary>
     private const string SERVICE_TITLE = "Landfill Service API";
 
+    /// <inheritdoc />
     public override string ServiceName => SERVICE_TITLE;
+
+    /// <inheritdoc />
     public override string ServiceDescription => "A service for landfill request";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
-
-    /// <summary>
-    ///   Initializes a new instance of the <see cref="Startup" /> class.
-    /// </summary>
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    
     // This method gets called by the runtime. Use this method to add services to the container
     /// <summary>
     ///   Configures the services.

@@ -59,8 +59,5 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     { }
-
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
   }
 }

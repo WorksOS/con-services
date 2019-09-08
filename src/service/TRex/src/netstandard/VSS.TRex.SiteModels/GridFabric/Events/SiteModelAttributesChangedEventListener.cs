@@ -92,8 +92,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
 
     public void StopListening()
     {
-      // Unregister the listener from the message group
-      MsgGroup?.StopLocalListen(this);
+      // Un-register the listener from the message group
+      MsgGroup?.StopLocalListen(this, MessageTopicName);
 
       MsgGroup = null;
     }

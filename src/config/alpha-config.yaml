@@ -36,6 +36,8 @@ data:
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1 
   unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-alpha-unifiedproductivity/1.0
+  productivity3d_service_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/1.0
+  productivity3d_service_public_v2: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
 #CAP configuration  

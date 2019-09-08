@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi
     public IConfigurationRoot ConfigurationRoot{ get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
           .SetBasePath(env.ContentRootPath)
@@ -149,7 +149,7 @@ namespace VSS.Productivity3D.WebApi
 
       try
       {
-        ServiceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
+        ServiceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out var config);
         if (Log.IsTraceEnabled())
           Log.LogTrace("Received config {0}", config);
 
