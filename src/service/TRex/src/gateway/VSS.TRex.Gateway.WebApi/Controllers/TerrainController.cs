@@ -33,23 +33,34 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     [HttpPost]
     public IActionResult GetTile([FromBody] QMTileRequest request)
     {
-      Log.LogInformation($"{nameof(GetTile)}: {Request.QueryString}");
+
+      Log.LogInformation($"{nameof(GetTile)}: #Tile# In. Params. XYZ:{request.X},{request.Y},{request.Z}, Project:{request.ProjectUid}, Lighting:{request.HasLighting}");
 
       request.Validate();
 
-      var tileResult = WithServiceExceptionTryExecute(() =>
-        RequestExecutorContainer
-          .Build<QuantizedMeshTileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
-          .Process(request)) as QMTileResult;
-
-      if (tileResult == null || tileResult.TileData == null)
+      try
       {
-        var msg = $"Failed to get Quantized Mesh tile for projectUid: {request.ProjectUid}";
-        Log.LogError(msg);
-        return NoContent();
-      }
+        var tileResult = WithServiceExceptionTryExecute(() =>
+          RequestExecutorContainer
+            .Build<QuantizedMeshTileExecutor>(ConfigStore, LoggerFactory, ServiceExceptionHandler)
+            .Process(request)) as QMTileResult;
+        if (tileResult == null || tileResult.TileData == null)
+        {
+          var msg = $"Failed to get Quantized Mesh tile for projectUid: {request.ProjectUid}. Check log VSS.TRex.Server.QuantizedMesh";
+          Log.LogError(msg);
+          return NoContent();
+        }
 
-      return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ApplicationOctetStream);
+        Log.LogDebug($"#Tile# Out. XYZ:{request.X},{request.Y},{request.Z}");
+        return new FileStreamResult(new MemoryStream(tileResult.TileData), ContentTypeConstants.ApplicationOctetStream);
+      }
+      catch (System.Exception e)
+      {
+        // log exception in Gateway log then return exception. Typically cluster not active
+        var msg = $"Failed to execute Quantized Mesh tile generation for projectUid: {request.ProjectUid} Error:{e.Message}";
+        Log.LogError(msg);
+        throw;
+      }
     }
   }
 }

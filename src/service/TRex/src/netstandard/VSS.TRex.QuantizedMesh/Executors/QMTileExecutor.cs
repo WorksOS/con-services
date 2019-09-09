@@ -61,8 +61,6 @@ namespace VSS.TRex.QuantizedMesh.Executors
     public GridReportOption GridReportOption { get; set; }
     public double StartNorthing { get; set; }
     public double StartEasting { get; set; }
- //   public double EndNorthing { get; set; }
- //   public double EndEasting { get; set; }
     public double Azimuth { get; set; }
     public int OverrideGridSize = 0;
     private bool Rotating;
@@ -96,9 +94,9 @@ namespace VSS.TRex.QuantizedMesh.Executors
     }
 
     /// <summary>
-    /// Compute normal map for tile
+    /// Compute normal map for lighting
     /// </summary>
-    private void ComputeNormals()
+    private void ComputeNormalMap()
     {
       var j = 0;
       var i = 0;
@@ -107,6 +105,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       Vector3 v1;
       Vector3 v2;
       Vector3 v3;
+      // Build list of triangle faces
       for (var y = 0; y < ElevData.GridSize - 1; y++)
       {
         for (var x = 0; x < ElevData.GridSize - 1; x++)
@@ -114,38 +113,22 @@ namespace VSS.TRex.QuantizedMesh.Executors
           // Build triangle list for normal computation later
           currY = StartNorthing + (y * GridIntervalY);
           currX = StartEasting + (x * GridIntervalX);
-
-          /*
-          var hgt = 597.0f;
+          var topIdx = i + ElevData.GridSize + 1;
           // Add two triangles per square
-          v1 = new Vector3(currX, currY, hgt);
-          v2 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, hgt+5.0f);
-          v3 = new Vector3(currX, currY + GridIntervalY, hgt+5.0f);
-          ElevData.Triangles[j] = new Triangle(v1, v2, v3);
-          v1 = new Vector3(currX, currY, hgt);
-          v2 = new Vector3(currX + GridIntervalX, currY, hgt);
-          v3 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, hgt + 5.0f);
+          v1 = new Vector3(currX, currY, ElevData.ElevGrid[i]);// origin
+          v2 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, ElevData.ElevGrid[topIdx]); // one above and right
+          v3 = new Vector3(currX, currY + GridIntervalY, ElevData.ElevGrid[i + ElevData.GridSize]); // one above
+          ElevData.Triangles[j] = new Triangle(v1, v2, v3); 
+          v1 = new Vector3(currX, currY, ElevData.ElevGrid[i]); // origin
+          v2 = new Vector3(currX + GridIntervalX, currY, ElevData.ElevGrid[i + 1]); // next right
+          v3 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, ElevData.ElevGrid[topIdx]); // one above and right
           ElevData.Triangles[j + 1] = new Triangle(v1, v2, v3);
-
-          */
-          
-
-          // Add two triangles per square
-          v1 = new Vector3(currX, currY, ElevData.ElevGrid[i]);
-          v2 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, ElevData.ElevGrid[i + ElevData.GridSize + 1]);
-          v3 = new Vector3(currX, currY + GridIntervalY, ElevData.ElevGrid[i + ElevData.GridSize]);
-          ElevData.Triangles[j] = new Triangle(v1, v2, v3);
-          v1 = new Vector3(currX, currY, ElevData.ElevGrid[i]);
-          v2 = new Vector3(currX + GridIntervalX, currY, ElevData.ElevGrid[i + 1]);
-          v3 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, ElevData.ElevGrid[i + ElevData.GridSize + 1]);
-          ElevData.Triangles[j + 1] = new Triangle(v1, v2, v3);
-          
-
           j += 2;
           i++;
         }
       }
 
+      // Compute normal map
       ElevData.VertexNormals = Cartesian3D.ComputeVertextNormals(ref ElevData.Triangles, ElevData.GridSize);
 
     }
@@ -184,7 +167,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // Normal Calculation
       if (ElevData.HasLighting)
-        ComputeNormals();
+        ComputeNormalMap();
     }
 
     /// <summary>
@@ -198,7 +181,10 @@ namespace VSS.TRex.QuantizedMesh.Executors
       if (ElevData.GridSize == QMConstants.NoGridSize)
         ElevData = new ElevationData(LowestElevation, QMConstants.FlatResolutionGridSize); // elevation grid
 
-      ElevData.MakeEmptyTile(TileBoundaryLL);
+      ElevData.MakeEmptyTile(TileBoundaryLL, HasLighting);
+      if (ElevData.HasLighting)
+        ComputeNormalMap();
+
       QMTileBuilder tileBuilder = new QMTileBuilder()
       {
         TileData = ElevData,

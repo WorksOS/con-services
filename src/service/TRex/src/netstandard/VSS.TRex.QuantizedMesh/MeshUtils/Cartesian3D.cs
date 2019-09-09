@@ -109,10 +109,14 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
     /// <param name="Faces"></param>
     public static void ComputeSmoothShading(int gridSize, ref Vector3[] vectorNormals, ref Vector3[] Faces)
     {
+
+      // each vertex nornmal is effected by all connecting faces
+      // This may require some experiementation to get the best results
+
       var ptr = 0;
       vectorNormals[ptr] = Normalize(Add(Faces[0], Faces[1])); // two triangles bottom left
 
-      // bottom row only
+      // bottom row one in only as triangles are all above vertex
       for (var x = 1; x < gridSize; x++)
       {
         ptr = x * 2 - 1;
@@ -127,7 +131,7 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       var idx = gridSize;
       var idxStep = (gridSize - 1) * 2;
       var idx3 = (gridSize - 1) * 2 - 1;
-      for (var y = 1; y < gridSize; y++)
+      for (var y = 1; y < gridSize; y++) // note one up
       {
         if (y != gridSize - 1)
           ptr += idxStep;
@@ -136,7 +140,7 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         var midRows = 0;
         for (var x = 0; x < gridSize; x++)
         {
-          if (y == gridSize - 1) // last row
+          if (y == gridSize - 1) // last row faces are down
           {
             if (x == 0)
               vectorNormals[idx] = Normalize(Faces[ptr]);
@@ -166,140 +170,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         }
       }
     }
-
-
-    public static void SmoothFaceNormals1Face(int gridSize, ref Vector3[] vectorNormals, ref Vector3[] Faces)
-    {
-
-      var ptr = 0;
-      vectorNormals[ptr] = Normalize(Add(Faces[0], Faces[1]));
-
-      // start bottom row
-      for (var x = 1; x < gridSize; x++)
-      {
-        ptr = x * 2 - 1;
-        vectorNormals[x] = Normalize(Faces[ptr]);
-      }
-
-      // now the rest working up left to right
-      ptr = 0;
-      var idx = gridSize;
-      var idxStep = (gridSize - 1) * 2;
-      var idx3 = (gridSize - 1) * 2 - 1;
-      for (var y = 1; y < gridSize; y++)
-      {
-        if (y != gridSize - 1)
-          ptr += idxStep;
-        var yIdx = ptr;
-        var lastRow = 0;
-        var midRows = 0;
-        for (var x = 0; x < gridSize; x++)
-        {
-          if (y == gridSize - 1) // last row
-          {
-            if (x == 0)
-              vectorNormals[idx] = Normalize(Faces[ptr]);
-            else if (x == gridSize - 1)
-              vectorNormals[idx] = Normalize(Faces[ptr + ((x - 1) * 2)]);
-            else
-            {
-              //  vectorNormals[idx] = Normalize(Add(Faces[yIdx + lastRow], Faces[yIdx + lastRow + 1]));
-              vectorNormals[idx] = Normalize(Faces[yIdx + lastRow + 2]);
-              lastRow += 2;
-            }
-          }
-          else if (x == 0) // 2 faces
-          {
-            vectorNormals[idx] = Normalize(Faces[ptr]);
-          }
-          else if (x == gridSize - 1) // 2 faces last box in row
-          {
-            //            vectorNormals[idx] = Normalize(Add(Add(Faces[ptr - 1], Faces[ptr - 2]), Faces[ptr + idx3]));
-            //            vectorNormals[idx] = Normalize(Add(Faces[ptr - 2], Faces[ptr + idx3]));
-            vectorNormals[idx] = Normalize(Faces[ptr + idx3]);
-          }
-          else // 2 faces for middle section
-          {
-            //            vectorNormals[idx] = Normalize(Add(Add(Add(Faces[yIdx + x], Faces[yIdx + x + 1]), Faces[yIdx + x + 2]), Add(Add(Faces[yIdx - idxStep + midRows], Faces[yIdx - idxStep + 1 + midRows]), Faces[yIdx - idxStep + 2 + midRows])));
-            vectorNormals[idx] = Normalize(Faces[yIdx + x + 1]);
-            midRows++;
-            yIdx++;
-          }
-          idx++;
-          //  ptr++;
-        }
-      }
-
-    }
-
-
-    public static void SmoothFaceNormals2Faces(int gridSize, ref Vector3[] vectorNormals, ref Vector3[] Faces)
-    {
-
-      var ptr = 0;
-      vectorNormals[ptr] = Normalize(Add(Faces[0], Faces[1]));
-
-      // start bottom row
-      for (var x = 1; x < gridSize; x++)
-      {
-        ptr = x * 2 - 1;
-        if (x == gridSize - 1)
-          vectorNormals[x] = Normalize(Faces[ptr]); // one face
-        else
-          vectorNormals[x] = Normalize(Add(Faces[ptr], Faces[ptr + 1]));
-      }
-
-      // now the rest working up left to right
-      ptr = 0;
-      var idx = gridSize;
-      var idxStep = (gridSize - 1) * 2;
-      var idx3 = (gridSize - 1) * 2 - 1;
-      for (var y = 1; y < gridSize; y++)
-      {
-        if (y != gridSize - 1)
-          ptr += idxStep;
-        var yIdx = ptr;
-        var lastRow = 0;
-        var midRows = 0;
-        for (var x = 0; x < gridSize; x++)
-        {
-          if (y == gridSize - 1) // last row
-          {
-            if (x == 0)
-              vectorNormals[idx] = Normalize(Faces[ptr]);
-            else if (x == gridSize - 1)
-              vectorNormals[idx] = Normalize(Add(Faces[ptr + ((x - 1) * 2)], Faces[ptr + ((x - 1) * 2) + 1]));
-            else
-            {
-              //  vectorNormals[idx] = Normalize(Add(Faces[yIdx + lastRow], Faces[yIdx + lastRow + 1]));
-              vectorNormals[idx] = Normalize(Faces[yIdx + lastRow + 2]);
-              lastRow += 2;
-            }
-          }
-          else if (x == 0) // 2 faces
-          {
-            vectorNormals[idx] = Normalize(Add(Faces[ptr], Faces[ptr + 1]));
-          }
-          else if (x == gridSize - 1) // 2 faces last box in row
-          {
-            //            vectorNormals[idx] = Normalize(Add(Add(Faces[ptr - 1], Faces[ptr - 2]), Faces[ptr + idx3]));
-            //            vectorNormals[idx] = Normalize(Add(Faces[ptr - 2], Faces[ptr + idx3]));
-            vectorNormals[idx] = Normalize(Faces[ptr + idx3]);
-          }
-          else // 2 faces for middle section
-          {
-            //            vectorNormals[idx] = Normalize(Add(Add(Add(Faces[yIdx + x], Faces[yIdx + x + 1]), Faces[yIdx + x + 2]), Add(Add(Faces[yIdx - idxStep + midRows], Faces[yIdx - idxStep + 1 + midRows]), Faces[yIdx - idxStep + 2 + midRows])));
-            vectorNormals[idx] = Normalize(Add(Faces[yIdx + x + 1], Faces[yIdx + x + 2]));
-            midRows++;
-            yIdx++;
-          }
-          idx++;
-          //  ptr++;
-        }
-      }
-
-    }
-
 
     /// <summary>
     /// Returns correct sign if less than zero
@@ -381,24 +251,8 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       for (var i = 0; i < numFaces; i++)
          Faces[i] = ComputeTriangleNormal(triangles[i].V1, triangles[i].V2, triangles[i].V3);
 
-        /*
-        for (var i = 0; i < numFaces; i++)
-        //  Faces[i] = ComputeTriangleNormal(triangles[i].V1, triangles[i].V2, triangles[i].V3);
-        if (i < numFaces / 4)
-            Faces[i] = ComputeTriangleNormal(new Vector3(1, 1, 1), new Vector3(1, 0, 1), new Vector3(1, 1, 2)); // north
-        else if (i < numFaces / 3)
-          Faces[i] = ComputeTriangleNormal(new Vector3(1, 1, 1), new Vector3(1, 2, 1), new Vector3(1, 1, 2));   // west
-        else if (i < numFaces / 2)
-          Faces[i] = ComputeTriangleNormal(new Vector3(1, 1, 1), new Vector3(1, 2, 1), new Vector3(1, 1, 2)); // south
-        else
-            Faces[i] = ComputeTriangleNormal(new Vector3(1, 1, 1), new Vector3(1, 0, 1), new Vector3(1, 1, 2));
-
-        // north  Faces[i] = ComputeTriangleNormal(new Vector3(1, 1, 1), new Vector3(1, 0, 1), new Vector3(1, 1, 2));
-        */
-
-        // Here we can experiment with different methods of shading to get best results
-        ComputeSmoothShading(gridSize, ref vectorNormals, ref Faces);
-///      SmoothFaceNormals1Face(gridSize, ref vectorNormals, ref Faces);
+      // Here we can experiment with different methods of shading to get best results
+      ComputeSmoothShading(gridSize, ref vectorNormals, ref Faces);
 
       // Pack vertex normals for QM tile
       var p = 0;
@@ -414,7 +268,5 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       }
       return packedVectorNormals; //  octencode normals
     }
-
-
   }
 }

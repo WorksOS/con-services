@@ -51,8 +51,19 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <returns></returns>
     private async Task<byte[]> FetchTile(Guid projectUid, Guid filterUid, int displayMode, int x, int y, int z, bool hasLighting)
     {
+      FilterResult filter;
+      try
+      {
+        filter = await GetCompactionFilter(projectUid, filterUid);
+        // Note! When debugging locally with your own data you may want to skip the above line and make a empty filter to avoid lookup validation failures 
+        // filter = new FilterResult();
+      }
+      catch (Exception e)
+      { var msg = $"TerrainController.FetchTile. Call to GetCompactionFilter has failed. ProjectUid:{projectUid}, FilterUid{filterUid}. Error:{e.Message}";
+        Log.LogError(e, msg);
+        throw new InvalidOperationException(msg);
+      }
 
-      var filter = await GetCompactionFilter(projectUid, filterUid);
       var request = new QMTileRequest()
       {
         ProjectUid = projectUid,
@@ -65,11 +76,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       };
 
       request.Validate();
-     
-      var qmTileResult = await RequestExecutorContainerFactory.Build<QMTilesExecutor>(LoggerFactory,
-        configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
 
-      return (qmTileResult == null) ? null : qmTileResult.TileData;
+      try
+      {
+        var qmTileResult = await RequestExecutorContainerFactory.Build<QMTilesExecutor>(LoggerFactory,
+          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as QMTileResult;
+        return (qmTileResult == null) ? null : qmTileResult.TileData;
+      }
+      catch (Exception e)
+      {
+        var msg = $"TerrainController.FetchTile. Call to TRex gateway for QMTile has failed. ProjectUid:{projectUid}, FilterUid{filterUid}. Error:{e.Message}";
+        Log.LogError(e, msg);
+        throw new InvalidOperationException(msg);
+      }
+
     }
 
     /// <summary>
@@ -89,8 +109,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
 
       Log.LogInformation("Get: " + Request.QueryString);
-
       var qmTile = await FetchTile(projectUid, filterUId, displayMode, x, y, z, hasLighting);
+
       if (qmTile != null)
       {
         HttpContext.Response.Headers.Add(ContentTypeConstants.ContentEncoding, ContentTypeConstants.ContentEncodingGzip); 

@@ -111,17 +111,22 @@ namespace VSS.TRex.QuantizedMesh.Models
         EcefPoints[i] = new Vector3();
     }
 
-    public void MakeEmptyTile(LLBoundingBox boundary)
+    public void MakeEmptyTile(LLBoundingBox boundary, bool hasLighting)
     {
+      HasLighting = hasLighting;
       if (GridSize != QMConstants.FlatResolutionGridSize)
       {
         GridSize = QMConstants.FlatResolutionGridSize;
         Array.Resize(ref ElevGrid, GridSize * GridSize);
         Array.Resize(ref EcefPoints, GridSize * GridSize);
+        if (hasLighting)
+        {
+          VertexNormals = new byte[GridSize * GridSize * 2];
+          Triangles = new Triangle[(GridSize - 1) * (GridSize - 1) * 2];
+        }
       }
       Clear();
       HasData = false;
-      HasLighting = false;
       East = boundary.East;
       West = boundary.West;
       North = boundary.North;
