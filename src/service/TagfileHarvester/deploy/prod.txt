@@ -1,1 +1,5 @@
+TCCBaseURL: https://www.myconnectedsite.com
+TCCUserName: vlproduction
+TCCOrganization: vlproduction
+TCCPassword: vlproduction_key5
 TagFileEndpoint: http://3dpm.prod.prod-eks.services.myvisionlink.com/api/v2/tagfiles
