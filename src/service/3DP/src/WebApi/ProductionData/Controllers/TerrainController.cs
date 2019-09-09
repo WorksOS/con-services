@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       catch (Exception e)
       { var msg = $"TerrainController.FetchTile. Call to GetCompactionFilter has failed. ProjectUid:{projectUid}, FilterUid{filterUid}. Error:{e.Message}";
         Log.LogError(e, msg);
-        throw new InvalidOperationException(msg);
+        throw;
       }
 
       var request = new QMTileRequest()
@@ -87,7 +87,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       {
         var msg = $"TerrainController.FetchTile. Call to TRex gateway for QMTile has failed. ProjectUid:{projectUid}, FilterUid{filterUid}. Error:{e.Message}";
         Log.LogError(e, msg);
-        throw new InvalidOperationException(msg);
+        throw;
       }
 
     }
