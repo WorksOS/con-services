@@ -1,5 +1,5 @@
 ﻿/// <summary>
-/// Contains an array of triangles for a quantized mesh
+/// Mesh triangle
 /// </summary>
 namespace VSS.TRex.QuantizedMesh.Models
 {

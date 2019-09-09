@@ -96,9 +96,9 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       return new Vector3(a.Y * b.Z - b.Y * a.Z, a.Z * b.X - b.Z * a.X, a.X * b.Y - b.X * a.Y);
     }
 
-    public static Vector3 ComputeTriangleNormal(Vector3 a, Vector3 b, Vector3 c)
+    public static Vector3 ComputeTriangleNormal(Vector3 v1, Vector3 v2, Vector3 v3)
     {
-      return Normalize(CrossProduct(a, b, c));
+      return Normalize(CrossProduct(v1, v2, v3));
     }
 
     /// <summary>
