@@ -21,6 +21,9 @@ namespace VSS.Productivity3D.Models.Models
     [JsonProperty(Required = Required.Always)]
     public int DisplayMode{ get; set; }
 
+    [JsonProperty(Required = Required.Always)]
+    public bool HasLighting { get; set; }
+
     /// <summary>
     /// Default public constructor.
     /// </summary>
@@ -37,7 +40,8 @@ namespace VSS.Productivity3D.Models.Models
       int displayMode,
       int x,
       int y,
-      int z)
+      int z,
+      bool hasLighting)
     {
       ProjectUid = projectUid;
       Filter = filter;
@@ -45,6 +49,7 @@ namespace VSS.Productivity3D.Models.Models
       X = x;
       Y = y;
       Z = z;
+      HasLighting = hasLighting;
     }
   }
 }

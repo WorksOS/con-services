@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using VSS.TRex.QuantizedMesh.MeshUtils;
 
 namespace VSS.TRex.QuantizedMesh.Models
@@ -13,6 +12,14 @@ namespace VSS.TRex.QuantizedMesh.Models
     /// Tile elevations for each vertice
     /// </summary>
     public float[] ElevGrid;
+    /// <summary>
+    /// packed vertex normals. 2 bytes per normal
+    /// </summary>
+    public byte[] VertexNormals;
+    /// <summary>
+    /// An array of the triangles that make up the mesh. Used in lighting calculation
+    /// </summary>
+    public Triangle[] Triangles;
     /// <summary>
     /// Earth Centered Earth Fixed coordinates used in tile header calculation
     /// </summary>
@@ -61,6 +68,7 @@ namespace VSS.TRex.QuantizedMesh.Models
     public double North;// maxY
     public float LowestElevation; // elevation for missing data
     public bool HasData; // Has data flag
+    public bool HasLighting; // Do we need to compute normals
 
     /// <summary>
     /// Initialise container
@@ -71,6 +79,8 @@ namespace VSS.TRex.QuantizedMesh.Models
     {
       ElevGrid = new float[gridSize * gridSize];
       EcefPoints = new Vector3[gridSize * gridSize];
+      VertexNormals = new byte[gridSize * gridSize * 2];
+      Triangles = new Triangle[(gridSize - 1) * (gridSize - 1) * 2];
       GridSize = gridSize;
       CenterX = 0;
       CenterY = 0;
@@ -90,6 +100,7 @@ namespace VSS.TRex.QuantizedMesh.Models
       North = 0;
       South = 0;
       LowestElevation = lowestElevation;
+      HasLighting = false;
     }
 
     public void Clear()
@@ -100,13 +111,19 @@ namespace VSS.TRex.QuantizedMesh.Models
         EcefPoints[i] = new Vector3();
     }
 
-    public void MakeEmptyTile(LLBoundingBox boundary)
+    public void MakeEmptyTile(LLBoundingBox boundary, bool hasLighting)
     {
+      HasLighting = hasLighting;
       if (GridSize != QMConstants.FlatResolutionGridSize)
       {
         GridSize = QMConstants.FlatResolutionGridSize;
         Array.Resize(ref ElevGrid, GridSize * GridSize);
         Array.Resize(ref EcefPoints, GridSize * GridSize);
+        if (hasLighting)
+        {
+          VertexNormals = new byte[GridSize * GridSize * 2];
+          Triangles = new Triangle[(GridSize - 1) * (GridSize - 1) * 2];
+        }
       }
       Clear();
       HasData = false;
