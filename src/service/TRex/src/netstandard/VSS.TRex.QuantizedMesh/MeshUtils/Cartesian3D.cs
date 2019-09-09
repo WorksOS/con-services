@@ -247,9 +247,8 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       var vectorNormals = new Vector3[numVertices];
       var packedVectorNormals = new byte[gridSize * gridSize * 2];
 
-
       for (var i = 0; i < numFaces; i++)
-         Faces[i] = ComputeTriangleNormal(triangles[i].V1, triangles[i].V2, triangles[i].V3);
+        Faces[i] = ComputeTriangleNormal(triangles[i].V1, triangles[i].V2, triangles[i].V3);
 
       // Here we can experiment with different methods of shading to get best results
       ComputeSmoothShading(gridSize, ref vectorNormals, ref Faces);

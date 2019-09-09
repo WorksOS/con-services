@@ -85,7 +85,7 @@ namespace VSS.TRex.QuantizedMesh.Tests
     {
       LLBoundingBox TileBoundaryLL = MapGeo.TileXYZToRectLL(0, 0, 20, out var yFlip);
       ElevationData elevData = new ElevationData(0, 5);
-      elevData.MakeEmptyTile(TileBoundaryLL);
+      elevData.MakeEmptyTile(TileBoundaryLL,false);
       QMTileBuilder tileBuilder = new QMTileBuilder()
       {
         TileData = elevData,

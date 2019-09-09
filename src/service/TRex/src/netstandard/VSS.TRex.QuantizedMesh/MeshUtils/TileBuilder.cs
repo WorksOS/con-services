@@ -127,7 +127,6 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
 
     }
 
-
     public void EncodeVertices(ref VertexData vData)
     {
       // ZigZag Encode Buffer. The quantizing of data I guess
