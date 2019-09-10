@@ -28,10 +28,10 @@ namespace TagFileHarvester.Implementation
     private static readonly GenericConfiguration config = new GenericConfiguration(new NullLoggerFactory());
     public static ILogger Log;
     private static string tccSynchFolder;
-    private static readonly string tccBaseUrl = config.GetValueString("TCCBaseURL");
-    private static readonly string tccUserName = config.GetValueString("TCCUserName");
-    private static readonly string tccPassword = config.GetValueString("TCCPassword");
-    private static readonly string tccOrganization = config.GetValueString("TCCOrganization");
+    private static readonly string tccBaseUrl = config.GetValueString("TCCBASEURL");
+    private static readonly string tccUserName = config.GetValueString("TCCUSERNAME");
+    private static readonly string tccPassword = config.GetValueString("TCCPWD");
+    private static readonly string tccOrganization = config.GetValueString("TCCORG");
     private static readonly string INVALID_TICKET_ERRORID = "NOT_AUTHENTICATED";
     private static readonly string FILE_NOT_FOUND = "WRONG_PATH";
     private static readonly string INVALID_TICKET_MESSAGE = "You have not authenticated, use login action";
