@@ -67,6 +67,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
       log.LogDebug($"{nameof(SendTagFileNonDirectToConnectedSite)}: Filename: {compactionTagFileRequest.FileName}");
       Gateway = GatewayType.ConnectedSite;
       return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, null);
+      // todoJeannie return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, "/status");
     }
 
     private async Task<ContractExecutionResult> SendTagFileRequest(CompactionTagFileRequest compactionTagFileRequest,

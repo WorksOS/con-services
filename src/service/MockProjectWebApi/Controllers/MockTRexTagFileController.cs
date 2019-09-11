@@ -12,6 +12,7 @@ namespace MockProjectWebApi.Controllers
     { }
 
     [Route("api/v2")]
+    [Route("api/v2/tagfiles")]
     [HttpPost]
     public ContractExecutionResult SendTagFileNonDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
     {
@@ -20,6 +21,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [Route("api/v2/direct")]
+    [Route("api/v2/tagfiles/direct")]
     [HttpPost]
     public ContractExecutionResult SendTagFileDirect([FromBody] CompactionTagFileRequest compactionTagFileRequest)
     {
