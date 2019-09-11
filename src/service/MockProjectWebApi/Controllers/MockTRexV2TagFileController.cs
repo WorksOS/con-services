@@ -6,9 +6,9 @@ using VSS.Productivity3D.Models.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockTRexTagFileController : BaseController
+  public class MockTRexV2TagFileController : BaseController
   {
-    public MockTRexTagFileController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    public MockTRexV2TagFileController(ILoggerFactory loggerFactory) : base(loggerFactory)
     { }
 
     [Route("api/v2")]

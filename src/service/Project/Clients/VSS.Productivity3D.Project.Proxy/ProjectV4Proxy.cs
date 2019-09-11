@@ -34,8 +34,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public async Task<List<ProjectData>> GetProjectsV4(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>(null, customerUid, null, customHeaders);
-      // todoJeannie var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project", customerUid, null, customHeaders);
+      var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project", customerUid, null, customHeaders);
       
       if (result.Code == 0)
         return result.ProjectDescriptors;

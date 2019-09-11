@@ -90,7 +90,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
       services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();
-      services.AddTransient<ITRexTagFileProxy, TRexTagFileV1Proxy>();
+      services.AddTransient<ITRexTagFileProxy, TRexTagFileV2Proxy>();
+      services.AddTransient<ITRexConnectedSiteProxy, TRexConnectedSiteV1Proxy>();
       services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>();
       
       //Disable CAP for now #76666

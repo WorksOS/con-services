@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Now3D
     /// <summary>
     /// Configures services and the application request pipeline.
     /// </summary>
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    public Startup()
     { }
 
     /// <inheritdoc />
