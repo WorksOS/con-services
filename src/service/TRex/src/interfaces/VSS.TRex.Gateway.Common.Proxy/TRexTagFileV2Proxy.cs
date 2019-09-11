@@ -19,9 +19,9 @@ namespace VSS.TRex.Gateway.Common.Proxy
   /// <summary>
   /// Proxy for TRex tag files and connected service.
   /// </summary>
-  public class TRexTagFileV1Proxy : BaseTRexServiceDiscoveryProxy, ITRexTagFileProxy
+  public class TRexTagFileV2Proxy : BaseTRexServiceDiscoveryProxy, ITRexTagFileProxy
   {
-    public TRexTagFileV1Proxy(IWebRequest webRequest, IConfigurationStore configurationStore,
+    public TRexTagFileV2Proxy(IWebRequest webRequest, IConfigurationStore configurationStore,
       ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
@@ -33,7 +33,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     public override string ExternalServiceName => null;
 
-    public override ApiVersion Version => ApiVersion.V1;
+    public override ApiVersion Version => ApiVersion.V2;
 
     public override ApiType Type => ApiType.Public;
 
@@ -47,7 +47,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       log.LogDebug($"{nameof(SendTagFileDirect)}: Filename: {compactionTagFileRequest.FileName}");
       Gateway = GatewayType.Mutable;
-      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, "/direct");
+      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, "/tagfiles/direct");
     }
 
     public async Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest,
@@ -55,20 +55,9 @@ namespace VSS.TRex.Gateway.Common.Proxy
     {
       log.LogDebug($"{nameof(SendTagFileNonDirect)}: Filename: {compactionTagFileRequest.FileName}");
       Gateway = GatewayType.Mutable;
-      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, null);
+      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, "/tagfiles");
     }
-
-    /// <summary>
-    /// Sends a tag file to TRex for to send to connectedSite
-    /// </summary>  
-    public async Task<ContractExecutionResult> SendTagFileNonDirectToConnectedSite(CompactionTagFileRequest compactionTagFileRequest,
-      IDictionary<string, string> customHeaders = null)
-    {
-      log.LogDebug($"{nameof(SendTagFileNonDirectToConnectedSite)}: Filename: {compactionTagFileRequest.FileName}");
-      Gateway = GatewayType.ConnectedSite;
-      return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, null);
-      // todoJeannie return await SendTagFileRequest(compactionTagFileRequest, customHeaders, HttpMethod.Post, "/status");
-    }
+    
 
     private async Task<ContractExecutionResult> SendTagFileRequest(CompactionTagFileRequest compactionTagFileRequest,
       IDictionary<string, string> customHeaders, HttpMethod method, string route)
