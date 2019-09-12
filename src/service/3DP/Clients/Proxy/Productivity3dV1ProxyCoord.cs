@@ -94,18 +94,33 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
 
 
     /// <summary>
-    /// Execute a generic request against v1 raptor endpoint
+    /// Execute a generic request against v1 productivity endpoint with a payload object
     /// </summary>
     public async Task<T> ExecuteGenericV1Request<T>(string route, object payload, IDictionary<string, string> customHeaders = null)
       where T : class, IMasterDataModel 
     {
-      log.LogDebug($"{nameof(ExecuteGenericV1Request)} route: {route}");
+      log.LogDebug($"{nameof(ExecuteGenericV1Request)} with payload. route: {route}");
       using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload))))
       {
         var result = await SendMasterDataItemServiceDiscoveryNoCache<T>(route, customHeaders, HttpMethod.Post, payload: stream);
         if (result != null)
           return result;
       }
+
+      log.LogDebug($"{nameof(ExecuteGenericV1Request)} Failed to post request");
+      return null;
+    }
+
+    /// <summary>
+    /// Execute a generic request against v1 productivity endpoint with a query string
+    /// </summary>
+    public async Task<T> ExecuteGenericV1Request<T>(string route, IList<KeyValuePair<string, string>> queryParameters, IDictionary<string, string> customHeaders = null)
+      where T : class, IMasterDataModel
+    {
+      log.LogDebug($"{nameof(ExecuteGenericV1Request)} with queryParameters. route: {route}");
+      var result = await SendMasterDataItemServiceDiscoveryNoCache<T>(route, customHeaders, HttpMethod.Get, queryParameters: queryParameters);
+      if (result != null)
+        return result;
 
       log.LogDebug($"{nameof(ExecuteGenericV1Request)} Failed to post request");
       return null;
