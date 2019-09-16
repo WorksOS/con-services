@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
@@ -21,10 +22,19 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// The filter containing the Json string. May be empty if all defaults
+    /// The filter containing the Json string representing a seialised filter to be created.
+    /// May be empty if all defaults
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public string FilterJson { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The list of filterUids from which to create a combined filter.
+    /// May be empty if no pre-exisitng filters are to be combined.
+    /// Will be ignired if the content of FilterJson is non-null
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public List<CombineFiltersRequestElement> FilterUids { get; set; } = null;
 
     /// <summary>
     /// The type of filter. If not specified defaults to Transient.
@@ -56,7 +66,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public static FilterRequest Create(Filter filter, string filterUid = null, string name = null,
       FilterType filterType = FilterType.Transient)
     {
-      return new FilterRequest()
+      return new FilterRequest
       {
         FilterJson = JsonConvert.SerializeObject(filter),
         FilterUid = filterUid,

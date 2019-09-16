@@ -54,6 +54,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       // Hydrate the polygon filter if present.
       request.FilterJson = await ValidationUtil.HydrateJsonWithBoundary(GeofenceProxy, auxRepository as GeofenceRepository, log, serviceExceptionHandler, request);
 
+      // Perform any required combination of filters of the request to create a new filter lists a set of filter UIDs and combination roles
+      request.FilterJson = await CombineFilters(request);
+
       if (request.FilterType == FilterType.Transient)
       {
         result = await ProcessTransient(request);
@@ -68,6 +71,16 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       await FilterJsonHelper.ParseFilterJson(request.ProjectData, result.FilterDescriptor, Productivity3dV2ProxyCompaction, request.CustomHeaders);
 
       return result;
+    }
+
+    private Task<string> CombineFilters(FilterRequestFull request)
+    {
+      if (request.FilterUids == null || request.FilterUids.Count == 0)
+      {
+        return Task.FromResult(request.FilterJson);
+      }
+
+      return FilterCombiner.Combine(request, (IFilterRepository)Repository, serviceExceptionHandler, log);
     }
 
     private Task<FilterDescriptorSingleResult> ProcessTransient(FilterRequestFull filterRequest)

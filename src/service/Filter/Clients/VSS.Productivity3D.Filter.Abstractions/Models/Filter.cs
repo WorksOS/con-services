@@ -590,11 +590,12 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
       return StartUtc.Equals(other.StartUtc) && EndUtc.Equals(other.EndUtc) && DateRangeType == other.DateRangeType &&
              string.Equals(DesignUid, other.DesignUid) &&
              string.Equals(DesignFileName, other.DesignFileName) &&
-             ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
+             ((ContributingMachines ?? other.ContributingMachines) == null || ContributingMachines.ScrambledEquals(other.ContributingMachines)) &&
              OnMachineDesignId == other.OnMachineDesignId && string.Equals(OnMachineDesignName, other.OnMachineDesignName) &&
              ElevationType == other.ElevationType && VibeStateOn == other.VibeStateOn && 
              string.Equals(PolygonUid, other.PolygonUid) && PolygonType == other.PolygonType &&
-             string.Equals(PolygonName, other.PolygonName) && PolygonLL.ScrambledEquals(other.PolygonLL) &&
+             string.Equals(PolygonName, other.PolygonName) && 
+             ((PolygonLL ?? other.PolygonLL) == null || PolygonLL.ScrambledEquals(other.PolygonLL)) &&
              ForwardDirection == other.ForwardDirection && LayerNumber == other.LayerNumber &&
              string.Equals(AlignmentUid, other.AlignmentUid) &&
              string.Equals(AlignmentFileName, other.AlignmentFileName) &&

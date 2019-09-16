@@ -4,6 +4,7 @@
   {
     Persistent = 0,
     Transient = 1,
-    Report = 2
+    Report = 2,
+    Dashboard = 3
   }
 }
