@@ -93,7 +93,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
               dataOceanFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
               deleteImportedFile.ProjectUid,
-              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
+              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn, configStore);
 
             if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
                 deleteImportedFile.ImportedFileType == ImportedFileType.Linework ||
@@ -110,7 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                 tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
                   dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
                   deleteImportedFile.ProjectUid,
-                  deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn));
+                  deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn, configStore));
               }
               await Task.WhenAll(tasks);
             }

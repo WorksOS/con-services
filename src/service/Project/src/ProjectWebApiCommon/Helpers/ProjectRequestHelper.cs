@@ -217,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             await DataOceanHelper.WriteFileToDataOcean(
               ms, rootFolder, customerUid, projectUid.ToString(),
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
-              false, null, log, serviceExceptionHandler, dataOceanClient, authn, projectUid);
+              false, null, log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
           }
         }
         catch (Exception e)

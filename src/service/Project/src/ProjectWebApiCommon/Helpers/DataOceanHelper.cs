@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
@@ -35,44 +36,53 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       Stream fileContents, string rootFolder, string customerUid, string projectUid,
       string dataOceanFileName, bool isSurveyedSurface, DateTime? surveyedUtc,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
-      ITPaaSApplicationAuthentication authn, Guid fileUid)
+      ITPaaSApplicationAuthentication authn, Guid fileUid, IConfigurationStore configStore)
     {
-      //Check file name starts with a Guid
-      if (!dataOceanFileName.StartsWith(fileUid.ToString()))
+      var dataOceanEnabled = configStore.GetValueBool("ENABLE_DATA_OCEAN", false);
+      if (dataOceanEnabled)
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Invalid DataOcean file name {dataOceanFileName}"));
-      }
-      var customHeaders = authn.CustomHeaders();
-      var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid);
+        //Check file name starts with a Guid
+        if (!dataOceanFileName.StartsWith(fileUid.ToString()))
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              $"Invalid DataOcean file name {dataOceanFileName}"));
+        }
 
-      bool ccPutFileResult = false;
-      bool folderAlreadyExists = false;
-      try
-      {
+        var customHeaders = authn.CustomHeaders();
+        var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid);
+
+        bool ccPutFileResult = false;
+        bool folderAlreadyExists = false;
+        try
+        {
+          log.LogInformation(
+            $"WriteFileToDataOcean: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
+          folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
+          if (folderAlreadyExists == false)
+            await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);
+
+          // this does an upsert
+          ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, customHeaders);
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "dataOceanClient.PutFile",
+            e.Message);
+        }
+
+        if (ccPutFileResult == false)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 116);
+        }
+
         log.LogInformation(
-          $"WriteFileToDataOcean: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
-        folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
-        if (folderAlreadyExists == false)
-          await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);
-
-        // this does an upsert
-        ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, customHeaders);
+          $"WriteFileToDataOcean: dataOceanFileName {dataOceanFileName} written to DataOcean. folderAlreadyExists {folderAlreadyExists}");
       }
-      catch (Exception e)
+      else
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "dataOceanClient.PutFile",
-          e.Message);
+        log.LogInformation($"WriteFileToDataOcean: File not saved. DataOcean disabled");
       }
-
-      if (ccPutFileResult == false)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 116);
-      }
-
-      log.LogInformation(
-        $"WriteFileToDataOcean: dataOceanFileName {dataOceanFileName} written to DataOcean. folderAlreadyExists {folderAlreadyExists}");
     }
 
     /// <summary>
@@ -82,32 +92,40 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(
       string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid, 
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
-      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
+      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn, IConfigurationStore configStore)
     {
-      var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid.ToString());
-      var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
-      log.LogInformation($"DeleteFileFromDataOcean: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
+      var dataOceanEnabled = configStore.GetValueBool("ENABLE_DATA_OCEAN", false);
+      if (dataOceanEnabled)
+      {
+        var dataOceanPath = DataOceanPath(rootFolder, customerUid, projectUid.ToString());
+        var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
+        log.LogInformation($"DeleteFileFromDataOcean: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
 
-      var customHeaders = authn.CustomHeaders();
-      bool ccDeleteFileResult = false;
-      try
-      {
-        ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders);
+        var customHeaders = authn.CustomHeaders();
+        bool ccDeleteFileResult = false;
+        try
+        {
+          ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders);
+        }
+        catch (Exception e)
+        {
+          log.LogError(e, $"DeleteFileFromDataOcean failed for {fileName} (importedFileUid:{importedFileUid}) with exception {e.Message}");
+          return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "dataOceanClient.DeleteFile", e.Message);
+        }
+
+        if (ccDeleteFileResult == false)
+        {
+          log.LogWarning(
+            $"DeleteFileFromDataOcean failed to delete {fileName} (importedFileUid:{importedFileUid}).");
+          //Not an error if it doesn't delete the file?
+          //return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 117);
+        }
       }
-      catch (Exception e)
+      else
       {
-        log.LogError(e, $"DeleteFileFromDataOcean failed for {fileName} (importedFileUid:{importedFileUid}) with exception {e.Message}");
-        return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "dataOceanClient.DeleteFile", e.Message);
+        log.LogInformation($"DeleteFileFromDataOcean: File not deleted. DataOcean disabled");
       }
 
-      if (ccDeleteFileResult == false)
-      {
-        log.LogWarning(
-          $"DeleteFileFromDataOcean failed to delete {fileName} (importedFileUid:{importedFileUid}).");
-        //Not an error if it doesn't delete the file?
-        //return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 117);
-      }
-    
       return null;
     }
 

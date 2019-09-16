@@ -109,6 +109,7 @@ data:
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER: prod
+  ENABLE_DATA_OCEAN: "false"
 #Pegasus
   PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca
   #TODO: This is staging, no prod yet, update when prod available
