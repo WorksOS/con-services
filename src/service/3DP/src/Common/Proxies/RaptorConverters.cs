@@ -1425,6 +1425,18 @@ namespace VSS.Productivity3D.Common.Proxies
       }
     }
 
+    public static CellPassType convertPassType(TICPassType type)
+    {
+      switch (type)
+      {
+        case TICPassType.ptFront: return CellPassType.Front;
+        case TICPassType.ptRear: return CellPassType.Rear;
+        case TICPassType.ptTrack: return CellPassType.Track;
+        case TICPassType.ptWheel: return CellPassType.Wheel;
+        default: throw new Exception($"Unknown TICPassType type: {Convert.ToInt32(type)}");
+      }
+    }
+
     public static ColorPalette[] convertColorPalettes(TColourPalette[] colorPalettes)
     {
       return colorPalettes?.Select(cp => new ColorPalette(cp.Colour, cp.Value)).ToArray();
