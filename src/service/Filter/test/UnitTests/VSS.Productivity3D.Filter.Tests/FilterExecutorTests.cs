@@ -420,7 +420,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public async Task UpsertFilterExecutor_Persistent_WithCombiningDashboardFilters_CreateOnly()
+    public async Task UpsertFilterExecutor_Persistent_WithCombiningWidgetFilters_CreateOnly()
     {
       // this scenario, the FilterUid is supplied, and is provided in Request
       // so this will result in an updated filter
@@ -442,8 +442,8 @@ namespace VSS.Productivity3D.Filter.Tests
       string filterUid_Master = Guid.NewGuid().ToString();
       string filterJson_Master = "{\"vibeStateOn\":true}";
 
-      string filterUid_Dashboard = Guid.NewGuid().ToString();
-      string filterJson_Dashboard = "{\"vibeStateOn\":false}";
+      string filterUid_Widget = Guid.NewGuid().ToString();
+      string filterJson_Widget = "{\"vibeStateOn\":false}";
 
       string filterUid_Volume = Guid.NewGuid().ToString();
       string filterJson_Volume = "{\"designUid\":\"" + designUid + "\", \"dateRangeType\":\"Custom\", \"startUTC\": \"" + startVolumeDate+"\", \"endUTC\":\"" + endVolumeDate +"\"}";
@@ -473,7 +473,7 @@ namespace VSS.Productivity3D.Filter.Tests
         FilterUid = filterUid,
         Name = name,
         FilterJson = filterJson,
-        FilterType = FilterType.Dashboard,
+        FilterType = FilterType.Widget,
         LastActionedUtc = DateTime.UtcNow
       };
 
@@ -487,7 +487,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid,
           Name = name,
           FilterJson = filterJson,
-          FilterType = FilterType.Dashboard,
+          FilterType = FilterType.Widget,
           LastActionedUtc = DateTime.UtcNow
         },*/
         new MasterData.Repositories.DBModels.Filter
@@ -498,7 +498,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid_Master,
           Name = name,
           FilterJson = filterJson_Master,
-          FilterType = FilterType.Dashboard,
+          FilterType = FilterType.Widget,
           LastActionedUtc = DateTime.UtcNow
         },
         new MasterData.Repositories.DBModels.Filter
@@ -506,10 +506,10 @@ namespace VSS.Productivity3D.Filter.Tests
           CustomerUid = custUid,
           UserId = userUid,
           ProjectUid = projectUid,
-          FilterUid = filterUid_Dashboard,
+          FilterUid = filterUid_Widget,
           Name = name,
-          FilterJson = filterJson_Dashboard,
-          FilterType = FilterType.Dashboard,
+          FilterJson = filterJson_Widget,
+          FilterType = FilterType.Widget,
           LastActionedUtc = DateTime.UtcNow
         },
         new MasterData.Repositories.DBModels.Filter
@@ -520,7 +520,7 @@ namespace VSS.Productivity3D.Filter.Tests
           FilterUid = filterUid_Volume,
           Name = name,
           FilterJson = filterJson_Volume,
-          FilterType = FilterType.Dashboard,
+          FilterType = FilterType.Widget,
           LastActionedUtc = DateTime.UtcNow
         }
       };
@@ -545,11 +545,11 @@ namespace VSS.Productivity3D.Filter.Tests
             //FilterUid = filterUid, 
             Name = name, 
             FilterJson = string.Empty, 
-            FilterType = FilterType.Dashboard,
+            FilterType = FilterType.Widget,
             FilterUids = new List<CombineFiltersRequestElement>
             {
               new CombineFiltersRequestElement { FilterUid = filterUid_Master, Role = FilterCombinationRole.MasterFilter },
-              new CombineFiltersRequestElement { FilterUid = filterUid_Dashboard, Role = FilterCombinationRole.DashboardFilter },
+              new CombineFiltersRequestElement { FilterUid = filterUid_Widget, Role = FilterCombinationRole.WidgetFilter },
               new CombineFiltersRequestElement { FilterUid = filterUid_Volume, Role = FilterCombinationRole.VolumesFilter }
             }
           });
@@ -575,7 +575,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    [InlineData(FilterType.Dashboard)]
+    [InlineData(FilterType.Widget)]
     public async Task DeleteFilterExecutor(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();

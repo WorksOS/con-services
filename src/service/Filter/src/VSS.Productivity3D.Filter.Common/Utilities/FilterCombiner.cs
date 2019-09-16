@@ -53,12 +53,12 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       if (masterFilter == null)
         return null;
 
-      // Is there a dashboard filter?
-      var dashboardFilter = ExtractFilterFromRequest(request, filters, FilterCombinationRole.DashboardFilter);
-      if (dashboardFilter != null)
+      // Is there a widget filter?
+      var widgetFilter = ExtractFilterFromRequest(request, filters, FilterCombinationRole.WidgetFilter);
+      if (widgetFilter != null)
       {
-        // Combine the dashboard filter into the combined filter
-        combinedFilter = CombineDashboardFilterIntoMasterFilter(masterFilter, dashboardFilter);
+        // Combine the widget filter into the combined filter
+        combinedFilter = CombineWidgetFilterIntoMasterFilter(masterFilter, widgetFilter);
       }
 
       // Is there a volumes filter?
@@ -132,7 +132,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
         polygonType: null
         );
 
-      // Any time constraint in the dashboard filter overrides the time constraint in the masterfilter.
+      // Any time constraint in the widget filter overrides the time constraint in the masterfilter.
       combinedFilter.DateRangeType = child.DateRangeType ?? parent.DateRangeType;
       combinedFilter.StartUtc = child?.DateRangeType == DateRangeType.Custom ? child.StartUtc : null;
       combinedFilter.EndUtc = child?.DateRangeType == DateRangeType.Custom ? child.EndUtc : null;
@@ -140,15 +140,15 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       return combinedFilter;
     }
     /// <summary>
-    /// Combines the dashboard filter into the master filter, returning a modified master filter
+    /// Combines the widget filter into the master filter, returning a modified master filter
     /// </summary>
     /// <param name="masterFilter"></param>
-    /// <param name="dashboardFilter"></param>
-    private static Abstractions.Models.Filter CombineDashboardFilterIntoMasterFilter(Abstractions.Models.Filter masterFilter, Abstractions.Models.Filter dashboardFilter)
+    /// <param name="widgetFilter"></param>
+    private static Abstractions.Models.Filter CombineWidgetFilterIntoMasterFilter(Abstractions.Models.Filter masterFilter, Abstractions.Models.Filter widgetFilter)
     {
-      // Create a new filter where all filter aspects are copied preferenially from the dashboard filter, and then the master filter.
+      // Create a new filter where all filter aspects are copied preferenially from the widget filter, and then the master filter.
 
-      return CombineTwoFilters(masterFilter, dashboardFilter);
+      return CombineTwoFilters(masterFilter, widgetFilter);
     }
 
     /// <summary>

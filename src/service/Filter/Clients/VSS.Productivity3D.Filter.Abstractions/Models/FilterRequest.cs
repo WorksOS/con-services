@@ -92,7 +92,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
           }
 
-          if (x.Role != FilterCombinationRole.DashboardFilter &&
+          if (x.Role != FilterCombinationRole.WidgetFilter &&
               x.Role != FilterCombinationRole.Undefined &&
               x.Role != FilterCombinationRole.MasterFilter &&
               x.Role != FilterCombinationRole.VolumesFilter)
@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
         }
 
-        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.DashboardFilter ? 1 : 0) > 1)
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.WidgetFilter ? 1 : 0) > 1)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
         }

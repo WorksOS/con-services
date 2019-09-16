@@ -14,12 +14,12 @@
     MasterFilter,
 
     /// <summary>
-    /// A filter defining VL 3DPM dashboard specific filtering to be combined with a master filter
+    /// A filter defining VL 3DPM widget specific filtering to be combined with a master filter
     /// </summary>
-    DashboardFilter,
+    WidgetFilter,
 
     /// <summary>
-    /// A filter defining specific volumes only filtering conditions (such as time range) to be applied as a
+    /// A filter defining specific volumes widget only filtering conditions (such as time range) to be applied as a
     /// final combined filter decoration
     /// </summary>
     VolumesFilter
