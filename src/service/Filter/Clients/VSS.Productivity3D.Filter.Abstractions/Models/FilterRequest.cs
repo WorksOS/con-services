@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
@@ -77,9 +78,49 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
 
     public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid = false)
     {
-      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out _) == false))
+      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out _) == false) || FilterUids?.Count == 0)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+      }
+
+      if (FilterUids != null)
+      {
+        FilterUids.ForEach(x =>
+        {
+          if (x == null || (x.FilterUid != string.Empty && Guid.TryParse(x.FilterUid, out _) == false))
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+          }
+
+          if (x.Role != FilterCombinationRole.DashboardFilter &&
+              x.Role != FilterCombinationRole.Undefined &&
+              x.Role != FilterCombinationRole.MasterFilter &&
+              x.Role != FilterCombinationRole.VolumesFilter)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+          }
+        });
+
+        // There must be at least a master filter present, 0 or 1 dashbaord filters present and 0 or 1 volume filters present
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.MasterFilter ? 1 : 0) != 1)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+        }
+
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.DashboardFilter ? 1 : 0) > 1)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+        }
+
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.VolumesFilter ? 1 : 0) > 1)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+        }
+
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.Undefined ? 1 : 0) > 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+        }
       }
 
       //Only filterUid needs validating for get filter otherwise everything needs validating
