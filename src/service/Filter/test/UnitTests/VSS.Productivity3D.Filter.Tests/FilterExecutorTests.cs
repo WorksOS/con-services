@@ -437,7 +437,6 @@ namespace VSS.Productivity3D.Filter.Tests
 
       string filterUid = Guid.NewGuid().ToString();
       string filterJson = "{\"vibeStateOn\":\"false\", \"designName\":\"" + designName + "\", \"designUid\":\"" + designUid + "\", \"dateRangeType\":\"Custom\", \"startUTC\": \"" + startVolumeDate + "\", \"endUTC\":\"" + endVolumeDate + "\"}";
-      //string filterJson = "{\"vibeStateOn\":\"false\", \"designUid\":\"" + designUid + "\", \"dateRangeType\":\"Custom\", \"startUTC\": \"" + startVolumeDate + "\", \"endUTC\":\"" + endVolumeDate + "\"}";
 
       string filterUid_Master = Guid.NewGuid().ToString();
       string filterJson_Master = "{\"vibeStateOn\":true}";
@@ -479,17 +478,6 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var filters = new List<MasterData.Repositories.DBModels.Filter>
       {
-    /*    new MasterData.Repositories.DBModels.Filter
-        {
-          CustomerUid = custUid,
-          UserId = userUid,
-          ProjectUid = projectUid,
-          FilterUid = filterUid,
-          Name = name,
-          FilterJson = filterJson,
-          FilterType = FilterType.Widget,
-          LastActionedUtc = DateTime.UtcNow
-        },*/
         new MasterData.Repositories.DBModels.Filter
         {
           CustomerUid = custUid,
@@ -542,7 +530,6 @@ namespace VSS.Productivity3D.Filter.Tests
           new ProjectData { ProjectUid = projectUid },
           new FilterRequest
           {
-            //FilterUid = filterUid, 
             Name = name, 
             FilterJson = string.Empty, 
             FilterType = FilterType.Widget,
