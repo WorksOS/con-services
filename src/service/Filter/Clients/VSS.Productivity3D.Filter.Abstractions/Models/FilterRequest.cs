@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
         {
           if (x == null || (x.FilterUid != string.Empty && Guid.TryParse(x.FilterUid, out _) == false))
           {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 79);
           }
 
           if (x.Role != FilterCombinationRole.WidgetFilter &&
@@ -97,29 +97,29 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
               x.Role != FilterCombinationRole.MasterFilter &&
               x.Role != FilterCombinationRole.VolumesFilter)
           {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 80);
           }
         });
 
         // There must be at least a master filter present, 0 or 1 dashbaord filters present and 0 or 1 volume filters present
         if (FilterUids.Sum(x => x.Role == FilterCombinationRole.MasterFilter ? 1 : 0) != 1)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 81);
         }
 
         if (FilterUids.Sum(x => x.Role == FilterCombinationRole.WidgetFilter ? 1 : 0) > 1)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 82);
         }
 
         if (FilterUids.Sum(x => x.Role == FilterCombinationRole.VolumesFilter ? 1 : 0) > 1)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 83);
         }
 
         if (FilterUids.Sum(x => x.Role == FilterCombinationRole.Undefined ? 1 : 0) > 0)
         {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 84);
         }
       }
 
