@@ -84,6 +84,12 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       //76: FilterValidationErrorCodesProvider
       //77: FilterValidationErrorCodesProvider
       DynamicAddwithOffset("FilterCleanup: Exception occurred: {0}", 78);
+      //79: FilterValidationErrorCodesProvider
+      //80: FilterValidationErrorCodesProvider
+      //81: FilterValidationErrorCodesProvider
+      //82: FilterValidationErrorCodesProvider
+      //83: FilterValidationErrorCodesProvider
+      //84: FilterValidationErrorCodesProvider
     }
   }
 }

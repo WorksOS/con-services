@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Filter.Proxy
       if (result.Code == 0)
         return result.filterDescriptor;
 
-      log.LogWarning("Failed to get Filter Descriptor: {result.Code}, {result.Message}");
+      log.LogWarning($"Failed to get Filter Descriptor: {result.Code}, {result.Message}");
       return null;
     }
 
@@ -89,5 +89,9 @@ namespace VSS.Productivity3D.Filter.Proxy
       ClearCacheItem(projectUid, userId);
     }
 
+    public Task<List<FilterDescriptor>> GetFilters(string projectUid, FilterRequest request, IDictionary<string, string> customHeaders = null)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

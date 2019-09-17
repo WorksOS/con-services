@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
@@ -21,10 +23,19 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// The filter containing the Json string. May be empty if all defaults
+    /// The filter containing the Json string representing a seialised filter to be created.
+    /// May be empty if all defaults
     /// </summary>
     [JsonProperty(Required = Required.Always)]
     public string FilterJson { get; set; } = string.Empty;
+
+    /// <summary>
+    /// The list of filterUids from which to create a combined filter.
+    /// May be empty if no pre-exisitng filters are to be combined.
+    /// Will be ignired if the content of FilterJson is non-null
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public List<CombineFiltersRequestElement> FilterUids { get; set; } = null;
 
     /// <summary>
     /// The type of filter. If not specified defaults to Transient.
@@ -56,7 +67,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     public static FilterRequest Create(Filter filter, string filterUid = null, string name = null,
       FilterType filterType = FilterType.Transient)
     {
-      return new FilterRequest()
+      return new FilterRequest
       {
         FilterJson = JsonConvert.SerializeObject(filter),
         FilterUid = filterUid,
@@ -67,9 +78,49 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
 
     public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid = false)
     {
-      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out _) == false))
+      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out _) == false) || FilterUids?.Count == 0)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
+      }
+
+      if (FilterUids != null)
+      {
+        FilterUids.ForEach(x =>
+        {
+          if (x == null || (x.FilterUid != string.Empty && Guid.TryParse(x.FilterUid, out _) == false))
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 79);
+          }
+
+          if (x.Role != FilterCombinationRole.WidgetFilter &&
+              x.Role != FilterCombinationRole.Undefined &&
+              x.Role != FilterCombinationRole.MasterFilter &&
+              x.Role != FilterCombinationRole.VolumesFilter)
+          {
+            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 80);
+          }
+        });
+
+        // There must be at least a master filter present, 0 or 1 dashbaord filters present and 0 or 1 volume filters present
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.MasterFilter ? 1 : 0) != 1)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 81);
+        }
+
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.WidgetFilter ? 1 : 0) > 1)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 82);
+        }
+
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.VolumesFilter ? 1 : 0) > 1)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 83);
+        }
+
+        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.Undefined ? 1 : 0) > 0)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 84);
+        }
       }
 
       //Only filterUid needs validating for get filter otherwise everything needs validating
