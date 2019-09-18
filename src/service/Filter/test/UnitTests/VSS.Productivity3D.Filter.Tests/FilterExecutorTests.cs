@@ -533,11 +533,11 @@ namespace VSS.Productivity3D.Filter.Tests
             Name = name, 
             FilterJson = string.Empty, 
             FilterType = FilterType.Widget,
-            FilterUids = new List<CombineFiltersRequestElement>
+            HierarchicFilterUids = new List<HierarchicFilterElement>
             {
-              new CombineFiltersRequestElement { FilterUid = filterUid_Master, Role = FilterCombinationRole.MasterFilter },
-              new CombineFiltersRequestElement { FilterUid = filterUid_Widget, Role = FilterCombinationRole.WidgetFilter },
-              new CombineFiltersRequestElement { FilterUid = filterUid_Volume, Role = FilterCombinationRole.VolumesFilter }
+              new HierarchicFilterElement { FilterUid = filterUid_Master, Role = FilterCombinationRole.MasterFilter },
+              new HierarchicFilterElement { FilterUid = filterUid_Widget, Role = FilterCombinationRole.WidgetFilter },
+              new HierarchicFilterElement { FilterUid = filterUid_Volume, Role = FilterCombinationRole.VolumesFilter }
             }
           });
 

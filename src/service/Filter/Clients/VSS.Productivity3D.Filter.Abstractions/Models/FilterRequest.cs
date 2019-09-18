@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
     /// Will be ignired if the content of FilterJson is non-null
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    public List<CombineFiltersRequestElement> FilterUids { get; set; } = null;
+    public List<HierarchicFilterElement> HierarchicFilterUids { get; set; } = null;
 
     /// <summary>
     /// The type of filter. If not specified defaults to Transient.
@@ -78,14 +78,14 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
 
     public virtual void Validate(IServiceExceptionHandler serviceExceptionHandler, bool onlyFilterUid = false)
     {
-      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out _) == false) || FilterUids?.Count == 0)
+      if (FilterUid == null || (FilterUid != string.Empty && Guid.TryParse(FilterUid, out _) == false) || HierarchicFilterUids?.Count == 0)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 2);
       }
 
-      if (FilterUids != null)
+      if (HierarchicFilterUids != null)
       {
-        FilterUids.ForEach(x =>
+        HierarchicFilterUids.ForEach(x =>
         {
           if (x == null || (x.FilterUid != string.Empty && Guid.TryParse(x.FilterUid, out _) == false))
           {
@@ -102,22 +102,22 @@ namespace VSS.Productivity3D.Filter.Abstractions.Models
         });
 
         // There must be at least a master filter present, 0 or 1 dashbaord filters present and 0 or 1 volume filters present
-        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.MasterFilter ? 1 : 0) != 1)
+        if (HierarchicFilterUids.Sum(x => x.Role == FilterCombinationRole.MasterFilter ? 1 : 0) != 1)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 81);
         }
 
-        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.WidgetFilter ? 1 : 0) > 1)
+        if (HierarchicFilterUids.Sum(x => x.Role == FilterCombinationRole.WidgetFilter ? 1 : 0) > 1)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 82);
         }
 
-        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.VolumesFilter ? 1 : 0) > 1)
+        if (HierarchicFilterUids.Sum(x => x.Role == FilterCombinationRole.VolumesFilter ? 1 : 0) > 1)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 83);
         }
 
-        if (FilterUids.Sum(x => x.Role == FilterCombinationRole.Undefined ? 1 : 0) > 0)
+        if (HierarchicFilterUids.Sum(x => x.Role == FilterCombinationRole.Undefined ? 1 : 0) > 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 84);
         }

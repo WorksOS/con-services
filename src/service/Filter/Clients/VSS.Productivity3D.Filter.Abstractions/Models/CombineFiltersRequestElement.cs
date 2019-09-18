@@ -2,7 +2,7 @@
 
 namespace VSS.Productivity3D.Filter.Abstractions.Models
 {
-  public class CombineFiltersRequestElement
+  public class HierarchicFilterElement
   {
     /// <summary>
     /// The UIDs of a filter is to be combined with other filters listed in the request

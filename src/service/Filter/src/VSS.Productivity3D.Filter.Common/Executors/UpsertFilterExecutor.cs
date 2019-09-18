@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
     private Task<string> CombineFilters(FilterRequestFull request)
     {
-      if (request.FilterUids == null || request.FilterUids.Count == 0)
+      if (request.HierarchicFilterUids == null || request.HierarchicFilterUids.Count == 0)
       {
         return Task.FromResult(request.FilterJson);
       }
