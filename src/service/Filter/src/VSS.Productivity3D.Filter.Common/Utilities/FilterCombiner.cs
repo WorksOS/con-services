@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
     /// <returns></returns>
     private static Abstractions.Models.Filter ExtractFilterFromRequest(FilterRequest request, List<MasterData.Repositories.DBModels.Filter> filters, FilterCombinationRole combinationRole)
     {
-      var FilterUid = request.FilterUids.SingleOrDefault(x => x.Role == combinationRole)?.FilterUid;
+      var FilterUid = request.HierarchicFilterUids.SingleOrDefault(x => x.Role == combinationRole)?.FilterUid;
       if (string.IsNullOrEmpty(FilterUid))
         return null;
 
@@ -85,15 +85,15 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
     {
       var filters =
         (await repository.GetFiltersForProjectUser(request.CustomerUid, request.ProjectUid, request.UserId, true).ConfigureAwait(false))
-        .Where(x => request.FilterUids.Any(f => string.Equals(f.FilterUid, x.FilterUid, StringComparison.OrdinalIgnoreCase)))
+        .Where(x => request.HierarchicFilterUids.Any(f => string.Equals(f.FilterUid, x.FilterUid, StringComparison.OrdinalIgnoreCase)))
         .ToList();
 
-      if (filters.Count != request.FilterUids.Count)
+      if (filters.Count != request.HierarchicFilterUids.Count)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 11);
       }
 
-      log.LogDebug($"CombineFilters retrieved {request.FilterUids.Count} requested filters to combine");
+      log.LogDebug($"CombineFilters retrieved {request.HierarchicFilterUids.Count} requested filters to combine");
 
       // Perform the operations to combine the selected filters
       return JsonConvert.SerializeObject(CombineFilters(request, filters));
