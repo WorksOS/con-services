@@ -1,1 +1,2 @@
 JAEGER_SERVICE_NAME: Alpha 3D Now Service API
+productivity3d-service: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0
