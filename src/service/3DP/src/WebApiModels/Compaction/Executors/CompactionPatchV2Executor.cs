@@ -121,15 +121,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private PatchResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
     {
-      using (BinaryReader reader = new BinaryReader(stream))
+      using (var reader = new BinaryReader(stream))
       {
-        var numSubgridsInPatch = reader.ReadInt32();
-        var dataPatchSubgridCount = reader.ReadInt32();
+        // only set if patchId/patchNumber = 0
+        // else -1
+        var totalPatchesRequired = reader.ReadInt32();  
+        var numSubgridsInPatch = reader.ReadInt32(); // actual count in this patch
         double cellSize = reader.ReadDouble();
 
-        var subgrids = new PatchSubgridResultBase[dataPatchSubgridCount];
+        var subgrids = new PatchSubgridResultBase[numSubgridsInPatch];
 
-        for (var i = 0; i < dataPatchSubgridCount; i++)
+        for (var i = 0; i < numSubgridsInPatch; i++)
         {
           var subgridOriginX = reader.ReadDouble();
           var subgridOriginY = reader.ReadDouble();
@@ -232,7 +234,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
         return PatchResult.Create(cellSize,
           numSubgridsInPatch,
-          dataPatchSubgridCount,
+          totalPatchesRequired,
           subgrids);
       }
     }
