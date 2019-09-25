@@ -222,12 +222,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
               }
             }
 
-            if (!float.IsNaN(elevation))
+            if (!float.IsNaN(elevation) )
+            //&& cells.Count == 0) // todoJeannie
             {
               var cellY = Math.DivRem(j, 32, out int cellX); /* todo*/
               cells.Add(PatchCellSimpleResult.Create(Math.Round(((subgridOriginX + (cellSize / 2)) + (cellSize * cellX)), 5),
                 Math.Round(((subgridOriginY + (cellSize / 2)) + (cellSize * cellY)), 5),
-                elevation, eventTime));
+                Math.Round(elevation, 3), eventTime));
             }
           }
         }

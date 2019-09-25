@@ -23,6 +23,15 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     [JsonProperty(PropertyName = "worldOriginY")]
     public double SubgridOriginY { get; private set; }
 
+
+    /// <summary>
+    /// The elevation origin referenced by all cell elevations in the binary representation of the patch subgrids.
+    /// UTC expressed as Unix time in seconds.
+    /// </summary>
+    [ProtoMember(3, IsRequired = true)]
+    [JsonProperty(PropertyName = "timeOrigin")]
+    protected uint TimeOrigin { get; set; }
+
     /// <summary>
     /// The grid of cells that make up this subgrid in the patch
     /// </summary>
@@ -33,17 +42,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// When the CellController 'api/v1/productiondata/patches/worldorigin' endpoint is no longer required for testing by the CTCT team we can remove it and
     /// remove <see cref="PatchSubgridOriginResult"/> and associated methods/classes.
     /// </remarks>
-    [ProtoMember(3, IsRequired = true)]
+    [ProtoMember(4, IsRequired = true)]
     [JsonProperty(PropertyName = "cells")]
     protected PatchCellHeightResult[] Cells { get; set; }
-
-    /// <summary>
-    /// The elevation origin referenced by all cell elevations in the binary representation of the patch subgrids.
-    /// UTC expressed as Unix time in seconds.
-    /// </summary>
-    [ProtoMember(4, IsRequired = true)]
-    [JsonProperty(PropertyName = "timeOrigin")]
-    protected uint TimeOrigin { get; set; }
 
     public bool ShouldSerializeTimeOrigin()
     {

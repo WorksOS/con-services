@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     [ProtoMember(3, IsRequired = true)]
     [JsonProperty(PropertyName = "elevation")]
-    public float Elevation { get; private set; }
+    public double Elevation { get; private set; }
 
     /// <summary>
     /// Time machine recorded this
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchCellSimpleResult Create(double worldOriginX, double worldOriginY, float elevation, uint eventTime)
+    public static PatchCellSimpleResult Create(double worldOriginX, double worldOriginY, double elevation, uint eventTime)
     {
       return new PatchCellSimpleResult
       {
