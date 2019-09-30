@@ -6,7 +6,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
 #pragma warning disable 1570
   /// <summary>
-  /// A structured representation of the data retruned by the Patch request
+  /// A structured representation of the data returned by the Patch request
   /// </summary>
   /// <remarks>
   /// In order for a consumer to use the type it's best to create a .proto file that defines the message object.
@@ -15,9 +15,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
   /// </remarks>
 #pragma warning restore 1570
   [ProtoContract (SkipConstructor = true)]
-  public class PatchResultSimple : ContractExecutionResult
+  public class PatchSubgridsProtobufResult : ContractExecutionResult
   {
-    protected PatchResultSimple()
+    protected PatchSubgridsProtobufResult()
     { }
 
     /// <summary>
@@ -31,8 +31,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// The number of subgrids returned in this patch request
     /// </summary>
     [ProtoMember(2, IsRequired = true)]
-    [JsonProperty(PropertyName = "numCellsInPatch")]
-    public int NumCellsInPatch { get; protected set; }
+    [JsonProperty(PropertyName = "numSubgridsInPatch")]
+    public int NumSubgridsInPatch { get; protected set; }
 
     /// <summary>
     /// The total number of patch requests that must be made to retrieve all the information identified by the parameters of the patch query. Only returned for requests
@@ -46,20 +46,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// The collection of subgrids returned in this patch request result.
     /// </summary>
     [ProtoMember(4, IsRequired = true)]
-    [JsonProperty(PropertyName = "cells")]
-    public PatchCellSimpleResult[] Cells { get; protected set; }
+    [JsonProperty(PropertyName = "subgrids")]
+    public PatchSubgridOriginProtobufResult[] Subgrids { get; protected set; }
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchResultSimple Create(double cellSize, int numCellsInPatch, int totalNumPatchesRequired, PatchCellSimpleResult[] cells)
+    public static PatchSubgridsProtobufResult Create(double cellSize, int numSubgridsInPatch, int totalNumPatchesRequired, PatchSubgridOriginProtobufResult[] subgrids)
     {
-      return new PatchResultSimple
+      return new PatchSubgridsProtobufResult
       {
         CellSize = cellSize,
-        NumCellsInPatch = numCellsInPatch,
+        NumSubgridsInPatch = numSubgridsInPatch,
         TotalNumPatchesRequired = totalNumPatchesRequired,
-        Cells = cells
+        Subgrids = subgrids
       };
     }
   }

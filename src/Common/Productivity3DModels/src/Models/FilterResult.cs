@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.Models.Models
     /// A polygon to be used as a spatial filter boundary. The vertices are grid positions within the project grid coordinate system
     /// </summary>
     [JsonProperty(PropertyName = "polygonGrid", Required = Required.Default)]
-    public List<Point> PolygonGrid { get; private set; }
+    public List<Point> PolygonGrid { get; set; }
 
     /// <summary>
     /// Only use cell passes recorded when the machine was driving in the forwards direction. If true, only returns machines travelling forward, if false, returns machines travelling in reverse, if null, returns all machines.

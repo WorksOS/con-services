@@ -13,8 +13,10 @@ namespace VSS.Productivity3D.WebApiTests
     {
       // After .proto file is created generate .cs client schema using:
       // $ protogen --proto_path=C:\temp PatchResult.proto --csharp_out=C:\temp
+      // .\protogen --proto_path=.\ 3dpPatchSubgridsResult.proto--csharp_out =.\
 
-      var fileString = Serializer.GetProto<PatchResultSimple>();
+      // var fileString = Serializer.GetProto<PatchSimpleListResult>();
+      var fileString = Serializer.GetProto<PatchSubgridsProtobufResult>();
     }
   }
 }

@@ -40,14 +40,14 @@
       DynamicAddwithOffset("DeviceType is invalid", 30);
       DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 31);
       DynamicAddwithOffset("Multiple projects found", 32);
-      DynamicAddwithOffset("Unable to identify RadioSerial in the 3dPM system", 33);
+      DynamicAddwithOffset("Unable to identify the EC or RadioSerial in the 3dPM system, and no tccOrgId provided", 33);
       DynamicAddwithOffset("Failed to get project uid", 34);
       DynamicAddwithOffset("GetProjectUid internal error", 35);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
       DynamicAddwithOffset("Auto Import: Either Radio Serial, ec520 Serial or TCCOrgId must be provided", 37);
       DynamicAddwithOffset("Unable to find the Project requested", 38);
       DynamicAddwithOffset("Manual Import: got asset. Unable to locate any valid project, or asset subscriptions", 39);
-      DynamicAddwithOffset("Manual Import: no asset provided or identifyable. Unable to locate any valid project subscriptions", 40);
+      DynamicAddwithOffset("Manual Import: no asset provided or identifiable. Unable to locate any valid project subscriptions", 40);
       DynamicAddwithOffset("Manual Import: no intersecting projects found", 41);
       DynamicAddwithOffset("Manual Import: project does not intersect location and time provided", 42);
       DynamicAddwithOffset("Manual Import: cannot import to an archived project", 43);
@@ -56,8 +56,9 @@
       DynamicAddwithOffset("Manual Import: internal unhandled path", 46);
       DynamicAddwithOffset("Auto Import: no asset or tccOrgId is identifiable from the request", 47);
       DynamicAddwithOffset("Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements", 48);
-      DynamicAddwithOffset("Auto Import: more than 1 project meets the time/location/subscription requirements", 49);
+      DynamicAddwithOffset("More than 1 project meets the time/location/subscription requirements", 49);
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
+      DynamicAddwithOffset("Must contain a EC520 serial number", 51);
     }
 
     /// <summary>

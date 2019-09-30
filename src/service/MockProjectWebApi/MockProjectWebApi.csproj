@@ -209,6 +209,7 @@
     <ProjectReference Include="..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
+    <ProjectReference Include="..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// Elevation at the cell center point
     /// </summary>
     [JsonProperty(PropertyName = "timeOffset")]
-    [ProtoMember(2, IsRequired = false)]
+    [ProtoMember(2, IsRequired = true)]
     public uint TimeOffset { get; private set; }
 
     public bool ShouldSerializeTimeOffset()

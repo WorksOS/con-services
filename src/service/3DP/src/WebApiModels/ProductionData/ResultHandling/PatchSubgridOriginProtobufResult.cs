@@ -7,7 +7,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
   /// A subgrid of information within a patch result
   /// </summary>
   [ProtoContract(SkipConstructor = true)]
-  public class PatchSubgridOriginProtobufResult : PatchSubgridResultBase
+  public class PatchSubgridOriginProtobufResult
   {
     /// <summary>
     /// Gets the northing patch origin in meters, as a delta.
@@ -33,6 +33,13 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     protected uint TimeOrigin { get; set; }
 
     /// <summary>
+    /// The elevation origin referenced by all cell elevations in the binary representation of the patch subgrids. Values are expressed in meters.
+    /// </summary>
+    [ProtoMember(4, IsRequired = true)]
+    [JsonProperty(PropertyName = "elevationOrigin")]
+    protected float ElevationOrigin { get; set; }
+
+    /// <summary>
     /// The grid of cells that make up this subgrid in the patch
     /// </summary>
     /// <remarks>
@@ -42,7 +49,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// When the CellController 'api/v1/productiondata/patches/worldorigin' endpoint is no longer required for testing by the CTCT team we can remove it and
     /// remove <see cref="PatchSubgridOriginResult"/> and associated methods/classes.
     /// </remarks>
-    [ProtoMember(4, IsRequired = true)]
+    [ProtoMember(5, IsRequired = true)]
     [JsonProperty(PropertyName = "cells")]
     protected PatchCellHeightResult[] Cells { get; set; }
 

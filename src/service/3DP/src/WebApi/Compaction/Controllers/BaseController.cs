@@ -26,9 +26,11 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Common;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Extensions;
@@ -51,6 +53,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     private IFilterServiceProxy filterServiceProxy;
     private IProjectSettingsProxy projectSettingsProxy;
     private ITRexCompactionDataProxy tRexCompactionDataProxy;
+    private ITagFileAuthProjectProxy tagFileAuthProjectProxy;
     private IServiceExceptionHandler serviceExceptionHandler;
 
     /// <summary>
@@ -67,6 +70,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// Gets the tRex CompactionData proxy interface.
     /// </summary>
     protected ITRexCompactionDataProxy TRexCompactionDataProxy => tRexCompactionDataProxy ?? (tRexCompactionDataProxy = HttpContext.RequestServices.GetService<ITRexCompactionDataProxy>());
+
+    /// <summary>
+    /// Gets the tagfile authorization proxy interface.
+    /// </summary>
+    protected ITagFileAuthProjectProxy TagFileAuthProjectProxy => tagFileAuthProjectProxy ?? (tagFileAuthProjectProxy = HttpContext.RequestServices.GetService<ITagFileAuthProjectProxy>());
 
     /// <summary>
     /// helper methods for getting project statistics from Raptor/TRex
@@ -370,10 +378,27 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return ps;
     }
 
+    protected async Task<FilterResult> SetupCompactionFilter(Guid projectUid, BoundingBox2DGrid boundingBox)
+    {
+      var filterResult = await GetCompactionFilter(projectUid, null, false);
+
+      // todoJeannie no UserId so may be null. How to get SS?
+      if (filterResult == null)
+        filterResult = new FilterResult();
+      filterResult.PolygonGrid = new List<Point>
+      {
+        new Point(boundingBox.BottomleftY, boundingBox.BottomLeftX),
+        new Point(boundingBox.BottomleftY, boundingBox.TopRightX),
+        new Point(boundingBox.TopRightY, boundingBox.TopRightX),
+        new Point(boundingBox.TopRightY, boundingBox.BottomLeftX)
+      };
+      return filterResult;
+    }
+
     /// <summary>
-    /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
-    /// </summary>
-    protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
+      /// Creates an instance of the <see cref="FilterResult"/> class and populates it with data from the <see cref="Filter"/> model class.
+      /// </summary>
+      protected async Task<FilterResult> GetCompactionFilter(Guid projectUid, Guid? filterUid, bool filterMustExist = false)
     {
       var filterKey = filterUid.HasValue ? $"{nameof(FilterResult)} {filterUid.Value}" : string.Empty;
       // Filter models are immutable except for their Name.

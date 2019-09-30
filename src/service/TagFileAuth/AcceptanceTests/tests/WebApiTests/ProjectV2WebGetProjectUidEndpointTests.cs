@@ -7,6 +7,8 @@ using Newtonsoft.Json;
 using TestUtility;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests
 {
@@ -256,16 +258,16 @@ namespace WebApiTests
     /// <param name="timeOfPosition">from tagfile-used to check against valid Project time range.</param>
     /// <param name="statusCode"></param>
     /// <returns>The project Uid result</returns>
-    private GetProjectUidResult CallWebApiGetProjectUid(TestSupport ts, int deviceType, string radioSerial, double latitude,double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
+    private GetProjectAndAssetUidsResult CallWebApiGetProjectUid(TestSupport ts, int deviceType, string radioSerial, double latitude,double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Thread.Sleep(500);
-      var request = GetProjectUidRequest.CreateGetProjectUidRequest(deviceType, radioSerial,latitude,longitude, timeOfPosition);
+      var request = new GetProjectAndAssetUidsRequest(null, deviceType, radioSerial,string.Empty, string.Empty, latitude,longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
       var uri = ts.GetBaseUri() + "api/v2/project/getUid";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson, statusCode);
-      var actualResult = JsonConvert.DeserializeObject<GetProjectUidResult>(response, ts.jsonSettings);
+      var actualResult = JsonConvert.DeserializeObject<GetProjectAndAssetUidsResult>(response, ts.jsonSettings);
       return actualResult;
     }
   }

@@ -7,9 +7,9 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -55,16 +55,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///     Deleted projects are not considered
     /// 
     ///  </summary>
-    ///  <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a GetProjectAndAssetUidsResult if successful</returns>      
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as GetProjectAndAssetUidsRequest;
       if (request == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
-          ProjectUidHelper.FormatResult(string.Empty, string.Empty, ContractExecutionStatesEnum.SerializationError));
+          ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, ContractExecutionStatesEnum.SerializationError));
       }
 
       var projectCustomerSubs = new List<Subscriptions>();
@@ -84,12 +81,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           if (project.IsDeleted)
           {
-            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 43);
+            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 43);
           }
 
           if (project.ProjectType == ProjectType.ProjectMonitoring)
           {
-            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 44);
+            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 44);
           }
 
           projectCustomerSubs =
@@ -98,64 +95,31 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
         else
         {
-          return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 38);
+          return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 38);
         }
       }
 
       // if a SNM device is provided, try to use it, over any EC520
-      if (request.DeviceType != (int) DeviceTypeEnum.MANUALDEVICE && !string.IsNullOrEmpty(request.RadioSerial)) 
+      if (request.DeviceType != (int) DeviceTypeEnum.MANUALDEVICE && !string.IsNullOrEmpty(request.RadioSerial))
       {
-        var assetDevice =
-          await dataRepository.LoadAssetDevice(request.RadioSerial, ((DeviceTypeEnum) request.DeviceType).ToString());
+        var assetResult = await ProjectUidHelper.GetSNMAsset(log, dataRepository, request.RadioSerial, request.DeviceType, 
+          (string.IsNullOrEmpty(request.ProjectUid) || project?.ProjectType == ProjectType.Standard));
 
-        // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
-        if (assetDevice == null && (DeviceTypeEnum) request.DeviceType == DeviceTypeEnum.SNM940)
-        {
-          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Failed for SNM940 trying again as Device Type SNM941");
-          assetDevice = await dataRepository.LoadAssetDevice(request.RadioSerial, DeviceTypeEnum.SNM941.ToString());
-        }
-
-        if (assetDevice != null)
-        {
-          assetUid = assetDevice.AssetUID;
-          assetOwningCustomerUid = assetDevice.OwningCustomerUID;
-          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
-
-          if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
-          {
-            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow));
-            log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
-          }
-        }
-        else
-        {
-          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Unable to locate SNM assetDevice for radioSerial: {request.RadioSerial} and deviceType: {request.DeviceType}");
-        }
+        assetUid = assetResult.Item1;
+        assetOwningCustomerUid = assetResult.Item2;
+        assetSubs = assetResult.Item3;
       }
 
       // if a SNM device was not provided, or did not have any subs,
-      //     then see if we can get a relavant sub from any EC520 device 
+      //     then see if we can get a relevant sub from any EC520 device 
       if (assetSubs.Count == 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
-        var assetDevice =
-          await dataRepository.LoadAssetDevice(request.Ec520Serial, ((DeviceTypeEnum.EC520).ToString()));
+        var assetResult = await ProjectUidHelper.GetEMAsset(log, dataRepository, request.Ec520Serial, (int) DeviceTypeEnum.EC520,
+          (string.IsNullOrEmpty(request.ProjectUid) || project?.ProjectType == ProjectType.Standard));
 
-        if (assetDevice != null)
-        {
-          assetUid = assetDevice.AssetUID;
-          assetOwningCustomerUid = assetDevice.OwningCustomerUID;
-          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetDevice {JsonConvert.SerializeObject(assetDevice)}");
-
-          if (string.IsNullOrEmpty(request.ProjectUid) || project.ProjectType == ProjectType.Standard)
-          {
-            assetSubs = (await dataRepository.LoadAssetSubs(assetUid, DateTime.UtcNow));
-            log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
-          }
-        }
-        else
-        {
-          log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Unable to locate EC520 assetDevice for ec520serial: {request.Ec520Serial}");
-        }
+        assetUid = assetResult.Item1;
+        assetOwningCustomerUid = assetResult.Item2;
+        assetSubs = assetResult.Item3;
       }
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
@@ -186,7 +150,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (!intersectingProjects.Any())
       {
-        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 41);
+        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 41);
       }
 
       if (project.ProjectType == ProjectType.Standard)
@@ -211,12 +175,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
             if (mostSignificantServiceType == serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum)
             {
-              return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 39);
+              return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 39);
             }
           }
           else
           {
-            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 40);
+            return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 40);
           }
         }
 
@@ -225,10 +189,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             string.Compare(p.ProjectUID, project.ProjectUID, StringComparison.OrdinalIgnoreCase))
           .Any())
         {
-          return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid);
+          return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid, true);
         }
 
-        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 50);
+        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 50);
       }
 
 
@@ -241,15 +205,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
             && p.SubscriptionEndDate.HasValue
             && request.TimeOfPosition <= p.SubscriptionEndDate))
         {
-          return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid);
+          return ProjectUidHelper.FormatResult(project.ProjectUID, assetUid, true);
         }
 
-        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, 45);
+        return ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, 45);
       }
 
       // pm prevented from getting here, all types should be handled already
       throw new ServiceException(HttpStatusCode.BadRequest,
-        ProjectUidHelper.FormatResult(String.Empty, String.Empty, 46));
+        ProjectUidHelper.FormatResult(String.Empty, String.Empty, false, 46));
     }
 
 
@@ -268,7 +232,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (string.IsNullOrEmpty(tccCustomerUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
       {
-        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, 47);
+        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, false, 47);
       }
 
       var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, assetSubs, tccCustomerUid, request);
@@ -277,15 +241,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (!potentialProjects.Any())
       {
-        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, 48);
+        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, false, 48);
       }
 
       if (potentialProjects.Count > 1)
       {
-        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, 49);
+        return ProjectUidHelper.FormatResult(String.Empty, string.Empty, false, 49);
       }
 
-      return ProjectUidHelper.FormatResult(potentialProjects[0].ProjectUID, assetUid);
+      return ProjectUidHelper.FormatResult(potentialProjects[0].ProjectUID, assetUid, true);
     }
 
     private int GetMostSignificantServiceType(string assetUid, string projectCustomerUid,

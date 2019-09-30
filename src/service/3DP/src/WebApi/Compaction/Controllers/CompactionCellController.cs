@@ -5,21 +5,32 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
+using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -134,16 +145,54 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return Ok(v2PatchRequestResponse);
     }
 
-    [HttpGet("api/v2/patchesSimple")]
-    public async Task<IActionResult> GetSubGridPatchesSimple(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
+    /// <summary>
+    /// Gets the subgrid patches for a given project. Maybe be filtered with a polygon grid.
+    /// </summary>
+    /// <remarks>
+    /// This endpoint is expected to be used by machine based devices requesting raw data and deliberately
+    /// returns a lean response object to minimize the response size.
+    /// The response DTOs are decorated for use with Protobuf-net.
+    /// </remarks>
+    [HttpGet("api/v2/patchesNew")]
+    //public async Task<IActionResult> GetSubGridPatchesNew([FromBody] PatchesRequest patchesRequest)
+    public async Task<IActionResult> GetSubGridPatchesNew(string ecSerial, string radioSerial, string tccOrgUid,
+      double machineLatitude, double machineLongitude,
+      double bottomLeftX, double bottomLeftY, double topRightX, double topRightY )
     {
-      Log.LogInformation($"GetSubGridPatches: {Request.QueryString}");
+      var patchesRequest = new PatchesRequest(ecSerial, radioSerial, tccOrgUid, machineLatitude, machineLongitude, 
+        new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
+      Log.LogInformation($"{nameof(GetSubGridPatchesNew)}: {JsonConvert.SerializeObject(patchesRequest)}");
 
-      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      var filter = GetCompactionFilter(projectUid, filterUid);
+      patchesRequest.Validate();
+
+      var requestPatchId = 0;
+      var requestPatchSize = 1000; // max # subgrids to scan
+      var requestIncludeTimeOffsets = true;
+
+      // identify VSS projectUid (and potentially VSS AssetUID)
+      // tfa checks in this order: snm940; snm941; EC520
+      var tfaRequest = new GetProjectAndAssetUidsRequest(null,
+        (int) DeviceTypeEnum.SNM940, patchesRequest.RadioSerial, patchesRequest.ECSerial,
+        patchesRequest.TccOrgUid, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude, DateTime.UtcNow);
+      // should I use the old CCT one or new TRex (this) one? // todoJeannie
+      var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectProxy);
+      var tfaResult = await tfaHelper.GetProjectUid(tfaRequest);
+
+      if (tfaResult?.Code != 0)
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+          $"unable to identify a unique project. Error code: {tfaResult?.Code}")); // todoJeannie get error strings 
+
+      // todoJeannie rules to be determined if returns a projectUid but HasValidSub = false
+      Log.LogDebug($"{nameof(GetSubGridPatchesNew)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
+
+      var projectUid = Guid.Parse(tfaResult.ProjectUid);
+      var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      Log.LogInformation($"{nameof(GetSubGridPatchesNew)}: tfaResult: {JsonConvert.SerializeObject(tfaResult)} projectId: {projectId}");
+
+      // this gets excluded SS but needs UserId (which will not be avail via CTCT) // todoJeannie
+      var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);
       var projectSettings = GetProjectSettingsTargets(projectUid);
-
-      await Task.WhenAll(projectId, filter, projectSettings);
+      await Task.WhenAll(filter, projectSettings);
 
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
 
@@ -151,18 +200,19 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         projectId.Result,
         projectUid,
         new Guid(),
-        mode,
+        DisplayMode.Height,
         null,
         liftSettings,
         false,
         VolumesType.None,
         VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
-        null, filter.Result, null, FilterLayerMethod.AutoMapReset, patchId, patchSize, includeTimeOffsets);
+        null, filter.Result, null, FilterLayerMethod.AutoMapReset,
+        requestPatchId, requestPatchSize, requestIncludeTimeOffsets);
 
       patchRequest.Validate();
 
       var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2ExecutorSimple>(LoggerFactory,
+        .Build<CompactionPatchV2ExecutorNew>(LoggerFactory,
 #if RAPTOR
           RaptorClient,
 #endif

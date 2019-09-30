@@ -2,7 +2,7 @@
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.MasterData.Models.ResultHandling
+namespace VSS.Productivity3D.TagFileAuth.Models
 {
   public class GetProjectAndAssetUidsResult : ContractExecutionResult, IMasterDataModel
   {
@@ -17,21 +17,25 @@ namespace VSS.MasterData.Models.ResultHandling
     public string AssetUid { get; set; }
 
     /// <summary>
+    /// CTCT cutfill can return project, where no traditional sub is available
+    /// tagFile endpoint will not return a project correct a sub is available
+    /// </summary>
+    public bool HasValidSub { get; set; } = false;
+
+    /// <summary>
     /// Create instance of GetProjectAndAssetUidsResult
     ///    The Code is the unique code (or 0 for success) code to use for translations.
     ///       We re-purpose ContractExecutionResult.Code with this unique code.
     ///    For TFA, these are 3k based 
     ///    Message is the english verion of any error
     /// </summary>
-    public static GetProjectAndAssetUidsResult CreateGetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0, string messageDetail = null)
+    public GetProjectAndAssetUidsResult(string projectUid, string assetUid, bool hasValidSub, int uniqueCode = 0, string messageDetail = null)
     {
-      return new GetProjectAndAssetUidsResult
-      {
-        ProjectUid = projectUid,
-        AssetUid = assetUid,
-        Code = uniqueCode,
-        Message = messageDetail
-      };
+      ProjectUid = projectUid;
+      AssetUid = assetUid;
+      HasValidSub = hasValidSub;
+      Code = uniqueCode;
+      Message = messageDetail;
     }
 
     public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>(){ ProjectUid };

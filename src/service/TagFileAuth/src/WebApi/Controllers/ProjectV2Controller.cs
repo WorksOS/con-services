@@ -4,11 +4,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -42,34 +40,36 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///      It allows a user once or twice a day
     ///      to obtain a Cut/fill or other map from 3dpService. 
     ///      This step tries to identify a unique projectUid
-    ///          before 3dpmSvc is used to retrive a map.
     /// 
     /// The device info, location and customerUid are provided.
     /// 
     /// Get the ProjectUid 
     ///     which belongs to the devices Customer and 
     ///     whose boundary the location is inside at the given date time. 
-    ///     authority is determined by servicePlans from the provided deviceUid.
+    ///     NOTE as of Sept 2019, VSS commercial model has not been determined,
+    ///            i.e. no VSS subscriptions are required. 
     /// </summary>
-    /// <param name="request">Details of the device and location</param>
+    /// <param name="request">Details of the project, asset and tccOrgId. Also location and its date time</param>
     /// <returns>
-    /// The project Uid if the asset is inside ONE project
-    ///     else a returnCode.
+    /// The project Uid which satisfies spatial and time requirements
+    ///      and possibly assetUid
+    ///      and an indicator of subscription availability
+    ///      otherwise a returnCode.
     /// </returns>
-    /// <executor>ProjectUidExecutor</executor>
-    [Route("api/v2/project/getUid")]
+    [Route("api/v2/project/getUidsCTCT")]
     [HttpPost]
-    public async Task<GetProjectUidResult> GetProjectUid([FromBody]GetProjectUidRequest request)
+    public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUidsCTCT([FromBody]GetProjectAndAssetUidsRequest request)
     {
-      _log.LogDebug($"{nameof(GetProjectUid)}: request: {JsonConvert.SerializeObject(request)}");
-      var errorCodeResult = request.Validate();
+      _log.LogDebug($"{nameof(GetProjectAndAssetUids)}: request: {JsonConvert.SerializeObject(request)}");
+      var errorCodeResult = request.Validate(true);
       if (errorCodeResult > 0)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult("", "", errorCodeResult));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, errorCodeResult));
 
-      var executor = RequestExecutorContainer.Build<ProjectUidExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
-      var result = await executor.ProcessAsync(request) as GetProjectUidResult;
 
-      _log.LogResult(nameof(GetProjectUid), request, result);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
+
+      _log.LogResult(nameof(GetProjectAndAssetUids), request, result);
       return result;
     }
 
@@ -89,7 +89,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </summary>
     /// <param name="request">Details of the project, asset and tccOrgId. Also location and its date time</param>
     /// <returns>
-    /// The project Uid and possibly assetUid
+    /// The project Uid which satisfies spatial, time and subscription requirements
+    ///      and possibly assetUid
     ///      otherwise a returnCode.
     /// </returns>
     /// <executor>GetProjectAndAssetUidsExecutor</executor>
@@ -98,9 +99,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUids([FromBody]GetProjectAndAssetUidsRequest request)
     {
       _log.LogDebug($"{nameof(GetProjectAndAssetUids)}: request:{JsonConvert.SerializeObject(request)}");
-      var errorCodeResult = request.Validate();
+      var errorCodeResult = request.Validate(false);
       if (errorCodeResult > 0)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult("", "", errorCodeResult));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, errorCodeResult));
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
 {
@@ -15,10 +15,10 @@ namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     /*
-     * [Route("api/v2/project/getUid")]     [HttpPost]
-     * returns GetProjectUidResult
+     * [Route("api/v2/project/getUidsCTCT")]     [HttpPost]
+     * returns GetProjectAndAssetUidsResult
      */
-    Task<GetProjectAndAssetUidsResult> GetProjectUid(GetProjectUidRequest getProjectUidRequest,
+    Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUidsCTCT(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest,
       IDictionary<string, string> customHeaders = null);
 
   }

@@ -24,12 +24,12 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class CompactionPatchV2ExecutorSimple : RequestExecutorContainer
+  public class CompactionPatchV2ExecutorNew : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public CompactionPatchV2ExecutorSimple()
+    public CompactionPatchV2ExecutorNew()
     {
       ProcessErrorCodes();
     }
@@ -122,7 +122,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #endif
     }
 
-    private PatchResultSimple ConvertPatchResult(Stream stream, bool includeTimeOffsets)
+    private PatchSimpleListResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
     {
       using (var reader = new BinaryReader(stream))
       {
@@ -233,7 +233,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           }
         }
 
-        return PatchResultSimple.Create(cellSize,
+        return PatchSimpleListResult.Create(cellSize,
           numSubgridsInPatch,
           totalPatchesRequired,
           cells.ToArray());

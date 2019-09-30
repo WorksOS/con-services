@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace WebApiTests.Models
 {
@@ -16,7 +17,7 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
+        new GetProjectAndAssetUidsRequest
         (projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, 
           latitude, longitude, timeOfPosition);
       var errorCodeResult = projectAndAssetUidsRequest.Validate();
@@ -35,10 +36,26 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
+        new GetProjectAndAssetUidsRequest
         (projectUid, (int)deviceType, radioSerial, ec520Serial, tccOrgUid,
           latitude, longitude, timeOfPosition);
       var errorCodeResult = projectAndAssetUidsRequest.Validate();
+      Assert.AreEqual(errorCode, errorCodeResult);
+    }
+
+    [TestMethod]
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 91, 179, 51)] // missing EC serial number
+    public void ValidateGetProjectAndAssetUidsRequest_CTCTValidationErrors
+    (string projectUid, DeviceTypeEnum deviceType, string radioSerial, string ec520Serial,
+      string tccOrgUid,
+      double latitude, double longitude, int errorCode)
+    {
+      var timeOfPosition = DateTime.UtcNow;
+      GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest
+        (projectUid, (int)deviceType, radioSerial, ec520Serial, tccOrgUid,
+          latitude, longitude, timeOfPosition);
+      var errorCodeResult = projectAndAssetUidsRequest.Validate(true);
       Assert.AreEqual(errorCode, errorCodeResult);
     }
 
@@ -54,8 +71,8 @@ namespace WebApiTests.Models
     {
       var timeOfPosition = DateTime.UtcNow;
       GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
-          (projectUid, (int)deviceType, radioSerial, ec520Serial,
+        new GetProjectAndAssetUidsRequest
+        (projectUid, (int)deviceType, radioSerial, ec520Serial,
           tccOrgUid, latitude, longitude, timeOfPosition);
       var errorCodeResult = projectAndAssetUidsRequest.Validate();
       Assert.AreEqual(errorCode, errorCodeResult);

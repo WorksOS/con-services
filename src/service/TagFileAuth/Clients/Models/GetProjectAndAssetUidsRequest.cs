@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterData.Models.Models
+namespace VSS.Productivity3D.TagFileAuth.Models
 {
   /// <summary>
   /// TFA v2 endpoint to retrieve ProjectUid and/or AssetUid for a tagfile
@@ -63,28 +64,24 @@ namespace VSS.MasterData.Models.Models
     /// Private constructor
     /// </summary>
     private GetProjectAndAssetUidsRequest()
-    {
-    }
+    { }
 
     /// <summary>
     /// Create instance of GetProjectAndAssetUidsRequest
     /// </summary>
-    public static GetProjectAndAssetUidsRequest CreateGetProjectAndAssetUidsRequest
-    (string projectUid, int deviceType, string radioSerial, string ec520Serial, 
+    public GetProjectAndAssetUidsRequest
+    ( string projectUid, int deviceType, string radioSerial, string ec520Serial, 
       string tccOrgUid,
       double latitude, double longitude, DateTime timeOfPosition)
     {
-      return new GetProjectAndAssetUidsRequest
-      {
-        ProjectUid = projectUid,
-        DeviceType = deviceType,
-        RadioSerial = radioSerial,
-        Ec520Serial = ec520Serial,
-        TccOrgUid = tccOrgUid,
-        Latitude = latitude,
-        Longitude = longitude,
-        TimeOfPosition = timeOfPosition
-      };
+      ProjectUid = projectUid;
+      DeviceType = deviceType;
+      RadioSerial = radioSerial;
+      Ec520Serial = ec520Serial;
+      TccOrgUid = tccOrgUid;
+      Latitude = latitude;
+      Longitude = longitude;
+      TimeOfPosition = timeOfPosition;
     }
 
 
@@ -109,40 +106,32 @@ namespace VSS.MasterData.Models.Models
     ///      same as #1
     /// 
     /// </summary>
-    public int Validate()
+    public int Validate(bool validateForCTCT = false)
     {
       // if it has a projectUid, then it's a manual import and must have either assetUid or radio/dt
       if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParseExact(ProjectUid, "D", out var projectUid))
-      {
         return 36;
-      }
+
       var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.EC520 };
       var isDeviceTypeValid = allowedDeviceTypes.Contains(DeviceType);
 
       if (!isDeviceTypeValid)
-      {
         return 30;
-      }
+
+      if (validateForCTCT && string.IsNullOrEmpty(Ec520Serial))
+        return 51;
 
       if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(Ec520Serial) && string.IsNullOrEmpty(TccOrgUid))
-      {
         return 37;
-      }
 
       if (Latitude < -90 || Latitude > 90)
-      {
         return 21;
-      }
 
       if (Longitude < -180 || Longitude > 180)
-      {
         return 22;
-      }
 
       if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(30)))
-      {
         return 23;
-      }
 
       return 0;
     }
