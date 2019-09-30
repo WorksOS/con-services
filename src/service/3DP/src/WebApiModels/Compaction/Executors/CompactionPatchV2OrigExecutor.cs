@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using SVOICVolumeCalculationsDecls;
 #endif
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -24,12 +20,12 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class CompactionPatchV2ExecutorNew : RequestExecutorContainer
+  public class CompactionPatchV2OrigExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public CompactionPatchV2ExecutorNew()
+    public CompactionPatchV2OrigExecutor()
     {
       ProcessErrorCodes();
     }
@@ -112,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           : CreateNullPatchReturnedResult();
       }
 
-      throw CreateServiceException<CompactionPatchV2ExecutorNew>((int)raptorResult);
+      throw CreateServiceException<CompactionPatchV2OrigExecutor>((int)raptorResult);
     }
 #endif
     protected sealed override void ProcessErrorCodes()
@@ -122,7 +118,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #endif
     }
 
-    private PatchSimpleListResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
+    private PatchSubgridsProtobufResult ConvertPatchResult(Stream stream, bool includeTimeOffsets)
     {
       using (var reader = new BinaryReader(stream))
       {
@@ -132,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var numSubgridsInPatch = reader.ReadInt32(); // actual count in this patch
         double cellSize = reader.ReadDouble();
 
-        var cells = new List<PatchCellSimpleResult>(); 
+        var subgrids = new PatchSubgridOriginProtobufResult[numSubgridsInPatch];
 
         for (var i = 0; i < numSubgridsInPatch; i++)
         {
@@ -155,88 +151,90 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
           log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
 
+          // Protobuf is limited to single dimension arrays so we cannot use the [32,32] layout used by other patch executors.
           const int arrayLength = 32 * 32;
+          var cells = new PatchCellHeightResult[arrayLength];
+
           for (var j = 0; j < arrayLength; j++)
           {
-            float elevation = float.NaN;
-            uint eventTime = 0;
+            ushort elevationOffsetDelta;
+            uint time = 0;
 
             switch (elevationOffsetSizeInBytes)
             {
+              // Return raw elevation offset delta and the client will determine the elevation using the following equation:
+              // float elevation = elevationOffsetDelta != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
+
+              // Also increment all non-null values by 1. The consumer will subtract 1 from all non zero values to determine the true elevation offset.
+              // These efforts are to further help the variant length operations that Protobuf applies to the byte stream.
               case 1:
-              {
-                uint elevationOffset = reader.ReadByte();
-                elevation = (float) (elevationOffset != 0xff ? (elevationOrigin + (elevationOffset / 1000.0)) : float.NaN);
+                {
+                  uint elevationOffset = reader.ReadByte();
+                  elevationOffsetDelta = (ushort)(elevationOffset != 0xff ? elevationOffset + 0x1 : 0x0);
 
-                break;
-              }
+                  break;
+                }
               case 2:
-              {
-                uint elevationOffset = reader.ReadUInt16();
-                elevation = (float) (elevationOffset != 0xffff ? (elevationOrigin + (elevationOffset / 1000.0)) : float.NaN);
+                {
+                  uint elevationOffset = reader.ReadUInt16();
+                  elevationOffsetDelta = (ushort)(elevationOffset != 0xffff ? elevationOffset + 0x1 : 0x0);
 
-                break;
-              }
+                  break;
+                }
               case 4:
-              {
-                uint elevationOffset = reader.ReadUInt32();
-                elevation = (float) (elevationOffset != 0xffffffff ? (elevationOrigin + (elevationOffset / 1000.0)) : float.NaN);
+                {
+                  uint elevationOffset = reader.ReadUInt32();
+                  elevationOffsetDelta = (ushort)(elevationOffset != 0xffffffff ? elevationOffset + 0x1 : 0x0);
 
-                break;
-              }
+                  break;
+                }
               default:
-              {
-                throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                  $"Invalid elevation offset size, '{elevationOffsetSizeInBytes}'."));
-              }
+                {
+                  throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                    $"Invalid elevation offset size, '{elevationOffsetSizeInBytes}'."));
+                }
             }
-
 
             switch (timeOffsetSizeInBytes)
             {
               case 1:
-              {
-                var timeOffset = reader.ReadByte();
-                eventTime = (uint) (timeOffset != 0xff ? timeOffset + timeOrigin : 0x0);
+                {
+                  var timeOffset = reader.ReadByte();
+                  time = (uint)(timeOffset != 0xff ? timeOffset : 0x0);
 
-                break;
-              }
+                  break;
+                }
               case 2:
-              {
-                var timeOffset = reader.ReadUInt16();
-                eventTime = (uint) (timeOffset != 0xffff ? timeOffset + timeOrigin : 0x0);
+                {
+                  var timeOffset = reader.ReadUInt16();
+                  time = (uint)(timeOffset != 0xffff ? timeOffset : 0x0);
 
-                break;
-              }
+                  break;
+                }
               case 4:
-              {
-                var timeOffset = reader.ReadUInt32();
-                eventTime = timeOffset != 0xffffffff ? timeOffset + timeOrigin : 0x0;
+                {
+                  var timeOffset = reader.ReadUInt32();
+                  time = timeOffset != 0xffffffff ? timeOffset : 0x0;
 
-                break;
-              }
+                  break;
+                }
               default:
-              {
-                throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
-                  $"Invalid time offset size, '{timeOffsetSizeInBytes}'."));
-              }
+                {
+                  throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults,
+                    $"Invalid time offset size, '{timeOffsetSizeInBytes}'."));
+                }
             }
 
-            if (!float.IsNaN(elevation) )
-            //&& cells.Count == 0) // todoJeannie
-            {
-              var cellY = Math.DivRem(j, 32, out int cellX); /* todo*/
-              cells.Add(PatchCellSimpleResult.Create(Math.Round(((subgridOriginX + (cellSize / 2)) + (cellSize * cellX)), 5),
-                Math.Round(((subgridOriginY + (cellSize / 2)) + (cellSize * cellY)), 5),
-                Math.Round(elevation, 3), eventTime));
-            }
+            cells[j] = PatchCellHeightResult.Create(elevationOffsetDelta, includeTimeOffsets ? time : uint.MaxValue);
           }
+
+          subgrids[i] = PatchSubgridOriginProtobufResult.Create(subgridOriginX, subgridOriginY, elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, cells);
         }
 
-        return PatchSimpleListResult.Create(cellSize,
+        return PatchSubgridsProtobufResult.Create(cellSize,
           numSubgridsInPatch,
           totalPatchesRequired,
-          cells.ToArray());
+          subgrids);
       }
     }
 

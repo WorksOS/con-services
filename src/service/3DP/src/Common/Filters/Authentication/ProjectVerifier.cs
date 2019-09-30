@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
 
       // CTCT cutfill interface: CompactionCellController (api/v2/patches) doesn't contain a projectId/Uid
       // Are there any ramifications of bypassing this requirement here? todoJeannie
-      if (string.Compare(actionContext.ActionDescriptor.DisplayName, "GetSubGridPatchesNew", StringComparison.OrdinalIgnoreCase) > 0)
+      if (actionContext.ActionDescriptor.DisplayName != null && actionContext.ActionDescriptor.DisplayName.Contains("GetSubGridPatchesNew"))
         return;
 
       // Identify any query parameter called 'request'.

@@ -107,7 +107,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="patchSize">Number of cell subgrids horizontally/vertically in a square patch (each subgrid has 32 cells)</param>
     /// <param name="includeTimeOffsets">If set, includes the time when the cell was recorded as a value expressed as Unix UTC time.</param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
-    [HttpGet("api/v2/patches")]
+    [HttpGet("api/v2/patchesOrig")]
     public async Task<IActionResult> GetSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
     {
       Log.LogInformation($"GetSubGridPatches: {Request.QueryString}");
@@ -135,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2Executor>(LoggerFactory,
+        .Build<CompactionPatchV2OrigExecutor>(LoggerFactory,
 #if RAPTOR
           RaptorClient,
 #endif
