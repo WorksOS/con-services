@@ -133,8 +133,16 @@ namespace WebApiTests.Executors
       IEnumerable < Subscription > eSubs = _subscriptions.ToList();
       _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(_assetUid, It.IsAny<DateTime>())).ReturnsAsync(eSubs);
 
-      _projects[0].ProjectType = ProjectType.Standard;
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int[]>(), _timeOfLocation)).ReturnsAsync(_projects);
+      var projects = new List<Project>
+      {
+        new Project
+        {
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _assetOwningCustomerUid,
+          ProjectType = ProjectType.Standard
+        }
+      };
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.Standard }, _timeOfLocation)).ReturnsAsync(projects);
       
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, customerRepository, _projectRepo.Object, _subscriptionRepo.Object);
@@ -158,13 +166,13 @@ namespace WebApiTests.Executors
       _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(_assetUid, It.IsAny<DateTime>())).ReturnsAsync(eSubs);
 
       _projects[0].ProjectType = ProjectType.Standard;
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(),It.IsAny<int[]>(), _timeOfLocation)).ReturnsAsync(_projects);
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.Standard }, _timeOfLocation)).ReturnsAsync(_projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, customerRepository, _projectRepo.Object, _subscriptionRepo.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
 
-      ValidateResult(result, string.Empty, _assetUid, false, 3052);
+      ValidateResult(result, _projectUidToBeDiscovered, _assetUid, false, 0);
     }
 
     [TestMethod]
@@ -183,7 +191,7 @@ namespace WebApiTests.Executors
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
       _projects[0].ProjectType = ProjectType.ProjectMonitoring;
       _projects[0].SubscriptionUID = Guid.NewGuid().ToString();
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int[]>(), _timeOfLocation)).ReturnsAsync(_projects);
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
@@ -208,7 +216,7 @@ namespace WebApiTests.Executors
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
       _projects[0].ProjectType = ProjectType.ProjectMonitoring;
       _projects[0].SubscriptionUID = string.Empty;
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int[]>(), _timeOfLocation)).ReturnsAsync(_projects);
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
@@ -233,7 +241,7 @@ namespace WebApiTests.Executors
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
       _projects[0].ProjectType = ProjectType.LandFill;
       _projects[0].SubscriptionUID = Guid.NewGuid().ToString();
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int[]>(), _timeOfLocation)).ReturnsAsync(_projects);
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
@@ -258,7 +266,7 @@ namespace WebApiTests.Executors
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
       _projects[0].ProjectType = ProjectType.LandFill;
       _projects[0].SubscriptionUID = string.Empty;
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<int[]>(), _timeOfLocation)).ReturnsAsync(_projects);
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
@@ -283,22 +291,32 @@ namespace WebApiTests.Executors
       IEnumerable<Subscription> eSubs = _subscriptions.ToList();
       _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(_assetUid, It.IsAny<DateTime>())).ReturnsAsync(eSubs);
 
-      var projects = new List<Project>(1);
-      projects.Add(_projects[0]);
-      projects[0].ProjectType = ProjectType.Standard;
-      projects[0].ProjectUID = Guid.NewGuid().ToString();
-      _projectRepo.Setup(d => d.GetIntersectingProjects(It.Is<string>(s => s.Contains(_assetOwningCustomerUid)), It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.Standard }, _timeOfLocation)).ReturnsAsync(projects);
+     var projects = new List<Project>
+      {
+        new Project
+        {
+          ProjectUID = Guid.NewGuid().ToString(),
+          CustomerUID = _assetOwningCustomerUid,
+          ProjectType = ProjectType.Standard
+        }
+      };
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.Standard }, _timeOfLocation)).ReturnsAsync(projects);
 
       // tccOrg, PMSub and PM project
       var customerTccOrg = new CustomerTccOrg() { CustomerUID = _tccOwningCustomerUid };
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
 
-      var projectsPM = new List<Project>(1);
-      projectsPM.Add(_projects[0]);
-      projectsPM[0].ProjectType = ProjectType.ProjectMonitoring;
-      projectsPM[0].ProjectUID = Guid.NewGuid().ToString();
-      projectsPM[0].SubscriptionUID = Guid.NewGuid().ToString();
-      _projectRepo.Setup(d => d.GetIntersectingProjects(It.Is<string>(s => s.Contains(_tccOwningCustomerUid)), It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projectsPM);
+      var projectsPM = new List<Project>
+      {
+        new Project
+        {
+          ProjectUID = Guid.NewGuid().ToString(),
+          CustomerUID = _tccOwningCustomerUid,
+          ProjectType = ProjectType.ProjectMonitoring,
+          SubscriptionUID = Guid.NewGuid().ToString()
+        }
+      };
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projectsPM);
 
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(

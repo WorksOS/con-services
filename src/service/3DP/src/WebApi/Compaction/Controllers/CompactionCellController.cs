@@ -109,9 +109,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="includeTimeOffsets">If set, includes the time when the cell was recorded as a value expressed as Unix UTC time.</param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
     [HttpGet("api/v2/patchesOrig")]
-    public async Task<IActionResult> GetSubGridPatchesOrig(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
+    public async Task<IActionResult> OrigSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
     {
-      Log.LogInformation($"GetSubGridPatchesOrig: {Request.QueryString}");
+      Log.LogInformation($"OrigSubGridPatches: {Request.QueryString}");
 
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = GetCompactionFilter(projectUid, filterUid);
