@@ -59,6 +59,7 @@
       DynamicAddwithOffset("More than 1 project meets the time/location/subscription requirements", 49);
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
       DynamicAddwithOffset("Must contain a EC520 serial number", 51);
+      DynamicAddwithOffset("Asset found, but has no valid subscriptions", 52);
     }
 
     /// <summary>

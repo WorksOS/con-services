@@ -111,6 +111,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (!potentialProjects.Any())
       {
+        // with CTCT we allow assetCustomerUid LF/PM sub for landfill/pm projects
+        if (string.IsNullOrEmpty(tccCustomerUid) && !string.IsNullOrEmpty(assetOwningCustomerUid) && !assetSubs.Any())
+          return ProjectUidHelper.FormatResult(String.Empty, assetUid, false, 52);
+
         return ProjectUidHelper.FormatResult(String.Empty, assetUid, false, 48);
       }
 
@@ -136,15 +140,29 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       var potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 
+      // todoJeannie need to check assetSubs after this somehow...
       if (!string.IsNullOrEmpty(assetOwningCustomerUid) ) 
         potentialProjects.AddRange((await dataRepository.GetIntersectingProjects(assetOwningCustomerUid,
           request.Latitude, request.Longitude, new[] { (int)ProjectType.Standard }, request.TimeOfPosition)));
 
+      if (!string.IsNullOrEmpty(assetOwningCustomerUid))
+        potentialProjects.AddRange((await dataRepository.GetIntersectingProjects(assetOwningCustomerUid,
+          request.Latitude, request.Longitude, new[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill },
+          request.TimeOfPosition)));
+
+
+      // in case asset owner and tccOrg resolve to same customer, don't add project twice
       if (!string.IsNullOrEmpty(tccCustomerUid))
-        potentialProjects.AddRange(
-          (await dataRepository.GetIntersectingProjects(tccCustomerUid, request.Latitude,
+      {
+        var projects = await dataRepository.GetIntersectingProjects(tccCustomerUid, request.Latitude,
             request.Longitude, new[] {(int) ProjectType.ProjectMonitoring, (int) ProjectType.LandFill},
-            request.TimeOfPosition)));
+            request.TimeOfPosition);
+        foreach (var project in projects)
+        {
+          if (!potentialProjects.Any(p => p.ProjectUID == project.ProjectUID))
+            potentialProjects.Add(project);
+        }
+      }
 
       return potentialProjects;
     }

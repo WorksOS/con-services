@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     ///    For TFA, these are 3k based 
     ///    Message is the english verion of any error
     /// </summary>
-    public GetProjectAndAssetUidsResult(string projectUid, string assetUid, bool hasValidSub, int uniqueCode = 0, string messageDetail = null)
+    public GetProjectAndAssetUidsResult(string projectUid, string assetUid, bool hasValidSub, int uniqueCode = 0, string messageDetail = "success")
     {
       ProjectUid = projectUid;
       AssetUid = assetUid;

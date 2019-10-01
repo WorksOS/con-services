@@ -20,12 +20,12 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class CompactionPatchV2OrigExecutor : RequestExecutorContainer
+  public class CompactionPatchV2Executor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public CompactionPatchV2OrigExecutor()
+    public CompactionPatchV2Executor()
     {
       ProcessErrorCodes();
     }
@@ -108,7 +108,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           : CreateNullPatchReturnedResult();
       }
 
-      throw CreateServiceException<CompactionPatchV2OrigExecutor>((int)raptorResult);
+      throw CreateServiceException<CompactionPatchV2Executor>((int)raptorResult);
     }
 #endif
     protected sealed override void ProcessErrorCodes()
@@ -126,6 +126,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         // else -1
         var totalPatchesRequired = reader.ReadInt32();  
         var numSubgridsInPatch = reader.ReadInt32(); // actual count in this patch
+        var numSubgridsInResult = numSubgridsInPatch; // actual count returned
         double cellSize = reader.ReadDouble();
 
         var subgrids = new PatchSubgridOriginProtobufResult[numSubgridsInPatch];
@@ -140,6 +141,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
           if (isNull)
           {
+            --numSubgridsInResult;
             continue;
           }
 
@@ -232,7 +234,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         }
 
         return PatchSubgridsProtobufResult.Create(cellSize,
-          numSubgridsInPatch,
+          numSubgridsInResult, // actual number is less those where all null (if (isNull) above)
           totalPatchesRequired,
           subgrids);
       }

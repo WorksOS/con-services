@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
     public async Task<GetProjectAndAssetUidsResult> GetProjectUid(GetProjectAndAssetUidsRequest tfaRequest)
     {
-      return await _tagFileAuthProjectV2Proxy.GetProjectAndAssetUids(tfaRequest); 
+      return await _tagFileAuthProjectV2Proxy.GetProjectAndAssetUidsCTCT(tfaRequest); 
     }
   }
 }

@@ -11,6 +11,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -108,9 +109,9 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// <param name="includeTimeOffsets">If set, includes the time when the cell was recorded as a value expressed as Unix UTC time.</param>
     /// <returns>Returns a highly efficient response stream of patch information (using Protobuf protocol).</returns>
     [HttpGet("api/v2/patchesOrig")]
-    public async Task<IActionResult> GetSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
+    public async Task<IActionResult> GetSubGridPatchesOrig(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
     {
-      Log.LogInformation($"GetSubGridPatches: {Request.QueryString}");
+      Log.LogInformation($"GetSubGridPatchesOrig: {Request.QueryString}");
 
       var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
       var filter = GetCompactionFilter(projectUid, filterUid);
@@ -135,7 +136,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2OrigExecutor>(LoggerFactory,
+        .Build<CompactionPatchV2Executor>(LoggerFactory,
 #if RAPTOR
           RaptorClient,
 #endif
@@ -146,23 +147,25 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     }
 
     /// <summary>
-    /// Gets the subgrid patches for a given project. Maybe be filtered with a polygon grid.
+    /// Gets the subgrid patches for a given project. 
     /// </summary>
     /// <remarks>
     /// This endpoint is expected to be used by machine based devices requesting raw data and deliberately
     /// returns a lean response object to minimize the response size.
     /// The response DTOs are decorated for use with Protobuf-net.
     /// </remarks>
-    [HttpGet("api/v2/patchesNew")]
-    //public async Task<IActionResult> GetSubGridPatchesNew([FromBody] PatchesRequest patchesRequest)
-    public async Task<IActionResult> GetSubGridPatchesNew(string ecSerial, string radioSerial, string tccOrgUid,
+    [HttpGet("api/v2/patches")]
+    public async Task<IActionResult> GetSubGridPatches(string ecSerial, string radioSerial, string tccOrgUid,
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY )
     {
       var patchesRequest = new PatchesRequest(ecSerial, radioSerial, tccOrgUid, machineLatitude, machineLongitude, 
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
-      Log.LogInformation($"{nameof(GetSubGridPatchesNew)}: {JsonConvert.SerializeObject(patchesRequest)}");
-
+      Log.LogInformation($"{nameof(GetSubGridPatches)}: {JsonConvert.SerializeObject(patchesRequest)}");
+      
+      // todoJeannie temporary to look into the DID info available.
+      Log.LogDebug($"{nameof(GetSubGridPatches)}: customHeaders {CustomHeaders.LogHeaders()}");
+      
       patchesRequest.Validate();
 
       var requestPatchId = 0;
@@ -178,16 +181,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectProxy);
       var tfaResult = await tfaHelper.GetProjectUid(tfaRequest);
 
-      if (tfaResult?.Code != 0)
-        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-          $"unable to identify a unique project. Error code: {tfaResult?.Code}")); // todoJeannie get error strings 
+      if (tfaResult?.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid))
+      {
+        // todoJeannie get error strings
+        var errorMessage = $"unable to identify a unique project. Error code: {tfaResult?.Code} ProjectUid: {tfaResult?.ProjectUid}";
+        Log.LogInformation(errorMessage);
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
+      }
 
       // todoJeannie rules to be determined if returns a projectUid but HasValidSub = false
-      Log.LogDebug($"{nameof(GetSubGridPatchesNew)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
+      Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
       var projectUid = Guid.Parse(tfaResult.ProjectUid);
       var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      Log.LogInformation($"{nameof(GetSubGridPatchesNew)}: tfaResult: {JsonConvert.SerializeObject(tfaResult)} projectId: {projectId}");
+      Log.LogDebug($"{nameof(GetSubGridPatches)}: projectId: {projectId}");
 
       // this gets excluded SS but needs UserId (which will not be avail via CTCT) // todoJeannie
       var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);
@@ -212,7 +219,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2ExecutorNew>(LoggerFactory,
+        .Build<CompactionPatchV2Executor>(LoggerFactory,
 #if RAPTOR
           RaptorClient,
 #endif
