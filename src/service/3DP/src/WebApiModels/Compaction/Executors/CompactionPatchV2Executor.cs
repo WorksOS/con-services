@@ -17,6 +17,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using System.Collections.Generic;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -129,7 +130,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var numSubgridsInResult = numSubgridsInPatch; // actual count returned
         double cellSize = reader.ReadDouble();
 
-        var subgrids = new PatchSubgridOriginProtobufResult[numSubgridsInPatch];
+        var subgrids = new List<PatchSubgridOriginProtobufResult>();
 
         for (var i = 0; i < numSubgridsInPatch; i++)
         {
@@ -230,13 +231,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             cells[j] = PatchCellHeightResult.Create(elevationOffsetDelta, includeTimeOffsets ? time : uint.MaxValue);
           }
 
-          subgrids[i] = PatchSubgridOriginProtobufResult.Create(subgridOriginX, subgridOriginY, elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, cells);
+          subgrids.Add(PatchSubgridOriginProtobufResult.Create(subgridOriginX, subgridOriginY, elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, cells));
         }
 
+        log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} numSubgridsInPatch: {numSubgridsInPatch} numSubgridsInResult: {numSubgridsInResult} subgridsCount: {subgrids.Count}");
         return PatchSubgridsProtobufResult.Create(cellSize,
           numSubgridsInResult, // actual number is less those where all null (if (isNull) above)
           totalPatchesRequired,
-          subgrids);
+          subgrids.ToArray());
       }
     }
 

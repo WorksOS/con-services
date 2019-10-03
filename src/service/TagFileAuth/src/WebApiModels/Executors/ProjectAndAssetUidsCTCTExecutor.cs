@@ -36,10 +36,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     {
       var request = item as GetProjectAndAssetUidsRequest;
       if (request == null)
-      {
         throw new ServiceException(HttpStatusCode.BadRequest,
           ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, ContractExecutionStatesEnum.SerializationError));
-      }
       
       var assetUid = string.Empty;
       var assetSubs = new List<Subscriptions>();
@@ -50,7 +48,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.RadioSerial))
       {
         var assetResult = await ProjectUidHelper.GetSNMAsset(log, dataRepository, request.RadioSerial, request.DeviceType, true);
-
         if (!string.IsNullOrEmpty(assetResult.Item1))
         {
           assetUid = assetResult.Item1;
@@ -65,7 +62,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (assetSubs.Count == 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         var assetResult = await ProjectUidHelper.GetEMAsset(log, dataRepository, request.Ec520Serial, (int) DeviceTypeEnum.EC520, true);
-
         if (!string.IsNullOrEmpty(assetResult.Item1))
         {
           assetUid = assetResult.Item1;
@@ -78,36 +74,29 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           return ProjectUidHelper.FormatResult(String.Empty, string.Empty, false, 33);
       }
 
-      return await HandleCTCTCutFill(request, assetUid, assetOwningCustomerUid, assetSubs);
+      return await LocateProjectsInProximity(request, assetUid, assetOwningCustomerUid, assetSubs);
     }
 
     /// <summary>
     /// CTCT cut/fill doesn't necessarily REQUIRE a subscription, or of the type required for 3dp tagFiles
-    ///    current thinking is that
-    ///          1) if there is no traditional sub, they may get cutfill for surveyed surfaces only
-    ///          2) if there is a traditional sub they get production data as well
-    ///          3) there may be a completely new type of subscription, specific to CTCT cutfill ...
     /// Must be able to identify one or other customer for a) radioSerial b) EM520 c) tccOrgUid
     /// </summary>
-    private async Task<GetProjectAndAssetUidsResult> HandleCTCTCutFill(GetProjectAndAssetUidsRequest request,
+    private async Task<GetProjectAndAssetUidsResult> LocateProjectsInProximity(GetProjectAndAssetUidsRequest request,
       string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)
     {
       string tccCustomerUid = null;
       if (!string.IsNullOrEmpty(request.TccOrgUid))
       {
         var customerTccOrg = await dataRepository.LoadCustomerByTccOrgId(request.TccOrgUid);
-        log.LogDebug($"{nameof(HandleCTCTCutFill)}: Loaded CustomerByTccOrgId? {JsonConvert.SerializeObject(customerTccOrg)}");
+        log.LogDebug($"{nameof(LocateProjectsInProximity)}: Loaded CustomerByTccOrgId? {JsonConvert.SerializeObject(customerTccOrg)}");
         tccCustomerUid = customerTccOrg?.CustomerUID ?? string.Empty;
       }
 
       if (string.IsNullOrEmpty(tccCustomerUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
-      {
         return ProjectUidHelper.FormatResult(String.Empty, assetUid, false, 47);
-      }
 
-      var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, assetSubs, tccCustomerUid, request);
-      log.LogDebug(
-        $"{nameof(HandleCTCTCutFill)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
+      var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, tccCustomerUid, request);
+      log.LogDebug($"{nameof(LocateProjectsInProximity)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
       {
@@ -119,14 +108,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       if (potentialProjects.Count > 1)
-      {
         return ProjectUidHelper.FormatResult(String.Empty, assetUid, true, 49);
-      }
 
-      var hasValidSub = ((potentialProjects[0].ProjectType == ProjectType.Standard && assetSubs.Any())
-                         || (potentialProjects[0].ProjectType != ProjectType.Standard && !string.IsNullOrEmpty(potentialProjects[0].SubscriptionUID))
-        );
-      return ProjectUidHelper.FormatResult(potentialProjects[0].ProjectUID, assetUid, hasValidSub);
+      return ProjectUidHelper.FormatResult(
+        potentialProjects[0].ProjectUID, assetUid,
+        ((potentialProjects[0].ProjectType == ProjectType.Standard && assetSubs.Any())
+          || (potentialProjects[0].ProjectType != ProjectType.Standard && !string.IsNullOrEmpty(potentialProjects[0].SubscriptionUID))));
     }
 
     /// <summary>
@@ -135,12 +122,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// CTCT cutfill doesn't necessarily need a traditional tagfile sub
     /// </summary>
     private async Task<List<Project.Abstractions.Models.DatabaseModels.Project>> GetPotentialProjects
-    (string assetOwningCustomerUid, List<Subscriptions> assetSubs, string tccCustomerUid,
-      GetProjectAndAssetUidsRequest request)
+      (string assetOwningCustomerUid, string tccCustomerUid, GetProjectAndAssetUidsRequest request)
     {
       var potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 
-      // todoJeannie need to check assetSubs after this somehow...
       if (!string.IsNullOrEmpty(assetOwningCustomerUid) ) 
         potentialProjects.AddRange((await dataRepository.GetIntersectingProjects(assetOwningCustomerUid,
           request.Latitude, request.Longitude, new[] { (int)ProjectType.Standard }, request.TimeOfPosition)));

@@ -177,31 +177,31 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var tfaRequest = new GetProjectAndAssetUidsRequest(null,
         (int) DeviceTypeEnum.SNM940, patchesRequest.RadioSerial, patchesRequest.ECSerial,
         patchesRequest.TccOrgUid, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude, DateTime.UtcNow);
-      // should I use the old CCT one or new TRex (this) one? // todoJeannie
       var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectProxy);
       var tfaResult = await tfaHelper.GetProjectUid(tfaRequest);
 
       if (tfaResult?.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid))
       {
-        // todoJeannie get error strings
+        // todoJeannie get list of error strings for CTCT
         var errorMessage = $"unable to identify a unique project. Error code: {tfaResult?.Code} ProjectUid: {tfaResult?.ProjectUid}";
         Log.LogInformation(errorMessage);
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
       }
 
-      // todoJeannie rules to be determined if returns a projectUid but HasValidSub = false
+      // todoJeannie rules to be determined if returns a projectUid but HasValidSub = false. 
+      //       e.g. Can Raptor/TRex return only ground from surveyedSurfaces, and NOT productionData?
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
       var projectUid = Guid.Parse(tfaResult.ProjectUid);
       var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      Log.LogDebug($"{nameof(GetSubGridPatches)}: projectId: {projectId}");
 
-      // this gets excluded SS but needs UserId (which will not be avail via CTCT) // todoJeannie
+      // CTCT endpoint probably (todoJeannie?) has no UserId so won't get any excludedSSs.
       var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);
       var projectSettings = GetProjectSettingsTargets(projectUid);
       await Task.WhenAll(filter, projectSettings);
 
       var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
+      Log.LogDebug($"{nameof(GetSubGridPatches)}: projectId: {projectId.Result} filter: {JsonConvert.SerializeObject(filter)} projectSettings: {JsonConvert.SerializeObject(projectSettings)} liftSettings: {JsonConvert.SerializeObject(liftSettings)}");
 
       var patchRequest = new PatchRequest(
         projectId.Result,
@@ -226,6 +226,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
         .ProcessAsync(patchRequest));
 
+      // todoJeannie get list of error strings for CTCT
       return Ok(v2PatchRequestResponse);
     }
 

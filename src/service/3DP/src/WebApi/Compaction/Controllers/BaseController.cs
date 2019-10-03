@@ -382,7 +382,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     {
       var filterResult = await GetCompactionFilter(projectUid, null, false);
 
-      // todoJeannie no UserId so may be null. How to get SS?
       if (filterResult == null)
         filterResult = new FilterResult();
       filterResult.PolygonGrid = new List<Point>
