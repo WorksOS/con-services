@@ -22,14 +22,15 @@ namespace VSS.TRex.Analytics.CMVChangeStatistics
       Counts = argument.CMVChangeDetailsDataValues != null ? new long[argument.CMVChangeDetailsDataValues.Length] : null
     };
 
-    public override AnalyticsComputor ConstructComputor(CMVChangeStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor()
+    public override AnalyticsComputor ConstructComputor(CMVChangeStatisticsArgument argument, AggregatorBase aggregator) => new AnalyticsComputor
     {
       RequestDescriptor = RequestDescriptor,
       SiteModel = SiteModel,
       Aggregator = aggregator,
       Filters = argument.Filters,
       IncludeSurveyedSurfaces = true,
-      RequestedGridDataType = GridDataType.CCV
+      RequestedGridDataType = GridDataType.CCVPercentChangeIgnoredTopNullValue,
+      LiftParams = argument.LiftParams
     };
 
     public override void ReadOutResults(AggregatorBase aggregator, CMVChangeStatisticsResponse response)

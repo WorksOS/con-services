@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using Apache.Ignite.Core;
+using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -13,6 +17,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
+using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
@@ -36,7 +41,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         projectUid, filter, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -62,7 +67,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, null, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
@@ -89,14 +94,18 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, filterResult, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
+
+      // Mock the CSV export request functionality to return a null CSV export reponse to stimulate tyhe desired internal processing error
+      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<CSVExportRequestComputeFunc>(), It.IsAny<CSVExportRequestArgument>(), It.IsAny<CancellationToken>())).Returns((CSVExportRequestComputeFunc func, CSVExportRequestArgument argument, CancellationToken token) => Task.FromResult<CSVExportRequestResponse>(null));
 
       var executor = RequestExecutorContainer
         .Build<CSVExportExecutor>(DIContext.Obtain<IConfigurationStore>(),
@@ -123,14 +132,18 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         contributingMachines, null, ElevationType.First, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var request = new CompactionVetaExportRequest(
         siteModel.ID, filterResult, fileName,
-        coordType, outputType, userPreferences, machineNames);
+        coordType, outputType, userPreferences, machineNames, null, null);
       request.Validate();
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
+
+      // Mock the CSV export request functionality to return a null CSV export reponse to stimulate tyhe desired internal processing error
+      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<CSVExportRequestComputeFunc>(), It.IsAny<CSVExportRequestArgument>(), It.IsAny<CancellationToken>())).Returns((CSVExportRequestComputeFunc func, CSVExportRequestArgument argument, CancellationToken token) => Task.FromResult<CSVExportRequestResponse>(null));
 
       var executor = RequestExecutorContainer
         .Build<CSVExportExecutor>(DIContext.Obtain<IConfigurationStore>(),

@@ -21,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\service\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\service\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\service\Filter\Clients\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj" />
   </ItemGroup>

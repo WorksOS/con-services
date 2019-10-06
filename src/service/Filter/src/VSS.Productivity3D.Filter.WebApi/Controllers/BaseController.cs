@@ -6,9 +6,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
@@ -24,14 +23,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     protected readonly IProjectProxy ProjectProxy;
 
     /// <summary>
-    /// Gets the service's Raptor interface controller.
+    /// Gets the service's TRex/Raptor interface controller.
     /// </summary>
-    protected readonly IRaptorProxy RaptorProxy;
-
-    /// <summary>
-    /// Gets the service's AssetResolverProxy interface controller.
-    /// </summary>
-    protected readonly IAssetResolverProxy AssetResolverProxy;
+    protected readonly IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
+    protected readonly IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
 
     /// <summary>
     /// Gets the service's configuration settings.
@@ -82,12 +77,12 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Gets the project data for the specified project
     /// </summary>
     protected Task<ProjectData> GetProject(string projectUid) => (User as FilterPrincipal)?.GetProject(projectUid);
- 
+
     /// <summary>
     /// Default constructor.
     /// </summary>
     protected BaseController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IKafka producer, string eventType)
+      IProjectProxy projectProxy, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction, IKafka producer, string eventType)
     {
       Logger = logger;
       Log = logger.CreateLogger<BaseController>();
@@ -95,8 +90,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       ConfigStore = configStore;
       ServiceExceptionHandler = serviceExceptionHandler;
       ProjectProxy = projectProxy;
-      RaptorProxy = raptorProxy;
-      AssetResolverProxy = assetResolverProxy;
+      Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
+      Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
       Producer = producer;
 
       if (!Producer.IsInitializedProducer)

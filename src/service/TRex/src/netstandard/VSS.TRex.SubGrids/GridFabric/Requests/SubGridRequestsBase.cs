@@ -139,7 +139,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         {
             Log.LogInformation($"Preparing argument with TRexNodeId = {TRexNodeId}");
 
-            arg = new TSubGridsRequestArgument()
+            arg = new TSubGridsRequestArgument
             {
                 ProjectID = SiteModelID,
                 RequestID = RequestID,

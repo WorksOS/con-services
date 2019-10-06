@@ -4,19 +4,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
 using VSS.MasterData.Project.WebAPI.Factories;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity.Push.Models.Notifications.Changes;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -26,7 +21,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// <summary>
   /// Project Settings controller, version 4.
   /// </summary>
-  public class ProjectSettingsV4Controller : BaseController
+  public class ProjectSettingsV4Controller : BaseController<ProjectSettingsV4Controller>
   {
     /// <summary>
     /// The request factory
@@ -39,13 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor
     /// </summary>
-    public ProjectSettingsV4Controller(ILoggerFactory loggerFactory, IConfigurationStore configStore,
-      IServiceExceptionHandler serviceExceptionHandler, IKafka producer,
-      IRaptorProxy raptorProxy, ISubscriptionProxy subscriptionProxy,
-      IProjectRepository projectRepo, ISubscriptionRepository subscriptionRepo,
-      IRequestFactory requestFactory, INotificationHubClient notificationHubClient
-      )
-      : base(loggerFactory, configStore, serviceExceptionHandler, producer, raptorProxy, projectRepo)
+    public ProjectSettingsV4Controller(IKafka producer, IConfigurationStore configStore, IRequestFactory requestFactory, INotificationHubClient notificationHubClient) : base (producer, configStore)
     {
       this.requestFactory = requestFactory;
       this.notificationHubClient = notificationHubClient;
@@ -85,9 +74,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectSettingsResult> UpsertProjectColors([FromBody]ProjectSettingsRequest request)
     {
       if (string.IsNullOrEmpty(request?.projectUid))
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
-      logger.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
       request.ProjectSettingsType = ProjectSettingsType.Colors;
 
@@ -98,17 +87,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpsertProjectSettingsExecutor>(loggerFactory, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders,
-            producer, kafkaTopicName,
-            raptorProxy, null, null, null, null,
-            projectRepo)
+          .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            customerUid, userId, headers: customHeaders,
+            producer: Producer, kafkaTopicName: KafkaTopicName,
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
       await NotifyChanges(userId, request.projectUid);
 
-      logger.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
+      Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
       return result;
     }
 
@@ -121,9 +109,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ProjectSettingsResult> UpsertProjectSettings([FromBody]ProjectSettingsRequest request)
     {
       if (string.IsNullOrEmpty(request?.projectUid))
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       LogCustomerDetails("UpsertProjectSettings", request?.projectUid);
-      logger.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"UpsertProjectSettings: {JsonConvert.SerializeObject(request)}");
 
       request.ProjectSettingsType = ProjectSettingsType.Targets;
 
@@ -134,24 +122,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpsertProjectSettingsExecutor>(loggerFactory, configStore, serviceExceptionHandler,
-            customerUid, userId, null, customHeaders,
-            producer, kafkaTopicName,
-            raptorProxy, null, null, null, null,
-            projectRepo)
+          .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            customerUid, userId, headers: customHeaders,
+            producer: Producer, kafkaTopicName: KafkaTopicName,
+            productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
       await NotifyChanges(userId, request.projectUid);
 
-      logger.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
+      Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(request), result);
       return result;
     }
 
     private async Task<ProjectSettingsResult> GetProjectSettingsForType(string projectUid, ProjectSettingsType settingsType)
     {
       if (string.IsNullOrEmpty(projectUid))
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       LogCustomerDetails("GetProjectSettings", projectUid);
 
       var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
@@ -161,15 +148,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var result = (await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<GetProjectSettingsExecutor>(loggerFactory, configStore, serviceExceptionHandler,
-            customerUid, userId, null, null,
-            null, null,
-            null, null, null, null, null,
-            projectRepo)
+          .Build<GetProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            customerUid, userId, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
 
-      logger.LogResult(this.ToString(), projectUid, result);
+      Logger.LogResult(this.ToString(), projectUid, result);
       return result;
     }
 

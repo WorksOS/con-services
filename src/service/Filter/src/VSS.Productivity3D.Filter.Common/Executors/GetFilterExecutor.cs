@@ -6,14 +6,13 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
@@ -25,9 +24,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetFilterExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
     { }
 
     /// <summary>
@@ -75,7 +76,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       }
 
 
-      await FilterJsonHelper.ParseFilterJson(request.ProjectData, filter, raptorProxy, assetResolverProxy, request.CustomHeaders);
+      await FilterJsonHelper.ParseFilterJson(request.ProjectData, filter, Productivity3dV2ProxyCompaction, request.CustomHeaders);
 
       return new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
     }

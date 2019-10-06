@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SubGridTrees.Client;

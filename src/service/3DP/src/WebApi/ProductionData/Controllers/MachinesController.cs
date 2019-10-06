@@ -17,6 +17,8 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -73,18 +75,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<MachineExecutionResult> GetMachinesOnProject([FromRoute] long projectId)
     {
       _log.LogInformation($"{nameof(GetMachinesOnProject)} Request. projectId: {projectId}");
-      
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
-      return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+      var response = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
+
+      _log.LogInformation($"{nameof(GetMachinesOnProject)} Response: {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
     /// <summary>
@@ -98,17 +102,19 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachinesOnProject)} Request. projectUid: {projectUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
-      return await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+      var response = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy, 
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
+
+      _log.LogInformation($"{nameof(GetMachinesOnProject)} Response: {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
     // GET: api/Machines
@@ -126,11 +132,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineOnProject)} Request. projectId: {projectId} machineId: {machineId}");
 
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
-      var result = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+      var response = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
@@ -138,9 +143,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
-      result?.FilterByMachineId(machineId);
+      _log.LogInformation($"{nameof(GetMachineOnProject)} Response: machineIdFilter {machineId} responsePreFilter {JsonConvert.SerializeObject(response)}");
+      response?.FilterByMachineId(machineId);
 
-      return result;
+      return response;
     }
 
     /// <summary>
@@ -156,12 +162,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<ContractExecutionResult> GetMachineOnProject([FromRoute] Guid projectUid, [FromRoute] long machineId)
     {
       _log.LogInformation($"{nameof(GetMachineOnProject)} Request. projectUid: {projectUid} machineId: {machineId}");
-      
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
-      var result = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+      var response = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
@@ -169,9 +174,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
-      result?.FilterByMachineId(machineId);
+      _log.LogInformation($"{nameof(GetMachineOnProject)} Response: machineIdFilter {machineId} responsePreFilter {JsonConvert.SerializeObject(response)}");
+      response?.FilterByMachineId(machineId);
 
-      return result;
+      return response;
     }
 
     /// <summary>
@@ -188,11 +194,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineOnProject)} Request. projectUid: {projectUid} machineUid: {machineUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
-      var result = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
+      var response = await RequestExecutorContainerFactory.Build<GetMachineIdsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
@@ -200,9 +205,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineExecutionResult;
 
-      result?.FilterByMachineUid(machineUid);
+      _log.LogInformation($"{nameof(GetMachineOnProject)} Response: machineUidFilter {machineUid} responsePreFilter {JsonConvert.SerializeObject(response)}");
+      response?.FilterByMachineUid(machineUid);
 
-      return result;
+      return response;
     }
 
     // GET: api/Machines/AssetOnDesignPeriods
@@ -215,12 +221,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v1/projects/{projectId}/machinedesigns")]
     [HttpGet]
-    public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] long projectId)
+    public async Task<MachineDesignsResult> GetMachineDesigns([FromRoute] long projectId)
     {
       _log.LogInformation($"{nameof(GetMachineDesigns)} Request. projectId: {projectId}");
 
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
@@ -230,7 +235,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
-      return CreateUniqueMachineDesignList(result);
+      var response = CreateUniqueMachineDesignList(result);
+
+      _log.LogInformation($"{nameof(GetMachineDesigns)} Response: {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
     // GET: api/Machines/AssetOnDesignPeriods
@@ -243,12 +251,11 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     [ProjectVerifier]
     [Route("api/v2/projects/{projectUid}/machinedesigns")]
     [HttpGet]
-    public async Task<MachineDesignsExecutionResult> GetMachineDesigns([FromRoute] Guid projectUid)
+    public async Task<MachineDesignsResult> GetMachineDesigns([FromRoute] Guid projectUid)
     {
       _log.LogInformation($"{nameof(GetMachineDesigns)} Request. projectUid: {projectUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignPeriodsExecutor>(_logger,
@@ -260,15 +267,17 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         .ProcessAsync(projectIds) as MachineDesignsExecutionResult;
 
       _log.LogDebug($"{nameof(GetMachineDesigns)} MachineDesignsExecutionResult: {result}");
-      return CreateUniqueMachineDesignList(result);
+      var response = CreateUniqueMachineDesignList(result);
+      _log.LogDebug($"{nameof(GetMachineDesigns)} Response: {response}");
+      return response;
     }
 
     /// <summary>
     /// Creates a unique list of all assetOnDesigns for all machines
     /// </summary>
-    private MachineDesignsExecutionResult CreateUniqueMachineDesignList(MachineDesignsExecutionResult result)
+    private MachineDesignsResult CreateUniqueMachineDesignList(MachineDesignsExecutionResult result)
     {
-      return new MachineDesignsExecutionResult(RemoveDuplicateMachineDesigns(result.AssetOnDesignPeriods));
+      return new MachineDesignsResult(RemoveDuplicateMachineDesigns(result.AssetOnDesignPeriods));
     }
 
     /// <summary>
@@ -280,8 +289,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     private List<AssetOnDesignPeriod> RemoveDuplicateMachineDesigns(List<AssetOnDesignPeriod> assetsOnDesignPeriods)
     {
-      // order by Uid. Gen3 assetsOnDesignPeriods won't have LegacyId
-      return assetsOnDesignPeriods.Distinct().OrderBy(d => d.OnMachineDesignId).ThenBy(n => n.OnMachineDesignName).ToList();}
+      // TRex won't have machineDesignId, but DesignName should be unique
+      return assetsOnDesignPeriods.Distinct().OrderBy(d => d.OnMachineDesignId).ThenBy(n => n.OnMachineDesignName).ToList();
+    }
 
     /// <summary>
     /// Gets On Machine assetOnDesigns by machine and date range for the selected project
@@ -299,8 +309,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineDesignByDateRangeDetails)} Request. projectUid: {projectUid} startUtc: {startUtc} endUtc: {endUtc}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
       ValidateDates(startUtc, endUtc, out var beginUtc, out var finishUtc);
@@ -331,7 +340,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
       // for this pairing to work, we need both executors to be using the same source: Raptor/TRex,
       //  otherwise there will be a mismatch of OnMachineDesignId v.s. Uid.
-      // For Gen3 assets, there will be no valid LegacyId. 
       var designDetailsList = new List<MachineDesignDetails>();
       if (machineResult != null && designsResult != null)
         foreach (var machine in machineResult.MachineStatuses)
@@ -340,24 +348,24 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
             designsResult.AssetOnDesignPeriods.Where(
               design =>
                 (
-                  design.MachineId == machine.AssetId
-                  // this test should eventually test Uids as follows,
-                  //     once tRex Guid and raptor Ids have been synchronized in test db
-                  //design.AssetUid.HasValue
-                  //  ? design.AssetUid == machine.AssetUid
-                  //  : design.MachineId == machine.AssetId
+                  design.AssetUid.HasValue
+                    ? design.AssetUid == machine.AssetUid
+                    : design.MachineId == machine.AssetId
+                 
                 ) &&
                 IsDateRangeOverlapping(design.StartDate, design.EndDate, beginUtc, finishUtc)).ToList();
 
           if (filteredDesigns.Count > 0)
           {
-            designDetailsList.Add(MachineDesignDetails.CreateMachineDesignDetails(
+            designDetailsList.Add(new MachineDesignDetails(
               machine.AssetId, machine.MachineName, machine.IsJohnDoe,
               RemoveDuplicateMachineDesigns(filteredDesigns).ToArray(), machine.AssetUid));
           }
         }
 
-      return new MachineDesignDetailsExecutionResult(designDetailsList);
+      var response = new MachineDesignDetailsExecutionResult(designDetailsList);
+      _log.LogInformation($"{nameof(GetMachineDesignByDateRangeDetails)} Response. {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
     /// <summary>
@@ -372,18 +380,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     public async Task<AssetOnDesignLayerPeriodsExecutionResult> GetMachineOnDesignLayerPeriods([FromRoute] long projectId)
     {
       _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriods)} Request. projectId: {projectId}");
-      
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
-      return await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
+      var response = await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
           configStore: _configStore, trexCompactionDataProxy: _trexCompactionDataProxy, assetResolverProxy: _assetResolverProxy,
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
+
+      _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriods)} Response. {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
     /// <summary>
@@ -399,11 +409,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineOnDesignLayerPeriods)} Request. projectUid: {projectUid}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
-      var result = await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
+      var response = await RequestExecutorContainerFactory.Build<GetAssetOnDesignLayerPeriodsExecutor>(_logger,
 #if RAPTOR
           _raptorClient,
 #endif
@@ -411,8 +420,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
           customHeaders: CustomHeaders, customerUid: CustomerUid)
         .ProcessAsync(projectIds) as AssetOnDesignLayerPeriodsExecutionResult;
 
-      _log.LogDebug($"{nameof(GetMachineOnDesignLayerPeriods)} AssetOnDesignLayerPeriodsExecutionResult: {JsonConvert.SerializeObject(result)}");
-      return result;
+      _log.LogDebug($"{nameof(GetMachineOnDesignLayerPeriods)} Response: {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
     /// <summary>
@@ -432,11 +441,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineLiftsByDateRange)} Request. projectId: {projectId} startUtc: {startUtc} endUtc: {endUtc}");
 
-      var projectUid = await ((RaptorPrincipal) User).GetProjectUid(projectId);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(projectId, await ((RaptorPrincipal)User).GetProjectUid(projectId));
       projectIds.Validate();
 
-      return await GetMachineLiftsWith(projectIds, startUtc, endUtc);
+      var response = await GetMachineLiftsWith(projectIds, startUtc, endUtc);
+
+      _log.LogDebug($"{nameof(GetMachineLiftsByDateRange)} Response: {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
     /// <summary>
@@ -456,15 +467,16 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     {
       _log.LogInformation($"{nameof(GetMachineLiftsByDateRange)} Request. projectUid: {projectUid} startUtc: {startUtc} endUtc: {endUtc}");
 
-      var projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var projectIds = new ProjectID(projectId, projectUid);
+      var projectIds = new ProjectIDs(await ((RaptorPrincipal)User).GetLegacyProjectId(projectUid), projectUid);
       projectIds.Validate();
 
-      return await GetMachineLiftsWith(projectIds, startUtc, endUtc);
+      var response =  await GetMachineLiftsWith(projectIds, startUtc, endUtc);
+
+      _log.LogDebug($"{nameof(GetMachineLiftsByDateRange)} Response: {JsonConvert.SerializeObject(response)}");
+      return response;
     }
 
-    private async Task<MachineLayerIdsExecutionResult> GetMachineLiftsWith(ProjectID projectIds, string startUtc,
-      string endUtc)
+    private async Task<MachineLayerIdsExecutionResult> GetMachineLiftsWith(ProjectIDs projectIds, string startUtc, string endUtc)
     {
       //Note: we use strings in the uri because the framework converts to local time although we are using UTC format.
       //Posts on the internet suggests using JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc

@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.ResultHandling
 {

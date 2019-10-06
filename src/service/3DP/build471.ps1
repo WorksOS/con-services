@@ -19,5 +19,4 @@ Copy-Item ./SetupWebAPI.ps1 $artifactsWorkingDir
 Copy-Item ./SetupAwsRoute.ps1 $artifactsWorkingDir
 Copy-Item ./Velociraptor.Config.Xml $artifactsWorkingDir
 Copy-Item ./web.config $artifactsWorkingDir
-Copy-Item ./log4netwindows.xml $artifactsWorkingDir/log4net.xml
 Set-Location $PSScriptRoot

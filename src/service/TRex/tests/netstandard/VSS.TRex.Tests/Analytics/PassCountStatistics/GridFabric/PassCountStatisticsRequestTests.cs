@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
@@ -70,7 +71,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryPassCountStatistics_EmptySiteModel_FullExtents_NoPassCountTargetOverride()
+    public async Task Test_SummaryPassCountStatistics_EmptySiteModel_FullExtents_NoPassCountTargetOverride()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -78,14 +79,14 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var operation = new PassCountStatisticsOperation();
 
-      var passCountSummaryResult = operation.Execute(SimplePassCountStatisticsArgument(siteModel, 0, 0));
+      var passCountSummaryResult = await operation.ExecuteAsync(SimplePassCountStatisticsArgument(siteModel, 0, 0));
 
       passCountSummaryResult.Should().NotBeNull();
       passCountSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void Test_SummaryPassCountStatistics_SiteModelWithSingleCell_FullExtents_NoPassCountTargetOverride()
+    public async Task Test_SummaryPassCountStatistics_SiteModelWithSingleCell_FullExtents_NoPassCountTargetOverride()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -93,7 +94,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       var siteModel = BuildModelForSingleCellPassCount(HEIGHT_INCREMENT_0_5);
       var operation = new PassCountStatisticsOperation();
 
-      var passCountSummaryResult = operation.Execute(SimplePassCountStatisticsArgument(siteModel, 0, 0));
+      var passCountSummaryResult = await operation.ExecuteAsync(SimplePassCountStatisticsArgument(siteModel, 0, 0));
 
       passCountSummaryResult.Should().NotBeNull();
       passCountSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -101,7 +102,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     }
 
     [Fact]
-    public void Test_SummaryPassCountStatistics_SiteModelWithSingleCell_FullExtents_NoPassCountTargetOverride_WithMachinePassCountTarget()
+    public async Task Test_SummaryPassCountStatistics_SiteModelWithSingleCell_FullExtents_NoPassCountTargetOverride_WithMachinePassCountTarget()
     {
       AddClusterComputeGridRouting();
       AddApplicationGridRouting();
@@ -111,7 +112,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 
       var operation = new PassCountStatisticsOperation();
 
-      var passCountSummaryResult = operation.Execute(SimplePassCountStatisticsArgument(siteModel, 0, 0));
+      var passCountSummaryResult = await operation.ExecuteAsync(SimplePassCountStatisticsArgument(siteModel, 0, 0));
 
       passCountSummaryResult.Should().NotBeNull();
       passCountSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -129,7 +130,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     [InlineData(3, 5, 0.0, 0.0, 100.0)]
     [InlineData(15, 20, 100.0, 0.0, 0.0)]
     [InlineData(5, 10, 0.0, 100.0, 0.0)]
-    public void Test_SummaryPassCountStatistics_SiteModelWithSingleCell_FullExtents_WithPassCountTargetOverrides
+    public async Task Test_SummaryPassCountStatistics_SiteModelWithSingleCell_FullExtents_WithPassCountTargetOverrides
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -138,7 +139,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       var siteModel = BuildModelForSingleCellPassCount(HEIGHT_INCREMENT_0_5);
       var operation = new PassCountStatisticsOperation();
 
-      var passCountSummaryResult = operation.Execute(SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget));
+      var passCountSummaryResult = await operation.ExecuteAsync(SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget));
 
       passCountSummaryResult.Should().NotBeNull();
       passCountSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -154,7 +155,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 
     [Theory]
     [InlineData(0, 0, 0.0, 0.0, 0.0)]
-    public void Test_DetailedPassCountStatistics_SiteModelWithSingleCell_FullExtents
+    public async Task Test_DetailedPassCountStatistics_SiteModelWithSingleCell_FullExtents
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove)
     {
       AddClusterComputeGridRouting();
@@ -165,7 +166,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 
       var arg = SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget);
       arg.PassCountDetailValues = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-      var passCountDetailResult = operation.Execute(arg);
+      var passCountDetailResult = await operation.ExecuteAsync(arg);
 
       passCountDetailResult.Should().NotBeNull();
 
@@ -194,7 +195,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     [InlineData(0, 0, 40.425531914893611, 22.391084093211752, 37.18338399189463, 342.29160000000007)]
     [InlineData(1, 3, 0.0, 62.816616008105377, 37.18338399189463, 342.29160000000007)]
     [InlineData(3, 5, 40.425531914893611, 59.574468085106382, 0.0, 342.29160000000007)]
-    public void Test_SummaryPassCountStatistics_SiteModelWithSingleTAGFile_FullExtents_WithPassCountTargetOverrides
+    public async Task Test_SummaryPassCountStatistics_SiteModelWithSingleTAGFile_FullExtents_WithPassCountTargetOverrides
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove, double totalArea)
     {
       AddClusterComputeGridRouting();
@@ -208,7 +209,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       var operation = new PassCountStatisticsOperation();
 
-      var passCountSummaryResult = operation.Execute(SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget));
+      var passCountSummaryResult = await operation.ExecuteAsync(SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget));
 
       passCountSummaryResult.Should().NotBeNull();
       passCountSummaryResult.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -227,7 +228,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
     [Theory]
     [InlineData(0, 0, 40.425531914893611, 22.391084093211752, 37.18338399189463, 342.29160000000007)]
     //[InlineData(0, 0, 25.540275049115913, 2.226588081204977, 72.2331368696791, 353.04240000000004)]
-    public void Test_DetailedPassCountStatistics_SiteModelWithSingleTAGFile_FullExtents
+    public async Task Test_DetailedPassCountStatistics_SiteModelWithSingleTAGFile_FullExtents
       (ushort minTarget, ushort maxTarget, double percentBelow, double percentWithin, double percentAbove, double totalArea)
     {
       AddClusterComputeGridRouting();
@@ -243,7 +244,7 @@ namespace VSS.TRex.Tests.Analytics.PassCountStatistics.GridFabric
 
       var arg = SimplePassCountStatisticsArgument(siteModel, minTarget, maxTarget);
       arg.PassCountDetailValues = new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
-      var passCountDetailResult = operation.Execute(arg);
+      var passCountDetailResult = await operation.ExecuteAsync(arg);
 
       passCountDetailResult.Should().NotBeNull();
 

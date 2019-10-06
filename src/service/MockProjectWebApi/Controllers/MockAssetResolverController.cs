@@ -1,26 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.AssetMgmt3D.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockAssetResolverController : Controller
+  public class MockAssetResolverController : BaseController
   {
+    public MockAssetResolverController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    { }
+
     [HttpPost("api/v1/assets/assetuids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
     public IActionResult GetMatchingAssets([FromBody] List<Guid> assetUids)
     {
-      Console.WriteLine($@"Get MockAssetResolverList for supplied Guids: {assetUids}");
-      return Json(new AssetDisplayModel {assetIdentifiers = new List<KeyValuePair<Guid, long>>()});
+      Logger.LogInformation($@"Get MockAssetResolverList for supplied Guids: {assetUids}");
+
+      return Ok(new AssetDisplayModel {assetIdentifiers = new List<KeyValuePair<Guid, long>>()});
     }
 
     [HttpPost("api/v1/assets/assetids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
     public IActionResult GetMatchingAssets([FromBody] List<long> assetIds)
     {
-      Console.WriteLine($@"Get MockAssetResolverList for supplied longs: {assetIds}");
-      return Json(new AssetDisplayModel { assetIdentifiers = new List<KeyValuePair<Guid, long>>() });
+      Logger.LogInformation($@"Get MockAssetResolverList for supplied longs: {assetIds}");
+
+      return Ok(new AssetDisplayModel { assetIdentifiers = new List<KeyValuePair<Guid, long>>() });
     }
 
     private List<KeyValuePair<Guid, long>> GoldenDataMachineList(List<long> assetIds)

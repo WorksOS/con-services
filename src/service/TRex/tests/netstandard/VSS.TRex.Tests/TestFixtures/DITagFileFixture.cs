@@ -10,6 +10,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Factories;
 using VSS.TRex.GridFabric.Interfaces;
@@ -83,27 +84,27 @@ namespace VSS.TRex.Tests.TestFixtures
         /// Injected standard storage proxy cache factories
         /////////////////////////////////////////////////////
         
-        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]>>>
-          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability, streamType)), new SubGridSpatialAffinityKeyEqualityComparer())))
+        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>>>
+          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SpatialCacheName(mutability, streamType)), new SubGridSpatialAffinityKeyEqualityComparer())))
 
-        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, byte[]>>>
-          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new NonSpatialAffinityKeyEqualityComparer())))
+        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>
+          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new NonSpatialAffinityKeyEqualityComparer())))
 
-        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]>>>
-          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISiteModelMachineAffinityKey, byte[]>(ignite?.GetCache<ISiteModelMachineAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new SiteModelMachineAffinityKeyEqualityComparer())))
+        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>>>
+          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new SiteModelMachineAffinityKeyEqualityComparer())))
 
         /////////////////////////////////////////////////////
         // Injected transacted storage proxy cache factories
         /////////////////////////////////////////////////////
 
-        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, byte[]>>>
-          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, byte[]>(ignite?.GetCache<ISubGridSpatialAffinityKey, byte[]>(TRexCaches.SpatialCacheName(mutability, streamType)), new SubGridSpatialAffinityKeyEqualityComparer())))
+        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>>>
+          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SpatialCacheName(mutability, streamType)), new SubGridSpatialAffinityKeyEqualityComparer())))
 
-        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, byte[]>>>
-          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, byte[]>(ignite?.GetCache<INonSpatialAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new NonSpatialAffinityKeyEqualityComparer())))
+        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>
+          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new NonSpatialAffinityKeyEqualityComparer())))
 
-        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISiteModelMachineAffinityKey, byte[]>>>
-          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISiteModelMachineAffinityKey, byte[]>(ignite?.GetCache<ISiteModelMachineAffinityKey, byte[]>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new SiteModelMachineAffinityKeyEqualityComparer())))
+        .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>>>
+          (factory => (ignite, mutability, streamType) => new StorageProxyCacheTransacted_TestHarness<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(ignite?.GetCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.NonSpatialCacheName(mutability, streamType)), new SiteModelMachineAffinityKeyEqualityComparer())))
 
         .Build();
 

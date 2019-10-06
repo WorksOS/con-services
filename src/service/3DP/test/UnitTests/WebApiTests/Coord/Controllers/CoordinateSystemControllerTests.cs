@@ -7,13 +7,13 @@ using Moq;
 using VLPDDecls;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Coords;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.WebApi.Models.Coord.Executors;
 
 namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
@@ -238,7 +238,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
           {
                 new TwoDConversionCoordinate(381043.710, 807625.050),
                 new TwoDConversionCoordinate(381821.617, 807359.462),
-                new TwoDConversionCoordinate(380781.358, 806969.174),
+                new TwoDConversionCoordinate(380781.358, 806969.174)
           });
 
       // Create the mock PDSClient with successful result...
@@ -278,7 +278,7 @@ namespace VSS.Productivity3D.WebApiTests.Coord.Controllers
         {
           new TwoDConversionCoordinate(381043.710, 807625.050),
           new TwoDConversionCoordinate(381821.617, 807359.462),
-          new TwoDConversionCoordinate(380781.358, 806969.174),
+          new TwoDConversionCoordinate(380781.358, 806969.174)
         });
 
       // Create the mock PDSClient with successful result...

@@ -7,6 +7,7 @@ using VSS.TRex.Caching;
 using VSS.ConfigurationStore;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.CoordinateSystems;
@@ -131,14 +132,14 @@ namespace VSS.TRex.Server.PSNode
         //.Add(x => x.AddSingleton<Func<IProfileCell>>(() => new ProfileCell()))
 
         // Register the factory for the CellProfileAnalyzer for detailed cell pass/lift cell profiles
-        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, IOverrideParameters, ICellProfileAnalyzer<ProfileCell>>>(
-          factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides) 
-            => new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides)))
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<ProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams) 
+            => new CellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams)))
 
         // Register the factory for the CellProfileAnalyzer for summary volume cell profiles
-        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
-          factory => (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType) 
-            =>  new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType)))
+        .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
+          factory => (siteModel, pDExistenceMap, filterSet, referenceDesignWrapper, cellLiftBuilder, volumeComputationType, overrides, liftParams) 
+            =>  new SummaryVolumesCellProfileAnalyzer(siteModel, pDExistenceMap, filterSet, referenceDesignWrapper, cellLiftBuilder, volumeComputationType, overrides, liftParams)))
 
         // Register the factory for surface elevation requests
         .Build()
@@ -202,26 +203,42 @@ namespace VSS.TRex.Server.PSNode
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
-      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SpatialMemoryCacheHeartBeatLogger());      
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SpatialMemoryCacheHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
-      DependencyInjection();
-
-      var cancelTokenSource = new CancellationTokenSource();
-      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      try
       {
-        Console.WriteLine("Exiting");
-        DIContext.Obtain<ITRexGridFactory>().StopGrids();
-        cancelTokenSource.Cancel();
-      };
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
 
-      DoServiceInitialisation();
+        var cancelTokenSource = new CancellationTokenSource();
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+          Console.WriteLine("Exiting");
+          DIContext.Obtain<ITRexGridFactory>().StopGrids();
+          cancelTokenSource.Cancel();
+        };
 
-      await Task.Delay(-1, cancelTokenSource.Token);
-      return 0;
+        DoServiceInitialisation();
+
+        await Task.Delay(-1, cancelTokenSource.Token);
+        return 0;
+      }
+      catch (TaskCanceledException)
+      {
+        // Don't care as this is thrown by Task.Delay()
+        Console.WriteLine("Process exit via TaskCanceledException (SIGTERM)");
+        return 0;
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+        return -1;
+      }
     }
   }
 }

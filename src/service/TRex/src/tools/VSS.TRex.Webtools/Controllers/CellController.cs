@@ -26,7 +26,7 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] double y)
     { 
       var cellDatumRequest = new CellDatumRequest_ApplicationService();
-      var response = cellDatumRequest.Execute(new CellDatumRequestArgument_ApplicationService
+      var response = await cellDatumRequest.ExecuteAsync(new CellDatumRequestArgument_ApplicationService
       {
         ProjectID = projectUid,
         Filters = new FilterSet(new CombinedFilter()),

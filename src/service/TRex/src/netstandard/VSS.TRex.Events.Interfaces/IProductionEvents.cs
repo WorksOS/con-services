@@ -39,6 +39,8 @@ namespace VSS.TRex.Events.Interfaces
 
     DateTime FirstStateDate();
     DateTime LastStateDate();
+
+    string EventChangeListPersistantFileName();
   }
 
   public interface IProductionEvents<T> : IProductionEvents
@@ -48,7 +50,6 @@ namespace VSS.TRex.Events.Interfaces
     T GetValueAtDate(DateTime eventDate, out int stateChangeIndex, T defaultValue);
 
     T LastStateValue(T defaultValue = default(T));
-    DateTime LastStateDate();
 
     void GetStateAtIndex(int index, out DateTime dateTime, out T state);
 
@@ -57,6 +58,10 @@ namespace VSS.TRex.Events.Interfaces
     void PutValueAtDate(DateTime dateTime, T state);
 
     void PutValuesAtDates(IEnumerable<(DateTime, T)> events);
+
+    void RemoveValueAtDate(DateTime dateTime);
+
+    void Clear();
 
     /// <summary>
     /// Determines the index of the event whose date immediately precedes the given eventData

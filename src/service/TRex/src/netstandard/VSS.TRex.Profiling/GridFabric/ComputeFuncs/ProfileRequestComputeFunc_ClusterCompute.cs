@@ -1,5 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Profiling.Executors;
 using VSS.TRex.Profiling.GridFabric.Arguments;
@@ -22,11 +23,11 @@ namespace VSS.TRex.Profiling.GridFabric.ComputeFuncs
       try
       {
         var executor = new ComputeProfileExecutor_ClusterCompute<T>(arg.ProfileStyle, arg.ProjectID, arg.ProfileTypeRequired, arg.NEECoords, arg.Filters,
-          arg.ReferenceDesign, arg.ReturnAllPassesAndLayers, arg.VolumeType, arg.Overrides);
+          arg.ReferenceDesign, arg.ReturnAllPassesAndLayers, arg.VolumeType, arg.Overrides, arg.LiftParams);
 
-        Log.LogInformation("Executing profiler.Execute()");
+        Log.LogInformation("Executing profiler.ExecuteAsync()");
 
-        return executor.Execute();
+        return executor.ExecuteAsync().WaitAndUnwrapException();
       }
       finally
       {

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
@@ -25,7 +23,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     { }
 
     /// <summary>
-    /// Gets the summary volumes parameters according to the calcultion type
+    /// Gets the summary volumes parameters according to the calculation type
     /// </summary>
     /// <param name="projectUid">Project UID</param>
     /// <param name="volumeCalcType">The summary volumes calculation type</param>

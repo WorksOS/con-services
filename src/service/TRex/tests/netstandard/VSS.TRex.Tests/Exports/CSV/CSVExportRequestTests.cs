@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -42,21 +43,21 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public void CSVExportRequest_Execute_EmptySiteModel()
+    public async Task CSVExportRequest_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
     }
 
     [Fact]
-    public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfile()
+    public async Task CSVExportRequest_Execute_SingleCellSinglePass_CellProfile()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -72,7 +73,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
@@ -96,7 +97,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public void CSVExportRequest_Execute_SingleCellSinglePass_CellProfileAllPasses()
+    public async Task CSVExportRequest_Execute_SingleCellSinglePass_CellProfileAllPasses()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -112,7 +113,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID, OutputTypes.PassCountAllPasses));
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID, OutputTypes.PassCountAllPasses));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
@@ -136,7 +137,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public void CSVExportRequest_Execute_SingleSubGridSinglePass()
+    public async Task CSVExportRequest_Execute_SingleSubGridSinglePass()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -155,7 +156,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
 
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
@@ -182,7 +183,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public void CSVExportRequest_Execute_UnableToWriteResultToS3()
+    public async Task CSVExportRequest_Execute_UnableToWriteResultToS3()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -201,7 +202,15 @@ namespace VSS.TRex.Tests.Exports.CSV
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
 
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>())).Callback(() => throw new IOException("S3 not available"));
+
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Complete();
+
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportUnableToLoadFileToS3);
 
@@ -209,7 +218,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public void CSVExportRequest_Execute_NoProductionData()
+    public async Task CSVExportRequest_Execute_NoProductionData()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -218,7 +227,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var request = new CSVExportRequest();
       
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.FailedToRequestDatamodelStatistics);
 
@@ -227,7 +236,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
     
     [Fact]
-    public void CSVExportRequest_Execute_NoCellPasses()
+    public async Task CSVExportRequest_Execute_NoCellPasses()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -247,7 +256,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
 
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportNoDataFound);
 
@@ -255,7 +264,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     }
 
     [Fact]
-    public void CSVExportRequest_Execute_ExceedsLimit()
+    public async Task CSVExportRequest_Execute_ExceedsLimit()
     {
       DILoggingFixture.SetMaxExportRowsConfig(1);
 
@@ -275,7 +284,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       DITAGFileAndSubGridRequestsFixture.AddSingleSubGridWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
 
-      var response = request.Execute(SimpleCSVExportRequestArgument(siteModel.ID));
+      var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.ExportExceededRowLimit);
 

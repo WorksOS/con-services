@@ -13,7 +13,7 @@ namespace VSS.TRex.SiteModels
   public class SiteModelMachineDesignList : List<ISiteModelMachineDesign>, ISiteModelMachineDesignList
   {
     private const byte VERSION_NUMBER = 1;
-    private const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
+    public const string MACHINE_DESIGN_LIST_STREAM_NAME = "MachineDesigns";
 
     /// <summary>
     /// There will be at least 1 designName in list

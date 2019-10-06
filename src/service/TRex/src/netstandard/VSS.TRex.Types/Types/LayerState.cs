@@ -11,7 +11,7 @@
         Off,
 
         /// <summary>
-        /// Layer analysis is performed according to LayerMethod
+        /// Layer analysis is performed according to LiftDetectionType
         /// </summary>
         On,
 

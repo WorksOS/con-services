@@ -16,11 +16,14 @@ using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -125,7 +128,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var project = new ProjectDatabaseModel { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
@@ -140,9 +143,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      raptorProxy.Setup(rp => rp.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
+      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
@@ -158,8 +162,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
-          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
+          customHeaders, producer.Object, KafkaTopicName,
+          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
+          productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
+          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -197,7 +203,7 @@ namespace VSS.MasterData.ProjectTests.Executors
        Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.DesignSurface,
        null, DxfUnitsType.Meters,
        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44),
-       fileDescriptor, importedFileUid, importedFileId, "some folder", 0
+       fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -210,9 +216,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      raptorProxy.Setup(rp => rp.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
+      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
@@ -225,8 +232,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, null, null,
-          projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object);
+          customHeaders, producer.Object, KafkaTopicName,
+          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
+          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
@@ -258,7 +266,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
        Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
-       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
+       importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -271,9 +279,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      var raptorDeleteFileResult = new BaseDataResult { Code = 0 };
-      raptorProxy.Setup(rp => rp.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      var raptorDeleteFileResult = new BaseMasterDataResult { Code = 0 };
+      productivity3dV2ProxyNotification.Setup(p => p.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
         It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<IDictionary<string, string>>()))
        .ReturnsAsync(raptorDeleteFileResult);
 
@@ -300,8 +308,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, raptorProxy.Object, null, null, filterServiceProxy.Object,
-          null, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
+          customHeaders, producer.Object, KafkaTopicName,
+          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, filterServiceProxy: filterServiceProxy.Object,
+          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 
@@ -355,7 +364,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
-        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0);
+        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -382,8 +391,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          null, null, null, null, null,
-          projectRepo.Object, schedulerProxy: scheduler.Object);
+          projectRepo: projectRepo.Object, schedulerProxy: scheduler.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -440,7 +448,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -464,8 +472,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          null, null, null, null, tRexImportFileProxy.Object,
-          projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -496,7 +503,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
        Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -520,8 +527,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          null, null, null, null, tRexImportFileProxy.Object,
-          projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
@@ -558,7 +564,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
-        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
 
@@ -598,8 +604,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, null, null, null, filterServiceProxy.Object,
-          tRexImportFileProxy.Object, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
+          customHeaders, producer.Object, KafkaTopicName,
+          filterServiceProxy: filterServiceProxy.Object,
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 
@@ -655,7 +662,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -679,8 +686,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          null, null, null, null, tRexImportFileProxy.Object,
-          projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -708,7 +714,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var fileUpdatedUtc = fileCreatedUtc;
 
       var newImportedFile = new ImportedFile
-                            {
+      {
         ProjectUid = _projectUid,
         ImportedFileUid = importedFileUid.ToString(),
         ImportedFileId = 999,
@@ -741,7 +747,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset);
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -766,8 +772,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          null, null, null, null, tRexImportFileProxy.Object,
-          projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>
        await executor.ProcessAsync(createImportedFile).ConfigureAwait(false));
     }
@@ -799,7 +804,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
        Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -823,8 +828,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          null, null, null, null, tRexImportFileProxy.Object,
-          projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
@@ -864,7 +868,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.ReferenceSurface, fileDescriptor,
-        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder"
+        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
 
@@ -904,8 +908,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, null, null, null, filterServiceProxy.Object,
-          tRexImportFileProxy.Object, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
+          customHeaders, producer.Object, KafkaTopicName,
+          filterServiceProxy: filterServiceProxy.Object,
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
     }
 
@@ -927,7 +932,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
 
       var referenceImportedFile = new ImportedFile
-                                  {
+      {
         ProjectUid = _projectUid,
         ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
@@ -937,7 +942,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var parentImportedFile = new ImportedFile
-                               {
+      {
         ProjectUid = _projectUid,
         ImportedFileUid = parentUid.ToString(),
         ImportedFileId = 998,
@@ -951,7 +956,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var deleteImportedFile = new DeleteImportedFile(
         Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
-        importedFileUid, importedFileId, parentImportedFile.LegacyImportedFileId, "some folder"
+        importedFileUid, importedFileId, parentImportedFile.LegacyImportedFileId, "some folder", null
       );
 
       var referenceList = new List<ImportedFile> { referenceImportedFile };
@@ -993,8 +998,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName, null, null, null, filterServiceProxy.Object,
-          tRexImportFileProxy.Object, projectRepo.Object, null, fileRepo.Object, null, null, dataOceanClient.Object, authn.Object, null, pegasusClient.Object);
+          customHeaders, producer.Object, KafkaTopicName,
+          filterServiceProxy: filterServiceProxy.Object,
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(deleteImportedFile).ConfigureAwait(false));
     }

@@ -7,7 +7,5 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     T[,] Items { get; }
 
     bool ForEach(Func<T, bool> functor);
-
-    void Clear();
   }
 }

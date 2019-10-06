@@ -6,6 +6,7 @@ using VSS.TRex.Rendering.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using System.Drawing;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 
 namespace VSS.TRex.Tests.Rendering
@@ -15,7 +16,7 @@ namespace VSS.TRex.Tests.Rendering
     [Fact()]
     public void Test_RenderOverlayTile_Creation()
     {
-      RenderOverlayTile render = new RenderOverlayTile(Guid.NewGuid(),
+      var render = new RenderOverlayTile(Guid.NewGuid(),
         DisplayMode.Height,
         new XYZ(0, 0),
         new XYZ(100, 100),
@@ -26,7 +27,8 @@ namespace VSS.TRex.Tests.Rendering
         new DesignOffset(), // DesignDescriptor.Null(),
         null,
         Color.Black,
-        string.Empty);
+        string.Empty,
+        new LiftParameters());
 
       render.Should().NotBeNull();
     }

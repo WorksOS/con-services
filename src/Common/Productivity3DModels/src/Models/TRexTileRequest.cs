@@ -7,7 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Models.Validation;
+using VSS.Productivity3D.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -93,6 +93,12 @@ namespace VSS.Productivity3D.Models.Models
     public OverridingTargets Overrides { get; private set; }
 
     /// <summary>
+    /// Settings for lift analysis
+    /// </summary>
+    [JsonProperty(Required = Required.Default)]
+    public LiftSettings LiftSettings { get; private set; }
+
+    /// <summary>
     /// Default public constructor.
     /// </summary>
     public TRexTileRequest()
@@ -112,7 +118,8 @@ namespace VSS.Productivity3D.Models.Models
       BoundingBox2DGrid boundingBoxGrid,
       ushort width,
       ushort height,
-      OverridingTargets overrides)
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
       Mode = mode;
@@ -125,6 +132,7 @@ namespace VSS.Productivity3D.Models.Models
       Width = width;
       Height = height;
       Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>
@@ -133,6 +141,7 @@ namespace VSS.Productivity3D.Models.Models
     public void Validate()
     {
       Overrides?.Validate();
+      LiftSettings?.Validate();
       DesignDescriptor?.Validate();
 
       if (BoundBoxLatLon == null && BoundBoxGrid == null)

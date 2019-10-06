@@ -1,5 +1,6 @@
-﻿using VSS.TRex.Analytics.Foundation.Aggregators;
-using VSS.TRex.Common.CellPasses;
+﻿using System.Threading.Tasks;
+using VSS.TRex.Analytics.Foundation.Aggregators;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Records;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;

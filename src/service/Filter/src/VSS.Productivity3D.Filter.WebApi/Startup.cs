@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -14,11 +13,11 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
-using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
@@ -50,7 +49,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     public new IConfigurationRoot Configuration { get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
@@ -69,7 +68,6 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TDI auth for customer/user validation
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
@@ -78,10 +76,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>();
 
-      services.AddServiceDiscovery();
-      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
-      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
-      services.AddTransient<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
+      services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
+      services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
+      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();

@@ -7,17 +7,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
+using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -26,15 +29,20 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   [ProjectVerifier]
-  public class EditDataController : IEditDataContract
+  public class EditDataController : Controller, IEditDataContract
   {
 #if RAPTOR
     private readonly ITagProcessor tagProcessor;
-  private readonly IASNodeClient raptorClient;
+    private readonly IASNodeClient raptorClient;
 #endif
     private readonly ILoggerFactory logger;
     private readonly IConfigurationStore configStore;
+    private readonly IFileImportProxy fileImportProxy;
+    private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
+    private readonly IAssetResolverProxy assetResolverProxy;
 
+    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
+    private string CustomerUid => ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
@@ -44,7 +52,10 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ITagProcessor tagProcessor, 
 #endif
       ILoggerFactory logger,
-      IConfigurationStore configStore)
+      IConfigurationStore configStore,
+      IFileImportProxy fileImportProxy,
+      ITRexCompactionDataProxy tRexCompactionDataProxy, 
+      IAssetResolverProxy assetResolverProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -52,6 +63,9 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 #endif
       this.logger = logger;
       this.configStore = configStore;
+      this.fileImportProxy = fileImportProxy;
+      this.tRexCompactionDataProxy = tRexCompactionDataProxy;
+      this.assetResolverProxy = assetResolverProxy;
     }
 
     /// <summary>
@@ -59,17 +73,21 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     /// <returns>A list of the edits applied to the production data for the project and machine.</returns>
     [PostRequestVerifier]
+    [ProjectVerifier]
     [Route("api/v1/productiondata/getedits")]
     [HttpPost]
-    public EditDataResult PostEditDataAcquire([FromBody] GetEditDataRequest request)
+    public async Task<EditDataResult> PostEditDataAcquire([FromBody] GetEditDataRequest request)
     {
       request.Validate();
+      return await RequestExecutorContainerFactory.Build<GetEditDataExecutor>(logger,
 #if RAPTOR
-      return RequestExecutorContainerFactory.Build<GetEditDataExecutor>(logger, raptorClient, tagProcessor).Process(request) as EditDataResult;
-#else
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+        raptorClient,
+        tagProcessor,
 #endif
+        configStore,
+        assetResolverProxy: assetResolverProxy,
+        trexCompactionDataProxy: tRexCompactionDataProxy
+        ).ProcessAsync(request) as EditDataResult;
     }
 
     /// <summary>
@@ -77,29 +95,33 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// </summary>
     [Obsolete("This is a BusinessCenter endpoint. It is not expected that this endpoint will have a v2")]
     [PostRequestVerifier]
+    [ProjectVerifier]
     [Route("api/v1/productiondata/edit")]
     [HttpPost]
     public async Task<ContractExecutionResult> Post([FromBody]EditDataRequest request)
     {
       request.Validate();
-#if RAPTOR
+
       if (!request.undo)
       {
         //Validate against existing data edits
-        GetEditDataRequest getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
+        var getRequest = GetEditDataRequest.CreateGetEditDataRequest(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID,
             request.dataEdit.assetId);
-        EditDataResult editResult = PostEditDataAcquire(getRequest);
+        var editResult = await PostEditDataAcquire(getRequest);
         ValidateNoOverlap(editResult.dataEdits, request.dataEdit);
         //Validate request date range within production data date range
-        await ValidateDates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.dataEdit);
+        await ValidateDates(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID, request.ProjectUid.Value, request.dataEdit);
       }
 
-      return RequestExecutorContainerFactory.Build<EditDataExecutor>(logger, raptorClient, tagProcessor).Process(request);
-#else
-      // see NOTE above
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+      return await RequestExecutorContainerFactory.Build<EditDataExecutor>(logger,
+#if RAPTOR
+        raptorClient,
+        tagProcessor,
 #endif
+        configStore,
+        assetResolverProxy: assetResolverProxy,
+        trexCompactionDataProxy: tRexCompactionDataProxy
+        ).ProcessAsync(request);
     }
 
     /// <summary>
@@ -135,11 +157,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Validates new edit is within production data date range for the project
     /// </summary>
-    private async Task ValidateDates(long projectId, ProductionDataEdit dataEdit)
+    private async Task ValidateDates(long projectId, Guid projectUid, ProductionDataEdit dataEdit)
     {
 #if RAPTOR
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, null, null, raptorClient);
-      var stats = await projectStatisticsHelper.GetProjectStatisticsWithExclusions(projectId, new long[0]) as ProjectStatisticsResult;
+      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy, raptorClient);
+      var stats = await projectStatisticsHelper.GetProjectStatisticsWithProjectSsExclusions(
+        projectUid, projectId, ((RaptorPrincipal)User).Identity.Name, Request.Headers.GetCustomHeaders());
       if (stats == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,

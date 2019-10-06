@@ -11,6 +11,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
@@ -25,18 +27,21 @@ using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi
 {
+  /// <summary>
+  /// Application startup class.
+  /// </summary>
   public class Startup : BaseStartup
   {
-
-    // This method gets called by the runtime. Use this method to add services to the container.
-    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    /// <inheritdoc />
     public override string ServiceName => "Tiling service";
+
+    /// <inheritdoc />
     public override string ServiceDescription => "Provides tiling endpoints and tile generation";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       // Add framework services.
@@ -54,7 +59,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddScoped<IDxfTileService, DxfTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<IBoundingBoxHelper, BoundingBoxHelper>();
-      services.AddSingleton<IRaptorProxy, RaptorProxy>();
+      services.AddSingleton<IProductivity3dV2ProxyCompactionTile, Productivity3dV2ProxyCompactionTile>();
 
       services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
@@ -64,8 +69,8 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
 
-      services.AddSingleton<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
-      services.AddSingleton<IFileImportProxy, FileImportV4ServiceDiscoveryProxy>();
+      services.AddSingleton<IProjectProxy, ProjectV4Proxy>();
+      services.AddSingleton<IFileImportProxy, FileImportV4Proxy>();
 
       services.AddSingleton<IFileRepository, FileRepository>();
 
@@ -82,6 +87,7 @@ namespace VSS.Tile.Service.WebApi
       });
     }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<TileAuthentication>();

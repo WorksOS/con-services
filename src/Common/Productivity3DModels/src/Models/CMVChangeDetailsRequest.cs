@@ -10,19 +10,12 @@ namespace VSS.Productivity3D.Models.Models
   /// <summary>
   /// Represents CMV change details request.
   /// </summary>
-  public class CMVChangeDetailsRequest : ProjectID
+  public class CMVChangeDetailsRequest : TRexBaseRequest
   {
-    /// <summary>
-    /// The filter instance to use in the request
-    /// Value may be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; set; }
-
     /// <summary>
     /// Sets the CMV change details values to compare against.
     /// </summary>
-    [JsonProperty(PropertyName = "CMVChangeSummaryValues", Required = Required.Always)]
+    [JsonProperty(Required = Required.Always)]
     [Required]
     public double[] CMVChangeDetailsValues { get; set; }
 
@@ -37,14 +30,18 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public CMVChangeDetailsRequest(
-      Guid? projectUid,
+      Guid projectUid,
       FilterResult filter,
-      double[] cmvChangeDetailsValues
+      double[] cmvChangeDetailsValues,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
       CMVChangeDetailsValues = cmvChangeDetailsValues;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>
@@ -53,8 +50,6 @@ namespace VSS.Productivity3D.Models.Models
     public override void Validate()
     {
       base.Validate();
-
-      Filter?.Validate();
 
       for (int i = 1; i < CMVChangeDetailsValues.Length; i++)
         if (CMVChangeDetailsValues[i] <= CMVChangeDetailsValues[i - 1])

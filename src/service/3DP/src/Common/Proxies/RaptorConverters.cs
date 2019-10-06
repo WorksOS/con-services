@@ -23,6 +23,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using __Global = ProductionServer_TLB.__Global;
 
 namespace VSS.Productivity3D.Common.Proxies
@@ -1421,6 +1422,18 @@ namespace VSS.Productivity3D.Common.Proxies
         case TICPositioningTech.ptUTS: return PositioningTechType.UTS;
         case TICPositioningTech.ptUnknown: return PositioningTechType.Unknown;
         default: throw new Exception($"Unknown TICPositioningTech type: {Convert.ToInt32(type)}");
+      }
+    }
+
+    public static CellPassType convertPassType(TICPassType type)
+    {
+      switch (type)
+      {
+        case TICPassType.ptFront: return CellPassType.Front;
+        case TICPassType.ptRear: return CellPassType.Rear;
+        case TICPassType.ptTrack: return CellPassType.Track;
+        case TICPassType.ptWheel: return CellPassType.Wheel;
+        default: throw new Exception($"Unknown TICPassType type: {Convert.ToInt32(type)}");
       }
     }
 

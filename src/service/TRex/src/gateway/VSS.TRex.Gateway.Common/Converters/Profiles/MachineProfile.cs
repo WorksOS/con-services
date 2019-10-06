@@ -1,6 +1,6 @@
 ﻿using System;
 using AutoMapper;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.TRex.Machines.Interfaces;
 
 namespace VSS.TRex.Gateway.Common.Converters.Profiles

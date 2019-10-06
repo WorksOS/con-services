@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling.Interfaces;
@@ -133,8 +133,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="context"></param>
     public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
     {
-      void CalculateCMVChange(IProfileCell profileCell /*; Todo: Liftbuildsettings
-      LiftBuildSettings : TICLiftBuildSettings*/)
+      void CalculateCMVChange(IProfileCell profileCell)
       {
         profileCell.CellCCV = CellPassConsts.NullCCV;
         profileCell.CellTargetCCV = CellPassConsts.NullCCV;
@@ -147,7 +146,7 @@ namespace VSS.TRex.SubGridTrees.Client
         {
           if (profileCell.Layers[i].FilteredPassCount > 0)
           {
-            if ((profileCell.Layers[i].Status & LayerStatus.Superseded) != 0 && !Dummy_LiftBuildSettings.IncludeSuperseded)
+            if ((profileCell.Layers[i].Status & LayerStatus.Superseded) != 0 && !context.LiftParams.IncludeSuperseded)
               continue;
 
             if (DataStillRequiredForCCV && profileCell.CellCCV == CellPassConsts.NullCCV && profileCell.Layers[i].CCV != CellPassConsts.NullCCV)
@@ -158,10 +157,10 @@ namespace VSS.TRex.SubGridTrees.Client
               int PassSearchIdx = profileCell.Layers[i].CCV_CellPassIdx - 1;
               while (PassSearchIdx >= 0)
               {
-                if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly && (PassSearchIdx < profileCell.Layers[i].StartCellPassIdx || PassSearchIdx > profileCell.Layers[i].EndCellPassIdx))
+                if (context.LiftParams.CCVSummarizeTopLayerOnly && (PassSearchIdx < profileCell.Layers[i].StartCellPassIdx || PassSearchIdx > profileCell.Layers[i].EndCellPassIdx))
                   break;
 
-                if (!profileCell.Layers.IsCellPassInSupersededLayer(PassSearchIdx) || Dummy_LiftBuildSettings.IncludeSuperseded)
+                if (!profileCell.Layers.IsCellPassInSupersededLayer(PassSearchIdx) || context.LiftParams.IncludeSuperseded)
                 {
                   profileCell.CellPreviousMeasuredCCV = profileCell.Passes.FilteredPassData[PassSearchIdx].FilteredPass.CCV;
                   if (context.Overrides?.OverrideMachineCCV ?? false)
@@ -181,7 +180,7 @@ namespace VSS.TRex.SubGridTrees.Client
             if (!DataStillRequiredForCCV)
               break;
 
-            if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
+            if (context.LiftParams.CCVSummarizeTopLayerOnly)
               DataStillRequiredForCCV = false;
           }
         }
@@ -244,7 +243,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].LastPassValidTemperature = LastPass.FilteredPass.MaterialTemperature; // Bug32323 show only last pass temp.  Passes.LastPassValidTemperature;
       Cells[cellX, cellY].Height = LastPass.FilteredPass.Height;
 
-      CalculateCMVChange(cellProfileFromContext /* todo: , context.LiftBuildSettings*/);
+      CalculateCMVChange(cellProfileFromContext);
       Cells[cellX, cellY].CCVChange = 0;
       short v2 = cellProfileFromContext.CellCCV;
       short v1 = cellProfileFromContext.CellPreviousMeasuredCCV;

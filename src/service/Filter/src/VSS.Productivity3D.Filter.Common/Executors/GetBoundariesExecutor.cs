@@ -11,10 +11,10 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 
@@ -27,11 +27,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     public GetBoundariesExecutor(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy, 
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository,
       IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
-       : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy,
-       fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
+       : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
+         fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     {
     }
 
@@ -55,7 +57,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       if (request == null) return null;
 
       var boundaries = new List<GeofenceData>();
-      var projectRepo = (IProjectRepository) auxRepository;
+      var projectRepo = (IProjectRepository)auxRepository;
 
       Task<GeofenceDataListResult> boundariesTask = null;
       Task<List<GeofenceData>> favoritesTask = null;
@@ -64,13 +66,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         //a) Custom boundaries 
         boundariesTask = BoundaryHelper.GetProjectBoundaries(
-        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository) Repository);
+        log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository)Repository);
         //b) favorite geofences that overlap project 
         favoritesTask =
           GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
         //c) unified productivity associated geofences
         associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid, request.CustomHeaders);
- 
+
         await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
       }
       catch (Exception e)

@@ -11,6 +11,9 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
@@ -116,6 +119,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         //  return (MachineExecutionResult) new ContractExecutionResult(response);
       }
 
+      Log.LogInformation($"{nameof(GetMachines)}: result: {JsonConvert.SerializeObject(result)}");
       return result;
     }
 
@@ -130,7 +134,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetAssetOnDesignPeriods)}: siteModelID: {siteModelID}");
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetAssetOnDesignPeriods), siteModelID);
-      return new MachineDesignsExecutionResult(siteModel.GetAssetOnDesignPeriods());
+      var result = new MachineDesignsExecutionResult(siteModel.GetAssetOnDesignPeriods());
+
+      Log.LogInformation($"{nameof(GetAssetOnDesignPeriods)}: result: {JsonConvert.SerializeObject(result)}");
+      return result;
     }
 
     /// <summary>
@@ -144,7 +151,10 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
       Log.LogInformation($"{nameof(GetMachineLayers)}: siteModelID: {siteModelID}");
 
       var siteModel = GatewayHelper.ValidateAndGetSiteModel(nameof(GetMachineLayers), siteModelID);
-      return new AssetOnDesignLayerPeriodsExecutionResult(siteModel.GetAssetOnDesignLayerPeriods());
+      var result = new AssetOnDesignLayerPeriodsExecutionResult(siteModel.GetAssetOnDesignLayerPeriods());
+
+      Log.LogInformation($"{nameof(GetMachineLayers)}: result: {JsonConvert.SerializeObject(result)}");
+      return result;
     }
 
   }

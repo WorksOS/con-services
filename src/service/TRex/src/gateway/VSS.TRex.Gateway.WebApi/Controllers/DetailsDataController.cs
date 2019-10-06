@@ -94,7 +94,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
     /// <returns></returns>
     [Route("api/v1/cutfill/details")]
     [HttpPost]
-    public Task<ContractExecutionResult> PostCutFillDetails([FromBody] CutFillDetailsRequest cutFillRequest)
+    public Task<ContractExecutionResult> PostCutFillDetails([FromBody] TRexCutFillDetailsRequest cutFillRequest)
     {
       Log.LogInformation($"{nameof(PostCutFillDetails)}: {Request.QueryString}");
 

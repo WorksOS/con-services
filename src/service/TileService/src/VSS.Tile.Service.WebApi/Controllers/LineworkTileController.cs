@@ -15,6 +15,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Tile.Service.Common.Executors;
@@ -34,10 +35,10 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public LineworkTileController(IRaptorProxy raptorProxy, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
+    public LineworkTileController(IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
       IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore,
       IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
-      : base(raptorProxy, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
+      : base(productivity3DProxyCompactionTile, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
     {
       this.dataOceanClient = dataOceanClient;
     }

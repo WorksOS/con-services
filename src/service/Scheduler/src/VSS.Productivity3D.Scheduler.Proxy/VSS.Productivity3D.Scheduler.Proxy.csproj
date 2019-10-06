@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
-    <ProjectReference Include="..\VSS.Productivity3D.Scheduler.Abstractions\VSS.Productivity3D.Scheduler.Abstractions.csproj" />
   </ItemGroup>
 
 

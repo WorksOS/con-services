@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var Requestors = utilities.ConstructRequestors(siteModel,
+      var Requestors = utilities.ConstructRequestors(siteModel, new OverrideParameters(), new LiftParameters(), 
         utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(new CombinedFilter()), true, GridDataType.Height),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
 
@@ -57,10 +57,11 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Request all elevation sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        if (Requestors[0].RequestSubGridInternal(x, null, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
-          requestedSubGrids.Add(clientGrid);
+        var requestSubGridInternalResult = await Requestors[0].RequestSubGridInternal(x, true, false);
+        if (requestSubGridInternalResult.requestResult  == ServerRequestResult.NoError)
+          requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
 
       requestedSubGrids.Count.Should().Be(4);
@@ -74,7 +75,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var Requestors = utilities.ConstructRequestors(siteModel,
+      var Requestors = utilities.ConstructRequestors(siteModel, new OverrideParameters(), new LiftParameters(), 
         utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(filters), true, gridDataType),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
 
@@ -88,10 +89,11 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       // Request all elevation sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        if (requestors[0].RequestSubGridInternal(x, null, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
-          requestedSubGrids.Add(clientGrid);
+        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, true, false);
+        if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
+          requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
 
       return requestedSubGrids.Cast<T>();

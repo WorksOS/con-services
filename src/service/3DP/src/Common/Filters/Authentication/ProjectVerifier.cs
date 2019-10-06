@@ -1,11 +1,10 @@
-﻿using System;
-using System.Net;
-using System.Reflection;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication
 {
@@ -23,28 +22,28 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
 
       // Identify any query parameter called 'request'.
       if (actionContext.ActionArguments.ContainsKey("request"))
-      {
-        var request = actionContext.ActionArguments["request"];
-
-        if (request.GetType() != typeof(string))
+      {  
+        //See if the [FromBody] request is a ProjectID derived model
+        var requestProjectIdentifier = actionContext.ActionArguments["request"] as ProjectID;
+        if (requestProjectIdentifier != null)
         {
-          projectIdentifier = request.GetType()
-                                     .GetProperty(PROJECT_ID, BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)?.GetValue(request);
-
-          if (projectIdentifier == null)
+          //Either projectId or projectUid will be in the request. We need to set the other one.
+          if (requestProjectIdentifier.ProjectId.HasValue)
           {
-            projectIdentifier = request
-              .GetType()
-              .GetProperty(PROJECT_UID, BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)?.GetValue(request);
-
-            var projectUid = Convert.ToString(projectIdentifier);
-            var projectDescriptor = ((RaptorPrincipal)actionContext.HttpContext.User).GetProject(projectUid).Result;
-
-            ((ProjectID) request).ProjectId = projectDescriptor.LegacyProjectId;
+            projectIdentifier = requestProjectIdentifier.ProjectId.Value;
+            if (!requestProjectIdentifier.ProjectUid.HasValue)
+              requestProjectIdentifier.ProjectUid = ((RaptorPrincipal)actionContext.HttpContext.User).GetProjectUid(requestProjectIdentifier.ProjectId.Value).Result;
           }
-        }
+          else if (requestProjectIdentifier.ProjectUid.HasValue)
+          {
+            projectIdentifier = requestProjectIdentifier.ProjectUid.Value;
+            if (!requestProjectIdentifier.ProjectId.HasValue)
+              requestProjectIdentifier.ProjectId = ((RaptorPrincipal)actionContext.HttpContext.User).GetLegacyProjectId(requestProjectIdentifier.ProjectUid.Value).Result;
+          }
+        }          
       }
 
+      //Check for [FromRoute] project identifiers
       if (actionContext.ActionArguments.ContainsKey(PROJECT_ID))
       {
         projectIdentifier = actionContext.ActionArguments[PROJECT_ID];

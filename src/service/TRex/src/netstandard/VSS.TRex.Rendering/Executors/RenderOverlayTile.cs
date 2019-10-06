@@ -19,6 +19,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using System.Drawing;
 using System.Threading.Tasks;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
@@ -71,21 +72,11 @@ namespace VSS.TRex.Rendering.Executors
     // ICOptions ICOptions = new ICOptions();
     private readonly Color RepresentColor;
 
+    private readonly ILiftParameters LiftParams;
+
     /// <summary>
     /// Constructor for the renderer
     /// </summary>
-    /// <param name="ADataModelID"></param>
-    /// <param name="AMode"></param>
-    /// <param name="ABLPoint"></param>
-    /// <param name="ATRPoint"></param>
-    /// <param name="ACoordsAreGrid"></param>
-    /// <param name="ANPixelsX"></param>
-    /// <param name="ANPixelsY"></param>
-    /// <param name="filters"></param>
-    /// <param name="ACutFillDesign"></param>
-    /// <param name="aColorPalettes"></param>
-    /// <param name="ARepresentColor"></param>
-    /// <param name="requestingTRexNodeId"></param>
     public RenderOverlayTile(Guid ADataModelID,
       //AExternalDescriptor :TASNodeRequestDescriptor;
       DisplayMode AMode,
@@ -100,7 +91,8 @@ namespace VSS.TRex.Rendering.Executors
       IPlanViewPalette aColorPalettes,
       //AICOptions: ...ICOptions;
       Color ARepresentColor,
-      string requestingTRexNodeId
+      string requestingTRexNodeId,
+      ILiftParameters liftParams
     )
     {
       DataModelID = ADataModelID;
@@ -118,6 +110,7 @@ namespace VSS.TRex.Rendering.Executors
       //ICOptions = AICOptions;
       RepresentColor = ARepresentColor;
       RequestingTRexNodeID = requestingTRexNodeId;
+      LiftParams = liftParams;
     }
 
     private readonly BoundingWorldExtent3D RotatedTileBoundingExtents = BoundingWorldExtent3D.Inverted();
@@ -277,35 +270,38 @@ namespace VSS.TRex.Rendering.Executors
     /// <returns></returns>
     private IBitmap RenderTileAsRepresentationalDueToScale(ISubGridTreeBitMask overallExistenceMap)
     {
-      var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/);
-
-      RepresentationalDisplay.MapView = new MapSurface
+      using (var RepresentationalDisplay = PVMDisplayerFactory.GetDisplayer(Mode /*, FICOptions*/))
       {
-        SquareAspect = false,
-        Rotation = -TileRotation + Math.PI / 2
-      };
-
-      RepresentationalDisplay.MapView.SetBounds(NPixelsX, NPixelsY);
-      RepresentationalDisplay.MapView.SetWorldBounds(NEECoords[0].X, NEECoords[0].Y,
-        NEECoords[0].X + WorldTileWidth, NEECoords[0].Y + WorldTileHeight, 0);
-
-      // Iterate over all the bits in the sub grids drawing a rectangle for each one on the tile being rendered
-      if (overallExistenceMap.ScanSubGrids(RotatedTileBoundingExtents,
-        leaf =>
+        using (var mapView = new MapSurface {SquareAspect = false, Rotation = -TileRotation + Math.PI / 2} )
         {
-          leaf.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
+          RepresentationalDisplay.MapView = mapView;
 
-          (leaf as SubGridTreeLeafBitmapSubGrid)?.Bits.ForEachSetBit((x, y) =>
+          RepresentationalDisplay.MapView.SetBounds(NPixelsX, NPixelsY);
+          RepresentationalDisplay.MapView.SetWorldBounds(NEECoords[0].X, NEECoords[0].Y,
+            NEECoords[0].X + WorldTileWidth, NEECoords[0].Y + WorldTileHeight, 0);
+
+          // Iterate over all the bits in the sub grids drawing a rectangle for each one on the tile being rendered
+          if (overallExistenceMap.ScanSubGrids(RotatedTileBoundingExtents,
+            leaf =>
+            {
+              leaf.CalculateWorldOrigin(out double WorldOriginX, out double WorldOriginY);
+
+              (leaf as SubGridTreeLeafBitmapSubGrid)?.Bits.ForEachSetBit((x, y) =>
+              {
+                RepresentationalDisplay.MapView.DrawRect(WorldOriginX + (x * overallExistenceMap.CellSize),
+                  WorldOriginY + (y * overallExistenceMap.CellSize),
+                  overallExistenceMap.CellSize, overallExistenceMap.CellSize, true, RepresentColor);
+              });
+
+              return true;
+            }))
           {
-            RepresentationalDisplay.MapView.DrawRect(WorldOriginX + (x * overallExistenceMap.CellSize),
-              WorldOriginY + (y * overallExistenceMap.CellSize),
-              overallExistenceMap.CellSize, overallExistenceMap.CellSize, true, RepresentColor);
-          });
-
-          return true;
-        }))
-      {
-        return RepresentationalDisplay.MapView.BitmapCanvas;
+            // Remove the canvas from the map view to prevent it's disposal (it's being returned to the caller)
+            var canvas = RepresentationalDisplay.MapView.BitmapCanvas;
+            RepresentationalDisplay.MapView.BitmapCanvas = null;
+            return canvas;
+          }
+        }
       }
 
       return null; // It did not work out...
@@ -416,7 +412,7 @@ namespace VSS.TRex.Rendering.Executors
       // given the project's coordinate system. If there is no coordinate system then exit.
 
       var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
-      Log.LogInformation($"Got Site model {DataModelID}, extents are {SiteModel.SiteModelExtent}");
+      Log.LogInformation($"Got Site model {DataModelID}, production data extents are {SiteModel.SiteModelExtent}");
 
       LLHCoords = new[]
       {
@@ -428,9 +424,7 @@ namespace VSS.TRex.Rendering.Executors
       Log.LogInformation($"LLHCoords for tile request {string.Concat(LLHCoords)}, CoordsAreGrid {CoordsAreGrid}");
 
       if (CoordsAreGrid)
-      {
         NEECoords = LLHCoords;
-      }
       else
       {
         var conversionResult = await DIContext.Obtain<IConvertCoordinates>().LLHToNEE(SiteModel.CSIB(), LLHCoords);
@@ -462,119 +456,126 @@ namespace VSS.TRex.Rendering.Executors
         $" [BL:{NEECoords[0].X}, {NEECoords[0].Y}, TL:{NEECoords[2].X},{NEECoords[2].Y}, " +
         $"TR:{NEECoords[1].X}, {NEECoords[1].Y}, BR:{NEECoords[3].X}, {NEECoords[3].Y}] " +
         $"World Width, Height: {WorldTileWidth}, {WorldTileHeight}" );
-      
+
       // Construct the renderer, configure it, and set it on its way
       //  WorkingColorPalette = Nil;
 
-      var Renderer = new PlanViewTileRenderer();
-      try
+      using (var Renderer = new PlanViewTileRenderer())
       {
-        // Intersect the site model extents with the extents requested by the caller
-        Log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{SiteModel.SiteModelExtent}");
-        RotatedTileBoundingExtents.Intersect(SiteModel.SiteModelExtent);
-        if (!RotatedTileBoundingExtents.IsValidPlanExtent)
+        try
         {
-          ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
-          Log.LogInformation($"Site model extents {SiteModel.SiteModelExtent}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
+          // Intersect the site model extents with the extents requested by the caller
+          var adjustedSiteModelExtents = SiteModel.GetAdjustedDataModelSpatialExtents(null);
 
-          var transparentDisplay = PVMDisplayerFactory.GetDisplayer(Mode);
-          transparentDisplay.MapView = new MapSurface();
-          transparentDisplay.MapView.SetBounds(NPixelsX, NPixelsY);
-          return transparentDisplay.MapView.BitmapCanvas;
-        }
+          Log.LogInformation($"Calculating intersection of bounding box and site model {DataModelID}:{adjustedSiteModelExtents}");
 
-        // Compute the override cell boundary to be used when processing cells in the sub grids
-        // selected as a part of this pipeline
-        // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
+          RotatedTileBoundingExtents.Intersect(adjustedSiteModelExtents);
+          if (!RotatedTileBoundingExtents.IsValidPlanExtent)
+          {
+            ResultStatus = RequestErrorStatus.InvalidCoordinateRange;
+            Log.LogInformation($"Site model extents {adjustedSiteModelExtents}, do not intersect RotatedTileBoundingExtents {RotatedTileBoundingExtents}");
 
-        SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
-          RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out var CellExtents_MinX, out var CellExtents_MinY);
-        SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
-          RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
-          out var CellExtents_MaxX, out var CellExtents_MaxY);
+            using (var mapView = new MapSurface())
+            {
+              mapView.SetBounds(NPixelsX, NPixelsY);
 
-        var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
-        CellExtents.Expand(1);
+              var canvas = mapView.BitmapCanvas;
+              mapView.BitmapCanvas = null;
+
+              return canvas;
+            }
+          }
+
+          // Compute the override cell boundary to be used when processing cells in the sub grids
+          // selected as a part of this pipeline
+          // Increase cell boundary by one cell to allow for cells on the boundary that cross the boundary
+
+          SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MinX,
+            RotatedTileBoundingExtents.MinY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+            out var CellExtents_MinX, out var CellExtents_MinY);
+          SubGridTree.CalculateIndexOfCellContainingPosition(RotatedTileBoundingExtents.MaxX,
+            RotatedTileBoundingExtents.MaxY, SiteModel.CellSize, SubGridTreeConsts.DefaultIndexOriginOffset,
+            out var CellExtents_MaxX, out var CellExtents_MaxY);
+
+          var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
+          CellExtents.Expand(1);
 
         // Construct PipelineProcessor
         var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
-          requestDescriptor: RequestDescriptor,
-          dataModelID: DataModelID,
-          gridDataType: GridDataFromModeConverter.Convert(Mode),
-          response: new SubGridsPipelinedResponseBase(),
-          cutFillDesign: CutFillDesign,
-          filters: Filters,
-          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
-          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requireSurveyedSurfaceInformation: Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
+          RequestDescriptor,
+          DataModelID,
+          GridDataFromModeConverter.Convert(Mode),
+          new SubGridsPipelinedResponseBase(),
+          Filters,
+          CutFillDesign,
+          DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
+          DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+          DIContext.Obtain<IRequestAnalyser>(),
+          Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
                                              Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          requestRequiresAccessToDesignFileExistenceMap: Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
-          overrideSpatialCellRestriction: CellExtents
+          Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
+          CellExtents,
+          LiftParams
         );
 
-        // Set the PVM rendering rexTask parameters for progressive processing
-        processor.Task.RequestDescriptor = RequestDescriptor;
-        processor.Task.TRexNodeID = RequestingTRexNodeID;
-        processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
-        ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
+          // Set the PVM rendering rexTask parameters for progressive processing
+          processor.Task.RequestDescriptor = RequestDescriptor;
+          processor.Task.TRexNodeID = RequestingTRexNodeID;
+          processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
+          ((IPVMRenderingTask) processor.Task).TileRenderer = Renderer;
 
-        // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
-        // a final restriction of the spatial extent used to govern data requests
-        processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
+          // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
+          // a final restriction of the spatial extent used to govern data requests
+          processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 
-        // Prepare the processor
-        if (!await processor.BuildAsync())
-        {
-          Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
-          return null;
+          // Prepare the processor
+          if (!await processor.BuildAsync())
+          {
+            Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+            ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
+            return null;
+          }
+
+          // Test to see if the tile can be satisfied with a representational render indicating where
+          // data is but not what it is (this is useful when the zoom level is far enough away that we
+          // cannot meaningfully render the data). If the size of s sub grid is smaller than
+          // the size of a pixel in the requested tile then do this. Just check the X dimension
+          // as the data display is isotropic.
+          if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
+            return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
+
+          /* TODO - Create a scaled palette to use when rendering the data
+          // Create a scaled palette to use when rendering the data
+          if not CreateAndInitialiseWorkingColorPalette then
+            begin
+            SIGLogMessage.PublishNoODS(Self, Format('Failed to create and initialise working color palette for data: %s in datamodel %d', [TypInfo.GetEnumName(TypeInfo(TICDisplayMode), Ord(FMode)), FDataModelID]), ...Warning);
+            Exit;
+            end;
+          */
+
+          // Renderer.WorkingPalette = WorkingColorPalette;
+          // Renderer.ReferenceVolumeType = FReferenceVolumeType;
+
+          Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
+          Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);
+          Renderer.TileRotation = TileRotation;
+          Renderer.WorldTileWidth = WorldTileWidth;
+          Renderer.WorldTileHeight = WorldTileHeight;
+
+          ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
+
+          if (processor.Response.ResultStatus == RequestErrorStatus.OK)
+          {
+            var canvas = Renderer.Displayer.MapView.BitmapCanvas;
+            Renderer.Displayer.MapView.BitmapCanvas = null;
+            return canvas;
+          }
         }
-
-        // Test to see if the tile can be satisfied with a representational render indicating where
-        // data is but not what it is (this is useful when the zoom level is far enough away that we
-        // cannot meaningfully render the data). If the size of s sub grid is smaller than
-        // the size of a pixel in the requested tile then do this. Just check the X dimension
-        // as the data display is isotropic.
-        if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
-          return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
-
-        /* TODO - Create a scaled palette to use when rendering the data
-        // Create a scaled palette to use when rendering the data
-        if not CreateAndInitialiseWorkingColorPalette then
-          begin
-          SIGLogMessage.PublishNoODS(Self, Format('Failed to create and initialise working color palette for data: %s in datamodel %d', [TypInfo.GetEnumName(TypeInfo(TICDisplayMode), Ord(FMode)), FDataModelID]), ...Warning);
-          Exit;
-          end;
-        */
-
-        /* TODO Lift build settings not supported
-        if (Filter1 != null && Filter1.AttributeFilter.HasLayerStateFilter || Filter1.AttributeFilter.LayerMethod != TFilterLayerMethod.flmNone)
-            Renderer.LiftBuildSettings = ICOptions.GetLiftBuildSettings(Filter1.LayerMethod);
-        else
-            Renderer.LiftBuildSettings = ICOptions.LiftBuildSettings;
-        */
-
-        // Renderer.WorkingPalette = WorkingColorPalette;
-        // Renderer.ReferenceVolumeType = FReferenceVolumeType;
-
-        Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
-        Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);
-        Renderer.TileRotation = TileRotation;
-        Renderer.WorldTileWidth = WorldTileWidth;
-        Renderer.WorldTileHeight = WorldTileHeight;
-
-        ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters);
-
-        if (processor.Response.ResultStatus == RequestErrorStatus.OK)
+        catch (Exception e)
         {
-          return Renderer.Displayer.MapView.BitmapCanvas;
+          Log.LogError(e, "Exception occurred");
+          ResultStatus = RequestErrorStatus.Exception;
         }
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, "Exception occurred");
-        ResultStatus = RequestErrorStatus.Exception;
       }
 
       return null;

@@ -113,9 +113,13 @@ namespace VSS.TRex.Common
     /// <param name="sourcePath"></param>
     /// <param name="siteModelUid"></param>
     /// <param name="fileName"></param>
-    public static bool WriteFile(string sourcePath, Guid siteModelUid, string fileName)
+    public static bool WriteFile(string sourcePath, Guid siteModelUid, string fileName, string destinationFileName = null)
     {
       var localFullPath = Path.Combine(sourcePath, fileName);
+
+      if (destinationFileName != null)
+        fileName = destinationFileName;
+
       var s3FullPath = $"{siteModelUid.ToString()}/{fileName}";
       return WriteFile(localFullPath, s3FullPath);
     }

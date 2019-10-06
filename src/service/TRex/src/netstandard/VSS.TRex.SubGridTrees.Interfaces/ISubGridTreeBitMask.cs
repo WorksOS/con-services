@@ -101,7 +101,5 @@ namespace VSS.TRex.SubGridTrees.Interfaces
     /// </summary>
     /// <param name="functor"></param>
     void ScanAllSetBitsAsSubGridAddresses(Action<SubGridCellAddress> functor);
-
-    ISubGrid CreateNewSubGrid(byte level);
   }
 }

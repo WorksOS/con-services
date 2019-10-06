@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 #endif
       IConfigurationStore configStore = null, IFileRepository fileRepo = null,
       ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
-      ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
+      ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexConnectedSiteProxy tRexConnectedSiteProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
       IAssetResolverProxy assetResolverProxy = null, IDictionary<string, string> customHeaders = null, string customerUid = null)
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -35,6 +35,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       var executor = new TExecutor();
 
       executor.Initialise(
+        logger,
         log,
 #if RAPTOR      
         raptorClient,
@@ -47,6 +48,7 @@ namespace VSS.Productivity3D.Common.Interfaces
         profileResultHelper,
         transferProxy,
         tRexTagFileProxy,
+        tRexConnectedSiteProxy,
         trexCompactionDataProxy,
         assetResolverProxy,
         customHeaders,

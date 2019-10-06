@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Transactions;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
@@ -9,9 +10,9 @@ namespace VSS.TRex.Storage.Interfaces
 {
   public interface IStorageProxy
   {
-    IStorageProxyCache<INonSpatialAffinityKey, byte[]> NonSpatialCache(FileSystemStreamType streamType);
-    IStorageProxyCache<ISubGridSpatialAffinityKey, byte[]> SpatialCache { get; }
-    IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> ProjectMachineCache(FileSystemStreamType streamType);
+    IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialCache(FileSystemStreamType streamType);
+    IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache { get; }
+    IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> ProjectMachineCache(FileSystemStreamType streamType);
 
     StorageMutability Mutability { get; set; }
 

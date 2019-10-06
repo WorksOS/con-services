@@ -40,16 +40,7 @@ namespace VSS.TRex.Gateway.Common.Proxy
 
     #region Protected Methods
 
-    /// <summary>
-    /// Execute a Post to an endpoint, and cache the result
-    /// NOTE: Must have a uid or userid for cache key
-    /// </summary>
-    protected override Task<string> GetUrl(string route = null, IDictionary<string, string> queryParameters = null)
-    {
-      return _serviceResolution.ResolveLocalServiceEndpoint(GetServiceName(), Type, Version, route, queryParameters);
-    }
-
-    private string GetServiceName()
+    protected override string GetServiceName()
     {
       switch (Gateway)
       {

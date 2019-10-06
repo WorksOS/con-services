@@ -7,8 +7,10 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Events.Interfaces;
+using VSS.TRex.Events.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Events
@@ -24,7 +26,7 @@ namespace VSS.TRex.Events
     /// <summary>
     /// The array of enumeration values represented by ProductionEventType
     /// </summary>
-    private static readonly ProductionEventType[] _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<ProductionEventType>().ToArray();
+    public static readonly ProductionEventType[] ProductionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<ProductionEventType>().ToArray();
  
     private static readonly IProductionEventsFactory _ProductionEventsFactory = DIContext.Obtain<IProductionEventsFactory>();
 
@@ -137,7 +139,7 @@ namespace VSS.TRex.Events
     /// </summary>
     public IProductionEvents<int> MachineDesignNameIDStateEvents
     {
-      get => (IProductionEvents<int>)GetEventList(ProductionEventType.DesignChange);
+      get => (IProductionEvents<int>) GetEventList(ProductionEventType.DesignChange);
     }
 
     /// <summary>
@@ -213,6 +215,23 @@ namespace VSS.TRex.Events
     }
 
     /// <summary>
+    /// Records the selected Layer ID overriding the id on the machine at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<OverrideEvent<ushort>> LayerOverrideEvents
+    {
+      get => (IProductionEvents<OverrideEvent<ushort>>)GetEventList(ProductionEventType.LayerOverride);
+    }
+
+
+    /// <summary>
+    /// Records the selected Design overriding the design on the machine at the time measurements were being made
+    /// </summary>
+    public IProductionEvents<OverrideEvent<int>> DesignOverrideEvents
+    {
+      get => (IProductionEvents<OverrideEvent<int>>)GetEventList(ProductionEventType.DesignOverride);
+    }
+
+    /// <summary>
     /// Retrieves the requested event list for this machine in this site model
     /// Event lists are lazy loaded at the point they are requested.
     /// </summary>
@@ -234,7 +253,7 @@ namespace VSS.TRex.Events
             {
               if (!SiteModel.IsTransient)
               {
-                temp.LoadFromStore(SiteModel.PrimaryStorageProxy);
+                LoadFromStore(temp, eventType, SiteModel.PrimaryStorageProxy);
               }
 
               allEventsForMachine[(int) eventType] = temp;
@@ -293,14 +312,32 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public bool LoadEventsForMachine(IStorageProxy storageProxy)
     {
-      foreach (ProductionEventType evt in _productionEventTypeValues)
+      foreach (ProductionEventType evt in ProductionEventTypeValues)
       {
         Log.LogDebug($"Loading {evt} events for machine {_internalSiteModelMachineIndex} in project {SiteModel.ID}");
 
-        GetEventList(evt)?.LoadFromStore(storageProxy);
+        LoadFromStore(GetEventList(evt), evt, storageProxy);
       }
 
       return true;
+    }
+
+    /// <summary>
+    /// Loads events of a specified type for a machine. If loading machine design or layer events it then merges with any override events.
+    /// </summary>
+    private void LoadFromStore(IProductionEvents events, ProductionEventType eventType, IStorageProxy storageProxy)
+    {
+      events?.LoadFromStore(storageProxy);
+
+      //Only merge for Immutable lists
+      if (storageProxy.Mutability == StorageMutability.Immutable)
+      {
+        if (eventType == ProductionEventType.DesignChange)
+          MergeEventLists((IProductionEvents<int>) events, DesignOverrideEvents);
+
+        else if (eventType == ProductionEventType.LayerID)
+          MergeEventLists((IProductionEvents<ushort>) events, LayerOverrideEvents);
+      }
     }
 
     /// <summary>
@@ -308,5 +345,51 @@ namespace VSS.TRex.Events
     /// </summary>
     /// <returns></returns>
     public IProductionEventPairs GetStartEndRecordedDataEvents() => StartEndRecordedDataEvents;
+
+    /// <summary>
+    /// Merges machine and override events into a single event list
+    /// </summary>
+    private void MergeEventLists<T>(IProductionEvents<T> machineEvents, IProductionEvents<OverrideEvent<T>> overrideEvents)
+    {
+      for (var i = 0; i < overrideEvents.Count(); i++)
+      {
+        overrideEvents.GetStateAtIndex(i, out var overrideStartDate, out var overrideState);
+        var overrideValue = overrideState.Value;
+        var overrideEndDate = overrideState.EndDate;
+        //Here we will get index of the latest added event
+        var j = machineEvents.IndexOfClosestEventPriorToDate(overrideEndDate.AddMilliseconds(-1));
+        if (j > -1)
+        {
+          //Remember and clone this last event
+          machineEvents.GetStateAtIndex(j, out _, out var machineValue);
+          //Remove all unused events in override interval
+          RemovePreviousEvent(machineEvents, overrideStartDate.AddMilliseconds(-1), overrideEndDate.AddMilliseconds(-1));
+          //Add override events and return
+          machineEvents.PutValueAtDate(overrideStartDate, overrideValue);
+          machineEvents.PutValueAtDate(overrideEndDate, machineValue);
+        }
+        else
+        {
+          //Add override events and return
+          machineEvents.PutValueAtDate(overrideStartDate,overrideValue);
+          machineEvents.PutValueAtDate(overrideEndDate, overrideValue);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Recursive method to delete elements within the range
+    /// </summary>
+    private void RemovePreviousEvent<T>(IProductionEvents<T> list, DateTime limitEarliestTime, DateTime currentTime)
+    {
+      var index = list.IndexOfClosestEventPriorToDate(currentTime);
+      if (index < 0)
+        return;
+      list.GetStateAtIndex(index, out var dateTime, out _);
+      if (dateTime <= limitEarliestTime)
+        return;
+      list.RemoveValueAtDate(dateTime);
+      RemovePreviousEvent<T>(list, limitEarliestTime, dateTime);
+    }
   }
 }

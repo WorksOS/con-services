@@ -1,5 +1,4 @@
 ﻿using System;
-using VSS.Productivity3D.Models.Models.Reports;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
 {
@@ -38,22 +37,17 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports
     /// <param name="rows">Grid rows.</param>
     /// <param name="request"></param>
     /// <returns>An instance of the GridReport class.</returns>
-    public static StationOffsetReport CreateReport(DateTime startTime, DateTime endTime, StationRow[] rows, CompactionReportStationOffsetRequest request)
+    public StationOffsetReport(DateTime startTime, DateTime endTime, StationRow[] rows, CompactionReportStationOffsetRequest request)
     {
-      var report = new StationOffsetReport
-      {
-        Rows = rows,
-        TemperatureReport = request.ReportTemperature,
-        CmvReport = request.ReportCMV,
-        CutFillReport = request.ReportCutFill,
-        ElevationReport = request.ReportElevation,
-        MdpReport = request.ReportMDP,
-        PassCountReport = request.ReportPassCount,
-        StartTime = startTime,
-        EndTime = endTime
-      };
-
-      return report;
+      Rows = rows;
+      TemperatureReport = request.ReportTemperature;
+      CmvReport = request.ReportCMV;
+      CutFillReport = request.ReportCutFill;
+      ElevationReport = request.ReportElevation;
+      MdpReport = request.ReportMDP;
+      PassCountReport = request.ReportPassCount;
+      StartTime = startTime.Kind == DateTimeKind.Utc ? startTime : startTime.ToUniversalTime();
+      EndTime = endTime.Kind == DateTimeKind.Utc ? endTime : endTime.ToUniversalTime();
     }
   }
 }

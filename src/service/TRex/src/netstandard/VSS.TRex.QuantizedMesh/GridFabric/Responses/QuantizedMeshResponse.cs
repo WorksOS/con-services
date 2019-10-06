@@ -1,26 +1,33 @@
-﻿using VSS.TRex.Common;
-using VSS.TRex.GridFabric.Interfaces;
-//using VSS.TRex.QuantizedMesh.Abstractions.GridFabric.Responses;
+﻿using Apache.Ignite.Core.Binary;
+using VSS.TRex.Common;
 
 namespace VSS.TRex.QuantizedMesh.GridFabric.Responses
 {
   /// <summary>
-  /// Contains the response quantized mesh for a tile request. 
+  /// Contains the prepared result for the client to consume
   /// </summary>
-  public class QuantizedMeshResponse : SubGridsPipelinedResponseBase, IQuantizedMeshResponse, IAggregateWith<IQuantizedMeshResponse>
+  public class QuantizedMeshResponse : SubGridsPipelinedResponseBase
   {
+    private static byte VERSION_NUMBER = 1;
 
-    public virtual IQuantizedMeshResponse AggregateWith(IQuantizedMeshResponse other)
+    public byte[] data;
+
+    public override void ToBinary(IBinaryRawWriter writer)
     {
-      // Composite the quantized mesh tile  held in this response with the QM held in 'other'
-      // ....
+      base.ToBinary(writer);
 
-      return null;
+      VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
+
+      writer.WriteByteArray(data);
     }
 
-    public virtual void SetQMTile(byte[] qmTile)
+    public override void FromBinary(IBinaryRawReader reader)
     {
-      // No implementation in base class
+      base.FromBinary(reader);
+
+      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+
+      data = reader.ReadByteArray();
     }
   }
 }

@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
     {
       try
       {
-        var request = CastRequestObjectTo<QMTileRequest>(item);
+        var request = CastTrexRequestObjectTo<QMTileRequest>(item);
         // Send request to TRex webapi endpoint
         var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(request, "/terrain", customHeaders);
         if (fileResult == null)
@@ -49,11 +49,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
-    }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new System.NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

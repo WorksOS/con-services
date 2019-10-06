@@ -22,37 +22,24 @@ data:
   MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
 #Kafka configuration
-  KAFKA_URI: 10.211.16.11
+  KAFKA_URI: kafka1.services.myvisionlink.com,kafka2.services.myvisionlink.com,kafka3.services.myvisionlink.com
   KAFKA_PORT: "9092"
   KAFKA_OFFSET: latest
   PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
 #Service references  
   ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
   DISSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/dissociateprojectsubscription
-  CONNECTED_SITE_GATEWAY_URL: http://connectedsite.prod.services.myvisionlink.com/api/position
-  COORDSYSPOST_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0/coordsystem
-  COORDSYSVALIDATE_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0/coordsystem/validation
   CUSTOMERSERVICE_API_URL: https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
-  FILTER_API_URL: https://api.trimble.com/t/trimble.com/vss-3dfilter/1.0
   GEOFENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0
-  IMPORTED_FILE_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles
-  IMPORTED_FILE_API_URL2: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfile
   PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
-  PROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project
-  PROJECT_INTERNAL_BASE_URL: http://project.prod.prod-eks.services.myvisionlink.com
-  PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-projectservice/1.4
-  RAPTOR_3DPM_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
-  RAPTOR_NOTIFICATION_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/notification
-  RAPTOR_PROJECT_SETTINGS_API_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
-  SCHEDULER_INTERNAL_BACKGROUND_JOB_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/background
-  SCHEDULER_INTERNAL_EXPORT_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/export
-  SCHEDULER_INTERNAL_BASE_URL: http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
   unifiedproductivity_public_v1: https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0
+  productivity3d_service_public_v1: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0
+  productivity3d_service_public_v2: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity.trimble.com/i/oauth2
 #Misc stuff
@@ -67,7 +54,8 @@ data:
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
   AWS_TAGFILE_BUCKET_NAME: vss-prod-directtagfile-archives
   ENVIRONMENT: PROD
-  NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
+  CORECLR_ENABLE_PROFILING: "0"
+#NEW_RELIC_LICENSE_KEY: 71c62a7fd0b5f943adbfe5126b34300ba7aaaec7 
 #AWS configuration  
   AWS_BUCKET_NAME: vss-prod-3dexports
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-prod
@@ -79,7 +67,8 @@ data:
   ENABLE_RAPTOR_GATEWAY_TAGFILE: "false"
   ENABLE_TREX_GATEWAY_CCA_PALETTE: "false"
   ENABLE_TREX_GATEWAY_CELL_DATUM: "false"
-  ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false" 
+  ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false"
+  ENABLE_TREX_GATEWAY_EDIT_DATA: "false"  
   ENABLE_TREX_GATEWAY_ELEVATION: "false"
   ENABLE_TREX_GATEWAY_GRIDREPORT: "false"
   ENABLE_TREX_GATEWAY_LINEWORKFILE: "false"
@@ -120,6 +109,7 @@ data:
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "5"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER: prod
+  ENABLE_DATA_OCEAN: "false"
 #Pegasus
   PEGASUS_DXF_PROCEDURE_ID: cd1ef2a0-63fb-4469-809a-e650c4feb4ca
   #TODO: This is staging, no prod yet, update when prod available

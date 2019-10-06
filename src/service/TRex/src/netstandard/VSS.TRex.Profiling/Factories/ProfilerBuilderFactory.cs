@@ -21,11 +21,6 @@ namespace VSS.TRex.Profiling.Factories
     /// <summary>
     /// Creates a new builder responsible for determining a vector of cells that are crossed by a profile line
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="cutFillDesignWrapper"></param>
-    /// <param name="slicerToolUsed"></param>
-    /// <returns></returns>
     public ICellProfileBuilder<T> NewCellProfileBuilder(ISiteModel siteModel,
       IFilterSet filterSet,
       IDesignWrapper cutFillDesignWrapper,
@@ -37,35 +32,25 @@ namespace VSS.TRex.Profiling.Factories
     /// <summary>
     /// Creates a new builder responsible for analyzing profile information for a cell or cells identified along a profile line
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="pDExistenceMap"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
-    /// <param name="referenceDesignWrapper"></param>
-    /// <param name="cellLiftBuilder"></param>
-    /// <param name="profileStyle"></param>
-    /// <param name="volumeComputationType"></param>
-    /// <param name="overrides"></param>
-    /// <returns></returns>
     public ICellProfileAnalyzer<T> NewCellProfileAnalyzer(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask pDExistenceMap,
       IFilterSet filterSet,
-      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IDesignWrapper referenceDesignWrapper,
       ICellLiftBuilder cellLiftBuilder,
       VolumeComputationType volumeComputationType,
-      IOverrideParameters overrides)
+      IOverrideParameters overrides,
+      ILiftParameters liftParams)
     {
       switch (profileStyle)
       {
         case ProfileStyle.CellPasses:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, IOverrideParameters, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, cellLiftBuilder, overrides);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, cellLiftBuilder, overrides, liftParams);
 
         case ProfileStyle.SummaryVolume:
-          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, ICellProfileAnalyzer<T>>>()
-            (siteModel, pDExistenceMap, filterSet, cellPassFilter_ElevationRangeDesignWrapper, referenceDesignWrapper, cellLiftBuilder, volumeComputationType);
+          return DIContext.Obtain<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, IDesignWrapper, ICellLiftBuilder, VolumeComputationType, IOverrideParameters, ILiftParameters, ICellProfileAnalyzer<T>>>()
+            (siteModel, pDExistenceMap, filterSet, referenceDesignWrapper, cellLiftBuilder, volumeComputationType, overrides, liftParams);
 
         default:
           throw new ArgumentOutOfRangeException(nameof(profileStyle), profileStyle, null);
@@ -75,12 +60,6 @@ namespace VSS.TRex.Profiling.Factories
     /// <summary>
     /// Creates a new builder responsible for processing cell pass, layer and other information for single cells in a profile
     /// </summary>
-    /// <param name="siteModel"></param>
-    /// <param name="gridDataType"></param>
-    /// <param name="populationControl"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="cellPassFastEventLookerUpper"></param>
-    /// <returns></returns>
     public ICellLiftBuilder NewCellLiftBuilder(ISiteModel siteModel,
       GridDataType gridDataType,
       IFilteredValuePopulationControl populationControl,

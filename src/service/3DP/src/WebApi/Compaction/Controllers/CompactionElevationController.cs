@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -15,6 +14,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
@@ -199,7 +199,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       try
       {
-        var result = await boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds, GetUserId(), CustomHeaders);
+        var result = await boundingBoxService.GetProductionDataExtents(projectUid, projectId, excludedIds?.Select(e => e.Item1), excludedIds?.Select(e => e.Item2), GetUserId(), CustomHeaders);
         return await FormatProjectExtentsResult(projectUid, result);
       }
       catch (ServiceException se)

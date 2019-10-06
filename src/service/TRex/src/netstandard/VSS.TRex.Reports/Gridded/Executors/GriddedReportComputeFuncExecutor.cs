@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Interfaces;
@@ -70,18 +70,20 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
       var task = DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport) as GriddedReportTask;
 
-      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
-        dataModelID: _griddedReportRequestArgument.ProjectID,
-        gridDataType: GridDataType.CellProfile,
-        response: GriddedReportRequestResponse,
-        filters: _griddedReportRequestArgument.Filters,
-        cutFillDesign: _griddedReportRequestArgument.ReferenceDesign,
-        task: task,
-        pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-        requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-        requireSurveyedSurfaceInformation: Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
-        requestRequiresAccessToDesignFileExistenceMap: _griddedReportRequestArgument.ReferenceDesign != null && _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty,
-        overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
+      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+        requestDescriptor,
+        _griddedReportRequestArgument.ProjectID,
+        GridDataType.CellProfile,
+        GriddedReportRequestResponse,
+        _griddedReportRequestArgument.Filters,
+        _griddedReportRequestArgument.ReferenceDesign,
+        task,
+        DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+        DIContext.Obtain<IRequestAnalyser>(),
+        Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(_griddedReportRequestArgument.Filters),
+        _griddedReportRequestArgument.ReferenceDesign != null && _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty,
+        BoundingIntegerExtent2D.Inverted(),
+        _griddedReportRequestArgument.LiftParams
       );
 
       // Set the grid TRexTask parameters for progressive processing
@@ -89,9 +91,8 @@ namespace VSS.TRex.Reports.Gridded.Executors
       processor.Task.TRexNodeID = _griddedReportRequestArgument.TRexNodeID;
       processor.Task.GridDataType = GridDataType.CellProfile;
 
-      task.ProcessorDelegate =
-        subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
-          .AddRange(ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
+      task.ProcessorDelegate = async subGrid => GriddedReportRequestResponse.GriddedReportDataRowList
+          .AddRange(await ExtractRequiredValues(_griddedReportRequestArgument, subGrid));
 
       // report options 0=direction,1=endpoint,2=automatic
       if (_griddedReportRequestArgument.GridReportOption == GridReportOption.EndPoint)
@@ -136,33 +137,31 @@ namespace VSS.TRex.Reports.Gridded.Executors
       return true;
     }
 
-    private List<GriddedReportDataRow> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
+    private async Task<List<GriddedReportDataRow>> ExtractRequiredValues(GriddedReportRequestArgument griddedReportRequestArgument, ClientCellProfileLeafSubgrid subGrid)
     {
       var result = new List<GriddedReportDataRow>();
-      IClientHeightLeafSubGrid designHeights = null;
+      (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult errorCode) getDesignHeightsResult = (null, DesignProfilerRequestResult.UnknownError);
 
       if (_griddedReportRequestArgument.ReferenceDesign != null && _griddedReportRequestArgument.ReferenceDesign.DesignID != Guid.Empty)
       {
-        IDesign cutFillDesign = _siteModel.Designs.Locate(_griddedReportRequestArgument.ReferenceDesign.DesignID);
+        var cutFillDesign = _siteModel.Designs.Locate(_griddedReportRequestArgument.ReferenceDesign.DesignID);
         if (cutFillDesign == null)
-        {
           throw new ArgumentException($"Design {_griddedReportRequestArgument.ReferenceDesign.DesignID} not a recognized design in project {_griddedReportRequestArgument.ProjectID}");
-        }
 
-        cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, _griddedReportRequestArgument.ReferenceDesign.Offset, 
-          subGrid.OriginAsCellAddress(), subGrid.CellSize, out designHeights, out var errorCode);
+        getDesignHeightsResult = await cutFillDesign.GetDesignHeights(_griddedReportRequestArgument.ProjectID, _griddedReportRequestArgument.ReferenceDesign.Offset, 
+          subGrid.OriginAsCellAddress(), subGrid.CellSize);
 
-        if (errorCode != DesignProfilerRequestResult.OK || designHeights == null)
+        if (getDesignHeightsResult.errorCode != DesignProfilerRequestResult.OK || getDesignHeightsResult.designHeights == null)
         {
           string errorMessage;
-          if (errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+          if (getDesignHeightsResult.errorCode == DesignProfilerRequestResult.NoElevationsInRequestedPatch)
           {
             errorMessage = "Gridded Report. Call to RequestDesignElevationPatch failed due to no elevations in requested patch.";
             Log.LogInformation(errorMessage);
           }
           else
           {
-            errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {errorCode}.";
+            errorMessage = $"Gridded Report. Call to RequestDesignElevationPatch failed due to no TDesignProfilerRequestResult return code {getDesignHeightsResult.errorCode}.";
             Log.LogWarning(errorMessage);
           }
         }
@@ -181,8 +180,8 @@ namespace VSS.TRex.Reports.Gridded.Executors
           Easting = cell.CellXOffset + subGridWorldOriginX,
           Northing = cell.CellYOffset + subGridWorldOriginY,
           Elevation = griddedReportRequestArgument.ReportElevation ? cell.Height : Consts.NullHeight,
-          CutFill = griddedReportRequestArgument.ReportCutFill && designHeights != null && designHeights.Cells[x, y] != Consts.NullHeight
-            ? cell.Height - designHeights.Cells[x, y]
+          CutFill = griddedReportRequestArgument.ReportCutFill && getDesignHeightsResult.designHeights != null && getDesignHeightsResult.designHeights.Cells[x, y] != Consts.NullHeight
+            ? cell.Height - getDesignHeightsResult.designHeights.Cells[x, y]
             : Consts.NullHeight,
 
           // CCV is equiv to CMV in this instance

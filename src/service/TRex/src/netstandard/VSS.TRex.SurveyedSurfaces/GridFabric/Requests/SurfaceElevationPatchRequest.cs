@@ -2,6 +2,7 @@
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Designs.GridFabric.Requests;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs;
@@ -33,7 +34,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
     /// <summary>
     /// The compute function used for surface elevation patch requests
     /// </summary>
-    private readonly IComputeFunc<ISurfaceElevationPatchArgument, byte[]> _computeFunc = new SurfaceElevationPatchComputeFunc();
+    private readonly IComputeFunc<ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper> _computeFunc = new SurfaceElevationPatchComputeFunc();
 
     /// <summary>
     /// Default no-arg constructor
@@ -76,12 +77,12 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
       }
 
       IClientLeafSubGrid clientResult = null;
-      byte[] result = Compute.Apply(_computeFunc, arg);
+      var result = Compute.Apply(_computeFunc, arg);
 
-      if (result != null)
+      if (result.Bytes != null)
       {
         clientResult = ClientLeafSubGridFactory.GetSubGrid(arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime);
-        clientResult.FromBytes(result);
+        clientResult.FromBytes(result.Bytes);
 
         // Fow now, only cache non-composite elevation sub grids
         if (cachingSupported)

@@ -2,23 +2,17 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using ExecutorTests.Internal;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
-using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Proxy;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.GridFabric.Arguments;
@@ -32,7 +33,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
     [InlineData(247668.341, 193059.996, 31.500, -2.3)]
     [InlineData(247680.000, 193054.000, 30.168, 100.1)]
     [InlineData(247680.000 + 100, 193054.000, Consts.NullDouble, 100.1)]  // Outside of surface so returns NullDouble
-    public void Test_DesignElevationSpotRequest_EmptySiteModel_SpotLookup_WithOffset(double spotX, double spotY, double expectedHeight, double offset)
+    public async Task Test_DesignElevationSpotRequest_EmptySiteModel_SpotLookup_WithOffset(double spotX, double spotY, double expectedHeight, double offset)
     {
       AddDesignProfilerGridRouting();
 
@@ -41,7 +42,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var referenceDesign = new DesignOffset(designUid, offset);
 
       var request = new DesignElevationSpotRequest();
-      var response = request.Execute(new CalculateDesignElevationSpotArgument
+      var response = await request.ExecuteAsync(new CalculateDesignElevationSpotArgument
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,

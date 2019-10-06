@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 #if RAPTOR
 using ASNodeDecls;
 using ASNodeRaptorReports;
 #endif
 using Microsoft.Extensions.Logging;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
@@ -20,6 +18,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -70,8 +69,28 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
     private CompactionReportResult ConvertTRexStationOffsetResult(CompactionReportStationOffsetRequest request, Stream stream)
     {
-      throw new ServiceException(HttpStatusCode.BadRequest,
-        new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "TRex unsupported request"));
+      log.LogDebug($"{nameof(ConvertTRexStationOffsetResult)}: Retrieving response data from TRex");
+
+      var stationOffsetReportResult = new StationOffsetReportResultPackager(ReportType.StationOffset);
+      stationOffsetReportResult.Read((stream as MemoryStream)?.ToArray());
+
+      var stationRows = new StationRow[stationOffsetReportResult.GriddedData.NumberOfRows];
+
+      for (var i = 0; i < stationOffsetReportResult.GriddedData.NumberOfRows; i++)
+      {
+        var station = stationOffsetReportResult.GriddedData.Rows[i];
+        var stationRow = StationRow.Create(station, request);
+
+        for (var j = 0; j < station.Offsets.Count; j++)
+          stationRow.Offsets[j] = StationOffsetRow.CreateRow(station.Offsets[j], request);
+
+        stationRows[i] = stationRow;
+      }
+
+      var startAndEndTime = request.Filter.StartUtc ?? DateTime.UtcNow;
+      var stationOffsetReport = new StationOffsetReport(startAndEndTime, startAndEndTime, stationRows, request);
+
+      return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
     }
 
 #if RAPTOR
@@ -146,16 +165,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         var stationRow = StationRow.Create(station, request);
 
         for (var j = 0; j < station.NumberOfOffsets; j++)
-        {
           stationRow.Offsets[j] = StationOffsetRow.CreateRow(station.Offsets[j], request);
-        }
 
         stationRows[i] = stationRow;
       }
 
-      var startAndEndTime = request.Filter.StartUtc ?? DateTime.Now;
-      var stationOffsetReport =
-        StationOffsetReport.CreateReport(startAndEndTime, startAndEndTime, stationRows, request);
+      var startAndEndTime = request.Filter.StartUtc ?? DateTime.UtcNow;
+      var stationOffsetReport = new StationOffsetReport(startAndEndTime, startAndEndTime, stationRows, request);
 
       return CompactionReportResult.CreateExportDataResult(stationOffsetReport, 1);
     }
@@ -168,9 +184,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #endif
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

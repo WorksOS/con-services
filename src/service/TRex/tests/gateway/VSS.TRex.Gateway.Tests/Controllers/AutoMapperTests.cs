@@ -3,17 +3,22 @@ using System.Drawing;
 using System.Linq;
 using Castle.Core.Internal;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.TRex.Common.CellPasses;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 using Xunit;
+using LiftDetectionType = VSS.Productivity3D.Models.Enums.LiftDetectionType;
+using LiftThicknessType = VSS.Productivity3D.Models.Enums.LiftThicknessType;
 using Point = VSS.MasterData.Models.Models.Point;
-using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
+using TargetPassCountRange = VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.TRex.Gateway.Tests.Controllers
 {
@@ -177,7 +182,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       double minTemp, double maxTemp, bool overrideTemp,
       ushort minSpeed, ushort maxSpeed, bool overrideSpeed)
     {
-      var pc = overridePassCount ? new TargetPassCountRange(minPassCount, maxPassCount) : null;
+      var pc = overridePassCount ? new TargetPassCountRange.TargetPassCountRange(minPassCount, maxPassCount) : null;
       var temp = overrideTemp ? new TemperatureSettings(maxTemp, minTemp, overrideTemp) : null;
       var speed = overrideSpeed ? new MachineSpeedTarget(minSpeed, maxSpeed) : null;
       var overrides = new OverridingTargets(ccv, overrideCCV, minCCV, maxCCV,
@@ -199,5 +204,31 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       Assert.Equal(overrideSpeed ? overrides.MachineSpeedTarget.MinTargetMachineSpeed : 0, result.TargetMachineSpeed.Min);
       Assert.Equal(overrideSpeed ? overrides.MachineSpeedTarget.MaxTargetMachineSpeed : 0, result.TargetMachineSpeed.Max);
     }
+
+    [Fact]
+    public void MapLiftSettingsToLiftParameters()
+    {
+      var liftSettings = new LiftSettings(true, false, SummaryType.Compaction, 
+        SummaryType.Thickness, 0.5f, LiftDetectionType.Automatic, LiftThicknessType.Compacted, 
+        new LiftThicknessTarget{TargetLiftThickness = 1.0f, BelowToleranceLiftThickness = 0.3f, AboveToleranceLiftThickness = 0.4f }, 
+        true, 0.7f, true, 0.6, 1.35);
+
+      var result = AutoMapperUtility.Automapper.Map<ILiftParameters>(liftSettings);
+      Assert.Equal(liftSettings.CCVSummarizeTopLayerOnly, result.CCVSummarizeTopLayerOnly);
+      Assert.Equal(liftSettings.MDPSummarizeTopLayerOnly, result.MDPSummarizeTopLayerOnly);
+      Assert.Equal(CCVSummaryTypes.Compaction, result.CCVSummaryTypes);
+      Assert.Equal(MDPSummaryTypes.Thickness, result.MDPSummaryTypes);
+      Assert.Equal((Types.LiftDetectionType)liftSettings.LiftDetectionType, result.LiftDetectionType);
+      Assert.Equal((Types.LiftThicknessType)liftSettings.LiftThicknessType, result.LiftThicknessType);
+      Assert.Equal(liftSettings.LiftThicknessTarget.TargetLiftThickness, result.TargetLiftThickness);
+      Assert.Equal(liftSettings.LiftThicknessTarget.AboveToleranceLiftThickness, result.AboveToleranceLiftThickness);
+      Assert.Equal(liftSettings.LiftThicknessTarget.BelowToleranceLiftThickness, result.BelowToleranceLiftThickness);
+      Assert.Equal(liftSettings.OverrideMachineThickness, result.OverrideMachineThickness);
+      Assert.Equal(liftSettings.OverridingLiftThickness, result.OverridingLiftThickness);
+      Assert.Equal(liftSettings.IncludeSupersededLifts, result.IncludeSuperseded);
+      Assert.Equal(liftSettings.DeadBandLowerBoundary, result.DeadBandLowerBoundary);
+      Assert.Equal(liftSettings.DeadBandUpperBoundary, result.DeadBandUpperBoundary);
+    }
+
   }
 }

@@ -16,7 +16,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
@@ -178,11 +178,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           }
         }
       }
-    }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
     }
 
   }

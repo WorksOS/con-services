@@ -11,7 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="2.2.0" />
@@ -21,19 +20,17 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\3DP\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
-    <ProjectReference Include="..\..\..\Filter\src\VSS.Productivity3D.Filter.Proxy\VSS.Productivity3D.Filter.Proxy.csproj" />
-    <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\Filter\Clients\VSS.Productivity3D.Filter.Proxy\VSS.Productivity3D.Filter.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj" />
     <ProjectReference Include="..\..\..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="kestrelsettings.json">
+    <Content Update="appsettings.json;kestrelsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

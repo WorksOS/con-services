@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -61,16 +62,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                                          updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
                                          updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
                                          Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
-                                         serviceExceptionHandler, raptorProxy,
+                                         serviceExceptionHandler, productivity3dV2ProxyNotification,
                                          projectRepo);
 
-        var dxfFileName = updateImportedFile.FileDescriptor.FileName;
+        var dxfFileName = updateImportedFile.DataOceanFileName;
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, raptorProxy, customHeaders, log,
-            serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.FileDescriptor.FileName, updateImportedFile.DataOceanRootFolder);
+            customerUid, updateImportedFile.ProjectUid, updateImportedFile.ImportedFileUid, productivity3dV2ProxyCompaction, customHeaders, log,
+            serviceExceptionHandler, authn, dataOceanClient, configStore, updateImportedFile.DataOceanFileName, updateImportedFile.DataOceanRootFolder);
         }
 
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment ||
@@ -80,13 +81,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           var projectTask = await ProjectRequestHelper.GetProject(updateImportedFile.ProjectUid.ToString(), customerUid, log, serviceExceptionHandler, projectRepo);
 
           var jobRequest = TileGenerationRequestHelper.CreateRequest(
-            updateImportedFile.ImportedFileType, 
-            customerUid, 
+            updateImportedFile.ImportedFileType,
+            customerUid,
             updateImportedFile.ProjectUid.ToString(),
-            existingImportedFile.ImportedFileUid, 
-            updateImportedFile.DataOceanRootFolder, 
+            existingImportedFile.ImportedFileUid,
+            updateImportedFile.DataOceanRootFolder,
             dxfFileName,
-            projectTask.CoordinateSystemFileName, 
+            DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, Guid.Parse(projectTask.ProjectUID), null),
             updateImportedFile.DxfUnitsTypeId,
             updateImportedFile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
@@ -102,8 +103,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           customerUid,
           updateImportedFile.ProjectUid.ToString(),
           existingImportedFile.ImportedFileUid,
-          updateImportedFile.DataOceanRootFolder, 
-          updateImportedFile.FileDescriptor.FileName,
+          updateImportedFile.DataOceanRootFolder,
+          updateImportedFile.DataOceanFileName,
           null,
           updateImportedFile.DxfUnitsTypeId,
           updateImportedFile.SurveyedUtc);

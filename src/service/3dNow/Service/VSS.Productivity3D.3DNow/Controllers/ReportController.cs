@@ -7,35 +7,38 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Now3D.Models;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 
 namespace VSS.Productivity3D.Now3D.Controllers
 {
   public class ReportController : BaseController
   {
-    private readonly IProjectProxy projectProxy;
-    private readonly IFileImportProxy fileImportProxy;
-    private readonly IFilterServiceProxy filterServiceProxy;
-    private readonly IRaptorProxy raptorProxy;
+    private readonly IProjectProxy _projectProxy;
+    private readonly IFileImportProxy _fileImportProxy;
+    private readonly IFilterServiceProxy _filterServiceProxy;
+    private readonly IProductivity3dV2ProxyCompaction _productivity3dV2ProxyCompaction;
 
     public ReportController(ILoggerFactory loggerFactory, 
       IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy,
       IFileImportProxy fileImportProxy, 
       IFilterServiceProxy filterServiceProxy,
-      IRaptorProxy raptorProxy) : base(loggerFactory, serviceExceptionHandler)
+      IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction) 
+      : base(loggerFactory, serviceExceptionHandler)
     {
-      this.projectProxy = projectProxy;
-      this.fileImportProxy = fileImportProxy;
-      this.filterServiceProxy = filterServiceProxy;
-      this.raptorProxy = raptorProxy;
+      _projectProxy = projectProxy;
+      _fileImportProxy = fileImportProxy;
+      _filterServiceProxy = filterServiceProxy;
+      _productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
     }
 
     /// <summary>
@@ -109,7 +112,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
       // Base UID needs to be filter
       // Top UID needs to be design
       var route = $"/volumes/summary?projectUid={filter.ProjectUid}&baseUid={filterUid}&topUid={filter.DesignFileUid}";
-      var result = await raptorProxy.ExecuteGenericV2Request<CompactionVolumesSummaryResult>(route, HttpMethod.Get, null, CustomHeaders);
+      var result = await _productivity3dV2ProxyCompaction.ExecuteGenericV2Request<CompactionVolumesSummaryResult>(route, HttpMethod.Get, null, CustomHeaders);
 
       if (result != null)
         return Json(result);
@@ -146,7 +149,8 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// Helper method to execute a request against 3dp and throw a service exception if the request fails
     /// </summary>
-    private async Task<T> ExecuteRequest<T>(string baseEndPoint, Guid projectUid, Guid filterUid, Dictionary<string, string> additionalParams = null) where T : class
+    private async Task<T> ExecuteRequest<T>(string baseEndPoint, Guid projectUid, Guid filterUid, Dictionary<string, string> additionalParams = null)
+      where T : class, IMasterDataModel
     {
       var route = $"{baseEndPoint}?projectUid={projectUid}&filterUid={filterUid}";
 
@@ -158,7 +162,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
         }
       }
 
-      var result = await raptorProxy.ExecuteGenericV2Request<T>(route, HttpMethod.Get, null, CustomHeaders);
+      var result = await _productivity3dV2ProxyCompaction.ExecuteGenericV2Request<T>(route, HttpMethod.Get, null, CustomHeaders);
 
       if (result != null)
         return result;
@@ -184,7 +188,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
           "No Simple Filter found");
       }
 
-      var project = await projectProxy.GetProjectForCustomer(CustomerUid, simpleFilter.ProjectUid, CustomHeaders);
+      var project = await _projectProxy.GetProjectForCustomer(CustomerUid, simpleFilter.ProjectUid, CustomHeaders);
       if (project == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 
@@ -193,7 +197,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
           $"Cannot find project {simpleFilter.ProjectUid} for Customer {CustomerUid}");
       }
 
-      var file = await fileImportProxy.GetFileForProject(simpleFilter.ProjectUid, UserId, simpleFilter.DesignFileUid,
+      var file = await _fileImportProxy.GetFileForProject(simpleFilter.ProjectUid, UserId, simpleFilter.DesignFileUid,
         CustomHeaders);
 
       if (file == null)
@@ -218,7 +222,7 @@ namespace VSS.Productivity3D.Now3D.Controllers
 
       var filterRequest = FilterRequest.Create(filterModel);
 
-      var result = await filterServiceProxy.CreateFilter(simpleFilter.ProjectUid, filterRequest, CustomHeaders);
+      var result = await _filterServiceProxy.CreateFilter(simpleFilter.ProjectUid, filterRequest, CustomHeaders);
 
       if (result.Code != 0)
       {

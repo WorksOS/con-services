@@ -1,8 +1,9 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace VSS.TRex.Rendering.Abstractions
 {
-  public interface IGraphics
+  public interface IGraphics : IDisposable
   {
     void DrawRectangle(IPen pen, Rectangle rectangle);
     void DrawLine(IPen pen, int x1, int y1, int x2, int y2);

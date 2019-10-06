@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Models.Enums;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Interfaces;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -126,6 +129,11 @@ namespace VSS.TRex.Pipelines
     public bool RequestRequiresAccessToDesignFileExistenceMap { get; set; }
 
     /// <summary>
+    /// Parameters used for lift analysis
+    /// </summary>
+    public ILiftParameters LiftParams { get; set; }
+
+    /// <summary>
     /// A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria
     /// </summary>
     public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
@@ -146,6 +154,7 @@ namespace VSS.TRex.Pipelines
     /// <param name="requireSurveyedSurfaceInformation"></param>
     /// <param name="requestRequiresAccessToDesignFileExistenceMap"></param>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
+    /// <param name="liftParams"></param>
     public PipelineProcessor(Guid requestDescriptor,
                              Guid dataModelID,
                              GridDataType gridDataType,
@@ -157,7 +166,8 @@ namespace VSS.TRex.Pipelines
                              IRequestAnalyser requestAnalyser,
                              bool requireSurveyedSurfaceInformation,
                              bool requestRequiresAccessToDesignFileExistenceMap,
-                             BoundingIntegerExtent2D overrideSpatialCellRestriction)
+                             BoundingIntegerExtent2D overrideSpatialCellRestriction,
+                             ILiftParameters liftParams)
     {
       RequestDescriptor = requestDescriptor;
       DataModelID = dataModelID;
@@ -174,6 +184,7 @@ namespace VSS.TRex.Pipelines
       RequestRequiresAccessToDesignFileExistenceMap = requestRequiresAccessToDesignFileExistenceMap;
 
       OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
+      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -235,6 +246,8 @@ namespace VSS.TRex.Pipelines
           var FilterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
           var FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
+          SurveyedSurfacesExcludedViaTimeFiltering = Filters.Filters.Length > 0;
+
           foreach (var filter in Filters.Filters)
           {
             if (!LocalSurveyedSurfaces.ProcessSurveyedSurfacesForFilter(DataModelID, filter,
@@ -244,7 +257,7 @@ namespace VSS.TRex.Pipelines
               return false;
             }
 
-            SurveyedSurfacesExcludedViaTimeFiltering |= FilterSurveyedSurfaces.Count > 0;
+            SurveyedSurfacesExcludedViaTimeFiltering &= FilterSurveyedSurfaces.Count == 0;
           }
         }
       }
@@ -329,8 +342,7 @@ namespace VSS.TRex.Pipelines
       Pipeline.DataModelID = DataModelID;
       Pipeline.ReferenceDesign = CutFillDesign;
 
-      //TODO Re-add when lift build settings are supported
-      // PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+      Pipeline.LiftParams = LiftParams;
 
       // If summaries of compaction information (both CMV and MDP) are being displayed,
       // and the lift build settings requires all layers to be examined (so the
@@ -338,20 +350,21 @@ namespace VSS.TRex.Pipelines
       // analysis engine to apply to restriction to the number of cell passes to use
       // to perform layer analysis (ie: all cell passes will be used).
 
-      /* Todo: Delegate this kind of specialised configuration to the client of the pipeline processor
+      //Todo: Delegate this kind of specialised configuration to the client of the pipeline processor
+      /*
       if (Mode == DisplayMode.CCVSummary || Mode == DisplayMode.CCVPercentSummary)
       {
-        if (!PipeLine.LiftBuildSettings.CCVSummarizeTopLayerOnly)
-           PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+        if (!Pipeline.LiftParams.CCVSummarizeTopLayerOnly)
+           Pipeline.MaxNumberOfPassesToReturn = CellPassConsts.MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
       }
 
       if (Mode == DisplayMode.MDPSummary || Mode == DisplayMode.MDPPercentSummary)
       {
-        if (!PipeLine.LiftBuildSettings.MDPSummarizeTopLayerOnly)
-          PipeLine.MaxNumberOfPassesToReturn = VLPDSvcLocations.VLPDASNode_MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
-      }
+        if (!Pipeline.LiftParams.MDPSummarizeTopLayerOnly)
+          Pipeline.MaxNumberOfPassesToReturn = CellPassConsts.MaxCellPassDepthForAllLayersCompactionSummaryAnalysis;
+      } 
       */
-
+     
       Pipeline.OverallExistenceMap = OverallExistenceMap;
       Pipeline.ProdDataExistenceMap = ProdDataExistenceMap;
       Pipeline.DesignSubGridOverlayMap = DesignSubGridOverlayMap;

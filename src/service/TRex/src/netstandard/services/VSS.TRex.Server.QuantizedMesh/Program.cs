@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -63,38 +63,37 @@ namespace VSS.TRex.Server.QuantizedMesh
     private static void DependencyInjection()
     {
       DIBuilder.New()
-      .AddLogging()
-      .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
-      .Build()
-      .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
-      .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
-      .Add(TRexGridFactory.AddGridFactoriesToDI)
-      .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
-      .Build()
-      .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
-      .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
-      .Build()
-      .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
-      .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
-      .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
-      .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
-      .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
-      .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
-      .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
-      .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
-      .Build()
-      //.Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
-      .Add(x => x.AddSingleton(new QuantizedMeshServer()))
-      .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
-      .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
+        .AddLogging()
+        .Add(x => x.AddSingleton<IConfigurationStore, GenericConfiguration>())
+        .Build()
+        .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
+        .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
+        .Add(TRexGridFactory.AddGridFactoriesToDI)
+        .Add(VSS.TRex.Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
+        .Build()
+        .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceFactory>(new SurveyedSurfaceFactory()))
+        .Build()
+        .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
+        .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
+        .Add(x => x.AddTransient<IRequestAnalyser>(factory => new RequestAnalyser()))
+        .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
+        .Add(x => x.AddSingleton<IClientLeafSubGridFactory>(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
+        .Build()
+        .Add(x => x.AddSingleton(new QuantizedMeshServer()))
+        .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
 
-      // Register the listener for site model attribute change notifications
-      .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
-      .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+        // Register the listener for site model attribute change notifications
+        .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
+        .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
-      .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+        .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
-      .Complete();
+        .Complete();
     }
 
     private static void EnsureAssemblyDependenciesAreLoaded()
@@ -142,30 +141,47 @@ namespace VSS.TRex.Server.QuantizedMesh
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
-      DependencyInjection();
-
-      ILogger Log = Logging.Logger.CreateLogger<Program>();
-
-      Log.LogInformation("Creating service");
-      Log.LogDebug("Creating service");
-
-      var cancelTokenSource = new CancellationTokenSource();
-      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      try
       {
-        Console.WriteLine("Exiting");
-        DIContext.Obtain<ITRexGridFactory>().StopGrids();
-        cancelTokenSource.Cancel();
-      };
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
 
-      DoServiceInitialisation();
+        var Log = Logging.Logger.CreateLogger<Program>();
 
-      await Task.Delay(-1, cancelTokenSource.Token);
-      return 0;
+        Log.LogInformation("Creating service");
+        Log.LogDebug("Creating service");
+
+        var cancelTokenSource = new CancellationTokenSource();
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+          Console.WriteLine("Exiting");
+          DIContext.Obtain<ITRexGridFactory>().StopGrids();
+          cancelTokenSource.Cancel();
+        };
+
+        DoServiceInitialisation();
+
+        await Task.Delay(-1, cancelTokenSource.Token);
+        return 0;
+      }
+      catch (TaskCanceledException)
+      {
+        // Don't care as this is thrown by Task.Delay()
+        Console.WriteLine("Process exit via TaskCanceledException (SIGTERM)");
+        return 0;
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+        return -1;
+      }
     }
   }
 }

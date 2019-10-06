@@ -39,7 +39,7 @@ namespace VSS.TRex.Filters.Models
 
         public IOverrideParameters Overrides { get; set; }
 
-        // TODO     LiftBuildSettings: TICLiftBuildSettings;
+        public ILiftParameters LiftParams { get; set; }
 
         /// <summary>
         /// ProbePositions is used to store the real world positions used to probe into
@@ -60,7 +60,7 @@ namespace VSS.TRex.Filters.Models
             CellProfile = null;
             LowestPassIdx = Common.Consts.NullLowestPassIdx;
             Overrides = new OverrideParameters();
-//          todo  LiftBuildSettings = Nil;
+            LiftParams = new LiftParameters();
         }
     }
 }

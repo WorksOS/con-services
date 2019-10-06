@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.TTM;
@@ -27,6 +28,8 @@ namespace VSS.TRex.Designs
   public class TTMDesign : DesignBase
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<TTMDesign>();
+
+    private const int TTM_DESIGN_BOUNDARY_FILE_VERSION = 1;
 
     private double minHeight;
     private double maxHeight;
@@ -275,24 +278,24 @@ namespace VSS.TRex.Designs
       } while ((NumCellRowsToProcess > 0) && !SingleRowOnly); // or not InRange(ProcessingCellYIndex, 0, kSubGridTreeDimension - 1);
     }
   
-    public override bool ComputeFilterPatch(double StartStn, double EndStn, double LeftOffset, double RightOffset,
-      SubGridTreeBitmapSubGridBits Mask,
-      SubGridTreeBitmapSubGridBits Patch,
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset)
+    public override bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
+      SubGridTreeBitmapSubGridBits mask,
+      SubGridTreeBitmapSubGridBits patch,
+      double originX, double originY,
+      double cellSize,
+      double offset)
     {
       var Heights = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
-      if (InterpolateHeights(Heights, OriginX, OriginY, CellSize, Offset))
+      if (InterpolateHeights(Heights, originX, originY, cellSize, offset))
       {
-        Mask.ForEachSetBit((x, y) =>
+        mask.ForEachSetBit((x, y) =>
         {
-          if (Heights[x, y] == Common.Consts.NullHeight) Mask.ClearBit(x, y);
+          if (Heights[x, y] == Common.Consts.NullHeight) mask.ClearBit(x, y);
         });
-        Patch.Assign(Mask);
+        patch.Assign(mask);
 
-        //SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [Patch.CountBits]), ...);
+        //SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [patch.CountBits]), ...);
 
         return true;
       }
@@ -557,7 +560,7 @@ namespace VSS.TRex.Designs
           triangleCellExtents[i] = triangleCellExtent;
         }
 
-        // Initialise Patch to null height values
+        // Initialise patch to null height values
         Array.Copy(kNullPatch, 0, Patch, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
         // Iterate over all the cells in the grid using the triangle sub grid cell extents to filter
@@ -826,7 +829,7 @@ namespace VSS.TRex.Designs
       if (boundary != null)
         return true;
 
-      bool result = LoadBoundary(fileName);
+      var result = LoadBoundary(fileName);
 
       if (!result)
       {
@@ -841,7 +844,6 @@ namespace VSS.TRex.Designs
         }
         else
           Log.LogError($"Unable to create and save boundary file {fileName}");
-
       }
 
       return result;
@@ -863,8 +865,19 @@ namespace VSS.TRex.Designs
         {
           using (var reader = new BinaryReader(ms))
           {
-            foreach (var fence in boundary)
+            var version = reader.ReadInt32();
+            if (version != TTM_DESIGN_BOUNDARY_FILE_VERSION)
+              throw new TRexException($"Invalid version in TTM boundary file: {version}");
+
+            var count = reader.ReadInt32();
+
+            boundary = new List<Fence>();
+            for (var i = 0; i < count; i++)
+            {
+              var fence = new Fence();
               fence.Read(reader);
+              boundary.Add(fence);
+            }
           }
         }
 
@@ -890,11 +903,14 @@ namespace VSS.TRex.Designs
         if (File.Exists(fileName))
           return true;
 
-        // Write the boundary out to a file
+        // Write the boundaries out to a file
         using (var fs = new FileStream(fileName, FileMode.CreateNew, FileAccess.Write, FileShare.None))
         {
           using (var writer = new BinaryWriter(fs))
           {
+            writer.Write((int)TTM_DESIGN_BOUNDARY_FILE_VERSION); // Version
+            writer.Write((int)(boundary.Count));
+
             foreach (var fence in boundary)
               fence.Write(writer);
           }

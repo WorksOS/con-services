@@ -5,15 +5,18 @@ metadata:
   name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}-webapi
   labels:
     app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+    component: {{ template "component.webapi" . }}
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+      component: {{ template "component.webapi" . }}
   template:
     metadata:
       labels:
         app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag | lower }}
+        component: {{ template "component.webapi" . }}
     spec:
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill:{{ .Values.image.tag }}

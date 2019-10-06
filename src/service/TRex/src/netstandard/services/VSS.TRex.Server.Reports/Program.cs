@@ -10,6 +10,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
@@ -38,6 +39,8 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 
 namespace VSS.TRex.Server.Reports
 {
@@ -77,6 +80,7 @@ namespace VSS.TRex.Server.Reports
         .Add(VSS.TRex.IO.DIUtilities.AddPoolCachesToDI)
         .Add(VSS.TRex.Cells.DIUtilities.AddPoolCachesToDI)
         .Add(TRexGridFactory.AddGridFactoriesToDI)
+        .Add(x => x.AddSingleton<ISubGridCellLatestPassesDataWrapperFactory>(new SubGridCellLatestPassesDataWrapperFactory()))
         .Add(Storage.Utilities.DIUtilities.AddProxyCacheFactoriesToDI)
         .Build()
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
@@ -102,7 +106,9 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
-        .Add(x => x.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")))
+
+        .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
+        .Add(x => x.AddTransient<ITransferProxy>(sp => sp.GetRequiredService<ITransferProxyFactory>().NewProxy("AWS_BUCKET_NAME")))
 
         .Complete();
     }
@@ -150,30 +156,46 @@ namespace VSS.TRex.Server.Reports
     {
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
-      DependencyInjection();
-
-      ILogger Log = Logging.Logger.CreateLogger<Program>();
-
-      Log.LogInformation("Creating service");
-      Log.LogDebug("Creating service");
-
-      var cancelTokenSource = new CancellationTokenSource();
-      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      try
       {
-        Console.WriteLine("Exiting");
-        DIContext.Obtain<ITRexGridFactory>().StopGrids();
-        cancelTokenSource.Cancel();
-      };
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
 
-      DoServiceInitialisation();
+        var Log = Logging.Logger.CreateLogger<Program>();
 
-      await Task.Delay(-1, cancelTokenSource.Token);
-      return 0;
+        Log.LogInformation("Creating service");
+        Log.LogDebug("Creating service");
+
+        var cancelTokenSource = new CancellationTokenSource();
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+          Console.WriteLine("Exiting");
+          DIContext.Obtain<ITRexGridFactory>().StopGrids();
+          cancelTokenSource.Cancel();
+        };
+
+        DoServiceInitialisation();
+
+        await Task.Delay(-1, cancelTokenSource.Token);
+        return 0;
+      }
+      catch (TaskCanceledException)
+      {
+        // Don't care as this is thrown by Task.Delay()
+        Console.WriteLine("Process exit via TaskCanceledException (SIGTERM)");
+        return 0;
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+        return -1;
+      }
     }
   }
 }

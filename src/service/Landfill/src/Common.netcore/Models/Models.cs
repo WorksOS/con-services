@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace LandfillService.Common.Models
 {
@@ -195,10 +196,10 @@ namespace LandfillService.Common.Models
 
   #endregion
 
-  #region Raptor API Models
+  #region Productivity3D API Models
 
   /// <summary>
-  ///   WGS point for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+  ///   WGS point for volume summary requests sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class WGSPoint
   {
@@ -216,7 +217,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Filter for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+  ///   Filter for volume summary requests sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class VolumeFilter
   {
@@ -241,7 +242,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Volume calculation parameters sent to the Raptor API; see Raptor API documentation for details
+  ///   Volume calculation parameters sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class VolumeParams
   {
@@ -263,7 +264,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Volume calculation parameters sent to the Raptor API; see Raptor API documentation for details
+  ///   Volume calculation parameters sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class ProjectExtentsParams
   {
@@ -272,7 +273,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Design for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+  ///   Design for volume summary requests sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class VolumeDesign
   {
@@ -281,7 +282,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Design descriptor for volume summary requests sent to the Raptor API; see Raptor API documentation for details
+  ///   Design descriptor for volume summary requests sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class DesignDescriptor
   {
@@ -292,7 +293,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Statistics parameters sent to the Raptor API; see Raptor API documentation for details
+  ///   Statistics parameters sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class StatisticsParams
   {
@@ -300,7 +301,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   3D bounding box - returned in volume summary results from the Raptor API
+  ///   3D bounding box - returned in volume summary results from the Productivity3D API
   /// </summary>
   public class BoundingBox3DGrid
   {
@@ -345,9 +346,9 @@ namespace LandfillService.Common.Models
 
 
   /// <summary>
-  ///   Volume summary entry returned from the Raptor API
+  ///   Volume summary entry returned from the Productivity3D API
   /// </summary>
-  public class SummaryVolumesResult
+  public class SummaryVolumesResult : IMasterDataModel
   {
     /// <summary>
     ///   Zone boundaries
@@ -387,22 +388,25 @@ namespace LandfillService.Common.Models
     {
       return string.Format("cut:{0}, fill:{1}", Cut, Fill);
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
 
   /// <summary>
-  ///   Project extents entry returned from the Raptor API
+  ///   Project extents entry returned from the Productivity3D API
   /// </summary>
-  public class ProjectExtentsResult
+  public class ProjectExtentsResult : IMasterDataModel
   {
     public DateTime startTime { get; set; }
     public DateTime endTime { get; set; }
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
   /// <summary>
   ///   A representation of a set of spatial and temporal stastics for the project as a whole
   /// </summary>
-  public class ProjectStatisticsResult
+  public class ProjectStatisticsResult : IMasterDataModel
   {
     /// <summary>
     ///   Size of spatial data cells in the project (the default value is 34cm)
@@ -440,10 +444,12 @@ namespace LandfillService.Common.Models
       return string.Format("Start time:{0}, end time:{1}, cellsize:{2}, indexOriginOffset:{3}, extents:{4}",
         startTime, endTime, cellSize, indexOriginOffset, extents);
     }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
   /// <summary>
-  ///   Machine details sent to/received from the Raptor API; see Raptor API documentation for details
+  ///   Machine details sent to/received from the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class MachineDetails
   {
@@ -463,7 +469,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Filter for CCA summary requests sent to the Raptor API; see Raptor API documentation for details
+  ///   Filter for CCA summary requests sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class CCAFilter
   {
@@ -490,7 +496,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   CCA summary parameters sent to the Raptor API; see Raptor API documentation for details
+  ///   CCA summary parameters sent to the Productivity3D API; see Productivity3D API documentation for details
   /// </summary>
   public class CCASummaryParams
   {
@@ -514,9 +520,9 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   CCA summary entry returned from the Raptor API
+  ///   CCA summary entry returned from the Productivity3D API
   /// </summary>
-  public class CCASummaryResult
+  public class CCASummaryResult : IMasterDataModel
   {
     /// <summary>
     ///   The percentage of the cells that are incomplete
@@ -552,18 +558,22 @@ namespace LandfillService.Common.Models
       return string.Format("under:{0}, complete:{1}, over:{2}",
         undercompletePercent, completePercent, overcompletePercent);
     }
+
+    public List<string> GetIdentifiers()=> new List<string>();
   }
 
   /// <summary>
-  ///   List of machines and lifts returned from the Raptor API
+  ///   List of machines and lifts returned from the Productivity3D API
   /// </summary>
-  public class MachineLayerIdsExecutionResult
+  public class MachineLayerIdsExecutionResult : IMasterDataModel
   {
     public MachineLiftDetails[] MachineLiftDetails { get; set; }
+
+    public List<string> GetIdentifiers() => new List<string>();
   }
 
   /// <summary>
-  ///   Machine Lift/Layer Details returned from the Raptor API
+  ///   Machine Lift/Layer Details returned from the Productivity3D API
   /// </summary>
   public class MachineLiftDetails : MachineDetails
   {
@@ -571,7 +581,7 @@ namespace LandfillService.Common.Models
   }
 
   /// <summary>
-  ///   Lift details returned from the Raptor API
+  ///   Lift details returned from the Productivity3D API
   /// </summary>
   public class LiftDetails
   {

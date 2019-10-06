@@ -12,7 +12,7 @@ import { TileData } from '../project/project-tiledata-model';
 import { VolumeResult } from '../project/project-volume-model';
 import { CombinedFilter } from '../project/project-filter-model';
 import { CellDatumResult } from "./project-model";
-
+import { SummaryType } from './project-summarytype-model';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -73,9 +73,13 @@ export class ProjectService {
     return this.executeRequest<DisplayMode[]>('getDisplayModes', `tiles/modes`);
   }
 
-  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number) {
+  public getSummaryTypes(): Observable<SummaryType[]> {
+      return this.executeRequest<DisplayMode[]>('getSummaryTypes', `profiles/summarytypes`);
+  }
+
+  public getTile(projectUid: string, mode: number, pixelsX: number, pixelsY: number, extents: ProjectExtents, designUid: string, designOffset: number, overrides:any) {
     let url = `tiles/${projectUid}?mode=${mode}&pixelsX=${pixelsX}&pixelsY=${pixelsY}&minX=${extents.minX}&minY=${extents.minY}&maxX=${extents.maxX}&maxY=${extents.maxY}&cutFillDesignUid=${designUid}&offset=${designOffset}`;
-    return this.executeRequest<TileData>('getTile', url);
+    return this.executePostRequest<TileData>('getTile', url, overrides);
   }
 
   public getSimpleFullVolume(projectUid: string, filter: CombinedFilter): Observable<VolumeResult> {
@@ -88,9 +92,12 @@ export class ProjectService {
     return this.executeRequest<CombinedFilter>('testJSONParameter', `sandbox/jsonparameter?param=${paramString}`);
   }
 
-  public addSurveyedSurface(projectUid: string, descriptor: DesignDescriptor, asAtDate: Date, extents: ProjectExtents): Observable<DesignDescriptor> {
+  public addSurveyedSurface(projectUid: string, surface : File, designUid : string, asAtDate: Date): Observable<DesignDescriptor> {
+    const formData: FormData = new FormData();
+    formData.append('fileKey', surface, surface.name);
     return this.executePostRequest<DesignDescriptor>
-      ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface?fileNameAndLocalPath=${descriptor.fileName}&asAtDate=${asAtDate}`, null);
+        ('addSurveyedSurface', `designs/${projectUid}/SurveyedSurface/upload?asAtDate=${asAtDate.toISOString()}&designUid=${designUid}`, 
+        formData);
   }
 
   public getSurveyedSurfaces(projectUid: string): Observable<SurveyedSurface[]> {
@@ -101,9 +108,11 @@ export class ProjectService {
     return this.executeDeleteRequest<any>('deleteSurveyedSurface', `designs/${projectUid}/SurveyedSurface/${surveyedSurfaceId}`);
   }
 
-  public addDesignSurface(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
+  public addDesignSurface(projectUid: string, designFile : File, designUid : string, ): Observable<DesignDescriptor> {
+    const formData: FormData = new FormData();
+    formData.append('fileKey', designFile, designFile.name);
     return this.executePostRequest<DesignDescriptor>
-      ('addDesignSurface', `designs/${projectUid}/DesignSurface?fileNameAndLocalPath=${descriptor.fileName}&designUid=${descriptor.designId}`, null);
+      ('addDesignSurface', `designs/${projectUid}/DesignSurface/upload?designUid=${designUid}`, formData);
   }
 
   public getDesignSurfaces(projectUid: string): Observable<DesignSurface[]> {
@@ -114,9 +123,11 @@ export class ProjectService {
     return this.executeDeleteRequest<any>('deleteDesignSurface', `designs/${projectUid}/DesignSurface/${designId}`);
   }
 
-  public addAlignment(projectUid: string, descriptor: DesignDescriptor): Observable<DesignDescriptor> {
+  public addAlignment(projectUid: string, alignmentFile : File, designUid : string, ): Observable<DesignDescriptor> {
+    const formData: FormData = new FormData();
+    formData.append('fileKey', alignmentFile, alignmentFile.name);
     return this.executePostRequest<DesignDescriptor>
-      ('addAlignment', `designs/${projectUid}/Alignment?fileNameAndLocalPath=${descriptor.fileName}`, null);
+        ('addAlignment', `designs/${projectUid}/Alignment/upload?designUid=${designUid}`, formData);
   }
 
   public getAlignments(projectUid: string): Observable<Alignment[]> {
@@ -168,8 +179,9 @@ export class ProjectService {
     return this.executeRequest<XYZS[]>('drawProfileLineForDesign', `profiles/design/${projectUid}/${designUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&offset=${designOffset}`);
   }
 
-  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<XYZS[]> {
-    return this.executeRequest<XYZS[]>('drawProfileLineForProdData', `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}`);
+  public drawProfileLineForProdData(projectUid: string, startX: number, startY: number, EndX: number, EndY: number, displayMode: number, designUid: string, designOffset: number, overrides: any): Observable<any[]> {
+      var query: string = `profiles/productiondata/${projectUid}?startX=${startX}&startY=${startY}&endX=${EndX}&endY=${EndY}&cutFillDesignUid=${designUid}&offset=${designOffset}&displayMode=${displayMode}`;
+      return this.executePostRequest<any[]>('drawProfileLineForProdData', query, overrides);
   }
 
   public drawProfileLineForCompositeElevations(projectUid: string, startX: number, startY: number, EndX: number, EndY: number): Observable<any[]> {

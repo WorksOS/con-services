@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -41,9 +42,9 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       return new XYZS[0];
     }
 
-    [InlineData(247645, 193072, 247680, 193054, 3, 0)] // Profile line between two adjacent triangles, one edge crossed.
     [Theory]
-    public void Test_DesignProfileRequest_OverTTM_NoFilter(double startX, double startY, double endX, double endY, int expectedPointCount, int resultIndex)
+    [InlineData(247645, 193072, 247680, 193054, 3, 0)] // Profile line between two adjacent triangles, one edge crossed.
+    public async Task Test_DesignProfileRequest_OverTTM_NoFilter(double startX, double startY, double endX, double endY, int expectedPointCount, int resultIndex)
     {
       const double EPSILON = 0.001;
 
@@ -54,7 +55,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
       var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new DesignProfileRequest();
-      var response = request.Execute(new CalculateDesignProfileArgument
+      var response = await request.ExecuteAsync(new CalculateDesignProfileArgument
       {
         ProjectID = siteModel.ID,
         CellSize = SubGridTreeConsts.DefaultCellSize,

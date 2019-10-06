@@ -1,14 +1,20 @@
 ﻿using System;
+using System.Threading.Tasks;
+#if RAPTOR
 using ASNode.Volumes.RPC;
 using ASNodeDecls;
 using SVOICOptionsDecls;
 using SVOICVolumeCalculationsDecls;
+using VSS.Productivity3D.WebApi.Models.Report.Executors.Utilities;
+#endif
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.WebApi.Models.Report.Executors.Utilities;
+using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -23,12 +29,28 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
       ProcessErrorCodes();
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try
       {
         var request = CastRequestObjectTo<SummaryVolumesRequest>(item);
+#if RAPTOR
+        if (UseTRexGateway("ENABLE_TREX_GATEWAY_VOLUMES"))
+        {
+#endif
+          var summaryVolumesRequest = new SummaryVolumesDataRequest(
+            request.ProjectUid,
+            request.BaseFilter,
+            request.TopFilter,
+            request.BaseDesignDescriptor.FileUid,
+            request.BaseDesignDescriptor.Offset,
+            request.TopDesignDescriptor.FileUid,
+            request.TopDesignDescriptor.Offset,
+            request.VolumeCalcType);
 
+          return await trexCompactionDataProxy.SendDataPostRequest<SummaryVolumesResult, SummaryVolumesDataRequest>(summaryVolumesRequest, "/volumes/summary", customHeaders);
+#if RAPTOR
+        }
         TASNodeSimpleVolumesResult result;
 
         var baseFilter = RaptorConverters.ConvertFilter(request.BaseFilter, request.ProjectId, raptorClient);
@@ -83,6 +105,7 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         }
 
         throw CreateServiceException<SummaryVolumesExecutor>((int)raptorResult);
+#endif
       }
       finally
       {
@@ -92,7 +115,10 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
 
     protected sealed override void ProcessErrorCodes()
     {
+#if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
+#endif
     }
+
   }
 }

@@ -1,20 +1,12 @@
 ﻿using System;
-using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Models.Models
 {
   /// <summary>
   /// The request representation used for a CCA Summary request.
   /// </summary>
-  public class CCASummaryRequest : ProjectID
+  public class CCASummaryRequest : TRexBaseRequest
   {
-    /// <summary>
-    /// The filter instance to use in the request.
-    /// Value may be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
-
     /// <summary>
     /// Default private constructor.
     /// </summary>
@@ -26,22 +18,17 @@ namespace VSS.Productivity3D.Models.Models
     /// Overload constructor with parameters.
     /// </summary>
     public CCASummaryRequest(
-      Guid? projectUid,
-      FilterResult filter
+      Guid projectUid,
+      FilterResult filter,
+      OverridingTargets overrides,
+      LiftSettings liftSettings
     )
     {
       ProjectUid = projectUid;
       Filter = filter;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
-    /// <summary>
-    /// Validates all properties
-    /// </summary>
-    public override void Validate()
-    {
-      base.Validate();
-
-      Filter?.Validate();
-    }
   }
 }

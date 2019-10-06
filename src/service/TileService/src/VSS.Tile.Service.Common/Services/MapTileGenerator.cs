@@ -9,6 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Interfaces;
@@ -29,10 +30,10 @@ namespace VSS.Tile.Service.Common.Services
     private readonly IDxfTileService dxfTileService;
     private readonly IBoundingBoxHelper boundingBoxHelper;
     private readonly IBoundingBoxService boundingBoxService;
-    private readonly IRaptorProxy raptorProxy;
+    private readonly IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
     private readonly ILoadDumpProxy loadDumpProxy;
 
-    public MapTileGenerator(ILoggerFactory logger, IBoundingBoxService bboxService, IRaptorProxy raptorProxy,
+    public MapTileGenerator(ILoggerFactory logger, IBoundingBoxService bboxService, IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile,
       IMapTileService mapTileService, IProjectTileService projectTileService, IGeofenceTileService geofenceTileService,
       IAlignmentTileService alignmentTileService, IDxfTileService dxfTileService, IBoundingBoxHelper boundingBoxHelper,
       ILoadDumpTileService loadDumpTileService, ILoadDumpProxy loadDumpProxy)
@@ -45,7 +46,7 @@ namespace VSS.Tile.Service.Common.Services
       this.dxfTileService = dxfTileService;
       this.boundingBoxHelper = boundingBoxHelper;
       boundingBoxService = bboxService;
-      this.raptorProxy = raptorProxy;
+      this.productivity3DProxyCompactionTile = productivity3DProxyCompactionTile;
       this.loadDumpTileService = loadDumpTileService;
       this.loadDumpProxy = loadDumpProxy;
     }
@@ -127,7 +128,7 @@ namespace VSS.Tile.Service.Common.Services
         case TileOverlayType.ProductionData:
           var bbox =
             $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
-          bitmap = await raptorProxy.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
+          bitmap = await productivity3DProxyCompactionTile.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
             request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
             bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders, request.ExplicitFilters);
           break;

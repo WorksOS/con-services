@@ -17,6 +17,7 @@ using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
@@ -53,7 +54,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
             request.BoundBoxGrid,
             request.Width,
             request.Height,
-            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings)
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings)
           );
           var fileResult = await trexCompactionDataProxy.SendDataPostRequestWithStreamResponse(trexRequest, "/tile", customHeaders);
 
@@ -141,11 +143,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
       RaptorResult.AddErrorMessages(ContractExecutionStates);
 #endif
-    }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

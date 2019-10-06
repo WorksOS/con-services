@@ -68,8 +68,10 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Build();
 
       services.AddServiceDiscovery();
-      services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2ServiceDiscoveryProxy>();
-      services.AddTransient<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"));
+      services.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2Proxy>();
+
+      services.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>()));
+      services.AddTransient<ITransferProxy>(sp => sp.GetRequiredService<ITransferProxyFactory>().NewProxy("AWS_DESIGNIMPORT_BUCKET_NAME"));
 
       services.AddOpenTracing(builder =>
       {
@@ -87,9 +89,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
-    { }
-
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
     { }
   }
 }

@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
+﻿using Microsoft.Extensions.Logging;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers

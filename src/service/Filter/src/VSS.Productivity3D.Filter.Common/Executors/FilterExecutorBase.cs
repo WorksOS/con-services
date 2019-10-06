@@ -7,13 +7,13 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -27,9 +27,11 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected FilterExecutorBase(IConfigurationStore configStore, ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy,
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy,
       RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, unifiedProductivityProxy)
     { }
 
     /// <summary>
@@ -68,7 +70,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
             return filterEvent;
           }
 
-          _ = Task.Run(()=> NotifyRaptor(filterRequest));
+          _ = Task.Run(() => NotifyProductivity3D(filterRequest));
         }
       }
       catch (Exception e)
@@ -82,13 +84,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// <summary>
     /// Notify 3dpm service that a filter has been added/updated/deleted.
     /// </summary>
-    private async Task NotifyRaptor(FilterRequestFull filterRequest)
+    private async Task NotifyProductivity3D(FilterRequestFull filterRequest)
     {
-      BaseDataResult notificationResult = null;
+      BaseMasterDataResult notificationResult = null;
 
       try
       {
-        notificationResult = await raptorProxy.NotifyFilterChange(new Guid(filterRequest.FilterUid),
+        notificationResult = await Productivity3dV2ProxyNotification.NotifyFilterChange(new Guid(filterRequest.FilterUid),
           new Guid(filterRequest.ProjectUid), filterRequest.CustomHeaders);
       }
       catch (ServiceException se)
@@ -100,7 +102,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       catch (Exception e)
       {
         log.LogError(e, $"FilterExecutorBase: RaptorServices failed with exception. FilterUid:{filterRequest.FilterUid}.");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "raptorProxy.NotifyFilterChange", e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 30, "Productivity3dV2ProxyNotification.NotifyFilterChange", e.Message);
       }
 
       log.LogDebug(
@@ -118,18 +120,18 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected void SendToKafka(string filterUid, string payload, int errorCode)
     {
       Task.Run(() => {
-      try
-      {
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>
-          {
+        try
+        {
+          producer.Send(kafkaTopicName,
+            new List<KeyValuePair<string, string>>
+            {
             new KeyValuePair<string, string>(filterUid, payload)
-          });
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode, e.Message);
-      }
+            });
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, errorCode, e.Message);
+        }
       });
     }
   }

@@ -23,5 +23,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
       IServerLeafSubGrid SubGrid);
 
     bool SaveLeafSubGrid(IServerLeafSubGrid subGrid, IStorageProxy storageProxy, List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams);
+
+    ServerSubGridTreeCachingStrategy CachingStrategy { get; set; }
   }
 }

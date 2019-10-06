@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Interfaces;
@@ -22,30 +23,28 @@ namespace VSS.TRex.SubGrids
     /// <param name="designWrapper"></param>
     /// <param name="SubGrid"></param>
     /// <param name="DataModelID"></param>
-    /// <param name="ProfilerRequestResult"></param>
     /// <returns></returns>
-    public static bool ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid,
-      IDesignWrapper designWrapper,
-      Guid DataModelID,
-      out DesignProfilerRequestResult ProfilerRequestResult)
+    public static async Task<(bool executionResult, DesignProfilerRequestResult profilerRequestResult)> ComputeCutFillSubGrid(IClientLeafSubGrid SubGrid, IDesignWrapper designWrapper, Guid DataModelID)
     {
-      ProfilerRequestResult = DesignProfilerRequestResult.UnknownError;
+      (bool executionResult, DesignProfilerRequestResult profilerRequestResult) result = (false, DesignProfilerRequestResult.UnknownError);
 
       if (designWrapper?.Design == null)
-        return false;
+        return result;
 
-      designWrapper.Design.GetDesignHeights(DataModelID, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize,
-        out IClientHeightLeafSubGrid DesignElevations, out ProfilerRequestResult);
+      var getDesignHeightsResult = await designWrapper.Design.GetDesignHeights(DataModelID, designWrapper.Offset, SubGrid.OriginAsCellAddress(), SubGrid.CellSize);
 
-      if (ProfilerRequestResult != DesignProfilerRequestResult.OK && ProfilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+      result.profilerRequestResult = getDesignHeightsResult.errorCode;
+
+      if (result.profilerRequestResult != DesignProfilerRequestResult.OK && result.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
       {
-        Log.LogError($"Design profiler sub grid elevation request for {SubGrid.OriginAsCellAddress()} failed with error {ProfilerRequestResult}");
-        return false;
+        Log.LogError($"Design profiler sub grid elevation request for {SubGrid.OriginAsCellAddress()} failed with error {result.profilerRequestResult}");
+        return result;
       }
 
-      ComputeCutFillSubGrid((IClientHeightLeafSubGrid) SubGrid, DesignElevations);
+      ComputeCutFillSubGrid((IClientHeightLeafSubGrid) SubGrid, getDesignHeightsResult.designHeights);
 
-      return true;
+      result.executionResult = true;
+      return result;
     }
 
     /// <summary>

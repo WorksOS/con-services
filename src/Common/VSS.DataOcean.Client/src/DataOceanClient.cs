@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -281,14 +282,14 @@ namespace VSS.DataOcean.Client
       {
         return result.Files[0];
       }
-
       if (count == 0)
       {
         Log.LogInformation($"File {fullName} not found");
       }
-      else if (count > 1)
+      if (count > 1)
       {
-        Log.LogWarning($"Multiple copies of file {fullName} found");
+        Log.LogWarning($"Multiple copies of file {fullName} found - returning latest");
+        return result.Files.OrderByDescending(f => f.UpdatedAt).First();
       }
 
       return null;

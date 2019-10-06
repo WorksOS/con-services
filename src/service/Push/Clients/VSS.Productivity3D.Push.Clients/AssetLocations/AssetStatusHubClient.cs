@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Productivity.Push.Models;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 

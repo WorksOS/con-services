@@ -56,8 +56,7 @@
     <ProjectReference Include="..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\..\..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
   </ItemGroup>
 
@@ -105,12 +104,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <Optimize>true</Optimize>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Update="System.Xml.Linq">

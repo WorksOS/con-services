@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using FluentAssertions;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
 using Xunit;

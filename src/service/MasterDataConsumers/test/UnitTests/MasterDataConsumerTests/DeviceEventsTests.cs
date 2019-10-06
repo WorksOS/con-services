@@ -13,8 +13,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     {
       DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var Device = new Device()
-      {
+      var Device = new Device
+                   {
         DeviceUID = Guid.NewGuid().ToString(),
         DeviceSerialNumber = "The Radio SerialNumber",
         DeviceType = "whatever",
@@ -30,8 +30,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     #region private
     private CreateDeviceEvent CopyModel(Device Device)
     {
-      return new CreateDeviceEvent()
-      {
+      return new CreateDeviceEvent
+             {
         DeviceUID = Guid.Parse(Device.DeviceUID),
         DeviceSerialNumber = Device.DeviceSerialNumber,
         DeviceType = Device.DeviceType,
@@ -41,8 +41,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private Device CopyModel(CreateDeviceEvent kafkaDeviceEvent)
     {
-      return new Device()
-      {
+      return new Device
+             {
         DeviceUID = kafkaDeviceEvent.DeviceUID.ToString(),
         DeviceSerialNumber = kafkaDeviceEvent.DeviceSerialNumber,
         DeviceType = kafkaDeviceEvent.DeviceType,

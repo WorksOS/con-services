@@ -33,30 +33,30 @@ using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Productivity3D.Scheduler.WebApi.JobRunner;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
   /// <summary>
-  /// VSS.Productivity3D.Scheduler startup
+  /// Application startup class.
   /// </summary>
   public class Startup : BaseStartup
   {
-    // This method gets called by the runtime. Use this method to add services to the container
+    /// <inheritdoc />
     public override string ServiceName => "Scheduler Service API";
+
+    /// <inheritdoc />
     public override string ServiceDescription => "A service to run scheduled jobs";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
     /// <summary>
     /// THe name of this service for swagger etc.
     /// </summary>
     private MySqlStorage _storage;
-
-    /// <summary>
-    /// VSS.Productivity3D.Scheduler startup
-    /// </summary>
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    
     /// <summary>
     /// Configures the services.
     /// </summary>
@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
+      services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IAssetResolverProxy, AssetResolverProxy>();
 
       services.AddOpenTracing(builder =>

@@ -42,6 +42,7 @@
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Models\VSS.Productivity.Push.Models\VSS.Productivity.Push.Models.csproj" />
+    <ProjectReference Include="..\..\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
   </ItemGroup>
 
@@ -52,20 +53,13 @@
     <Compile Remove=".\Compaction\Executors\AlignmentLineworkExecutor.cs" />
 
     <Compile Remove=".\Compaction\Models\LineworkRequest.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\OffsetStatistics.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\StationOffsetReport.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\StationOffsetRow.cs" />
-    <Compile Remove=".\Compaction\Models\Reports\StationRow.cs" />
 
     <Compile Remove=".\Compaction\ResultHandling\DxfLineworkFileResult.cs" />
 
     <Compile Remove=".\Notification\Executors\AddFileExecutor.cs" />
     <Compile Remove=".\Notification\Executors\DeleteFileExecutor.cs" />
 
-    <Compile Remove=".\ProductionData\Executors\CellPassesExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\DesignNameUpdateCacheExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\EditDataExecutor.cs" />
-    <Compile Remove=".\ProductionData\Executors\GetEditDataExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\PatchExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutor.cs" />
     <Compile Remove=".\ProductionData\Executors\SurveyedSurfaceExecutorDelete.cs" />
@@ -76,16 +70,8 @@
 
     <Compile Remove=".\Report\Executors\ConfigExecutor.cs" />
     <Compile Remove=".\Report\Executors\ExportGridCSVExecutor.cs" />
-    <Compile Remove=".\Report\Executors\ExportReportExecutor.cs" />
     <Compile Remove=".\Report\Executors\SummaryThicknessExecutor.cs" />
-    <Compile Remove=".\Report\Executors\SummaryVolumesExecutor.cs" />
     <Compile Remove=".\Report\Executors\Utilities\ResultConverter.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

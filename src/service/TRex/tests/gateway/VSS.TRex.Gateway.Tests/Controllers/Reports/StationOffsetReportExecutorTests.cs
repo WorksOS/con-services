@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -14,6 +17,10 @@ using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Reports.Gridded.GridFabric;
+using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
+using VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs;
+using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -44,7 +51,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets, null);
+        crossSectionInterval, startStation, endStation, offsets, null, null);
       request.Validate();
 
       var executor = RequestExecutorContainer
@@ -79,15 +86,20 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         siteModel.ID, filterResult,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets, null);
+        crossSectionInterval, startStation, endStation, offsets, null, null);
       request.Validate();
+
+      // Mock the export request functionality to return an empty report reponse to stimulate the desired success
+      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<StationOffsetReportRequestComputeFunc_ApplicationService>(), It.IsAny<StationOffsetReportRequestArgument_ApplicationService>(), It.IsAny<CancellationToken>()))
+        .Returns((StationOffsetReportRequestComputeFunc_ApplicationService func, StationOffsetReportRequestArgument_ApplicationService argument, CancellationToken token) => Task.FromResult(new StationOffsetReportRequestResponse_ApplicationService()));
 
       var executor = RequestExecutorContainer
         .Build<StationOffsetReportExecutor>(DIContext.Obtain<IConfigurationStore>(),

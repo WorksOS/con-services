@@ -4,8 +4,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.TRex.Gateway.Common.Utilities;
 
 namespace VSS.TRex.Gateway.Common.Executors.Coords

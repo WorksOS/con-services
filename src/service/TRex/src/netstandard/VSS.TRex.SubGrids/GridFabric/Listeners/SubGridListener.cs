@@ -9,6 +9,7 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
@@ -19,7 +20,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
   /// to the local context for further processing when using a progressive style of sub grid requesting. 
   /// Sub grids are sent in groups as serialized streams held in memory streams to minimize serialization/deserialization overhead
   /// </summary>
-  public class SubGridListener : IMessageListener<byte[]>, IBinarizable, IFromToBinary
+  public class SubGridListener : IMessageListener<ISerialisedByteArrayWrapper>, IBinarizable, IFromToBinary
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridListener>();
 
@@ -47,9 +48,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// Processes a response containing a set of sub grids from the sub grid processor for a request
     /// </summary>
     /// <param name="message"></param>
-    private void ProcessResponse(byte[] message)
+    private void ProcessResponse(ISerialisedByteArrayWrapper message)
     {
-      using (var MS = new MemoryStream(message))
+      using (var MS = new MemoryStream(message.Bytes))
       {
         using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
         {
@@ -123,7 +124,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <param name="nodeId"></param>
     /// <param name="message"></param>
     /// <returns></returns>
-    public bool Invoke(Guid nodeId, byte[] message)
+    public bool Invoke(Guid nodeId, ISerialisedByteArrayWrapper message)
     {
       Task.Run(() => ProcessResponse(message));
 

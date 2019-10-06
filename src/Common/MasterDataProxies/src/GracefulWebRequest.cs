@@ -285,7 +285,7 @@ namespace VSS.MasterData.Proxies
         {
           _log.LogDebug(
             policyResult.FinalException,
-            "ExecuteRequest_multi(). endpoint: {endpoint} customHeaders: {customHeaders}");
+            $"ExecuteRequest_multi(). endpoint: {endpoint} customHeaders: {customHeaders}");
         }
 
         throw policyResult.FinalException;

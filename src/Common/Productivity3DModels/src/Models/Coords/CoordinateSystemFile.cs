@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.FIlters;
 using VSS.Productivity3D.Models.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models;
 
 namespace VSS.Productivity3D.Models.Models.Coords
 {

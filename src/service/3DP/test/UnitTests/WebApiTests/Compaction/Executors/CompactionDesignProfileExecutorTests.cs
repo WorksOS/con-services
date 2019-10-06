@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -15,10 +16,11 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Serilog.Extensions;
 using VSS.Velociraptor.PDSInterface.DesignProfile;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -32,18 +34,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, RaptorResult>();
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+        .AddTransient<IErrorCodesProvider, RaptorResult>().BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }

@@ -65,8 +65,10 @@ namespace VSS.TRex.Tests.SubGrids
         .Complete();
     }
 
-    public void Dispose()
+    public new void Dispose()
     {
+      base.Dispose();
+
       SurfaceElevationPatchRequest = null;
       TRexSpatialMemoryCacheContext = null;
     }
@@ -372,7 +374,7 @@ namespace VSS.TRex.Tests.SubGrids
       IFilterSet filterSet = new FilterSet(filters);
       
       var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
-      var requestors = ru.ConstructRequestors(mockSiteModel.Object, intermediaries, AreaControlSet.CreateAreaControlSet(), null);
+      var requestors = ru.ConstructRequestors(mockSiteModel.Object, new OverrideParameters(), new LiftParameters(), intermediaries, AreaControlSet.CreateAreaControlSet(), null);
 
       requestors.Length.Should().Be(filters.Length);
 

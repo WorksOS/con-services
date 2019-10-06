@@ -5,13 +5,12 @@ metadata:
 data:
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   ALK_BASE_URL: http://localhost:5001
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/mock/getcustomersforme
+  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/Customers/me
   DATA_OCEAN_ROOT_FOLDER: dev
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_URL: http://localhost:5001
   GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
-  IMPORTED_FILE_API_URL: http://localhost:5001/api/v4/importedfiles
   LOADDUMP_API_URL: http://localhost:5001/api/v1/mock/loaddump
   LOG_MAX_CHAR: "1000"
   MOCK_WEBAPI_BASE_URL: http://localhost:5001
@@ -20,8 +19,8 @@ data:
   PEGASUS_EXECUTION_WAIT_MILLSECS: "1000"
   PEGASUS_URL: http://localhost:5001
   PREFERENCE_API_URL: http://localhost:5001/api/v1/mock/preferences
+  productivity3d_service: http://localhost:5001
   project_service: http://localhost:5001
-  RAPTOR_3DPM_API_URL: http://localhost:5001/api/v2
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
   TCCORG: vldev

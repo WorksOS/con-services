@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
 using VSS.TRex.CellDatum.GridFabric.Responses;
@@ -27,7 +28,7 @@ namespace VSS.TRex.CellDatum.Executors
     /// <summary>
     /// Executor that implements requesting and rendering sub grid information to create the cell datum
     /// </summary>
-    public CellPassesResponse Execute(CellPassesRequestArgument_ClusterCompute arg, SubGridSpatialAffinityKey key)
+    public async Task<CellPassesResponse> ExecuteAsync(CellPassesRequestArgument_ClusterCompute arg, SubGridSpatialAffinityKey key)
     {
       Log.LogInformation($"Performing Execute for DataModel:{arg.ProjectID}");
 
@@ -42,7 +43,7 @@ namespace VSS.TRex.CellDatum.Executors
 
       var existenceMap = siteModel.ExistenceMap;
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var requestors = utilities.ConstructRequestors(siteModel,
+      var requestors = utilities.ConstructRequestors(siteModel, arg.Overrides, arg.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, arg.Filters, true, GridDataType.CellPasses),
         AreaControlSet.CreateAreaControlSet(), 
         existenceMap);
@@ -57,19 +58,19 @@ namespace VSS.TRex.CellDatum.Executors
       requestors[0].CellOverrideMask = cellOverrideMask;
 
       var thisSubGridOrigin = new SubGridCellAddress(arg.OTGCellX, arg.OTGCellY);
-      var request = requestors[0].RequestSubGridInternal(thisSubGridOrigin, arg.Overrides, true, true, out var clientGrid);
-      if (request != ServerRequestResult.NoError)
+      var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(thisSubGridOrigin,  true, true);
+      if (requestSubGridInternalResult.requestResult != ServerRequestResult.NoError)
       {
-        if (request == ServerRequestResult.SubGridNotFound)
+        if (requestSubGridInternalResult.requestResult == ServerRequestResult.SubGridNotFound)
           result.ReturnCode = CellPassesReturnCode.NoDataFound;
         else
-          Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed with code {request}");
+          Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed with code {requestSubGridInternalResult.requestResult}");
         return result;
       }
 
-      if (!(clientGrid is ClientCellProfileAllPassesLeafSubgrid grid))
+      if (!(requestSubGridInternalResult.clientGrid is ClientCellProfileAllPassesLeafSubgrid grid))
       {
-        Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed due the grid return type being incorrect. Expected {typeof(ClientCellProfileAllPassesLeafSubgrid).Name}, but got {clientGrid.GetType().Name}");
+        Log.LogError($"Request for sub grid {thisSubGridOrigin} request failed due the grid return type being incorrect. Expected {typeof(ClientCellProfileAllPassesLeafSubgrid).Name}, but got {requestSubGridInternalResult.clientGrid.GetType().Name}");
         return result;
       }
 
@@ -84,9 +85,7 @@ namespace VSS.TRex.CellDatum.Executors
         }
       }
       else
-      {
         result.ReturnCode = CellPassesReturnCode.NoDataFound;
-      }
 
       return result;
     }

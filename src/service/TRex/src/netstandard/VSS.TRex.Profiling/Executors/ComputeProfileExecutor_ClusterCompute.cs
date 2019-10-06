@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
@@ -20,6 +21,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Types;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Profiling.Executors
 {
@@ -37,10 +39,10 @@ namespace VSS.TRex.Profiling.Executors
     private readonly ProfileStyle ProfileStyle;
     private readonly VolumeComputationType VolumeType;
     private readonly IOverrideParameters Overrides;
+    private readonly ILiftParameters LiftParams;
 
     private const int INITIAL_PROFILE_LIST_SIZE = 1000;
 
-    // todo LiftBuildSettings: TICLiftBuildSettings;
     // ExternalRequestDescriptor: TASNodeRequestDescriptor;
 
     private readonly DesignOffset Design;
@@ -53,19 +55,9 @@ namespace VSS.TRex.Profiling.Executors
     /// <summary>
     /// Constructs the profile analysis executor
     /// </summary>
-    /// <param name="profileStyle"></param>
-    /// <param name="projectID"></param>
-    /// <param name="profileTypeRequired"></param>
-    /// <param name="nEECoords"></param>
-    /// <param name="filters"></param>
-    /// <param name="design"></param>
-    /// <param name="returnAllPassesAndLayers"></param>
-    /// <param name="volumeType"></param>
-    /// <param name="overrides"></param>
     public ComputeProfileExecutor_ClusterCompute(ProfileStyle profileStyle, Guid projectID, GridDataType profileTypeRequired, XYZ[] nEECoords, IFilterSet filters,
-      // todo liftBuildSettings: TICLiftBuildSettings;
       // externalRequestDescriptor: TASNodeRequestDescriptor;
-      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides)
+      DesignOffset design, bool returnAllPassesAndLayers, VolumeComputationType volumeType, IOverrideParameters overrides, ILiftParameters liftParams)
     {
       ProfileStyle = profileStyle;
       ProjectID = projectID;
@@ -75,6 +67,7 @@ namespace VSS.TRex.Profiling.Executors
       Design = design;
       VolumeType = volumeType;
       Overrides = overrides;
+      LiftParams = liftParams;
     }
 
     /// <summary>
@@ -107,10 +100,10 @@ namespace VSS.TRex.Profiling.Executors
     /// Executes the profiler logic in the cluster compute context where each cluster node processes its fraction of the work and returns the
     /// results to the application service context
     /// </summary>
-    public ProfileRequestResponse<T> Execute()
+    public async Task<ProfileRequestResponse<T>> ExecuteAsync()
     {
-      // todo Args.LiftBuildSettings.CCVSummaryTypes := Args.LiftBuildSettings.CCVSummaryTypes + [iccstCompaction];
-      // todo Args.LiftBuildSettings.MDPSummaryTypes := Args.LiftBuildSettings.MDPSummaryTypes + [icmdpCompaction];
+      LiftParams.CCVSummaryTypes |= CCVSummaryTypes.Compaction;
+      LiftParams.MDPSummaryTypes |= MDPSummaryTypes.Compaction;
 
       ProfileRequestResponse<T> Response = null;
       try
@@ -137,16 +130,15 @@ namespace VSS.TRex.Profiling.Executors
           var ProdDataExistenceMap = SiteModel.ExistenceMap;
 
           var PopulationControl = new FilteredValuePopulationControl();
-          PopulationControl.PreparePopulationControl(ProfileTypeRequired, Filters.Filters[0].AttributeFilter);
+          PopulationControl.PreparePopulationControl(ProfileTypeRequired, LiftParams, Filters.Filters[0].AttributeFilter);
 
-          IDesign design = null;
+          IDesignWrapper designWrapper = null;
           if (Design != null && Design.DesignID != Guid.Empty)
           {
-
-            design = SiteModel.Designs.Locate(Design.DesignID);
-
+            var design = SiteModel.Designs.Locate(Design.DesignID);
             if (design == null)
               throw new ArgumentException($"Design {Design.DesignID} is unknown in project {SiteModel.ID}");
+            designWrapper = new DesignWrapper(Design, design);
           }
 
           Log.LogInformation("Creating IProfileBuilder");
@@ -157,16 +149,17 @@ namespace VSS.TRex.Profiling.Executors
             return Response = new ProfileRequestResponse<T> { ResultStatus = RequestErrorStatus.FailedOnRequestProfile};
           }
 
-          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, new DesignWrapper(Design, design),
-            /* todo elevation range design + offset: */null, PopulationControl, new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides);
+          Profiler.Configure(ProfileStyle, SiteModel, ProdDataExistenceMap, ProfileTypeRequired, Filters, 
+            designWrapper, PopulationControl, 
+            new CellPassFastEventLookerUpper(SiteModel), VolumeType, Overrides, LiftParams);
 
           Log.LogInformation("Building cell profile");
-          if (Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
+          if (await Profiler.CellProfileBuilder.Build(NEECoords, ProfileCells))
           {
             SetupForCellPassStackExamination(Filters.Filters[0].AttributeFilter);
 
             Log.LogInformation("Building lift profile");
-            if (Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
+            if (await Profiler.CellProfileAnalyzer.Analyze(ProfileCells, CellPassIterator))
             {
               Log.LogInformation("Lift profile building succeeded");
 

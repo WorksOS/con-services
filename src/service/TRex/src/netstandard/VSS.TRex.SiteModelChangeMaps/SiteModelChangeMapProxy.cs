@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Apache.Ignite.Core.Cache;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -16,7 +17,7 @@ namespace VSS.TRex.SiteModelChangeMaps
   /// </summary>
   public class SiteModelChangeMapProxy
   {
-    private readonly IStorageProxyCache<ISiteModelMachineAffinityKey, byte[]> _proxyStorageCache;
+    private readonly IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> _proxyStorageCache;
 
     public SiteModelChangeMapProxy()
     {
@@ -32,7 +33,7 @@ namespace VSS.TRex.SiteModelChangeMaps
 
         if (cacheItem != null)
         {
-          result.FromBytes(cacheItem);
+          result.FromBytes(cacheItem.Bytes);
         }
 
         return result;
@@ -50,7 +51,7 @@ namespace VSS.TRex.SiteModelChangeMaps
         throw new ArgumentException("Change map cannot be null");
       }
 
-      _proxyStorageCache.Put(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap), changeMap.ToBytes());
+      _proxyStorageCache.Put(new SiteModelMachineAffinityKey(siteModelUid, assetUid, FileSystemStreamType.SiteModelMachineElevationChangeMap), new SerialisedByteArrayWrapper(changeMap.ToBytes()));
     }
 
     public ICacheLock Lock(Guid siteModelUid, Guid assetUid)

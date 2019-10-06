@@ -1,15 +1,17 @@
 import { Component } from '@angular/core';
-import { ProjectExtents, DesignDescriptor, SurveyedSurface, DesignSurface, Alignment, Machine, ISiteModelMetadata, MachineEventType, MachineDesign, SiteProofingRun, XYZS } from './project-model';
-import { ProjectService } from './project-service';
-import { DisplayMode } from './project-displaymode-model';
+import { DisplayModeType, OverrideParameters } from '../fetch-data/fetch-data-model';
+import { FetchDataService } from '../fetch-data/fetch-data.service';
+import { AttributeFilter, CombinedFilter, FencePoint, SpatialFilter } from '../project/project-filter-model';
 import { VolumeResult } from '../project/project-volume-model';
-import { CombinedFilter, SpatialFilter, AttributeFilter, FencePoint } from '../project/project-filter-model';
-import { CellDatumResult } from "./project-model";
+import { DisplayMode } from './project-displaymode-model';
+import { Alignment, DesignSurface, ISiteModelMetadata, Machine, MachineDesign, MachineEventType, ProjectExtents, SiteProofingRun, SurveyedSurface } from './project-model';
+import { ProjectService } from './project-service';
+import { SummaryType } from './project-summarytype-model';
 
 @Component({
   selector: 'project',
   templateUrl: './project-component.html',
-  providers: [ProjectService]
+  providers: [ProjectService, FetchDataService]
   //  styleUrls: ['./project.component.less']
 })
 export class ProjectComponent {
@@ -26,6 +28,8 @@ export class ProjectComponent {
 
   public displayModes: DisplayMode[] = [];
   public displayMode: DisplayMode = new DisplayMode();
+
+  public summaryTypes: SummaryType[] = [];
 
   public eventTypes: MachineEventType[] = [];
   public eventType: MachineEventType = new MachineEventType();
@@ -56,18 +60,21 @@ export class ProjectComponent {
 
   public applyToViewOnly: boolean = false;
 
+  public surveyedSurfaceFile : File = null;
   public surveyedSurfaceFileName: string = "";
-  public surveyedSurfaceAsAtDate: Date = new Date();
+  public surveyedSurfaceDate: string = this.getDatePart(new Date());
+  public surveyedSurfaceTime: string = this.getTimePart(new Date());
 
   public newSurveyedSurfaceGuid: string = "";
   public surveyedSurfaces: SurveyedSurface[] = [];
 
   public alignments: Alignment[] = [];
-  public alignmentFileName: string = "";
+  public alignmentFile : File = null;
+  public alignmentUid: string = "";
   public newAlignmentGuid: string = "";
 
   public designs: DesignSurface[] = [];
-  public designFileName: string = "";
+  public designFile : File = null;
   public designOffset: number = 0.0;
   public designUid: string = "";
 
@@ -120,8 +127,12 @@ export class ProjectComponent {
   public allProjectsMetadata: ISiteModelMetadata[] = [];
 
   public machineEvents: string[] = [];
-  public machineEventsStartDate: Date = new Date(1980, 1, 1, 0, 0, 0, 0);
-  public machineEventsEndDate: Date = new Date(2100, 1, 1, 0, 0, 0, 0);
+  public machineEventsStartDate: string = this.getDatePart(new Date(1980, 1, 1, 0, 0, 0, 0));
+  public machineEventsStartTime: string = this.getTimePart(new Date(1980, 1, 1, 0, 0, 0, 0));
+
+  public machineEventsEndDate: string = this.getDatePart(new Date(2100, 1, 1, 0, 0, 0, 0));
+  public machineEventsEndTime: string = this.getTimePart(new Date(2100, 1, 1, 0, 0, 0, 0));
+
   public maxMachineEventsToReturn: number = 100;
 
   public profilePath: string = "M0 0 L200 500 L400 0 L600 500 L800 0 L1000 500";
@@ -189,11 +200,27 @@ export class ProjectComponent {
   public mouseProfilePixelLocation: string = '';
   public mouseProfileWorldLocation: string = '';
 
+  public profileValue: string = '';
+  public profileValue2: string = '';
+  private profilePoints: any[];
+  private profileCanvasHeight: number = 500.0;
+  private profileCanvasWidth: number = 1000.0;
+  private overrides:OverrideParameters;
+
   public cellDatum: string = "";
   private showCellDatum: boolean = false;
 
+  private getDatePart(date: Date): string {
+    return date.toISOString().substring(0, 10);
+  }
+
+  private getTimePart(date: Date): string {
+    return date.toISOString().substring(11, 19);
+  }
+
   constructor(
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private fetchDataService: FetchDataService
   ) { }
 
   ngOnInit() {
@@ -202,14 +229,24 @@ export class ProjectComponent {
       this.displayMode = this.displayModes[0];
     });
 
+    this.projectService.getSummaryTypes().subscribe((summaryTypes) => {
+        summaryTypes.forEach(summaryType => this.summaryTypes.push(summaryType));
+    });
+
     this.projectService.getMachineEventTypes().subscribe((types) => {
       types.forEach(type => this.eventTypes.push(type));
       this.eventType = this.eventTypes[0];
     });
 
+    if ("overrides" in localStorage) {
+        this.overrides = JSON.parse(localStorage.getItem("overrides"));
+    } else {
+        this.overrides = this.fetchDataService.getDefaultOverrides();
+    }
+
     this.getAllProjectMetadata();
 
-    this.switchToMutable();
+    this.switchToImmutable();
   }
 
   public selectProject(): void {
@@ -231,7 +268,8 @@ export class ProjectComponent {
     localStorage.setItem("projectUid", undefined);
     localStorage.setItem("designUid", undefined);
     localStorage.setItem("designOffset", undefined);
-
+    this.overrides = this.fetchDataService.getDefaultOverrides();
+    localStorage.setItem("overrides", JSON.stringify(this.overrides));
   }
 
   public getProjectExtents(): void {
@@ -259,7 +297,7 @@ export class ProjectComponent {
     designOffset: number): Promise<string> {
 
     var vm = this;
-    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents, designUid, designOffset)
+    return new Promise<string>((resolve) => this.projectService.getTile(projectUid, mode, pixelsX, pixelsY, tileExtents, designUid, designOffset, this.overrides)
       .subscribe(tile => {
         vm.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
         resolve();
@@ -288,7 +326,7 @@ export class ProjectComponent {
 
     // Make sure the displayed tile extents is updated
     this.tileExtents = new ProjectExtents(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
-    this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents, this.designUid, this.designOffset)
+    this.projectService.getTile(this.projectUid, this.mode, this.pixelsX, this.pixelsY, this.tileExtents, this.designUid, this.designOffset, this.overrides)
       .subscribe(tile => {
         this.base64EncodedTile = 'data:image/png;base64,' + tile.tileData;
         this.updateTimerCompletionTime();
@@ -504,24 +542,43 @@ export class ProjectComponent {
     this.projectService.testJSONParameter(filter).subscribe(x => x);
   }
 
-  public addADummySurveyedSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.ttm";
-    this.projectService.addSurveyedSurface(this.projectUid, descriptor, new Date(), this.tileExtents).subscribe(
-      uid => {
-        this.newSurveyedSurfaceGuid = uid.designId;
-        this.getSurveyedSurfaces();
-      });
+
+  handleSurveyedSurfaceChange(files: FileList) {
+    this.surveyedSurfaceFile = files.item(0);
   }
 
-  public addNewSurveyedSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.surveyedSurfaceFileName;
-    this.projectService.addSurveyedSurface(this.projectUid, descriptor, this.surveyedSurfaceAsAtDate, new ProjectExtents(0, 0, 0, 0)).subscribe(
-      uid => {
-        this.newSurveyedSurfaceGuid = uid.designId;
-        this.getSurveyedSurfaces();
-      });
+  public canAddSurveyedSurfaceFile(): boolean {
+      return this.surveyedSurfaceFile != null && this.newSurveyedSurfaceGuid !== "";
+  }
+
+  public canAddDesignSurfaceFile(): boolean {
+    return this.designFile != null && this.designUid !== "";
+  }
+
+  public canAddAlignmentFile(): boolean {
+    return this.alignmentFile != null && this.alignmentUid !== "";
+  }
+
+  public addNewSurveyedSurface(): void { 
+  console.log("Surveyed Surface", this.surveyedSurfaceFile);
+
+  this.projectService.addSurveyedSurface(this.projectUid, this.surveyedSurfaceFile, this.newSurveyedSurfaceGuid, this.combineDateAndTime(this.surveyedSurfaceDate, this.surveyedSurfaceTime)).subscribe(
+    uid => {
+      this.newSurveyedSurfaceGuid = uid.designId;
+      this.getSurveyedSurfaces();
+    });
+  }
+
+  private combineDateAndTime(date: string, time: string): Date {
+    let dateParts: any = date.split("-");
+    let timeParts: any = time.split(":");
+
+    if (dateParts && timeParts) {
+      dateParts[1] -= 1;
+      return new Date(Date.UTC.apply(undefined, dateParts.concat(timeParts)));
+    }
+
+    return null;
   }
 
   public getSurveyedSurfaces(): void {
@@ -538,21 +595,12 @@ export class ProjectComponent {
       uid => this.surveyedSurfaces.splice(this.surveyedSurfaces.indexOf(surveyedSurface), 1));
   }
 
-  public addADummyDesignSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.ttm";
-    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
-      uid => {
-        this.newDesignGuid = uid.designId;
-        this.getDesignSurfaces();
-      });
+  handleDesignFileChange(files: FileList) { 
+      this.designFile = files.item(0);
   }
 
   public addNewDesignSurface(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.designFileName;
-    descriptor.designId = this.designUid;
-    this.projectService.addDesignSurface(this.projectUid, descriptor).subscribe(
+      this.projectService.addDesignSurface(this.projectUid, this.designFile, this.designUid).subscribe(
       uid => {
         this.newDesignGuid = uid.designId;
         this.getDesignSurfaces();
@@ -578,20 +626,12 @@ export class ProjectComponent {
     localStorage.setItem("designOffset", this.designOffset.toString());
   }
 
-  public addADummyAlignment(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = "C:/temp/SomeFile.svl";
-    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
-      uid => {
-        this.newAlignmentGuid = uid.designId;
-        this.getAlignments();
-      });
+  handleAlignmentFileChange(files: FileList) { 
+      this.alignmentFile = files.item(0);
   }
 
   public addNewAlignment(): void {
-    var descriptor = new DesignDescriptor();
-    descriptor.fileName = this.alignmentFileName;
-    this.projectService.addAlignment(this.projectUid, descriptor).subscribe(
+    this.projectService.addAlignment(this.projectUid, this.alignmentFile, this.alignmentUid).subscribe(
       uid => {
         this.newAlignmentGuid = uid.designId;
         this.getAlignments();
@@ -665,7 +705,8 @@ export class ProjectComponent {
     localStorage.setItem("projectUid", undefined);
     localStorage.setItem("designUid", undefined);
     localStorage.setItem("designOffset", undefined);
-
+    this.overrides = this.fetchDataService.getDefaultOverrides();
+    localStorage.setItem("overrides", JSON.stringify(this.overrides));
 
     return -1;
   }
@@ -682,14 +723,14 @@ export class ProjectComponent {
 
   public updateDisplayedMachineEvents() {
     // Request the first 100 events of the selected event type from the selected site model and machine
-    var result: string[] = [];
+    let result: string[] = [];
 
-    var startDate: Date = this.machineEventsStartDate;
+    let startDate: Date = this.combineDateAndTime(this.machineEventsStartDate, this.machineEventsStartTime);
     if (startDate === undefined) {
       startDate = new Date(1980, 1, 1, 0, 0, 0, 0);
     }
 
-    var endDate: Date = this.machineEventsEndDate;
+      let endDate: Date = this.combineDateAndTime(this.machineEventsEndDate, this.machineEventsEndTime);
     if (endDate === undefined) {
       endDate = new Date(2100, 1, 1, 0, 0, 0, 0);
     }
@@ -724,48 +765,7 @@ export class ProjectComponent {
     this.currentGridName = "Immutable";
   }
 
-  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
-  // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
-  // between all others
-  public drawProfileLineForDesign(startX: number, startY: number, endX: number, endY: number) {
-    var profileCanvasHeight: number = 500.0;
-    var profileCanvasWidth: number = 1000.0;
-
-    var result: string = "";
-    var first: boolean = true;
-
-    return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUid, this.designOffset, startX, startY, endX, endY)
-      .subscribe(points => {
-        var stationRange: number = points[points.length - 1].station - points[0].station;
-        var stationRatio: number = profileCanvasWidth / stationRange;
-
-        var minZ: number = this.kMaxTestElev;
-        var maxZ: number = this.kMinTestElev;
-        points.forEach(pt => {
-          if (pt.z > this.kMinTestElev && pt.z < minZ) minZ = pt.z;
-          if (pt.z > this.kMinTestElev && pt.z > maxZ) maxZ = pt.z;
-        });
-
-        var zRange = maxZ - minZ;
-        var zRatio = profileCanvasHeight / zRange;
-
-        points.forEach(point => {
-          if (point.z <= this.kMinTestElev) {
-            // It's a gap...
-            first = true;
-          }
-          else {
-            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
-            first = false;
-          }
-        });
-
-        this.profilePath = result;
-        this.numPointInProfile = result.length;
-        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
-      });
-  }
-
+ 
   //Draw profile line from bottom left to top right of project 
   public drawProfileBLToTR(): void {
     this.drawProfileLineForDesign(this.tileExtents.minX, this.tileExtents.minY, this.tileExtents.maxX, this.tileExtents.maxY);
@@ -841,42 +841,13 @@ export class ProjectComponent {
     this.drawProfileLineForDesign(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
 
-  public ComputeSVGForProfileValueVector(points: any[], minZ: number, maxZ: number, getValue: (point: any) => number): string {
-    var profileCanvasHeight: number = 500.0;
-    var profileCanvasWidth: number = 1000.0;
 
-    var result: string = "";
-    var first: boolean = true;
-
-    var stationRange: number = points[points.length - 1].station - points[0].station;
-    var stationRatio: number = profileCanvasWidth / stationRange;
-
-    var zRange = maxZ - minZ;
-    var zRatio = profileCanvasHeight / zRange;
-
-    points.forEach(point => {
-      var value: number = getValue(point);
-      if (value <= this.kMinTestElev) {
-        // It's a gap...
-        first = true;
-      }
-      else {
-        result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (value - minZ) * zRatio)).toFixed(3) + " ";
-        first = false;
-      }
-    });
-
-    this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
-
-    return result;
-  }
-
-  public ProcessProfileDataVectorToSVGPolyLine(points: any[], minZ: number, maxZ: number, getValue: (point: any) => number, setResult: (theResult: string) => void) {
+  public ProcessProfileDataVectorToSVGPolyLine(points: any[], minZ: number, maxZ: number, getValue: (point: any) => number): string {
     this.SetProfileViewExtents(points, minZ, maxZ);
-    setResult(this.ComputeSVGForProfileValueVector(points, minZ, maxZ, getValue));
+    return this.drawProfileLine(points, minZ, maxZ, getValue);
   }
 
-  public SetProfileViewExtents(points: any[], minZ: number, maxZ: number) {
+  private SetProfileViewExtents(points: any[], minZ: number, maxZ: number) {
     if (this.profileExtents === null)
       this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
     else {
@@ -885,87 +856,79 @@ export class ProjectComponent {
     }
   }
 
-  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
-  // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
-  // between all others
-  public drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number,
-    getValue: (point: any) => number, setResult: (theResult: string) => void) {
-    return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY)
-      .subscribe(
-        points => {
-          // Compute the overall scale factor for the elevation range
-          var minZ: number = this.kMaxTestElev;
-          var maxZ: number = this.kMinTestElev;
-
-          this.updateElevationRange(points,
-            getValue,
-            minZ,
-            maxZ,
-            (min, max) => {
-              minZ = min;
-              maxZ = max;
-            });
-          this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, getValue, setResult);
-        });
-  };
-
   public drawProfileLineFromStartToEndPointsForProdData(): void {
-    this.ClearAllSVGProfilePolylines();
-    this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY,
-      pt => pt.z,
-      theResult => {
-        this.profilePath = theResult;
-        this.numPointInProfile = theResult.length;
-      });
+      this.ClearAllSVGProfilePolylines();
+      this.drawProfileLineForProdData(this.firstPointX, this.firstPointY, this.secondPointX, this.secondPointY);
   }
-
-
-  public drawProfileLineForSummaryVolumes(startX: number, startY: number, endX: number, endY: number) {
-    var profileCanvasHeight: number = 500.0;
-    var profileCanvasWidth: number = 1000.0;
-
-    var result: string = "";
-    var first: boolean = true;
-
-    return this.projectService.drawProfileLineForSummaryVolumes(this.projectUid, startX, startY, endX, endY)
-      .subscribe(points => {
-        var stationRange: number = points[points.length - 1].station - points[0].station;
-        var stationRatio: number = profileCanvasWidth / stationRange;
-
-        var minZ: number = this.kMaxTestElev;
-        var maxZ: number = this.kMinTestElev;
-        points.forEach(pt => {
-          if (pt.z > this.kMinTestElev && pt.z < minZ) minZ = pt.z;
-          if (pt.z > this.kMinTestElev && pt.z > maxZ) maxZ = pt.z;
-        });
-
-        var zRange = maxZ - minZ;
-        var zRatio = profileCanvasHeight / zRange;
-
-        points.forEach(point => {
-          if (point.z <= this.kMinTestElev) {
-            // It's a gap...
-            first = true;
-          }
-          else {
-            result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((profileCanvasHeight - (point.z - minZ) * zRatio)).toFixed(3) + " ";
-            first = false;
-          }
-        });
-
-        this.profilePath = result;
-        this.numPointInProfile = result.length;
-        this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
-      });
-  }
-
 
   public drawProfileLineFromStartToEndPointsForSummaryVolumes(): void {
     this.ClearAllSVGProfilePolylines();
     this.drawProfileLineForSummaryVolumes(this.svFirstPointX, this.svFirstPointY, this.svSecondPointX, this.svSecondPointY);
   }
 
-  public updateElevationRange(points: any[], getValue: (point: any) => number, minZ: number, maxZ: number, setValue: (min: number, max: number) => void) {
+  // Requests a computed profile and then transforms the resulting XYZS points into a SVG Path string
+  // with m move instruction at the first vertex, and at any vertex indicating a gap and line instructions
+  // between all others
+  public drawProfileLineForDesign(startX: number, startY: number, endX: number, endY: number) {
+      return this.projectService.drawProfileLineForDesign(this.projectUid, this.designUid, this.designOffset, startX, startY, endX, endY)
+          .subscribe(points => this.calculateProfileLine(points, pt => pt.z));
+  }
+
+
+  // Requests a computed profile and then transforms the resulting points into a SVG Path string
+  // with a move instruction at the first vertex, and at any vertex indicating a gap and line instructions
+  // between all others
+  private drawProfileLineForProdData(startX: number, startY: number, endX: number, endY: number) {
+      return this.projectService.drawProfileLineForProdData(this.projectUid, startX, startY, endX, endY, this.mode, this.designUid, this.designOffset, this.overrides)
+        .subscribe(points => {
+          this.calculateProfileLine(points, pt => pt.elevation);
+          this.profilePoints = points;
+        });
+  };
+
+ 
+  private drawProfileLineForSummaryVolumes(startX: number, startY: number, endX: number, endY: number) {
+    return this.projectService.drawProfileLineForSummaryVolumes(this.projectUid, startX, startY, endX, endY)
+      .subscribe(points => this.calculateProfileLine(points, pt => pt.z));
+  }
+
+  private calculateProfileLine(points: any[], getValue: (point: any) => number) {
+      var minZ: number = this.kMaxTestElev;
+      var maxZ: number = this.kMinTestElev;
+
+      this.updateElevationRange(points, getValue, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
+      this.profilePath = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, getValue);
+      this.numPointInProfile = points.length;
+  }
+
+  private drawProfileLine(points: any[], minZ: number, maxZ: number, getValue: (point: any) => number): string {
+      var result: string = "";
+      var first: boolean = true;
+
+      var stationRange: number = points[points.length - 1].station - points[0].station;
+      var stationRatio: number = this.profileCanvasWidth / stationRange;
+
+      var zRange = maxZ - minZ;
+      var zRatio = this.profileCanvasHeight / zRange;
+
+      points.forEach(point => {
+          var value: number = getValue(point);
+          if (value <= this.kMinTestElev) {
+              // It's a gap...
+              first = true;
+          }
+          else {
+              result += (first ? "M" : "L") + ((point.station - points[0].station) * stationRatio).toFixed(3) + " " + ((this.profileCanvasHeight - (value - minZ) * zRatio)).toFixed(3) + " ";
+              first = false;
+          }
+      });
+
+      this.profileExtents.Set(points[0].station, minZ, points[points.length - 1].station, maxZ);
+      return result;
+  }
+
+ 
+  private updateElevationRange(points: any[], getValue: (point: any) => number, minZ: number, maxZ: number, setValue: (min: number, max: number) => void) {
     points.forEach(pt => {
       var value: number = getValue(pt);
       if (value > this.kMinTestElev && value < minZ) minZ = value;
@@ -974,10 +937,11 @@ export class ProjectComponent {
     setValue(minZ, maxZ);
   }
 
-  public ClearAllSVGProfilePolylines(): void {
+  private ClearAllSVGProfilePolylines(): void {
     // Production data profile
     this.profilePath = "";
     this.numPointInProfile = 0;
+    this.profilePoints = [];
 
     // Composite elevation profiles
     this.compositeElevationProfilePath_LastElev = "";
@@ -990,7 +954,7 @@ export class ProjectComponent {
     this.compositeElevationProfilePath_HighestCompositeElev = "";
   }
 
-  public drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
+  private drawProfileLineForCompositeElevationData(startX: number, startY: number, endX: number, endY: number) {
     return this.projectService.drawProfileLineForCompositeElevations(this.projectUid, startX, startY, endX, endY)
       .subscribe(points => {
         this.ClearAllSVGProfilePolylines();
@@ -1009,14 +973,14 @@ export class ProjectComponent {
         this.updateElevationRange(points, pt => pt.cellHighestCompositeElev, minZ, maxZ, (min, max) => { minZ = min; maxZ = max; });
 
 
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastElev, theResult => this._compositeElevationProfilePath_LastElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstElev, theResult => this._compositeElevationProfilePath_FirstElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestElev, theResult => this._compositeElevationProfilePath_LowestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestElev, theResult => this._compositeElevationProfilePath_HighestElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastCompositeElev, theResult => this._compositeElevationProfilePath_LastCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstCompositeElev, theResult => this._compositeElevationProfilePath_FirstCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestCompositeElev, theResult => this._compositeElevationProfilePath_LowestCompositeElev = theResult);
-        this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestCompositeElev, theResult => this._compositeElevationProfilePath_HighestCompositeElev = theResult);
+        this._compositeElevationProfilePath_LastElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastElev);
+        this._compositeElevationProfilePath_FirstElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstElev);
+        this._compositeElevationProfilePath_LowestElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestElev);
+        this._compositeElevationProfilePath_HighestElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestElev);
+        this._compositeElevationProfilePath_LastCompositeElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLastCompositeElev);
+        this._compositeElevationProfilePath_FirstCompositeElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellFirstCompositeElev);
+        this._compositeElevationProfilePath_LowestCompositeElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellLowestCompositeElev);
+        this._compositeElevationProfilePath_HighestCompositeElev = this.ProcessProfileDataVectorToSVGPolyLine(points, minZ, maxZ, pt => pt.cellHighestCompositeElev);
 
         this.compositeElevationProfilePath_LastElev = this._compositeElevationProfilePath_LastElev;
         this.compositeElevationProfilePath_FirstElev = this._compositeElevationProfilePath_FirstElev;
@@ -1046,11 +1010,32 @@ export class ProjectComponent {
     let localStation = offsetX;
     let localZ = this.pixelsY - offsetY;
 
-    this.mouseProfileWorldStation = this.profileExtents.minX + offsetX * (this.profileExtents.sizeX() / 1000);
-    this.mouseProfileWorldZ = this.profileExtents.minY + (this.pixelsY - offsetY) * (this.profileExtents.sizeY() / 500);
+    this.mouseProfileWorldStation = this.profileExtents.minX + offsetX * (this.profileExtents.sizeX() / this.profileCanvasWidth);
+    this.mouseProfileWorldZ = this.profileExtents.minY + (this.pixelsY - offsetY) * (this.profileExtents.sizeY() / this.profileCanvasHeight);
 
     this.mouseProfilePixelLocation = `${localStation}, ${localZ}`;
     this.mouseProfileWorldLocation = `${this.mouseProfileWorldStation.toFixed(3)}, ${this.mouseProfileWorldZ.toFixed(3)}`;
+
+    this.profileValue = "";
+    this.profileValue2 = "";
+      if (this.profilePoints && this.profilePoints.length > 0 && this.profilePoints[0].hasOwnProperty("value")) {
+      let ratio = (this.mouseProfileWorldStation - this.profileExtents.minX) / this.profileExtents.sizeX();
+      let index = Math.round(this.profilePoints.length * ratio) - 1;
+      this.profileValue = this.profilePoints[index].value.toFixed(this.mode === 4 || this.mode === 14 ? 0 : 3);
+      switch (<DisplayModeType>this.mode) {
+        case DisplayModeType.TargetSpeedSummary: 
+          this.profileValue += "-" + this.profilePoints[index].value2.toFixed(3);
+          //fall through to set above/below/on target
+        case DisplayModeType.CCVPercentSummary:
+        case DisplayModeType.MDPPercentSummary:
+        case DisplayModeType.PassCountSummary:
+        case DisplayModeType.TemperatureSummary:
+          this.profileValue2 = this.summaryTypes.find((item) => item.item1 === this.profilePoints[index].index).item2;
+          break;
+        default:
+            break;
+      }
+    }
   }
 
   public onMouseOverProfile(event: any): void {

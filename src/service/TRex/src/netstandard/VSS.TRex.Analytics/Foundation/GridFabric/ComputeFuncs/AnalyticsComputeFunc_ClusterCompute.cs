@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Analytics.Foundation.Coordinators;
 using VSS.TRex.Analytics.Foundation.GridFabric.Responses;
 using VSS.TRex.GridFabric.Arguments;
@@ -32,10 +33,10 @@ namespace VSS.TRex.Analytics.Foundation.GridFabric.ComputeFuncs
 
             try
             {
-                Log.LogInformation("Executing AnalyticsComputeFunc_ClusterCompute.Execute()");
+                Log.LogInformation("Executing AnalyticsComputeFunc_ClusterCompute.ExecuteAsync()");
 
                 var coordinator = new TCoordinator();
-                return coordinator.ExecuteAsync(arg).Result;
+                return coordinator.ExecuteAsync(arg).WaitAndUnwrapException();
             }
             finally
             {

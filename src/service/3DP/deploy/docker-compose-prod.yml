@@ -6,22 +6,25 @@ services:
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=prod-aslv01.vssengg.com
-     - assetmgmt3d-service=http://assetmgmt3d.prod.prod-eks.services.myvisionlink.com
-     - push-service=http://push.prod.prod-eks.services.myvisionlink.com
-     - scheduler-service=http://scheduler.prod.prod-eks.services.myvisionlink.com
-     - project-service=http://project.prod.prod-eks.services.myvisionlink.com
-     - filter-service=http://filter.prod.prod-eks.services.myvisionlink.com
+     - assetmgmt3d_service=http://assetmgmt3d.prod.prod-eks.services.myvisionlink.com
+     - push_service=http://push.prod.prod-eks.services.myvisionlink.com
+     - scheduler_service=http://scheduler.prod.prod-eks.services.myvisionlink.com
+     - project_service=http://project.prod.prod-eks.services.myvisionlink.com
+     - filter_service=http://filter.prod.prod-eks.services.myvisionlink.com
+     - trex_service_connectedsite=http://connectedsite.prod.prod-eks.services.myvisionlink.com
+     - trex_service_immutable=http://trex.immutable.dev.k8s.vspengg.com
+     - trex_service_mutable=http://trex.mutable.dev.k8s.vspengg.com
      - ASSETMGMT_CACHE_LIFE=00:15:00
      - AWS_DESIGNIMPORT_BUCKET_NAME=vss-project3dp
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
-     - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives
-     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.prod.prod-eks.services.myvisionlink.com/api/status
+     - AWS_TAGFILE_BUCKET_NAME=vss-prod-directtagfile-archives    
      - CUSTOMERSERVICE_API_URL=https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
      - CUSTOMER_CACHE_LIFE=00:30:00
      - DEFAULT_CONNECTION_LIMIT=64
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
      - ENABLE_CONNECTED_SITE_GATEWAY=true
      - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
+     - ENABLE_TREX_GATEWAY_CCA=false
      - ENABLE_TREX_GATEWAY_CELL_DATUM=false
      - ENABLE_TREX_GATEWAY_DESIGNIMPORT=false
      - ENABLE_TREX_GATEWAY_ELEVATION=false
@@ -31,17 +34,17 @@ services:
      - ENABLE_TREX_GATEWAY_LINEWORKFILE=false
      - ENABLE_TREX_GATEWAY_MACHINEDESIGNS=false
      - ENABLE_TREX_GATEWAY_MACHINES=false
+     - ENABLE_TREX_GATEWAY_PASSCOUNT=false
      - ENABLE_TREX_GATEWAY_PROJECTSTATISTICS=false
+     - ENABLE_TREX_GATEWAY_SPEED=false     
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_SURFACE=false
      - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_TILES=false
      - ENABLE_TREX_GATEWAY_VETA=false
-     - FILTER_API_URL=http://filter.prod.prod-eks.services.myvisionlink.com/api/v1
      - FILTER_CACHE_LIFE=00:15:00
      - GEOFENCE_API_URL=https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0
      - GEOFENCE_CACHE_LIFE=00:15:00
-     - IMPORTED_FILE_API_URL=https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/importedfiles
      - IMPORTED_FILE_CACHE_LIFE=00:15:00
      - IONODEIP=prod-iolv01.vssengg.com
      - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
@@ -64,14 +67,11 @@ services:
      - MYSQL_USERNAME_BUILD=root
      - NOTIFICATION_HUB_URL=http://push.prod.prod-eks.services.myvisionlink.com/notifications
      - PREFERENCE_API_URL=https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0
-     - PROJECT_API_URL=https://api.trimble.com/t/trimble.com/vss-projectservice/1.4/project
      - PROJECT_CACHE_LIFE=00:15:00
-     - PROJECT_SETTINGS_API_URL=https://api.trimble.com/t/trimble.com/vss-projectservice/1.4
      - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
      - PUSH_NO_AUTHENTICATION_HEADER=true
      - RAPTORUSERNAME=svcRaptor
      - SCHEDULED_JOB_TIMEOUT=900000
-     - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.prod.prod-eks.services.myvisionlink.com/internal/v1/export
      - SHAREUNC=\\prod-iolv01.vssengg.com\ProductionData
      - SNAKEPIT_HOST=snakepit.prod.prod-eks.services.myvisionlink.com
      - TCCBASEURL=https://www.myconnectedsite.com
@@ -89,8 +89,7 @@ services:
      - TILE_RENDER_JOB_TIMEOUT=00:00:10
      - TILE_RENDER_MAX_ZOOM_LEVEL=21
      - TILE_RENDER_MAX_ZOOM_RANGE=14
-     - TILE_RENDER_WAIT_INTERVAL=2000
-     - TREX_TAGFILE_API_URL=http://trex.mutable.dev.k8s.vspengg.com/api/v2/tagfiles
+     - TILE_RENDER_WAIT_INTERVAL=2000    
     ports:
       - "8080:80"
 networks:

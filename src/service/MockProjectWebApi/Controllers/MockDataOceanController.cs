@@ -1,24 +1,23 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.ConfigurationStore;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockDataOceanController : Controller
+  public class MockDataOceanController : BaseController
   {
     private const string GENERATED_TILE_FOLDER_SUFFIX = "_Tiles$";
-    private string TILE_METADATA_ROUTE = "/{path}";
+    private const string TILE_METADATA_ROUTE = "/{path}";
 
     private readonly string baseUrl;
 
-    public MockDataOceanController(IConfigurationStore configurationStore)
+    public MockDataOceanController(ILoggerFactory loggerFactory, IConfigurationStore configurationStore)
+      : base(loggerFactory)
     {
       baseUrl = configurationStore.GetValueString("MOCK_WEBAPI_BASE_URL");
       if (string.IsNullOrEmpty(baseUrl))
@@ -27,12 +26,10 @@ namespace MockProjectWebApi.Controllers
       }
     }
 
-
-    [Route("/api/browse/directories")]
-    [HttpGet]
-    public dynamic BrowseDirectories([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
+    [HttpGet("/api/browse/directories")]
+    public IActionResult BrowseDirectories([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
     {
-      Console.WriteLine($"{nameof(BrowseDirectories)}: {Request.QueryString}");
+      Logger.LogInformation($"{nameof(BrowseDirectories)}: {Request.QueryString}");
 
       var result = new
       {
@@ -45,24 +42,23 @@ namespace MockProjectWebApi.Controllers
             parent_id = parent_id
           }
         }
-
-
       };
-      Console.WriteLine($"{nameof(BrowseDirectories)} returning: {JsonConvert.SerializeObject(result)}");
-      return result;
+
+      Logger.LogInformation($"{nameof(BrowseDirectories)} returning: {JsonConvert.SerializeObject(result)}");
+      return Ok(result);
     }
 
-    [Route("/api/browse/files")]
-    [HttpGet]
-    public dynamic BrowseFiles([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
+    [HttpGet("/api/browse/files")]
+    public IActionResult BrowseFiles([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
     {
-      Console.WriteLine($"{nameof(BrowseFiles)}: {Request.QueryString}");
+      Logger.LogInformation($"{nameof(BrowseFiles)}: {Request.QueryString}");
 
       var suffix = string.Empty;
       if (name.Contains(GENERATED_TILE_FOLDER_SUFFIX))
       {
         suffix = TILE_METADATA_ROUTE;
       }
+
       var result = new
       {
         files = new[]
@@ -84,17 +80,16 @@ namespace MockProjectWebApi.Controllers
             multifile = !string.IsNullOrEmpty(suffix)
           }
         }
-
       };
-      Console.WriteLine($"{nameof(BrowseFiles)} returning: {JsonConvert.SerializeObject(result)}");
-      return result;
+
+      Logger.LogInformation($"{nameof(BrowseFiles)} returning: {JsonConvert.SerializeObject(result)}");
+      return Ok(result);
     }
 
-    [Route("/api/files/{id}")]
-    [HttpGet]
-    public dynamic GetFile([FromRoute]Guid id)
+    [HttpGet("/api/files/{id}")]
+    public IActionResult GetFile([FromRoute]Guid id)
     {
-      Console.WriteLine($"{nameof(GetFile)}: {id}");
+      Logger.LogInformation($"{nameof(GetFile)}: {id}");
 
       var result = new
       {
@@ -114,25 +109,24 @@ namespace MockProjectWebApi.Controllers
           }
         }
       };
-      Console.WriteLine($"{nameof(GetFile)} returning: {JsonConvert.SerializeObject(result)}");
-      return result;
+
+      Logger.LogInformation($"{nameof(GetFile)} returning: {JsonConvert.SerializeObject(result)}");
+      return Ok(result);
     }
 
-    [Route("/api/files/{id}")]
-    [HttpDelete]
-    public HttpResponseMessage DeleteFile([FromRoute]Guid id)
+    [HttpDelete("/api/files/{id}")]
+    public IActionResult DeleteFile([FromRoute]Guid id)
     {
-      Console.WriteLine($"{nameof(DeleteFile)}: {id}");
+      Logger.LogInformation($"{nameof(DeleteFile)}: {id}");
 
-      return new HttpResponseMessage(HttpStatusCode.NoContent);
+      return NoContent();
     }
 
 
-    [Route("/api/directories")]
-    [HttpPost]
-    public dynamic CreateDirectory([FromBody]dynamic message)
+    [HttpPost("/api/directories")]
+    public IActionResult CreateDirectory([FromBody]dynamic message)
     {
-      Console.WriteLine($"{nameof(CreateDirectory)}: {JsonConvert.SerializeObject(message)}");
+      Logger.LogInformation($"{nameof(CreateDirectory)}: {JsonConvert.SerializeObject(message)}");
 
       var result = new
       {
@@ -143,15 +137,15 @@ namespace MockProjectWebApi.Controllers
           parent_id = message.directory.parent_id
         }
       };
-      Console.WriteLine($"{nameof(CreateDirectory)} returning: {JsonConvert.SerializeObject(result)}");
-      return new CreatedResult(Request.Path, result);
+
+      Logger.LogInformation($"{nameof(CreateDirectory)} returning: {JsonConvert.SerializeObject(result)}");
+      return Ok(result);
     }
 
-    [Route("/api/files")]
-    [HttpPost]
-    public dynamic CreateFile([FromBody]dynamic message)
+    [HttpPost("/api/files")]
+    public IActionResult CreateFile([FromBody]dynamic message)
     {
-      Console.WriteLine($"{nameof(CreateFile)}: {JsonConvert.SerializeObject(message)}");
+      Logger.LogInformation($"{nameof(CreateFile)}: {JsonConvert.SerializeObject(message)}");
 
       var result = new
       {
@@ -171,53 +165,50 @@ namespace MockProjectWebApi.Controllers
           }
         }
       };
-      Console.WriteLine($"{nameof(CreateFile)} returning: {JsonConvert.SerializeObject(result)}");
-      return new CreatedResult(Request.Path, result);
+
+      Logger.LogInformation($"{nameof(CreateFile)} returning: {JsonConvert.SerializeObject(result)}");
+      return Ok(result);
     }
 
-    [Route("/fake_upload_signed_url")]
-    [HttpPut]
-    public HttpResponseMessage UploadFile()
+    [HttpPut("/fake_upload_signed_url")]
+    public IActionResult UploadFile()
     {
-      Console.WriteLine($"{nameof(UploadFile)}");
+      Logger.LogInformation($"{nameof(UploadFile)}");
 
-      return new HttpResponseMessage(HttpStatusCode.OK);
+      return Ok();
     }
 
-    [Route("/fake_download_signed_url")]
-    [HttpGet]
+    [HttpGet("/fake_download_signed_url")]
     public Stream DownloadFile()
     {
-      Console.WriteLine($"{nameof(DownloadFile)}");
+      Logger.LogInformation($"{nameof(DownloadFile)}");
 
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       return new MemoryStream(buffer);
     }
 
-    [Route("/fake_download_signed_url/tiles/tiles.json")]
-    [HttpGet]
+    [HttpGet("/fake_download_signed_url/tiles/tiles.json")]
     public Stream DownloadTilesMetadataFile()
     {
-      Console.WriteLine($"{nameof(DownloadTilesMetadataFile)}");
+      Logger.LogInformation($"{nameof(DownloadTilesMetadataFile)}");
 
-      byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(tileMetadata));
-      return new MemoryStream(byteArray);
+      return new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(tileMetadata)));
     }
 
-    [Route("/fake_download_signed_url/tiles/xyz/{zoomLevel}/{yTile}/{xTile}.png")]
-    [HttpGet]
-    public ActionResult DownloadTilesLineworkFile([FromRoute] int zoomLevel, [FromRoute] int yTile, [FromRoute] int xTile)
+    [HttpGet("/fake_download_signed_url/tiles/xyz/{zoomLevel}/{yTile}/{xTile}.png")]
+    public IActionResult DownloadTilesLineworkFile([FromRoute] int zoomLevel, [FromRoute] int yTile, [FromRoute] int xTile)
     {
-      Console.WriteLine($"{nameof(DownloadTilesLineworkFile)}");
+      Logger.LogInformation($"{nameof(DownloadTilesLineworkFile)}");
 
-      string fileName = $"Resources/Z{zoomLevel}-Y{yTile}-X{xTile}.png";
+      var fileName = $"Resources/Z{zoomLevel}-Y{yTile}-X{xTile}.png";
 
       if (!System.IO.File.Exists(fileName))
       {
         //This is what DataOcean returns for a tile that doesn't exist
-        return StatusCode((int)HttpStatusCode.Forbidden, "access denied");
+        return Forbid("Access denied");
       }
-      return new FileStreamResult(new FileStream(fileName, FileMode.Open), ContentTypeConstants.ImagePng);
+
+      return new FileStreamResult(new FileStream(fileName, FileMode.Open, FileAccess.Read), ContentTypeConstants.ImagePng);
     }
 
     //We need a copy of this model class from DataOcean as we can't use dynamic due to the hypenated property names
@@ -231,7 +222,6 @@ namespace MockProjectWebApi.Controllers
       public int MaxZoom { get; set; }
       [JsonProperty(PropertyName = "tile-count", Required = Required.Default)]
       public int TileCount { get; set; }
-
     }
 
     public class Extents
@@ -256,7 +246,7 @@ namespace MockProjectWebApi.Controllers
       public string Value { get; set; }
     }
 
-    public static TileMetadata tileMetadata = new TileMetadata
+    private static readonly TileMetadata tileMetadata = new TileMetadata
     {
       Extents = new Extents
       {
@@ -273,6 +263,5 @@ namespace MockProjectWebApi.Controllers
       MaxZoom = 21,
       TileCount = 79
     };
-
   }
 }

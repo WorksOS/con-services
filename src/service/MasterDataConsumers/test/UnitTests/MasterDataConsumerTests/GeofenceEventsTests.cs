@@ -13,8 +13,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     public void GeofenceEventsCopyModels()
     {
       DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
-      var geofence = new Geofence()
-      {
+      var geofence = new Geofence
+                     {
         GeofenceUID = Guid.NewGuid().ToString(),
         Name = "Test Geofence",
         GeofenceType = GeofenceType.Borrow,
@@ -40,8 +40,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
    
     private CreateGeofenceEvent CopyModel(Geofence geofence)
     {
-      return new CreateGeofenceEvent()
-      {
+      return new CreateGeofenceEvent
+             {
         GeofenceUID = Guid.Parse(geofence.GeofenceUID),
         GeofenceName = geofence.Name,
         Description = geofence.Description,
@@ -57,8 +57,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private Geofence CopyModel(CreateGeofenceEvent kafkaGeofenceEvent)
     {
-      return new Geofence()
-      {
+      return new Geofence
+             {
         GeofenceUID = kafkaGeofenceEvent.GeofenceUID.ToString(),
         Name = kafkaGeofenceEvent.GeofenceName,
         GeofenceType = (GeofenceType)Enum.Parse(typeof(GeofenceType), kafkaGeofenceEvent.GeofenceType, true),

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Exceptions;
@@ -20,12 +21,10 @@ namespace VSS.Common.Abstractions.ServiceDiscovery.Interfaces
     Task<ServiceResult> ResolveService(string serviceName);
 
     /// <summary>
-    /// Resolve a Service URL for a given Service that we know about (e.g project / filter)
-    /// This will handle the cases where the service is internal / via TPaaS
+    /// Convert an internal service definition to a string representation
     /// </summary>
-    /// <exception cref="ServiceNotFoundException"></exception>
-    /// <returns>Full URL Representing the service details, or an exception if no service found</returns>
-    Task<string> ResolveLocalServiceEndpoint(ApiService service, ApiType apiType, ApiVersion version, string route = null, IDictionary<string, string> queryParameters = null);
+    /// <exception cref="ArgumentException">The Service requested is not defined. </exception>
+    string GetServiceName(ApiService service);
 
     /// <summary>
     /// Resolve a Service URL for a given Service that we know about (e.g project / filter)
@@ -33,7 +32,15 @@ namespace VSS.Common.Abstractions.ServiceDiscovery.Interfaces
     /// </summary>
     /// <exception cref="ServiceNotFoundException"></exception>
     /// <returns>Full URL Representing the service details, or an exception if no service found</returns>
-    Task<string> ResolveLocalServiceEndpoint(string service, ApiType apiType, ApiVersion version, string route = null, IDictionary<string, string> queryParameters = null);
+    Task<string> ResolveLocalServiceEndpoint(ApiService service, ApiType apiType, ApiVersion version, string route = null, IList<KeyValuePair<string, string>> queryParameters = null);
+
+    /// <summary>
+    /// Resolve a Service URL for a given Service that we know about (e.g project / filter)
+    /// This will handle the cases where the service is internal / via TPaaS
+    /// </summary>
+    /// <exception cref="ServiceNotFoundException"></exception>
+    /// <returns>Full URL Representing the service details, or an exception if no service found</returns>
+    Task<string> ResolveLocalServiceEndpoint(string service, ApiType apiType, ApiVersion version, string route = null, IList<KeyValuePair<string, string>> queryParameters = null);
 
     /// <summary>
     /// Resolve a Service URL for a given Service Name (either our service, or an external service that is configured)
@@ -41,6 +48,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery.Interfaces
     /// </summary>
     /// <exception cref="ServiceNotFoundException"></exception>
     /// <returns>Full URL Representing the service details, or an exception if no service found</returns>
-    Task<string> ResolveRemoteServiceEndpoint(string serviceName, ApiType apiType, ApiVersion version, string route = null, IDictionary<string, string> queryParameters = null);
+    Task<string> ResolveRemoteServiceEndpoint(string serviceName, ApiType apiType, ApiVersion version, string route = null, IList<KeyValuePair<string, string>> queryParameters = null);
   }
 }

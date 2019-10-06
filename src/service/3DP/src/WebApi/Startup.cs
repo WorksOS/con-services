@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.ServiceDiscovery;
-using VSS.Log4NetExtensions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
@@ -18,6 +17,7 @@ using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.WebApi.Middleware;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
 using WebApiContrib.Core.Formatter.Protobuf;
 
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.WebApi
     public IConfigurationRoot ConfigurationRoot{ get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
           .SetBasePath(env.ContentRootPath)
@@ -149,7 +149,7 @@ namespace VSS.Productivity3D.WebApi
 
       try
       {
-        ServiceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out string config);
+        ServiceProvider.GetRequiredService<IASNodeClient>().RequestConfig(out var config);
         if (Log.IsTraceEnabled())
           Log.LogTrace("Received config {0}", config);
 

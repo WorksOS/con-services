@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -47,11 +46,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     }
 
     /// <summary>
-    /// Gets the ids of the surveyed surfaces to exclude from Raptor/TRex calculations. 
+    /// Gets the ids and uids of the surveyed surfaces to exclude from Raptor/TRex calculations. 
     /// This is the deactivated ones.
     /// </summary>
-    /// <returns>The list of file ids for the surveyed surfaces to be excluded</returns>
-    public async Task<List<long>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<List<(long, Guid)>> GetExcludedSurveyedSurfaceIds(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
     {
       var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
       if (fileList == null || fileList.Count == 0)
@@ -59,87 +57,51 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
       var results = fileList
         .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => f.LegacyFileId).ToList();
+        .Select(f => (f.LegacyFileId, Guid.Parse(f.ImportedFileUid))).ToList();
 
       return results;
     }
 
     /// <summary>
-    /// Gets the Uid and Id lists of the surveyed surfaces to exclude from TRex/Raptor calculations. 
-    /// This is the deactivated ones.
+    /// Get project statistics using all excluded surveyed surfaces.
     /// </summary>
-    private async Task<(List<Guid> Uids, List<long> Ids)> GetExcludedSurveyedSurfaces(Guid projectUid, string userId, IDictionary<string, string> customHeaders)
+    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithProjectSsExclusions(Guid projectUid, long projectId, string userId, IDictionary<string, string> customHeaders)
     {
-      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
-      if (fileList == null || fileList.Count == 0)
-        return (null, null);
+      var excludedIds = await GetExcludedSurveyedSurfaceIds(projectUid, userId, customHeaders);
 
-      var uidList = fileList
-        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => Guid.Parse(f.ImportedFileUid)).ToList();
-
-      var idList = fileList
-        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface && !f.IsActivated)
-        .Select(f => f.LegacyFileId).ToList();
-      return (uidList, idList);
+      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds?.Select(e => e.Item1), excludedIds?.Select(e => e.Item2));
     }
 
     /// <summary>
-    /// Gets the Uid and Id lists of the surveyed surfaces to exclude from TRex/Raptor calculations. 
-    /// This is the deactivated ones.
+    /// Get project statistics using excluded surveyed surfaces provided in the request.
+    /// This is used for v1 requests where the excluded surveyed surfaces are provided in the request
     /// </summary>
-    private async Task<List<Guid>> GetExcludedSurveyedSurfacesMatches(Guid projectUid, List<long> Ids, string userId, IDictionary<string, string> customHeaders)
+    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithRequestSsExclusions(Guid projectUid, long projectId, string userId, long[] excludedIds, IDictionary<string, string> customHeaders)
     {
-      var fileList = await _fileImportProxy.GetFiles(projectUid.ToString(), userId, customHeaders);
-      if (fileList == null || fileList.Count == 0)
-        return null;
-
-      var uidList = fileList
-        .Where(f => f.ImportedFileType == ImportedFileType.SurveyedSurface
-                    && Ids.Contains(f.LegacyFileId))
-        .Select(f => Guid.Parse(f.ImportedFileUid)).ToList();
-      return uidList;
+      Guid[] excludedUids = null;
+      if (excludedIds != null && excludedIds.Length > 0)
+      {
+        var excludedSs = await GetExcludedSurveyedSurfaceIds(projectUid, userId, customHeaders);
+        excludedUids = excludedSs == null || excludedSs.Count == 0 ? null :
+          excludedSs.Where(e => excludedIds.Contains(e.Item1)).Select(e => e.Item2).ToArray();
+      }
+      return await GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds, excludedUids);
     }
 
-    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithProjectSsExclusions(Guid projectUid, long projectId, string userId, IDictionary<string, string> customHeaders)
+    /// <summary>
+    /// Get project statistics using excluded surveyed surfaces provided in the filter.
+    /// </summary>
+    public Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids)
     {
-      var excludedSSs = await GetExcludedSurveyedSurfaces(projectUid, userId, customHeaders);
-
-      var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
-        excludedSSs.Uids?.ToArray(), excludedSSs.Ids?.ToArray());
-
-      return await
-        RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
-#if RAPTOR
-            _raptorClient,
-#endif
-            configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
-          .ProcessAsync(request) as ProjectStatisticsResult;
+      return GetProjectStatisticsWithSsExclusions(projectUid, projectId, excludedIds, excludedUids);
     }
 
-    // special case for obsolete controllers
-    // supported only on Raptor
-    public Task<ContractExecutionResult> GetProjectStatisticsWithExclusions(long projectId, long[] excludedSsIds)
+    /// <summary>
+    /// Get project statistics using excluded surveyed surfaces.
+    /// </summary>
+    private async Task<ProjectStatisticsResult> GetProjectStatisticsWithSsExclusions(Guid projectUid, long projectId, IEnumerable<long> excludedIds, IEnumerable<Guid> excludedUids)
     {
-      var request = new ProjectStatisticsMultiRequest(null, projectId,
-        new Guid[0], excludedSsIds);
-
-      return RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,
-#if RAPTOR
-            _raptorClient,
-#endif
-            configStore: _configStore, trexCompactionDataProxy: _tRexCompactionDataProxy)
-          .ProcessAsync(request);
-    }
-
-    public async Task<ProjectStatisticsResult> GetProjectStatisticsWithFilterSsExclusions(Guid projectUid, long projectId, List<long> filterSSExclusionList, string userId, IDictionary<string, string> customHeaders)
-    {
-      List<Guid> excludedSSUids = null;
-      if (filterSSExclusionList != null && filterSSExclusionList.Count > 0)
-        excludedSSUids = await GetExcludedSurveyedSurfacesMatches(projectUid, filterSSExclusionList.ToList(), userId, customHeaders);
-
-      var request = new ProjectStatisticsMultiRequest(projectUid, projectId,
-        excludedSSUids?.ToArray(), filterSSExclusionList?.ToArray());
+      var request = new ProjectStatisticsMultiRequest(projectUid, projectId, excludedUids?.ToArray(), excludedIds?.ToArray());
 
       return await
         RequestExecutorContainerFactory.Build<ProjectStatisticsExecutor>(_loggerFactory,

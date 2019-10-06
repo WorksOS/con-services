@@ -3,6 +3,7 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -61,7 +62,6 @@ namespace VSS.Productivity3D.Models.Models
     /// Override the target MDP recorded from the machine with the value of mdpTarget
     /// </summary>
     [JsonProperty(Required = Required.Default)]
-    [Required]
     public bool OverrideTargetMDP { get; private set; }
 
     /// <summary>

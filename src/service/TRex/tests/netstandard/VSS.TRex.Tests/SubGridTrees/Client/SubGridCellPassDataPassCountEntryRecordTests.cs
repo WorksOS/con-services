@@ -1,4 +1,4 @@
-﻿using VSS.TRex.Common.CellPasses;
+﻿using VSS.TRex.Types.CellPasses;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using Xunit;
 

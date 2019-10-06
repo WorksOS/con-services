@@ -1,29 +1,28 @@
-﻿using System;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Services;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockFilterController
+  public class MockFilterController : BaseController
   {
     private readonly FiltersService filtersService;
 
-    public MockFilterController(IFiltersService filtersService)
+    public MockFilterController(ILoggerFactory loggerFactory, IFiltersService filtersService) : base(loggerFactory)
     {
-      this.filtersService = (FiltersService) filtersService;
+      this.filtersService = (FiltersService)filtersService;
     }
 
     /// <summary>
     /// Get a filter for a project by filter id.
     /// </summary>
-    [Route("api/v1/mock/filter/{projectUid}")]
     [Route("api/v1/filter/{projectUid}")]
     [HttpGet]
     public FilterData GetMockFilter(string projectUid, [FromUri] string filterUid)
     {
-      Console.WriteLine($"{nameof(GetMockFilter)}: projectUid={projectUid}, filterUid={filterUid}");
+      Logger.LogInformation($"{nameof(GetMockFilter)}: projectUid={projectUid}, filterUid={filterUid}");
 
       return filtersService.GetFilter(projectUid, filterUid);
     }
@@ -31,12 +30,11 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Gets the filters for a given project.
     /// </summary>
-    [Route("api/v1/mock/filters/{projectUid}")]
     [Route("api/v1/filters/{projectUid}")]
     [HttpGet]
     public FilterListData GetMockFilters(string projectUid)
     {
-      Console.WriteLine($"{nameof(GetMockFilters)}: projectUid={projectUid}");
+      Logger.LogInformation($"{nameof(GetMockFilters)}: projectUid={projectUid}");
 
       return filtersService.GetFilters(projectUid);
     }

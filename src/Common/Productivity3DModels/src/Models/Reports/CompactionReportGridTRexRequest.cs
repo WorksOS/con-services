@@ -3,7 +3,7 @@ using System;
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.Models.Models.Reports
@@ -79,7 +79,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
       double endNorthing,
       double endEasting,
       double azimuth,
-      OverridingTargets overrides)
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
       Filter = filter;
@@ -99,6 +100,7 @@ namespace VSS.Productivity3D.Models.Models.Reports
       EndEasting = endEasting;
       Azimuth = azimuth;
       Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>

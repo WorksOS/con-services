@@ -9,10 +9,10 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.TRex.Gateway.Common.Proxy;
 
 namespace VSS.Productivity3D.Common.Interfaces
 {
@@ -24,6 +24,7 @@ namespace VSS.Productivity3D.Common.Interfaces
   {
     protected bool UseTRexGateway(string key) => configStore.GetValueBool(key) ?? false;
     protected bool UseRaptorGateway(string key) => configStore.GetValueBool(key) ?? false;
+    protected bool IsTRexAvailable(string key) => configStore.GetValueBool(key) ?? false;
 
     private const string ERROR_MESSAGE = "Failed to get/update data requested by {0}";
     private const string ERROR_MESSAGE_EX = "{0} with error: {1}";
@@ -45,6 +46,7 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Logger for logging
     /// </summary>
     protected ILogger log;
+    protected ILoggerFactory loggerFactory;
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from
@@ -74,6 +76,8 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected ITransferProxy transferProxy;
 
     protected ITRexTagFileProxy tRexTagFileProxy;
+
+    protected ITRexConnectedSiteProxy tRexConnectedSiteProxy;
 
     protected ITRexCompactionDataProxy trexCompactionDataProxy;
 
@@ -121,7 +125,10 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// </summary>
     /// <typeparam name="T">>Generic type which should be</typeparam>
     /// <param name="item">>The item.</param>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item);
+    protected virtual ContractExecutionResult ProcessEx<T>(T item)
+    {
+      throw new NotImplementedException("Missing synchronous executor process method override or Use the asynchronous form of this method");
+    }
 
     /// <summary>
     /// 
@@ -166,16 +173,17 @@ namespace VSS.Productivity3D.Common.Interfaces
     protected virtual void ProcessErrorCodes()
     { }
 
-    public void Initialise(ILogger logger,
+    public void Initialise(ILoggerFactory loggerFactory, ILogger logger,
 #if RAPTOR
       IASNodeClient raptorClient,
       ITagProcessor tagProcessor,
 #endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
-      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
+      ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
       IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders, string customerUid)
     {
-      log = logger;
+      this.loggerFactory = loggerFactory;
+      this.log = logger;
 #if RAPTOR
       this.raptorClient = raptorClient;
       this.tagProcessor = tagProcessor;
@@ -187,6 +195,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.profileResultHelper = profileResultHelper;
       this.transferProxy = transferProxy;
       this.tRexTagFileProxy = tRexTagFileProxy;
+      this.tRexConnectedSiteProxy = tRexConnectedSiteProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
       this.assetResolverProxy = assetResolverProxy;
       this.customHeaders = customHeaders;
@@ -197,6 +206,33 @@ namespace VSS.Productivity3D.Common.Interfaces
     /// Casts input object to type T for use with child executors.
     /// </summary>
     protected T CastRequestObjectTo<T>(object item) where T : ProjectID
+    {
+      var request = item as T;
+
+      if (request == null)
+      {
+        ThrowRequestTypeCastException<T>();
+      }
+
+      return request;
+    }
+
+    /// <summary>
+    /// Casts input object to type ProjectIDs for use with child executors.
+    /// </summary>
+    protected ProjectIDs CastRequestObjectToProjectIDs(object item)
+    {
+      var request = item as ProjectIDs;
+
+      if (request == null)
+      {
+        ThrowRequestTypeCastException<ProjectIDs>();
+      }
+
+      return request;
+    }
+
+    protected T CastTrexRequestObjectTo<T>(object item) where T : TRexBaseRequest
     {
       var request = item as T;
 

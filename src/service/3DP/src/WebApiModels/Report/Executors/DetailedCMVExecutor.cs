@@ -14,6 +14,8 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -44,7 +46,12 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var settings = (CMVSettingsEx)request.CmvSettings;
-          var cmvDetailsRequest = new CMVDetailsRequest(request.ProjectUid, request.Filter, settings.CustomCMVDetailTargets);
+          var cmvDetailsRequest = new CMVDetailsRequest(
+            request.ProjectUid.Value, 
+            request.Filter, 
+            settings.CustomCMVDetailTargets,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
           return await trexCompactionDataProxy.SendDataPostRequest<CMVDetailedResult, CMVDetailsRequest>(cmvDetailsRequest, "/cmv/details", customHeaders);
 #if RAPTOR
         }
@@ -136,9 +143,5 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     }
 #endif
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

@@ -1,11 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Common.Models;
-using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Validation;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 {
@@ -19,7 +18,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
       var validator = new DataAnnotationsValidator();
       //empty project settings
       CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       ICollection<ValidationResult> results;
       Assert.IsTrue(validator.TryValidate(settings, out results));
 
@@ -40,7 +39,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 
       //target/default flags all true, don't need settings values
       settings = CompactionProjectSettings.CreateProjectSettings(
-        true, null, null, true, null, null, true, null, true, null, true, null, null, true, null, null, true, null, null, true, null, true, null, null, true, null);
+        true, null, null, true, null, null, true, null, true, null, true, null, null, true, null, null, true, null, null, true, null, true, null, null, true);
       settings.Validate();
 
       //target/default flags all true, can have valid settings
@@ -50,7 +49,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
 
       //target/default flags all null, don't need settings values
       settings = CompactionProjectSettings.CreateProjectSettings(
-        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
       settings.Validate();
 
       //target/default flags all null, can have valid settings
@@ -329,7 +328,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     {
       //Pass count missing values
       CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, null);
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false);
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
       //Pass count too many values
@@ -363,7 +362,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     {
       //CMV details missing values
       CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 }, false, null);
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 }, false);
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
       //CMV details too many values
@@ -397,7 +396,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     {
       //Temperature details missing values
       CompactionProjectSettings settings = CompactionProjectSettings.CreateProjectSettings(
-        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 }, false, new List<int> { 0, 40, 80, 120, 150 }, false, null);
+        false, 5, 7, false, 75, 155, false, 77, false, 88, false, 75, 105, false, 85, 115, false, 10, 30, false, new List<double> { 3, 2, 1, 0, -1, -2, -3 }, false, 5, 7.5, false, new List<int> { 1, 3, 5, 8, 11, 16, 20, 25 }, false, new List<int> { 0, 40, 80, 120, 150 }, false);
       Assert.ThrowsException<ServiceException>(() => settings.Validate());
 
       //Temperature details too many values

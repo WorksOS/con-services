@@ -14,17 +14,20 @@ using VSS.WebApi.Common;
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
 {
   /// <summary>
-  /// Configures services and request pipelines.
+  /// Application startup class.
   /// </summary>
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    /// <inheritdoc />
     public override string ServiceName => "3dpm Tag File Auth API";
+
+    /// <inheritdoc />
     public override string ServiceDescription => "The service is used for TagFile authorization";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       Log.LogDebug("Loading application service descriptors");
@@ -49,6 +52,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       });
     }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     { }
   }

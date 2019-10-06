@@ -1,15 +1,21 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Cache.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
@@ -25,6 +31,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
   /// </summary>
   public class ElevationExtentsProxy : IElevationExtentsProxy
   {
+    private static readonly AsyncDuplicateLock memCacheLock = new AsyncDuplicateLock();
 
     /// <summary>
     /// Logger factory for use by executor
@@ -34,7 +41,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <summary>
     /// Cache for elevation extents
     /// </summary>
-    private readonly IMemoryCache elevationExtentsCache;
+    private readonly IDataCache elevationExtentsCache;
 #if RAPTOR
     /// <summary>
     /// Raptor client for use by executor
@@ -77,7 +84,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
-      ILoggerFactory logger, IMemoryCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
+      ILoggerFactory logger, IDataCache cache, ICompactionSettingsManager settingsManager, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -103,67 +110,84 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     {
       const double NO_ELEVATION = 10000000000.0;
 
-      var cacheKey = ElevationCacheKey(projectId, filter);
+      var cacheKey = ElevationCacheKey(projectUid, filter);
       var strFilter = filter != null ? JsonConvert.SerializeObject(filter) : "";
       var opts = new MemoryCacheEntryOptions().GetCacheOptions(elevationExtentsCacheLifeKey, configStore, log);
 
-      return await elevationExtentsCache.GetOrCreate(cacheKey, async entry =>
-      {
-        ElevationStatisticsResult result;
-        entry.SetOptions(opts);
-        if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
-        {
-          log.LogDebug(
-            $"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
+      // User Story: 88271 - when the UI makes calls requiring elevation, we can bombard Raptor with duplicate calls to retrieve elevation
+      // This can cause raptor to take longer than expected to query the same data over and over again.
+      // This only ever happens when there is no cached item here, as once the item is cached for a given filter the cached item is returned.
+      // To fix this, we will lock per cache key here, so only one call can be made to raptor, blocking all other calls requesting the same info until the cache item is ready
+      // Overall the call time should not change for any request, however the number of calls will be reduced to 1 for each unique projectid / filter.
+      ElevationStatisticsResult resultElevationStatisticsResult = null;
 
-          var projectExtentsRequest = new ExtentRequest(projectId, projectUid,
-            filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
-          var extents = await RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
+      using (await memCacheLock.LockAsync(cacheKey))
+      {
+        resultElevationStatisticsResult = await elevationExtentsCache.GetOrCreate(cacheKey, async entry =>
+        {
+          ElevationStatisticsResult result;
+          entry.SetOptions(opts);
+          if (filter == null || (filter.isFilterContainsSSOnly) || (filter.IsFilterEmpty))
+          {
+            log.LogDebug($"Calling elevation statistics from Project Extents for project {projectId} and filter {strFilter}");
+
+            var projectExtentsRequest = new ExtentRequest(projectId, projectUid,filter != null ? filter.SurveyedSurfaceExclusionList.ToArray() : null);
+            var extents = await RequestExecutorContainerFactory.Build<ProjectExtentsSubmitter>(logger,
 #if RAPTOR
-                raptorClient, 
+                raptorClient,
 #endif
                 configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
               .ProcessAsync(projectExtentsRequest) as ProjectExtentsResult;
 
-          if (extents != null)
-          {
-            result = new ElevationStatisticsResult(
-              new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
-                extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
-                extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0.0);
+            if (extents != null)
+            {
+              result = new ElevationStatisticsResult(
+                new BoundingBox3DGrid(extents.ProjectExtents.MinX, extents.ProjectExtents.MinY,
+                  extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxX, extents.ProjectExtents.MaxY,
+                  extents.ProjectExtents.MaxZ), extents.ProjectExtents.MinZ, extents.ProjectExtents.MaxZ, 0.0);
+            }
+            else
+              result = new ElevationStatisticsResult(null, 0.0, 0.0, 0.0);
           }
           else
-            result = new ElevationStatisticsResult(null, 0.0, 0.0, 0.0);
-        }
-        else
-        {
-          log.LogDebug(
-            $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
+          {
+            log.LogDebug(
+              $"Calling elevation statistics from Elevation Statistics for project {projectId} and filter {strFilter}");
 
-          var liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
+            var liftSettings = settingsManager.CompactionLiftBuildSettings(projectSettings);
 
-          var statsRequest =
+            var statsRequest =
               new ElevationStatisticsRequest(projectId, projectUid, null, filter, 0,
-              liftSettings);
-          statsRequest.Validate();
+                liftSettings);
+            statsRequest.Validate();
 
-          result =
-            await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
+            result =
+              await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
 #if RAPTOR
-              raptorClient,
+                  raptorClient,
 #endif
-              configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
-              .ProcessAsync(statsRequest) as ElevationStatisticsResult;
-        }
-        //Check for 'No elevation range' result
-        if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 &&
-            Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
-        {
-          result = null;
-        }
-        log.LogDebug($"Done elevation request");
-        return result;
-      });
+                  configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, customHeaders: customHeaders)
+                .ProcessAsync(statsRequest) as ElevationStatisticsResult;
+          }
+
+          //Check for 'No elevation range' result
+          if (Math.Abs(result.MinElevation - NO_ELEVATION) < 0.001 &&
+              Math.Abs(result.MaxElevation + NO_ELEVATION) < 0.001)
+          {
+            result = null;
+          }
+
+          // We need to tag the result as this filter and project for cache invalidation
+          var identifiers = new List<string> {projectUid.ToString()};
+          if (filter?.Uid != null)
+            identifiers.Add(filter.Uid.Value.ToString());
+
+          log.LogDebug($"Done elevation request");
+          return new CacheItem<ElevationStatisticsResult>(result, identifiers);
+        });
+      }
+      
+      return resultElevationStatisticsResult;
     }
 
     /// <summary>
@@ -172,10 +196,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// <param name="projectId">project ID</param>
     /// <param name="filter">Compaction filter</param>
     /// <returns>Cache key</returns>
-    private string ElevationCacheKey(long projectId, FilterResult filter)
+    private string ElevationCacheKey(Guid projectUid, FilterResult filter)
     {
-      var filterHash = filter == null ? 0 : filter.GetHashCode();
-      return $"{projectId},{filterHash}";
+      var filterHash = filter?.Uid == null ? string.Empty : filter.Uid.Value.ToString();
+      return $"Elevation-{projectUid}--{filterHash}";
     }
   }
 }

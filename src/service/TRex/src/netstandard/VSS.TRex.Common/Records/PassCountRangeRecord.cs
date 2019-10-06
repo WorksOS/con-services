@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
 using Apache.Ignite.Core.Binary;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Common.Records
 {
-  public struct PassCountRangeRecord //: IBinaryReaderWriter
+  public struct PassCountRangeRecord
   {
     /// <summary>
     /// Minimum Pass Count range value.
@@ -60,10 +60,8 @@ namespace VSS.TRex.Common.Records
       writer.Write(Max);
     }
 
-    public void Write(BinaryWriter writer, byte[] buffer) => Write(writer);
-
     /// <summary>
-    /// Serialises comtent of the cell from the writer
+    /// Serialises content of the cell from the writer
     /// </summary>
     /// <param name="reader"></param>
     public void Read(BinaryReader reader)

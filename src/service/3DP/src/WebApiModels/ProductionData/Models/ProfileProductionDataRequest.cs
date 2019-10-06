@@ -8,7 +8,8 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Models
 {

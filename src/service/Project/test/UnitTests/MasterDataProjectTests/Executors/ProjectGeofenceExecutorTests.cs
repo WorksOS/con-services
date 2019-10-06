@@ -45,7 +45,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectRepo = new Mock<IProjectRepository>();
       var project = new ProjectDatabaseModel
-                    {
+      {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill
@@ -79,9 +79,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, testDiFixtureFixture.KafkaTopicName,
-        null, null, null, null, null,
-        projectRepo.Object);
+        producer.Object, testDiFixtureFixture.KafkaTopicName, projectRepo: projectRepo.Object);
       await executor.ProcessAsync(request);
     }
 
@@ -94,7 +92,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectRepo = new Mock<IProjectRepository>();
       var project = new ProjectDatabaseModel
-                    {
+      {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard
@@ -128,9 +126,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, testDiFixtureFixture.KafkaTopicName,
-        null, null, null, null, null,
-        projectRepo.Object);
+        producer.Object, testDiFixtureFixture.KafkaTopicName, projectRepo: projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 
@@ -147,7 +143,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectRepo = new Mock<IProjectRepository>();
       var project = new ProjectDatabaseModel
-                    {
+      {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill
@@ -177,9 +173,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, testDiFixtureFixture.KafkaTopicName,
-        null, null, null, null, null,
-        projectRepo.Object);
+        producer.Object, testDiFixtureFixture.KafkaTopicName, projectRepo: projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 
@@ -196,7 +190,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var projectRepo = new Mock<IProjectRepository>();
       var project = new ProjectDatabaseModel
-                    {
+      {
         CustomerUID = customerUid,
         ProjectUID = projectUid,
         ProjectType = ProjectType.LandFill
@@ -226,9 +220,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, testDiFixtureFixture.KafkaTopicName,
-        null, null, null, null, null,
-        projectRepo.Object);
+        producer.Object, testDiFixtureFixture.KafkaTopicName, projectRepo: projectRepo.Object);
       await executor.ProcessAsync(request);
     }
 
@@ -268,9 +260,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, testDiFixtureFixture.KafkaTopicName,
-        null, null, null, null, null,
-        projectRepo.Object);
+        producer.Object, testDiFixtureFixture.KafkaTopicName, projectRepo: projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 
@@ -317,9 +307,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory.Build<UpdateProjectGeofenceExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, null, null, null,
-        producer.Object, testDiFixtureFixture.KafkaTopicName,
-        null, null, null, null, null,
-        projectRepo.Object);
+        producer.Object, testDiFixtureFixture.KafkaTopicName, projectRepo: projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
         await executor.ProcessAsync(request));
 

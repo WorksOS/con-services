@@ -26,7 +26,9 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(name:"delete " + filterType, filterType: filterType, onlyFilterUid: true);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectProxy, 
+          productivity3dV2ProxyNotification:Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction:Productivity3dV2ProxyCompaction,
+          producer:Producer, kafkaTopicName:KafkaTopicName);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2011", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("DeleteFilter failed. The requested filter does not exist, or does not belong to the requesting customer; project or user.", StringComparison.Ordinal), "executor threw exception but incorrect message");
@@ -61,7 +63,9 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(name: name, customerUid: custUid, userId: userId, projectUid: projectUid, filterUid: filterUid, filterType: filterType, onlyFilterUid: true);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectProxy,
+          productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+          producer:Producer, kafkaTopicName:KafkaTopicName);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor should always return a result");

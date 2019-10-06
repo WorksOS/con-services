@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Executors;
@@ -9,7 +10,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
 {
-  public class SurfaceElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<ISurfaceElevationPatchArgument, byte[]>
+  public class SurfaceElevationPatchComputeFunc : BaseComputeFunc, IComputeFunc<ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SurfaceElevationPatchComputeFunc>();
 
@@ -18,7 +19,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
     /// </summary>
     /// <param name="arg"></param>
     /// <returns></returns>
-    public byte[] Invoke(ISurfaceElevationPatchArgument arg)
+    public ISerialisedByteArrayWrapper Invoke(ISurfaceElevationPatchArgument arg)
     {
       byte[] resultAsBytes = null;
 
@@ -26,9 +27,8 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
       {
         Log.LogDebug($"CalculateDesignElevationPatchComputeFunc: Arg = {arg}");
 
-        CalculateSurfaceElevationPatch Executor = new CalculateSurfaceElevationPatch(arg);
-
-        IClientLeafSubGrid result = Executor.Execute();
+        var Executor = new CalculateSurfaceElevationPatch(arg);
+        var result = Executor.Execute();
 
         if (result != null)
         {
@@ -47,7 +47,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.ComputeFuncs
         Log.LogError(E, $"{nameof(SurfaceElevationPatchComputeFunc)}.Invoke: Exception:");
       }
 
-      return resultAsBytes;
+      return new SerialisedByteArrayWrapper(resultAsBytes);
     }
   }
 }

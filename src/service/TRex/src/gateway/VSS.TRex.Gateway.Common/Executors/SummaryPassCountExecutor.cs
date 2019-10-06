@@ -12,8 +12,8 @@ using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 using PassCountStatisticsResult = VSS.TRex.Analytics.PassCountStatistics.PassCountStatisticsResult;
-using SummaryResult = VSS.Productivity3D.Models.ResultHandling.PassCountSummaryResult;
-using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
+using SummaryResult = VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling.PassCountSummaryResult;
+using TargetPassCountRange = VSS.Productivity3D.Productivity3D.Models.Compaction.TargetPassCountRange;
 
 
 namespace VSS.TRex.Gateway.Common.Executors
@@ -53,7 +53,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+          LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
         }
       );
 

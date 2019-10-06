@@ -5,8 +5,9 @@ using AutoMapper;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -22,63 +23,165 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
     {
       public ICellPassAttributeFilter Resolve(FilterResult src, CombinedFilter dst, ICellPassAttributeFilter member, ResolutionContext context)
       {
-        var returnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value && src.ReturnEarliest.Value == true;
+        var filter = new CellPassAttributeFilter();
+
+        if (src == null)
+          return filter;
         
-        var contributingMachines = new Guid[0];
-        if (src.ContributingMachines != null && src.ContributingMachines.Count > 0)
-          contributingMachines = (src.ContributingMachines.Where(m => m.AssetUid.HasValue)
-          .Select(m => m.AssetUid.Value).ToArray());
-        
-        
-        return new CellPassAttributeFilter
+        if (src.StartUtc.HasValue)
         {
-          HasTimeFilter = src.StartUtc.HasValue && src.EndUtc.HasValue,
-          StartTime = src.StartUtc ?? Consts.MIN_DATETIME_AS_UTC,
-          EndTime = src.EndUtc ?? Consts.MAX_DATETIME_AS_UTC,
+          filter.StartTime = src.StartUtc.Value;
+          filter.HasTimeFilter = true;
+        }
 
-          HasMachineFilter = contributingMachines.Length > 0,
-          MachinesList = contributingMachines,
-         
-          HasMachineDirectionFilter = src.ForwardDirection.HasValue,
-          MachineDirection = src.ForwardDirection.HasValue 
-                            ? ( src.ForwardDirection == true ? MachineDirection.Forward : MachineDirection.Reverse)
-                            : MachineDirection.Unknown,
+        if (src.EndUtc.HasValue)
+        {
+          filter.EndTime = src.EndUtc.Value;
+          filter.HasTimeFilter = true;
+        }
 
-          HasDesignFilter = src.OnMachineDesignId.HasValue,
-          DesignNameID = (int) (src.OnMachineDesignId ?? Consts.kNoDesignNameID),
+        //src.OnMachineDesignName - Can't do this in TRex at present
 
-          HasVibeStateFilter = src.VibeStateOn.HasValue && src.VibeStateOn.Value,
-          HasLayerStateFilter = src.LayerType.HasValue,
-          LayerState = src.LayerType.HasValue ? LayerState.On : LayerState.Off,
+        filter.HasDesignFilter = src.OnMachineDesignId.HasValue;
+        if (filter.HasDesignFilter)
+        {
+          filter.DesignNameID = (int) (src.OnMachineDesignId.Value);
+        }
 
-          HasElevationMappingModeFilter = false, // does this have something to do with LayerType/Number?
+        filter.HasMachineFilter = src.ContributingMachines != null && src.ContributingMachines.Count > 0;
+        if (filter.HasMachineFilter)
+        {
+          filter.MachinesList = src.ContributingMachines.Where(m => m.AssetUid.HasValue)
+            .Select(m => m.AssetUid.Value).ToArray();
+        }
 
-          HasElevationTypeFilter = src.ReturnEarliest.HasValue,
-          ReturnEarliestFilteredCellPass = returnEarliestFilteredCellPass,
-          ElevationType = returnEarliestFilteredCellPass ? ElevationType.First : ElevationType.Last,
+        if (src.CompactorDataOnly.HasValue)
+        {
+          filter.HasCompactionMachinesOnlyFilter = src.CompactorDataOnly.Value;
+        }
 
-          HasGCSGuidanceModeFilter = src.AutomaticsType.HasValue,
-          GCSGuidanceMode = src.AutomaticsType ?? AutomaticsType.Unknown,
+        filter.HasVibeStateFilter = src.VibeStateOn.HasValue;
+        if (filter.HasVibeStateFilter)
+        {
+          filter.VibeState = src.VibeStateOn.Value ? VibrationState.On : VibrationState.Off;
+        }
 
-          HasGPSAccuracyFilter = false,     // this filter is not set-able in FilterResult (GPSAccuracy)
-          HasGPSToleranceFilter = false,    // this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
-          HasPositioningTechFilter = false, // this filter is not in FilterResult (set directly on Raptor TICFilterSettings?)
+        filter.HasElevationTypeFilter = src.ElevationType.HasValue;
+        if (filter.HasElevationTypeFilter)
+        {
+          filter.ElevationType = (ElevationType) src.ElevationType.Value;
+        }
 
-          HasLayerIDFilter = src.LayerNumber.HasValue,
-          LayerID = (int) (src.LayerNumber ?? CellPassConsts.NullLayerID),
+        filter.HasMachineDirectionFilter = src.ForwardDirection.HasValue;
+        if (filter.HasMachineDirectionFilter)
+        {
+          filter.MachineDirection = src.ForwardDirection.Value
+            ? MachineDirection.Forward
+            : MachineDirection.Reverse;
+        }
 
-          HasElevationRangeFilter = false,  // does this have something to do with LayerType/Number?
-          HasPassTypeFilter = false,        // this filter is not set-able in FilterResult (bladeOnGround)
-          HasCompactionMachinesOnlyFilter = false, // this filter is not set-able in FilterResult (compactorDataOnly)
+        // Layer Analysis
+        filter.HasLayerStateFilter = src.LayerType.HasValue;
+        if (filter.HasLayerStateFilter)
+        {
+          //filter.LayerMethod is used to set LiftSettings.LiftDetectionType elsewhere. LayerMethod is not in the TRex filter.
+          filter.LayerState = LayerState.On;
 
-          HasTemperatureRangeFilter = src.TemperatureRangeMin.HasValue && src.TemperatureRangeMax.HasValue,
-          MaterialTemperatureMin = (ushort) (src.TemperatureRangeMin ?? CellPassConsts.NullMaterialTemperatureValue),
-          MaterialTemperatureMax = (ushort) (src.TemperatureRangeMax ?? CellPassConsts.NullMaterialTemperatureValue),
+          if (src.LayerType == FilterLayerMethod.OffsetFromDesign ||
+              src.LayerType == FilterLayerMethod.OffsetFromBench ||
+              src.LayerType == FilterLayerMethod.OffsetFromProfile)
+          {
+            if (src.LayerType == FilterLayerMethod.OffsetFromBench)
+            {
+              filter.ElevationRangeLevel = src.BenchElevation.HasValue ? src.BenchElevation.Value : 0;
+            }
+            else
+            {
+              filter.ElevationRangeDesign = new DesignOffset(src.LayerDesignOrAlignmentFile.FileUid.Value, src.LayerDesignOrAlignmentFile.Offset);
+            }
 
-          HasPassCountRangeFilter = src.PassCountRangeMin.HasValue && src.PassCountRangeMax.HasValue,
-          PassCountRangeMin = (ushort) (src.PassCountRangeMin ?? CellPassConsts.NullPassCountValue),
-          PassCountRangeMax = (ushort) (src.PassCountRangeMax ?? CellPassConsts.NullPassCountValue),
-        };
+            if (src.LayerNumber.HasValue && src.LayerThickness.HasValue)
+            {
+              int layerNumber = src.LayerNumber.Value < 0
+                ? src.LayerNumber.Value + 1
+                : src.LayerNumber.Value;
+              filter.ElevationRangeOffset = layerNumber * src.LayerThickness.Value;
+              filter.ElevationRangeThickness = src.LayerThickness.Value;
+            }
+            else
+            {
+              filter.ElevationRangeOffset = 0;
+              filter.ElevationRangeThickness = 0;
+            }
+
+            filter.HasElevationRangeFilter = true;
+          }
+          else if (src.LayerType == FilterLayerMethod.TagfileLayerNumber)
+          {
+            filter.LayerID = src.LayerNumber.Value;
+            filter.HasLayerIDFilter = true;
+          }
+        }
+        else
+        {
+          filter.LayerState = LayerState.Off;
+        }
+
+        filter.HasGPSAccuracyFilter = src.GpsAccuracy.HasValue;
+        if (filter.HasGPSAccuracyFilter)
+        {
+          filter.GPSAccuracy = (GPSAccuracy)src.GpsAccuracy;
+          filter.GPSAccuracyIsInclusive = src.GpsAccuracyIsInclusive ?? false;
+        }
+
+        if (src.BladeOnGround.HasValue && src.BladeOnGround.Value)
+        {
+          filter.HasPassTypeFilter = true;
+          filter.PassTypeSet |= PassTypeSet.Front;
+          filter.PassTypeSet |= PassTypeSet.Rear;
+        }
+
+        if (src.TrackMapping.HasValue && src.TrackMapping.Value)
+        {
+          filter.HasPassTypeFilter = true;
+          filter.PassTypeSet |= PassTypeSet.Track;
+        }
+
+        if (src.WheelTracking.HasValue && src.WheelTracking.Value)
+        {
+          filter.HasPassTypeFilter = true;
+          filter.PassTypeSet |= PassTypeSet.Wheel;
+        }
+
+        if (src.ExcludedSurveyedSurfaceUids != null)
+          filter.SurveyedSurfaceExclusionList = src.ExcludedSurveyedSurfaceUids.ToArray();
+
+        filter.ReturnEarliestFilteredCellPass = src.ReturnEarliest.HasValue && src.ReturnEarliest.Value;
+
+        filter.HasGCSGuidanceModeFilter = src.AutomaticsType.HasValue;
+        if (filter.HasGCSGuidanceModeFilter)
+        {
+          filter.GCSGuidanceMode = (AutomaticsType)src.AutomaticsType.Value;
+        }
+
+        filter.HasTemperatureRangeFilter = src.TemperatureRangeMin.HasValue && src.TemperatureRangeMax.HasValue;
+        if (filter.HasTemperatureRangeFilter)
+        {
+          filter.MaterialTemperatureMin = (ushort)(src.TemperatureRangeMin.Value * 10);
+          filter.MaterialTemperatureMax = (ushort)(src.TemperatureRangeMax.Value * 10);
+        }
+
+        filter.HasPassCountRangeFilter = src.PassCountRangeMin.HasValue && src.PassCountRangeMax.HasValue;
+        if (filter.HasPassCountRangeFilter)
+        {
+          filter.PassCountRangeMin = (ushort)src.PassCountRangeMin.Value;
+          filter.PassCountRangeMax = (ushort)src.PassCountRangeMax.Value;
+        }
+
+        //These are not used?
+        //HasElevationMappingModeFilter
+        //HasPositioningTechFilter
+        return filter;
       }
     }
 
@@ -100,11 +203,20 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           fence.UpdateExtents();
         }
 
+        var fileUid = src.DesignFile != null ? src.DesignFile.FileUid.Value : (src.AlignmentFile != null ? src.AlignmentFile.FileUid.Value : Guid.Empty);
+
         return new CellSpatialFilter
         {
           CoordsAreGrid = src.PolygonGrid != null,
           IsSpatial = fence != null,
-          Fence = fence
+          Fence = fence,
+          IsDesignMask = src.DesignFile != null,
+          IsAlignmentMask = src.AlignmentFile != null,
+          AlignmentDesignMaskDesignUID = fileUid,
+          StartStation = src.StartStation,
+          EndStation = src.EndStation,
+          LeftOffset = src.LeftOffset,
+          RightOffset = src.RightOffset
         };
       }
     }
@@ -118,5 +230,6 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
       .ForMember(x => x.SpatialFilter,
           opt => opt.ResolveUsing<CustomCellSpatialFilterResolver>());
     }
+   
   }
 }

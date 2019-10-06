@@ -13,8 +13,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     {
       DateTime now = new DateTime(2017, 1, 1, 2, 30, 3);
 
-      var customer = new Customer()
-      {
+      var customer = new Customer
+                     {
         CustomerUID = Guid.NewGuid().ToString(),
         Name = "The Customer Name",
         CustomerType = CustomerType.Corporate,
@@ -30,8 +30,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
     #region private
     private CreateCustomerEvent CopyModel(Customer customer)
     {
-      return new CreateCustomerEvent()
-      {
+      return new CreateCustomerEvent
+             {
         CustomerUID = Guid.Parse(customer.CustomerUID),
         CustomerName = customer.Name,
         CustomerType = customer.CustomerType.ToString(),
@@ -41,8 +41,8 @@ namespace VSS.Productivity3D.MasterDataConsumer.Tests
 
     private Customer CopyModel(CreateCustomerEvent kafkaCustomerEvent)
     {
-      return new Customer()
-      {
+      return new Customer
+             {
         CustomerUID = kafkaCustomerEvent.CustomerUID.ToString(),
         Name = kafkaCustomerEvent.CustomerName,
         CustomerType = (CustomerType)Enum.Parse(typeof(CustomerType), kafkaCustomerEvent.CustomerType, true),

@@ -2,7 +2,7 @@
 using Apache.Ignite.Core.Binary;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
@@ -322,7 +322,7 @@ namespace VSS.TRex.Filters
 
     /// <summary>
     /// Denotes whether analysis of cell passes in a cell are analyzed into separate layers according to 
-    /// LayerMethod or if extracted cell passes are wrapped into a single containing layer.
+    /// LiftDetectionType or if extracted cell passes are wrapped into a single containing layer.
     /// </summary>
     public LayerState LayerState { get; set; } = LayerState.Invalid;
 

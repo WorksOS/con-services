@@ -13,8 +13,10 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -49,10 +51,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, userEmailAddress, null,
-        null, null,
-        null, null, null, null, null,
-        projectRepo.Object);
+        customerUid, userId, userEmailAddress, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.NotNull(result);
@@ -87,10 +86,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, null, null,
-        null, null,
-        null, null, null, null, null,
-        projectRepo.Object);
+        customerUid, userId, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       Assert.NotNull(result);
@@ -128,10 +124,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
-        customerUid, userId, null, null,
-        null, null,
-        null, null, null, null, null,
-        projectRepo.Object);
+        customerUid, userId, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
       var tempSettings = JsonConvert.DeserializeObject<JObject>(settings2);
@@ -164,10 +157,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory.Build<GetProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
-          customerUid, userId, null, null,
-          null, null,
-          null, null, null, null, null,
-          projectRepo.Object);
+          customerUid, userId, projectRepo: projectRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () =>
        await executor.ProcessAsync(projectSettingsRequest));
 
@@ -200,16 +190,15 @@ namespace VSS.MasterData.ProjectTests.Executors
       var producer = new Mock<IKafka>();
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
-        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dV2ProxyCompaction.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseMasterDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, null, null, null, null,
-        projectRepo.Object);
+        productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object, projectRepo: projectRepo.Object);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings, settingsType);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 
@@ -266,16 +255,15 @@ namespace VSS.MasterData.ProjectTests.Executors
       producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
       producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
-        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseDataResult());
+      var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dV2ProxyCompaction.Setup(r => r.ValidateProjectSettings(It.IsAny<ProjectSettingsRequest>(),
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new BaseMasterDataResult());
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (logger, configStore, serviceExceptionHandler,
         customerUid, userId, null, null,
         producer.Object, KafkaTopicName,
-        raptorProxy.Object, null, null, null, null,
-        projectRepo.Object);
+        productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object, projectRepo: projectRepo.Object);
       var projectSettingsRequest = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, settings1, settingsType1);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
 

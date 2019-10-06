@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using SVOICFilterSettings;
 using SVOICLiftBuildSettings;
 using VLPDDecls;
@@ -22,6 +23,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -35,16 +37,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IErrorCodesProvider, RaptorResult>();
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
+        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
+        .AddTransient<IErrorCodesProvider, RaptorResult>()
+        .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
@@ -62,7 +60,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       raptorClient.Setup(x => x.GetCellProductionData(
           request.ProjectId.Value,
-          (int) RaptorConverters.convertDisplayMode(request.DisplayMode),
+          (int)RaptorConverters.convertDisplayMode(request.DisplayMode),
           request.GridPoint != null ? request.GridPoint.x : 0.0,
           request.GridPoint != null ? request.GridPoint.y : 0.0,
           It.IsAny<TWGS84Point>(),
@@ -86,7 +84,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 
       TCellProductionData data = new TCellProductionData
       {
-        DisplayMode = (int) request.DisplayMode,
+        DisplayMode = (int)request.DisplayMode,
         Value = 500,
         ReturnCode = 0
       };
@@ -113,7 +111,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request), "On Cell Datum request. Failed to process coordinate conversion request.");
     }
 #endif
-  
+
     [TestMethod]
     public async Task CompactionCellDatumExecutor_TRex_Success()
     {

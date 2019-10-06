@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RepositoryTests.Internal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;

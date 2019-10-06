@@ -3,7 +3,7 @@ using System.Net;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 
 namespace VSS.Productivity3D.Models.Models.Reports
 {
@@ -53,7 +53,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
       double startStation,
       double endStation,
       double[] offsets,
-      OverridingTargets overrides)
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       return new CompactionReportStationOffsetTRexRequest
       {
@@ -72,7 +73,8 @@ namespace VSS.Productivity3D.Models.Models.Reports
         StartStation = startStation,
         EndStation = endStation,
         Offsets = offsets,
-        Overrides = overrides
+        Overrides = overrides,
+        LiftSettings = liftSettings
       };
     }
 

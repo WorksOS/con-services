@@ -29,15 +29,10 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
     private async Task<ContractExecutionResult> CallConnectedSiteEndpoint(CompactionTagFileRequest request)
     {
-      // connectedSite is in tRexTagFileProxy because it uses some tRex code
-      var connectedSiteResult = await tRexTagFileProxy.SendTagFileNonDirectToConnectedSite(request, customHeaders);
+      // connectedSite is in tRexConnectedSiteProxy because it uses some tRex code
+      var connectedSiteResult = await tRexConnectedSiteProxy.SendTagFileNonDirectToConnectedSite(request, customHeaders);
       log.LogInformation($"{nameof(CallConnectedSiteEndpoint)}: result: {JsonConvert.SerializeObject(connectedSiteResult)}");
       return connectedSiteResult;
-    }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
     }
   }
 }

@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
 using FluentAssertions;
-using FluentAssertions.Common;
-using Moq;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -87,7 +83,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
     }
 
     [Fact]
-    public void Test_CellPassesRequest_ClusterCompute_Execute_EmptySiteModel()
+    public async Task Test_CellPassesRequest_ClusterCompute_Execute_EmptySiteModel()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -96,14 +92,14 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       var request = new CellPassesRequest_ClusterCompute();
       var arg = CreateRequestArgument(siteModel);
-      var response = request.Execute(arg, new SubGridSpatialAffinityKey());
+      var response = await request.ExecuteAsync(arg, new SubGridSpatialAffinityKey());
 
       response.Should().NotBeNull();
       response.ReturnCode.Should().Be(CellPassesReturnCode.NoDataFound);
     }
 
     [Fact]
-    public void Test_CellPassesRequest_ClusterCompute_ExecuteData()
+    public async Task Test_CellPassesRequest_ClusterCompute_ExecuteData()
     {
       const int expectedCount = 20;
       AddApplicationGridRouting();
@@ -114,7 +110,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
       var request = new CellPassesRequest_ClusterCompute();
       var arg = CreateRequestArgument(siteModel);
-      var response = request.Execute(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
+      var response = await request.ExecuteAsync(arg, new SubGridSpatialAffinityKey(SubGridSpatialAffinityKey.DEFAULT_SPATIAL_AFFINITY_VERSION_NUMBER_TICKS, arg.ProjectID, arg.OTGCellX, arg.OTGCellY));
 
       response.Should().NotBeNull();
       response.ReturnCode.Should().Be(CellPassesReturnCode.DataFound);
@@ -151,7 +147,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var executor = new CellPassesExecutor();
       var coords = new Point(0.1, 0.1);
 
-      var request = new CellPassesTRexRequest(siteModel.ID, coords, null);
+      var request = new CellPassesTRexRequest(siteModel.ID, coords, null, null, null);
 
       var response = await executor.ProcessAsync(request) as CellPassesV2Result;
       response.Should().NotBeNull();

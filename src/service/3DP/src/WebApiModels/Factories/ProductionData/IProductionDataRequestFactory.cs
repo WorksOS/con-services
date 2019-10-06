@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Common.Models;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Factories.ProductionData

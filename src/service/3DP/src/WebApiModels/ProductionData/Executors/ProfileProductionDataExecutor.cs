@@ -19,7 +19,8 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Profiling;
 using VSS.Productivity3D.Models.ResultHandling.Profiling;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -52,7 +53,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         request.GridPoints?.x2 ?? request.WGS84Points.lon2,
         request.GridPoints?.y1 ?? request.WGS84Points.lat1,
         request.GridPoints?.y2 ?? request.WGS84Points.lat2,
-        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings)
+        AutoMapperUtility.Automapper.Map<OverridingTargets>(liftBuildSettings),
+        AutoMapperUtility.Automapper.Map<LiftSettings>(liftBuildSettings)
       );
 
       var trexResult = await trexCompactionDataProxy.SendDataPostRequest<ProfileDataResult<ProfileCellData>, ProductionDataProfileDataRequest>(productionDataProfileDataRequest, "/productiondata/profile", customHeaders);
@@ -366,9 +368,5 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
       }
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

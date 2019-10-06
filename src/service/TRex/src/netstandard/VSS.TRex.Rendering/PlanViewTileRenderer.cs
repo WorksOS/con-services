@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Drawing;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Palettes;
-using VSS.TRex.Rendering.Palettes.CCAColorScale;
 using VSS.TRex.Rendering.Palettes.Interfaces;
-using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering
@@ -22,7 +18,7 @@ namespace VSS.TRex.Rendering
   /// Coordinates the display related activities required to produce a rendered thematic tile at a location in the world,
   /// or a required thematic layer according to filtering and other processing criteria and configuration
   /// </summary>
-  public class PlanViewTileRenderer
+  public class PlanViewTileRenderer : IDisposable
   {
     //private static readonly ILogger Log = Logging.Logger.CreateLogger<PlanViewTileRenderer>();
 
@@ -39,7 +35,6 @@ namespace VSS.TRex.Rendering
     // DisplayPalettes : TICDisplayPalettes;
     // Palette : TICDisplayPaletteBase;       
     // ICOptions : TSVOICOptions;
-    // LiftBuildSettings : TICLiftBuildSettings;
 
     // The rotation of tile in the grid coordinate space due to any defined
     // rotation on the coordinate system.
@@ -125,15 +120,11 @@ namespace VSS.TRex.Rendering
     //      property WorkingPalette : TICDisplayPaletteBase read GetWorkingPalette write SetWorkingPalette;
     //      property DisplayPalettes : TICDisplayPalettes read FDisplayPalettes write FDisplayPalettes;
     //      property ICOptions : TSVOICOptions read FICOptions write FICOptions;
-    //      property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
 
     /// <summary>
     /// Perform rendering activities to produce a bitmap tile
     /// </summary>
-    /// <param name="mode"></param>
-    /// <param name="processor"></param>
-    /// <returns></returns>
-    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters)
+    public RequestErrorStatus PerformRender(DisplayMode mode, IPipelineProcessor processor, IPlanViewPalette colourPalette, IFilterSet filters, ILiftParameters liftParams)
     {
       // Obtain the display responsible for rendering the thematic information for this mode
       Displayer = PVMDisplayerFactory.GetDisplayer(mode /*, FICOptions*/);
@@ -144,7 +135,7 @@ namespace VSS.TRex.Rendering
         return processor.Response.ResultStatus;
       }
 
-      // Create and assign the colour pallete logic for this mode to the displayer
+      // Create and assign the colour palette logic for this mode to the displayer
       if (colourPalette == null)
       {
         if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
@@ -158,7 +149,7 @@ namespace VSS.TRex.Rendering
           }
         }
         else
-          Displayer.Palette = PVMPaletteFactory.GetPallete(processor.SiteModel, mode, processor.SpatialExtents);
+          Displayer.Palette = PVMPaletteFactory.GetPalette(processor.SiteModel, mode, processor.SpatialExtents);
       }
       else
         Displayer.Palette = colourPalette;
@@ -188,7 +179,7 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.YPixelSize, 0, 0, 0);
 
       // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
-      // todo PipeLine.LiftBuildSettings  = FICOptions.GetLiftBuildSettings(FFilter1.LayerMethod);
+      processor.Pipeline.LiftParams  = liftParams;
       // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
       // Perform the sub grid query and processing to render the tile
@@ -236,5 +227,43 @@ namespace VSS.TRex.Rendering
       NPixelsX = ANPixelsX;
       NPixelsY = ANPixelsY;
     }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          if (Displayer != null)
+          {
+            Displayer.Palette = null;
+            Displayer.Dispose();
+            Displayer = null;
+          }
+        }
+
+        disposedValue = true;
+      }
+    }
+
+    //  override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+    // ~PlanViewTileRenderer()
+    // {
+    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+    //   Dispose(false);
+    // }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+      // uncomment the following line if the finalizer is overridden above.
+      // GC.SuppressFinalize(this);
+    }
+    #endregion
   }
 }

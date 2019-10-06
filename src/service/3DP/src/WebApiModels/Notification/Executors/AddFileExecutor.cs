@@ -14,8 +14,8 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
+using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -44,12 +44,6 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
       RaptorResult.AddErrorMessages(ContractExecutionStates);
       RaptorResult.AddDesignProfileErrorMessages(ContractExecutionStates);
     }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
-
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try

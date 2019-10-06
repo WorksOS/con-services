@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.TRex.Types;
+using VSS.TRex.Common;
 
-namespace VSS.TRex.Common.CellPasses
+namespace VSS.TRex.Types.CellPasses
 {
   public static class CellPassConsts
   {
@@ -195,6 +195,11 @@ namespace VSS.TRex.Common.CellPasses
     /// Map Reset Design Name ID Event null value
     /// </summary>
     public const int NullEventMapResetDesignNameId = int.MaxValue;
+
+    /// <summary>
+    /// Maximum depth of cell passes to consider
+    /// </summary>
+    public const int MaxCellPassDepthForAllLayersCompactionSummaryAnalysis = 200;
 
   }
 }

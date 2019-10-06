@@ -1,7 +1,6 @@
-﻿using ASNodeRaptorReports;
+﻿using System;
+using ASNodeRaptorReports;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Models
@@ -45,7 +44,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
       Assert.AreEqual(station.ElevMin, statistics.Elevation);
       Assert.AreEqual((double)station.MDPMin/10, statistics.MDP);
       Assert.AreEqual(station.PassCountMin, statistics.PassCount);
-      Assert.AreEqual((double)station.TemperatureMin/10, statistics.Temperature);
+      Assert.AreEqual(station.TemperatureMin/10, statistics.Temperature);
     }
 
     [TestMethod]
@@ -58,7 +57,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
       Assert.AreEqual(station.ElevMax, statistics.Elevation);
       Assert.AreEqual((double)station.MDPMax/10, statistics.MDP);
       Assert.AreEqual(station.PassCountMax, statistics.PassCount);
-      Assert.AreEqual((double)station.TemperatureMax/10, statistics.Temperature);
+      Assert.AreEqual(station.TemperatureMax/10, statistics.Temperature);
     }
 
     [TestMethod]
@@ -66,12 +65,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Models
     {
       var statistics = OffsetStatistics.Create(OffsetStatisticType.Average, station, request);
 
-      Assert.AreEqual((double)station.CMVAvg/10, statistics.CMV);
+      Assert.AreEqual(station.CMVAvg/10, statistics.CMV);
       Assert.AreEqual(station.CutFillAvg, statistics.CutFill);
       Assert.AreEqual(station.ElevAvg, statistics.Elevation);
-      Assert.AreEqual((double)station.MDPAvg/10, statistics.MDP);
+      Assert.AreEqual(station.MDPAvg/10, statistics.MDP);
       Assert.AreEqual(station.PassCountAvg, statistics.PassCount);
-      Assert.AreEqual((double)station.TemperatureAvg/10, statistics.Temperature);
+      Assert.AreEqual(station.TemperatureAvg/10, statistics.Temperature);
     }
   }
 }

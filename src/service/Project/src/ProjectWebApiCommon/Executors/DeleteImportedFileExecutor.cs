@@ -4,12 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -56,7 +54,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy, projectRepo).ConfigureAwait(false);
 
-        // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
+        // DB change must be made before productivity3dV2ProxyNotification.DeleteFile is called as it calls back here to get list of Active files
         deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
           (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false);
@@ -64,7 +62,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useRaptorGatewayDesignImport)
       {
-        // DB change must be made before raptorProxy.DeleteFile is called as it calls back here to get list of Active files
+        // DB change must be made before productivity3dV2ProxyNotification.DeleteFile is called as it calls back here to get list of Active files
         if (deleteImportedFileEvent == null)
         {
           deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
@@ -76,8 +74,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileType,
             deleteImportedFile.ImportedFileUid, deleteImportedFile.FileDescriptor,
             deleteImportedFile.ImportedFileId, deleteImportedFile.LegacyImportedFileId,
-            log, customHeaders, serviceExceptionHandler,
-            projectRepo, raptorProxy)
+            log, customHeaders, productivity3dV2ProxyNotification)
           .ConfigureAwait(false);
 
         if (importedFileInternalResult == null)
@@ -89,10 +86,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                 log, serviceExceptionHandler, fileRepo, projectRepo)
               .ConfigureAwait(false);
 
+            var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(deleteImportedFile.FileDescriptor.FileName,
+              deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff,
+              deleteImportedFile.ImportedFileUid, deleteImportedFile.SurveyedUtc);
+
             importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
-              deleteImportedFile.FileDescriptor.FileName, deleteImportedFile.DataOceanRootFolder, customerUid,
+              dataOceanFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
               deleteImportedFile.ProjectUid,
-              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn);
+              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn, configStore);
 
             if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
                 deleteImportedFile.ImportedFileType == ImportedFileType.Linework ||
@@ -100,20 +101,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             {
               var tasks = new List<Task>();
               //delete generated DXF tiles
-              string dxfFileName = null;
-              switch (deleteImportedFile.ImportedFileType)
-              {
-                case ImportedFileType.GeoTiff:
-                  dxfFileName = deleteImportedFile.FileDescriptor.FileName.IncludeSurveyedUtcInName(deleteImportedFile.SurveyedUtc.Value);
-                  break;
-                case ImportedFileType.Linework:
-                  dxfFileName = deleteImportedFile.FileDescriptor.FileName;
-                  break;
-                case ImportedFileType.Alignment:
-                  dxfFileName = DataOceanFileUtil.GeneratedFileName(deleteImportedFile.FileDescriptor.FileName,
-                    deleteImportedFile.ImportedFileType);
-                  break;
-              }
+              string dxfFileName = DataOceanFileUtil.GeneratedFileName(dataOceanFileName, deleteImportedFile.ImportedFileType);
               tasks.Add(pegasusClient.DeleteTiles(dxfFileName, DataOceanHelper.CustomHeaders(authn)));
 
               if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
@@ -122,7 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                 tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
                   dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
                   deleteImportedFile.ProjectUid,
-                  deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn));
+                  deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn, configStore));
               }
               await Task.WhenAll(tasks);
             }

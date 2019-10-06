@@ -8,11 +8,11 @@ using VSS.TRex.Common.Utilities;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-    public class MapSurface
+    public class MapSurface : IDisposable
     {
-        private const double MaxViewDimensionMetres = 20000000;
+        private const double MaxViewDimensionMeters = 20000000;
 //        private const double MaxViewDimensionFeet = 60000000;
-        private const double MinViewDimensionMetres = 0.001;
+        private const double MinViewDimensionMeters = 0.001;
 
         public bool SquareAspect = true;
         public double OriginX = Consts.NullDouble;
@@ -480,28 +480,28 @@ namespace VSS.TRex.Rendering.Displayers
             MinMax.SetMinMax(ref MinX, ref MaxX);
             MinMax.SetMinMax(ref MinY, ref MaxY);
 
-            // We restrict the maximum zoom extent (ie width/height across view) to +-20,000,000 metres
-            if ((MaxX - MinX) > MaxViewDimensionMetres)
+            // We restrict the maximum zoom extent (ie width/height across view) to +-20,000,000 Meters
+            if ((MaxX - MinX) > MaxViewDimensionMeters)
             {
-                MinX = ((MaxX + MinX) / 2) - (MaxViewDimensionMetres / 2);
-                MaxX = MinX + MaxViewDimensionMetres;
+                MinX = ((MaxX + MinX) / 2) - (MaxViewDimensionMeters / 2);
+                MaxX = MinX + MaxViewDimensionMeters;
             }
-            if ((MaxY - MinY) > MaxViewDimensionMetres)
+            if ((MaxY - MinY) > MaxViewDimensionMeters)
             {
-                MinY = ((MaxY + MinY) / 2) - (MaxViewDimensionMetres / 2);
-                MaxY = MinY + MaxViewDimensionMetres;
+                MinY = ((MaxY + MinY) / 2) - (MaxViewDimensionMeters / 2);
+                MaxY = MinY + MaxViewDimensionMeters;
             }
 
-            // We restrict the minimum zoom extent (ie width/height across view) to +0.001 metres
-            if ((MaxX - MinX) < MinViewDimensionMetres)
+            // We restrict the minimum zoom extent (ie width/height across view) to +0.001 Meters
+            if ((MaxX - MinX) < MinViewDimensionMeters)
             {
-                MinX = ((MaxX + MinX) / 2) - (MinViewDimensionMetres / 2);
-                MaxX = MinX + MinViewDimensionMetres;
+                MinX = ((MaxX + MinX) / 2) - (MinViewDimensionMeters / 2);
+                MaxX = MinX + MinViewDimensionMeters;
             }
-            if ((MaxY - MinY) < MinViewDimensionMetres)
+            if ((MaxY - MinY) < MinViewDimensionMeters)
             {
-                MinY = ((MaxY + MinY) / 2) - (MinViewDimensionMetres / 2);
-                MaxY = MinY + MinViewDimensionMetres;
+                MinY = ((MaxY + MinY) / 2) - (MinViewDimensionMeters / 2);
+                MaxY = MinY + MinViewDimensionMeters;
             }
 
             if (!SquareAspect) // Do nothing, we will stretch it to the view...
@@ -983,14 +983,14 @@ double BorderSize)
                                LabelGrid : Boolean;
                                GridLabelFormatX : GridLabelFormater;
                                GridLabelFormatY : GridLabelFormater;
-                               ToMetresXAxisFactor : Float;
-                               ToMetresYAxisFactor : Float;
+                               ToMetersXAxisFactor : Float;
+                               ToMetersYAxisFactor : Float;
                                UseIntervalToSetDPs : Boolean);
 
             Procedure DrawText(const T : String;
         const x, y : FLOAT;
                                const Font : TFont;
-                               const Size : FLOAT; { Metres in world }
+                               const Size : FLOAT; { Meters in world }
                                const Rotation : FLOAT; {Radians}
                                const PenColor : TColor);
 
@@ -1086,7 +1086,10 @@ double BorderSize)
                 PrevDisplayHeight = BitmapCanvas.Height;
             }
 
+            BitmapCanvas?.Dispose();
             BitmapCanvas = RenderingFactory.CreateBitmap(AWidth, AHeight);
+
+            DrawCanvas?.Dispose();
             DrawCanvas = RenderingFactory.CreateGraphics(BitmapCanvas);
 
             if (BitmapCanvas != null)
@@ -1145,5 +1148,45 @@ double BorderSize)
 //    Procedure RecordRepaint;
 
     public double Scale { get => GetScale(); set => SetScale(value); }
+
+    #region IDisposable Support
+    private bool disposedValue; // To detect redundant calls
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (!disposedValue)
+      {
+        if (disposing)
+        {
+          DrawCanvasPen?.Dispose();
+          DrawCanvasPen = null;
+          DrawCanvasBrush?.Dispose();
+          DrawCanvasBrush = null;
+          BitmapCanvas?.Dispose();
+          BitmapCanvas = null;
+          DrawCanvas?.Dispose();
+          DrawCanvas = null;
+        }
+
+        disposedValue = true;
+      }
     }
+
+    // Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+    // ~MapSurface()
+    // {
+    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+    //   Dispose(false);
+    // }
+
+    // This code added to correctly implement the disposable pattern.
+    public void Dispose()
+    {
+      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+      Dispose(true);
+      // Uncomment the following line if the finalizer is overridden above.
+      // GC.SuppressFinalize(this);
+    }
+    #endregion
+  }
 }

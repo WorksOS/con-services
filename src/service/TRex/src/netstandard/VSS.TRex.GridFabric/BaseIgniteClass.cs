@@ -3,6 +3,7 @@ using Apache.Ignite.Core.Cluster;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Apache.Ignite.Core.Binary;
+using Apache.Ignite.Core.Common;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
@@ -85,20 +86,41 @@ namespace VSS.TRex.GridFabric
       if (string.IsNullOrEmpty(_role))
         throw new TRexException("Role name not defined when acquiring topology projection");
 
-      _ignite = _tRexGridFactory?.Grid(_gridName);
+      try
+      {
+        _ignite = _tRexGridFactory?.Grid(_gridName);
+      }
+      catch (IgniteException e)
+      {
+        throw new TRexException($"Failed to find Grid {_gridName} due to Ignite Exception", e);
+      }
 
       if (_ignite == null)
         throw new TRexException("Ignite reference is null in AcquireIgniteTopologyProjections");
 
-      _Group = _ignite?.GetCluster()?.ForAttribute(_roleAttribute, "True");
+      try
+      {
+        _Group = _ignite?.GetCluster()?.ForAttribute(_roleAttribute, "True");
+      }
+      catch (IgniteException e)
+      {
+        throw new TRexException($"Failed to find Node on Grid {_gridName} with Role {_roleAttribute} due to Ignite Exception", e);
+      }
 
       if (_Group == null)
         throw new TRexException($"Cluster group reference is null in AcquireIgniteTopologyProjections for role {_role} on grid {_gridName}");
 
-      if (_Group.GetNodes()?.Count == 0)
+      if ((_Group.GetNodes()?.Count ?? 0) == 0)
         throw new TRexException($"Group cluster topology is empty for role {_role} on grid {_gridName}");
 
-      _compute = _Group.GetCompute();
+      try
+      {
+        _compute = _Group.GetCompute();
+      }
+      catch (IgniteException e)
+      {
+        throw new TRexException($"Failed to find Compute for Grid {_gridName} due to Ignite Exception", e);
+      }
 
       if (_compute == null)
         throw new TRexException($"Compute projection is null in AcquireIgniteTopologyProjections on grid {_gridName}");

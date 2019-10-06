@@ -10,9 +10,11 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.Analytics.PassCountStatistics;
 using VSS.TRex.Analytics.PassCountStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
-using TargetPassCountRange = VSS.Productivity3D.Models.Models.TargetPassCountRange;
+using TargetPassCountRange = VSS.Productivity3D.Productivity3D.Models.Compaction.TargetPassCountRange;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -50,7 +52,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
-        PassCountDetailValues = UpdatePassCounts(request.PassCounts)
+        PassCountDetailValues = UpdatePassCounts(request.PassCounts),
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       if (passCountDetailsResult != null)

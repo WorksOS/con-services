@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Analytics.CCAStatistics;
@@ -23,12 +24,10 @@ using VSS.TRex.Analytics.SpeedStatistics.GridFabric;
 using VSS.TRex.Analytics.TemperatureStatistics;
 using VSS.TRex.Analytics.TemperatureStatistics.GridFabric;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Webtools.Controllers
 {
@@ -43,13 +42,13 @@ namespace VSS.TRex.Webtools.Controllers
     /// </summary>
     /// <param name="siteModelID">Grid to return the data from.</param>
     /// <returns></returns>
-    [HttpGet("cmvdetails/{siteModelID}")]
-    public JsonResult GetCMVDetails(string siteModelID)
+    [HttpPost("cmvdetails/{siteModelID}")]
+    public async Task<JsonResult> GetCMVDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       const int CMV_DENOMINATOR = 10;
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -60,16 +59,17 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CMVStatisticsOperation operation = new CMVStatisticsOperation();
-          CMVStatisticsResult result = operation.Execute(
+          var operation = new CMVStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new CMVStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              CMVDetailValues = cmvBands
+              CMVDetailValues = cmvBands,
+              Overrides = overrides
             }
           );
 
@@ -104,14 +104,12 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data CMV Summary.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("cmvsummary/{siteModelID}")]
-    public JsonResult GetCMVSummary(string siteModelID)
+    [HttpPost("cmvsummary/{siteModelID}")]
+    public async Task<JsonResult> GetCMVSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -121,22 +119,17 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CMVStatisticsOperation operation = new CMVStatisticsOperation();
+          var operation = new CMVStatisticsOperation();
 
-          CMVStatisticsResult result = operation.Execute(
+          var result = await operation.ExecuteAsync(
             new CMVStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet(new CombinedFilter()),
-              Overrides = new OverrideParameters
-              { 
-                CMVRange = new CMVRangePercentageRecord(80, 120),
-                OverrideMachineCCV = false,
-                OverridingMachineCCV = 50
-              }
+              Overrides = overrides
             }
           );
 
@@ -162,34 +155,33 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data CMV Change.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("cmvchange/{siteModelID}")]
-    public JsonResult GetCMVChange(string siteModelID)
+    [HttpPost("cmvchange/{siteModelID}")]
+    public async Task<JsonResult> GetCMVChange([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
         var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(UID, false);
-        var cmvPercentBands = new double[] { -50.0, -20.0, -10.0, -5.0, 0.0, 5.0, 10.0, 20.0, 50.0 };
+        var cmvPercentBands = new double[] {short.MinValue, -50.0, -20.0, -10.0, 0.0, 10.0, 20.0, 50.0 };
 
         if (siteModel == null)
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CMVChangeStatisticsOperation operation = new CMVChangeStatisticsOperation();
-          CMVChangeStatisticsResult result = operation.Execute(
+          var operation = new CMVChangeStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new CMVChangeStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              CMVChangeDetailsDataValues = cmvPercentBands
+              CMVChangeDetailsDataValues = cmvPercentBands,
+              Overrides = overrides
             }
           );
 
@@ -208,7 +200,10 @@ namespace VSS.TRex.Webtools.Controllers
               if (Math.Abs(anyTwoDigitsNumber) > 0 && Math.Abs(cmvPercentBands[i]) >= 0 && Math.Abs(cmvPercentBands[i]) < TWO_DIGITS_NUMBER)
                 space += "&nbsp;&nbsp;";
 
-              resultString += $"<b>{space}{cmvPercentBands[i]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
+              if (cmvPercentBands[i] == short.MinValue)
+                resultString += $"<b>{space}<{cmvPercentBands[i + 1]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
+              else
+                resultString += $"<b>{space}{cmvPercentBands[i]:##0.#0}%</b> - {result.Percents[i]:##0.#0}%<br/>";
             }
 
             resultToReturn = resultString;
@@ -224,14 +219,12 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data MDP Summary.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("mdpsummary/{siteModelID}")]
-    public JsonResult GetMDPSummary(string siteModelID)
+    [HttpPost("mdpsummary/{siteModelID}")]
+    public async Task<JsonResult> GetMDPSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -241,21 +234,16 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          MDPStatisticsOperation operation = new MDPStatisticsOperation();
-          MDPStatisticsResult result = operation.Execute(
+          var operation = new MDPStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new MDPStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              Overrides = new OverrideParameters
-              { 
-                MDPRange = new MDPRangePercentageRecord(80, 120),
-                OverrideMachineMDP = false,
-                OverridingMachineMDP = 1000
-              }
+              Overrides = overrides
             }
           );
 
@@ -281,14 +269,12 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data Pass Count Details.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("passcountdetails/{siteModelID}")]
-    public JsonResult GetPassCountDetails(string siteModelID)
+    [HttpPost("passcountdetails/{siteModelID}")]
+    public async Task<JsonResult> GetPassCountDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -299,16 +285,17 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-          PassCountStatisticsResult result = operation.Execute(
+          var operation = new PassCountStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new PassCountStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              PassCountDetailValues = passCountBands
+              PassCountDetailValues = passCountBands,
+              Overrides = overrides
             }
           );
 
@@ -337,14 +324,12 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data Pass Count Summary.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("passcountsummary/{siteModelID}")]
-    public JsonResult GetPassCountSummary(string siteModelID)
+    [HttpPost("passcountsummary/{siteModelID}")]
+    public async Task<JsonResult> GetPassCountSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -354,20 +339,16 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          PassCountStatisticsOperation operation = new PassCountStatisticsOperation();
-          PassCountStatisticsResult result = operation.Execute(
+          var operation = new PassCountStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new PassCountStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              Overrides = new OverrideParameters
-              { 
-                OverridingTargetPassCountRange = new PassCountRangeRecord(3, 10),
-                OverrideTargetPassCount = false
-              }
+              Overrides = overrides
             }
           );
 
@@ -393,14 +374,12 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data CCA Summary.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("ccasummary/{siteModelID}")]
-    public JsonResult GetCCASummary(string siteModelID)
+    [HttpPost("ccasummary/{siteModelID}")]
+    public async Task<JsonResult> GetCCASummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -410,11 +389,11 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          CCAStatisticsOperation operation = new CCAStatisticsOperation();
-          CCAStatisticsResult result = operation.Execute(
+          var operation = new CCAStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new CCAStatisticsArgument()
             {
               ProjectID = siteModel.ID,
@@ -444,15 +423,13 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data Temperature Details.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("temeraturedetails/{siteModelID}")]
-    public JsonResult GetTemperatureDetails(string siteModelID)
+    [HttpPost("temeraturedetails/{siteModelID}")]
+    public async Task<JsonResult> GetTemperatureDetails([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       const int TEMP_DENOMINATOR = 10;
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -463,16 +440,17 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-          TemperatureStatisticsResult result = operation.Execute(
+          var operation = new TemperatureStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new TemperatureStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              TemperatureDetailValues = temperatureBands
+              TemperatureDetailValues = temperatureBands,
+              Overrides = overrides
             }
           );
 
@@ -507,14 +485,12 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data Temperature Summary.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("temeraturesummary/{siteModelID}")]
-    public JsonResult GetTemperartureSummary(string siteModelID)
+    [HttpPost("temeraturesummary/{siteModelID}")]
+    public async Task<JsonResult> GetTemperatureSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -524,20 +500,16 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          TemperatureStatisticsOperation operation = new TemperatureStatisticsOperation();
-          TemperatureStatisticsResult result = operation.Execute(
+          var operation = new TemperatureStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new TemperatureStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              Overrides = new OverrideParameters
-              { 
-                OverrideTemperatureWarningLevels = true,
-                OverridingTemperatureWarningLevels = new TemperatureWarningLevelsRecord(10, 150)
-              }
+              Overrides = overrides
             }
           );
 
@@ -562,15 +534,13 @@ namespace VSS.TRex.Webtools.Controllers
 
     /// <summary>
     /// Gets production data Machine Speed Summary.
-    /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("machinespeedsummary/{siteModelID}")]
-    public JsonResult GetMachineSpeedSummary(string siteModelID)
+    /// </summary> 
+    [HttpPost("machinespeedsummary/{siteModelID}")]
+    public async Task<JsonResult> GetMachineSpeedSummary([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -580,16 +550,16 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
-          SpeedStatisticsOperation operation = new SpeedStatisticsOperation();
-          SpeedStatisticsResult result = operation.Execute(
+          var operation = new SpeedStatisticsOperation();
+          var result = await operation.ExecuteAsync(
             new SpeedStatisticsArgument()
             {
               ProjectID = siteModel.ID,
               Filters = new FilterSet() { Filters = new[] { new CombinedFilter() } },
-              Overrides = new OverrideParameters{ TargetMachineSpeed = new MachineSpeedExtendedRecord(5, 50) }
+              Overrides = overrides
             }
           );
 
@@ -615,16 +585,14 @@ namespace VSS.TRex.Webtools.Controllers
     /// <summary>
     /// Gets production data Cut/Fill statistics.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("cutfillstatistics/{siteModelID}")]
-    public JsonResult GetCutFillStatistics(string siteModelID,
+    [HttpPost("cutfillstatistics/{siteModelID}")]
+    public async Task<JsonResult> GetCutFillStatistics([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides,
       [FromQuery] Guid cutFillDesignUid,
       [FromQuery] double? cutFillOffset)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else if (cutFillDesignUid == Guid.Empty)
         resultToReturn = "<b>Missing CutFill Design UID</b>";
@@ -637,16 +605,17 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+                    var sw = new Stopwatch();
           sw.Start();
 
-          CutFillStatisticsOperation operation = new CutFillStatisticsOperation();
-          CutFillStatisticsResult result = operation.Execute(new CutFillStatisticsArgument()
+          var operation = new CutFillStatisticsOperation();
+          var result = await operation.ExecuteAsync(new CutFillStatisticsArgument()
           {
             ProjectID = siteModel.ID,
             Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
             ReferenceDesign = new DesignOffset(cutFillDesignUid, cutFillOffset ?? 0), 
-            Offsets = offsets
+            Offsets = offsets,
+            Overrides = overrides
           });
 
           if (result != null)
@@ -678,16 +647,14 @@ namespace VSS.TRex.Webtools.Controllers
     }
 
     /// <summary>
-    /// Gets production data Cut/Fill statistics.
+    /// Gets production data elevation statistics.
     /// </summary>
-    /// <param name="siteModelID">Grid to return the data from.</param>
-    /// <returns></returns>
-    [HttpGet("elevationrange/{siteModelID}")]
-    public JsonResult GetElevationRange(string siteModelID)
+    [HttpPost("elevationrange/{siteModelID}")]
+    public async Task<JsonResult> GetElevationRange([FromRoute]string siteModelID, [FromBody] OverrideParameters overrides)
     {
       string resultToReturn;
 
-      if (!Guid.TryParse(siteModelID, out Guid UID))
+      if (!Guid.TryParse(siteModelID, out var UID))
         resultToReturn = $"<b>Invalid Site Model UID: {siteModelID}</b>";
       else
       {
@@ -697,14 +664,15 @@ namespace VSS.TRex.Webtools.Controllers
           resultToReturn = $"<b>Site model {UID} is unavailable</b>";
         else
         {
-          Stopwatch sw = new Stopwatch();
+          var sw = new Stopwatch();
           sw.Start();
 
           var operation = new ElevationStatisticsOperation();
-          var result = operation.Execute(new ElevationStatisticsArgument()
+          var result = await operation.ExecuteAsync(new ElevationStatisticsArgument()
           {
             ProjectID = siteModel.ID,
-            Filters = new FilterSet { Filters = new[] { new CombinedFilter() } }
+            Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
+            Overrides = overrides
           });
 
           if (result != null)

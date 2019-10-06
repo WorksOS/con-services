@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Records;
 using VSS.TRex.Designs.GridFabric.Arguments;
@@ -112,7 +113,7 @@ namespace VSS.TRex.Tests.Profiling
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void ProfileCell_SingleCell_NoDesign(bool withOverrides)
+    public async Task ProfileCell_SingleCell_NoDesign(bool withOverrides)
     {
       AddRoutings();
 
@@ -148,7 +149,7 @@ namespace VSS.TRex.Tests.Profiling
       };
 
       var svRequest = new ProfileRequest_ApplicationService_ProfileCell();
-      var response = svRequest.Execute(arg);
+      var response = await svRequest.ExecuteAsync(arg);
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -215,7 +216,7 @@ namespace VSS.TRex.Tests.Profiling
     [InlineData(VolumeComputationType.BetweenDesignAndFilter, 0.0f, Consts.NullHeight, 9.0f, 3)]
     [InlineData(VolumeComputationType.BetweenFilterAndDesign, 10.0f, 0.0f, Consts.NullHeight, 3)]
     [InlineData(VolumeComputationType.BetweenDesignAndFilter, 10.0f, Consts.NullHeight, 9.0f, 3)]
-    public void SummaryVolumeProfileCell_SingleCell_FlatDesignAtOrigin_FilterToDesignOrDesignToFilter(VolumeComputationType volumeComputationType, float designElevation,
+    public async Task SummaryVolumeProfileCell_SingleCell_FlatDesignAtOrigin_FilterToDesignOrDesignToFilter(VolumeComputationType volumeComputationType, float designElevation,
       float lastPassElevation1, float lastPassElevation2, int checkCellIndex)
     {
       AddRoutings();
@@ -244,7 +245,7 @@ namespace VSS.TRex.Tests.Profiling
 
       // Compute a profile from the bottom left of the screen extents to the top right 
       var svRequest = new ProfileRequest_ApplicationService_SummaryVolumeProfileCell();
-      var response = svRequest.Execute(arg);
+      var response = await svRequest.ExecuteAsync(arg);
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);

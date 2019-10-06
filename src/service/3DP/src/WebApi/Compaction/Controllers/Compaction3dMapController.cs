@@ -30,6 +30,7 @@ using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Compaction.Controllers.Filters;
@@ -633,7 +634,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         }
 
         outputStream.Seek(0, SeekOrigin.Begin);
-        Log.LogInformation($"GetExportReportSurface completed: ExportData size={outputStream.Length}");
+        Log.LogInformation($"GetMapTileData completed: ExportData size={outputStream.Length}");
         return new FileStreamResult(outputStream, ContentTypeConstants.TextPlain);
       }
     }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
+using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -13,8 +16,10 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.Productivity3D.WebApi.Models.Compaction.Models.Reports;
 using VSS.TRex.DI;
+using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
+using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -47,7 +52,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null, null);
       request.Validate();
 
       var executor = RequestExecutorContainer
@@ -84,15 +89,19 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         DateTime.SpecifyKind(new DateTime(2019, 2, 11), DateTimeKind.Utc), "", "",
         new List<MachineDetails>(), null, null, null, null, null, null
       );
-      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null);
+      var filterResult = new FilterResult(null, filter, null, null, null, null, null, null, null);
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var request = new CompactionReportGridTRexRequest(
         siteModel.ID, filterResult,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutFillDesignOffset,
-        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null);
+        gridInterval, gridReportOption, startNorthing, startEasting, endNorthing, endEasting, azimuth, null, null);
       request.Validate();
+
+      // Mock the export request functionality to return an empty gridded report reponse to stimulate the desired success
+      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<GriddedReportRequestComputeFunc>(), It.IsAny<GriddedReportRequestArgument>(), It.IsAny<CancellationToken>())).Returns((GriddedReportRequestComputeFunc func, GriddedReportRequestArgument argument, CancellationToken token) => Task.FromResult(new GriddedReportRequestResponse()));
 
       var executor = RequestExecutorContainer
         .Build<GriddedReportExecutor>(DIContext.Obtain<IConfigurationStore>(),

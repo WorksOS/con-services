@@ -9,11 +9,11 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Designs.Models;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
@@ -148,12 +148,27 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           if (request.Palettes != null)
           {
-            cmvSummaryPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
-            cmvSummaryPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[1].Color);
+            cmvSummaryPalette.WithinCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
             cmvSummaryPalette.BelowCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            cmvSummaryPalette.AboveCMVTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
           }
 
           break;
+        case DisplayMode.CMVChange:
+          convertedPalette = new CMVPercentChangePalette();
+
+          var cmvPercentChangePalette = ((CMVPercentChangePalette)convertedPalette);
+          
+          cmvPercentChangePalette.CMVPercentageRange.Min = overrides?.CMVRange.Min ?? PERCENTAGE_RANGE_MIN;
+          cmvPercentChangePalette.CMVPercentageRange.Max = overrides?.CMVRange.Max ?? PERCENTAGE_RANGE_MAX;
+
+          cmvPercentChangePalette.UseAbsoluteValues = false;
+
+          cmvPercentChangePalette.UseMachineTargetCMV = !overrides?.OverrideMachineCCV ?? true;
+          cmvPercentChangePalette.AbsoluteTargetCMV = overrides?.OverridingMachineCCV ?? 0;
+
+          cmvPercentChangePalette.TargetCCVColour = Color.Green;
+          cmvPercentChangePalette.DefaultDecoupledCMVColour = Color.Black; break;
         case DisplayMode.CutFill:
           convertedPalette = new CutFillPalette();
           break;
@@ -200,9 +215,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           if (request.Palettes != null)
           {
-            mdpSummaryPalette.AboveMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
-            mdpSummaryPalette.WithinMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[1].Color);
+            mdpSummaryPalette.WithinMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
             mdpSummaryPalette.BelowMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            mdpSummaryPalette.AboveMDPTargetRangeColour = ColorUtility.UIntToColor(request.Palettes[3].Color);
           }
 
           break;
@@ -235,9 +250,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
           if (request.Palettes != null)
           {
-            speedSummaryPalette.OverSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
+            speedSummaryPalette.LowerSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[0].Color);
             speedSummaryPalette.WithinSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[1].Color);
-            speedSummaryPalette.LowerSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
+            speedSummaryPalette.OverSpeedRangeColour = ColorUtility.UIntToColor(request.Palettes[2].Color);
           }
 
           speedSummaryPalette.MachineSpeedTarget.Min = overrides?.TargetMachineSpeed.Min ?? CellPassConsts.NullMachineSpeed;
@@ -278,10 +293,10 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           var transitions = new Transition[request.Palettes.Count];
 
-        for (var i = 0; i < request.Palettes.Count; i++)
-          transitions[i] = new Transition(request.Palettes[i].Value, ColorUtility.UIntToColor(request.Palettes[i].Color));
+          for (var i = 0; i < request.Palettes.Count; i++)
+            transitions[i] = new Transition(request.Palettes[i].Value, ColorUtility.UIntToColor(request.Palettes[i].Color));
 
-        convertedPalette.PaletteTransitions = transitions;
+          convertedPalette.PaletteTransitions = transitions;
         }
       }
 

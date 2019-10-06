@@ -60,7 +60,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         "-XX:+UseG1GC"
       };
 
-      cfg.JvmMaxMemoryMb = 1 * 1024; // Set max to 1Gb
+      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB);
+      cfg.JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB);
+
       cfg.UserAttributes = new Dictionary<string, object>
             {
                 { "Owner", TRexGrids.ImmutableGridName() }
@@ -171,12 +173,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
       Console.WriteLine($"CacheConfig is: {CacheCfg}");
       Console.WriteLine($"immutableTRexGrid is : {immutableTRexGrid}");
 
-      return immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
     }
 
     public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
@@ -194,14 +196,14 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.AffinityFunction = new ImmutableSpatialAffinityFunction();
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
     }
 
     private void InstantiateSiteModelsCacheReference()
     {
-      immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(new CacheConfiguration
+      immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
       {
         Name = TRexCaches.SiteModelsCacheName(StorageMutability.Immutable),
         KeepBinaryInStore = true,
@@ -221,7 +223,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     /// </summary>
     private void InstantiateSiteModelMachinesChangeMapsCacheReference()
     {
-      immutableTRexGrid.GetOrCreateCache<ISiteModelMachineAffinityKey, byte[]>(new CacheConfiguration
+      immutableTRexGrid.GetOrCreateCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
       {
         Name = TRexCaches.SiteModelChangeMapsCacheName(),
         KeepBinaryInStore = true,

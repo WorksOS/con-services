@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using log4net;
+using Microsoft.Extensions.Logging;
 using TagFileHarvester.Interfaces;
 using TagFileHarvester.Models;
 using TagFileHarvester.TaskQueues;
@@ -29,7 +29,7 @@ namespace TagFileHarvester
     public static string ShortOrgName;
     public static string newrelic = "";
 
-    private static ILog log;
+    private static ILogger log;
 
     public static readonly object OrgListLocker = new object();
 
@@ -58,7 +58,7 @@ namespace TagFileHarvester
     public static void Initialize(IUnityContainer container)
     {
       Container = container;
-      log = Container.Resolve<ILog>();
+      log = Container.Resolve<ILogger>();
     }
 
     public static List<Organization> GetOrgs()
@@ -72,12 +72,12 @@ namespace TagFileHarvester
       {
         //Make sure that data export is running
         var orgs = GetOrgs();
-        log.InfoFormat("Got {0} orgs from repository", orgs.Count);
+        log.LogInformation("Got {0} orgs from repository", orgs.Count);
         MergeAndProcessOrgs(orgs);
       }
       catch (Exception ex)
       {
-        log.ErrorFormat("Exception while listing orgs occured {0}", ex.Message);
+        log.LogError("Exception while listing orgs occured {0}", ex.Message);
       }
     }
 
@@ -93,23 +93,23 @@ namespace TagFileHarvester
         OrgProcessingTasks.Where(o => o.Key.IsCompleted || o.Key.IsFaulted || o.Key.IsCanceled)
           .Select(d => d.Key)
           .ForEach(d => OrgProcessingTasks.Remove(d));
-        log.InfoFormat("Currently processing orgs: {0} ",
+        log.LogInformation("Currently processing orgs: {0} ",
           OrgProcessingTasks.Select(o => o.Value.Item1).DefaultIfEmpty(new Organization())
             .Select(t => t.shortName).Aggregate((current, next) => current + ", " + next));
-        log.DebugFormat("Tasks status when trying to add new orgs is {0} in Queue1 and {1} in Queue2 on {2} Threads",
+        log.LogDebug("Tasks status when trying to add new orgs is {0} in Queue1 and {1} in Queue2 on {2} Threads",
           Container.Resolve<IHarvesterTasks>().Status().Item1,
           Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads());
         //do merge here - if there is no org in the list of tasks - build it. If there is no org but there in the list but there is a task - kill the task
         orgs.Where(o => !OrgProcessingTasks.Select(t => t.Value.Item1).Contains(o))
           .Where(o => string.IsNullOrEmpty(ShortOrgName) || o.shortName == ShortOrgName).ForEach(o =>
           {
-            log.InfoFormat("Adding {0} org for processing", o.shortName);
+            log.LogInformation("Adding {0} org for processing", o.shortName);
             var cancellationToken = new CancellationTokenSource();
             OrgProcessingTasks.Add(Container.Resolve<IHarvesterTasks>().StartNewLimitedConcurrency2(() =>
             {
               new OrgProcessorTask(Container, o, cancellationToken, OrgProcessingTasks).ProcessOrg(false,
                 t => log
-                  .InfoFormat("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
+                  .LogInformation("Tasks status is {0} in Queue1 and {1} in Queue2 on {2} Threads",
                     Container.Resolve<IHarvesterTasks>().Status().Item1,
                     Container.Resolve<IHarvesterTasks>().Status().Item2, GetUsedThreads()));
             }, cancellationToken.Token, false), new Tuple<Organization, CancellationTokenSource>(o, cancellationToken));
@@ -118,7 +118,7 @@ namespace TagFileHarvester
         if (OrgProcessingTasks.Any(o => !orgs.Contains(o.Value.Item1)))
         {
           OrgProcessingTasks.Where(o => !orgs.Contains(o.Value.Item1)).ForEach(o => o.Value.Item2.Cancel());
-          log.InfoFormat("Removing {0} org from processing",
+          log.LogInformation("Removing {0} org from processing",
             OrgProcessingTasks.Select(o => o.Value.Item1)
               .Where(y => !orgs.Contains(y))
               .Select(t => t.shortName)
@@ -132,9 +132,8 @@ namespace TagFileHarvester
 
     public static int GetUsedThreads()
     {
-      int i, j, k;
-      ThreadPool.GetAvailableThreads(out i, out k);
-      ThreadPool.GetMaxThreads(out j, out k);
+      ThreadPool.GetAvailableThreads(out var i, out _);
+      ThreadPool.GetMaxThreads(out var j, out _);
       return j - i;
     }
   }

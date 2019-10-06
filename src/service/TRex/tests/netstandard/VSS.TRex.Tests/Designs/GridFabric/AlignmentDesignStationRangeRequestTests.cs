@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -25,16 +26,16 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public void Test_AlignmentDesignStationRangeRequest()
+    public async Task Test_AlignmentDesignStationRangeRequest()
     {
       AddDesignProfilerGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl", false);
       var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new AlignmentDesignStationRangeRequest();
-      var response = request.Execute(new DesignSubGridRequestArgumentBase()
+      var response = await request.ExecuteAsync(new DesignSubGridRequestArgumentBase
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,

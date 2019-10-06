@@ -12,7 +12,6 @@ namespace WebApiTests.Executors
   [TestClass]
   public class ProjectBoundariesAtDateExecutorTests : ExecutorBaseTests
   {
-
     [TestMethod]
     public async Task CanCallProjectBoundariesAtDateExecutorNoValidInput()
     {

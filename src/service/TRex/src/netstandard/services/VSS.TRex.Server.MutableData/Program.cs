@@ -11,6 +11,7 @@ using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
+using VSS.TRex.Common.HeartbeatLoggers;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
@@ -59,7 +60,7 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<ISubGridSpatialAffinityKeyFactory>(new SubGridSpatialAffinityKeyFactory()))
         .Build()
         .Add(x => x.AddServiceDiscovery())
-        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2ServiceDiscoveryProxy>())
+        .Add(x => x.AddSingleton<ITagFileAuthProjectProxy, TagFileAuthProjectV2Proxy>())
         .Add(x => x.AddSingleton<ISiteModels>(new SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
@@ -84,11 +85,11 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
 
         .Add(x => x.AddSingleton<ITAGFileBufferQueue>(factory => new TAGFileBufferQueue()))
-       .Complete();
+        .Complete();
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-      private static void EnsureAssemblyDependenciesAreLoaded()
+    private static void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -117,7 +118,6 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.TAGFiles.Executors.SubmitTAGFileExecutor),
         typeof(VSS.TRex.CoordinateSystems.CoordinateSystemResponse)
       };
-
       foreach (var asmType in AssemblyDependencies)
         if (asmType.Assembly == null)
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
@@ -131,7 +131,7 @@ namespace VSS.TRex.Server.MutableData
     /// </summary>
     private static void DisplayEnvironmentVariablesToConsole()
     {
-      IConfigurationRoot configuration = new ConfigurationBuilder()
+      var configuration = new ConfigurationBuilder()
         .AddEnvironmentVariables()
         .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
         .Build();
@@ -150,30 +150,47 @@ namespace VSS.TRex.Server.MutableData
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new RecycledMemoryStreamHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new SiteModelsHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new TAGFileProcessingHeartBeatLogger());
+      DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Mutable)));
+
       IO.DIUtilities.AddHeartBeatLoggers();
     }
 
     static async Task<int> Main(string[] args)
     {
-      EnsureAssemblyDependenciesAreLoaded();
-      DependencyInjection();
-
-      DisplayEnvironmentVariablesToConsole();
-      if (string.IsNullOrEmpty(DIContext.Obtain<IConfigurationStore>().GetValueString("ENABLE_TFA_SERVICE")))
-        Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g ENABLE_TFA_SERVICE");
-
-      var cancelTokenSource = new CancellationTokenSource();
-      AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+      try
       {
-        Console.WriteLine("Exiting");
-        DIContext.Obtain<ITRexGridFactory>().StopGrids();
-        cancelTokenSource.Cancel();
-      };
+        EnsureAssemblyDependenciesAreLoaded();
+        DependencyInjection();
 
-      DoServiceInitialisation();
+        DisplayEnvironmentVariablesToConsole();
+        if (string.IsNullOrEmpty(DIContext.Obtain<IConfigurationStore>().GetValueString("ENABLE_TFA_SERVICE")))
+          Console.WriteLine("*** Warning! **** Check for missing configuration values. e.g ENABLE_TFA_SERVICE");
 
-      await Task.Delay(-1, cancelTokenSource.Token);
-      return 0;
+        var cancelTokenSource = new CancellationTokenSource();
+        AppDomain.CurrentDomain.ProcessExit += (s, e) =>
+        {
+          Console.WriteLine("Exiting");
+          DIContext.Obtain<ITRexGridFactory>().StopGrids();
+          cancelTokenSource.Cancel();
+        };
+
+        DoServiceInitialisation();
+
+        await Task.Delay(-1, cancelTokenSource.Token);
+        return 0;
+      }
+      catch (TaskCanceledException)
+      {
+        // Don't care as this is thrown by Task.Delay()
+        Console.WriteLine("Process exit via TaskCanceledException (SIGTERM)");
+        return 0;
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine($"Unhandled exception: {e}");
+        Console.WriteLine($"Stack trace: {e.StackTrace}");
+        return -1;
+      }
     }
   }
 }

@@ -35,12 +35,6 @@ namespace VSS.Productivity3D.WebApi.Models.Notification.Executors
     {
       RaptorResult.AddErrorMessages(ContractExecutionStates);
     }
-
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
-
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       try

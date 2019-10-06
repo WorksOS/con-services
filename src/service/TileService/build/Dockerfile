@@ -4,7 +4,7 @@ COPY . /build/
 WORKDIR /build
 ARG SERVICE_PATH
 
-RUN dotnet publish ./$SERVICE_PATH/src/VSS.Tile.Service.WebApi/VSS.Tile.Service.WebApi.csproj -o /build/artifacts/VSS.Tile.Service.WebApi --framework netcoreapp2.1 --runtime linux-x64
+RUN dotnet publish /nowarn:1591 ./$SERVICE_PATH/src/VSS.Tile.Service.WebApi/VSS.Tile.Service.WebApi.csproj -o /build/artifacts/VSS.Tile.Service.WebApi --framework netcoreapp2.1 --runtime linux-x64
 
 FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-aspnetcore-runtime
 
@@ -21,8 +21,7 @@ RUN apt-get update && apt-get install --assume-yes \
 RUN wget https://download.mono-project.com/repo/ubuntu/pool/main/libg/libgdiplus/libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb && \
     apt-get install -y ./libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb
 
-ENV CORECLR_ENABLE_PROFILING=1 \
-    CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
+ENV CORECLR_PROFILER={36032161-FFC0-4B61-B559-F6C5D41BAE5A} \
     CORECLR_NEWRELIC_HOME=/usr/local/newrelic-netcore20-agent \
     CORECLR_PROFILER_PATH=/usr/local/newrelic-netcore20-agent/libNewRelicProfiler.so 
 

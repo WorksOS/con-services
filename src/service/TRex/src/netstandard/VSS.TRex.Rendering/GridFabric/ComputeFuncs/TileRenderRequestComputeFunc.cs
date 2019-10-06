@@ -2,6 +2,7 @@
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using System.Drawing;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -11,7 +12,6 @@ using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Servers;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
 {
@@ -55,25 +55,29 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
              arg.ReferenceDesign,
              arg.Palette,
              Color.Black,
-             arg.TRexNodeID);
+             arg.TRexNodeID,
+             arg.LiftParams);
 
-        Log.LogInformation("Executing render.Execute()");
+        Log.LogInformation("Executing render.ExecuteAsync()");
 
-        var bmp = render.ExecuteAsync().Result;
-        Log.LogInformation($"Render status = {render.ResultStatus}");
-
-        if (bmp == null)
+        using (var bmp = render.ExecuteAsync().WaitAndUnwrapException())
         {
-          Log.LogInformation("Null bitmap returned by executor");
+          Log.LogInformation($"Render status = {render.ResultStatus}");
+
+          if (bmp == null)
+          {
+            Log.LogInformation("Null bitmap returned by executor");
+          }
+
+          // Get the rendering factory from the DI context
+          var RenderingFactory = DIContext.Obtain<IRenderingFactory>();
+          var response = RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+
+          if (response != null)
+            response.ResultStatus = render.ResultStatus;
+
+          return response;
         }
-
-        // Get the rendering factory from the DI context
-        var RenderingFactory = DIContext.Obtain<IRenderingFactory>();
-        var response = RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
-        if (response != null)
-          response.ResultStatus = render.ResultStatus;
-
-        return response;
       }
       finally
       {

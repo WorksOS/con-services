@@ -3,7 +3,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.Types;
@@ -38,8 +37,9 @@ namespace VSS.TRex.Pipelines
         /// As each sub grid result is processed in the task, the task pings the pipeline to note another task has been 
         /// completed. Once this count reaches zero the pipeline is cleared to complete its processing.
         /// </summary>
-        private long subGridsRemainingToProcess = 0;
+        private long subGridsRemainingToProcess;
         public long SubGridsRemainingToProcess => subGridsRemainingToProcess;
+        public long TotalSubGridsToProcess { get; private set; }
 
         public ITRexTask PipelineTask { get; set; }
 
@@ -84,7 +84,7 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public IFilterSet FilterSet { get; set; }
 
-        public int MaxNumberOfPassesToReturn = 0;
+        public int MaxNumberOfPassesToReturn { get; set; } = int.MaxValue;
 
         public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 
@@ -106,8 +106,9 @@ namespace VSS.TRex.Pipelines
             }
         }
 
-        // FLiftBuildSettings is a reference to a lift build settings object provided by the caller
-        //  property LiftBuildSettings : TICLiftBuildSettings read FLiftBuildSettings write FLiftBuildSettings;
+        // LiftParams is a reference to a lift build settings object provided by the caller
+        public ILiftParameters LiftParams { get; set; } = new LiftParameters();
+
         //  property Terminated : Boolean read FTerminated;
       
         /// <summary>
@@ -190,15 +191,11 @@ namespace VSS.TRex.Pipelines
         /// <summary>
         /// Orchestrates sending sub grid requests to the compute cluster and handling the result
         /// </summary>
-        /// <returns></returns>
         public bool Initiate()
         {
-          bool result = false;
-
           // First analyze the request to determine the set of sub grids that will need to be requested
           if (RequestAnalyser.Execute())
           {
-            result = true;
             subGridsRemainingToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
 
             Log.LogInformation($"Request analyzer counts {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids to be requested, compared to {OverallExistenceMap.CountBits()} sub grids in production existence map");
@@ -223,14 +220,27 @@ namespace VSS.TRex.Pipelines
               })
               {
                 var Response = requestor.Execute();
-                result = Response.ResponseCode == SubGridRequestsResponseResult.OK;
+                if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
+                {
+                  Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
+                  return false;
+                }
+
+                Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
+                TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
+                return true;
               }
             }
-
-            Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
+            else
+            {
+              Log.LogInformation("SKIPPED: Requested no sub grids to process.");
+              TotalSubGridsToProcess = 0;
+              return true;
+            }
           }
 
-          return result;
+          Log.LogWarning($"RequestAnalyser failed execution - cannot process any sub grids (if any).");
+          return false;
         }
 
         /// <summary>
@@ -239,6 +249,10 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public Task<bool> WaitForCompletion()
         {
+          // If we have nothing to process, no point in waiting.
+          if (TotalSubGridsToProcess == 0)
+            return Task.FromResult(true); 
+
           // Todo: Make the 2 minute limit configurable
           return PipelineSignalEvent.WaitAsync(120000); // Don't wait for more than two minutes...
         }

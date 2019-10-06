@@ -25,6 +25,12 @@ namespace VSS.MasterData.Models.ResultHandling.Abstractions
       DynamicAddwithOffset("Invalid pass count range filter. Minimum must be less than maximum.", 75);
       DynamicAddwithOffset($"Invalid temperature range filter. Range must be between {ValidationConstants.MIN_TEMPERATURE} and {ValidationConstants.MAX_TEMPERATURE}.", 76);
       DynamicAddwithOffset($"Invalid pass count range filter. Range must be between {ValidationConstants.MIN_PASS_COUNT} and {ValidationConstants.MAX_PASS_COUNT}.", 77);
+      DynamicAddwithOffset("Invalid filter UID in FilterUids", 79);
+      DynamicAddwithOffset("Invalid combination role type in FilterUids", 80);
+      DynamicAddwithOffset("No master filter referenced in FilterUids", 81);
+      DynamicAddwithOffset("More than one general widget filter present in FilterUids", 82);
+      DynamicAddwithOffset("More than one volumes widget filter present in FilterUids", 83);
+      DynamicAddwithOffset("Filters with undefined combination role present in FilterUids", 84);
     }
   }
 }

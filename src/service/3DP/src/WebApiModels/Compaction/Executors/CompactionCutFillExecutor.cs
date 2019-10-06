@@ -11,7 +11,9 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -37,7 +39,14 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
         if (UseTRexGateway("ENABLE_TREX_GATEWAY_CUTFILL"))
         {
 #endif
-          return await trexCompactionDataProxy.SendDataPostRequest<CompactionCutFillDetailedResult, CutFillDetailsRequest>(request, "/cutfill/details", customHeaders);
+          var trexRequest = new TRexCutFillDetailsRequest(
+            request.ProjectUid.Value,
+            request.CutFillTolerances,
+            request.Filter,
+            request.DesignDescriptor,
+            AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
+          return await trexCompactionDataProxy.SendDataPostRequest<CompactionCutFillDetailedResult, TRexCutFillDetailsRequest>(trexRequest, "/cutfill/details", customHeaders);
 #if RAPTOR
         }
 
@@ -76,9 +85,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 #endif
     }
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

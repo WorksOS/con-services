@@ -1,11 +1,11 @@
-﻿using Apache.Ignite.Core.Compute;
-using Apache.Ignite.Core.Messaging;
+﻿using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
@@ -55,7 +55,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
         }
 
-        public void StartListening()
+        private void StartListening()
         {
             if (MsgGroup == null)
             {
@@ -65,11 +65,13 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             }
         }
 
-        public void StopListening()
+        private void StopListening()
         {
             // De-register the listener from the message group
-            MsgGroup?.StopLocalListen(Listener);
+            MsgGroup?.StopLocalListen(Listener, arg.MessageTopic);
             MsgGroup = null;
+
+            Listener = null;
         }
 
         private void PrepareForExecution()
@@ -98,7 +100,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
 
             Task<ICollection<TSubGridRequestsResponse>> taskResult = null;
 
-            Stopwatch sw = new Stopwatch();
+            var sw = new Stopwatch();
             sw.Start();
             try
             {
@@ -130,14 +132,14 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             PrepareForExecution();
 
             // Construct the function to be used
-            IComputeFunc<TSubGridsRequestArgument, TSubGridRequestsResponse> func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
+            var func = new SubGridsRequestComputeFuncProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>();
 
             return Compute.BroadcastAsync(func, arg)
               .ContinueWith(result => result.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)))
-              .ContinueWith(x =>
+              .ContinueWith(x => 
               {
-                Log.LogInformation($"SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
-                return x.Result;
+                Log.LogInformation($"SubGridRequests.ExecuteAsync() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType}");
+                return x.WaitAndUnwrapException();
               });
         }
 

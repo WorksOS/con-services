@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling.Interfaces;
@@ -106,7 +106,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Cells[cellX, cellY].MeasuredCMV = context.FilteredValue.FilteredPassData.FilteredPass.CCV;
       Cells[cellX, cellY].TargetCMV = context.FilteredValue.FilteredPassData.TargetValues.TargetCCV;
       Cells[cellX, cellY].PreviousMeasuredCMV = context.PreviousFilteredValue.FilteredPassData.FilteredPass.CCV;
-      Cells[cellX, cellY].PreviousMeasuredCMV = context.PreviousFilteredValue.FilteredPassData.TargetValues.TargetCCV;
+      Cells[cellX, cellY].PreviousTargetCMV = context.PreviousFilteredValue.FilteredPassData.TargetValues.TargetCCV;
 
       Cells[cellX, cellY].IsDecoupled = context.PreviousFilteredValue.FilteredPassData.FilteredPass.RMV > context.FilteredValue.FilteredPassData.EventValues.EventMachineRMVThreshold;
       Cells[cellX, cellY].IsUndercompacted = false;
@@ -120,7 +120,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       IProfileLayers layers = ((IProfileCell) context.CellProfile).Layers;
 
-      if (Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly)
+      if (context.LiftParams.CCVSummarizeTopLayerOnly)
       {
         for (var i = layers.Count() - 1; i >= 0; i--)
         {

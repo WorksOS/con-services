@@ -1,19 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.Kafka;
-using VSS.Log4Net.Extensions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Serilog.Extensions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
+
 #if NET_4_7
 using Topshelf;
 #endif
@@ -56,9 +59,9 @@ namespace VSS.Productivity3D.MasterDataConsumer
   {
     ILogger _log;
 
-    private List<Task> tasks;
-    private CancellationTokenSource token;
-    private List<IAbstractKafkaConsumer> consumers;
+    private readonly List<Task> tasks;
+    private readonly CancellationTokenSource token;
+    private readonly List<IAbstractKafkaConsumer> consumers;
 
     public ConsumerContainer()
     {
@@ -78,9 +81,6 @@ namespace VSS.Productivity3D.MasterDataConsumer
 
     public void Initialize()
     {
-      //Make sure logging name set first
-      Log4NetProvider.RepoName = "MasterDataConsumer";
-
       var serviceConverter = new Dictionary<string, Type>()
       {
         {"IAssetEvent", typeof(IKafkaConsumer<IAssetEvent>)},
@@ -91,11 +91,10 @@ namespace VSS.Productivity3D.MasterDataConsumer
         {"IGeofenceEvent", typeof(IKafkaConsumer<IGeofenceEvent>)},
         {"IFilterEvent", typeof(IKafkaConsumer<IFilterEvent>)},
       };
-
-
-      var serviceCollection = new ServiceCollection()
-        .AddSingleton<ILoggerProvider, Log4NetProvider>()
-        .AddSingleton<ILoggerFactory>(new LoggerFactory())
+      
+      var serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure()))
         .AddTransient<IKafka, RdKafkaDriver>()
         .AddTransient<IMessageTypeResolver, MessageResolver>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
@@ -115,28 +114,15 @@ namespace VSS.Productivity3D.MasterDataConsumer
         .AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
         .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-        .AddTransient<IRepository<IFilterEvent>, FilterRepository>();
-
-      // catch-22 here. I want to use the GenericConfig to get the kafkaTopics
-      //     I can't use it until it is in DI (as it needs a logger)
-      var serviceProvider = serviceCollection
+        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
         .BuildServiceProvider();
 
+      _log = serviceProvider.GetService<ILoggerFactory>().CreateLogger(GetType());
       var configStore = serviceProvider.GetService<IConfigurationStore>();
       var kafkaTopics = configStore
         .GetValueString("KAFKA_TOPICS")
         .Split(new[] { "," }, StringSplitOptions.None);
 
-      string loggerRepoName = "MDC " + kafkaTopics[0].Split('.').Last();
-
-      Log4NetProvider.RepoName = loggerRepoName;
-      Log4NetAspExtensions.ConfigureLog4Net(loggerRepoName, "log4net.xml");
-
-      var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-      loggerFactory.AddDebug();
-      loggerFactory.AddLog4Net(loggerRepoName);
-
-      _log = loggerFactory.CreateLogger(loggerRepoName);
       _log.LogDebug($"{nameof(Initialize)}: consumers are starting....");
 
       foreach (var kafkaTopic in kafkaTopics)

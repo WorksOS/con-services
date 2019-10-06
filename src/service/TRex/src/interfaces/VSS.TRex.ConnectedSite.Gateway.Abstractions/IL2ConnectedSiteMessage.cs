@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
 {
   public interface IL2ConnectedSiteMessage : IConnectedSiteMessage
   {
-    [JsonProperty("timestamp")]
+    [JsonProperty("ts")]
     DateTime? Timestamp { get; set; }
 
     [JsonProperty("designName")]
@@ -17,7 +18,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
     [JsonProperty("appVersion")]
     string AppVersion { get; set; }
     /// <summary>
-    /// This will normally for GCS900 for messges from harvested TAGS 
+    /// This will normally for GCS900 for messages from harvested TAGS 
     /// </summary>
     [JsonProperty("appName")]
     string AppName { get; }
@@ -26,6 +27,9 @@ namespace VSS.TRex.ConnectedSite.Gateway.Abstractions
     /// </summary>
     [JsonProperty("assetNickname")]
     string AssetNickname { get; set; }
+
+    [JsonProperty("devices", NullValueHandling = NullValueHandling.Ignore)]
+    List<IStatusMessageDevice> Devices { get; set; }
 
   }
 }

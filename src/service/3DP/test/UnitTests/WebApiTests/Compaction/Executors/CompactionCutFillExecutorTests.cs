@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
@@ -20,8 +21,10 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
+using VSS.Productivity3D.WebApi.Models.Compaction.Models;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
@@ -35,20 +38,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
 #if RAPTOR
         .AddTransient<IErrorCodesProvider, RaptorResult>()
 #endif
-        ;
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+        .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
@@ -58,7 +55,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var request = new CutFillDetailsRequest(0, null, null, null, null, null);
 
-      TCutFillDetails details = new TCutFillDetails();
+      var details = new TCutFillDetails();
 
       var raptorClient = new Mock<IASNodeClient>();
       var configStore = new Mock<IConfigurationStore>();
@@ -91,7 +88,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
           $"Cut/Fill statistics have not been implemented in TRex yet. ProjectUid: {projectUid}"));
 
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCutFillDetailedResult, CutFillDetailsRequest>(request, It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
+      tRexProxy.Setup(x => x.SendDataPostRequest<CompactionCutFillDetailedResult, TRexCutFillDetailsRequest>(It.IsAny<TRexCutFillDetailsRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
         .Throws(exception);
 
       var executor = RequestExecutorContainerFactory
@@ -110,7 +107,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     {
       var request = new CutFillDetailsRequest(0, null, null, null, null, null);
 
-      TCutFillDetails details = new TCutFillDetails { Percents = new[] { 5.0, 20.0, 13.0, 10.0, 22.0, 12.0, 18.0 } };
+      var details = new TCutFillDetails { Percents = new[] { 5.0, 20.0, 13.0, 10.0, 22.0, 12.0, 18.0 } };
 
       var raptorClient = new Mock<IASNodeClient>();
       var configStore = new Mock<IConfigurationStore>();

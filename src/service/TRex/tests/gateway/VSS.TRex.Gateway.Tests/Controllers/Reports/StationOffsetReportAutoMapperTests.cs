@@ -2,8 +2,10 @@
 using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Reports;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
@@ -33,7 +35,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets, null);
+        crossSectionInterval, startStation, endStation, offsets, null, null);
 
       var result = AutoMapperUtility.Automapper.Map<StationOffsetReportData_ApplicationService>(request);
 
@@ -66,11 +68,19 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         ? new OverridingTargets(75, true, 70, 90, 0, false, 80, 125, new TargetPassCountRange(4, 10),
           new TemperatureSettings(120, 70, true), null)
         : null;
+
+      var liftSettings = useOverrides
+        ? new LiftSettings(true, false, SummaryType.Compaction,
+          SummaryType.WorkInProgress, 0.2f, LiftDetectionType.AutoMapReset, LiftThicknessType.Compacted,
+          new LiftThicknessTarget { TargetLiftThickness = 0.75f, AboveToleranceLiftThickness = 0.3f, BelowToleranceLiftThickness = 0.2f },
+          true, 0.5f, true, 0.3, 0.7)
+        : null;
+
       var request = CompactionReportStationOffsetTRexRequest.CreateRequest(
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets, overrides);
+        crossSectionInterval, startStation, endStation, offsets, overrides, liftSettings);
 
       var result = AutoMapperUtility.Automapper.Map<StationOffsetReportRequestArgument_ApplicationService>(request);
 
@@ -91,10 +101,16 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       Assert.Equal(request.Offsets.Length, result.Offsets.Length);
       Assert.Equal(request.Offsets[2], result.Offsets[2]);
       //Overrides mapping tested separately in AutoMapperTests
-     if (useOverrides)
-       Assert.NotNull(result.Overrides);
-     else
-       Assert.Null(result.Overrides);
+      if (useOverrides)
+      {
+        Assert.NotNull(result.Overrides);
+        Assert.NotNull(result.LiftParams);
+      }
+      else
+      {
+        Assert.Null(result.Overrides);
+        Assert.Null(result.LiftParams);
+      }
     }
 
     [Theory]
@@ -116,7 +132,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets, null);
+        crossSectionInterval, startStation, endStation, offsets, null, null);
       request.Validate();
     }
 
@@ -157,7 +173,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
         projectUid, filter,
         reportElevation, reportCmv, reportMdp, reportPassCount, reportTemperature, reportCutFill,
         cutFillDesignUid, cutfillDesignOffset, alignmentDesignUid,
-        crossSectionInterval, startStation, endStation, offsets, null);
+        crossSectionInterval, startStation, endStation, offsets, null, null);
       var ex = Assert.Throws<ServiceException>(() => request.Validate());
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.ValidationError, ex.GetResult.Code);

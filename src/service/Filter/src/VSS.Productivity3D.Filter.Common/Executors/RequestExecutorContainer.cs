@@ -8,13 +8,13 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Common.Executors
 {
   /// <summary>
-  ///   Represents abstract container for all Request executors. Uses abstract factory pattern to seperate executor logic
+  ///   Represents abstract container for all Request executors. Uses abstract factory pattern to separate executor logic
   ///   from controller logic for testability and possible executor versioning.
   /// </summary>
   public abstract class RequestExecutorContainer
@@ -45,14 +45,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected IFileImportProxy fileImportProxy;
 
     /// <summary>
-    /// Implementation of the proxy interface for <see cref="IRaptorProxy"/>.
+    /// Implementation of the proxy interface for Productivity3D
     /// </summary>
-    protected IRaptorProxy raptorProxy;
-
-    /// <summary>
-    /// Implementation of the proxy interface for <see cref="IAssetResolverProxy"/>.
-    /// </summary>
-    protected IAssetResolverProxy assetResolverProxy;
+    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
+    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
 
     /// <summary>
     /// Main DB repo for filters/boundaries used in ProcessEx
@@ -60,7 +56,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     protected RepositoryBase Repository;
 
     /// <summary>
-    /// Gets or sets the Kafak consumer.
+    /// Gets or sets the Kafa consumer.
     /// </summary>
     protected IKafka producer;
 
@@ -156,7 +152,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RequestExecutorContainer(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IFileImportProxy fileImportProxy, RepositoryBase repository,
+      IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IFileImportProxy fileImportProxy, RepositoryBase repository,
       IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy) : this()
     {
       this.configStore = configStore;
@@ -164,8 +162,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log = logger.CreateLogger<RequestExecutorContainer>();
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.projectProxy = projectProxy;
-      this.raptorProxy = raptorProxy;
-      this.assetResolverProxy = assetResolverProxy;
+      Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
+      Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
       Repository = repository;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
@@ -192,7 +190,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       Build<TExecutor>(IConfigurationStore configStore,
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       RepositoryBase repository, RepositoryBase auxRepository,
-      IProjectProxy projectProxy = null, IRaptorProxy raptorProxy = null, IAssetResolverProxy assetResolverProxy = null,
+      IProjectProxy projectProxy = null,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       IKafka producer = null, string kafkaTopicName = null, IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null,
       IUnifiedProductivityProxy unifiedProductivityProxy = null)
       where TExecutor : RequestExecutorContainer, new()
@@ -203,8 +202,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log = logger.CreateLogger<TExecutor>(),
         serviceExceptionHandler = serviceExceptionHandler,
         projectProxy = projectProxy,
-        raptorProxy = raptorProxy,
-        assetResolverProxy = assetResolverProxy,
+        Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification,
+        Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction,
         fileImportProxy = fileImportProxy,
         Repository = repository,
         producer = producer,

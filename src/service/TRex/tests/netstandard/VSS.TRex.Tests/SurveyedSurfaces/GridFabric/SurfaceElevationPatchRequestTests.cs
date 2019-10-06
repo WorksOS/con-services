@@ -5,6 +5,7 @@ using VSS.TRex.Caching;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Geometry;
+using VSS.TRex.GridFabric;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
@@ -23,7 +24,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(SurfaceElevationPatchRequest))]
   public class SurfaceElevationPatchRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, byte[]>();
+    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<SurfaceElevationPatchComputeFunc, ISurfaceElevationPatchArgument, ISerialisedByteArrayWrapper>();
 
     [Fact]
     public void Creation()
@@ -60,7 +61,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       result.CountNonNullCells().Should().Be(903);
     }
 
-    [Theory]
+    [Theory()]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
@@ -81,7 +82,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       ValidateSurveyedSurfaceSuGridResult(siteModel, expectedGridType, patchType, result);
     }
 
-    [Theory]
+    [Theory()]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
@@ -114,7 +115,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       result.Should().BeEquivalentTo(result2);
     }
 
-    [Theory]
+    [Theory()]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
@@ -136,7 +137,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       ValidateSurveyedSurfaceSuGridResult(siteModel, expectedGridType, patchType, result);
     }
 
-    [Theory]
+    [Theory()]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
@@ -158,7 +159,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       ValidateSurveyedSurfaceSuGridResult(siteModel, expectedGridType, patchType, result);
     }
 
-    [Theory]
+    [Theory()]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation, GridDataType.HeightAndTime)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations, GridDataType.CompositeHeights)]
@@ -195,7 +196,7 @@ namespace VSS.TRex.Tests.SurveyedSurfaces.GridFabric
       }
     }
 
-    [Theory]
+    [Theory()]
     [InlineData(SurveyedSurfacePatchType.EarliestSingleElevation)]
     [InlineData(SurveyedSurfacePatchType.LatestSingleElevation)]
     [InlineData(SurveyedSurfacePatchType.CompositeElevations)]

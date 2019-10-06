@@ -19,7 +19,7 @@ TDesignFiles = class(TObject)
     FDesignUnlockedEvent : TSimpleEvent;
     function EnsureSufficientSpaceToLoadDesign(SpaceRequiredInKB: Integer): Boolean;
     function SpaceAvailableInKB: Integer;
-    function ImportFileFromTCC(const DesignDescriptor : TVLPDDesignDescriptor; const DataModelID : Int64) : Boolean;
+    function ImportFileFromTCC(const DesignDescriptor : TVLPDDesignDescriptor; const ProjectUid : Int64) : Boolean;
 
     procedure DeleteLocallyCachedFile(const FileToDelete: TFileName);
 
@@ -27,10 +27,10 @@ TDesignFiles = class(TObject)
     Function AnyLocks(out LockCount : integer) : Boolean;
 
     function GetCombinedSubgridIndexStream(const Surfaces: TICGroundSurfaceDetailsList;
-                                           const DataModelID : Int64; const ACellSize: Double;
+                                           const ProjectUid : Int64; const ACellSize: Double;
                                            out MS: TMemoryStream): Boolean;
 
-    procedure UpdateDesignCache(const DataModelID     :Int64;
+    procedure UpdateDesignCache(const ProjectUid     :Int64;
                                 const DesignFileName  :String;
                                 const DeleteTTMFile   :Boolean);
 end;
@@ -88,11 +88,9 @@ end;
           }
 
           // Add a design in the 'IsLoading state' to control multiple access to this design until it is fully loaded
-          design = new TTMDesign(cellSize)
-          {
-            IsLoading = true,
-            FileName = Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelID), descriptor.FileName)
-          };
+          design = DIContext.Obtain<IDesignClassFactory>().NewInstance(Path.Combine(FilePathHelper.GetTempFolderForProject(dataModelID), descriptor.FileName), cellSize, dataModelID);
+          design.IsLoading = true;
+
           designs.Add(designUid, design);
         }
       }
@@ -106,7 +104,15 @@ end;
         }
 
         if (!File.Exists(design.FileName))
-          design.LoadFromStorage(dataModelID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true);
+        {
+          // TODO we need to take away this async code from the lock
+          loadResult = design.LoadFromStorage(dataModelID, Path.GetFileName(design.FileName), Path.GetDirectoryName(design.FileName), true).Result;
+          if (loadResult != DesignLoadResult.Success)
+          {
+            designs.Remove(designUid);
+            return null;
+          }
+        }
 
         loadResult = design.LoadFromFile(design.FileName);
         if (loadResult != DesignLoadResult.Success)

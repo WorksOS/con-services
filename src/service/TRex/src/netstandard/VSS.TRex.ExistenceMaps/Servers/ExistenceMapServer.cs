@@ -1,10 +1,10 @@
-﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
+﻿using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System.Collections.Generic;
 using VSS.TRex.DI;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.ExistenceMaps.Interfaces;
+using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Caches;
@@ -23,7 +23,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// Each existence map is stored in it's serialized byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        private readonly ICache<INonSpatialAffinityKey, byte[]> DesignTopologyExistenceMapsCache;
+        private readonly ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> DesignTopologyExistenceMapsCache;
 
         /// <summary>
         /// Default no-arg constructor that creates the Ignite cache within the server
@@ -32,7 +32,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         {
             var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
             
-            DesignTopologyExistenceMapsCache = ignite?.GetOrCreateCache<INonSpatialAffinityKey, byte[]>(ConfigureDesignTopologyExistenceMapsCache());
+            DesignTopologyExistenceMapsCache = ignite?.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
 
             if (DesignTopologyExistenceMapsCache == null)
                 throw new TRexException($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}, ignite reference is {ignite}");
@@ -65,7 +65,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public byte [] GetExistenceMap(INonSpatialAffinityKey key)
+        public ISerialisedByteArrayWrapper GetExistenceMap(INonSpatialAffinityKey key)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// </summary>
         /// <param name="key"></param>
         /// <param name="map"></param>
-        public void SetExistenceMap(INonSpatialAffinityKey key, byte [] map)
+        public void SetExistenceMap(INonSpatialAffinityKey key, ISerialisedByteArrayWrapper map)
         {
             DesignTopologyExistenceMapsCache.Put(key, map);
         }

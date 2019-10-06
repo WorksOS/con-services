@@ -1,26 +1,26 @@
 <h1>Projects</h1>
 <p><button (click)="switchToMutable()"> Switch to Mutable </button><button (click)="switchToImmutable()"> Switch to Immutable </button> ==> Using {{currentGridName}}</p>
 <p>
-  Project UID: <input [(ngModel)]="projectUid" size="37" type="text" value="" />
-  <button (click)="selectProject()">Select</button>
-  <button (click)="setProjectToZero()">Zero</button>
-  Available Projects({{allProjectsMetadata.length}}):
-  <select id="projectMetadata" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChanged($event)">
-    <option *ngFor="let projectMetadata of allProjectsMetadata" [ngValue]="projectMetadata">
-      {{ projectMetadata.id }}
-    </option>
-  </select>
-  <button (click)="updateAllProjectsMetadata()">Update Metadata</button>
+    Project UID: <input [(ngModel)]="projectUid" size="37" type="text" value="" />
+    <button (click)="selectProject()">Select</button>
+    <button (click)="setProjectToZero()">Zero</button>
+    Available Projects({{allProjectsMetadata.length}}):
+    <select id="projectMetadata" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChanged($event)">
+        <option *ngFor="let projectMetadata of allProjectsMetadata" [ngValue]="projectMetadata">
+            {{ projectMetadata.id }}
+        </option>
+    </select>
+    <button (click)="updateAllProjectsMetadata()">Update Metadata</button>
 </p>
 <p>Project Extents: {{projectExtents}}, Starts At: {{projectStartDate}}, Ends At: {{projectEndDate}}</p>
 <p>Existence map contains {{existenceMapSubGridCount}} subgrids, covering approximately {{(existenceMapSubGridCount * 1024 * (0.34*0.34)) / 10000}} hectares.</p>
 <p>
-  Render tiles of type:
-  <select id="displayMode" name="displayMode" [(ngModel)]="displayMode" (change)="displayModeChanged($event)">
-    <option *ngFor="let displayMode of displayModes" [ngValue]="displayMode">
-      {{ displayMode.item2 }}
-    </option>
-  </select> Timed call took {{timerTotalTime}}ms
+    Render tiles of type:
+    <select id="displayMode" name="displayMode" [(ngModel)]="displayMode" (change)="displayModeChanged($event)">
+        <option *ngFor="let displayMode of displayModes" [ngValue]="displayMode">
+            {{ displayMode.item2 }}
+        </option>
+    </select> Timed call took {{timerTotalTime}}ms
 </p>
 <button (click)="testAsync()">TestAsync</button>
 <button (click)="getTileXTimes(1)">Render</button>
@@ -40,13 +40,13 @@
 
 <br />
 <div style="display: inline-block; position:relative" (mouseover)="onMouseOver($event)" (mousemove)="onMouseMove($event)" (wheel)="onMouseWheel($event)" (click)="onMapMouseClick()">
-  <img style="position: absolute; border: 1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
-  <svg style="position: relative"
-       height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <svg:circle [attr.cx]="userProfilePoint1SVG_CX" [attr.cy]="userProfilePoint1SVG_CY" r="5" stroke="black" stroke-width="1" />
-    <svg:circle [attr.cx]="userProfilePoint2SVG_CX" [attr.cy]="userProfilePoint2SVG_CY" r="5" stroke="black" stroke-width="1" />
-    <svg:path [attr.d]="userProfilePath" stroke="black" stroke-width="1.5" fill="none" />
-  </svg>
+    <img style="position: absolute; border: 1px solid black" class="mapTileImage" src={{base64EncodedTile}} width="{{pixelsX}}" height="{{pixelsY}}" />
+    <svg style="position: relative"
+         height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <svg:circle [attr.cx]="userProfilePoint1SVG_CX" [attr.cy]="userProfilePoint1SVG_CY" r="5" stroke="black" stroke-width="1" />
+        <svg:circle [attr.cx]="userProfilePoint2SVG_CX" [attr.cy]="userProfilePoint2SVG_CY" r="5" stroke="black" stroke-width="1" />
+        <svg:path [attr.d]="userProfilePath" stroke="black" stroke-width="1.5" fill="none" />
+    </svg>
 </div>
 
 <p>Tile: Extents: {{tileExtents}}, Width: {{tileExtents.sizeX().toFixed(3)}} Height: {{tileExtents.sizeY().toFixed(3)}} </p>
@@ -55,130 +55,149 @@
 
 <H3>Profiling Points</H3>
 <p>
-  <label><input type="checkbox" [(ngModel)]="updateFirstPointLocation">First point X:</label><input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
-  <label><input type="checkbox" [(ngModel)]="updateSecondPointLocation">Second point X:</label><input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
-  Points in profile: {{numPointInProfile}}
+    <label><input type="checkbox" [(ngModel)]="updateFirstPointLocation">1st point X:</label><input type="number" [(ngModel)]="firstPointX" /> Y:<input type="number" [(ngModel)]="firstPointY" />
+    <label><input type="checkbox" [(ngModel)]="updateSecondPointLocation">2nd point X:</label><input type="number" [(ngModel)]="secondPointX" /> Y:<input type="number" [(ngModel)]="secondPointY" />
+    #Points: {{numPointInProfile}}
 </p>
 
 <H3>Summary Volumes Profiling Points</H3>
 <p>
-  <label><input type="checkbox" [(ngModel)]="updateFirstPointLocationSV">First point X:</label><input type="number" [(ngModel)]="svFirstPointX" /> Y:<input type="number" [(ngModel)]="svFirstPointY" />
-  <label><input type="checkbox" [(ngModel)]="updateSecondPointLocationSV">Second point X:</label><input type="number" [(ngModel)]="svSecondPointX" /> Y:<input type="number" [(ngModel)]="svSecondPointY" />
-  Points in profile: {{numPointInProfile}}
+    <label><input type="checkbox" [(ngModel)]="updateFirstPointLocationSV">1st point X:</label><input type="number" [(ngModel)]="svFirstPointX" /> Y:<input type="number" [(ngModel)]="svFirstPointY" />
+    <label><input type="checkbox" [(ngModel)]="updateSecondPointLocationSV">2nd point X:</label><input type="number" [(ngModel)]="svSecondPointX" /> Y:<input type="number" [(ngModel)]="svSecondPointY" />
+    #Points: {{numPointInProfile}}
 </p>
 
 
 <p>
-  <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Design Profile</button>
-  <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Prod Latest Data Profile</button>
-  <button (click)="drawProfileLineFromStartToEndPointsForCompositeElevations()">Composite Elevations Profile</button>
+    <button (click)="drawProfileLineFromStartToEndPointsForDesign()">Design Profile</button>
+    <button (click)="drawProfileLineFromStartToEndPointsForProdData()">Prod Latest Data Profile</button>
+    <button (click)="drawProfileLineFromStartToEndPointsForCompositeElevations()">Composite Elevations Profile</button>
 </p>
 <p>
-  Production elevation profiles:
-  <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()" [(ngModel)]="showLastElevationProfile">Last</label>
-  <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()" [(ngModel)]="showFirstElevationProfile">First</label>
-  <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()" [(ngModel)]="showLowestElevationProfile">Lowest</label>
-  <label><input type="checkbox" (ngModelChange)="showHighestElevationProfile_change()" [(ngModel)]="showHighestElevationProfile">Highest</label>
+    Production elevation profiles:
+    <label><input type="checkbox" (ngModelChange)="showLastElevationProfile_change()" [(ngModel)]="showLastElevationProfile">Last</label>
+    <label><input type="checkbox" (ngModelChange)="showFirstElevationProfile_change()" [(ngModel)]="showFirstElevationProfile">First</label>
+    <label><input type="checkbox" (ngModelChange)="showLowestElevationProfile_change()" [(ngModel)]="showLowestElevationProfile">Lowest</label>
+    <label><input type="checkbox" (ngModelChange)="showHighestElevationProfile_change()" [(ngModel)]="showHighestElevationProfile">Highest</label>
 </p><p>
-  Composite elevation profiles:
-  <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()" [(ngModel)]="showLastCompositeElevationProfile">Last</label>
-  <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()" [(ngModel)]="showFirstCompositeElevationProfile">First</label>
-  <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()" [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
-  <label><input type="checkbox" (ngModelChange)="showHighestCompositeElevationProfile_change()" [(ngModel)]="showHighestCompositeElevationProfile">Highest</label>
+    Composite elevation profiles:
+    <label><input type="checkbox" (ngModelChange)="showLastCompositeElevationProfile_change()" [(ngModel)]="showLastCompositeElevationProfile">Last</label>
+    <label><input type="checkbox" (ngModelChange)="showFirstCompositeElevationProfile_change()" [(ngModel)]="showFirstCompositeElevationProfile">First</label>
+    <label><input type="checkbox" (ngModelChange)="showLowestCompositeElevationProfile_change()" [(ngModel)]="showLowestCompositeElevationProfile">Lowest</label>
+    <label><input type="checkbox" (ngModelChange)="showHighestCompositeElevationProfile_change()" [(ngModel)]="showHighestCompositeElevationProfile">Highest</label>
 </p>
 
 <svg height="500" width="1000" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
      (mouseover)="onMouseOverProfile($event)" (mousemove)="onMouseMoveProfile($event)">
-  <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1.5" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_LastElev" stroke="red" stroke-width="1" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_FirstElev" stroke="green" stroke-width="1" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_LowestElev" stroke="blue" stroke-width="1" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_HighestElev" stroke="yellow" stroke-width="1" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_LastCompositeElev" stroke="orange" stroke-width="1" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_FirstCompositeElev" stroke="coral" stroke-width="1" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_LowestCompositeElev" stroke="magenta" stroke-width="1" fill="none" />
-  <svg:path [attr.d]="compositeElevationProfilePath_HighestCompositeElev" stroke="pink" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="profilePath" stroke="black" stroke-width="1.5" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_LastElev" stroke="red" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_FirstElev" stroke="green" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_LowestElev" stroke="blue" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_HighestElev" stroke="yellow" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_LastCompositeElev" stroke="orange" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_FirstCompositeElev" stroke="coral" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_LowestCompositeElev" stroke="magenta" stroke-width="1" fill="none" />
+    <svg:path [attr.d]="compositeElevationProfilePath_HighestCompositeElev" stroke="pink" stroke-width="1" fill="none" />
 </svg>
 <p>Profile extents: Start station: {{profileExtents.minX}}, End station: {{profileExtents.maxX}}, Min Z: {{profileExtents.minY}}, Max Z: {{profileExtents.maxY}}</p>
-<p>Mouse: Screen: {{mouseProfilePixelLocation}}, World: {{mouseProfileWorldLocation}} </p>
+<p>Mouse: Screen: {{mouseProfilePixelLocation}}, World: {{mouseProfileWorldLocation}}, Profile value: {{profileValue}} {{profileValue2}} </p>
 
 <H3>Machines [{{machines.length}} in total]</H3>
 <!--Display the machines in a table-->
 <table>
-  <tr>
-    <th *ngFor="let col of machineColumnNames">
-      of
-      {{col}}
-    </th>
-  </tr>
-  <tr *ngFor="let machine of machines">
-    <td *ngFor="let col of machineColumns">
-      {{machine[col]}}
-    </td>
-  </tr>
+    <tr>
+        <th *ngFor="let col of machineColumnNames">
+            of
+            {{col}}
+        </th>
+    </tr>
+    <tr *ngFor="let machine of machines">
+        <td *ngFor="let col of machineColumns">
+            {{machine[col]}}
+        </td>
+    </tr>
 </table>
 
 <br />
 <H3>Surveyed Surfaces [{{surveyedSurfaces.length}} in total]</H3>
-<p>Design File Name: <input [(ngModel)]="surveyedSurfaceFileName" type="text" value="" /> As At Date: <input [(ngModel)]="surveyedSurfaceAsAtDate" type="datetime" value="" /> </p>
-<p><button (click)=addNewSurveyedSurface()>Add New Surveyed Surface</button>   <button (click)="addADummySurveyedSurface()">Add a dummy!</button></p>
+<p>
+    Design File Name: <input type="file" accept=".ttm" value="" (change)="handleSurveyedSurfaceChange($event.target.files)" />
+    As At Date:
+    <input name="surveyedSurfaceDate" [(ngModel)]="surveyedSurfaceDate" type="date" value="" />
+    <input name="surveyedSurfaceTime" [(ngModel)]="surveyedSurfaceTime" type="time" value="" />
+</p>
+<p>
+    <button (click)=addNewSurveyedSurface() [disabled]="!canAddSurveyedSurfaceFile()">Add New Surveyed Surface</button>
+    Surveyed Surface UID: <input [(ngModel)]="newSurveyedSurfaceGuid" size="37" type="text" value="" />
+</p>
 <p *ngFor="let surveyedSurface of surveyedSurfaces">
-  <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
-  Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} from file {{surveyedSurface.designDescriptor.fileName}}
+    <button (click)="deleteSurveyedSurface(surveyedSurface)">Delete</button>
+    Surveyed surface: {{ surveyedSurface.id }} as at {{ surveyedSurface.asAtDate }} from file {{surveyedSurface.designDescriptor.fileName}}
 </p>
 <br />
 <H3>Design Surface [{{designs.length}} in total]</H3>
-<p>Design File Name: <input [(ngModel)]="designFileName" type="text" value="" /></p>
 <p>
-  <button (click)=addNewDesignSurface()>Add New Design Surface</button>   <button (click)="addADummyDesignSurface()">Add a dummy!</button>
-  Design UID: <input [(ngModel)]="designUid" size="37" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" />
-  <button (click)="selectDesign()">Select</button>
+    Design File Name: <input type="file" accept=".ttm" value="" (change)="handleDesignFileChange($event.target.files)" />
+</p>
+<p>
+    <button (click)=addNewDesignSurface() [disabled]="!canAddDesignSurfaceFile()">Add New Design Surface</button>  
+    Design UID: <input [(ngModel)]="designUid" size="37" type="text" value="" /> Offset: <input [(ngModel)]="designOffset" type="number" value="" />
+    <button (click)="selectDesign()">Select</button>
 </p>
 <p *ngFor="let design of designs">
-  <button (click)="deleteDesignSurface(design)">Delete</button>
-  Design: {{ design.id }} from file {{design.designDescriptor.fileName}}
+    <button (click)="deleteDesignSurface(design)">Delete</button>
+    Design: {{ design.id }} from file {{design.designDescriptor.fileName}}
 </p>
 <H3>Alignment [{{alignments.length}} in total]</H3>
-<p>Design File Name: <input [(ngModel)]="alignmentFileName" type="text" value="" /></p>
-<p><button (click)=addNewAlignment()>Add New Alignment</button>   <button (click)="addADummyAlignment()">Add a dummy!</button></p>
+<p>
+    Alignment File Name: <input type="file" accept=".svl" value="" (change)="handleAlignmentFileChange($event.target.files)" />
+</p>
+<p>
+    <button (click)=addNewAlignment() [disabled]="!canAddAlignmentFile()">Add New Alignment</button>
+    Alignment UID: <input [(ngModel)]="alignmentUid" size="37" type="text" value="" />
+</p>
 <p *ngFor="let alignment of alignments">
-  <button (click)="deleteAlignment(alignment)">Delete</button>
-  Alignment: {{ alignment.id }} from file {{alignment.designDescriptor.fileName}}
+    <button (click)="deleteAlignment(alignment)">Delete</button>
+    Alignment: {{ alignment.id }} from file {{alignment.designDescriptor.fileName}}
 </p>
 <br />
 <H3>Machine Events</H3>
 <p>
-  Machine:
-  <select id="machine" name="machine" [(ngModel)]="machine" (change)="machineChanged($event)">
-    <option *ngFor="let machine of machines" [ngValue]="machine">
-      {{ machine.id }} - {{ machine.name }}
-    </option>
-  </select>
-  Event Type:
-  <select id="eventType" name="eventType" [(ngModel)]="eventType" (change)="eventTypeChanged($event)">
-    <option *ngFor="let eventType of eventTypes" [ngValue]="eventType">
-      {{ eventType.item2 }}
-    </option>
-  </select>
+    Machine:
+    <select id="machine" name="machine" [(ngModel)]="machine" (change)="machineChanged($event)">
+        <option *ngFor="let machine of machines" [ngValue]="machine">
+            {{ machine.id }} - {{ machine.name }}
+        </option>
+    </select>
+    Event Type:
+    <select id="eventType" name="eventType" [(ngModel)]="eventType" (change)="eventTypeChanged($event)">
+        <option *ngFor="let eventType of eventTypes" [ngValue]="eventType">
+            {{ eventType.item2 }}
+        </option>
+    </select>
 </p>
 <p>
-  Start Date:<input [(ngModel)]="machineEventsStartDate" type="datetime" value="" />
-  End Date:<input [(ngModel)]="machineEventsEndDate" type="datetime" value="" />
-  Max Events<input [(ngModel)]="maxMachineEventsToReturn" type="number" value="" />
-  <button (click)=updateMachineEvents()>Update</button>
+    Start Date:
+    <input name="machineEventsStartDate" [(ngModel)]="machineEventsStartDate" type="date" value="" />
+    <input name="machineEventsStartTime" [(ngModel)]="machineEventsStartTime" type="time" value="" />
+    End Date:
+    <input name="machineEventsEndDate" [(ngModel)]="machineEventsEndDate" type="date" value="" />
+    <input name="machineEventsEndTime" [(ngModel)]="machineEventsEndTime" type="time" value="" />
+    Max Events<input [(ngModel)]="maxMachineEventsToReturn" type="number" value="" />
+    <button (click)=updateMachineEvents()>Update</button>
 </p>
 <p> Number of events retrieved: {{machineEvents.length}}</p>
 <table>
-  <tr>
-    <th *ngFor="let col of ['Date/Time + Event Type']">
-      {{col}}
-    </th>
-  </tr>
-  <tr *ngFor="let event of machineEvents">
-    <td>
-      {{event}}
-    </td>
-  </tr>
+    <tr>
+        <th *ngFor="let col of ['Date/Time + Event Type']">
+            {{col}}
+        </th>
+    </tr>
+    <tr *ngFor="let event of machineEvents">
+        <td>
+            {{event}}
+        </td>
+    </tr>
 </table>
 
 <br />
@@ -188,11 +207,11 @@
 <br />
 <H3>Machine Designs</H3>
 <p *ngFor="let machinedesign of machineDesigns">
-  machine design: {{machinedesign.id}}  {{machinedesign.name}}
+    machine design: {{machinedesign.id}}  {{machinedesign.name}}
 </p>
 
 <br />
 <H3>Proofing Runs</H3>
 <p *ngFor="let proofingRun of siteProofingRuns">
-  Proofing Run: {{proofingRun.name}}, Start Time: {{proofingRun.startTime}}, End Time: {{proofingRun.endTime}}
+    Proofing Run: {{proofingRun.name}}, Start Time: {{proofingRun.startTime}}, End Time: {{proofingRun.endTime}}
 </p>

@@ -1,8 +1,0 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: {{ template "trex.deployname" . }}-immutable-data
-spec:
-  selector:
-      component: {{ template "trex.deployname" . }}-psn
-  clusterIP: None # custom value.

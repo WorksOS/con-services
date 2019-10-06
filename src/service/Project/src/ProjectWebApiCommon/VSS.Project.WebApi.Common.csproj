@@ -27,7 +27,6 @@
     <ProjectReference Include="..\..\..\..\Common\AWS.TransferProxy\src\VSS.AWS.TransferProxy.csproj" />
     <ProjectReference Include="..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
     <ProjectReference Include="..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\log4netExtensions\src\VSS.Log4NetExtensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
@@ -35,11 +34,11 @@
     <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Models\VSS.Productivity.Push.Models\VSS.Productivity.Push.Models.csproj" />
+    <ProjectReference Include="..\..\..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Abstractions\VSS.Productivity3D.Scheduler.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Scheduler\src\VSS.Productivity3D.Scheduler.Jobs.TileGenJob\VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

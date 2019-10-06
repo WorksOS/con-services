@@ -11,7 +11,7 @@ using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
-using SummaryResult = VSS.Productivity3D.Models.ResultHandling.MDPSummaryResult;
+using SummaryResult = VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling.MDPSummaryResult;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {
@@ -50,7 +50,8 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = siteModel.ID,
           Filters = new FilterSet(filter),
-          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides)
+          Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+          LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
         }
       );
 

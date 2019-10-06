@@ -7,33 +7,20 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.Models.Models
 {
-  public class CellPassesTRexRequest
+  public class CellPassesTRexRequest : TRexBaseRequest
   {
-    /// <summary>
-    /// The project identifier
-    /// </summary>
-    [JsonProperty(PropertyName = "projectUid", Required = Required.Always)]
-    public Guid ProjectUid { get; private set; }
-
     /// <summary>
     /// If defined, the WGS84 LL position to identify the cell from. 
     /// May be null.
     /// </summary>       
-    [JsonProperty(PropertyName = "llPoint", Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public WGSPoint LLPoint { get; private set; }
-
-    /// <summary>
-    /// The filter to be used to govern selection of the cell/cell pass. 
-    /// May be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
 
     /// <summary>
     /// If defined, the grid point in the project coordinate system to identify the cell from.
     /// May be null.
     /// </summary>
-    [JsonProperty(PropertyName = "gridPoint", Required = Required.Default)]
+    [JsonProperty(Required = Required.Default)]
     public Point GridPoint { get; private set; }
 
     /// <summary>
@@ -50,38 +37,46 @@ namespace VSS.Productivity3D.Models.Models
     public CellPassesTRexRequest(
       Guid projectUid,
       Point gridPoint,
-      FilterResult filter)
+      FilterResult filter,
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
+      : this(projectUid, filter, overrides, liftSettings)
     {
-      ProjectUid = projectUid;
       GridPoint = gridPoint;
-      Filter = filter;
-      CoordsAreGrid = true;
+      CoordsAreGrid = true;  
     }
 
     public CellPassesTRexRequest(
       Guid projectUid,
       WGSPoint llPoint,
-      FilterResult filter)
+      FilterResult filter,
+      OverridingTargets overrides,
+      LiftSettings liftSettings) 
+      : this(projectUid, filter, overrides, liftSettings)
+    {
+      LLPoint = llPoint;
+      CoordsAreGrid = false;
+    }
+
+    private CellPassesTRexRequest(
+      Guid projectUid,
+      FilterResult filter,
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
-      LLPoint = llPoint;
       Filter = filter;
       CoordsAreGrid = false;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
     /// <summary>
     /// Validates all properties
     /// </summary>
-    public void Validate()
+    public override  void Validate()
     {
-      if (ProjectUid == Guid.Empty)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "Invalid projectUid"));
-      }
-
-      Filter?.Validate();
+      base.Validate();
 
       if (GridPoint == null && LLPoint == null)
       {

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Requests;
@@ -25,7 +26,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
     }
 
     [Fact]
-    public void Test_AlignmentDesignFilterBoundaryRequest()
+    public async Task Test_AlignmentDesignFilterBoundaryRequest()
     {
       const double START_STATION = 0.0;
       const double END_STATION = 100.0;
@@ -35,11 +36,11 @@ namespace VSS.TRex.Tests.Designs.GridFabric
       AddDesignProfilerGridRouting();
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
-      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Bug36372.ttm", false);
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.AddSVLAlignmentDesignToSiteModel(ref siteModel, TestHelper.CommonTestDataPath, "Large Sites Road - Trimble Road.svl", false);
       var referenceDesign = new DesignOffset(designUid, 0);
 
       var request = new AlignmentDesignFilterBoundaryRequest();
-      var response = request.Execute(new AlignmentDesignFilterBoundaryArgument()
+      var response = await request.ExecuteAsync(new AlignmentDesignFilterBoundaryArgument
       {
         ProjectID = siteModel.ID,
         ReferenceDesign = referenceDesign,

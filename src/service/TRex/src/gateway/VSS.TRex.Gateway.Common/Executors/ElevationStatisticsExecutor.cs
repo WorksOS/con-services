@@ -5,7 +5,9 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Analytics.ElevationStatistics;
 using VSS.TRex.Analytics.ElevationStatistics.GridFabric;
+using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
+using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Types;
 using ElevationDataResult = VSS.Productivity3D.Models.ResultHandling.ElevationStatisticsResult;
 
@@ -33,7 +35,9 @@ namespace VSS.TRex.Gateway.Common.Executors
       var elevationStatisticsResult = await operation.ExecuteAsync(new ElevationStatisticsArgument()
       {
         ProjectID = siteModel.ID,
-        Filters = new FilterSet { Filters = new[] { new CombinedFilter() } }
+        Filters = new FilterSet { Filters = new[] { new CombinedFilter() } },
+        Overrides = AutoMapperUtility.Automapper.Map<OverrideParameters>(request.Overrides),
+        LiftParams = ConvertLift(request.LiftSettings, request.Filter?.LayerType)
       });
 
       if (elevationStatisticsResult != null)

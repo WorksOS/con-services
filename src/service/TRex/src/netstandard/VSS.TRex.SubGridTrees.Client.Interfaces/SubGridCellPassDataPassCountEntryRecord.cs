@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.SubGridTrees.Client.Interfaces
 {

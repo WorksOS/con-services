@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       IFilterSet filters = new FilterSet();
       var referenceDesign = new DesignOffset(Guid.NewGuid(), 12.34);
       var overrides = new OverrideParameters { OverrideMachineMDP = true, OverridingMachineMDP = 321 };
-      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesign, overrides);
+      var arg = new CellDatumRequestArgument_ClusterCompute(siteModelID, mode, neeCoords, otgCellX, otgCellY, filters, referenceDesign, overrides, null);
       Assert.NotNull(arg);
       Assert.Equal(siteModelID, arg.ProjectID);
       Assert.Equal(mode, arg.Mode);

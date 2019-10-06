@@ -27,7 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\..\Project\src\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
+    <ProjectReference Include="..\..\..\..\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
     <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.csproj" />
   </ItemGroup>

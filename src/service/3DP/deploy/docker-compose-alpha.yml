@@ -8,16 +8,18 @@ services:
     environment:
      - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
      - ASNODEIP=10.97.96.150
-     - assetmgmt3d-service=http://assetmgmt3d.alpha.eks.vspengg.com
-     - push-service=http://push.alpha.eks.vspengg.com
-     - scheduler-service=http://scheduler.alpha.eks.vspengg.com
-     - project-service=http://project.alpha.eks.vspengg.com
-     - filter-service=http://filter.alpha.eks.vspengg.com
+     - assetmgmt3d_service=http://assetmgmt3d.alpha.eks.vspengg.com
+     - push_service=http://push.alpha.eks.vspengg.com
+     - scheduler_service=http://scheduler.alpha.eks.vspengg.com
+     - project_service=http://project.alpha.eks.vspengg.com
+     - filter_service=http://filter.alpha.eks.vspengg.com
+     - trex_service_connectedsite=http://connectedsite.alpha.eks.vspengg.com
+     - trex_service_immutable=http://trex.immutable.dev.eks.vspengg.com
+     - trex_service_mutable=http://trex.mutable.dev.eks.vspengg.com
      - ASSETMGMT_CACHE_LIFE=00:15:00
      - AWS_DESIGNIMPORT_BUCKET_NAME=vss-project3dp-stg
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
      - AWS_TAGFILE_BUCKET_NAME=vss-stg-directtagfile-archives
-     - CONNECTED_SITE_GATEWAY_URL=http://connectedsite.alpha.eks.vspengg.com/api/status
      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
      - CUSTOMER_CACHE_LIFE=00:30:00
      - DEFAULT_CONNECTION_LIMIT=64
@@ -39,11 +41,9 @@ services:
      - ENABLE_TREX_GATEWAY_TAGFILE=false
      - ENABLE_TREX_GATEWAY_TILES=false
      - ENABLE_TREX_GATEWAY_VETA=false
-     - FILTER_API_URL=http://filter.alpha.eks.vspengg.com/api/v1
      - FILTER_CACHE_LIFE=00:15:00
      - GEOFENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0
      - GEOFENCE_CACHE_LIFE=00:15:00
-     - IMPORTED_FILE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/importedfiles
      - IMPORTED_FILE_CACHE_LIFE=00:15:00
      - IONODEIP=10.97.97.49
      - KAFKA_CAP_GROUP_NAME=3dpm-CAP,
@@ -66,13 +66,10 @@ services:
      - MYSQL_USERNAME_BUILD="vssBuildUsr"
      - NOTIFICATION_HUB_URL=http://push.alpha.eks.vspengg.com/notifications
      - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
-     - PROJECT_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4/project
      - PROJECT_CACHE_LIFE=00:15:00
-     - PROJECT_SETTINGS_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-projects/1.4
      - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
      - PUSH_NO_AUTHENTICATION_HEADER=true
      - SCHEDULED_JOB_TIMEOUT=900000
-     - SCHEDULER_INTERNAL_EXPORT_URL=http://scheduler.alpha.eks.vspengg.com/internal/v1/export
      - SHAREUNC=\\alpha-iolv01.vssengg.com\ProductionData
      - SNAKEPIT_HOST=snakepit.dev.eks.vspengg.com
      - TCCBASEURL=https://www.myconnectedsite.com
@@ -90,8 +87,7 @@ services:
      - TILE_RENDER_JOB_TIMEOUT=00:00:10
      - TILE_RENDER_MAX_ZOOM_LEVEL=21
      - TILE_RENDER_MAX_ZOOM_RANGE=14
-     - TILE_RENDER_WAIT_INTERVAL=2000
-     - TREX_TAGFILE_API_URL=http://trex.mutable.dev.eks.vspengg.com/api/v2/tagfiles
+     - TILE_RENDER_WAIT_INTERVAL=2000    
     ports:
       - "4001:80"
 networks:

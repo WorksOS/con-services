@@ -26,11 +26,9 @@ namespace VSS.Common.Cache.MemoryCache.UnitTests
 
     public InMemoryCacheTests()
     {
-      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Common.Cache.MemoryCache.UnitTests.log"));
-
       var serviceCollection = new ServiceCollection()
                           .AddLogging()
-                          .AddSingleton(loggerFactory)
+                          .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Common.Cache.MemoryCache.UnitTests.log")))
                           .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
                           .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>()
                           .AddMemoryCache()
@@ -234,25 +232,25 @@ namespace VSS.Common.Cache.MemoryCache.UnitTests
 
       // NOTE: Cache keys can change case to ensure key AAAA == AAaa (useful for guids)
       Assert.True(cache.CacheKeys.Count == 2);
-      Assert.True(cache.CacheKeys.Contains(key1, StringComparer.OrdinalIgnoreCase));
-      Assert.True(cache.CacheKeys.Contains(key2, StringComparer.OrdinalIgnoreCase));
+      Assert.Contains(key1, cache.CacheKeys, StringComparer.OrdinalIgnoreCase);
+      Assert.Contains(key2, cache.CacheKeys, StringComparer.OrdinalIgnoreCase);
 
       Assert.True(cache.CacheTags.Count == 3);
-      Assert.True(cache.CacheTags.Contains(tagUnique1, StringComparer.OrdinalIgnoreCase));
-      Assert.True(cache.CacheTags.Contains(tagUnique2, StringComparer.OrdinalIgnoreCase));
-      Assert.True(cache.CacheTags.Contains(tagShared, StringComparer.OrdinalIgnoreCase));
+      Assert.Contains(tagUnique1, cache.CacheTags, StringComparer.OrdinalIgnoreCase);
+      Assert.Contains(tagUnique2, cache.CacheTags, StringComparer.OrdinalIgnoreCase);
+      Assert.Contains(tagShared, cache.CacheTags, StringComparer.OrdinalIgnoreCase);
 
       cache.RemoveByTag(tagUnique1);
 
       Assert.True(cache.CacheKeys.Count == 1);
-      Assert.False(cache.CacheKeys.Contains(key1, StringComparer.OrdinalIgnoreCase));
+      Assert.DoesNotContain(key1, cache.CacheKeys, StringComparer.OrdinalIgnoreCase);
       Assert.True(cache.CacheTags.Count == 2);
-      Assert.False(cache.CacheTags.Contains(tagUnique1, StringComparer.OrdinalIgnoreCase));
+      Assert.DoesNotContain(tagUnique1, cache.CacheTags, StringComparer.OrdinalIgnoreCase);
 
       // Add it back, and remove the shared tag
       cache.Set(key1, RandomString(64), new List<string> { tagUnique1, tagShared });
-      Assert.True(cache.CacheKeys.Contains(key1, StringComparer.OrdinalIgnoreCase));
-      Assert.True(cache.CacheTags.Contains(tagUnique1, StringComparer.OrdinalIgnoreCase));
+      Assert.Contains(key1, cache.CacheKeys, StringComparer.OrdinalIgnoreCase);
+      Assert.Contains(tagUnique1, cache.CacheTags, StringComparer.OrdinalIgnoreCase);
 
       // Remove it all
       cache.RemoveByTag(tagShared);
@@ -317,7 +315,7 @@ namespace VSS.Common.Cache.MemoryCache.UnitTests
       Assert.Equal(data, result3);
 
 
-      Assert.Equal(dataCalledCount, 2);
+      Assert.Equal(2, dataCalledCount);
     }
 
     [Fact]

@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "trex.deployname" . }}-cm
+  name: {{ $name }}
   labels:
     app: {{ template "trex.deployname" . }}
     release: {{ template "trex.deployname" . }}

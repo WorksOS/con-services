@@ -31,29 +31,17 @@ namespace VSS.TRex.Profiling.Interfaces
     /// Configures a new profile builder that provides the three core builders used in profiling: construction of cell vector from profile line,
     /// profile analysis orchestration and per cell layer/statistics calculation
     /// </summary>
-    /// <param name="profileStyle"></param>
-    /// <param name="siteModel"></param>
-    /// <param name="productionDataExistenceMap"></param>
-    /// <param name="gridDataType"></param>
-    /// <param name="filterSet"></param>
-    /// <param name="referenceDesignWrapper"></param>
-    /// <param name="cellPassFilter_ElevationRangeDesignWrapper"></param>
-    /// <param name="PopulationControl"></param>
-    /// <param name="CellPassFastEventLookerUpper"></param>
-    /// <param name="overrides"></param>
-    /// <param name="VolumeType"></param>
-    /// <param name="slicerToolUsed"></param>
     void Configure(ProfileStyle profileStyle,
       ISiteModel siteModel,
       ISubGridTreeBitMask productionDataExistenceMap,
       GridDataType gridDataType,
       IFilterSet filterSet,
       IDesignWrapper referenceDesignWrapper,
-      IDesignWrapper cellPassFilter_ElevationRangeDesignWrapper,
       IFilteredValuePopulationControl PopulationControl,
       ICellPassFastEventLookerUpper CellPassFastEventLookerUpper,
       VolumeComputationType VolumeType,
       IOverrideParameters overrides,
+      ILiftParameters liftParams,
       bool slicerToolUsed = true);
   }
 }

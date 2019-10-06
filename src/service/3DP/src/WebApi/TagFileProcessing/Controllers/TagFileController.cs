@@ -41,6 +41,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     private readonly ITransferProxy _transferProxy;
     private readonly IConfigurationStore _configStore;
     private readonly ITRexTagFileProxy _tRexTagFileProxy;
+    private readonly ITRexConnectedSiteProxy _tRexConnectedSiteProxy;
     private readonly IFileRepository _tccRepository;
     private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
 
@@ -52,7 +53,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       IASNodeClient raptorClient, 
       ITagProcessor tagProcessor, 
 #endif
-      ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, IConfigurationStore configStore, IFileRepository tccRepository)
+      ILoggerFactory logger, ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, IConfigurationStore configStore, IFileRepository tccRepository)
     {
 #if RAPTOR
       _raptorClient = raptorClient;
@@ -62,6 +63,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       _log = logger.CreateLogger<TagFileController>();
       _transferProxy = transferProxy;
       _tRexTagFileProxy = tRexTagFileProxy;
+      _tRexConnectedSiteProxy = tRexConnectedSiteProxy;
       _configStore = configStore;
       _tccRepository = tccRepository;
     }
@@ -80,6 +82,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       _log.LogDebug($"{nameof(PostTagFileNonDirectSubmission)}: request {serializedRequest}");
 
+      //First submit tag file to connected site gateway
       // Don't need to await as this process should be fire and forget there are more robust ways to do this but this will do for the moment
 #pragma warning disable 4014
       RequestExecutorContainerFactory
@@ -88,7 +91,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           _raptorClient, 
           _tagProcessor, 
 #endif
-          _configStore, null, null, null, null, _transferProxy, _tRexTagFileProxy, null, customHeaders: CustomHeaders)
+          _configStore, transferProxy:_transferProxy, tRexTagFileProxy:_tRexTagFileProxy, tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
         .ProcessAsync(request).ContinueWith((task) =>
         {
           if (task.IsFaulted)
@@ -98,6 +101,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
         }, TaskContinuationOptions.OnlyOnFaulted);
 #pragma warning restore 4014
 
+      //Now submit tag file to Raptor and/or TRex
       ProjectData projectData = null;
 
       if (request.ProjectId != null)
@@ -131,7 +135,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           _raptorClient, 
           _tagProcessor, 
 #endif
-          _configStore, null, null, null, null, _transferProxy, _tRexTagFileProxy, null, customHeaders: CustomHeaders)
+          _configStore, transferProxy:_transferProxy,tRexTagFileProxy:_tRexTagFileProxy, tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
         .ProcessAsync(requestExt);
 
       // when we disable Raptor, allowing Trex response to return to harvester,
@@ -164,7 +168,7 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
           _raptorClient, 
           _tagProcessor, 
 #endif
-          _configStore, _tccRepository, null, null, null, _transferProxy, _tRexTagFileProxy, null, customHeaders: CustomHeaders)
+          _configStore, _tccRepository, transferProxy:_transferProxy,tRexTagFileProxy:_tRexTagFileProxy,tRexConnectedSiteProxy:_tRexConnectedSiteProxy, customHeaders: CustomHeaders)
         .ProcessAsync(request) as TagFileDirectSubmissionResult;
 
       if (result?.Code == 0)

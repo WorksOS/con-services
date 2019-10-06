@@ -108,10 +108,10 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// <summary>
     /// Loads a TrimbleTINModel from a stream
     /// </summary>
-    /// <param name="FileName"></param>
-    public void LoadFromFile(string FileName)
+    /// <param name="fileName"></param>
+    public void LoadFromFile(string fileName)
     {
-      byte[] bytes = File.ReadAllBytes(FileName);
+      byte[] bytes = File.ReadAllBytes(fileName);
 
       using (MemoryStream ms = new MemoryStream(bytes))
       {
@@ -119,13 +119,13 @@ namespace VSS.TRex.Designs.TTM.Optimised
       }
 
       // FYI, This method sucks totally - don't use it
-      //using (FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read, FileShare.Read, 2048))
+      //using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, 2048))
       //{
       //    LoadFromStream(fs);
       //}
 
       if (ModelName.Length == 0)
-        ModelName = Path.ChangeExtension(Path.GetFileName(FileName), "");
+        ModelName = Path.GetFileNameWithoutExtension(fileName);
     }
   }
 }

@@ -9,7 +9,6 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tests.Common;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.DI;
@@ -376,11 +375,12 @@ namespace VSS.TRex.Tests.Exports.CSV
     {
       siteModel = SetupSiteAndRequestArgument(coordType, outputType, isRawDataAsDBaseRequired, tagFileDirectory, out requestArgument);
       var overrides = requestArgument.Overrides;
+      var liftParams = requestArgument.LiftParams;
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var gridDataType = outputType == OutputTypes.PassCountLastPass || outputType == OutputTypes.VedaFinalPass
         ? GridDataType.CellProfile : GridDataType.CellPasses;
-      var requestors = utilities.ConstructRequestors(siteModel,
+      var requestors = utilities.ConstructRequestors(siteModel, requestArgument.Overrides, requestArgument.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, false, gridDataType),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
       requestors.Should().NotBeNull();
@@ -388,10 +388,11 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       // Request sub grids from the model
       var requestedSubGrids = new List<IClientLeafSubGrid>();
-      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(x =>
+      siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(async x =>
       {
-        if (requestors[0].RequestSubGridInternal(x, overrides, true, false, out IClientLeafSubGrid clientGrid) == ServerRequestResult.NoError)
-          requestedSubGrids.Add(clientGrid);
+        var requestSubGridInternalResult = await requestors[0].RequestSubGridInternal(x, true, false);
+        if (requestSubGridInternalResult.requestResult == ServerRequestResult.NoError)
+          requestedSubGrids.Add(requestSubGridInternalResult.clientGrid);
       });
       requestedSubGrids.Count.Should().Be(tagFileDirectory == "ElevationMappingMode-KettlewellDrive" ? 18 : 9);
       return requestedSubGrids;

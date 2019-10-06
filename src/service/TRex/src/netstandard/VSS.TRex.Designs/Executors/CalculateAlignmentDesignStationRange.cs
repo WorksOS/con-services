@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Geometry;
+using VSS.TRex.Designs.Interfaces;
+using VSS.TRex.DI;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Designs.Executors
 {
@@ -14,22 +16,20 @@ namespace VSS.TRex.Designs.Executors
     /// <param name="projectUID"></param>
     /// <param name="referenceDesignUID"></param>
     /// <returns></returns>
-    public (double startStation, double endStation) Execute(Guid projectUID, Guid referenceDesignUID)
+    public (double StartStation, double EndStation) Execute(Guid projectUID, Guid referenceDesignUID)
     {
       try
       {
-        // Perform the calculation
-        (double startStation, double endStation) result = (double.MaxValue, double.MinValue);
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUID, false);
+        var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUID, projectUID, siteModel.CellSize, out var lockResult);
 
-        // Todo: This implementation is dependent on a .Net standard version of the Symphony SDK
-        throw new NotImplementedException("Alignment design station range implementation is dependent on a .Net standard version of the Symphony SDK");
-
-        if (result.startStation == Double.MaxValue || result.endStation == Double.MinValue)
+        if (design == null)
         {
-          // TODO: Handle failure to calculate the station range
+          Log.LogWarning($"Failed to read file for design {referenceDesignUID}");
+          return (double.MaxValue, double.MinValue);
         }
 
-        //return result;
+        return (design as SVLAlignmentDesign).GetStationRange();
       }
       catch (Exception e)
       {

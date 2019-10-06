@@ -3,9 +3,6 @@ using Newtonsoft.Json;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
-#if RAPTOR
-using SVOICDecls;
-#endif
 
 namespace VSS.Productivity3D.Models.ResultHandling
 {
@@ -87,6 +84,16 @@ public class CellPassesV2Result : ContractExecutionResult
       /// A bit field stored used to hold the GPSMode recorded by the machine at the time the cell was passed over. The LSB four bits in the byte are used for this purpose.
       /// </summary>
       public byte GpsModeStore { get; set; }
+
+      /// <summary>
+      /// Is this pass representing a half pass, defaults to false
+      /// </summary>
+      public bool HalfPass { get; set; }
+
+      /// <summary>
+      /// Cell Pass type, used in half passes - Defaults to Front
+      /// </summary>
+      public CellPassType PassType { get; set; }
     }
 
     /// <summary>
@@ -216,12 +223,12 @@ public class CellPassesV2Result : ContractExecutionResult
 
       /// <summary>
       /// The GCS machine control system is mapping minimum elevations; typically used by HEX (Hydraulic Excavator machines)
+      /// 0 - mmLatestElevation,
+      /// 1 - mmMinimumElevation,
+      /// 2 - mmMaximumElevation.
       /// </summary>
-#if RAPTOR
-      public TICMinElevMappingState EventMinElevMapping { get; set; }
-#else
-      public bool EventMinElevMapping;
-#endif
+      /// 
+      public byte EventMinElevMapping;
     }
 
     /// <summary>

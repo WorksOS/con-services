@@ -14,17 +14,13 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 {
   public class CellPassesV2Executor : RequestExecutorContainer 
   {
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
-
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = CastRequestObjectTo<CellPassesRequest>(item);
@@ -160,11 +156,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
         EventMachineAutomatics = RaptorConverters.convertGCSAutomaticsModeType(events.EventMachineAutomatics),
         EventMachineGear = RaptorConverters.convertMachineGearType(events.EventMachineGear),
         EventMachineRmvThreshold = events.EventMachineRMVThreshold,
-//#if RAPTOR
-//        EventMinElevMapping = events.EventMinElevMapping,
-//#else
-//        EventMinElevMapping = false;
-//#endif
+        EventMinElevMapping = (byte)events.EventMinElevMapping,
         EventOnGroundState = RaptorConverters.convertOnGroundStateType(events.EventOnGroundState),
         EventVibrationState = RaptorConverters.convertVibrationStateType(events.EventVibrationState),
         GpsAccuracy = RaptorConverters.convertGPSAccuracyType(events.GPSAccuracy),
@@ -191,7 +183,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
         Mdp = pass.MDP,
         RadioLatency = pass.RadioLatency,
         Rmv = pass.RMV,
-        Time = pass.Time
+        Time = pass.Time,
+        HalfPass = pass.HalfPass,
+        PassType = RaptorConverters.convertPassType(pass.PassType)
       };
     }
 
@@ -230,18 +224,24 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
 
     private Task<CellPassesV2Result> GetTRexCellPasses(CellPassesRequest request)
     {
+      var overrides = AutoMapperUtility.Automapper.Map<OverridingTargets>(request.liftBuildSettings);
+      var liftSettings = AutoMapperUtility.Automapper.Map<LiftSettings>(request.liftBuildSettings);
       CellPassesTRexRequest tRexRequest;
       if (request.probePositionGrid != null)
       {
         tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
           request.probePositionGrid,
-          request.filter);
+          request.filter,
+          overrides,
+          liftSettings);
       }
       else
       {
         tRexRequest = new CellPassesTRexRequest(request.ProjectUid.Value,
           request.probePositionLL,
-          request.filter);
+          request.filter,
+          overrides,
+          liftSettings);
       }
 
       return trexCompactionDataProxy.SendDataPostRequest<CellPassesV2Result, CellPassesTRexRequest>(tRexRequest, "/cells/passes", customHeaders);

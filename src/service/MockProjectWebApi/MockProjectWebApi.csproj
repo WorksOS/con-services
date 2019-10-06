@@ -13,6 +13,25 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="build\**" />
+    <Compile Remove="deploy\**" />
+    <Compile Remove="logs\**" />
+    <Compile Remove="newrelic\**" />
+    <Content Remove="build\**" />
+    <Content Remove="deploy\**" />
+    <Content Remove="logs\**" />
+    <Content Remove="newrelic\**" />
+    <EmbeddedResource Remove="build\**" />
+    <EmbeddedResource Remove="deploy\**" />
+    <EmbeddedResource Remove="logs\**" />
+    <EmbeddedResource Remove="newrelic\**" />
+    <None Remove="build\**" />
+    <None Remove="deploy\**" />
+    <None Remove="logs\**" />
+    <None Remove="newrelic\**" />
+  </ItemGroup>
+
  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Routing" Version="2.2.0" />
@@ -24,8 +43,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.2" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
@@ -188,15 +205,10 @@
     <ProjectReference Include="..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
     <ProjectReference Include="..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
-    <ProjectReference Include="..\Filter\src\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj" />
-    <ProjectReference Include="..\Project\src\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
-    <ProjectReference Include="..\Scheduler\src\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\Common\log4netExtensions\src\dll\log4net.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -205,15 +217,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="kestrelsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>

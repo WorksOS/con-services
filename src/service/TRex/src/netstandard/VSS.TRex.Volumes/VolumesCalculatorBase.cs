@@ -21,6 +21,7 @@ using VSS.TRex.Types;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Models;
 using Consts = VSS.TRex.Common.Consts;
 
 
@@ -55,6 +56,11 @@ namespace VSS.TRex.Volumes
         /// The volume computation method to use when calculating volume information
         /// </summary>
         public VolumeComputationType VolumeType = VolumeComputationType.None;
+
+        /// <summary>
+        /// Parameters for lift analysis
+        /// </summary>
+        public ILiftParameters LiftParams { get; set; }
 
         /// <summary>
         ///  Default no-arg constructor
@@ -118,32 +124,18 @@ namespace VSS.TRex.Volumes
         public IDesign RefOriginal { get; set; }
 
         /// <summary>
-        /// The offset for the RefOriginal design if it is a reference surface
-        /// </summary>
-        public double RefOriginalOffset { get; set; }
-
-        /// <summary>
         /// RefDesign references a subset that may be used in the volumes calculations
         /// process. If set, it takes the place of the 'top' filter.
         /// </summary>
         public IDesign RefDesign { get; set; }
 
         /// <summary>
-        /// The offset for the RefOriginal design if it is a reference surface
-        /// </summary>
-        public double RefDesignOffset { get; set; }
-
-        /// <summary>
         /// ActiveDesign is the design surface being used as the comparison surface in the
         /// surface to production data volume calculations. It is assigned from the FRefOriginal
         /// and FRefDesign surfaces depending on the volumes reporting type and configuration.
+        /// It also contains the offset for a reference surface.
         /// </summary>
-        public IDesign ActiveDesign { get; set; }
-
-        /// <summary>
-        /// The offset for the active design if it is a reference surface
-        /// </summary>
-        public double ActiveDesignOffset { get; set; }
+        public IDesignWrapper ActiveDesign { get; set; }
 
         /// <summary>
         /// FromSelectionType and ToSelectionType describe how we mix the two filters
@@ -213,7 +205,7 @@ namespace VSS.TRex.Volumes
             PipeLine.RequestAnalyser.Pipeline = PipeLine;
             PipeLine.RequestAnalyser.WorldExtents.Assign(Extents);
 
-            // PipeLine.LiftBuildSettings := FLiftBuildSettings;
+            PipeLine.LiftParams = LiftParams;
 
             // Construct and assign the filter set into the pipeline
             IFilterSet FilterSet;
@@ -267,13 +259,13 @@ namespace VSS.TRex.Volumes
                 {
                     if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))
                     {
-                        if (ActiveDesign == null || ActiveDesign.DesignDescriptor.IsNull)
+                        if (ActiveDesign == null || ActiveDesign.Design.DesignDescriptor.IsNull)
                         {
                             Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
                             return RequestErrorStatus.NoDesignProvided;
                         }
 
-                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.ID);
+                        DesignSubgridOverlayMap = GetExistenceMaps().GetSingleExistenceMap(SiteModel.ID, ExistenceMaps.Interfaces.Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, ActiveDesign.Design.ID);
 
                         if (DesignSubgridOverlayMap == null)
                             return RequestErrorStatus.NoDesignProvided;
@@ -354,7 +346,7 @@ namespace VSS.TRex.Volumes
                                    ((FPipeLine.OperationNode.NumPendingResultsReceived > 0) or (FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0)) then
                                   SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d): #Progress# - Scanned = %d, Submitted = %d, Processed = %d (with %d pending and %d results outstanding)',
                                                                           [Self.ClassName,
-                                                                           FRequestDescriptor, FPipeline.DataModelID,
+                                                                           FRequestDescriptor, FPipeline.ProjectUid,
                                                                            FPipeLine.SubmissionNode.TotalNumberOfSubgridsScanned,
                                                                            FPipeLine.SubmissionNode.TotalSumbittedSubgridRequests,
                                                                            FPipeLine.OperationNode.TotalOperatedOnSubgrids,
@@ -369,7 +361,7 @@ namespace VSS.TRex.Volumes
                                     if (FPipeLine.OperationNode.NumPendingResultsReceived > 0) or (FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
                                       SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) being aborted as it''s completed event has remained set but still has work to do (%d outstanding subgrids, %d pending results to process) over a sleep epoch',
                                                                             [Self.ClassName,
-                                                                             FRequestDescriptor, FPipeline.DataModelID,
+                                                                             FRequestDescriptor, FPipeline.ProjectUid,
                                                                              FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
                                                                              FPipeLine.OperationNode.NumPendingResultsReceived]), slmcError);
                                     FPipeLine.Abort;
@@ -381,7 +373,7 @@ namespace VSS.TRex.Volumes
                                     if (FPipeLine.OperationNode.NumPendingResultsReceived > 0) or (FPipeLine.OperationNode.OustandingSubgridsToOperateOn > 0) then
                                       SIGLogMessage.PublishNoODS(Self, Format('%s: Pipeline (request %d, model %d) has it''s completed event set but still has work to do (%d outstanding subgrids, %d pending results to process)',
                                                                             [Self.ClassName,
-                                                                             FRequestDescriptor, FPipeline.DataModelID,
+                                                                             FRequestDescriptor, FPipeline.ProjectUid,
                                                                              FPipeLine.OperationNode.OustandingSubgridsToOperateOn,
                                                                              FPipeLine.OperationNode.NumPendingResultsReceived]), slmcDebug);
                                     Sleep(500);

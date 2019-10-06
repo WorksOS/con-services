@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -28,6 +27,7 @@ using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.SiteModels
 {
@@ -62,8 +62,8 @@ namespace VSS.TRex.SiteModels
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModel>();
 
-    private const string kSiteModelXMLFileName = "ProductionDataModel.XML";
-    private const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
+    public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
+    public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
     //private const string kSubGridVersionMapFileName = "SubGridVersionMap";
 
     private const byte VERSION_NUMBER = 1;
@@ -784,19 +784,19 @@ return localVersionMap;
     public BoundingWorldExtent3D GetAdjustedDataModelSpatialExtents(Guid[] SurveyedSurfaceExclusionList)
     {
 // Start with the data model extents
-      BoundingWorldExtent3D SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
+      var SpatialExtents = new BoundingWorldExtent3D(SiteModelExtent);
 
       if ((SurveyedSurfaces?.Count ?? 0) > 0)
       {
 // Iterate over all non-excluded surveyed surfaces and expand the SpatialExtents as necessary
         if (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Length == 0)
         {
-          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+          foreach (var surveyedSurface in SurveyedSurfaces)
             SpatialExtents.Include(surveyedSurface.Extents);
         }
         else
         {
-          foreach (ISurveyedSurface surveyedSurface in SurveyedSurfaces)
+          foreach (var surveyedSurface in SurveyedSurfaces)
           {
             if (SurveyedSurfaceExclusionList.All(x => x != surveyedSurface.ID))
               SpatialExtents.Include(surveyedSurface.Extents);
@@ -874,7 +874,7 @@ return localVersionMap;
               machine.ID));
           }
 
-// where multi events for same design -  want to retain startDate of first
+          // where multi events for same design -  want to retain startDate of first
           if (priorMachineDesignId != machineDesignId)
           {
             priorMachineDesignId = machineDesignId;
@@ -917,7 +917,7 @@ return localVersionMap;
           startStopEvents.GetStateAtIndex(startStopEventIndex - 1, out var startReportingPeriod, out _);
           startStopEvents.GetStateAtIndex(startStopEventIndex, out var endReportingPeriod, out _);
 
-// identify layer changes within a report period which will likely overlap reporting periods.
+          // identify layer changes within a report period which will likely overlap reporting periods.
           var priorLayerId = MachinesTargetValues[machine.InternalSiteModelMachineIndex].LayerIDStateEvents
             .GetValueAtDate(startReportingPeriod, out var layerStateChangeIndex, ushort.MaxValue);
           var priorMachineDesignId = MachinesTargetValues[machine.InternalSiteModelMachineIndex]
@@ -952,7 +952,7 @@ return localVersionMap;
             priorLayerId = nextLayerId;
           }
 
-// event earlier in report period, this covers to end of period
+          // event earlier in report period, this covers to end of period
           if (layerStateChangeIndex == layerEventCount && thisLayerChangeTime < endReportingPeriod)
           {
             var machineDesign = SiteModelMachineDesigns.Locate(priorMachineDesignId);

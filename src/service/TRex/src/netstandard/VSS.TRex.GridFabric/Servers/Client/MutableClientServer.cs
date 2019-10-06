@@ -74,9 +74,10 @@ namespace VSS.TRex.GridFabric.Servers.Client
               "-XX:+UseG1GC"
             },
 
-            JvmMaxMemoryMb = 1 * 1024, // Set max to 1Gb
+            JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB),
+            JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB),
 
-            UserAttributes = new Dictionary<string, object>()
+              UserAttributes = new Dictionary<string, object>()
                         {
                             { "TRexNodeId", TRexNodeID }
                         },
@@ -189,14 +190,14 @@ namespace VSS.TRex.GridFabric.Servers.Client
     }
 
 
-    public override ICache<INonSpatialAffinityKey, byte[]> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetCache<INonSpatialAffinityKey, byte[]>(CacheCfg.Name);
+      return mutableTRexGrid.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg.Name);
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, byte[]> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
     {
-      return mutableTRexGrid.GetCache<ISubGridSpatialAffinityKey, byte[]>(CacheCfg.Name);
+      return mutableTRexGrid.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg.Name);
     }
   }
 }

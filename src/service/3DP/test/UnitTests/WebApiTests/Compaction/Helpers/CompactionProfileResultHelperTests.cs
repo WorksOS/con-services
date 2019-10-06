@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -12,6 +13,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
+using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 {
@@ -23,21 +25,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [ClassInitialize]
     public static void ClassInit(TestContext context)
     {
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
-
-      var serviceCollection = new ServiceCollection();
-      serviceCollection.AddLogging();
-      serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.WebApi.Tests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
 #if RAPTOR
         .AddTransient<IErrorCodesProvider, RaptorResult>()
 #endif
-        ;
-
-      serviceProvider = serviceCollection.BuildServiceProvider();
+        .BuildServiceProvider();
     }
 
 #region FindCutFillElevations tests
@@ -47,7 +43,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void NoProdDataAndNoDesignProfile(string profileType, VolumeCalcType calcType)
     {
-      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -59,11 +55,11 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             }
           }
         };
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+      var slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>();
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
@@ -77,7 +73,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void NoDesignProfileShouldNotChangeProdData(string profileType, VolumeCalcType calcType)
     {
-      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -89,22 +85,22 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint {x = 0, y = float.NaN, y2 = float.NaN},
                 new CompactionDataPoint {x = 1, y = float.NaN, y2 = float.NaN},
-                new CompactionDataPoint {x = 2, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint {x = 2, y = float.NaN, y2 = float.NaN}
               }
             }
           }
         };  
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+      var slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>();
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
-      for (int i = 0; i < 3; i++)
+      for (var i = 0; i < 3; i++)
       {
         Assert.AreEqual(float.NaN, actualPoints[i].y, $"{i}: Wrong y height");
         Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong y2 height");
@@ -117,7 +113,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void CellStationsOutsideDesign(string profileType, VolumeCalcType calcType)
     {
-      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -130,24 +126,24 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
                 new CompactionDataPoint{ x = 0, y = float.NaN, y2 = float.NaN},
                 new CompactionDataPoint{ x = 1, y = float.NaN, y2 = float.NaN},
                 new CompactionDataPoint{ x = 2, y = float.NaN, y2 = float.NaN},
-                new CompactionDataPoint{ x = 3, y = float.NaN, y2 = float.NaN},
+                new CompactionDataPoint{ x = 3, y = float.NaN, y2 = float.NaN}
               }
             }
           }
         };
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+      var slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>
         {
           results = new List<CompactionProfileVertex>
           {
             new CompactionProfileVertex {station = 0.5, elevation = 10},
             new CompactionProfileVertex {station = 1.5, elevation = 20},
-            new CompactionProfileVertex {station = 2.5, elevation = 40},
+            new CompactionProfileVertex {station = 2.5, elevation = 40}
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
@@ -165,7 +161,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void CellStationsMatchDesign(string profileType, VolumeCalcType calcType)
     {
-      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -177,12 +173,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint{ x = 0, y2 = float.NaN},
                 new CompactionDataPoint{ x = 1, y2 = float.NaN},
-                new CompactionDataPoint{ x = 2, y2 = float.NaN},
+                new CompactionDataPoint{ x = 2, y2 = float.NaN}
               }
             }
           }
         };
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+      var slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>
         {
           results = new List<CompactionProfileVertex>
@@ -191,12 +187,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             new CompactionProfileVertex {station = 0.5, elevation = 30},
             new CompactionProfileVertex {station = 1.0, elevation = 20},
             new CompactionProfileVertex {station = 1.5, elevation = 10},
-            new CompactionProfileVertex {station = 2.0, elevation = 40},
+            new CompactionProfileVertex {station = 2.0, elevation = 40}
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
@@ -213,7 +209,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void CellStationsWithNoDesignElevation(string profileType, VolumeCalcType calcType)
     {
-      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -226,12 +222,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
                 new CompactionDataPoint{ x = 0, y2 = float.NaN},
                 new CompactionDataPoint{ x = 1, y2 = float.NaN},
                 new CompactionDataPoint{ x = 2, y2 = float.NaN},
-                new CompactionDataPoint{ x = 3, y2 = float.NaN},
+                new CompactionDataPoint{ x = 3, y2 = float.NaN}
               }
             }
           }
         };
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+      var slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>
         {
           results = new List<CompactionProfileVertex>
@@ -246,7 +242,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, profileType, calcType);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
@@ -261,7 +257,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void WrongProfileTypeShouldNotChangeData()
     {
-      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -273,12 +269,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint{ x = 0, y2 = float.NaN},
                 new CompactionDataPoint{ x = 1, y2 = float.NaN},
-                new CompactionDataPoint{ x = 2, y2 = float.NaN},
+                new CompactionDataPoint{ x = 2, y2 = float.NaN}
               }
             }
           }
         };
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+      var slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>
         {
           results = new List<CompactionProfileVertex>
@@ -287,18 +283,18 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             new CompactionProfileVertex {station = 0.5, elevation = 30},
             new CompactionProfileVertex {station = 1.0, elevation = 20},
             new CompactionProfileVertex {station = 1.5, elevation = 10},
-            new CompactionProfileVertex {station = 2.0, elevation = 40},
+            new CompactionProfileVertex {station = 2.0, elevation = 40}
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.CMV_SUMMARY, VolumeCalcType.GroundToDesign);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
       var actualPoints = slicerProfileResult.results[0].data;
       Assert.AreEqual(3, actualPoints.Count, "Wrong number of profile points");
-      for (int i = 0; i < 3; i++)
+      for (var i = 0; i < 3; i++)
       {
         Assert.AreEqual(float.NaN, actualPoints[i].y2, $"{i}: Wrong cut-fill height");
       }
@@ -307,7 +303,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void GroundToGroundShouldNotChangeData()
     {
-      CompactionProfileResult<CompactionProfileDataResult> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -319,12 +315,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               {
                 new CompactionDataPoint{ x = 0, y = 10 , y2 = 11},
                 new CompactionDataPoint{ x = 1, y = 15, y2 = 17},
-                new CompactionDataPoint{ x = 2, y = 25, y2 = 30},
+                new CompactionDataPoint{ x = 2, y = 25, y2 = 30}
               }
             }
           }
         };
-      CompactionProfileResult<CompactionProfileVertex> slicerDesignResult =
+      var slicerDesignResult =
         new CompactionProfileResult<CompactionProfileVertex>
         {
           results = new List<CompactionProfileVertex>
@@ -333,12 +329,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
             new CompactionProfileVertex {station = 0.5, elevation = 30},
             new CompactionProfileVertex {station = 1.0, elevation = 20},
             new CompactionProfileVertex {station = 1.5, elevation = 10},
-            new CompactionProfileVertex {station = 2.0, elevation = 40},
+            new CompactionProfileVertex {station = 2.0, elevation = 40}
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.FindCutFillElevations(slicerProfileResult, slicerDesignResult, CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.GroundToGround);
 
       Assert.AreEqual(1, slicerProfileResult.results.Count, "Wrong number of profiles");
@@ -359,20 +355,20 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public void RearrangeProductionDataProfileResultWithNull()
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(
-        () => helper.RearrangeProfileResult((CompactionProfileResult<CompactionProfileCell>) null));
+        () => helper.RearrangeProfileResult(null));
     }
 
     [TestMethod]
     public void RearrangeProductionDataProfileResultWithNoProfile()
     {
-      CompactionProfileResult<CompactionProfileCell> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileCell>();
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(() => helper.RearrangeProfileResult(slicerProfileResult));
     }
@@ -380,7 +376,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void RearrangeProductionDataProfileResultSuccess()
     {
-      CompactionProfileResult<CompactionProfileCell> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionProfileCell>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -474,7 +470,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       var result = helper.RearrangeProfileResult(slicerProfileResult);
       Assert.IsNotNull(result);
@@ -486,10 +482,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         CompactionDataPoint.CMV_SUMMARY, CompactionDataPoint.CMV_DETAIL, CompactionDataPoint.CMV_PERCENT_CHANGE, CompactionDataPoint.MDP_SUMMARY, CompactionDataPoint.TEMPERATURE_SUMMARY,
         CompactionDataPoint.TEMPERATURE_DETAIL, CompactionDataPoint.SPEED_SUMMARY, CompactionDataPoint.PASS_COUNT_SUMMARY, CompactionDataPoint.PASS_COUNT_DETAIL, CompactionDataPoint.CUT_FILL
       };
-      int expectedCount = expectedTypes.Length;
+      var expectedCount = expectedTypes.Length;
       Assert.AreEqual(expectedCount, result.results.Count, "Wrong number of profiles");
 
-      for (int i = 0; i < expectedCount; i++)
+      for (var i = 0; i < expectedCount; i++)
       {
         ValidateList(expectedTypes[i], i, slicerProfileResult.results, result.results);
       }
@@ -505,10 +501,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       float? expectedY2 = null;
       float? expectedValue2 = null;
 
-      for (int j = 0; j < expectedList.Count; j++)
+      for (var j = 0; j < expectedList.Count; j++)
       {
-        float expectedHeight = float.NaN;
-        float expectedValue = float.NaN;
+        var expectedHeight = float.NaN;
+        var expectedValue = float.NaN;
         switch (i)
         {
           case 0: //firstPass
@@ -603,15 +599,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public void RearrangeSummaryVolumesProfileResultWithNull()
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger); 
-      var result = helper.RearrangeProfileResult((CompactionProfileResult<CompactionSummaryVolumesProfileCell>)null, VolumeCalcType.None);
+      var helper = new CompactionProfileResultHelper(logger); 
+      var result = helper.RearrangeProfileResult(null, VolumeCalcType.None);
       Assert.IsNull(result);
     }
 
     [TestMethod]
     public void RearrangeSummaryVolumesProfileResultWithJustEndPoints()
     {
-      CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
         {
           results = new List<CompactionSummaryVolumesProfileCell>
@@ -638,7 +634,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       var result = helper.RearrangeProfileResult(slicerProfileResult, VolumeCalcType.GroundToGround);
 
       ValidatePoint(CompactionDataPoint.SUMMARY_VOLUMES, 0, slicerProfileResult.results[0], result.data[0], float.NaN, float.NaN, float.NaN);
@@ -651,7 +647,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(VolumeCalcType.DesignToGround)]
     public void RearrangeSummaryVolumesProfileResultSuccess(VolumeCalcType calcType)
     {
-      CompactionProfileResult<CompactionSummaryVolumesProfileCell> slicerProfileResult =
+      var slicerProfileResult =
         new CompactionProfileResult<CompactionSummaryVolumesProfileCell>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -682,13 +678,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
               lastPassHeight1 = 0.9F,
               lastPassHeight2 = 0.7F,
               designHeight = 0.9F,
-              cutFill = 0.2F,
+              cutFill = 0.2F
             }
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       var result = helper.RearrangeProfileResult(slicerProfileResult, calcType);
       Assert.IsNotNull(result);
@@ -700,10 +696,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     {
       Assert.AreEqual(expectedList.Count, actualResult.data.Count, "Wrong number of points");
 
-      for (int j = 0; j < expectedList.Count; j++)
+      for (var j = 0; j < expectedList.Count; j++)
       {
-        float expectedHeight = float.NaN;
-        float expectedValue = expectedList[j].cutFill;
+        var expectedHeight = float.NaN;
+        var expectedValue = expectedList[j].cutFill;
         float? expectedY2 = float.NaN;
         switch (calcType)
         {
@@ -749,10 +745,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void AllGapsShouldReturnEmptyList(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> result =
+      var result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -793,7 +789,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
@@ -809,8 +805,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void NoRepeatedGapsShouldNotChangeData(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
       var cellTypes = new List<ProfileCellType>
       {
@@ -840,7 +836,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         useY2 ? 1.4F : (float?)null,
         useY2 ? float.NaN : (float?)null
       };
-      CompactionProfileResult<CompactionProfileDataResult> result =
+      var result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -854,7 +850,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      for (int i = 0; i < 6; i++)
+      for (var i = 0; i < 6; i++)
       {
         result.results[0].data.Add(new CompactionDataPoint
         {
@@ -867,12 +863,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       }
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       var item = result.results[0];
       Assert.AreEqual(6, item.data.Count, $"{item.type}: Wrong number of data items");
-      for (int i = 0; i < 6; i++)
+      for (var i = 0; i < 6; i++)
       {
         //First and last points are gaps but also the slicer end points. 
         var expectedCellType = i == 0 || i == 5 ? ProfileCellType.Gap : cellTypes[i];
@@ -887,8 +883,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void NoGapsShouldNotChangeData(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
       var cellTypes = new List<ProfileCellType>
       {
@@ -905,7 +901,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         useY ? 1.2F : float.NaN,
         useY ? 1.5F : float.NaN,
         useY ? 1.3F : float.NaN,
-        useY ? 1.0F : float.NaN,
+        useY ? 1.0F : float.NaN
       };
       var y2Values = new List<float?>
       {
@@ -913,9 +909,9 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         useY2 ? 1.3F : (float?)null,
         useY2 ? 1.6F : (float?)null,
         useY2 ? 1.2F : (float?)null,
-        useY2 ? 1.4F : (float?)null,
+        useY2 ? 1.4F : (float?)null
       };
-      CompactionProfileResult<CompactionProfileDataResult> result =
+      var result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -929,7 +925,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      for (int i = 0; i < 5; i++)
+      for (var i = 0; i < 5; i++)
       {
         result.results[0].data.Add(new CompactionDataPoint
         {
@@ -943,13 +939,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
 
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
         Assert.AreEqual(5, item.data.Count, $"{item.type}: Wrong number of data items");
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
         {
           ValidateItem(i, item.data[i], cellTypes[i], stations[i], yValues[i], y2Values[i]);
         }
@@ -963,8 +959,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void RepeatedGapsShouldBeRemoved(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
       var cellTypes = new List<ProfileCellType>
       {
@@ -1018,7 +1014,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         useY2 ? float.NaN : (float?)null,
         useY2 ? float.NaN : (float?)null
       };
-      CompactionProfileResult<CompactionProfileDataResult> result =
+      var result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -1032,7 +1028,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      for (int i = 0; i < 14; i++)
+      for (var i = 0; i < 14; i++)
       {
         result.results[0].data.Add(new CompactionDataPoint
         {
@@ -1045,14 +1041,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       }
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
         Assert.AreEqual(8, item.data.Count, $"{item.type}: Wrong number of data items");
-        var keptItemIndices = new int[] {0, 3, 4, 5, 8, 9, 10, 13};
-        for (int i = 0; i < 8; i++)
+        var keptItemIndices = new[] {0, 3, 4, 5, 8, 9, 10, 13};
+        for (var i = 0; i < 8; i++)
         {
           //First and last points are gaps but also the slicer end points. Also keep start of last gap as a gap.
           var expectedCellType = i == 0 || i == 6 || i == 7 ? ProfileCellType.Gap : cellTypes[keptItemIndices[i]];
@@ -1064,7 +1060,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void RepeatedGapsForDifferentTypesShouldBeRemoved()
     {
-      CompactionProfileResult<CompactionProfileDataResult> result =
+      var result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -1392,15 +1388,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
                   y2 = 1.6F
                 }
               }
-            },
+            }
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result, VolumeCalcType.DesignToGround);
       Assert.AreEqual(5, result.results.Count, "Wrong number of results");
-      for (int i=0; i<5; i++)
+      for (var i=0; i<5; i++)
       {
         var item = result.results[i];
         switch (i)
@@ -1468,8 +1464,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void RepeatedGapsWithNoDataShouldBeRemoved(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
       var cellTypes = new List<ProfileCellType>
       {
@@ -1512,7 +1508,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         1.7F,
         1.2F
       };
-      CompactionProfileResult<CompactionProfileDataResult> result =
+      var result =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           gridDistanceBetweenProfilePoints = 1.234,
@@ -1526,7 +1522,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           }
         };
 
-      for (int i = 0; i < 7; i++)
+      for (var i = 0; i < 7; i++)
       {
         result.results[0].data.Add(new CompactionDataPoint
         {
@@ -1540,14 +1536,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       }
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.RemoveRepeatedNoData(result, calcType);
       Assert.AreEqual(1, result.results.Count, "Wrong number of results");
       foreach (var item in result.results)
       {
         Assert.AreEqual(4, item.data.Count, $"{item.type}: Wrong number of data items");
-        var keptItemIndices = new int[] { 0, 1, 5, 6 };
-        for (int i = 0; i < 4; i++)
+        var keptItemIndices = new[] { 0, 1, 5, 6 };
+        for (var i = 0; i < 4; i++)
         {
           //Index 1 is a gap due to no data
           var expectedCellType = i == 1 ? ProfileCellType.Gap : cellTypes[keptItemIndices[i]];
@@ -1570,7 +1566,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicerEmptyDataNoAddedMidPoints()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1584,7 +1580,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1595,7 +1591,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicerInOneCellNoAddedMidPoints()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1613,7 +1609,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1626,7 +1622,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicesOneEdgeNoAddedMidPoints()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1645,7 +1641,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1659,7 +1655,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicesTwoEdgesOneAddedMidPoint()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1679,7 +1675,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1710,7 +1706,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicerNoGapsMidPointsBetweenAllEdges()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1731,7 +1727,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1770,7 +1766,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicerWithOneGapNoMidPointInGap()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1791,7 +1787,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1826,7 +1822,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicerWithOnlyAGapNoAddedMidPoints()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1846,7 +1842,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1873,7 +1869,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicerWithTwoGapsNoMidPointInGaps()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1895,7 +1891,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -1934,7 +1930,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void SlicerStartAndEndInGapAddMidPointsCorrectly()
     {
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -1955,7 +1951,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.AddMidPoints(profileResult);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2001,10 +1997,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void SlicerInOneCellNoInterpolation(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2022,7 +2018,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2047,10 +2043,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void SlicesOneEdgeInterpolated(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2069,7 +2065,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2096,10 +2092,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void SlicesTwoEdgesInterpolated(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2120,7 +2116,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2164,10 +2160,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void SlicerWithOneGapInterpolated(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2189,7 +2185,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2238,10 +2234,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void SlicerWithOnlyAGapInterpolated(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2261,7 +2257,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2301,10 +2297,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void SlicerWithTwoGapsInterpolated(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2327,7 +2323,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2380,10 +2376,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public void SlicerStartInGapExtrapolated(string profileType, VolumeCalcType? calcType)
     {
       //Tests the extrapolation special case
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2406,7 +2402,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2458,10 +2454,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [DataRow(CompactionDataPoint.SUMMARY_VOLUMES, VolumeCalcType.DesignToGround)]
     public void SlicerStartAndEndInGapInterpolatedCorrectly(string profileType, VolumeCalcType? calcType)
     {
-      bool useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
-      bool useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
+      var useY = profileType != CompactionDataPoint.SUMMARY_VOLUMES || calcType != VolumeCalcType.DesignToGround;
+      var useY2 = profileType == CompactionDataPoint.SUMMARY_VOLUMES && calcType != VolumeCalcType.GroundToDesign;
 
-      CompactionProfileResult<CompactionProfileDataResult> profileResult =
+      var profileResult =
         new CompactionProfileResult<CompactionProfileDataResult>
         {
           results = new List<CompactionProfileDataResult>
@@ -2477,14 +2473,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
                 new CompactionDataPoint{ cellType = ProfileCellType.Edge, x = 1.0, y = useY ? 200F : float.NaN, y2 = useY2 ? 300F : (float?)null},
                 new CompactionDataPoint{ cellType = ProfileCellType.MidPoint, x = 1.25, y = useY ? 200F : float.NaN, y2 = useY2 ? 300F : (float?)null},
                 new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 1.5, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
-                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 2.0, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null },//this is a gap
+                new CompactionDataPoint{ cellType = ProfileCellType.Gap, x = 2.0, y = float.NaN, y2 = useY2 ? float.NaN : (float?)null }//this is a gap
               }
             }
           }
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
       helper.InterpolateEdges(profileResult, calcType);
 
       Assert.AreEqual(1, profileResult.results.Count, "Wrong number of profiles");
@@ -2535,20 +2531,20 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     public void ConvertDesignProfileResultWithNull()
     {
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(
-        () => helper.ConvertProfileResult((Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>)null));
+        () => helper.ConvertProfileResult(null));
     }
 
     [TestMethod]
     public void ConvertDesignProfileResultWithNoProfile()
     {
-      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults =
+      var slicerProfileResults =
         new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       Assert.ThrowsException<ServiceException>(() => helper.ConvertProfileResult(slicerProfileResults));
     }
@@ -2556,10 +2552,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void ConvertDesignProfileResultSuccess()
     {
-      Guid designUid1 = Guid.NewGuid();
-      Guid designUid2 = Guid.NewGuid();
+      var designUid1 = Guid.NewGuid();
+      var designUid2 = Guid.NewGuid();
 
-      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults =
+      var slicerProfileResults =
         new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
       slicerProfileResults.Add(designUid1, new CompactionProfileResult<CompactionProfileVertex>
       {
@@ -2569,7 +2565,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           new CompactionProfileVertex{station = 1.2, elevation = 0.9F},
           new CompactionProfileVertex{station = 1.7, elevation = 1.3F},
           new CompactionProfileVertex{station = 2.8, elevation = 2.1F},
-          new CompactionProfileVertex{station = 2.9, elevation = float.NaN},
+          new CompactionProfileVertex{station = 2.9, elevation = float.NaN}
         }
       });
       slicerProfileResults.Add(designUid2, new CompactionProfileResult<CompactionProfileVertex>
@@ -2581,19 +2577,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           new CompactionProfileVertex{station = 1.1, elevation = 1.3F},
           new CompactionProfileVertex{station = 2.7, elevation = float.NaN},
           new CompactionProfileVertex{station = 3.8, elevation = 3.4F},
-          new CompactionProfileVertex{station = 4.2, elevation = 2.3F},
+          new CompactionProfileVertex{station = 4.2, elevation = 2.3F}
         }
       });
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       var result = helper.ConvertProfileResult(slicerProfileResults);
       Assert.IsNotNull(result);
       Assert.AreEqual(slicerProfileResults.Values.First().gridDistanceBetweenProfilePoints, result.gridDistanceBetweenProfilePoints,
         "Wrong gridDistanceBetweenProfilePoints");
       Assert.AreEqual(slicerProfileResults.Keys.Count, result.results.Count, "Wrong number of profiles");
-      int i = 0;
+      var i = 0;
       foreach (var item in slicerProfileResults)
       {
         ValidateDesignProfile(item.Key, i, item.Value.results, result.results[i]);
@@ -2604,10 +2600,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void ConvertDesignProfileResultWithEmptyProfile()
     {
-      Guid designUid1 = Guid.NewGuid();
-      Guid designUid2 = Guid.NewGuid();
+      var designUid1 = Guid.NewGuid();
+      var designUid2 = Guid.NewGuid();
 
-      Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>> slicerProfileResults =
+      var slicerProfileResults =
         new Dictionary<Guid, CompactionProfileResult<CompactionProfileVertex>>();
       slicerProfileResults.Add(designUid1, new CompactionProfileResult<CompactionProfileVertex>
       {
@@ -2623,19 +2619,19 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
           new CompactionProfileVertex{station = 1.1, elevation = 1.3F},
           new CompactionProfileVertex{station = 2.7, elevation = float.NaN},
           new CompactionProfileVertex{station = 3.8, elevation = 3.4F},
-          new CompactionProfileVertex{station = 4.2, elevation = 2.3F},
+          new CompactionProfileVertex{station = 4.2, elevation = 2.3F}
         }
       });
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       var result = helper.ConvertProfileResult(slicerProfileResults);
       Assert.IsNotNull(result);
       Assert.AreEqual(12.34, result.gridDistanceBetweenProfilePoints,
         "Wrong gridDistanceBetweenProfilePoints");
       Assert.AreEqual(slicerProfileResults.Keys.Count, result.results.Count, "Wrong number of profiles");
-      int i = 0;
+      var i = 0;
       foreach (var item in slicerProfileResults)
       {
         ValidateDesignProfile(item.Key, i, item.Value.results, result.results[i]);
@@ -2648,7 +2644,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedDesignUid, actualResult.designFileUid, $"{j}: Wrong designUid");
       Assert.IsNotNull(actualResult.data, $"{j}: Should have some data returned");
       Assert.AreEqual(expectedVertices.Count, actualResult.data.Count, $"{j}: Wrong vertex count");
-      for (int i = 0; i < expectedVertices.Count; i++)
+      for (var i = 0; i < expectedVertices.Count; i++)
       {
         Assert.AreEqual(expectedVertices[i].station, actualResult.data[i].station, $"{j}: Wrong station {i}");
         Assert.AreEqual(expectedVertices[i].elevation, actualResult.data[i].elevation, $"{j}: Wrong elevation {i}");
@@ -2661,7 +2657,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void DesignProfileWithSlicerEndPointsPresentShouldNotChange()
     {
-      Guid designUid = Guid.NewGuid();
+      var designUid = Guid.NewGuid();
       var distance = 7.3;
       var v1 = new CompactionProfileVertex {station = 0.0, elevation = 2.1F};
       var v2 = new CompactionProfileVertex { station = 1.1, elevation = 1.3F };
@@ -2677,7 +2673,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         v5
       };
 
-      CompactionProfileResult<CompactionDesignProfileResult> result =
+      var result =
         new CompactionProfileResult<CompactionDesignProfileResult>
         {
           gridDistanceBetweenProfilePoints = distance,
@@ -2692,7 +2688,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       helper.AddSlicerEndPoints(result);
       Assert.AreEqual(distance, result.gridDistanceBetweenProfilePoints,
@@ -2700,7 +2696,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(1, result.results.Count);
       Assert.AreEqual(designUid, result.results[0].designFileUid);
       Assert.AreEqual(expectedVertices.Count, result.results[0].data.Count);
-      for (int i = 0; i < expectedVertices.Count; i++)
+      for (var i = 0; i < expectedVertices.Count; i++)
       {
         Assert.AreEqual(expectedVertices[i].station, result.results[0].data[i].station);
         Assert.AreEqual(expectedVertices[i].elevation, result.results[0].data[i].elevation);
@@ -2710,7 +2706,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void DesignProfileWithoutSlicerEndPointsPresentShouldAddThem()
     {
-      Guid designUid = Guid.NewGuid();
+      var designUid = Guid.NewGuid();
       var distance = 7.3;
       var v1 = new CompactionProfileVertex { station = 0.5, elevation = 2.1F };
       var v2 = new CompactionProfileVertex { station = 1.1, elevation = 1.3F };
@@ -2726,7 +2722,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         v5
       };
 
-      CompactionProfileResult<CompactionDesignProfileResult> result =
+      var result =
         new CompactionProfileResult<CompactionDesignProfileResult>
         {
           gridDistanceBetweenProfilePoints = distance,
@@ -2741,7 +2737,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       helper.AddSlicerEndPoints(result);
       Assert.AreEqual(distance, result.gridDistanceBetweenProfilePoints,
@@ -2751,7 +2747,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
       Assert.AreEqual(expectedVertices.Count+2, result.results[0].data.Count);
       Assert.AreEqual(0, result.results[0].data[0].station);
       Assert.AreEqual(float.NaN, result.results[0].data[0].elevation);
-      for (int i = 1; i < 6; i++)
+      for (var i = 1; i < 6; i++)
       {
         Assert.AreEqual(expectedVertices[i-1].station, result.results[0].data[i].station);
         Assert.AreEqual(expectedVertices[i-1].elevation, result.results[0].data[i].elevation);
@@ -2763,10 +2759,10 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
     [TestMethod]
     public void DesignProfileWithNoPointsShouldNotChange()
     {
-      Guid designUid = Guid.NewGuid();
+      var designUid = Guid.NewGuid();
       var distance = 0;
  
-      CompactionProfileResult<CompactionDesignProfileResult> result =
+      var result =
         new CompactionProfileResult<CompactionDesignProfileResult>
         {
           gridDistanceBetweenProfilePoints = distance,
@@ -2781,7 +2777,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Helpers
         };
 
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      CompactionProfileResultHelper helper = new CompactionProfileResultHelper(logger);
+      var helper = new CompactionProfileResultHelper(logger);
 
       helper.AddSlicerEndPoints(result);
       Assert.AreEqual(distance, result.gridDistanceBetweenProfilePoints,

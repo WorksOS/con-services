@@ -9,9 +9,10 @@ using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
+using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Models.Utilities;
+using VSS.Productivity3D.Productivity3D.Models.Utilities;
 
 namespace VSS.Productivity3D.Models.Models
 {
@@ -202,10 +203,16 @@ namespace VSS.Productivity3D.Models.Models
     public List<MachineDetails> ContributingMachines { get; private set; }
 
     /// <summary>
-    /// A list of surveyed surfaces that have been added to the project which are to be excluded from consideration.
+    /// A list of surveyed surfaces that have been added to the project which are to be excluded from consideration in Raptor.
     /// </summary>
     [JsonProperty(PropertyName = "surveyedSurfaceExclusionList", Required = Required.Default)]
     public List<long> SurveyedSurfaceExclusionList { get; private set; }
+
+    /// <summary>
+    /// A list of surveyed surfaces that have been added to the project which are to be excluded from consideration in TRex.
+    /// </summary>
+    [JsonProperty(PropertyName = "excludedSurveyedSurfaceUids", Required = Required.Default)]
+    public List<Guid> ExcludedSurveyedSurfaceUids { get; private set; }
 
     /// <summary>
     /// The selected cell pass to be used from the cell passes matching a filter is the earliest matching pass if true. If false, or not present the latest cell pass is used.
@@ -341,6 +348,7 @@ namespace VSS.Productivity3D.Models.Models
         !LayerThickness.HasValue &&
         (ContributingMachines == null || ContributingMachines.Count == 0) &&
         (SurveyedSurfaceExclusionList == null || SurveyedSurfaceExclusionList.Count == 0) &&
+        (ExcludedSurveyedSurfaceUids == null || ExcludedSurveyedSurfaceUids.Count == 0) &&
         !ReturnEarliest.HasValue &&
         !GpsAccuracy.HasValue &&
         !GpsAccuracyIsInclusive.HasValue &&
@@ -362,45 +370,45 @@ namespace VSS.Productivity3D.Models.Models
     /// Static constructor.
     /// </summary>
     public static FilterResult CreateFilterObsolete(
-      long? id,
-      Guid? uid,
-      string name,
-      string description,
-      DateTime? startUtc,
-      DateTime? endUtc,
-      long? onMachineDesignId,
-      string onMachineDesignName,
-      List<long> assetIDs,
-      bool? vibeStateOn,
-      bool? compactorDataOnly,
-      ElevationType? elevationType,
-      List<WGSPoint> polygonLL,
-      List<Point> polygonGrid,
-      bool? forwardDirection,
-      DesignDescriptor alignmentFile,
-      double? startStation,
-      double? endStation,
-      double? leftOffset,
-      double? rightOffset,
-      FilterLayerMethod? layerType,
-      DesignDescriptor layerDesignOrAlignmentFile,
-      double? benchElevation,
-      int? layerNumber,
-      double? layerThickness,
-      List<MachineDetails> contributingMachines,
-      List<long> surveyedSurfaceExclusionList,
-      bool? returnEarliest,
-      GPSAccuracy? accuracy,
-      bool? inclusive,
-      bool? bladeOnGround,
-      bool? trackMapping,
-      bool? wheelTracking,
-      DesignDescriptor designFile,
-      AutomaticsType? automaticsType,
-      double? temperatureRangeMin,
-      double? temperatureRangeMax,
-      int? passCountRangeMin,
-      int? passCountRangeMax
+      long? id=null,
+      Guid? uid = null,
+      string name = null,
+      string description = null,
+      DateTime? startUtc = null,
+      DateTime? endUtc = null,
+      long? onMachineDesignId = null,
+      string onMachineDesignName = null,
+      List<long> assetIDs=null,
+      bool? vibeStateOn=null,
+      bool? compactorDataOnly=null,
+      ElevationType? elevationType=null,
+      List<WGSPoint> polygonLL=null,
+      List<Point> polygonGrid=null,
+      bool? forwardDirection=null,
+      DesignDescriptor alignmentFile=null,
+      double? startStation=null,
+      double? endStation=null,
+      double? leftOffset=null,
+      double? rightOffset=null,
+      FilterLayerMethod? layerType=null,
+      DesignDescriptor layerDesignOrAlignmentFile=null,
+      double? benchElevation=null,
+      int? layerNumber=null,
+      double? layerThickness=null,
+      List<MachineDetails> contributingMachines=null,
+      List<long> surveyedSurfaceExclusionList=null,
+      bool? returnEarliest=null,
+      GPSAccuracy? accuracy=null,
+      bool? inclusive=null,
+      bool? bladeOnGround=null,
+      bool? trackMapping=null,
+      bool? wheelTracking=null,
+      DesignDescriptor designFile=null,
+      AutomaticsType? automaticsType=null,
+      double? temperatureRangeMin=null,
+      double? temperatureRangeMax=null,
+      int? passCountRangeMin=null,
+      int? passCountRangeMax=null
     )
     {
       return new FilterResult
@@ -451,13 +459,13 @@ namespace VSS.Productivity3D.Models.Models
     /// Static constructor for use with the CCATileController class.
     /// </summary>
     public static FilterResult CreateFilterForCCATileRequest(
-      DateTime? startUtc,
-      DateTime? endUtc,
-      List<long> assetIDs,
-      List<WGSPoint> polygonLL,
-      FilterLayerMethod? layerType,
-      int? layerNumber,
-      List<MachineDetails> contributingMachines)
+      DateTime? startUtc = null,
+      DateTime? endUtc = null,
+      List<long> assetIDs = null,
+      List<WGSPoint> polygonLL = null,
+      FilterLayerMethod? layerType = null,
+      int? layerNumber = null,
+      List<MachineDetails> contributingMachines = null)
     {
       return new FilterResult
       {
@@ -474,12 +482,13 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Creates a new <see cref="FilterResult"/> specifically for excluding surveyed surfaces only.
     /// </summary>
-    public static FilterResult CreateFilter(List<long> surveyedSurfaceExclusionList)
+    public static FilterResult CreateFilter(List<long> excludedIds, List<Guid> excludedUids)
     {
       return new FilterResult
       {
         isFilterContainsSSOnly = true,
-        SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList
+        SurveyedSurfaceExclusionList = excludedIds,
+        ExcludedSurveyedSurfaceUids = excludedUids
       };
     }
 
@@ -488,42 +497,44 @@ namespace VSS.Productivity3D.Models.Models
     /// </summary>
     public FilterResult
     (
-      Guid? uid,
-      Filter.Abstractions.Models.Filter filter,
-      List<WGSPoint> polygonLL,
-      DesignDescriptor alignmentFile,
-      FilterLayerMethod? layerType,
-      List<long> surveyedSurfaceExclusionList,
-      bool? returnEarliest,
-      DesignDescriptor designFile)
+      Guid? uid = null,
+      Filter.Abstractions.Models.Filter filter = null,
+      List<WGSPoint> polygonLL = null,
+      DesignDescriptor alignmentFile = null,
+      FilterLayerMethod? layerType = null,
+      List<long> surveyedSurfaceExclusionList = null,
+      List<Guid> excludedSurveyedSurfaceUids = null,
+      bool? returnEarliest = null,
+      DesignDescriptor designFile = null)
     {
       Uid = uid;
-      StartUtc = filter.StartUtc;
-      EndUtc = filter.EndUtc;
-      OnMachineDesignId = filter.OnMachineDesignId;
-      OnMachineDesignName = filter.OnMachineDesignName;
-      VibeStateOn = filter.VibeStateOn;
-      ElevationType = filter.ElevationType;
+      StartUtc = filter?.StartUtc;
+      EndUtc = filter?.EndUtc;
+      OnMachineDesignId = filter?.OnMachineDesignId;
+      OnMachineDesignName = filter?.OnMachineDesignName;
+      VibeStateOn = filter?.VibeStateOn;
+      ElevationType = filter?.ElevationType;
       PolygonLL = polygonLL;
-      ForwardDirection = filter.ForwardDirection;
+      ForwardDirection = filter?.ForwardDirection;
       AlignmentFile = alignmentFile;
-      StartStation = filter.StartStation;
-      EndStation = filter.EndStation;
-      LeftOffset = filter.LeftOffset;
-      RightOffset = filter.RightOffset;
+      StartStation = filter?.StartStation;
+      EndStation = filter?.EndStation;
+      LeftOffset = filter?.LeftOffset;
+      RightOffset = filter?.RightOffset;
       LayerType = layerType;
-      LayerNumber = filter.LayerNumber;
-      ContributingMachines = filter.ContributingMachines;
+      LayerNumber = filter?.LayerNumber;
+      ContributingMachines = filter?.ContributingMachines;
       SurveyedSurfaceExclusionList = surveyedSurfaceExclusionList;
+      ExcludedSurveyedSurfaceUids = excludedSurveyedSurfaceUids;
       ReturnEarliest = returnEarliest;
       DesignFile = designFile;
-      DateRangeType = filter.DateRangeType;
-      AsAtDate = filter.AsAtDate;
-      AutomaticsType = filter.AutomaticsType;
-      TemperatureRangeMin = filter.TemperatureRangeMin;
-      TemperatureRangeMax = filter.TemperatureRangeMax;
-      PassCountRangeMin = filter.PassCountRangeMin;
-      PassCountRangeMax = filter.PassCountRangeMax;
+      DateRangeType = filter?.DateRangeType;
+      AsAtDate = filter?.AsAtDate;
+      AutomaticsType = filter?.AutomaticsType;
+      TemperatureRangeMin = filter?.TemperatureRangeMin;
+      TemperatureRangeMax = filter?.TemperatureRangeMax;
+      PassCountRangeMin = filter?.PassCountRangeMin;
+      PassCountRangeMax = filter?.PassCountRangeMax;
     }
 
     /// <summary>
@@ -723,6 +734,31 @@ namespace VSS.Productivity3D.Models.Models
               $"Invalid pass count range filter. Range must be between {ValidationConstants.MIN_PASS_COUNT} and {ValidationConstants.MAX_PASS_COUNT}."));
         }
       }
+
+      if (SurveyedSurfaceExclusionList != null && SurveyedSurfaceExclusionList.Count > 0)
+      {
+        foreach (var id in SurveyedSurfaceExclusionList)
+        {
+          if (id <= 0)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Invalid excluded surveyed surface id {id}"));
+          }
+        }
+      }
+      if (ExcludedSurveyedSurfaceUids != null && ExcludedSurveyedSurfaceUids.Count > 0)
+      {
+        foreach (var uid in ExcludedSurveyedSurfaceUids)
+        {
+          if (uid == Guid.Empty)
+          {
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+                $"Invalid excluded surveyed surface id {uid}"));
+          }
+        }
+      }
     }
 
     #region IEquatable
@@ -759,6 +795,7 @@ namespace VSS.Productivity3D.Models.Models
              LayerThickness.Equals(other.LayerThickness) &&
              ContributingMachines.ScrambledEquals(other.ContributingMachines) &&
              SurveyedSurfaceExclusionList.ScrambledEquals(other.SurveyedSurfaceExclusionList) &&
+             ExcludedSurveyedSurfaceUids.ScrambledEquals(other.ExcludedSurveyedSurfaceUids) &&
              ReturnEarliest.Equals(other.ReturnEarliest) &&
              GpsAccuracy.Equals(other.GpsAccuracy) &&
              GpsAccuracyIsInclusive.Equals(other.GpsAccuracyIsInclusive) &&
@@ -814,6 +851,7 @@ namespace VSS.Productivity3D.Models.Models
         hashCode = GetHashCode(hashCode, GetNullableHashCode(LayerThickness));
         hashCode = GetHashCode(hashCode, GetListHashCode(ContributingMachines));
         hashCode = GetHashCode(hashCode, GetListHashCode(SurveyedSurfaceExclusionList));
+        hashCode = GetHashCode(hashCode, GetListHashCode(ExcludedSurveyedSurfaceUids));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(ReturnEarliest));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(GpsAccuracy));
         hashCode = GetHashCode(hashCode, GetNullableHashCode(GpsAccuracyIsInclusive));

@@ -1,21 +1,12 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Models.Models
 {
   /// <summary>
   /// The request representation used to request Elevation statistics.
   /// </summary>
-  public class ElevationDataRequest : ProjectID
+  public class ElevationDataRequest : TRexBaseRequest
   {
-    /// <summary>
-    /// The filter instance to use in the request.
-    /// Value may be null.
-    /// </summary>
-    [JsonProperty(PropertyName = "filter", Required = Required.Default)]
-    public FilterResult Filter { get; private set; }
-
     /// <summary>
     /// Default private constructor
     /// </summary>
@@ -26,20 +17,17 @@ namespace VSS.Productivity3D.Models.Models
     /// <summary>
     /// Overload constructor with parameters.
     /// </summary>
-    public ElevationDataRequest(Guid? projectUid, FilterResult filter)
+    public ElevationDataRequest(
+      Guid projectUid, 
+      FilterResult filter,
+      OverridingTargets overrides,
+      LiftSettings liftSettings)
     {
       ProjectUid = projectUid;
       Filter = filter;
+      Overrides = overrides;
+      LiftSettings = liftSettings;
     }
 
-    /// <summary>
-    /// Validates all properties
-    /// </summary>
-    public override void Validate()
-    {
-      base.Validate();
-
-      Filter?.Validate();
-    }
   }
 }

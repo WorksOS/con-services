@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using IntegrationTests.UtilityClasses;
 using Newtonsoft.Json;
 using TestUtility;
-using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
@@ -13,7 +15,7 @@ namespace IntegrationTests.WebApiTests
   public class ProjectSettingsAccTests : WebApiTestsBase
   {
     [Fact]
-    public void AddProjectSettingsGoodPath()
+    public async Task AddProjectSettingsGoodPath()
     {
       Msg.Title("Project settings 1", "Add project settings for a standard project");
       var ts = new TestSupport();
@@ -26,14 +28,14 @@ namespace IntegrationTests.WebApiTests
       var customerEventArray = new[] {
         "| TableName | EventDate   | Name              | fk_CustomerTypeID | CustomerUID   |",
        $"| Customer  | 0d+09:00:00 | Projectsettings 1 | 1                 | {customerUid} |"};
-      ts.PublishEventCollection(customerEventArray);
+      await ts.PublishEventCollection(customerEventArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Projectsettings 1 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      |" };
-      ts.PublishEventCollection(projectEventArray);
-      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
       // Now create the settings
       var projectSettings1 = "{ useMachineTargetPassCount: false,customTargetPassCountMinimum: 5,customTargetPassCountMaximum: 7,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 75," +
       "customTargetTemperatureMaximum: 150,useMachineTargetCmv: false,customTargetCmv: 77,useMachineTargetMdp: false,customTargetMdp: 88,useDefaultTargetRangeCmvPercent: false," +
@@ -45,7 +47,7 @@ namespace IntegrationTests.WebApiTests
 
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1, ProjectSettingsType.Targets);
       var configJson1 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var putresponse1 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson1, customerUid.ToString());
+      var putresponse1 = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson1, customerUid.ToString());
       var putobjresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(putresponse1);
 
       var tempSettings = JsonConvert.SerializeObject(putobjresp1.settings).Replace("\"", string.Empty);
@@ -65,7 +67,7 @@ namespace IntegrationTests.WebApiTests
 
       var projSettings2 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings2, ProjectSettingsType.Targets);
       var configJson2 = JsonConvert.SerializeObject(projSettings2, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var putresponse2 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString(), RestClientUtil.ANOTHER_JWT);
+      var putresponse2 = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson2, customerUid.ToString(), RestClient.ANOTHER_JWT);
       var putobjresp2 = JsonConvert.DeserializeObject<ProjectSettingsResult>(putresponse2);
 
       tempSettings = JsonConvert.SerializeObject(putobjresp2.settings).Replace("\"", string.Empty);
@@ -74,9 +76,8 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(projectSettings2, tempSettings);
       Assert.Equal(projectUid, putobjresp2.projectUid);
 
-
       // get call
-      var getresponse1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var getresponse1 = await ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", HttpMethod.Get, null, customerUid.ToString());
       var getobjresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(getresponse1);
 
       tempSettings = JsonConvert.SerializeObject(getobjresp1.settings).Replace("\"", string.Empty);
@@ -87,7 +88,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void AddInvalidProjectSettings()
+    public async Task AddInvalidProjectSettings()
     {
       Msg.Title("Project settings 2", "Add project settings for a standard project with invalid project UID");
       var ts = new TestSupport();
@@ -96,20 +97,20 @@ namespace IntegrationTests.WebApiTests
       var customerEventArray = new[] {
         "| TableName | EventDate   | Name              | fk_CustomerTypeID | CustomerUID   |",
        $"| Customer  | 0d+09:00:00 | Projectsettings 2 | 1                 | {customerUid} |"};
-      ts.PublishEventCollection(customerEventArray);
+      await ts.PublishEventCollection(customerEventArray);
       ts.IsPublishToWebApi = true;
       var projectSettings = "{ Invalid project UID }";
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      var response = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson, customerUid.ToString(), statusCode: HttpStatusCode.BadRequest);
       Assert.True(response == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
       // Try to get the project that doesn't exist
-      var response1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response1 = await ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", HttpMethod.Get, null, customerUid.ToString(), statusCode: HttpStatusCode.BadRequest);
       Assert.True(response1 == "{\"Code\":2001,\"Message\":\"No access to the project for a customer or the project does not exist.\"}", "Actual response different to expected");
     }
 
     [Fact]
-    public void AddProjectSettingsForProjectMonitoringProject()
+    public async Task AddProjectSettingsForProjectMonitoringProject()
     {
       Msg.Title("Project settings 3", "Add project settings for a project monitoring project");
       var ts = new TestSupport();
@@ -129,14 +130,14 @@ namespace IntegrationTests.WebApiTests
        $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
        $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
       };
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectName       | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Projectsettings 3 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      |" };
-      ts.PublishEventCollection(projectEventArray);
-      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
       // Now create the settings
       var projectSettings = "{ useMachineTargetPassCount: false,customTargetPassCountMinimum: 5,customTargetPassCountMaximum: 7,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 75," +
                             "customTargetTemperatureMaximum: 150,useMachineTargetCmv: false,customTargetCmv: 77,useMachineTargetMdp: false,customTargetMdp: 88,useDefaultTargetRangeCmvPercent: false," +
@@ -148,7 +149,7 @@ namespace IntegrationTests.WebApiTests
 
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      var response = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
 
       var tempSettings = JsonConvert.SerializeObject(objresp.settings).Replace("\"", string.Empty);
@@ -157,7 +158,7 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(projectUid, objresp.projectUid);
 
       // get call
-      var response1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response1 = await ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", HttpMethod.Get, null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", string.Empty);
@@ -167,7 +168,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void AddEmptyProjectSettingsForProjectMonitoringProject()
+    public async Task AddEmptyProjectSettingsForProjectMonitoringProject()
     {
       Msg.Title("Project settings 4", "Add project settings for a project monitoring project");
       var ts = new TestSupport();
@@ -187,19 +188,19 @@ namespace IntegrationTests.WebApiTests
        $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
        $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
       };
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectName       | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Projectsettings 4 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      |" };
-      ts.PublishEventCollection(projectEventArray);
-      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
       // Now create the settings
       var projectSettings = string.Empty;
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      var response = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response);
 
       var tempSettings = objresp.settings == null ? string.Empty : JsonConvert.SerializeObject(objresp.settings).Replace("\"", string.Empty);
@@ -208,7 +209,7 @@ namespace IntegrationTests.WebApiTests
       //Assert.Equal(projectUid, objresp.projectUid);
 
       // get call
-      var response1 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response1 = await ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", HttpMethod.Get, null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       tempSettings = objresp1.settings == null ? string.Empty : JsonConvert.SerializeObject(objresp1.settings).Replace("\"", string.Empty);
@@ -218,7 +219,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void AddProjectSettingsThenUpdateThem()
+    public async Task AddProjectSettingsThenUpdateThem()
     {
       Msg.Title("Project settings 5", "Add project settings for a project monitoring project");
       var ts = new TestSupport();
@@ -238,14 +239,14 @@ namespace IntegrationTests.WebApiTests
        $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
        $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
       };
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectName       | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Projectsettings 3 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      |" };
-      ts.PublishEventCollection(projectEventArray);
-      ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
       // Now create the settings
       var projectSettings = "{useMachineTargetPassCount: false,customTargetPassCountMinimum: 5}";
 
@@ -253,7 +254,7 @@ namespace IntegrationTests.WebApiTests
 
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson, customerUid.ToString());
 
       var projectSettings1 = "{customTargetPassCountMaximum: 7,useMachineTargetTemperature: false,customTargetTemperatureMinimum: 75}";
 
@@ -261,7 +262,7 @@ namespace IntegrationTests.WebApiTests
 
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1, ProjectSettingsType.Targets);
       var configJson2 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response1 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());
+      var response1 = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson2, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       var tempSettings = JsonConvert.SerializeObject(objresp.settings).Replace("\"", string.Empty);
@@ -270,7 +271,7 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(projectUid, objresp.projectUid);
 
       // get call
-      var response2 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response2 = await ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", HttpMethod.Get, null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response2);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", string.Empty);
@@ -280,7 +281,7 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public void AddProjectSettingsAndCheckKafkaMessagesConsumed()
+    public async Task AddProjectSettingsAndCheckKafkaMessagesConsumed()
     {
       Msg.Title("Project settings 6", "Add project settings then check kafka messages consumed");
       var ts = new TestSupport();
@@ -300,12 +301,12 @@ namespace IntegrationTests.WebApiTests
        $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
        $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 20               | {startDate} | {endDate}      |               |          |                    |",
       };
-      ts.PublishEventCollection(eventsArray);
+      await ts.PublishEventCollection(eventsArray);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectName       | ProjectType       | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | ",
        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Projectsettings 3 | ProjectMonitoring | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      |" };
-      ts.PublishEventCollection(projectEventArray);
+      await ts.PublishEventCollection(projectEventArray);
       // Now create the settings
       var projectSettings = "{useMachineTargetPassCount: false,customTargetPassCountMinimum: 5}";
 
@@ -313,7 +314,7 @@ namespace IntegrationTests.WebApiTests
 
       var projSettings = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings, ProjectSettingsType.Targets);
       var configJson = JsonConvert.SerializeObject(projSettings, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson, customerUid.ToString());
+      await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson, customerUid.ToString());
 
       MySqlHelper.VerifyTestResultDatabaseRecordCount("ProjectSettings", "fk_ProjectUID", 1, new Guid(projectUid));
       MySqlHelper.VerifyTestResultDatabaseFieldsAreExpected("ProjectSettings", "fk_ProjectUID", "Settings", $"{projectSettings}", new Guid(projectUid));
@@ -324,7 +325,7 @@ namespace IntegrationTests.WebApiTests
 
       var projSettings1 = ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid, projectSettings1, ProjectSettingsType.Targets);
       var configJson2 = JsonConvert.SerializeObject(projSettings1, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var response1 = ts.CallProjectWebApi("api/v4/projectsettings", "PUT", configJson2, customerUid.ToString());
+      var response1 = await ts.CallProjectWebApi("api/v4/projectsettings", HttpMethod.Put, configJson2, customerUid.ToString());
       var objresp = JsonConvert.DeserializeObject<ProjectSettingsResult>(response1);
 
       var tempSettings = JsonConvert.SerializeObject(objresp.settings).Replace("\"", string.Empty);
@@ -332,7 +333,7 @@ namespace IntegrationTests.WebApiTests
       Assert.Equal(projectSettings1, tempSettings);
       Assert.Equal(projectUid, objresp.projectUid);
 
-      var response2 = ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", "GET", null, customerUid.ToString());
+      var response2 = await ts.CallProjectWebApi($"api/v4/projectsettings/{projectUid}", HttpMethod.Get, null, customerUid.ToString());
       var objresp1 = JsonConvert.DeserializeObject<ProjectSettingsResult>(response2);
 
       tempSettings = JsonConvert.SerializeObject(objresp1.settings).Replace("\"", string.Empty);

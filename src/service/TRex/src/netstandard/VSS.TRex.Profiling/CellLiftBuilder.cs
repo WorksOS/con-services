@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
@@ -17,6 +17,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Types.Types;
 
 namespace VSS.TRex.Profiling
 {
@@ -208,7 +209,7 @@ namespace VSS.TRex.Profiling
       if (lift.CCV == CellPassConsts.NullCCV && lift.MDP == CellPassConsts.NullMDP && lift.CCA == CellPassConsts.NullCCA)
         return;
 
-      Cell.CheckLiftCompaction(lift, overrides, /* todo LiftBuildSettings,*/ ProfileTypeRequired);
+      Cell.CheckLiftCompaction(lift, overrides, ProfileTypeRequired);
     }
 
     /// <summary>
@@ -421,35 +422,33 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Determines if the given cell passes the criteria for inclusion in the current lift being constructed.
     /// </summary>
-    /// <param name="pass"></param>
-    /// <returns></returns>
-    private bool IsStillInCurrentLift(FilteredPassData pass)
+    private bool IsStillInCurrentLift(FilteredPassData pass, ILiftParameters liftParameters)
     {
       bool Result = false;
 
       if (FirstCellInLayerProcessing())
         return true;
 
-      if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.MapReset ||
-          Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.AutoMapReset)
+      if (liftParameters.LiftDetectionType == LiftDetectionType.MapReset ||
+          liftParameters.LiftDetectionType == LiftDetectionType.AutoMapReset)
       {
         if ((pass.EventValues.MapReset_PriorDate != Consts.MIN_DATETIME_AS_UTC &&
              pass.EventValues.MapReset_PriorDate > LastMRDate) ||
             (LayerIDOfLastProcessedCellPass != pass.EventValues.LayerID))
           return false;
 
-        if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.MapReset)
+        if (liftParameters.LiftDetectionType == LiftDetectionType.MapReset)
           return true;
       }
 
       // If we haven't hit an explicit Map Reset, optionally check for an auto detected lift
-      if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.MapReset ||
-          Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.AutoMapReset)
+      if (liftParameters.LiftDetectionType == LiftDetectionType.MapReset ||
+          liftParameters.LiftDetectionType == LiftDetectionType.AutoMapReset)
       {
         // We'll force LowerDeadBandBoundary to always be subtracted from the ElevationOfLastProcessedCellPass.
         Result = Range.InRange(pass.FilteredPass.Height,
-          ElevationOfLastProcessedCellPass - Math.Abs(Dummy_LiftBuildSettings.DeadBandLowerBoundary),
-          ElevationOfLastProcessedCellPass + Dummy_LiftBuildSettings.DeadBandUpperBoundary);
+          ElevationOfLastProcessedCellPass - Math.Abs(liftParameters.DeadBandLowerBoundary),
+          ElevationOfLastProcessedCellPass + liftParameters.DeadBandUpperBoundary);
 
         if (Result)
           return true;
@@ -459,8 +458,8 @@ namespace VSS.TRex.Profiling
         {
           double TargetThickness;
 
-          if (Dummy_LiftBuildSettings.OverrideMachineThickness)
-            TargetThickness = Dummy_LiftBuildSettings.OverridingLiftThickness;
+          if (liftParameters.OverrideMachineThickness)
+            TargetThickness = liftParameters.OverridingLiftThickness;
           else
             TargetThickness = pass.TargetValues.TargetLiftThickness;
 
@@ -472,7 +471,7 @@ namespace VSS.TRex.Profiling
       }
 
       // If layer detection is via layer id has the layer id changed
-      if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.Tagfile)
+      if (liftParameters.LiftDetectionType == LiftDetectionType.Tagfile)
       {
         if (pass.EventValues.LayerID == LastLayerID || pass.EventValues.LayerID == CellEvents.NullLayerID)
           return true; // still in same layer
@@ -484,7 +483,7 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Updates tracking state to take into account the state of the last cell pass that was analyzed
     /// </summary>
-    private void UpdateLastPassTrackingVars()
+    private void UpdateLastPassTrackingVars(ILiftParameters liftParameters)
     {
       // If we're not on the first pass over the cell, but the passes for the current lift are empty,
       // then store the elevation of the last pass over the lift we've just finished,
@@ -564,8 +563,8 @@ namespace VSS.TRex.Profiling
       if (CurrentPass.FilteredPass.MachineSpeed != CellPassConsts.NullMachineSpeed)
         LastPassMachineSpeed = CurrentPass.FilteredPass.MachineSpeed;
 
-      if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.MapReset ||
-          Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.AutoMapReset)
+      if (liftParameters.LiftDetectionType == LiftDetectionType.MapReset ||
+          liftParameters.LiftDetectionType == LiftDetectionType.AutoMapReset)
       {
         if (CurrentPass.EventValues.MapReset_PriorDate > LastMRDate)
         {
@@ -576,7 +575,7 @@ namespace VSS.TRex.Profiling
         LayerIDOfLastProcessedCellPass = CurrentPass.EventValues.LayerID;
       }
 
-      if (Dummy_LiftBuildSettings.LiftDetectionType == LiftDetectionType.Tagfile)
+      if (liftParameters.LiftDetectionType == LiftDetectionType.Tagfile)
         LastLayerID = CurrentPass.EventValues.LayerID;
     }
 
@@ -584,22 +583,22 @@ namespace VSS.TRex.Profiling
     /// Determines if the cell pass being analyzed triggers completion of the layer currently being constructed
     /// </summary>
     /// <returns></returns>
-    private bool CheckLayerCompleted()
+    private bool CheckLayerCompleted(ILiftParameters liftParameters)
     {
       bool Result = false;
 
       // If this is the first pass over this cell to process, then we don't know the elevation prior to this first pass.
       if (FirstCellInLayerProcessing())
-        LastPassInPreviousLayerElev = CurrentPass.FilteredPass.Height - Dummy_LiftBuildSettings.FirstPassThickness;
+        LastPassInPreviousLayerElev = CurrentPass.FilteredPass.Height - liftParameters.FirstPassThickness;
 
-      if (!IsStillInCurrentLift(CurrentPass) && !NewLayer &&
-          Dummy_LiftBuildSettings.LiftDetectionType != LiftDetectionType.None)
+      if (!IsStillInCurrentLift(CurrentPass, liftParameters) && !NewLayer &&
+          liftParameters.LiftDetectionType != LiftDetectionType.None)
       {
         AddFinishedLayer();
         Result = true;
       }
 
-      UpdateLastPassTrackingVars();
+      UpdateLastPassTrackingVars(liftParameters);
 
       return Result;
     }
@@ -688,7 +687,7 @@ namespace VSS.TRex.Profiling
     /// Apples the 'elevation type' filter aspect to determine which cell pass of a set of filtered cell passes
     /// in a layer should be used to provide the required attribute 
     /// </summary>
-    private void ApplyElevationTypeFilter()
+    private void ApplyElevationTypeFilter(ILiftParameters liftParameters)
     {
       if (PassFilter == null || !PassFilter.HasElevationTypeFilter)
         return;
@@ -729,7 +728,7 @@ namespace VSS.TRex.Profiling
         if (LayerIndex == Cell.Layers.Count() - 1)
           LastPassIdx = EndPassIdx;
 
-        if (!Dummy_LiftBuildSettings.IncludeSuperseded &&
+        if (!liftParameters.IncludeSuperseded &&
             (Cell.Layers[LayerIndex].Status & LayerStatus.Superseded) != 0)
           continue;
 
@@ -833,7 +832,6 @@ namespace VSS.TRex.Profiling
       int HalfPassCount = 0;
       int PrevIdx = 0;
       DateTime tme = DateTime.MinValue;
-      bool isMinElev;
       int lowPassIdx = Consts.NullLowestPassIdx;
       float lowestHeight = Consts.NullHeight; 
       float hgt;
@@ -990,14 +988,8 @@ namespace VSS.TRex.Profiling
     /// Performs extensive business rule logic analysis to the cell passes in a cell to derive layer breakdown
     /// and summary analytics for the cell
     /// </summary>
-    /// <param name="cell"></param>
-    /// <param name="ClientGrid"></param>
-    /// <param name="AssignmentContext"></param>
-    /// <param name="cellPassIterator"></param>
-    /// <param name="returnIndividualFilteredValueSelection"></param>
-    /// <returns></returns>
     public bool Build(IProfileCell cell,
-      // todo const LiftBuildSettings: TICLiftBuildSettings;
+      ILiftParameters liftParameters,
       IClientLeafSubGrid ClientGrid,
       FilteredValueAssignmentContext AssignmentContext, 
       ISubGridSegmentCellPassIterator cellPassIterator,
@@ -1007,13 +999,13 @@ namespace VSS.TRex.Profiling
       //  Log.LogDebug($"In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}");
 
       bool Result = false;
-      NumCellPassesRemainingToFetch = 1000;
+      NumCellPassesRemainingToFetch = Consts.NumberCellPassesToBeFetched;
 
       if (AssignmentContext != null)
         AssignmentContext.LowestPassIdx = Consts.NullLowestPassIdx; // if LowestPassIdx ends up > -1 then lowestpass is used
 
       FilteredValuePopulationControl.CalculateFlags(ProfileTypeRequired,
-        // todo ... LiftBuildSettings,
+        liftParameters,
         out CompactionSummaryInLiftBuildSettings,
         out WorkInProgressSummaryInLiftBuildSettings,
         out ThicknessInProgressInLiftBuildSettings);
@@ -1041,7 +1033,7 @@ namespace VSS.TRex.Profiling
 
       if (cellPassIterator == null)
       {
-        NumCellPassesRemainingToFetch = 1000; // TODO: = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
+        NumCellPassesRemainingToFetch = Consts.NumberCellPassesToBeFetched; // TODO: = VLPDSvcLocations.VLPDPSNode_MaxCellPassIterationDepth_PassCountDetailAndSummary;
 
         SetCellIterationParameters();
         if (CellPassFastEventLookerUpper != null)
@@ -1155,13 +1147,11 @@ namespace VSS.TRex.Profiling
 
             if (TempFilteredPassFlags[I]) // if valid pass
             {
-              Cell.FilteredPassFlags[Cell.Passes.PassCount - 1] =
-                PassFilter.FilterPass_MachineEvents(ref TempPasses[I]);
+              Cell.FilteredPassFlags[Cell.Passes.PassCount - 1] = PassFilter.FilterPass_MachineEvents(ref TempPasses[I]);
               if (Cell.FilteredPassFlags[Cell.Passes.PassCount - 1])
               {
                 Cell.FilteredPassCount++;
-                if (TempPasses[I].FilteredPass.HalfPass ||
-                    MachineTypeUtilities.IsHalfPassCompactorMachine(TempPasses[I].MachineType))
+                if (TempPasses[I].FilteredPass.HalfPass || MachineTypeUtilities.IsHalfPassCompactorMachine(TempPasses[I].MachineType))
                   Cell.FilteredHalfPassCount++;
                 else
                   Cell.FilteredHalfPassCount += 2; // record as a whole pass
@@ -1182,7 +1172,7 @@ namespace VSS.TRex.Profiling
         // standard fashion
         if (Cell.Passes.PassCount > 0)
         { 
-          for (int I = 0; I < Cell.Passes.PassCount / 2; I++)
+          for (var I = 0; I < Cell.Passes.PassCount / 2; I++)
           {
             TempPass = Cell.Passes.FilteredPassData[I];
 
@@ -1207,10 +1197,7 @@ namespace VSS.TRex.Profiling
         SetCellIterationParameters();
       }
       else
-      {
-        if (Cell.Passes.PassCount > Cell.FilteredPassFlags.Length)
-          Array.Resize(ref Cell.FilteredPassFlags, Cell.Passes.PassCount);
-      }
+        Array.Resize(ref Cell.FilteredPassFlags, Cell.Passes.PassCount);
 
       BeginCellPassIteration();
 
@@ -1222,7 +1209,7 @@ namespace VSS.TRex.Profiling
         // if (Debug_ExtremeLogSwitchF)
         //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: CheckLayerCompleted");
 
-        CheckLayerCompleted(); // closes layer if true
+        CheckLayerCompleted(liftParameters); // closes layer if true
 
         // if (Debug_ExtremeLogSwitchF)
         //   Log.LogDebug("In BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: AddValidatedPassToLayer");
@@ -1262,7 +1249,7 @@ namespace VSS.TRex.Profiling
           Cell.CellMaxSpeed = 0;
 
           // Calculate the superceded and layer thickness information for the computed layers
-          if (Dummy_LiftBuildSettings.IncludeSuperseded == false)
+          if (liftParameters.IncludeSuperseded == false)
             ComputeSupercededStatusForLayers();
 
           for (int I = Cell.Layers.Count() - 1; I >= 0; I--)
@@ -1311,7 +1298,7 @@ namespace VSS.TRex.Profiling
                     if (ClientGrid.GridDataType == GridDataType.CCVPercentChange ||
                         ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue)
                       ((ClientCMVLeafSubGrid) ClientGrid).IgnoresNullValueForLastCMV = false;
-                    FilteredPassIndex++;
+                    FilteredPassIndex--;
                   }
                 }
                 else
@@ -1320,8 +1307,7 @@ namespace VSS.TRex.Profiling
                       ClientGrid.GridDataType == GridDataType.CellProfile ||
                       ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue)
                   {
-                    AssignmentContext.PreviousFilteredValue.FilteredPassData.Assign(
-                      Cell.Passes.FilteredPassData[FilteredPassIndex]);
+                    AssignmentContext.PreviousFilteredValue.FilteredPassData.Assign(Cell.Passes.FilteredPassData[FilteredPassIndex]);
                     FilteredPassIndex--;
                   }
                 }
@@ -1344,17 +1330,17 @@ namespace VSS.TRex.Profiling
 
             if (LayerContainsAFilteredPass) // CCA not catered for here with settings
             {
-              if ((ClientGrid.GridDataType == GridDataType.CCV && Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly &&
-                   Dummy_LiftBuildSettings.CCVSummaryTypes != 0)
+              if ((ClientGrid.GridDataType == GridDataType.CCV && liftParameters.CCVSummarizeTopLayerOnly &&
+                   liftParameters.CCVSummaryTypes != CCVSummaryTypes.None)
                   ||
                   (ClientGrid.GridDataType == GridDataType.MDP && ProfileTypeRequired == GridDataType.MDP &&
-                   Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly && Dummy_LiftBuildSettings.MDPSummaryTypes != 0)
+                   liftParameters.MDPSummarizeTopLayerOnly && liftParameters.MDPSummaryTypes != MDPSummaryTypes.None)
                   ||
                   (ClientGrid.TopLayerOnly)
                   ||
                   ((ClientGrid.GridDataType == GridDataType.CCVPercentChangeIgnoredTopNullValue ||
                     ClientGrid.GridDataType == GridDataType.CCVPercentChange) &&
-                   Dummy_LiftBuildSettings.CCVSummarizeTopLayerOnly))
+                   liftParameters.CCVSummarizeTopLayerOnly))
               {
                 // For CCV and MDP, if we are calculating summary information and the current settings
                 // are to examine only the top most layer, then there is no need to examine any further layers in the stack
@@ -1392,28 +1378,32 @@ namespace VSS.TRex.Profiling
       if (Result)
       {
         // Calculate the superseded and layer thickness information for the computed layers
-        if (Dummy_LiftBuildSettings.IncludeSuperseded == false)
+        if (liftParameters.IncludeSuperseded == false)
           ComputeSupercededStatusForLayers();
 
         // Todo: See NormalizeLayersMaxThickness() in SVOICProfileCell.pas in Raptor source
-        // Cell.NormalizeLayersMaxThickness(Dummy_LiftBuildSettings.FirstPassThickness);
+        // Cell.NormalizeLayersMaxThickness(liftParameters.FirstPassThickness);
 
         // Todo ... layer thickness computation not included in TRex yet
-        // ComputeLayerThicknessForLayers();
+        //ComputeLayerThicknessForLayers();
       }
 
       // if (Debug_ExtremeLogSwitchE)
       //   Log.LogDebug($" BuildLiftsForCell at {Cell.OTGCellX}x{Cell.OTGCellY}: Handling pass count check");
 
-
-      ApplyPassCountRangeFilter();
+      if (PassFilter != null && PassFilter.HasPassCountRangeFilter) // Filter only wants passes that match a range...
+        ApplyPassCountRangeFilter();
 
       // Apply the Elevation Type filter if any...
-      ApplyElevationTypeFilter();
+      ApplyElevationTypeFilter(liftParameters);
 
       // Remove all the non-filtered passes from the passes that were used to perform
       // the layer analysis and make sure indexing is correct in layers
       RemoveNonFilteredPasses(ref AssignmentContext);
+
+      // After removal applied we might have no passes due to passcount filter...
+      if (Result && Cell.Passes.PassCount == 0)
+        Result = false;
 
       // If the caller is really just interested in the pass count of the topmost (most
       // recent) layer in the processed lifts, then count the number of cell passes in
@@ -1437,14 +1427,14 @@ namespace VSS.TRex.Profiling
           }
           else
           {
-            for (int PassIndex = Cell.Layers.Last().StartCellPassIdx;
-              PassIndex < Cell.Layers.Last().EndCellPassIdx;
-              PassIndex++)
-              if (PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[PassIndex], PassFilterAnnex))
+            for (var passIndex = Cell.Layers.Last().StartCellPassIdx;
+              passIndex <= Cell.Layers.Last().EndCellPassIdx;
+              passIndex++)
+              if (PassFilter.FilterPass(ref Cell.Passes.FilteredPassData[passIndex], PassFilterAnnex))
               {
                 FilteredPassCountOfTopMostLayer++;
-                if (Cell.Passes.FilteredPassData[PassIndex].FilteredPass.HalfPass ||
-                    MachineTypeUtilities.IsHalfPassCompactorMachine(Cell.Passes.FilteredPassData[PassIndex].MachineType))
+                if (Cell.Passes.FilteredPassData[passIndex].FilteredPass.HalfPass ||
+                    MachineTypeUtilities.IsHalfPassCompactorMachine(Cell.Passes.FilteredPassData[passIndex].MachineType))
                   FilteredHalfCellPassCountOfTopMostLayer++;
                 else
                   FilteredHalfCellPassCountOfTopMostLayer += 2;

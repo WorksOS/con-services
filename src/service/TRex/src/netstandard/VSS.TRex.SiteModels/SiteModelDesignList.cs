@@ -4,7 +4,6 @@ using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
-using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
@@ -17,7 +16,7 @@ namespace VSS.TRex.SiteModels
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelDesignList>();
 
     private const byte VERSION_NUMBER = 1;
-    private const string LIST_STREAM_NAME = "SiteModelDesigns";
+    public const string LIST_STREAM_NAME = "SiteModelDesigns";
 
     /// <summary>
     /// Indexer supporting locating designs by the design name

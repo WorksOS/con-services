@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Models.Validation;
+using VSS.Productivity3D.Productivity3D.Models.Validation;
 
 namespace VSS.Productivity3D.Models.UnitTests
 {

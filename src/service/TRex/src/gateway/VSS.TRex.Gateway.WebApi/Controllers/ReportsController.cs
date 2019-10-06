@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -61,7 +62,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get stationOffset report data for projectUid: {reportStationOffsetRequest.ProjectUid}"));
       }
 
-      return new FileStreamResult(new MemoryStream(stationOffsetReportDataResult?.GriddedData), "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(stationOffsetReportDataResult.GriddedData), ContentTypeConstants.ApplicationOctetStream);
     }
 
     /// <summary>
@@ -95,7 +96,7 @@ namespace VSS.TRex.Gateway.WebApi.Controllers
         throw new ServiceException(code, new ContractExecutionResult(exCode, $"Failed to get gridded report data for projectUid: {reportGridRequest.ProjectUid}"));
       }
 
-      return new FileStreamResult(new MemoryStream(griddedReportDataResult.GriddedData), "application/octet-stream");
+      return new FileStreamResult(new MemoryStream(griddedReportDataResult.GriddedData), ContentTypeConstants.ApplicationOctetStream);
     }
   }
 }

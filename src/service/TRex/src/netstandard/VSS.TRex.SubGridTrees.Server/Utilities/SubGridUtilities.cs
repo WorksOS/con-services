@@ -76,10 +76,24 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
 
                 if (!subGrid.IsLeafSubGrid() && !lookInCacheOnly && level == forSubGridTree.NumLevels)
                 {
-                    // Create the leaf sub grid that will be used to read in the sub grid from the disk.
-                    // In the case where the sub grid isn't present on the disk this reference will
-                    // be destroyed
-                    subGrid = forSubGridTree.ConstructPathToCell(cellX, cellY, Types.SubGridPathConstructionType.CreateLeaf);
+                    if (forSubGridTree.CachingStrategy == ServerSubGridTreeCachingStrategy.CacheSubGridsInTree)
+                    { 
+                        // Create the leaf sub grid that will be used to read in the sub grid from the disk.
+                        // In the case where the sub grid isn't present on the disk this reference will be destroyed
+                        subGrid = forSubGridTree.ConstructPathToCell(cellX, cellY, Types.SubGridPathConstructionType.CreateLeaf);
+                    }
+                    else if (forSubGridTree.CachingStrategy == ServerSubGridTreeCachingStrategy.CacheSubGridsInIgniteGridCache)
+                    {
+                        // Create the leaf sub grid without constructing elements in the grid to represent it other than the
+                        // path in the tree to the parent of the sub grid.
+                        // Note: Setting owner and parent relationship from the sub grid to the tree in this fashion permits
+                        // business logic in th sub grid that require knowledge of it parent and owner relationships to function
+                        // correctly while not including a reference to the sub grid from the tree.
+                        subGrid = forSubGridTree.CreateNewSubGrid(forSubGridTree.NumLevels);
+                        subGrid.SetAbsoluteOriginPosition(cellX & ~SubGridTreeConsts.SubGridLocalKeyMask, cellY & ~SubGridTreeConsts.SubGridLocalKeyMask);
+                        subGrid.Owner = forSubGridTree;
+                        subGrid.Parent = forSubGridTree.ConstructPathToCell(cellX, cellY, Types.SubGridPathConstructionType.CreatePathToLeaf);
+                    }
 
                     if (subGrid != null)
                     {

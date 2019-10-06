@@ -140,14 +140,15 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
     {
       base.AssignFromCachedPreProcessedClientSubgrid(source);
+      Array.Copy(((ClientHeightAndTimeLeafSubGrid)source).Times, Times, SubGridTreeConsts.CellsPerSubGrid);
 
-      SurveyedSurfaceMap.Assign(((ClientHeightAndTimeLeafSubGrid)source).SurveyedSurfaceMap);
+      //SurveyedSurfaceMap.Assign(((ClientHeightAndTimeLeafSubGrid)source).SurveyedSurfaceMap);
     }
 
 
     /// <summary>
     /// Assign cell information from a previously cached result held in the general sub grid result cache
-    /// using the supplied map to control which cells from the caches sub grid should be copied into this
+    /// using the supplied map to control which cells from the cached sub grid should be copied into this
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
@@ -156,8 +157,11 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.AssignFromCachedPreProcessedClientSubgrid(source, map);
 
-      SurveyedSurfaceMap.Assign(((ClientHeightLeafSubGrid)source).SurveyedSurfaceMap);
-      SurveyedSurfaceMap.AndWith(map);
+      // Copy all of the times as the nullity (or not) of the elevation is the determinator of a value being present
+      Array.Copy(((ClientHeightAndTimeLeafSubGrid)source).Times, Times, SubGridTreeConsts.CellsPerSubGrid);
+
+      //SurveyedSurfaceMap.Assign(((ClientHeightLeafSubGrid)source).SurveyedSurfaceMap);
+      //SurveyedSurfaceMap.AndWith(map);
     }
   }
 }

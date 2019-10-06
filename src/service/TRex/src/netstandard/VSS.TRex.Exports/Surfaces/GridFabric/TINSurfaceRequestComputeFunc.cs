@@ -2,6 +2,7 @@
 using System.Reflection;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
+using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Designs.TTM;
 using VSS.TRex.Exports.Surfaces.Executors;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -38,11 +39,11 @@ namespace VSS.TRex.Exports.Surfaces.GridFabric
 
         Log.LogInformation($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        var request = new TINSurfaceExportExecutor(arg.ProjectID, arg.Filters, arg.Tolerance, arg.TRexNodeID);
+        var request = new TINSurfaceExportExecutor(arg.ProjectID, arg.Filters, arg.Tolerance, arg.TRexNodeID, arg.LiftParams);
 
-        Log.LogInformation("Executing request.Execute()");
+        Log.LogInformation("Executing request.ExecuteAsync()");
 
-        if (!request.ExecuteAsync().Result)
+        if (!request.ExecuteAsync().WaitAndUnwrapException())
           Log.LogError("Request execution failed");
 
         TINSurfaceResult result = new TINSurfaceResult();

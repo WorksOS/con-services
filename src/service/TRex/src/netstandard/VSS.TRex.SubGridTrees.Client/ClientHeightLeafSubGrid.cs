@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
-using Org.BouncyCastle.Utilities;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
@@ -22,7 +21,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Surveyed surface map records which cells hold cell pass heights that were derived
     /// from a surveyed surface
     /// </summary>
-    public readonly SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    /// public readonly SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
 
     /// <summary>
     /// Initialise the null cell values for the client sub grid
@@ -69,7 +68,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       Buffer.BlockCopy(heightAndTimeResults.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
 
-      SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
+      // SurveyedSurfaceMap.Assign(heightAndTimeResults.SurveyedSurfaceMap);
     }
 
     /// <summary>
@@ -82,7 +81,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       Buffer.BlockCopy(heightLeaf.Cells, 0, Cells, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float));
 
-      SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
+      //SurveyedSurfaceMap.Assign(heightLeaf.SurveyedSurfaceMap);
     }
 
 
@@ -145,7 +144,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Clear();
 
-      SurveyedSurfaceMap.Clear();
+      //SurveyedSurfaceMap.Clear();
     }
 
     /*
@@ -189,7 +188,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer);
 
-      SurveyedSurfaceMap.Write(writer);
+      //SurveyedSurfaceMap.Write(writer);
 
       const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
@@ -215,7 +214,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader);
 
-      SurveyedSurfaceMap.Read(reader);
+      //SurveyedSurfaceMap.Read(reader);
 
       const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
@@ -243,13 +242,17 @@ namespace VSS.TRex.SubGridTrees.Client
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() + 
-             SurveyedSurfaceMap.IndicativeSizeInBytes() +
+             //SurveyedSurfaceMap.IndicativeSizeInBytes() +
              SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
     }
 
-    public void DumpToLog()
+    /// <summary>
+    /// Dumps Height values from sub grid to the log
+    /// </summary>
+    /// <param name="title"></param>
+    public override void DumpToLog(string title)
     {
-      base.DumpToLog();
+      base.DumpToLog(title);
     }
   }
 }

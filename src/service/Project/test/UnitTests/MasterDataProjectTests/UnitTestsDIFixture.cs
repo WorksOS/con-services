@@ -9,8 +9,8 @@ using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
@@ -23,7 +23,7 @@ namespace VSS.MasterData.ProjectTests
   {
     public IServiceProvider ServiceProvider;
     public string KafkaTopicName;
-    
+
     protected IErrorCodesProvider ProjectErrorCodesProvider;
     protected IServiceExceptionHandler ServiceExceptionHandler;
     public ILogger Log;
@@ -41,7 +41,9 @@ namespace VSS.MasterData.ProjectTests
         .AddTransient<IProjectRepository, ProjectRepository>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-        .AddTransient<IRaptorProxy, RaptorProxy>()
+        .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
+        .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
+        .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
         .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
@@ -50,7 +52,7 @@ namespace VSS.MasterData.ProjectTests
                        ServiceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
       ProjectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      
+
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();
     }
 

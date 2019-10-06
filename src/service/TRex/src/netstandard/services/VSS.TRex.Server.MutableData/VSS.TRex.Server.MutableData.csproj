@@ -22,7 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj" />
-    <ProjectReference Include="..\..\..\..\..\TagFileAuth\src\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\..\..\TagFileAuth\Clients\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.Common\VSS.TRex.Common.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.CoordinateSystems\VSS.TRex.CoordinateSystems.csproj" />
@@ -40,7 +40,6 @@
     <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces.Interfaces\VSS.TRex.SurveyedSurfaces.Interfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SurveyedSurfaces\VSS.TRex.SurveyedSurfaces.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
-    <ProjectReference Include="..\..\VSS.TRex\VSS.TRex.csproj" />
   </ItemGroup>
 
 

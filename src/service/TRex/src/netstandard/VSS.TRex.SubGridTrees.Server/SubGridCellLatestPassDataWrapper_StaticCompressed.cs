@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Compression;
 using VSS.TRex.IO;

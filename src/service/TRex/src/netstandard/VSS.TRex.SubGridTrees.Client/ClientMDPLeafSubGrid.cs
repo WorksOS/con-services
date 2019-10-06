@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
@@ -93,7 +93,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
       IProfileLayers layers = ((IProfileCell) context.CellProfile).Layers;
 
-      if (Dummy_LiftBuildSettings.MDPSummarizeTopLayerOnly)
+      if (context.LiftParams.MDPSummarizeTopLayerOnly)
       {
         for (var i = layers.Count() - 1; i >= 0; i--)
         {

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
-using VSS.TRex.Common.CellPasses;
+using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Models;
@@ -320,15 +320,12 @@ namespace VSS.TRex.Profiling
     /// <summary>
     /// Checks to see if compaction as measured by CCV/MDP or CCA has met or not the compaction metrics
     /// </summary>
-    /// <param name="layer"></param>
-    /// <param name="overrides"></param>
-    /// <param name="gridDataType"></param>
-    public void CheckLiftCompaction(ProfileLayer layer, /*todo const LiftBuildSettings :TICLiftBuildSettings; */
+    public void CheckLiftCompaction(ProfileLayer layer, 
       IOverrideParameters overrides,
       GridDataType gridDataType)
     {
       // CCA tracking vars
-      int Tolerance = Dummy_LiftBuildSettings.CCATolerance;
+      int Tolerance = 0; // How many extra passes is OK before over-compaction is set
       bool TargetMeet = false;
       int ValidCCAPasses = 0;
 

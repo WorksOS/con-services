@@ -12,7 +12,6 @@ using VSS.TRex.DI;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common.Utilities;
@@ -40,7 +39,7 @@ namespace VSS.TRex.Tests.Exports.CSV
         csvExportUserPreference, new List<CSVExportMappedMachine>(), false, false
       ) { TRexNodeID = Guid.NewGuid().ToString() };
 
-      var dataRows = new List<string>() { "string one", "string two" };
+      var dataRows = new List<string> { "string one", "string two" };
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
@@ -316,9 +315,11 @@ namespace VSS.TRex.Tests.Exports.CSV
         CoordType.Northeast, OutputTypes.VedaFinalPass,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), true, true
       )
-      { TRexNodeID = Guid.NewGuid().ToString() };
+      {
+        TRexNodeID = Guid.NewGuid().ToString()
+      };
 
-      var dataRows = new List<string>() { "string one", "string two" };
+      var dataRows = new List<string> { "string one", "string two" };
 
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.UploadToBucket(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()));
@@ -366,7 +367,7 @@ namespace VSS.TRex.Tests.Exports.CSV
     {
       var projectUid = Guid.NewGuid();
 
-      var userPreferences = new UserPreferences() { TemperatureUnits = (int)TemperatureUnitEnum.Fahrenheit };
+      var userPreferences = new UserPreferences { TemperatureUnits = (int)TemperatureUnitEnum.Fahrenheit };
       var csvExportUserPreference = AutoMapperUtility.Automapper.Map<CSVExportUserPreferences>(userPreferences);
 
       var requestArgument = new CSVExportRequestArgument
@@ -375,7 +376,9 @@ namespace VSS.TRex.Tests.Exports.CSV
         CoordType.Northeast, OutputTypes.VedaFinalPass,
         csvExportUserPreference, new List<CSVExportMappedMachine>(), true, true
       )
-      { TRexNodeID = Guid.NewGuid().ToString() };
+      {
+        TRexNodeID = Guid.NewGuid().ToString()
+      };
 
       var dataRows = new List<string>(70000);
       for (int i = 0; i < 70000; i++)
@@ -423,6 +426,5 @@ namespace VSS.TRex.Tests.Exports.CSV
       if (Directory.Exists(projectDir))
         Directory.Delete(projectDir, true);
     }
-
   }
 }

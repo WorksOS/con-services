@@ -7,10 +7,14 @@ using VLPDDecls;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
+using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Report.Executors
@@ -41,12 +45,13 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
         {
 #endif
           var cmvSummaryRequest = new CMVSummaryRequest(
-            request.ProjectUid,
+            request.ProjectUid.Value,
             request.Filter,
             request.CmvSettings.CmvTarget,
             request.CmvSettings.OverrideTargetCMV,
             request.CmvSettings.MaxCMVPercent,
-            request.CmvSettings.MinCMVPercent);
+            request.CmvSettings.MinCMVPercent,
+            AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
 
           return await trexCompactionDataProxy.SendDataPostRequest<CMVSummaryResult, CMVSummaryRequest>(cmvSummaryRequest, "/cmv/summary", customHeaders);
 #if RAPTOR
@@ -108,9 +113,5 @@ namespace VSS.Productivity3D.WebApi.Models.Report.Executors
     }
 #endif
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

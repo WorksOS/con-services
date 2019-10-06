@@ -61,12 +61,13 @@ namespace VSS.Map3D.TMS.Controllers
     /// <param name="formatExtension"></param>
     /// <returns></returns>
     [HttpGet("trex/1.0/{z}/{x}/{y}.{formatExtension}")]
-    public async Task<IActionResult> GetStaticTile(int x, int y, int z, string formatExtension)
+    public async Task<IActionResult> GetStaticTile(int x, int y, int z, string formatExtension, [FromQuery] Guid projectUid, [FromQuery] Guid filterUid)
     {
       // todo for now default values. these will be passed in eventually
       var testDataPath = _configuration["TestDataPath"];
 
-      Guid projectId;
+      Guid projectId = projectUid;
+      Guid filterid  = filterUid;
       bool isValid = Guid.TryParse(_configuration["DefaultProjectUid"], out projectId);
       if (!isValid)
         return NotFound(); // todo

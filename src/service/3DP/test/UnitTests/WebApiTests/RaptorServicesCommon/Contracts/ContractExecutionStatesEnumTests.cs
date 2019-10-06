@@ -1,9 +1,10 @@
-﻿#if RAPTOR
-using DesignProfilerDecls;
-#endif
+﻿
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
+#if RAPTOR
+using DesignProfilerDecls;
+#endif
 
 namespace VSS.Productivity3D.WebApiTests.RaptorServicesCommon.Contracts
 {

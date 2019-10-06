@@ -13,11 +13,11 @@ using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
@@ -36,10 +36,11 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Initializes a new instance of the <see cref="BoundaryController"/> class.
     /// </summary>
     public BoundaryController(IConfigurationStore configStore, ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IRaptorProxy raptorProxy, IAssetResolverProxy assetResolverProxy, IRepository<IGeofenceEvent> geofenceRepo,
+      IServiceExceptionHandler serviceExceptionHandler, IProjectProxy projectProxy,
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
+      IRepository<IGeofenceEvent> geofenceRepo,
       IKafka producer, IRepository<IProjectEvent> projectRepo)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, raptorProxy, assetResolverProxy, producer, "IBoundaryEvent")
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, producer, "IBoundaryEvent")
     {
       Log = logger.CreateLogger<BoundaryController>();
       _geofenceRepository = geofenceRepo as GeofenceRepository;
@@ -70,7 +71,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.SendKafkaMessages = false;
 
       var getResult = await BoundaryHelper.GetProjectBoundaries(
-        Log, ServiceExceptionHandler, 
+        Log, ServiceExceptionHandler,
         projectUid, _projectRepository, _geofenceRepository).ConfigureAwait(false);
       if (getResult.GeofenceData.Any(g => request.Name.Equals(g.GeofenceName, StringComparison.OrdinalIgnoreCase)))
       {
@@ -78,8 +79,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       }
 
       var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger,
-        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer,
-        KafkaTopicName);
+        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer, kafkaTopicName: KafkaTopicName);
       var result = await executor.ProcessAsync(requestFull) as GeofenceDataSingleResult;
 
       Log.LogInformation(
@@ -108,8 +108,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.SendKafkaMessages = false;
 
       var executor = RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger,
-        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer,
-        KafkaTopicName);
+        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer, kafkaTopicName: KafkaTopicName);
 
       var result = await executor.ProcessAsync(requestFull);
 
@@ -125,7 +124,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [Route("api/v1/boundaries/{ProjectUid}")]
     [HttpGet]
     public async Task<GeofenceDataListResult> GetProjectBoundaries(
-      string projectUid, 
+      string projectUid,
       [FromServices] IGeofenceProxy geofenceProxy,
       [FromServices] IUnifiedProductivityProxy unifiedProductivityProxy)
     {
@@ -142,8 +141,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler,
-        _geofenceRepository, _projectRepository, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, 
-        KafkaTopicName, geofenceProxy:geofenceProxy, unifiedProductivityProxy: unifiedProductivityProxy);
+        _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer,
+        kafkaTopicName: KafkaTopicName, geofenceProxy: geofenceProxy, unifiedProductivityProxy: unifiedProductivityProxy);
 
       var result = await executor.ProcessAsync(requestFull);
 
@@ -175,7 +174,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<GetBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler,
-        _geofenceRepository, _projectRepository, ProjectProxy, RaptorProxy, AssetResolverProxy, Producer, KafkaTopicName);
+        _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer, kafkaTopicName: KafkaTopicName);
 
       var result = await executor.ProcessAsync(requestFull);
 
@@ -183,6 +182,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         $"{ToString()}.GetProjectBoundary Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");
       return result as GeofenceDataSingleResult;
     }
-    
+
   }
 }

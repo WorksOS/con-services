@@ -24,15 +24,12 @@ service:
   type: ClusterIP
 
 connectedSiteGateway:
+  serviceDiscoveryName: trex-service-connectedsite
   replicaCount: 1
   resources: 
     requests:
       cpu: 300m
       memory: 512Mi
-  environment:
-    tpaasAppToken: "R1doOVJad29Wa19lT1dpUFJkSlhGZWk5YmJvYTozMndPT0VoZ2luVDdrSjY0RTVHal9ZSGVqZ1Fh"
-    tpaasAuthUrl: "https://identity-stg.trimble.com/i/oauth2/token"
-    connectedSiteUrl: "https://api-stg.trimble.com/t/trimble.com/cws/connectedsite/"
 
 nodeSelector: {}
 

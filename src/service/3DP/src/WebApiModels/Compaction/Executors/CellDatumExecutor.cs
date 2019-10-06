@@ -52,7 +52,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       var trexRequest = new CellDatumTRexRequest(request.ProjectUid.Value, request.DisplayMode, request.LLPoint,
         request.GridPoint, request.Filter, request.Design?.FileUid, request.Design?.Offset, 
-        AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings));
+        AutoMapperUtility.Automapper.Map<OverridingTargets>(request.LiftBuildSettings),
+        AutoMapperUtility.Automapper.Map<LiftSettings>(request.LiftBuildSettings));
       return await trexCompactionDataProxy.SendDataPostRequest<CompactionCellDatumResult, CellDatumTRexRequest>(trexRequest, "/cells/datum", customHeaders);
     }
 #if RAPTOR
@@ -83,9 +84,5 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     }
 #endif
 
-    protected override ContractExecutionResult ProcessEx<T>(T item)
-    {
-      throw new NotImplementedException("Use the asynchronous form of this method");
-    }
   }
 }

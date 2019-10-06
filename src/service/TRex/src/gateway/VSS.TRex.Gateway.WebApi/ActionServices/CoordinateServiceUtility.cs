@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Models.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;

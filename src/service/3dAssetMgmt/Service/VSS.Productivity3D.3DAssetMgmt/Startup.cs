@@ -19,24 +19,28 @@ using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.AssetMgmt3D
 {
+  /// <summary>
+  /// Application startup class.
+  /// </summary>
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    /// <inheritdoc />
     public override string ServiceName => "3D Asset Management API";
 
+    /// <inheritdoc />
     public override string ServiceDescription => "A service to match 3D assets with telematics and manage legacy asset identifiers in 3D";
 
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       services.AddMvc();
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IProjectProxy, ProjectV4ServiceDiscoveryProxy>();
+      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
@@ -57,6 +61,7 @@ namespace VSS.Productivity3D.AssetMgmt3D
       });
     }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<AssetMgmt3DAuthentication>();

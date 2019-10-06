@@ -21,11 +21,12 @@ using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
-  ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
+  ///   Represents abstract container for all request executors. Uses abstract factory pattern to separate executor logic
   ///   from controller logic for testability and possible executor versioning.
   /// </summary>
   public abstract class RequestExecutorContainer
@@ -60,11 +61,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// Gets or sets the Kafka topic.
     /// </summary>
     protected string kafkaTopicName;
-    
+
     /// <summary>
-    /// Interface to 3dp service validation
+    /// Interfaces to Productivity3d
     /// </summary>
-    protected IRaptorProxy raptorProxy;
+    protected IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord;
+
+    protected IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification;
+
+    protected IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction;
 
     /// <summary>
     /// 
@@ -187,12 +192,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
       IKafka producer = null, string kafkaTopicName = null,
-      IRaptorProxy raptorProxy = null, ISubscriptionProxy subscriptionProxy = null,
-      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, 
-      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, 
-      ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null, 
-      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, 
-      IDataOceanClient dataOceanClient= null, ITPaaSApplicationAuthentication authn = null, 
+      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
+      ISubscriptionProxy subscriptionProxy = null,
+      ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
+      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
+      ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null,
+      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null,
+      IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null)
     {
       log = logger;
@@ -204,7 +210,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.customHeaders = headers;
       this.producer = producer;
       this.kafkaTopicName = kafkaTopicName;
-      this.raptorProxy = raptorProxy;
+      this.productivity3dV1ProxyCoord = productivity3dV1ProxyCoord;
+      this.productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
+      this.productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
       this.subscriptionProxy = subscriptionProxy;
       this.persistantTransferProxy = persistantTransferProxy;
       this.filterServiceProxy = filterServiceProxy;

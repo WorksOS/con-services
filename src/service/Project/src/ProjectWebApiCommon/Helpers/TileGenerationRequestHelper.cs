@@ -1,6 +1,4 @@
 ﻿using System;
-using VSS.Common.Abstractions.Extensions;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
@@ -25,7 +23,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       switch (importedFileType)
       {
         case ImportedFileType.GeoTiff:
-          fileName = fileName.IncludeSurveyedUtcInName(surveyedUtc.Value);
           runParams = new TileGenerationRequest();
           jobUid = GeoTiffTileGenerationJob.VSSJOB_UID;
           break;

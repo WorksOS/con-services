@@ -34,7 +34,10 @@ namespace VSS.MasterData.Proxies
     public Task<AssetSummary> GetAssetSummary(string assetUid, IDictionary<string, string> customHeaders = null)
     {
       return GetMasterDataItemServiceDiscovery<AssetSummary>("details/summary", assetUid, null,
-        customHeaders, new Dictionary<string, string> { { "assetUid", assetUid },{"date",DateTime.UtcNow.ToString("M/d/yy")} });
+        customHeaders, 
+        new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>("assetUid", assetUid),
+          new KeyValuePair<string, string>( "date",DateTime.UtcNow.ToString("M/d/yy"))
+        });
     }
   }
   
