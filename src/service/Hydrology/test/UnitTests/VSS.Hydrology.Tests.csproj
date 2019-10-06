@@ -91,6 +91,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
     <ProjectReference Include="..\..\Service\WebApiCommon\VSS.Hydrology.WebApi.Common.csproj" />
   </ItemGroup>
 

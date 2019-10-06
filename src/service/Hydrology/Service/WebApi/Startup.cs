@@ -10,6 +10,7 @@ using VSS.Hydrology.WebApi.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
+using Microsoft.Extensions.Configuration;
 #if NET_4_7
 using Morph.Services.Core.Interfaces;
 #endif
@@ -27,9 +28,21 @@ namespace VSS.Hydrology.WebApi
     /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
+    /// <summary> Gets the default configuration object. </summary>
+    public IConfigurationRoot ConfigurationRoot { get; }
+
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
+    public Startup(IHostingEnvironment env)
+    {
+      var builder = new ConfigurationBuilder()
+          .SetBasePath(env.ContentRootPath)
+          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+      builder.AddEnvironmentVariables();
+      ConfigurationRoot = builder.Build();
+
+    }
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)

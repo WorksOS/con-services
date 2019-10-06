@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Morph.Services.Core.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Hydrology.WebApi.Common.Executors
@@ -18,7 +18,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     public static TExecutor Build<TExecutor>(
       ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
-      ILandLeveling landLeveling = null, IRaptorProxy raptorProxy = null
+      ILandLeveling landLeveling = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null
       )
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -33,7 +33,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       executor.Initialise(
         log, configStore, serviceExceptionHandler, 
         customerUid, userId, userEmailAddress, headers,
-        landLeveling, raptorProxy
+        landLeveling, productivity3dV2ProxyCompaction
         );
 
       return executor;

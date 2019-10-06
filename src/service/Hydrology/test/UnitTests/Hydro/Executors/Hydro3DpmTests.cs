@@ -11,6 +11,7 @@ using VSS.Common.Exceptions;
 using VSS.Hydrology.WebApi.Abstractions.Models;
 using VSS.Hydrology.WebApi.Common.Helpers;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 
 namespace VSS.Hydrology.Tests.Hydro.Executors
 {
@@ -29,13 +30,12 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
 
       var ttmZip = new FileStream(TTMZippedFile, FileMode.Open);
       var fileResult = new FileStreamResult(ttmZip, ContentTypeConstants.ApplicationZip);
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
-          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>(), null))
+      var productivity3dProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid?>(), It.IsAny<int?>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(fileResult.FileStream);
 
       var currentGroundTTMStream = await HydroRequestHelperCurrentGround.GetCurrentGround3Dp(request, Log,
-        ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object);
+        ServiceExceptionHandler, new Dictionary<string, string>(), productivity3dProxy.Object);
 
       var ttmFile = new FileStream(TTMUnzippedFile, FileMode.Open);
       
@@ -54,13 +54,12 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
 
       var ttmUnZippedFile = new FileStream(TTMUnzippedFile, FileMode.Open);
       var fileResult = new FileStreamResult(ttmUnZippedFile, ContentTypeConstants.ApplicationZip);
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
-          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>(), null))
+      var productivity3dProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid?>(), It.IsAny<int?>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(fileResult.FileStream);
 
       var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await HydroRequestHelperCurrentGround.GetCurrentGround3Dp(request, Log,
-       ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object));
+       ServiceExceptionHandler, new Dictionary<string, string>(), productivity3dProxy.Object));
 
       Assert.AreEqual(HttpStatusCode.InternalServerError, ex.Result.Code);
       Assert.AreEqual(2027, ex.Result.GetResult.Code);
@@ -75,13 +74,12 @@ namespace VSS.Hydrology.Tests.Hydro.Executors
 
       var ttmNoTTMFileZipped = new FileStream(TTMnoTTMFile, FileMode.Open);
       var fileResult = new FileStreamResult(ttmNoTTMFileZipped, ContentTypeConstants.ApplicationZip);
-      var raptorProxy = new Mock<IRaptorProxy>();
-      raptorProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid>(),
-          It.IsAny<IDictionary<string, string>>(), It.IsAny<bool>(), null))
+      var productivity3dProxy = new Mock<IProductivity3dV2ProxyCompaction>();
+      productivity3dProxy.Setup(rp => rp.GetExportSurface(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<Guid?>(), It.IsAny<int?>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(fileResult.FileStream);
 
       var ex = Assert.ThrowsExceptionAsync<ServiceException>(async () => await HydroRequestHelperCurrentGround.GetCurrentGround3Dp(request, Log,
-        ServiceExceptionHandler, new Dictionary<string, string>(), raptorProxy.Object));
+        ServiceExceptionHandler, new Dictionary<string, string>(), productivity3dProxy.Object));
 
       Assert.AreEqual(HttpStatusCode.InternalServerError, ex.Result.Code);
       Assert.AreEqual(2026, ex.Result.GetResult.Code);

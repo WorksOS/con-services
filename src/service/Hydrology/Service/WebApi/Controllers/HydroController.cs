@@ -13,7 +13,7 @@ using VSS.Hydrology.WebApi.Abstractions.Models.ResultHandling;
 using VSS.Hydrology.WebApi.Common.Executors;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 
@@ -27,9 +27,9 @@ namespace VSS.Hydrology.WebApi.Controllers
     /// <summary>
     /// Gets the service exception handler.
     /// </summary>
-    private IRaptorProxy raptorProxy;
+    private IProductivity3dV2ProxyCompaction productivity3DProxy;
 
-    private IRaptorProxy RaptorProxy => raptorProxy ?? (raptorProxy = HttpContext.RequestServices.GetService<IRaptorProxy>());
+    private IProductivity3dV2ProxyCompaction Productivity3DProxy => productivity3DProxy ?? (productivity3DProxy = HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>());
 
     /// <summary>
     /// Generates a zip containing hydrology images from the original ground from a design file (TIN).
@@ -47,7 +47,7 @@ namespace VSS.Hydrology.WebApi.Controllers
         RequestExecutorContainerFactory
           .Build<HydroExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             null, null,
-            null, CustomHeaders, LandLeveling, RaptorProxy)
+            null, CustomHeaders, LandLeveling, Productivity3DProxy)
           .ProcessAsync(hydroRequest)) as HydroResult
       );
 

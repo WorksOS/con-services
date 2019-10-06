@@ -10,6 +10,8 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Proxy;
 
@@ -34,8 +36,10 @@ namespace VSS.Hydrology.WebApi
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, HydroErrorCodesProvider>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IRaptorProxy, RaptorProxy>();
-      services.AddTransient<ISchedulerProxy, SchedulerProxy>(); // framework net471 doesn't support service discovery
+
+      // framework net471 doesn't support service discovery
+      services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompactionInternal>();
+      services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>(); 
     }
   }
 }

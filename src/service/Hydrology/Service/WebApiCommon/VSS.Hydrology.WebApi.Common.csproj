@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
     <ProjectReference Include="..\..\Clients\Abstractions\VSS.Hydrology.WebApi.Abstractions.csproj" />
     <ProjectReference Include="..\TTM\VSS.Hydrology.WebApi.TTM.csproj" />
   </ItemGroup>

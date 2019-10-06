@@ -72,8 +72,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\Scheduler\src\VSS.Productivity3D.Scheduler.Abstractions\VSS.Productivity3D.Scheduler.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Scheduler\src\VSS.Productivity3D.Scheduler.Proxy\VSS.Productivity3D.Scheduler.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Abstractions\VSS.Productivity3D.Scheduler.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
+    <ProjectReference Include="..\..\..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Proxy\VSS.Productivity3D.Scheduler.Proxy.csproj" />
     <ProjectReference Include="..\..\Clients\Abstractions\VSS.Hydrology.WebApi.Abstractions.csproj" />
     <ProjectReference Include="..\WebApiCommon\VSS.Hydrology.WebApi.Common.csproj" />
   </ItemGroup>

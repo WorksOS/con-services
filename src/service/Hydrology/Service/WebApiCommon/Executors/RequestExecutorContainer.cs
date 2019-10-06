@@ -7,7 +7,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace VSS.Hydrology.WebApi.Common.Executors
@@ -30,7 +30,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
     protected string UserEmailAddress;
     protected IDictionary<string, string> CustomHeaders;
     protected ILandLeveling LandLeveling;
-    protected IRaptorProxy RaptorProxy;
+    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
 
 
     /// <summary>
@@ -119,7 +119,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
-      ILandLeveling landLeveling = null, IRaptorProxy raptorProxy = null)
+      ILandLeveling landLeveling = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null)
     {
       Log = logger;
       ConfigStore = configStore;
@@ -129,7 +129,7 @@ namespace VSS.Hydrology.WebApi.Common.Executors
       UserEmailAddress = userEmailAddress;
       CustomHeaders = headers;
       LandLeveling = landLeveling;
-      RaptorProxy = raptorProxy;
+      Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
     }
 
     protected T CastRequestObjectTo<T>(object item) where T : class

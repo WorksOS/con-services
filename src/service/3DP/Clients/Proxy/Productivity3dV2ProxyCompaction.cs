@@ -56,6 +56,24 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       return null;
     }
 
+    public async Task<Stream> GetExportSurface(Guid projectUid, string fileName, Guid? filterUid, int? timeoutMs, IDictionary<string, string> customHeaders)
+    {
+      var queryParams = new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("projectUid", projectUid.ToString()),
+        new KeyValuePair<string, string>("fileName", fileName),
+        new KeyValuePair<string, string>("filterUid", filterUid == null ? string.Empty : filterUid.ToString())
+      };
+
+      var result = await GetMasterDataStreamItemServiceDiscoveryNoCache
+        ("/export/surface", customHeaders, method: HttpMethod.Get, queryParameters: queryParams, timeout: timeoutMs);
+      if (result != null)
+        return result;
+
+      log.LogDebug($"{nameof(GetExportSurface)} Failed to get streamed results");
+      return null;
+    }
+
     /// <summary>
     /// Get the statistics for a project.
     /// </summary>

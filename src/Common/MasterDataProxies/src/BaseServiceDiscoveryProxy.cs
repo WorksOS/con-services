@@ -110,9 +110,9 @@ namespace VSS.MasterData.Proxies
     }
 
     protected Task<Stream> GetMasterDataStreamItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
-     HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)
+     HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null, int? timeout = null)
     {
-      return RequestAndReturnDataStream(customHeaders, method, route, queryParameters, payload);
+      return RequestAndReturnDataStream(customHeaders, method, route, queryParameters, payload, timeout: timeout);
     }
 
     protected Task<T> SendMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
@@ -188,7 +188,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<Stream> RequestAndReturnDataStream(IDictionary<string, string> customHeaders,
-     HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)  
+     HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null, int? timeout = null)  
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
@@ -196,7 +196,7 @@ namespace VSS.MasterData.Proxies
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
       var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
-      var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
+      var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload, timeout: timeout)).ReadAsStreamAsync();
       BaseProxyHealthCheck.SetStatus(true, this.GetType());
       return result;
     }

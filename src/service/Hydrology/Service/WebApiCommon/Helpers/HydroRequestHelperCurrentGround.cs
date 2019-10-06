@@ -9,7 +9,7 @@ using VSS.Hydrology.WebApi.Abstractions.Models;
 using VSS.Hydrology.WebApi.Abstractions.ResultsHandling;
 using VSS.MasterData.Models.Handlers;
 using Microsoft.Extensions.Logging;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 
 namespace VSS.Hydrology.WebApi.Common.Helpers
 {
@@ -19,7 +19,7 @@ namespace VSS.Hydrology.WebApi.Common.Helpers
 
     public static async Task<Stream> GetCurrentGround3Dp(HydroRequest request, 
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
-      IRaptorProxy raptorProxy, int? getExportTimeoutMs = null)
+      IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction, int? getExportTimeoutMs = null)
     {
       var currentGroundTTMStream = new MemoryStream();
       Stream currentGroundTTMStreamCompressed = null;
@@ -27,7 +27,7 @@ namespace VSS.Hydrology.WebApi.Common.Helpers
       try
       {
         currentGroundTTMStreamCompressed =
-          await raptorProxy.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, customHeaders, true, getExportTimeoutMs);
+          await productivity3dV2ProxyCompaction.GetExportSurface(request.ProjectUid, request.FileName, request.FilterUid, getExportTimeoutMs, customHeaders);
       }
       catch (ServiceException se)
       {
