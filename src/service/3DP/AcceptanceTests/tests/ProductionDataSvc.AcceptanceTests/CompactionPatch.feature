@@ -2,7 +2,7 @@
   I should be able to request Production Data Patch
 
 Scenario Outline: Patch - Good Request
-  Given the service route "/api/v2/patchesOrig" and result repo "CompactionPatchResponse.json"
+  Given the service route "/api/v2/temppatchesorig" and result repo "CompactionPatchResponse.json"
   And with parameter "projectUid" with value "<ProjectUID>"
   And with parameter "filterUid" with value "<FilterUID>"
   And with parameter "patchId" with value "<PatchId>"
@@ -19,7 +19,7 @@ Scenario Outline: Patch - Good Request
   | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 1       | 0    | 1         | true               | Patch1WithFilter     | 200      |
 
 Scenario Outline: Patch - Good Request Protobuf
-  Given the service route "/api/v2/patchesOrig" and result repo "CompactionPatchResponse.json"
+  Given the service route "/api/v2/temppatchesorig" and result repo "CompactionPatchResponse.json"
   And with parameter "projectUid" with value "<ProjectUID>"
   And with parameter "filterUid" with value "<FilterUID>"
   And with parameter "patchId" with value "<PatchId>"
@@ -35,7 +35,7 @@ Scenario Outline: Patch - Good Request Protobuf
   | ff91dd40-1569-4765-a2bc-014321f76ace | 3ef41e3c-d1f5-40cd-b012-99d11ff432ef | 1       | 0    | 1         | true               | Patch1WithFilterProtobuf     | 200      | application/x-protobuf |
 
 Scenario Outline: Patch - Bad Request
-  Given the service route "/api/v2/patchesOrig" and result repo "CompactionPatchResponse.json"
+  Given the service route "/api/v2/temppatchesorig" and result repo "CompactionPatchResponse.json"
   And with parameter "projectUid" with value "<ProjectUID>"
   And with parameter "patchId" with value "<PatchId>"
   And with parameter "mode" with value "<Mode>"

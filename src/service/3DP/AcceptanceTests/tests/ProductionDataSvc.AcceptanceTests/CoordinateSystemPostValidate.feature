@@ -8,7 +8,7 @@ Scenario Outline: CoordSystemPostValidate - Good Request
   Examples: 
   | ParameterName             | ResultName                | HttpCode |
   | CoordinateSystem          | CoordinateSystem          | 200      |
-  | CoordinateSystemWithGeoid | CoordinateSystemWithGeoid | 200      |
+  #| CoordinateSystemWithGeoid | CoordinateSystemWithGeoid | 200      |
 
 Scenario Outline: CoordinateSystemPostValidate - Bad Request
   Given the service route "/api/v1/coordsystem/validation" request repo "CoordSysValidationRequest.json" and result repo "CoordSysValidationResponse.json"
