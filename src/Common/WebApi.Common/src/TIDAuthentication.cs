@@ -69,10 +69,11 @@ namespace VSS.WebApi.Common
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
+        // If no authorization header found, nothing to process further
         if (string.IsNullOrEmpty(authorization))
         {
-          log.LogWarning("No account selected for the request");
-          await SetResult("No account selected", context);
+          log.LogWarning("No authorization provided for the request");
+          await SetResult("No authorization provided", context);
           return;
         }
 
@@ -87,22 +88,19 @@ namespace VSS.WebApi.Common
         catch (Exception e)
         {
           log.LogWarning(e, "Invalid JWT token with exception");
-          await SetResult("Invalid authentication", context);
+          await SetResult("Invalid JWT token", context);
           return;
         }
 
         bool requireCustomerUid = RequireCustomerUid(context);
-
         if (requireCustomerUid)
-        {
           customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
-        }
 
-        // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
+        // If required customer not provided, nothing to process further
+        if (string.IsNullOrEmpty(customerUid) && requireCustomerUid)
         {
-          log.LogWarning("No account selected for the request");
-          await SetResult("No account selected", context);
+          log.LogWarning("No customer provided for the request");
+          await SetResult("No customer provided", context);
           return;
         }
 
@@ -144,8 +142,7 @@ namespace VSS.WebApi.Common
           customerName = "Unknown";
         }
 
-        log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
-          userEmail);
+        log.LogInformation($"Authorization: for Customer: {customerUid} userUid: {userUid} userEmail: {userEmail} allowed");
         //Set calling context Principal
         context.User = CreatePrincipal(userUid, customerUid, customerName, userEmail, isApplicationContext, customHeaders, applicationName);
       }
