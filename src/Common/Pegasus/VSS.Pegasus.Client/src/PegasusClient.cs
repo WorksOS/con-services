@@ -127,7 +127,7 @@ namespace VSS.Pegasus.Client
           {
             DcFileId = dcFileId.Value,
             DxfFileId = dxfFileId.Value,
-            MaxZoom = maxZoomLevel,
+            MaxZoom = maxZoomLevel.ToString(),
             TileType = TILE_TYPE,
             AngularUnit = AngularUnitsType.Degree.ToString(),
             PlaneUnit = pegasusUnits.ToString(),

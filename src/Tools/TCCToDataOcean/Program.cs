@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
 using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
