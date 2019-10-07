@@ -9,29 +9,23 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.Models.Coords;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
-using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -172,20 +166,17 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requestPatchSize = 1000; // max # subgrids to scan
       var requestIncludeTimeOffsets = true;
 
-      // identify VSS projectUid (and potentially VSS AssetUID)
-      // tfa checks in this order: snm940; snm941; EC520
-      var tfaRequest = new GetProjectAndAssetUidsRequest(null,
-        (int) DeviceTypeEnum.SNM940, patchesRequest.RadioSerial, patchesRequest.ECSerial,
-        patchesRequest.TccOrgUid, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude, DateTime.UtcNow);
+      // identify VSS projectUid
       var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectProxy);
-      var tfaResult = await tfaHelper.GetProjectUid(tfaRequest);
+      var tfaResult = await tfaHelper.GetProjectUid(patchesRequest.RadioSerial, patchesRequest.ECSerial,
+        patchesRequest.TccOrgUid, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude);
 
       if (tfaResult?.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid))
       {
         // todoJeannie get list of error strings for CTCT
         var errorMessage = $"unable to identify a unique project. Error code: {tfaResult?.Code} ProjectUid: {tfaResult?.ProjectUid}";
         Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, errorMessage));
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
       }
 
       // todoJeannie rules to be determined if returns a projectUid but HasValidSub = false. 
