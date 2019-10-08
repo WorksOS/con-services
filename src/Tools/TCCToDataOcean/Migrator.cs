@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -10,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
-using TCCToDataOcean.Types;
 using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -53,9 +51,7 @@ namespace TCCToDataOcean
     // Diagnostic settings
     private readonly bool _downloadProjectFiles;
     private readonly bool _uploadProjectFiles;
-    private readonly bool _downloadProjectCoordinateSystemFile;
     private readonly bool _updateProjectCoordinateSystemFile;
-    private readonly bool _saveCoordinateSystemFile;
     private readonly bool _saveFailedProjects;
     private readonly bool _uploadToTCC;
 
@@ -88,9 +84,7 @@ namespace TCCToDataOcean
       // Diagnostic settings
       _downloadProjectFiles = configStore.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
       _uploadProjectFiles = configStore.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
-      _downloadProjectCoordinateSystemFile = configStore.GetValueBool("DOWNLOAD_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
       _updateProjectCoordinateSystemFile = configStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
-      _saveCoordinateSystemFile = configStore.GetValueBool("SAVE_COORDIANTE_SYSTEM_FILE", defaultValue: false);
       _saveFailedProjects = configStore.GetValueBool("SAVE_FAILED_PROJECT_IDS", defaultValue: true);
       _uploadToTCC = configStore.GetValueBool("UPLOAD_TO_TCC", defaultValue: false);
     }
@@ -201,78 +195,8 @@ namespace TCCToDataOcean
         Log.LogInformation($"{Method.In()} Migrating project {project.ProjectUID}, Name: '{project.Name}'");
         _migrationDb.SetMigrationState(Table.Projects, project, MigrationState.InProgress, null);
 
-        var coordinateSystemFileMigrationResult = false;
-        var dxfUnitsType = DxfUnitsType.Meters;
-
-        // DIAGNOSTIC RUNTIME SWITCH
-        if (_downloadProjectCoordinateSystemFile)
-        {
-          // Get the real CSIB for this project, ignoring what's attached to the project in the database.
-          var csibResponse = await _csibAgent.GetCSIBForProject(project);
-          var csib = csibResponse.CSIB;
-
-          // Temporary fix while Production doesn't have the new CSIBResult definition;
-          if (string.IsNullOrEmpty(csibResponse.CSIB))
-          {
-            csib = csibResponse.Message;
-
-            if (string.IsNullOrEmpty(csib))
-            {
-              Debugger.Break();
-              throw new Exception($"Unable to locate CSIB for project {project.ProjectUID}");
-            }
-          }
-          // End fix
-
-          _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
-
-          byte[] coordSystemFileContent;
-
-          if (csibResponse.Code != 0)
-          {
-            _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csib);
-
-            // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
-            coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
-          }
-          else
-          {
-            _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csib);
-
-            var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csib);
-            var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
-
-            coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
-          }
-
-          if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
-          {
-            _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project);
-
-            dxfUnitsType = new CalibrationFileHelper(coordSystemFileContent).GetDxfUnitsType();
-            _migrationDb.SetProjectDxfUnitsType(Table.Projects, project, dxfUnitsType);
-
-            // DIAGNOSTIC RUNTIME SWITCH
-            if (_updateProjectCoordinateSystemFile)
-            {
-              var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
-
-              coordinateSystemFileMigrationResult = updateProjectResult.Code == (int)ExecutionResult.Success;
-
-              Log.LogInformation($"{Method.Info()} Update result {updateProjectResult.Message} ({updateProjectResult.Code})");
-            }
-            else
-            {
-              Log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
-            }
-
-            SaveDCFileToDisk(project, coordSystemFileContent);
-          }
-        }
-        else
-        {
-          _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project);
-        }
+        var result = await ResolveProjectCoordinateSystemFile(project);
+        if (!result) { return false; }
 
         var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={project.ProjectUID}", project);
 
@@ -318,15 +242,13 @@ namespace TCCToDataOcean
 
         var importedFilesResult = fileTasks.All(t => t.Result.Item1);
 
-        var result = coordinateSystemFileMigrationResult && importedFilesResult;
+        _migrationDb.SetMigrationState(Table.Projects, project, importedFilesResult ? MigrationState.Completed : MigrationState.Failed, null);
 
-        _migrationDb.SetMigrationState(Table.Projects, project, result ? MigrationState.Completed : MigrationState.Failed, null);
-
-        Log.LogInformation($"{Method.Out()} Project '{project.Name}' ({project.ProjectUID}) {(result ? "succeeded" : "failed")}");
+        Log.LogInformation($"{Method.Out()} Project '{project.Name}' ({project.ProjectUID}) {(importedFilesResult ? "succeeded" : "failed")}");
 
         _migrationDb.SetMigationInfo_IncrementProjectsProcessed();
 
-        return result;
+        return importedFilesResult;
       }
       catch (Exception exception)
       {
@@ -336,90 +258,194 @@ namespace TCCToDataOcean
       return false;
     }
 
-    /// <summary>
-    /// Saves the DC file content to disk; for testing purposes only so we can eyeball the content.
-    /// </summary>
-    private void SaveDCFileToDisk(Project project, byte[] dcFileContent)
+    private async Task<bool> ResolveProjectCoordinateSystemFile(Project project)
     {
-      Log.LogDebug($"{Method.In()} Writing coordinate system file for project {project.ProjectUID}");
+      if (string.IsNullOrEmpty(project.CoordinateSystemFileName))
+      {
+        Log.LogDebug($"Project '{project.ProjectUID}' contains NULL CoordinateSystemFileName field.");
+      }
+      else
+      {
+        var fileDownloadResult = await DownloadCoordinateSystemFileFromTCC(project);
+        if (fileDownloadResult) { return true; }
+      }
 
-      var dcFilePath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
+      // Failed to download coordinate system file from TCC, try and resolve it using what we know from Raptor.
+      _migrationDb.WriteError(project.ProjectUID, $"Failed to fetch coordinate system file '{project.CustomerUID}/{project.ProjectUID}/{project.CoordinateSystemFileName}' from TCC.");
 
-      if (!Directory.Exists(dcFilePath)) Directory.CreateDirectory(dcFilePath);
+      // Get the real CSIB for this project, ignoring what's attached to the project in the database.
+      var csibResponse = await _csibAgent.GetCSIBForProject(project);
+      var csib = csibResponse.CSIB;
 
-      var coordinateSystemFilename = project.CoordinateSystemFileName;
+      // Temporary fix while Production doesn't have the new CSIBResult definition;
+      if (string.IsNullOrEmpty(csibResponse.CSIB))
+      {
+        csib = csibResponse.Message;
 
-      if (string.IsNullOrEmpty(coordinateSystemFilename)) coordinateSystemFilename = "ProjectCalibrationFile.dc";
-      if (coordinateSystemFilename.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0) coordinateSystemFilename = "ProjectCalibrationFile.dc";
+        if (string.IsNullOrEmpty(csib))
+        {
+          _migrationDb.WriteError(project.ProjectUID, $"Failed to resolve CSIB for project: {project.ProjectUID}");
+          Log.LogError($"{Method.Info()} Error: Failed to resolve CSIB for project: {project.ProjectUID}");
 
-      var tempFileName = Path.Combine(dcFilePath, coordinateSystemFilename);
+          return false;
+        }
+      }
+      // End fix
 
-      Log.LogInformation($"{Method.Info()} Creating DC file '{tempFileName}' for project {project.ProjectUID}");
+      _migrationDb.SetCanResolveCSIB(Table.Projects, project.ProjectUID, csibResponse.Code == 0);
 
-      File.WriteAllBytes(tempFileName, dcFileContent);
+      if (csibResponse.Code != 0)
+      {
+        _migrationDb.SetResolveCSIBMessage(Table.Projects, project.ProjectUID, csib);
+
+        // We couldn't resolve a CSIB for the project, so try using the DC file if one exists.
+        //     coordSystemFileContent = await DownloadCoordinateSystemFileFromTCC(project);
+
+        _migrationDb.WriteError(project.ProjectUID, $"Failed to resolve CSIB for project: {project.ProjectUID}");
+        return false;
+      }
+
+      _migrationDb.SetProjectCSIB(Table.Projects, project.ProjectUID, csib);
+
+      var coordSysInfo = await _csibAgent.GetCoordSysInfoFromCSIB64(project, csib);
+      var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(project, coordSysInfo["coordinateSystem"]["id"].ToString());
+
+      var coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
+
+      var saveResult = SaveDCFileToDisk(project, new MemoryStream(coordSystemFileContent));
+      if (!saveResult) { return false; }
+
+      if (coordSystemFileContent != null && coordSystemFileContent.Length > 0)
+      {
+        _migrationDb.SetProjectCoordinateSystemDetails(Table.Projects, project);
+
+        var dxfUnitsType = new CalibrationFileHelper(coordSystemFileContent).GetDxfUnitsType();
+        _migrationDb.SetProjectDxfUnitsType(Table.Projects, project, dxfUnitsType);
+
+        // DIAGNOSTIC RUNTIME SWITCH
+        if (_updateProjectCoordinateSystemFile)
+        {
+          var updateProjectResult = await WebApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, project, coordSystemFileContent);
+
+          Log.LogInformation($"{Method.Info()} Update result '{updateProjectResult.Message}' ({updateProjectResult.Code})");
+        }
+        else
+        {
+          Log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
+        }
+      }
+
+      return true;
     }
 
     /// <summary>
     /// Downloads the coordinate system file for a given project.
     /// </summary>
-    private async Task<byte[]> DownloadCoordinateSystemFileFromTCC(Project project)
+    private async Task<bool> DownloadCoordinateSystemFileFromTCC(Project project)
     {
-      Log.LogInformation($"{Method.In()} Downloading coord system file '{project.CoordinateSystemFileName}'");
-
-      // DIAGNOSTIC RUNTIME SWITCH
-      if (!_downloadProjectCoordinateSystemFile)
-      {
-        Log.LogDebug($"{Method.Info("DEBUG")} Skipped downloading coordinate system file '{project.CoordinateSystemFileName}' for project {project.ProjectUID}");
-        return null;
-      }
+      Log.LogInformation($"{Method.In()} Downloading coord system file '{project.CoordinateSystemFileName}' from TCC");
 
       Stream memStream = null;
-      byte[] coordSystemFileContent;
-      int numBytesRead;
 
       try
       {
         memStream = await FileRepo.GetFile(FileSpaceId, $"/{project.CustomerUID}/{project.ProjectUID}/{project.CoordinateSystemFileName}");
-        if (memStream != null && memStream.CanRead && memStream.Length > 0)
-        {
-          coordSystemFileContent = new byte[memStream.Length];
-          var numBytesToRead = (int)memStream.Length;
-          numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
 
-          // DIAGNOSTIC RUNTIME SWITCH
-          if (_saveCoordinateSystemFile)
-          {
-            var tempPath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
-            Directory.CreateDirectory(tempPath);
-
-            var tempFileName = Path.Combine(tempPath, project.CoordinateSystemFileName);
-
-            Log.LogInformation($"{Method.Info()} Creating temporary file '{tempFileName}' for project {project.ProjectUID}");
-
-            using (var tempFile = new FileStream(tempFileName, FileMode.Create))
-            {
-              memStream.Position = 0;
-              memStream.CopyTo(tempFile);
-            }
-          }
-        }
-        else
-        {
-          _migrationDb.WriteError(project.ProjectUID, $"Failed to fetch coordinate system file '{project.CustomerUID}/{project.ProjectUID}/{project.CoordinateSystemFileName}'. isAbleToRead: {memStream != null && memStream.CanRead}, bytesReturned: {memStream?.Length ?? 0}");
-
-          return null;
-        }
+        return SaveDCFileToDisk(project, memStream);
       }
       finally
       {
         memStream?.Dispose();
       }
-
-      Log.LogInformation(
-        $"Coord system file for project {project.ProjectUID}: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
-
-      return coordSystemFileContent;
     }
+
+    /// <summary>
+    /// Saves the DC file content to disk; for testing purposes only so we can eyeball the content.
+    /// </summary>
+    private bool SaveDCFileToDisk(Project project, Stream dcFileContent)
+    {
+      if (dcFileContent == null || dcFileContent.Length <= 0)
+      {
+        Log.LogDebug($"{Method.Info()} Error: Null stream provided for dcFileContent for project '{project.ProjectUID}'");
+        return false;
+      }
+
+      Log.LogDebug($"{Method.In()} Writing coordinate system file for project {project.ProjectUID}");
+
+      try
+      {
+        var dcFilePath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
+
+        if (!Directory.Exists(dcFilePath))
+        {
+          Directory.CreateDirectory(dcFilePath);
+        }
+
+        var coordinateSystemFilename = project.CoordinateSystemFileName;
+
+        if (string.IsNullOrEmpty(coordinateSystemFilename) ||
+            coordinateSystemFilename.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+        {
+          coordinateSystemFilename = "ProjectCalibrationFile.dc";
+        }
+
+        var tempFileName = Path.Combine(dcFilePath, coordinateSystemFilename);
+
+        using (var fileStream = File.Create(tempFileName))
+        {
+          dcFileContent.Seek(0, SeekOrigin.Begin);
+          dcFileContent.CopyTo(fileStream);
+
+          Log.LogInformation($"{Method.Info()} Completed writing DC file '{tempFileName}' for project {project.ProjectUID}");
+        }
+      }
+      catch (Exception exception)
+      {
+        Log.LogError(exception, $"{Method.Info()} Error writing DC file for project {project.ProjectUID}");
+        return false;
+      }
+
+      return true;
+    }
+
+
+
+    //private byte[] WriteCoordinateFileToDisk(Project project, Stream memStream)
+    //{
+    //  byte[] coordSystemFileContent;
+    //  int numBytesRead;
+
+    //  if (memStream != null && memStream.CanRead && memStream.Length > 0)
+    //  {
+    //    coordSystemFileContent = new byte[memStream.Length];
+    //    var numBytesToRead = (int)memStream.Length;
+    //    numBytesRead = memStream.Read(coordSystemFileContent, 0, numBytesToRead);
+
+    //    var tempPath = Path.Combine(TemporaryFolder, project.CustomerUID, project.ProjectUID);
+    //    Directory.CreateDirectory(tempPath);
+
+    //    var tempFileName = Path.Combine(tempPath, project.CoordinateSystemFileName);
+
+    //    Log.LogInformation($"{Method.Info()} Creating temporary file '{tempFileName}' for project {project.ProjectUID}");
+
+    //    using (var tempFile = new FileStream(tempFileName, FileMode.Create))
+    //    {
+    //      memStream.Position = 0;
+    //      memStream.CopyTo(tempFile);
+    //    }
+    //  }
+    //  else
+    //  {
+    //    _migrationDb.WriteError(project.ProjectUID, $"Failed to fetch coordinate system file '{project.CustomerUID}/{project.ProjectUID}/{project.CoordinateSystemFileName}'. isAbleToRead: {memStream != null && memStream.CanRead}, bytesReturned: {memStream?.Length ?? 0}");
+
+    //    return null;
+    //  }
+
+    //  Log.LogInformation(
+    //    $"Coord system file for project {project.ProjectUID}: numBytesRead: {numBytesRead} coordSystemFileContent.Length {coordSystemFileContent?.Length ?? 0}");
+
+    //  return coordSystemFileContent;
+    //}
 
     /// <summary>
     /// Downloads the file from TCC and if successful uploads it through the Project service.
@@ -438,7 +464,7 @@ namespace TCCToDataOcean
         {
           var message = $"Failed to fetch file '{file.Name}' ({file.LegacyFileId}), not found";
           _migrationDb.SetMigrationState(Table.Files, file, MigrationState.FileNotFound);
-          _migrationDb.WriteError(file.ProjectUid, message);
+          _migrationDb.WriteWarning(file.ProjectUid, message);
 
           Log.LogWarning($"{Method.Out()} {message}");
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -12,7 +11,8 @@ namespace TCCToDataOcean.DatabaseAgent
     void DropTables(string[] tableNames);
     void WriteRecord(string tableName, Project project);
     void WriteRecord(string tableName, ImportedFileDescriptor file);
-    void WriteError(string projectUid, string errorMessage);
+    void WriteWarning(string projectUid, string message);
+    void WriteError(string projectUid, string message);
     void SetMigrationState(string tableName, Project project, MigrationState migrationState, string reason);
     void SetMigrationState(string tableName, ImportedFileDescriptor file, MigrationState migrationState);
     void SetFileSize(string tableName, ImportedFileDescriptor file, long length);

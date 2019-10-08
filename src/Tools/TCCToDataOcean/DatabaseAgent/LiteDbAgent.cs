@@ -59,7 +59,7 @@ namespace TCCToDataOcean.DatabaseAgent
       dbObj.ProjectsTotal = projectCount;
       objs.Update(dbObj);
     }
-    
+
     public void SetMigationInfo_IncrementProjectsProcessed()
     {
       var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
@@ -85,10 +85,8 @@ namespace TCCToDataOcean.DatabaseAgent
       }
     }
 
-    public void WriteError(string projectUid, string errorMessage)
-    {
-      db.GetCollection<MigrationErrorMessage>(Table.Errors).Insert(new MigrationErrorMessage(projectUid, errorMessage));
-    }
+    public void WriteWarning(string projectUid, string message) => db.GetCollection<MigrationMessage>(Table.Warnings).Insert(new MigrationMessage(projectUid, message));
+    public void WriteError(string projectUid, string message) => db.GetCollection<MigrationMessage>(Table.Errors).Insert(new MigrationMessage(projectUid, message));
 
     public void SetMigrationState(string tableName, Project project, MigrationState migrationState, string message)
     {
