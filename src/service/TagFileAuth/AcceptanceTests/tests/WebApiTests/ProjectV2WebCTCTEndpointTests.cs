@@ -81,47 +81,6 @@ namespace WebApiTests
     }
 
     [TestMethod]
-    public void AssetDevice_3dPMSubAndProject_UnsupportedDeviceType()
-    {
-      msg.Title("Project WebTest 2", "3D project monitoring subscription and a standard project. Get the projectUid for ProjectUid request");
-      var ts = new TestSupport { IsPublishToKafka = false };
-      var legacyProjectId = ts.SetLegacyProjectId();
-      var legacyAssetId = ts.SetLegacyAssetId();
-      var projectUid = Guid.NewGuid();
-      var customerUid = Guid.NewGuid();
-      var deviceUid = Guid.NewGuid();
-      var subscriptionUid = Guid.NewGuid();
-      var startDate = ts.FirstEventDate.ToString("yyyy-MM-dd");
-      var endDate = new DateTime(9999, 12, 31).ToString("yyyy-MM-dd");
-      var geometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))";
-      // Write events to database 
-      var projectEventArray = new[] {
-       "| TableName | EventDate   | ProjectUID   | LegacyProjectID   | Name            | fk_ProjectTypeID | ProjectTimeZone           | LandfillTimeZone | StartDate   | EndDate   | GeometryWKT   |",
-      $"| Project   | 0d+09:00:00 | {projectUid} | {legacyProjectId} | ProjectV2WebTest1 | 0                | New Zealand Standard Time | Pacific/Auckland | {startDate} | {endDate} | {geometryWKT} |" };
-      ts.PublishEventCollection(projectEventArray);
-      var eventsArray = new[] {
-        "| TableName       | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID |",
-       $"| Customer        | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |",
-       $"| Subscription    | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 13               | {startDate} | {endDate}      |               |          |",
-       $"| CustomerProject | 0d+09:20:00 |               |           |                   |                   | {customerUid}  |                  |             |                | {projectUid}  |          |"};
-      ts.PublishEventCollection(eventsArray);
-      var assetEventArray = new[] {
-       "| TableName | EventDate   | AssetUID      | LegacyAssetID   | Name            | MakeCode | SerialNumber | Model | IconKey | AssetType  | OwningCustomerUID |",
-      $"| Asset     | 0d+09:00:00 | {ts.AssetUid} | {legacyAssetId} | ProjectV2WebTest1 | CAT      | XAT1         | 345D  | 10      | Excavators | {customerUid}     |"};
-      ts.PublishEventCollection(assetEventArray);
-      var deviceEventArray = new[] {
-       "| TableName         | EventDate   | DeviceSerialNumber | DeviceState | DeviceType              | DeviceUID   | DataLinkType | GatewayFirmwarePartNumber | fk_AssetUID   | fk_DeviceUID | fk_SubscriptionUID | EffectiveDate | ",
-      $"| Device            | 0d+09:00:00 | {deviceUid}        | Subscribed  | {DeviceTypeEnum.SNM940} | {deviceUid} | CDMA         | ProjectV2WebTest2           |               |              |                    |               |",
-      $"| AssetDevice       | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |",
-      $"| AssetSubscription | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
-      ts.PublishEventCollection(deviceEventArray);
-
-      var actualResult = CallWebApiGetProjectUid(ts, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1), HttpStatusCode.BadRequest);
-      Assert.AreEqual(String.Empty, actualResult.ProjectUid, "ProjectUid does not match");
-      Assert.AreEqual(3030, actualResult.Code, " result code of request doesn't match expected");
-    }
-
-    [TestMethod]
     public void AssetDevice_3dPMSubAndProject_LatLongOutSideBoundary()
     {
       msg.Title("Project WebTest 3", "3D project monitoring subscription for standard project. Call web api with lat long outside boundary");
@@ -261,7 +220,7 @@ namespace WebApiTests
     private GetProjectAndAssetUidsCTCTResult CallWebApiGetProjectUid(TestSupport ts, string radioSerial, string ecSerial, string tccOrgId, double latitude,double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Thread.Sleep(500);
-      var request = new GetProjectAndAssetUidsCTCTRequest(radioSerial, ecSerial, tccOrgId, latitude,longitude, timeOfPosition);
+      var request = new GetProjectAndAssetUidsCTCTRequest(ecSerial, radioSerial, tccOrgId, latitude,longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
       var uri = ts.GetBaseUri() + "api/v2/project/getUidsCTCT";
