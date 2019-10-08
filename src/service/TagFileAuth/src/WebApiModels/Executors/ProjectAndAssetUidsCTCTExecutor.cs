@@ -34,10 +34,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as GetProjectAndAssetUidsRequest;
+      var request = item as GetProjectAndAssetUidsCTCTRequest;
       if (request == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, ContractExecutionStatesEnum.SerializationError));
+          ProjectUidHelper.FormatResult(string.Empty, string.Empty, string.Empty, false, ContractExecutionStatesEnum.SerializationError));
       
       var assetUid = string.Empty;
       var assetSubs = new List<Subscriptions>();
@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // get the owningCustomer of the SNM
       if (!string.IsNullOrEmpty(request.RadioSerial))
       {
-        var assetResult = await ProjectUidHelper.GetSNMAsset(log, dataRepository, request.RadioSerial, request.DeviceType, true);
+        var assetResult = await ProjectUidHelper.GetSNMAsset(log, dataRepository, request.RadioSerial, (int)DeviceTypeEnum.SNM940, true);
         if (!string.IsNullOrEmpty(assetResult.Item1))
         {
           assetUid = assetResult.Item1;
@@ -71,7 +71,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         // Unable to identify the EC in the 3dPM system, and no tccOrgId provided
         if (string.IsNullOrEmpty(request.TccOrgUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
-          return ProjectUidHelper.FormatResult(String.Empty, string.Empty, false, 33);
+          return ProjectUidHelper.FormatResult(string.Empty, string.Empty, string.Empty, false, 33);
       }
 
       return await LocateProjectsInProximity(request, assetUid, assetOwningCustomerUid, assetSubs);
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// CTCT cut/fill doesn't necessarily REQUIRE a subscription, or of the type required for 3dp tagFiles
     /// Must be able to identify one or other customer for a) radioSerial b) EM520 c) tccOrgUid
     /// </summary>
-    private async Task<GetProjectAndAssetUidsResult> LocateProjectsInProximity(GetProjectAndAssetUidsRequest request,
+    private async Task<GetProjectAndAssetUidsCTCTResult> LocateProjectsInProximity(GetProjectAndAssetUidsCTCTRequest request,
       string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)
     {
       string tccCustomerUid = null;
@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       if (string.IsNullOrEmpty(tccCustomerUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
-        return ProjectUidHelper.FormatResult(String.Empty, assetUid, false, 47);
+        return ProjectUidHelper.FormatResult(string.Empty, assetUid, string.Empty, false, 47);
 
       var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, tccCustomerUid, request);
       log.LogDebug($"{nameof(LocateProjectsInProximity)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
@@ -102,16 +102,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         // with CTCT we allow assetCustomerUid LF/PM sub for landfill/pm projects
         if (string.IsNullOrEmpty(tccCustomerUid) && !string.IsNullOrEmpty(assetOwningCustomerUid) && !assetSubs.Any())
-          return ProjectUidHelper.FormatResult(String.Empty, assetUid, false, 52);
+          return ProjectUidHelper.FormatResult(string.Empty, assetUid, assetOwningCustomerUid, false, 52);
 
-        return ProjectUidHelper.FormatResult(String.Empty, assetUid, false, 48);
+        return ProjectUidHelper.FormatResult(string.Empty, assetUid, assetOwningCustomerUid, false, 48);
       }
 
       if (potentialProjects.Count > 1)
-        return ProjectUidHelper.FormatResult(String.Empty, assetUid, true, 49);
+        return ProjectUidHelper.FormatResult(string.Empty, assetUid, potentialProjects[0].CustomerUID, true, 49);
 
       return ProjectUidHelper.FormatResult(
         potentialProjects[0].ProjectUID, assetUid,
+        potentialProjects[0].CustomerUID,
         ((potentialProjects[0].ProjectType == ProjectType.Standard && assetSubs.Any())
           || (potentialProjects[0].ProjectType != ProjectType.Standard && !string.IsNullOrEmpty(potentialProjects[0].SubscriptionUID))));
     }
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// CTCT cutfill doesn't necessarily need a traditional tagfile sub
     /// </summary>
     private async Task<List<Project.Abstractions.Models.DatabaseModels.Project>> GetPotentialProjects
-      (string assetOwningCustomerUid, string tccCustomerUid, GetProjectAndAssetUidsRequest request)
+      (string assetOwningCustomerUid, string tccCustomerUid, GetProjectAndAssetUidsCTCTRequest request)
     {
       var potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 

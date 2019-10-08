@@ -16,9 +16,9 @@ namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
 
     /*
      * [Route("api/v2/project/getUidsCTCT")]     [HttpPost]
-     * returns GetProjectAndAssetUidsResult
+     * returns GetProjectAndAssetUidsCTCTResult
      */
-    Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUidsCTCT(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest,
+    Task<GetProjectAndAssetUidsCTCTResult> GetProjectAndAssetUidsCTCT(GetProjectAndAssetUidsCTCTRequest getProjectAndAssetUidsCTCTRequest,
       IDictionary<string, string> customHeaders = null);
 
   }

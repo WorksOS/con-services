@@ -29,7 +29,7 @@ namespace WebApiTests.Executors
     private string _assetOwningCustomerUid;
     private string _tccOwningCustomerUid;
 
-    private GetProjectAndAssetUidsRequest _projectAndAssetUidsRequest;
+    private GetProjectAndAssetUidsCTCTRequest _projectAndAssetUidsCTCTRequest;
     private string radioSerial = "radSer45";
     private string ec520Serial = "ecSer";
     private string tccOrgUid = "tccOrgUid_guid";
@@ -56,7 +56,7 @@ namespace WebApiTests.Executors
       _timeOfLocation = DateTime.UtcNow;
       _assetOwningCustomerUid = Guid.NewGuid().ToString();
       _tccOwningCustomerUid = Guid.NewGuid().ToString();
-      _projectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, 6, radioSerial, string.Empty, string.Empty, 80, 160, _timeOfLocation);
+      _projectAndAssetUidsCTCTRequest = new GetProjectAndAssetUidsCTCTRequest(string.Empty, radioSerial, string.Empty, 80, 160, _timeOfLocation);
       _loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       _assetDeviceIds = new AssetDeviceIds { OwningCustomerUID = _assetOwningCustomerUid, AssetUID = _assetUid };
@@ -95,7 +95,7 @@ namespace WebApiTests.Executors
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsRequest)null));
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsCTCTRequest)null));
 
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual(-3, ex.GetResult.Code);
@@ -105,8 +105,8 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_NoAssetDeviceAssociation()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // asset
@@ -114,16 +114,16 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, customerRepository, projectRepository, subscriptionRepository);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, string.Empty, string.Empty, false, 3033);
+      ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
     }
 
     [TestMethod]
     public async Task ProjectUidExecutor_StandardProjectAnd3dPmSubscription()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // asset, assetSub and standard project
@@ -146,17 +146,17 @@ namespace WebApiTests.Executors
       
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, customerRepository, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, _assetUid, true, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, _assetUid, _assetOwningCustomerUid, true, 0);
     }
 
 
     [TestMethod]
     public async Task ProjectUidExecutor_StandardProjectAndNo3dPmSubscription()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // asset, NO assetSub and standard project
@@ -170,17 +170,17 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, customerRepository, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, _assetUid, false, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, _assetUid, _assetOwningCustomerUid, false, 0);
     }
 
     [TestMethod]
     public async Task ProjectUidExecutor_PMProjectAndPMSubscription()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset, No assetSub
@@ -189,23 +189,31 @@ namespace WebApiTests.Executors
       // tccOrg, PMSub and PM project
       var customerTccOrg = new CustomerTccOrg() {CustomerUID = _tccOwningCustomerUid};
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
-      _projects[0].ProjectType = ProjectType.ProjectMonitoring;
-      _projects[0].SubscriptionUID = Guid.NewGuid().ToString();
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
+      var projects = new List<Project>
+      {
+        new Project
+        {
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _tccOwningCustomerUid,
+          ProjectType = ProjectType.ProjectMonitoring,
+          SubscriptionUID = Guid.NewGuid().ToString()
+        }
+      };
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, true, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, true, 0);
     }
 
     [TestMethod]
     public async Task ProjectUidExecutor_PMProjectAndNoPMSubscription()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset, No assetSub
@@ -214,23 +222,31 @@ namespace WebApiTests.Executors
       // tccOrg, NO PMSub and PM project
       var customerTccOrg = new CustomerTccOrg() { CustomerUID = _tccOwningCustomerUid };
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
-      _projects[0].ProjectType = ProjectType.ProjectMonitoring;
-      _projects[0].SubscriptionUID = string.Empty;
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
+      var projects = new List<Project>
+      {
+        new Project
+        {
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _tccOwningCustomerUid,
+          ProjectType = ProjectType.ProjectMonitoring,
+          SubscriptionUID = string.Empty
+        }
+      };
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, false, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, false, 0);
     }
 
     [TestMethod]
     public async Task ProjectUidExecutor_LandfillProjectAndSubscription()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset
@@ -239,23 +255,31 @@ namespace WebApiTests.Executors
       // tccOrg, LFSub and LF project
       var customerTccOrg = new CustomerTccOrg() { CustomerUID = _tccOwningCustomerUid };
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
-      _projects[0].ProjectType = ProjectType.LandFill;
-      _projects[0].SubscriptionUID = Guid.NewGuid().ToString();
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
+      var projects = new List<Project>
+      {
+        new Project
+        {
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _tccOwningCustomerUid,
+          ProjectType = ProjectType.LandFill,
+          SubscriptionUID = Guid.NewGuid().ToString()
+        }
+      };
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, true, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, true, 0);
     }
 
     [TestMethod]
     public async Task ProjectUidExecutor_LandfillProjectAndNoSubscription()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset
@@ -263,25 +287,33 @@ namespace WebApiTests.Executors
 
       // tccOrg, NO LFSub and LF project
       var customerTccOrg = new CustomerTccOrg() { CustomerUID = _tccOwningCustomerUid };
-      _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);
-      _projects[0].ProjectType = ProjectType.LandFill;
-      _projects[0].SubscriptionUID = string.Empty;
-      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(_projects);
+      _customerRepo.Setup(c => c.GetCustomerWithTccOrg(tccOrgUid)).ReturnsAsync(customerTccOrg);  
+      var projects = new List<Project>
+      {
+        new Project
+        {
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _tccOwningCustomerUid,
+          ProjectType = ProjectType.LandFill,
+          SubscriptionUID = string.Empty
+        }
+      };
+      _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, false, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, false, 0);
     }
 
 
     [TestMethod]
     public async Task ProjectUidExecutor_MultiProjectAndSubscription()
     {
-      _projectAndAssetUidsRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsRequest.Validate(true);
+      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate(true);
       Assert.AreEqual(0, errorCodeResult);
 
       // asset, assetSub and standard project
@@ -322,16 +354,17 @@ namespace WebApiTests.Executors
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), configStore,
         assetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
 
-      ValidateResult(result, string.Empty, _assetUid, true, 3049);
+      ValidateResult(result, string.Empty, _assetUid, _assetOwningCustomerUid, true, 3049);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult result, string expectedProjectUid, string expectedAssetUid, bool expectedHasValidSubscription, int expectedCode)
+    private void ValidateResult(GetProjectAndAssetUidsCTCTResult result, string expectedProjectUid, string expectedAssetUid, string expectedCustomerUid, bool expectedHasValidSubscription, int expectedCode)
     {
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
       Assert.AreEqual(expectedAssetUid, result.AssetUid, "executor returned incorrect AssetUid");
+      Assert.AreEqual(expectedCustomerUid, result.CustomerUid, "executor returned incorrect CustomerUid");
       Assert.AreEqual(expectedHasValidSubscription, result.HasValidSub, "executor returned incorrect HasValidSub");
       Assert.AreEqual(expectedCode, result.Code, "executor returned incorrect result code");
     }

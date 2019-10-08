@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -113,15 +114,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var requestPatchSize = 1000; // max # subgrids to scan
       var requestIncludeTimeOffsets = true;
 
-      // identify VSS projectUid
+      // identify VSS projectUid and CustomerUid
       var tfaHelper = new TagFileAuthHelper(LoggerFactory, ConfigStore, TagFileAuthProjectProxy);
       var tfaResult = await tfaHelper.GetProjectUid(patchesRequest.RadioSerial, patchesRequest.ECSerial,
         patchesRequest.TccOrgUid, patchesRequest.MachineLatitude, patchesRequest.MachineLongitude);
 
-      if (tfaResult?.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid))
+      if (tfaResult?.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid) || string.IsNullOrEmpty(tfaResult.CustomerUid))
       {
         // todoJeannie get list of TFA and 3dp error strings for CTCT
-        var errorMessage = $"Unable to identify a unique project. Error code: {tfaResult?.Code} AssetUid: {tfaResult?.AssetUid}";
+        var errorMessage = $"Unable to identify a unique project or customer. Error code: {tfaResult?.Code} ProjectUid: {tfaResult?.ProjectUid} AssetUid: {tfaResult?.AssetUid} CustomerUid: {tfaResult?.CustomerUid}";
         Log.LogInformation(errorMessage);
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
       }
@@ -130,7 +131,12 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       //       e.g. Can Raptor/TRex return only ground from surveyedSurfaces, and NOT productionData?
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
-      var projectUid = Guid.Parse(tfaResult.ProjectUid);
+      // Set customerUid for downstream service calls e.g. ProjectSvc
+      Log.LogInformation($"{nameof(GetSubGridPatches)}: requestHeaders {JsonConvert.SerializeObject(Request.Headers)} PrincipalCustomerUID {((RaptorPrincipal)User).CustomerUid} authNContext {JsonConvert.SerializeObject(((RaptorPrincipal)User).authNContext)}");
+      if ( ((RaptorPrincipal)User).SetCustomerUid(tfaResult.CustomerUid))
+        Request.Headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID] = tfaResult.CustomerUid;
+
+      var projectUid = Guid.Parse(tfaResult.ProjectUid);      
       var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
 
       // CTCT endpoint probably (todoJeannie?) has no UserId so won't get any excludedSSs.

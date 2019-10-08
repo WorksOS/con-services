@@ -125,7 +125,7 @@ namespace TAGFiles.Tests
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
       var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 0, 0, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, true, (int) DeviceTypeEnum.MANUALDEVICE, "success");
+      var moqResult = new GetProjectAndAssetUidsResult(projectUid.ToString(), string.Empty, (int) DeviceTypeEnum.MANUALDEVICE, "success");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;
@@ -158,7 +158,7 @@ namespace TAGFiles.Tests
       var projectUid = Guid.NewGuid();
       var timeOfPosition = DateTime.UtcNow;
       var moqRequest = new GetProjectAndAssetUidsRequest(projectUid.ToString(), (int) DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 0, 0, timeOfPosition);
-      var moqResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, false, 3044, "Manual Import: cannot import to a Civil type project");
+      var moqResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty, 3044, "Manual Import: cannot import to a Civil type project");
       SetupDITfa(true, moqRequest, moqResult);
 
       byte[] tagContent;

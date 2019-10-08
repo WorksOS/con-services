@@ -34,7 +34,7 @@ namespace WebApiTests
       $"| AssetDevice       | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} | {deviceUid}  |                    |               |"};
       ts.PublishEventCollection(deviceEventArray);
 
-      var actualResult = CallWebApiGetProjectUid(ts, 6, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectUid(ts, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual("", actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(3052, actualResult.Code, " result code of request doesn't match expected");
     }
@@ -75,7 +75,7 @@ namespace WebApiTests
       $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
-      var actualResult = CallWebApiGetProjectUid(ts, 6, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectUid(ts, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual(projectUid.ToString(), actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(0, actualResult.Code, " result code of request doesn't match expected");
     }
@@ -116,7 +116,7 @@ namespace WebApiTests
       $"| AssetSubscription | 0d+09:20:00 |                    |             |                         |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
-      var actualResult = CallWebApiGetProjectUid(ts, 3, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1), HttpStatusCode.BadRequest);
+      var actualResult = CallWebApiGetProjectUid(ts, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1), HttpStatusCode.BadRequest);
       Assert.AreEqual(String.Empty, actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(3030, actualResult.Code, " result code of request doesn't match expected");
     }
@@ -157,7 +157,7 @@ namespace WebApiTests
       $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
-      var actualResult = CallWebApiGetProjectUid(ts, 6, deviceUid.ToString(), "ecSerialNumber", string.Empty, 40.837, -121.348, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectUid(ts, deviceUid.ToString(), "ecSerialNumber", string.Empty, 40.837, -121.348, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual(string.Empty, actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(3048, actualResult.Code, " result code of request doesn't match expected");
     }
@@ -199,7 +199,7 @@ namespace WebApiTests
       $"| AssetSubscription | 0d+09:20:00 |                    |             |            |             |              |                           | {ts.AssetUid} |              | {subscriptionUid}  | {startDate}   |"};
       ts.PublishEventCollection(deviceEventArray);
 
-      var actualResult = CallWebApiGetProjectUid(ts, 6, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectUid(ts, deviceUid.ToString(), "ecSerialNumber", string.Empty, 38.837, -121.348, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual(projectUid.ToString(), actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(0, actualResult.Code, " result code of request doesn't match expected");
     }
@@ -243,7 +243,7 @@ namespace WebApiTests
       };
       ts.PublishEventCollection(deviceEventArray);
 
-      var actualResult = CallWebApiGetProjectUid(ts, 6, deviceUid.ToString(), "ecSerialNumber", tccOrg.ToString(), 38.837, -121.348, ts.FirstEventDate.AddDays(1));
+      var actualResult = CallWebApiGetProjectUid(ts, deviceUid.ToString(), "ecSerialNumber", tccOrg.ToString(), 38.837, -121.348, ts.FirstEventDate.AddDays(1));
       Assert.AreEqual(projectUid.ToString(), actualResult.ProjectUid, "ProjectUid does not match");
       Assert.AreEqual(0, actualResult.Code, " result code of request doesn't match expected");
     }
@@ -252,23 +252,22 @@ namespace WebApiTests
     /// Call the get project request
     /// </summary>
     /// <param name="ts">test support</param>
-    /// <param name="deviceType"></param>
     /// <param name="radioSerial"></param>
     /// <param name="latitude">seed position latitude value from tagfile</param>
     /// <param name="longitude">seed position longitude value from tagfile</param>
     /// <param name="timeOfPosition">from tagfile-used to check against valid Project time range.</param>
     /// <param name="statusCode"></param>
     /// <returns>The project Uid result</returns>
-    private GetProjectAndAssetUidsResult CallWebApiGetProjectUid(TestSupport ts, int deviceType, string radioSerial, string ecSerial, string tccOrgId, double latitude,double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
+    private GetProjectAndAssetUidsCTCTResult CallWebApiGetProjectUid(TestSupport ts, string radioSerial, string ecSerial, string tccOrgId, double latitude,double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Thread.Sleep(500);
-      var request = new GetProjectAndAssetUidsRequest(null, deviceType, radioSerial, ecSerial, tccOrgId, latitude,longitude, timeOfPosition);
+      var request = new GetProjectAndAssetUidsCTCTRequest(radioSerial, ecSerial, tccOrgId, latitude,longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
       var uri = ts.GetBaseUri() + "api/v2/project/getUidsCTCT";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson, statusCode);
-      var actualResult = JsonConvert.DeserializeObject<GetProjectAndAssetUidsResult>(response, ts.jsonSettings);
+      var actualResult = JsonConvert.DeserializeObject<GetProjectAndAssetUidsCTCTResult>(response, ts.jsonSettings);
       return actualResult;
     }
   }

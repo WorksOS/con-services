@@ -47,14 +47,14 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
       }
     }
 
-    public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUidsCTCT(GetProjectAndAssetUidsRequest request,
+    public async Task<GetProjectAndAssetUidsCTCTResult> GetProjectAndAssetUidsCTCT(GetProjectAndAssetUidsCTCTRequest request,
       IDictionary<string, string> customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
-      log.LogDebug($"{nameof(GetProjectAndAssetUidsCTCT)}  getProjectAndAssetUidsRequest: {jsonData}");
+      log.LogDebug($"{nameof(GetProjectAndAssetUidsCTCT)}  getProjectAndAssetUidsCTCTRequest: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>($"project/getUidsCTCT", customHeaders, HttpMethod.Post, payload: payload);
+        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsCTCTResult>($"project/getUidsCTCT", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
   }

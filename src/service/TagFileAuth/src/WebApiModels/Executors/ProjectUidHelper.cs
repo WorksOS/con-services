@@ -15,9 +15,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   {
     protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
-    public static GetProjectAndAssetUidsResult FormatResult(string projectUid, string assetUid, bool hasValidSub, int uniqueCode = 0)
+    public static GetProjectAndAssetUidsResult FormatResult(string projectUid, string assetUid, int uniqueCode = 0)
     {
-      return new GetProjectAndAssetUidsResult(projectUid, assetUid, hasValidSub,
+      return new GetProjectAndAssetUidsResult(projectUid, assetUid, 
+        (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
+        (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
+          (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));
+    }
+
+    public static GetProjectAndAssetUidsCTCTResult FormatResult(string projectUid, string assetUid, string customerUid, bool hasValidSub, int uniqueCode = 0)
+    {
+      return new GetProjectAndAssetUidsCTCTResult(projectUid, assetUid, customerUid, hasValidSub,
         (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
         (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
           (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));

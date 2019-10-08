@@ -24,6 +24,11 @@ namespace VSS.WebApi.Common
       TpaasApplicationName = tpaasApplicationName;
     }
 
+    public void SetCustomerUid(string customerUid)
+    {
+      CustomerUid = customerUid;
+    }
+
     /// <summary>
     /// Get TPaas Application name
     /// </summary>

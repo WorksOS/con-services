@@ -59,15 +59,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </returns>
     [Route("api/v2/project/getUidsCTCT")]
     [HttpPost]
-    public async Task<GetProjectAndAssetUidsResult> GetProjectAndAssetUidsCTCT([FromBody]GetProjectAndAssetUidsRequest request)
+    public async Task<GetProjectAndAssetUidsCTCTResult> GetProjectAndAssetUidsCTCT([FromBody]GetProjectAndAssetUidsCTCTRequest request)
     {
       _log.LogDebug($"{nameof(GetProjectAndAssetUids)}: request: {JsonConvert.SerializeObject(request)}");
       var errorCodeResult = request.Validate(true);
       if (errorCodeResult > 0)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, errorCodeResult));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(string.Empty, string.Empty, string.Empty, false, errorCodeResult));
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
-      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
+      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsCTCTResult;
 
       _log.LogResult(nameof(GetProjectAndAssetUids), request, result);
       return result;
@@ -101,7 +101,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetProjectAndAssetUids)}: request:{JsonConvert.SerializeObject(request)}");
       var errorCodeResult = request.Validate(false);
       if (errorCodeResult > 0)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(string.Empty, string.Empty, false, errorCodeResult));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, ProjectUidHelper.FormatResult(string.Empty, string.Empty, errorCodeResult));
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
