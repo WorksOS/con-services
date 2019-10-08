@@ -8,7 +8,7 @@ Scenario Outline: CoordinateSystemPost - Good Request
   Examples: 
   | ParameterName             | ResultName                | HttpCode |
   | CoordinateSystem          | CoordinateSystem          | 200      |
-  #| CoordinateSystemWithGeoid | CoordinateSystemWithGeoid | 200      |
+  | CoordinateSystemWithGeoid | CoordinateSystemWithGeoid | 200      |
 
 Scenario Outline: CoordinateSystemPost - Bad Request
   Given the service route "/api/v1/coordsystem" request repo "CoordSysRequest.json" and result repo "CoordSysResponse.json"

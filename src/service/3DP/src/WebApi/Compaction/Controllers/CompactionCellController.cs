@@ -167,46 +167,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       return Ok(v2PatchRequestResponse);
     }
 
-    // keep this for acceptance tests on the executor, until final output is determined
-
-    [HttpGet("api/v2/temppatchesorig")]
-    public async Task<IActionResult> OrigSubGridPatches(Guid projectUid, Guid filterUid, int patchId, DisplayMode mode, int patchSize, bool includeTimeOffsets = false)
-    {
-      Log.LogInformation($"OrigSubGridPatches: {Request.QueryString}");
-
-      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
-      var filter = GetCompactionFilter(projectUid, filterUid);
-      var projectSettings = GetProjectSettingsTargets(projectUid);
-
-      await Task.WhenAll(projectId, filter, projectSettings);
-
-      var liftSettings = SettingsManager.CompactionLiftBuildSettings(projectSettings.Result);
-
-      var patchRequest = new PatchRequest(
-        projectId.Result,
-        projectUid,
-        new Guid(),
-        mode,
-        null,
-        liftSettings,
-        false,
-        VolumesType.None,
-        VelociraptorConstants.VOLUME_CHANGE_TOLERANCE,
-        null, filter.Result, null, FilterLayerMethod.AutoMapReset, patchId, patchSize, includeTimeOffsets);
-
-      patchRequest.Validate();
-
-      var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2Executor>(LoggerFactory,
-#if RAPTOR
-          RaptorClient,
-#endif
-          configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders)
-        .ProcessAsync(patchRequest));
-
-      return Ok(v2PatchRequestResponse);
-    }
-
     /// <summary>
     /// Retrieve passes for a single cell and process them according to the provided filter and layer analysis parameters
     /// The version 2 endpoint supports FilterUID values being passed, as opposed to raw filters or filter ID values

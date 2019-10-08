@@ -13,14 +13,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// Gets the northing patch origin in meters, as a delta.
     /// </summary>
     [ProtoMember(1, IsRequired = true)]
-    [JsonProperty(PropertyName = "worldOriginX")]
+    [JsonProperty(PropertyName = "subgridOriginX")]
     public double SubgridOriginX { get; private set; }
 
     /// <summary>
     /// Gets the easting patch origin in meters, as a delta.
     /// </summary>
     [ProtoMember(2, IsRequired = true)]
-    [JsonProperty(PropertyName = "worldOriginY")]
+    [JsonProperty(PropertyName = "subgridOriginY")]
     public double SubgridOriginY { get; private set; }
 
 
