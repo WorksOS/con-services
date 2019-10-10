@@ -330,8 +330,7 @@ namespace TCCToDataOcean
       }
       catch (Exception exception)
       {
-        Log.LogError($"{Method.Info()} Error processing project {project.ProjectUID}");
-        Log.LogError(exception.GetBaseException().Message);
+        Log.LogError(exception, $"{Method.Info()} Error processing project {project.ProjectUID}");
       }
 
       return false;
