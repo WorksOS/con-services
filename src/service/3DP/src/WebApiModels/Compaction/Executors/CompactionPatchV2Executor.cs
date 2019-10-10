@@ -138,8 +138,6 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           var subgridOriginY = reader.ReadDouble();
           var isNull = reader.ReadBoolean();
 
-          log.LogDebug($"Subgrid {i + 1} in patch has world origin of {subgridOriginX}:{subgridOriginY}. IsNull?:{isNull}");
-
           if (isNull)
           {
             --numSubgridsInResult;
@@ -151,9 +149,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 
           uint timeOrigin = reader.ReadUInt32(); // UTC expressed as Unix time in seconds.
           byte timeOffsetSizeInBytes = reader.ReadByte();
-
-          log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
-
+          
           // Protobuf is limited to single dimension arrays so we cannot use the [32,32] layout used by other patch executors.
           const int arrayLength = 32 * 32;
           var cells = new PatchCellHeightResult[arrayLength];
@@ -167,6 +163,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
             {
               // Return raw elevation offset delta and the client will determine the elevation using the following equation:
               // float elevation = elevationOffsetDelta != 0xffff ? (float)(elevationOrigin + (elevOffset / 1000.0)) : -100000;
+
+              // Cells[] is in column major order i.e. 0,0, 0,1; 0,2 .. 0.31 1,0, 1,1, 1.2..1.31
 
               // Also increment all non-null values by 1. The consumer will subtract 1 from all non zero values to determine the true elevation offset.
               // These efforts are to further help the variant length operations that Protobuf applies to the byte stream.
@@ -198,6 +196,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
                 }
             }
 
+            // timeOrigin and time Unix seconds
             switch (timeOffsetSizeInBytes)
             {
               case 1:
@@ -232,6 +231,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           }
 
           subgrids.Add(PatchSubgridOriginProtobufResult.Create(Math.Round(subgridOriginX, 5), Math.Round(subgridOriginY, 5), elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, cells));
+          // TestUnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
         }
 
         log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} numSubgridsInPatch: {numSubgridsInPatch} numSubgridsInResult: {numSubgridsInResult} subgridsCount: {subgrids.Count}");
@@ -240,6 +240,45 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           totalPatchesRequired,
           subgrids.ToArray());
       }
+    }
+
+    class ElevAndTimeCell
+    {
+      public double elevation = -1;
+      public DateTime dateTime = DateTime.MinValue;
+      public double easting = -1;
+      public double northing = -1;
+      public ElevAndTimeCell(double easting, double northing, double elevation, DateTime dateTime)
+      {
+        this.easting = easting;
+        this.northing = northing;
+        this.elevation = elevation;
+        this.dateTime = dateTime;
+      }
+    }
+
+    // todoJeannie maybe turn into a unit test?
+    void TestUnpackSubgrid(double cellSize, PatchSubgridOriginProtobufResult subgrid)
+    {
+      var result = new ElevAndTimeCell[32, 32];
+      var subGridIterator = 0;
+
+      for (int x = 0; x < 32; x++)
+      {
+        for (int y = 0; y < 32; y++)
+        {
+          if (subgrid.Cells[subGridIterator].ElevationOffset > 0)
+          {
+            result[x, y] = new ElevAndTimeCell(
+              Math.Round(((subgrid.SubgridOriginX + (cellSize / 2)) + (cellSize * x)), 5),
+              Math.Round(((subgrid.SubgridOriginY + (cellSize / 2)) + (cellSize * y)), 5),
+              Math.Round(subgrid.ElevationOrigin + ((subgrid.Cells[subGridIterator].ElevationOffset - 1)) / 1000, 3),
+              (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(subgrid.TimeOrigin).AddSeconds(subgrid.Cells[subGridIterator].TimeOffset)
+              );
+          }
+          subGridIterator++;
+        }
+      }      
     }
 
   }

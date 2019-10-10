@@ -4,8 +4,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
 namespace VSS.Productivity3D.WebApiTests
 {
-  [TestClass]
-  //[TestClass, Ignore("Temporary script to generate .proto file for PatchResult while development is ongoing.")]
+  [TestClass, Ignore("Temporary script to generate .proto file for PatchResult while development is ongoing.")] 
   public class GeneratePatchResultProtoFile
   {
     [TestMethod]

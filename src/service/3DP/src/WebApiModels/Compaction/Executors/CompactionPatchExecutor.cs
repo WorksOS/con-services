@@ -97,13 +97,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           var worldOriginY = (StreamUtils.__Global.ReadIntegerFromStream(ms) - indexOriginOffset) * cellSize;
           var isNull = StreamUtils.__Global.ReadBooleanFromStream(ms);
 
-          log.LogDebug($"Subgrid {i + 1} in patch has world origin of {worldOriginX}:{worldOriginY}. IsNull?:{isNull}");
+          //log.LogDebug($"Subgrid {i + 1} in patch has world origin of {worldOriginX}:{worldOriginY}. IsNull?:{isNull}");
 
           if (!isNull)
           {
             var elevationOrigin = StreamUtils.__Global.ReadSingleFromStream(ms);
 
-            log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
+            //log.LogDebug($"Subgrid elevation origin in {elevationOrigin}");
 
             var cells = new PatchCellResult[32, 32];
 

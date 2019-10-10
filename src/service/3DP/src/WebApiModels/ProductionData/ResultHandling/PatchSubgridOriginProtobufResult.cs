@@ -30,14 +30,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </summary>
     [ProtoMember(3, IsRequired = true)]
     [JsonProperty(PropertyName = "timeOrigin")]
-    protected uint TimeOrigin { get; set; }
+    public uint TimeOrigin { get; set; }
 
     /// <summary>
     /// The elevation origin referenced by all cell elevations in the binary representation of the patch subgrids. Values are expressed in meters.
     /// </summary>
     [ProtoMember(4, IsRequired = true)]
     [JsonProperty(PropertyName = "elevationOrigin")]
-    protected float ElevationOrigin { get; set; }
+    public float ElevationOrigin { get; set; }
 
     /// <summary>
     /// The grid of cells that make up this subgrid in the patch
@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// </remarks>
     [ProtoMember(5, IsRequired = true)]
     [JsonProperty(PropertyName = "cells")]
-    protected PatchCellHeightResult[] Cells { get; set; }
+    public PatchCellHeightResult[] Cells { get; set; }
 
     public bool ShouldSerializeTimeOrigin()
     {
