@@ -131,6 +131,13 @@ namespace TCCToDataOcean
       var projectTasks = new List<Task<bool>>(projects.Count);
       _migrationDb.SetMigationInfo_SetProjectCount(projects.Count);
 
+      // Sort projects by most recently updated, so we process the (likely) most utilized first,
+      // in-case of a race condition during production migration with projects receiving new files
+      // while the migration is in flight.
+      projects = projects.OrderBy(x => x.LastActionedUTC)
+                         .Reverse()
+                         .ToList();
+
       foreach (var project in projects)
       {
         _migrationDb.WriteRecord(Table.Projects, project);
