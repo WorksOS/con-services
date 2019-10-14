@@ -13,13 +13,14 @@ namespace TCCToDataOcean.DatabaseAgent
     void WriteRecord(string tableName, ImportedFileDescriptor file);
     void WriteWarning(string projectUid, string message);
     void WriteError(string projectUid, string message);
-    void SetMigrationState(string tableName, Project project, MigrationState migrationState, string reason);
+    void SetMigrationState(string tableName, MigrationJob job, MigrationState migrationState, string reason);
     void SetMigrationState(string tableName, ImportedFileDescriptor file, MigrationState migrationState);
     void SetFileSize(string tableName, ImportedFileDescriptor file, long length);
     void SetProjectCoordinateSystemDetails(string tableName, Project project);
     void SetProjectDxfUnitsType(string tableName, Project project, DxfUnitsType? dxfUnitsType);
+    void IncrementProjectFilesUploaded(string tableName, Project project, int fileCount);
     void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount);
-    void SetCanResolveCSIB(string tableName, string key, bool canResolveCsib);
+    //void SetCanResolveCSIB(string tableName, string key, bool canResolveCsib);
     void SetResolveCSIBMessage(string tableName, string key, string message);
     void SetProjectCSIB(string tableName, string key, string csib);
 

@@ -182,7 +182,7 @@ namespace TCCToDataOcean
         writeStream.Write(payloadData, 0, payloadData.Length);
       }
 
-      string responseString = string.Empty;
+      var responseString = string.Empty;
 
       try
       {

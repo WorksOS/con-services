@@ -17,7 +17,7 @@ namespace TCCToDataOcean.Utils
       var dxfUnitsType = Encoding.UTF8.GetString(_coordSystemFileContent).Substring(41, 1);
       int.TryParse(dxfUnitsType, out var dxfUnits);
 
-      return (DxfUnitsType)dxfUnits;
+      return (DxfUnitsType)dxfUnits - 1;
     }
   }
 }
