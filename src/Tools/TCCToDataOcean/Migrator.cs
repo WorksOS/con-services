@@ -138,6 +138,9 @@ namespace TCCToDataOcean
                          .Reverse()
                          .ToList();
 
+      var projectCount = projects.Count;
+      var projectsProcessed = 0;
+
       foreach (var project in projects)
       {
         _migrationDb.WriteRecord(Table.Projects, project);
@@ -149,6 +152,13 @@ namespace TCCToDataOcean
 
         var completed = await Task.WhenAny(projectTasks);
         projectTasks.Remove(completed);
+
+        projectsProcessed += 1;
+
+        Log.LogInformation("Migration Progress:");
+        Log.LogInformation($"  Processed: {projectsProcessed}");
+        Log.LogInformation($"  In Flight: {projectTasks.Count}");
+        Log.LogInformation($"  Remaining: {projectCount - projectsProcessed}");
       }
 
       await Task.WhenAll(projectTasks);
@@ -244,7 +254,7 @@ namespace TCCToDataOcean
 
           if (selectedFiles.Count == 0)
           {
-            Log.LogInformation($"{Method.Info()} Project {job.Project.ProjectUID} contains no eligible files, aborting project migration");
+            Log.LogInformation($"{Method.Info()} Project {job.Project.ProjectUID} contains no eligible files, skipping project migration");
 
             migrationStateMessage = "Project contains no eligible files";
             migrationResult = true;
@@ -516,7 +526,7 @@ namespace TCCToDataOcean
       else
       {
         _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Skipped);
-        Log.LogDebug($"{Method.Info()} Skipped uploading file {file.ImportedFileUid}");
+        Log.LogDebug($"{Method.Info("DEBUG")} Skipped uploading file {file.ImportedFileUid}");
       }
 
       Log.LogInformation($"{Method.Out()} File {file.ImportedFileUid} update result {result.Code} {result.Message}");
