@@ -42,6 +42,8 @@ namespace TCCToDataOcean
     private readonly ILiteDbAgent _migrationDb;
     private readonly ICSIBAgent _csibAgent;
 
+    private readonly bool ResumeMigration;
+    private readonly bool ReProcessFailedProjects;
     private readonly string FileSpaceId;
     private readonly string ProjectApiUrl;
     private readonly string UploadFileApiUrl;
@@ -74,6 +76,9 @@ namespace TCCToDataOcean
       ImportFile = importFile;
       _migrationDb = liteDbAgent;
       _csibAgent = csibAgent;
+
+      ResumeMigration = configStore.GetValueBool("RESUME_MIGRATION", true);
+      ReProcessFailedProjects = configStore.GetValueBool("REPROCESS_FAILED_PROJECTS", true);
 
       FileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
       ProjectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
@@ -110,23 +115,28 @@ namespace TCCToDataOcean
           if (fileContents.Contains(project.ProjectUID)) tmpProjects.Add(project);
         }
 
-        Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
         DropTables();
 
         projects = tmpProjects;
       }
       else
       {
-        Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
-        DropTables();
-
-        if (Directory.Exists(TemporaryFolder))
+        if (!ResumeMigration)
         {
-          Directory.Delete(TemporaryFolder, recursive: true);
+          DropTables();
+
+          if (Directory.Exists(TemporaryFolder))
+          {
+            Log.LogDebug($"{Method.Info()} Removing temporary files from {TemporaryFolder}");
+            Directory.Delete(TemporaryFolder, recursive: true);
+          }
         }
       }
 
-      _migrationDb.InitDatabase();
+      if (!ResumeMigration)
+      {
+        _migrationDb.InitDatabase();
+      }
 
       var projectTasks = new List<Task<bool>>(projects.Count);
       _migrationDb.SetMigationInfo_SetProjectCount(projects.Count);
@@ -143,9 +153,41 @@ namespace TCCToDataOcean
 
       foreach (var project in projects)
       {
-        _migrationDb.WriteRecord(Table.Projects, project);
+        var projectRecord = _migrationDb.GetRecord<MigrationProject>(Table.Projects, project.LegacyProjectID);
 
-        var job = new MigrationJob { Project = project };
+        if (projectRecord == null)
+        {
+          Log.LogInformation($"{Method.Info()} Creating new migration record for project {project.ProjectUID}");
+          _migrationDb.WriteRecord(Table.Projects, project);
+        }
+        else
+        {
+          Log.LogInformation($"{Method.Info()} Found migration record for project {project.ProjectUID}");
+
+          if (projectRecord.MigrationState == MigrationState.Completed)
+          {
+            Log.LogInformation($"{Method.Info()} Skipping project {project.ProjectUID}, marked as COMPLETED");
+            continue;
+          }
+
+          if (projectRecord.MigrationState == MigrationState.Failed)
+          {
+            if (!ReProcessFailedProjects)
+            {
+              Log.LogInformation($"{Method.Info()} Not reprocessing FAILED project {project.ProjectUID}");
+              continue;
+            }
+          }
+
+          Log.LogInformation($"{Method.Info()} Resuming migration for project {project.ProjectUID}, marked as {Enum.GetName(typeof(MigrationState), projectRecord.MigrationState)?.ToUpper()}");
+        }
+
+        var job = new MigrationJob
+        {
+          Project = project,
+          IsRetryAttempt = projectRecord != null
+        };
+
         projectTasks.Add(MigrateProject(job));
 
         if (projectTasks.Count != THROTTLE_ASYNC_PROJECT_JOBS) continue;
@@ -153,6 +195,7 @@ namespace TCCToDataOcean
         var completed = await Task.WhenAny(projectTasks);
         projectTasks.Remove(completed);
 
+        _migrationDb.IncrementProjectMigrationCounter(project);
         projectsProcessed += 1;
 
         Log.LogInformation("Migration Progress:");
@@ -193,14 +236,18 @@ namespace TCCToDataOcean
 
     private void DropTables()
     {
+      if (ResumeMigration) { return; }
+
+      Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
+
       _migrationDb.DropTables(new[]
-                              {
-                                Table.MigrationInfo,
-                                Table.Projects,
-                                Table.Files,
-                                Table.Errors,
-                                Table.Warnings
-                              });
+      {
+        Table.MigrationInfo,
+        Table.Projects,
+        Table.Files,
+        Table.Errors,
+        Table.Warnings
+      });
     }
 
     /// <summary>
@@ -259,12 +306,16 @@ namespace TCCToDataOcean
             migrationStateMessage = "Project contains no eligible files";
             migrationResult = true;
           }
-          
+
           var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
 
           foreach (var file in selectedFiles)
           {
-            _migrationDb.WriteRecord(Table.Files, file);
+            if (!job.IsRetryAttempt)
+            {
+              _migrationDb.WriteRecord(Table.Files, file);
+            }
+
             var migrationResultObj = MigrateFile(file, job.Project);
 
             fileTasks.Add(migrationResultObj);
@@ -349,10 +400,14 @@ namespace TCCToDataOcean
       return true;
     }
 
+    /// <summary>
+    /// Failed to download coordinate system file from TCC, try and resolve it using what we know from Raptor.
+    /// </summary>
     private async Task<bool> ResolveCoordinateSystemFromRaptor(MigrationJob job)
     {
-      // Failed to download coordinate system file from TCC, try and resolve it using what we know from Raptor.
+      Log.LogInformation($"{Method.In()} Resolving project {job.Project.ProjectUID} CSIB from Raptor");
       var logMessage = $"Failed to fetch coordinate system file '{job.Project.CustomerUID}/{job.Project.ProjectUID}/{job.Project.CoordinateSystemFileName}' from TCC.";
+
       _migrationDb.WriteWarning(job.Project.ProjectUID, logMessage);
       Log.LogWarning(logMessage);
 
@@ -362,8 +417,11 @@ namespace TCCToDataOcean
 
       if (csibResponse.Code != 0)
       {
+        var errorMessage = $"Failed to resolve CSIB for project: {job.Project.ProjectUID}";
         _migrationDb.SetResolveCSIBMessage(Table.Projects, job.Project.ProjectUID, csib);
-        _migrationDb.WriteError(job.Project.ProjectUID, $"Failed to resolve CSIB for project: {job.Project.ProjectUID}");
+        _migrationDb.WriteError(job.Project.ProjectUID, errorMessage);
+
+        Log.LogError(errorMessage);
 
         return false;
       }
@@ -374,11 +432,23 @@ namespace TCCToDataOcean
       var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(job.Project, coordSysInfo["coordinateSystem"]["id"].ToString());
 
       var coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
+      bool result;
 
       using (var stream = new MemoryStream(coordSystemFileContent))
       {
-        return SaveDCFileToDisk(job, stream);
+        result = SaveDCFileToDisk(job, stream);
       }
+
+      if (result)
+      {
+        Log.LogInformation("Successfully resolved coordinate system information from Raptor");
+      }
+      else
+      {
+        Log.LogError("Failed to resolve coordinate system information from Raptor");
+      }
+
+      return result;
     }
 
     /// <summary>
@@ -521,7 +591,7 @@ namespace TCCToDataOcean
           _uploadToTCC);
 
         _migrationDb.SetMigrationState(Table.Files, file, MigrationState.Completed);
-        _migrationDb.IncrementProjectFilesUploaded(Table.Projects, project, 1);
+        _migrationDb.IncrementProjectFilesUploaded(project);
       }
       else
       {

@@ -9,6 +9,7 @@ namespace TCCToDataOcean.DatabaseAgent
   {
     IEnumerable<T> GetTable<T>(string tableName);
     void DropTables(string[] tableNames);
+    T GetRecord<T>(string tableName, int id) where T : MigrationObj;
     void WriteRecord(string tableName, Project project);
     void WriteRecord(string tableName, ImportedFileDescriptor file);
     void WriteWarning(string projectUid, string message);
@@ -18,7 +19,8 @@ namespace TCCToDataOcean.DatabaseAgent
     void SetFileSize(string tableName, ImportedFileDescriptor file, long length);
     void SetProjectCoordinateSystemDetails(string tableName, Project project);
     void SetProjectDxfUnitsType(string tableName, Project project, DxfUnitsType? dxfUnitsType);
-    void IncrementProjectFilesUploaded(string tableName, Project project, int fileCount);
+    void IncrementProjectFilesUploaded(Project project, int fileCount = 1);
+    void IncrementProjectMigrationCounter(Project project, int count = 1);
     void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount);
     //void SetCanResolveCSIB(string tableName, string key, bool canResolveCsib);
     void SetResolveCSIBMessage(string tableName, string key, string message);

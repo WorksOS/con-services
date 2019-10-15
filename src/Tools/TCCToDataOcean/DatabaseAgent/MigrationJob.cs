@@ -5,6 +5,7 @@ namespace TCCToDataOcean.DatabaseAgent
   public class MigrationJob
   {
     public Project Project { get; set; }
+    public bool IsRetryAttempt { get; set; }
     public byte[] CoordinateSystemFileBytes { get; set; }
   }
 }

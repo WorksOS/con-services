@@ -28,7 +28,8 @@ namespace TCCToDataOcean
   {
     private static void Main()
     {
-      MainAsync().GetAwaiter().GetResult();
+      MainAsync().GetAwaiter()
+                 .GetResult();
     }
 
     private static async Task MainAsync()

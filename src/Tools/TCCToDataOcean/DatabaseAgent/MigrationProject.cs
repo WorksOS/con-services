@@ -1,6 +1,4 @@
 ﻿using System;
-using Confluent.Kafka;
-using LiteDB;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -22,9 +20,9 @@ namespace TCCToDataOcean.DatabaseAgent
     public int TotalFileCount { get; set; }
     public int EligibleFileCount { get; set; }
     public int UploadedFileCount { get; set; }
-    //public bool CanResolveCSIB { get; set; }
     public string ResolveCSIBMessage { get; set; }
     public string CSIB { get; set; }
+    public int MigrationAttempts { get; set; }
 
     public MigrationProject()
     { }
