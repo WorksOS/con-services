@@ -122,7 +122,7 @@ namespace TCCToDataOcean
       try
       {
         var name = new DirectoryInfo(fullFileName).Name;
-        byte[] bytes = File.ReadAllBytes(fullFileName);
+        var bytes = File.ReadAllBytes(fullFileName);
         var fileSize = bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
@@ -147,6 +147,8 @@ namespace TCCToDataOcean
           {
             FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
             result = DoHttpRequest(uri, httpMethod, content.ToArray(), customerUid, contentType);
+
+//            content.Dispose();
           }
         }
 
@@ -201,9 +203,8 @@ namespace TCCToDataOcean
           if (!(e is WebException)) { continue; }
 
           var webException = (WebException)e;
-          var response = webException.Response as HttpWebResponse;
 
-          if (response == null) { continue; }
+          if (!(webException.Response is HttpWebResponse response)) { continue; }
 
           return GetStringFromResponseStream(response);
         }
@@ -252,13 +253,13 @@ namespace TCCToDataOcean
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowTotalChunks\"{NEWLINE}{NEWLINE}{flowFileUpload.flowTotalChunks}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"file\"; filename=\"{name}\"{NEWLINE}Content-Type: application/octet-stream{NEWLINE}{NEWLINE}");
 
-      byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      var header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(header, 0, header.Length);
       resultingStream.Write(chunkContent, 0, chunkContent.Length);
 
       sb = new StringBuilder();
       sb.Append($"{NEWLINE}{boundary}{BOUNDARY_BLOCK_DELIMITER}{NEWLINE}");
-      byte[] tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      var tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(tail, 0, tail.Length);
     }
 

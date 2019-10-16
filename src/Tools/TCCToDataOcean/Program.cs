@@ -71,6 +71,7 @@ namespace TCCToDataOcean
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
       services.AddSingleton<ICSIBAgent, CSIBAgent>();
+      services.AddSingleton<ICalibrationFileAgent, CalibrationFileAgent>();
     }
   }
 }

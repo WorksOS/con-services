@@ -157,9 +157,9 @@ namespace TCCToDataOcean.DatabaseAgent
       files.Update(dbObj);
     }
 
-    public void SetProjectCoordinateSystemDetails(string tableName, Project project)
+    public void SetProjectCoordinateSystemDetails(Project project)
     {
-      var projects = db.GetCollection<MigrationProject>(tableName);
+      var projects = db.GetCollection<MigrationProject>(Table.Projects);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.DcFilename = project.CoordinateSystemFileName;
@@ -213,14 +213,6 @@ namespace TCCToDataOcean.DatabaseAgent
 
       projects.Update(dbObj);
     }
-
-    //public void SetCanResolveCSIB(string tableName, string key, bool canResolveCsib)
-    //{
-    //  var projects = db.GetCollection<MigrationProject>(tableName);
-    //  var dbObj = projects.FindOne(x => x.ProjectUid == key);
-
-    //  UpdateProject(projects, dbObj, () => dbObj.CanResolveCSIB = canResolveCsib);
-    //}
 
     public void SetResolveCSIBMessage(string tableName, string key, string message)
     {
