@@ -259,13 +259,7 @@ namespace TCCToDataOcean
         Log.LogInformation($"{Method.In()} Migrating project {job.Project.ProjectUID}, Name: '{job.Project.Name}'");
         Database.SetMigrationState(Table.Projects, job, MigrationState.InProgress, null);
 
-        var result = await DcFileAgent.ResolveProjectCoordinateSystemFile(job);
-        if (!result)
-        {
-          migrationStateMessage = "Unable to resolve coordinate system file";
-          return false;
-        }
-
+        // Resolve imported files for current project.
         var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={job.Project.ProjectUID}", job.Project);
 
         if (filesResult == null)
@@ -287,6 +281,15 @@ namespace TCCToDataOcean
         }
         else
         {
+          // Resolve coordinate system file for the project.
+          var result = await DcFileAgent.ResolveProjectCoordinateSystemFile(job);
+          if (!result)
+          {
+            migrationStateMessage = "Unable to resolve coordinate system file";
+            return false;
+          }
+
+          // We have files, and a valid coordinate system, continue processing.
           var selectedFiles = filesResult.ImportedFileDescriptors
                                          .Where(f => MigrationFileTypes.Contains(f.ImportedFileType))
                                          .ToList();
@@ -310,7 +313,7 @@ namespace TCCToDataOcean
             // Check to sort out bad data; found in development database.
             if (file.CustomerUid != job.Project.CustomerUID)
             {
-              Log.LogError($"{Method.Info("ERROR")} Imported file CustomerUid ({file.CustomerUid}) doesn't match associated project {job.Project.ProjectUID}");
+              Log.LogError($"{Method.Info("ERROR")} CustomerUid ({file.CustomerUid}) for ImportedFile ({file.ImportedFileUid}) doesn't match associated project: {job.Project.ProjectUID}");
               continue;
             }
 
