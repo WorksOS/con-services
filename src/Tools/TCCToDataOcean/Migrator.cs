@@ -290,7 +290,7 @@ namespace TCCToDataOcean
           var selectedFiles = filesResult.ImportedFileDescriptors
                                          .Where(f => MigrationFileTypes.Contains(f.ImportedFileType))
                                          .ToList();
-
+          
           Database.SetProjectFilesDetails(Table.Projects, job.Project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
 
           Log.LogInformation($"{Method.Info()} Found {selectedFiles.Count} eligible files out of {filesResult.ImportedFileDescriptors.Count} total to migrate for {job.Project.ProjectUID}");
@@ -307,6 +307,13 @@ namespace TCCToDataOcean
 
           foreach (var file in selectedFiles)
           {
+            // Check to sort out bad data; found in development database.
+            if (file.CustomerUid != job.Project.CustomerUID)
+            {
+              Log.LogError($"{Method.Info("ERROR")} Imported file CustomerUid ({file.CustomerUid}) doesn't match associated project {job.Project.ProjectUID}");
+              continue;
+            }
+
             if (!job.IsRetryAttempt)
             {
               Database.WriteRecord(Table.Files, file);
