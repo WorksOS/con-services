@@ -176,10 +176,10 @@ namespace VSS.TCCFileAccess
       var sendFileParams = new PutFileRequest
       {
         filespaceid = filespaceId,
-        path = path,//WebUtility.UrlEncode(path),
+        path = path,
         replace = true,
         commitUpload = true,
-        filename = filename//WebUtility.UrlEncode(filename)
+        filename = filename
       };
       if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
@@ -216,42 +216,34 @@ namespace VSS.TCCFileAccess
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    public Task<Stream> GetFile(Organization org, string fullName)
-    {
-      Log.LogDebug("GetFile: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
-
-      return GetFileEx(org.filespaceId, fullName);
-    }
+    public Task<Stream> GetFile(Organization org, string fullName, int retries = 3) => GetFileEx(org.filespaceId, fullName, retries);
 
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    /// <param name="filespaceId">The file space ID.</param>
-    /// <param name="fullName">The full name.</param>
-    /// <returns></returns>
-    public async Task<Stream> GetFile(string filespaceId, string fullName)
-    {
-      Log.LogDebug("GetFile: filespaceId={0}, fullName={1}", filespaceId, fullName);
+    public async Task<Stream> GetFile(string filespaceId, string fullName, int retries = 3) => await GetFileEx(filespaceId, fullName, retries);
 
-      return await GetFileEx(filespaceId, fullName);
-    }
-
-    private async Task<Stream> GetFileEx(string filespaceId, string fullName)
+    private async Task<Stream> GetFileEx(string filespaceId, string fullName, int retries)
     {
+      Log.LogDebug($"{nameof(GetFileEx)}: filespaceId={filespaceId}, fullName={fullName}, retries={retries}");
+
       byte[] file;
       var cacheable = TCCFile.FileCacheable(fullName);
 
       if (cacheable)
       {
         Log.LogDebug("Trying to extract from cache {0} with cache size {1}", fullName, fileCache.Count);
+
         if (fileCache.TryGetValue(fullName, out file))
         {
           Log.LogDebug("Serving TCC tile request from cache {0}", fullName);
+
           if (file.Length == 0)
           {
             Log.LogDebug("Serving TCC tile request from cache empty tile");
             return null;
           }
+
           return new MemoryStream(file);
         }
       }
@@ -259,7 +251,7 @@ namespace VSS.TCCFileAccess
       var getFileParams = new GetFileParams
       {
         filespaceid = filespaceId,
-        path = fullName//WebUtility.UrlEncode(fullName)
+        path = fullName
       };
 
       if (string.IsNullOrEmpty(tccBaseUrl))
@@ -283,7 +275,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers)).ReadAsStreamAsync())
+        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers, retries: retries)).ReadAsStreamAsync())
         {
           Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
           responseStream.Position = 0;
@@ -335,9 +327,9 @@ namespace VSS.TCCFileAccess
         var renParams = new RenParams
         {
           filespaceid = org.filespaceId,
-          path = srcFullName,//WebUtility.UrlEncode(srcFullName),
+          path = srcFullName,
           newfilespaceid = org.filespaceId,
-          newPath = dstFullName,//WebUtility.UrlEncode(dstFullName),
+          newPath = dstFullName,
           merge = false,
           replace = true
         };
@@ -388,9 +380,9 @@ namespace VSS.TCCFileAccess
         var copyParams = new CopyParams
         {
           filespaceid = srcFilespaceId,
-          path = srcFullName, //WebUtility.UrlEncode(srcFullName),
+          path = srcFullName,
           newfilespaceid = dstFilespaceId,
-          newPath = dstFullName,//WebUtility.UrlEncode(dstFullName),
+          newPath = dstFullName,
           merge = false,
           replace = true//Not sure if we want true or false here
         };
@@ -424,7 +416,7 @@ namespace VSS.TCCFileAccess
         var dirParams = new DirParams
         {
           filespaceid = org.filespaceId,
-          path = path,//WebUtility.UrlEncode(path),
+          path = path,
           recursive = false,
           filterfolders = true,
         };
@@ -456,7 +448,7 @@ namespace VSS.TCCFileAccess
         var dirParams = new DirParams
         {
           filespaceid = filespaceId,
-          path = path,//WebUtility.UrlEncode(path),
+          path = path,
           recursive = false,
           filterfolders = false,
         };
@@ -490,7 +482,7 @@ namespace VSS.TCCFileAccess
         var lastDirChangeParams = new LastDirChangeParams
         {
           filespaceid = filespaceId,
-          path = path,//WebUtility.UrlEncode(path),
+          path = path,
           recursive = true
         };
         var lastDirChangeResult =
@@ -516,10 +508,7 @@ namespace VSS.TCCFileAccess
       return DateTime.MinValue;
     }
 
-    public async Task<bool> FolderExists(string filespaceId, string folder)
-    {
-      return await PathExists(filespaceId, folder);
-    }
+    public Task<bool> FolderExists(string filespaceId, string folder) => PathExists(filespaceId, folder);
 
     public Task<bool> FileExists(string filespaceId, string filename)
     {
@@ -565,15 +554,9 @@ namespace VSS.TCCFileAccess
     }
 
 
-    public async Task<bool> DeleteFolder(string filespaceId, string path)
-    {
-      return await DeleteFileEx(filespaceId, path, true);
-    }
+    public Task<bool> DeleteFolder(string filespaceId, string path) => DeleteFileEx(filespaceId, path, true);
 
-    public async Task<bool> DeleteFile(string filespaceId, string fullName)
-    {
-      return await DeleteFileEx(filespaceId, fullName, false);
-    }
+    public Task<bool> DeleteFile(string filespaceId, string fullName) => DeleteFileEx(filespaceId, fullName, false);
 
     public async Task<bool> DeleteFileEx(string filespaceId, string fullName, bool isFolder)
     {
@@ -583,7 +566,7 @@ namespace VSS.TCCFileAccess
         var deleteParams = new DeleteFileParams
         {
           filespaceid = filespaceId,
-          path = fullName,//WebUtility.UrlEncode(fullName),
+          path = fullName,
           recursive = isFolder
         };
         var deleteResult = await ExecuteRequest<DeleteFileResult>(Ticket, "Del", deleteParams);
