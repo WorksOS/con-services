@@ -172,6 +172,13 @@ namespace TCCToDataOcean.Utils
       {
         memStream = await FileRepo.GetFile(_fileSpaceId, $"/{job.Project.CustomerUID}/{job.Project.ProjectUID}/{job.Project.CoordinateSystemFileName}");
 
+        if (memStream == null)
+        {
+          _log.LogWarning($"{Method.Info()} Unable to download '{job.Project.CoordinateSystemFileName}' from TCC, unexpected error.");
+
+          return false;
+        }
+
         return SaveDCFileToDisk(job, memStream);
       }
       finally
