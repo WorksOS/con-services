@@ -19,9 +19,10 @@ namespace TCCToDataOcean.DatabaseAgent
     public DxfUnitsType? DxfUnitsType { get; set; }
     public int TotalFileCount { get; set; }
     public int EligibleFileCount { get; set; }
-    public bool CanResolveCSIB { get; set; }
+    public int UploadedFileCount { get; set; }
     public string ResolveCSIBMessage { get; set; }
     public string CSIB { get; set; }
+    public int MigrationAttempts { get; set; }
 
     public MigrationProject()
     { }

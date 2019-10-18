@@ -12,14 +12,13 @@ using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
-using TCCToDataOcean.Utils;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Utils
 {
   public class ImportFile : IImportFile
   {
@@ -122,7 +121,7 @@ namespace TCCToDataOcean
       try
       {
         var name = new DirectoryInfo(fullFileName).Name;
-        byte[] bytes = File.ReadAllBytes(fullFileName);
+        var bytes = File.ReadAllBytes(fullFileName);
         var fileSize = bytes.Length;
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
@@ -147,6 +146,8 @@ namespace TCCToDataOcean
           {
             FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
             result = DoHttpRequest(uri, httpMethod, content.ToArray(), customerUid, contentType);
+
+//            content.Dispose();
           }
         }
 
@@ -182,7 +183,7 @@ namespace TCCToDataOcean
         writeStream.Write(payloadData, 0, payloadData.Length);
       }
 
-      string responseString = string.Empty;
+      var responseString = string.Empty;
 
       try
       {
@@ -201,9 +202,8 @@ namespace TCCToDataOcean
           if (!(e is WebException)) { continue; }
 
           var webException = (WebException)e;
-          var response = webException.Response as HttpWebResponse;
 
-          if (response == null) { continue; }
+          if (!(webException.Response is HttpWebResponse response)) { continue; }
 
           return GetStringFromResponseStream(response);
         }
@@ -252,13 +252,13 @@ namespace TCCToDataOcean
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowTotalChunks\"{NEWLINE}{NEWLINE}{flowFileUpload.flowTotalChunks}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"file\"; filename=\"{name}\"{NEWLINE}Content-Type: application/octet-stream{NEWLINE}{NEWLINE}");
 
-      byte[] header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      var header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(header, 0, header.Length);
       resultingStream.Write(chunkContent, 0, chunkContent.Length);
 
       sb = new StringBuilder();
       sb.Append($"{NEWLINE}{boundary}{BOUNDARY_BLOCK_DELIMITER}{NEWLINE}");
-      byte[] tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      var tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(tail, 0, tail.Length);
     }
 
