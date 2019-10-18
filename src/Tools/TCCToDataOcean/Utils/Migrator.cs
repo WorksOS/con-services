@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
-using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
@@ -18,7 +17,7 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Utils
 {
   public class Migrator : IMigrator
   {
@@ -41,25 +40,22 @@ namespace TCCToDataOcean
     private readonly ILiteDbAgent Database;
     private readonly ICalibrationFileAgent DcFileAgent;
 
-    private readonly bool ResumeMigration;
-    private readonly bool ReProcessFailedProjects;
-    private readonly string FileSpaceId;
-    private readonly string ProjectApiUrl;
-    private readonly string UploadFileApiUrl;
-    private readonly string ImportedFileApiUrl;
-    private readonly string TemporaryFolder;
+    private readonly bool _resumeMigration;
+    private readonly bool _reProcessFailedProjects;
+    private readonly string _fileSpaceId;
+    private readonly string _projectApiUrl;
+    private readonly string _uploadFileApiUrl;
+    private readonly string _importedFileApiUrl;
+    private readonly string _tempFolder;
 
     // Diagnostic settings
     private readonly bool _downloadProjectFiles;
     private readonly bool _uploadProjectFiles;
     private readonly bool _saveFailedProjects;
-    private readonly bool _uploadToTCC;
 
     private readonly List<ImportedFileType> MigrationFileTypes = new List<ImportedFileType>
     {
       ImportedFileType.Linework, // DXF
-      //ImportedFileType.DesignSurface,
-      //ImportedFileType.SurveyedSurface,
       ImportedFileType.Alignment // SVL
     };
 
@@ -74,27 +70,26 @@ namespace TCCToDataOcean
       Database = liteDbAgent;
       DcFileAgent = dcFileAgent;
 
-      ResumeMigration = configStore.GetValueBool("RESUME_MIGRATION", true);
-      ReProcessFailedProjects = configStore.GetValueBool("REPROCESS_FAILED_PROJECTS", true);
+      _resumeMigration = configStore.GetValueBool("RESUME_MIGRATION", true);
+      _reProcessFailedProjects = configStore.GetValueBool("REPROCESS_FAILED_PROJECTS", true);
 
-      FileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
-      ProjectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
-      UploadFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL2", 1);
-      ImportedFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL", 3);
-      TemporaryFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
+      _fileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
+      _projectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
+      _uploadFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL2", 1);
+      _importedFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL", 3);
+      _tempFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
 
       // Diagnostic settings
       _downloadProjectFiles = configStore.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
       _uploadProjectFiles = configStore.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
       _saveFailedProjects = configStore.GetValueBool("SAVE_FAILED_PROJECT_IDS", defaultValue: true);
-      _uploadToTCC = configStore.GetValueBool("UPLOAD_TO_TCC", defaultValue: false);
     }
 
     public async Task MigrateFilesForAllActiveProjects()
     {
-      var recoveryFile = Path.Combine(TemporaryFolder, "MigrationRecovery.log");
+      var recoveryFile = Path.Combine(_tempFolder, "MigrationRecovery.log");
 
-      Log.LogInformation($"{Method.Info()} Fetching projects from: '{ProjectApiUrl}'");
+      Log.LogInformation($"{Method.Info()} Fetching projects from: '{_projectApiUrl}'");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
       Log.LogInformation($"{Method.Info()} Found {projects.Count} projects");
 
@@ -117,19 +112,19 @@ namespace TCCToDataOcean
       }
       else
       {
-        if (!ResumeMigration)
+        if (!_resumeMigration)
         {
           DropTables();
 
-          if (Directory.Exists(TemporaryFolder))
+          if (Directory.Exists(_tempFolder))
           {
-            Log.LogDebug($"{Method.Info()} Removing temporary files from {TemporaryFolder}");
-            Directory.Delete(TemporaryFolder, recursive: true);
+            Log.LogDebug($"{Method.Info()} Removing temporary files from {_tempFolder}");
+            Directory.Delete(_tempFolder, recursive: true);
           }
         }
       }
 
-      if (!ResumeMigration)
+      if (!_resumeMigration)
       {
         Database.InitDatabase();
       }
@@ -168,7 +163,7 @@ namespace TCCToDataOcean
 
           if (projectRecord.MigrationState == MigrationState.Failed)
           {
-            if (!ReProcessFailedProjects)
+            if (!_reProcessFailedProjects)
             {
               Log.LogInformation($"{Method.Info()} Not reprocessing FAILED project {project.ProjectUID}");
               continue;
@@ -207,9 +202,9 @@ namespace TCCToDataOcean
       {
         // Create a recovery file of project uids for re processing
         var processedProjects = Database.GetTable<MigrationProject>(Table.Projects);
-        var logFilename = Path.Combine(TemporaryFolder, $"MigrationRecovery_{DateTime.Now.Date.ToShortDateString().Replace('/', '-')}_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}.log");
+        var logFilename = Path.Combine(_tempFolder, $"MigrationRecovery_{DateTime.Now.Date.ToShortDateString().Replace('/', '-')}_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}.log");
 
-        if (!Directory.Exists(TemporaryFolder)) Directory.CreateDirectory(TemporaryFolder);
+        if (!Directory.Exists(_tempFolder)) Directory.CreateDirectory(_tempFolder);
 
         using (TextWriter tw = new StreamWriter(logFilename))
         {
@@ -225,14 +220,14 @@ namespace TCCToDataOcean
             }
           }
 
-          tw.Close();
+          tw.Dispose();
         }
       }
     }
 
     private void DropTables()
     {
-      if (ResumeMigration) { return; }
+      if (_resumeMigration) { return; }
 
       Log.LogInformation($"{Method.Info()} Cleaning database, dropping collections");
 
@@ -260,7 +255,7 @@ namespace TCCToDataOcean
         Database.SetMigrationState(Table.Projects, job, MigrationState.InProgress, null);
 
         // Resolve imported files for current project.
-        var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{ImportedFileApiUrl}?projectUid={job.Project.ProjectUID}", job.Project);
+        var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{_importedFileApiUrl}?projectUid={job.Project.ProjectUID}", job.Project);
 
         if (filesResult == null)
         {
@@ -366,7 +361,7 @@ namespace TCCToDataOcean
 
       string tempFileName;
 
-      using (var fileContents = await FileRepo.GetFile(FileSpaceId, $"{file.Path}/{file.Name}"))
+      using (var fileContents = await FileRepo.GetFile(_fileSpaceId, $"{file.Path}/{file.Name}"))
       {
         Database.SetMigrationState(Table.Files, file, MigrationState.InProgress);
 
@@ -381,7 +376,7 @@ namespace TCCToDataOcean
           return (success: true, file: null);
         }
 
-        var tempPath = Path.Combine(TemporaryFolder, file.CustomerUid, file.ProjectUid, file.ImportedFileUid);
+        var tempPath = Path.Combine(_tempFolder, file.CustomerUid, file.ProjectUid, file.ImportedFileUid);
         Directory.CreateDirectory(tempPath);
 
         tempFileName = Path.Combine(tempPath, file.Name);
@@ -408,11 +403,10 @@ namespace TCCToDataOcean
         Log.LogInformation($"{Method.Info()} Uploading file {file.ImportedFileUid}");
 
         result = ImportFile.SendRequestToFileImportV4(
-          UploadFileApiUrl,
+          _uploadFileApiUrl,
           file,
           tempFileName,
-          new ImportOptions(HttpMethod.Put),
-          _uploadToTCC);
+          new ImportOptions(HttpMethod.Put));
 
         Database.SetMigrationState(Table.Files, file, MigrationState.Completed);
         Database.IncrementProjectFilesUploaded(project);

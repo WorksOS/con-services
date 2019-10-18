@@ -12,14 +12,13 @@ using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
-using TCCToDataOcean.Utils;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Utils
 {
   public class ImportFile : IImportFile
   {

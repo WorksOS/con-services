@@ -10,30 +10,29 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TCCToDataOcean.Interfaces;
 using TCCToDataOcean.Types;
-using TCCToDataOcean.Utils;
 using VSS.WebApi.Common;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Utils
 {
   public class RestClient : IRestClient
   {
     private const string BOUNDARY_START = "-----";
 
-    private readonly HttpClient httpClient;
-    private readonly ILogger Log;
+    private readonly HttpClient _httpClient;
+    private readonly ILogger _log;
     private readonly string _bearerToken;
 
     private static HttpRequestMessage GetRequestMessage(HttpMethod method, string uri) => new HttpRequestMessage(method, new Uri(uri));
 
     public RestClient(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication)
     {
-      Log = loggerFactory.CreateLogger<HttpClient>();
-      Log.LogInformation(Method.In());
+      _log = loggerFactory.CreateLogger<HttpClient>();
+      _log.LogInformation(Method.In());
 
       _bearerToken = authentication.GetApplicationBearerToken();
 
-      httpClient = new HttpClient();
-      httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
+      _httpClient = new HttpClient();
+      _httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
     }
 
     /// <summary>
@@ -48,7 +47,7 @@ namespace TCCToDataOcean
       string requestBodyJson = null,
       byte[] payloadData = null) where TResponse : class
     {
-      Log.LogInformation($"{Method.In()} URI: {method} {uri}");
+      _log.LogInformation($"{Method.In()} URI: {method} {uri}");
 
       var request = GetRequestMessage(method, uri);
 
@@ -80,7 +79,7 @@ namespace TCCToDataOcean
           }
         }
 
-        var response = await httpClient.SendAsync(request);
+        var response = await _httpClient.SendAsync(request);
 
         var receiveStream = response.Content.ReadAsStreamAsync().Result;
         string responseBody;
@@ -94,20 +93,20 @@ namespace TCCToDataOcean
         {
           case HttpStatusCode.OK:
             {
-              Log.LogInformation($"{Method.Info()} Status [{response.StatusCode}] Body: '{responseBody}'");
+              _log.LogInformation($"{Method.Info()} Status [{response.StatusCode}] Body: '{responseBody}'");
               break;
             }
           case HttpStatusCode.InternalServerError:
           case HttpStatusCode.NotFound:
             {
-              Log.LogError($"{Method.Info()} Status [{response.StatusCode}] Body: '{responseBody}'");
+              _log.LogError($"{Method.Info()} Status [{response.StatusCode}] Body: '{responseBody}'");
               Debugger.Break();
 
               break;
             }
           default:
             {
-              Log.LogDebug($"{Method.Info()} Status [{response.StatusCode}] URI: '{request.RequestUri.AbsoluteUri}', Body: '{responseBody}'");
+              _log.LogDebug($"{Method.Info()} Status [{response.StatusCode}] URI: '{request.RequestUri.AbsoluteUri}', Body: '{responseBody}'");
 
               if (response.StatusCode == HttpStatusCode.Unauthorized)
               {
@@ -136,7 +135,7 @@ namespace TCCToDataOcean
       }
       catch (Exception exception)
       {
-        Log.LogError($"{Method.Info("ERROR")} {method} URI: '{request.RequestUri.AbsoluteUri}', Exception: {exception.GetBaseException()}");
+        _log.LogError($"{Method.Info("ERROR")} {method} URI: '{request.RequestUri.AbsoluteUri}', Exception: {exception.GetBaseException()}");
       }
       finally
       {

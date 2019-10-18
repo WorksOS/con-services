@@ -13,31 +13,31 @@ namespace TCCToDataOcean.Utils
 {
   public class CalibrationFileAgent : ICalibrationFileAgent
   {
-    private readonly ILogger Log;
+    private readonly ILogger _log;
     private readonly ILiteDbAgent _migrationDb;
     private readonly ICSIBAgent _csibAgent;
     private readonly IFileRepository FileRepo;
     private readonly IWebApiUtils _webApiUtils;
 
-    private readonly string TemporaryFolder;
+    private readonly string _tempFolder;
 
-    private readonly string ProjectApiUrl;
-    private readonly string FileSpaceId;
+    private readonly string _projectApiUrl;
+    private readonly string _fileSpaceId;
     private readonly bool _updateProjectCoordinateSystemFile;
 
     public CalibrationFileAgent(ILoggerFactory loggerFactory, ILiteDbAgent liteDbAgent, IConfigurationStore configStore, IEnvironmentHelper environmentHelper, IFileRepository fileRepo, IWebApiUtils webApiUtils, ICSIBAgent csibAgent)
     {
-      Log = loggerFactory.CreateLogger<CalibrationFileAgent>();
-      Log.LogInformation(Method.In());
+      _log = loggerFactory.CreateLogger<CalibrationFileAgent>();
+      _log.LogInformation(Method.In());
 
       _migrationDb = liteDbAgent;
       _webApiUtils = webApiUtils;
       _csibAgent = csibAgent;
       FileRepo = fileRepo;
 
-      ProjectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
-      FileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
-      TemporaryFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
+      _projectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
+      _fileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
+      _tempFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
 
       _updateProjectCoordinateSystemFile = configStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
     }
@@ -61,7 +61,7 @@ namespace TCCToDataOcean.Utils
     {
       if (string.IsNullOrEmpty(job.Project.CoordinateSystemFileName))
       {
-        Log.LogDebug($"Project '{job.Project.ProjectUID}' contains NULL CoordinateSystemFileName field.");
+        _log.LogDebug($"Project '{job.Project.ProjectUID}' contains NULL CoordinateSystemFileName field.");
         if (!await ResolveCoordinateSystemFromRaptor(job))
         {
           return false;
@@ -82,7 +82,6 @@ namespace TCCToDataOcean.Utils
       _migrationDb.SetProjectCoordinateSystemDetails(job.Project);
 
       return true;
-  //    return await UpdateProjectCoordinateSystemInfo(job);
     }
 
     /// <summary>
@@ -90,11 +89,11 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     private async Task<bool> ResolveCoordinateSystemFromRaptor(MigrationJob job)
     {
-      Log.LogInformation($"{Method.In()} Resolving project {job.Project.ProjectUID} CSIB from Raptor");
+      _log.LogInformation($"{Method.In()} Resolving project {job.Project.ProjectUID} CSIB from Raptor");
       var logMessage = $"Failed to fetch coordinate system file '{job.Project.CustomerUID}/{job.Project.ProjectUID}/{job.Project.CoordinateSystemFileName}' from TCC.";
 
       _migrationDb.WriteWarning(job.Project.ProjectUID, logMessage);
-      Log.LogWarning(logMessage);
+      _log.LogWarning(logMessage);
 
       // Get the the CSIB for the project from Raptor.
       var csibResponse = await _csibAgent.GetCSIBForProject(job.Project);
@@ -106,7 +105,7 @@ namespace TCCToDataOcean.Utils
         _migrationDb.SetResolveCSIBMessage(Table.Projects, job.Project.ProjectUID, csib);
         _migrationDb.WriteError(job.Project.ProjectUID, errorMessage);
 
-        Log.LogError(errorMessage);
+        _log.LogError(errorMessage);
 
         return false;
       }
@@ -126,15 +125,12 @@ namespace TCCToDataOcean.Utils
 
       if (result)
       {
-        Log.LogInformation("Successfully resolved coordinate system information from Raptor");
-        await UpdateProjectCoordinateSystemInfo(job);
-      }
-      else
-      {
-        Log.LogError("Failed to resolve coordinate system information from Raptor");
+        _log.LogInformation("Successfully resolved coordinate system information from Raptor");
+        return await UpdateProjectCoordinateSystemInfo(job);
       }
 
-      return result;
+      _log.LogError("Failed to resolve coordinate system information from Raptor");
+      return false;
     }
 
     /// <summary>
@@ -144,21 +140,21 @@ namespace TCCToDataOcean.Utils
     {
       if (_updateProjectCoordinateSystemFile)
       {
-        var updateProjectResult = await _webApiUtils.UpdateProjectCoordinateSystemFile(ProjectApiUrl, job);
+        var updateProjectResult = await _webApiUtils.UpdateProjectCoordinateSystemFile(_projectApiUrl, job);
 
         if (updateProjectResult.Code != 0)
         {
-          Log.LogError($"{Method.Info()} Error: Unable to update project coordinate system file; '{updateProjectResult.Message}' ({updateProjectResult.Code})");
+          _log.LogError($"{Method.Info()} Error: Unable to update project coordinate system file; '{updateProjectResult.Message}' ({updateProjectResult.Code})");
 
           return false;
         }
 
-        Log.LogInformation($"{Method.Info()} Update result '{updateProjectResult.Message}' ({updateProjectResult.Code})");
+        _log.LogInformation($"{Method.Info()} Update result '{updateProjectResult.Message}' ({updateProjectResult.Code})");
 
         return true;
       }
 
-      Log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
+      _log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
 
       return false;
     }
@@ -168,13 +164,13 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     private async Task<bool> DownloadCoordinateSystemFileFromTCC(MigrationJob job)
     {
-      Log.LogInformation($"{Method.In()} Downloading coord system file '{job.Project.CoordinateSystemFileName}' from TCC");
+      _log.LogInformation($"{Method.In()} Downloading coord system file '{job.Project.CoordinateSystemFileName}' from TCC");
 
       Stream memStream = null;
 
       try
       {
-        memStream = await FileRepo.GetFile(FileSpaceId, $"/{job.Project.CustomerUID}/{job.Project.ProjectUID}/{job.Project.CoordinateSystemFileName}");
+        memStream = await FileRepo.GetFile(_fileSpaceId, $"/{job.Project.CustomerUID}/{job.Project.ProjectUID}/{job.Project.CoordinateSystemFileName}");
 
         return SaveDCFileToDisk(job, memStream);
       }
@@ -189,11 +185,11 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     private bool SaveDCFileToDisk(MigrationJob job, Stream dcFileContent)
     {
-      Log.LogDebug($"{Method.In()} Writing coordinate system file for project {job.Project.ProjectUID}");
+      _log.LogDebug($"{Method.In()} Writing coordinate system file for project {job.Project.ProjectUID}");
 
       if (dcFileContent == null || dcFileContent.Length <= 0)
       {
-        Log.LogDebug($"{Method.Info()} Error: Null stream provided for dcFileContent for project '{job.Project.ProjectUID}'");
+        _log.LogDebug($"{Method.Info()} Error: Null stream provided for dcFileContent for project '{job.Project.ProjectUID}'");
         return false;
       }
 
@@ -204,13 +200,13 @@ namespace TCCToDataOcean.Utils
         var dxfUnitsType = GetDxfUnitsType(dcFileArray);
         job.CoordinateSystemFileBytes = dcFileArray;
 
-        Log.LogDebug($"{Method.Info()} Coordinate system file for project {job.Project.ProjectUID} uses {dxfUnitsType} units.");
+        _log.LogDebug($"{Method.Info()} Coordinate system file for project {job.Project.ProjectUID} uses {dxfUnitsType} units.");
         _migrationDb.SetProjectDxfUnitsType(Table.Projects, job.Project, dxfUnitsType);
       }
 
       try
       {
-        var dcFilePath = Path.Combine(TemporaryFolder, job.Project.CustomerUID, job.Project.ProjectUID);
+        var dcFilePath = Path.Combine(_tempFolder, job.Project.CustomerUID, job.Project.ProjectUID);
 
         if (!Directory.Exists(dcFilePath))
         {
@@ -232,14 +228,14 @@ namespace TCCToDataOcean.Utils
           dcFileContent.Seek(0, SeekOrigin.Begin);
           dcFileContent.CopyTo(fileStream);
 
-          Log.LogInformation($"{Method.Info()} Completed writing DC file '{tempFileName}' for project {job.Project.ProjectUID}");
+          _log.LogInformation($"{Method.Info()} Completed writing DC file '{tempFileName}' for project {job.Project.ProjectUID}");
 
           return true;
         }
       }
       catch (Exception exception)
       {
-        Log.LogError(exception, $"{Method.Info()} Error writing DC file for project {job.Project.ProjectUID}");
+        _log.LogError(exception, $"{Method.Info()} Error writing DC file for project {job.Project.ProjectUID}");
       }
 
       return false;
