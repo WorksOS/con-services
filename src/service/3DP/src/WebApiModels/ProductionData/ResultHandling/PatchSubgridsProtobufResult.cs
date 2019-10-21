@@ -28,37 +28,20 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     public double CellSize { get; protected set; }
 
     /// <summary>
-    /// The number of subgrids returned in this patch request
-    /// </summary>
-    [ProtoMember(2, IsRequired = true)]
-    [JsonProperty(PropertyName = "numSubgridsInPatch")]
-    public int NumSubgridsInPatch { get; protected set; }
-
-    /// <summary>
-    /// The total number of patch requests that must be made to retrieve all the information identified by the parameters of the patch query. Only returned for requests
-    /// that identify patch number 0 in the set to be retrieved.
-    /// </summary>
-    [ProtoMember(3, IsRequired = true)]
-    [JsonProperty(PropertyName = "totalNumPatchesRequired")]
-    public int TotalNumPatchesRequired { get; protected set; }
-
-    /// <summary>
     /// The collection of subgrids returned in this patch request result.
     /// </summary>
-    [ProtoMember(4, IsRequired = true)]
+    [ProtoMember(2, IsRequired = true)]
     [JsonProperty(PropertyName = "subgrids")]
     public PatchSubgridOriginProtobufResult[] Subgrids { get; protected set; }
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchSubgridsProtobufResult Create(double cellSize, int numSubgridsInPatch, int totalNumPatchesRequired, PatchSubgridOriginProtobufResult[] subgrids)
+    public static PatchSubgridsProtobufResult Create(double cellSize, PatchSubgridOriginProtobufResult[] subgrids)
     {
       return new PatchSubgridsProtobufResult
       {
-        CellSize = cellSize,
-        NumSubgridsInPatch = numSubgridsInPatch,
-        TotalNumPatchesRequired = totalNumPatchesRequired,
+        CellSize = cellSize,        
         Subgrids = subgrids
       };
     }

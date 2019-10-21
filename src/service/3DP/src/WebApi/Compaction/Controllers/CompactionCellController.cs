@@ -87,14 +87,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 #endif
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CompactionCellDatumResult;
     }
-       
+
     /// <summary>
-    /// Gets the subgrid patches for a given project. 
+    /// Gets a single patch of subgrids for the project at the machines lat/long. 
     /// </summary>
     /// <remarks>
-    /// This endpoint is expected to be used by machine based devices requesting raw data and deliberately
-    /// returns a lean response object to minimize the response size.
-    /// The response DTOs are decorated for use with Protobuf-net.
+    /// This endpoint is expected to be used by machine based devices requesting latest elevation and machine times.
+    /// The area required is indicated by the bounding box, which is limited to 500m2.
+    /// The response patch of subgrids is lean and decorated for use with Protobuf-net.
+    ///     See GeneratePatchResultProtoFile unit test for generating .proto file for injest by client.
     /// </remarks>
     [HttpGet("api/v2/patches")]
     public async Task<IActionResult> GetSubGridPatches(string ecSerial, string radioSerial, string tccOrgUid,
@@ -121,14 +122,20 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (tfaResult?.Code != 0 || string.IsNullOrEmpty(tfaResult.ProjectUid) || string.IsNullOrEmpty(tfaResult.CustomerUid))
       {
-        // todoJeannie get list of TFA and 3dp error strings for CTCT
         var errorMessage = $"Unable to identify a unique project or customer. Error code: {tfaResult?.Code} ProjectUid: {tfaResult?.ProjectUid} AssetUid: {tfaResult?.AssetUid} CustomerUid: {tfaResult?.CustomerUid}";
         Log.LogInformation(errorMessage);
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
       }
 
-      // todoJeannie rules to be determined if returns a projectUid but HasValidSub = false. 
+      // rules to be determined if returns a projectUid but HasValidSub = false. 
       //       e.g. Can Raptor/TRex return only ground from surveyedSurfaces, and NOT productionData?
+      if (!string.IsNullOrEmpty(tfaResult.ProjectUid) && !tfaResult.HasValidSub)
+      {
+        var errorMessage = $"Unique project was found, however no valid subscription was found. ProjectUid: {tfaResult?.ProjectUid} AssetUid: {tfaResult?.AssetUid} CustomerUid: {tfaResult?.CustomerUid}";
+        Log.LogInformation(errorMessage);
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
+      }
+           
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
       // Set customerUid for downstream service calls e.g. ProjectSvc
@@ -139,7 +146,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var projectUid = Guid.Parse(tfaResult.ProjectUid);      
       var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
 
-      // CTCT endpoint probably (todoJeannie?) has no UserId so won't get any excludedSSs.
+      // CTCT endpoint has no UserId so won't get any excludedSSs.
       var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);
       var projectSettings = GetProjectSettingsTargets(projectUid);
       await Task.WhenAll(filter, projectSettings);
@@ -163,7 +170,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       patchRequest.Validate();
 
       var v2PatchRequestResponse = await WithServiceExceptionTryExecuteAsync(() => RequestExecutorContainerFactory
-        .Build<CompactionPatchV2Executor>(LoggerFactory,
+        .Build<CompactionSinglePatchExecutor>(LoggerFactory,
 #if RAPTOR
           RaptorClient,
 #endif

@@ -1,8 +1,6 @@
 {
   "OneSubGrid": {
     "cellSize": 0.34,
-    "numSubgridsInPatch": 1,
-    "totalNumPatchesRequired": 1,
     "subgrids": [
       {
         "subgridOriginX": 2709.12,
@@ -4114,8 +4112,6 @@
   },
   "OneSubGridProtobuf": {
     "CellSize": 0.34,
-    "NumSubgridsInPatch": 1,
-    "TotalNumPatchesRequired": 1,
     "Subgrids": [
       {
         "SubgridOriginX": 2709.12,

@@ -39,6 +39,8 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
     private PatchesRequest()
     { }
 
+    private const double MAX_PATCHES_SM_BOUNDARY = 500;
+
     public PatchesRequest(string ecSerial, string radioSerial,
       string tccOrgUid,
       double machineLatitude, double machineLongitude,
@@ -68,6 +70,14 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
       }
 
       BoundingBox.Validate();
+
+      // NE are in metres (according to Raymond)     
+      if (((BoundingBox.TopRightX - BoundingBox.BottomLeftX) * (BoundingBox.TopRightY - BoundingBox.BottomleftY)) > MAX_PATCHES_SM_BOUNDARY)
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Invalid bounding box: Must be 500m2 or less."));
+      }
     }
   }
 }

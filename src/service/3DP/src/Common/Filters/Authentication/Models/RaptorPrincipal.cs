@@ -19,7 +19,6 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
   public class RaptorPrincipal : TIDCustomPrincipal
   {
     private readonly IProjectProxy projectProxy;
-    // todoJeannie    private 
     public readonly IDictionary<string, string> authNContext;
     private static readonly ConcurrentDictionary<Guid, long> legacyProjectIdsCache;
     private static readonly ConcurrentDictionary<long, Guid> ProjectUidsCache;

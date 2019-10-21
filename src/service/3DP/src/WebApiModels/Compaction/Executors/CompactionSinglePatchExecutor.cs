@@ -21,12 +21,12 @@ using System.Collections.Generic;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
-  public class CompactionPatchV2Executor : RequestExecutorContainer
+  public class CompactionSinglePatchExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Default constructor for RequestExecutorContainer.Build
     /// </summary>
-    public CompactionPatchV2Executor()
+    public CompactionSinglePatchExecutor()
     {
       ProcessErrorCodes();
     }
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           : CreateNullPatchReturnedResult();
       }
 
-      throw CreateServiceException<CompactionPatchV2Executor>((int)raptorResult);
+      throw CreateServiceException<CompactionSinglePatchExecutor>((int)raptorResult);
     }
 #endif
     protected sealed override void ProcessErrorCodes()
@@ -231,55 +231,12 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           }
 
           subgrids.Add(PatchSubgridOriginProtobufResult.Create(Math.Round(subgridOriginX, 5), Math.Round(subgridOriginY, 5), elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, cells));
-          // TestUnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
+          // test: CompactionSinglePatchResult.UnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
         }
 
         log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} numSubgridsInPatch: {numSubgridsInPatch} numSubgridsInResult: {numSubgridsInResult} subgridsCount: {subgrids.Count}");
-        return PatchSubgridsProtobufResult.Create(cellSize,
-          numSubgridsInResult, // actual number is less those where all null (if (isNull) above)
-          totalPatchesRequired,
-          subgrids.ToArray());
+        return PatchSubgridsProtobufResult.Create(cellSize, subgrids.ToArray());
       }
-    }
-
-    class ElevAndTimeCell
-    {
-      public double elevation = -1;
-      public DateTime dateTime = DateTime.MinValue;
-      public double easting = -1;
-      public double northing = -1;
-      public ElevAndTimeCell(double easting, double northing, double elevation, DateTime dateTime)
-      {
-        this.easting = easting;
-        this.northing = northing;
-        this.elevation = elevation;
-        this.dateTime = dateTime;
-      }
-    }
-
-    // todoJeannie maybe turn into a unit test?
-    void TestUnpackSubgrid(double cellSize, PatchSubgridOriginProtobufResult subgrid)
-    {
-      var result = new ElevAndTimeCell[32, 32];
-      var subGridIterator = 0;
-
-      for (int x = 0; x < 32; x++)
-      {
-        for (int y = 0; y < 32; y++)
-        {
-          if (subgrid.Cells[subGridIterator].ElevationOffset > 0)
-          {
-            result[x, y] = new ElevAndTimeCell(
-              Math.Round(((subgrid.SubgridOriginX + (cellSize / 2)) + (cellSize * x)), 5),
-              Math.Round(((subgrid.SubgridOriginY + (cellSize / 2)) + (cellSize * y)), 5),
-              Math.Round(subgrid.ElevationOrigin + ((subgrid.Cells[subGridIterator].ElevationOffset - 1)) / 1000, 3),
-              (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(subgrid.TimeOrigin).AddSeconds(subgrid.Cells[subGridIterator].TimeOffset)
-              );
-          }
-          subGridIterator++;
-        }
-      }      
-    }
-
+    }    
   }
 }
