@@ -36,7 +36,6 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceProvider = serviceCollection.BuildServiceProvider();
     }
 
-    //Use [Theory] with [InlineData] for parameterized tests
     [Fact]
     public async Task CanCheckTopLevelFolderExists()
     {
@@ -130,7 +129,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       const string fileName = "dummy.dxf";
       var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = fileName, ParentId = expectedFolderResult.Id };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile> { expectedFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -163,7 +162,7 @@ namespace VSS.DataOcean.Client.UnitTests
         new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string fileName = "dummy.dxf";
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile>() };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -266,30 +265,16 @@ namespace VSS.DataOcean.Client.UnitTests
       success = await client.MakeFolder(
         $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{subFolderName}", null);
       Assert.True(success);
-
-    }
-
-
-    [Fact]
-    public void CanPutFileSuccess()
-    {
-      var success = CanPutFile("AVAILABLE").Result;
-      Assert.True(success);
     }
 
     [Fact]
-    public void CanPutFileUploadFailed()
-    {
-      var success = CanPutFile("UPLOAD_FAILED").Result;
-      Assert.False(success);
-    }
+    public async Task CanPutFileSuccess() => Assert.True(await CanPutFile("AVAILABLE"));
 
     [Fact]
-    public void CanPutFileTimeout()
-    {
-      var success = CanPutFile("UPLOADABLE").Result;
-      Assert.False(success);
-    }
+    public async Task CanPutFileUploadFailed() => Assert.False(await CanPutFile("UPLOAD_FAILED"));
+
+    [Fact]
+    public async Task CanPutFileTimeout() => Assert.False(await CanPutFile("UPLOADABLE"));
 
     [Fact]
     public async Task CanDeleteExistingFile()
@@ -301,7 +286,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       const string fileName = "dummy.dxf";
       var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = fileName, ParentId = expectedFolderResult.Id };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile> { expectedFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -338,7 +323,7 @@ namespace VSS.DataOcean.Client.UnitTests
         new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string fileName = "dummy.dxf";
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile>() };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -418,7 +403,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       const string fileName = "dummy.dxf";
       var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = fileName, ParentId = expectedFolderResult.Id };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile> { expectedFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -451,7 +436,7 @@ namespace VSS.DataOcean.Client.UnitTests
         new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string fileName = "dummy.dxf";
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile>() };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -499,7 +484,7 @@ namespace VSS.DataOcean.Client.UnitTests
         Status = "AVAILABLE",
         DataOceanDownload = new DataOceanTransfer { Url = downloadUrl }
       };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile> { expectedFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -540,7 +525,7 @@ namespace VSS.DataOcean.Client.UnitTests
         new BrowseDirectoriesResult { Directories = new List<DataOceanDirectory> { expectedFolderResult } };
 
       const string fileName = "dummy.dxf";
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile>() };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile>() };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -604,7 +589,7 @@ namespace VSS.DataOcean.Client.UnitTests
         DataOceanDownload = new DataOceanTransfer { Url = downloadUrl },
         UpdatedAt = updatedAt.AddHours(-5)
       };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult, otherFileResult } };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile> { expectedFileResult, otherFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -659,7 +644,7 @@ namespace VSS.DataOcean.Client.UnitTests
         Status = "AVAILABLE",
         DataOceanDownload = new DataOceanTransfer { Url = downloadUrl }
       };
-      var expectedFileBrowseResult = new BrowseFilesResult() { Files = new List<DataOceanFile> { expectedFileResult } };
+      var expectedFileBrowseResult = new BrowseFilesResult { Files = new List<DataOceanFile> { expectedFileResult } };
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
@@ -686,7 +671,6 @@ namespace VSS.DataOcean.Client.UnitTests
       Assert.Null(resultStream);
     }
 
-    #region privates
     private Task<bool> CanPutFile(string status)
     {
       var uploadUrl = "https://fs-us1.staging-tdata-cdn.com/r/11591287-648f-4c60-ae5c-80b61b12d78b?Signature=lD3yNv-YesLoQWwCYPVo-dzh9Xw0Q5kiCkPkckv67tOP1e~AfFiJv9jYAqmES0vQgkQvSqzvK4RJ2l2gXybdq3pvEDxeFbQtvAW-6hHMBd7q~KUMi4gW4GSD-mWtiH~4~576SEUn-uZl6reyaM6yRqPXjS2VhBJGnBWzdhU~HVEiMJERR5MSfZp~oXfi~Gq-0NbeiXF-zIp1EIuH-cEP69MZg4zXRQn~wbHdrkBeVQeaziPVo1Keg~xDoi5TkyBnfV5Lpc3ZlRvlgHdPPrLuzOKbHXnsH2rPSD3naZPNfxtCq-V8YapD2NnZGyTPX-2FE77y3~X8k-rWPboU210WdA__&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9mcy11czEuc3RhZ2luZy10ZGF0YS1jZG4uY29tL3IvMTE1OTEyODctNjQ4Zi00YzYwLWFlNWMtODBiNjFiMTJkNzhiIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNTQxNjI1NzA1fX19XX0_&Key-Pair-Id=APKAJZFK5OCWBA5LQHUQ";
@@ -731,9 +715,8 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
+
       return client.PutFile(folderName, fileName, null);
     }
-
-    #endregion
   }
 }
