@@ -21,15 +21,11 @@ namespace VSS.DataOcean.Client
   /// </summary>
   public class DataOceanClient : IDataOceanClient
   {
-    private const string DATA_OCEAN_URL_KEY = "DATA_OCEAN_URL";
-    private const string DATA_OCEAN_UPLOAD_TIMEOUT_KEY = "DATA_OCEAN_UPLOAD_TIMEOUT_MINS";
-    private const string DATA_OCEAN_UPLOAD_WAIT_KEY = "DATA_OCEAN_UPLOAD_WAIT_MILLSECS";
-
     private readonly ILogger<DataOceanClient> Log;
-    private readonly IWebRequest gracefulClient;
-    private readonly string dataOceanBaseUrl;
-    private readonly int uploadWaitInterval;
-    private readonly double uploadTimeout;
+    private readonly IWebRequest _gracefulClient;
+    private readonly string _dataOceanBaseUrl;
+    private readonly int _uploadWaitInterval;
+    private readonly double _uploadTimeout;
 
     /// <summary>
     /// Client for sending requests to the data ocean.
@@ -37,19 +33,21 @@ namespace VSS.DataOcean.Client
     public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient)
     {
       Log = logger.CreateLogger<DataOceanClient>();
-      this.gracefulClient = gracefulClient;
+      _gracefulClient = gracefulClient;
 
-      dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
-      if (string.IsNullOrEmpty(dataOceanBaseUrl))
+      const string DATA_OCEAN_URL_KEY = "DATA_OCEAN_URL";
+      _dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
+
+      if (string.IsNullOrEmpty(_dataOceanBaseUrl))
       {
         throw new ArgumentException($"Missing environment variable {DATA_OCEAN_URL_KEY}");
       }
-      uploadWaitInterval = configuration.GetValueInt(DATA_OCEAN_UPLOAD_WAIT_KEY, 1000);//Millisecs
-      uploadTimeout = configuration.GetValueDouble(DATA_OCEAN_UPLOAD_TIMEOUT_KEY, 5);//minutes
-      Log.LogInformation($"{DATA_OCEAN_URL_KEY}={dataOceanBaseUrl}");
-    }
 
-    #region DataOcean public
+      _uploadWaitInterval = configuration.GetValueInt("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", 1000); //Millisecs
+      _uploadTimeout = configuration.GetValueDouble("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", 5); //minutes
+
+      Log.LogInformation($"{DATA_OCEAN_URL_KEY}={_dataOceanBaseUrl}");
+    }
 
     /// <summary>
     /// Determines if the folder path exists.
@@ -114,18 +112,18 @@ namespace VSS.DataOcean.Client
       if (newFile != null)
       {
         //2. Upload the file
-        await gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents);
+        await _gracefulClient.ExecuteRequestAsStreamContent(newFile.DataOceanUpload.Url, HttpMethod.Put, customHeaders, contents);
 
         //3. Monitor status of upload until done
         var route = $"/api/files/{newFile.Id}";
-        var endJob = DateTime.Now + TimeSpan.FromMinutes(uploadTimeout);
+        var endJob = DateTime.Now + TimeSpan.FromMinutes(_uploadTimeout);
         var done = false;
 
         while (!done && DateTime.Now <= endJob)
         {
-          if (uploadWaitInterval > 0)
+          if (_uploadWaitInterval > 0)
           {
-            await Task.Delay(uploadWaitInterval);
+            await Task.Delay(_uploadWaitInterval);
           }
 
           //TODO: This could be a scheduler job, polled for by the caller, if the upload is too slow.
@@ -162,7 +160,7 @@ namespace VSS.DataOcean.Client
       if (result != null)
       {
         var route = $"/api/files/{result.Id}";
-        await gracefulClient.ExecuteRequest($"{dataOceanBaseUrl}{route}", null, customHeaders, HttpMethod.Delete);
+        await _gracefulClient.ExecuteRequest($"{_dataOceanBaseUrl}{route}", null, customHeaders, HttpMethod.Delete);
         return true;
       }
 
@@ -233,7 +231,7 @@ namespace VSS.DataOcean.Client
       HttpContent response = null;
       try
       {
-        response = await gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders,
+        response = await _gracefulClient.ExecuteRequestAsStreamContent(downloadUrl, HttpMethod.Get, customHeaders,
           null, null, result.Multifile ? 0 : 3);
       }
       catch (HttpRequestException ex)
@@ -256,9 +254,6 @@ namespace VSS.DataOcean.Client
         return new MemoryStream(file);
       }
     }
-    #endregion
-
-    #region DataOcean private
 
     /// <summary>
     /// Gets the file metadata.
@@ -443,7 +438,7 @@ namespace VSS.DataOcean.Client
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        var result = await gracefulClient.ExecuteRequest<U>($"{dataOceanBaseUrl}{route}", ms, customHeaders, HttpMethod.Post);
+        var result = await _gracefulClient.ExecuteRequest<U>($"{_dataOceanBaseUrl}{route}", ms, customHeaders, HttpMethod.Post);
         Log.LogDebug($"CreateItem: result={JsonConvert.SerializeObject(result)}");
         return result;
       }
@@ -461,16 +456,14 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"GetData: route={route}, queryParameters={JsonConvert.SerializeObject(queryParameters)}");
 
-      var query = $"{dataOceanBaseUrl}{route}";
+      var query = $"{_dataOceanBaseUrl}{route}";
       if (queryParameters != null)
       {
         query = QueryHelpers.AddQueryString(query, queryParameters);
       }
-      var result = await gracefulClient.ExecuteRequest<T>(query, null, customHeaders, HttpMethod.Get);
+      var result = await _gracefulClient.ExecuteRequest<T>(query, null, customHeaders, HttpMethod.Get);
       Log.LogDebug($"GetData: result={(result == null ? "null" : JsonConvert.SerializeObject(result))}");
       return result;
     }
-
-    #endregion
   }
 }
