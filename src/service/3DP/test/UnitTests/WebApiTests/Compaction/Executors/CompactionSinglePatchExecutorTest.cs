@@ -49,8 +49,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       _logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 
-    //[TestMethod, Ignore("Temporary script to generate .proto file for PatchResult while development is ongoing.")]
-    [TestMethod]
+    [TestMethod, Ignore("Temporary script to generate .proto file for PatchResult while development is ongoing.")]
     public void GenerateProtoFile()
     {
       // After .proto file is created generate .cs client schema using:

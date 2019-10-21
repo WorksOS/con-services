@@ -1,0 +1,18 @@
+syntax = "proto2";
+package VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+
+message PatchCellHeightResult {
+   required uint32 ElevationOffset = 1;
+   required uint32 TimeOffset = 2;
+}
+message PatchSubgridOriginProtobufResult {
+   required double SubgridOriginX = 1;
+   required double SubgridOriginY = 2;
+   required uint32 TimeOrigin = 3;
+   required float ElevationOrigin = 4;
+   repeated PatchCellHeightResult Cells = 5;
+}
+message PatchSubgridsProtobufResult {
+   required double CellSize = 1;
+   repeated PatchSubgridOriginProtobufResult Subgrids = 2;
+}

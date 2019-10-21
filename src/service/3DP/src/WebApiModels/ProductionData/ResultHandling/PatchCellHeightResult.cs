@@ -13,14 +13,14 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// Elevation at the cell center point
     /// </summary>
     [JsonProperty(PropertyName = "elevationOffset")]
-    [ProtoMember(1, IsRequired = true, IsPacked = true)]
+    [ProtoMember(1, IsRequired = true)]
     public ushort ElevationOffset { get; private set; }
 
     /// <summary>
     /// Elevation at the cell center point
     /// </summary>
     [JsonProperty(PropertyName = "timeOffset")]
-    [ProtoMember(2, IsRequired = true, IsPacked = true)]
+    [ProtoMember(2, IsRequired = true)]
     public uint TimeOffset { get; private set; }
 
     public bool ShouldSerializeTimeOffset()
