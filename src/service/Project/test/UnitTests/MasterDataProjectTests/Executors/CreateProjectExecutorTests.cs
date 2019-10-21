@@ -71,7 +71,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       fileRepo.Setup(fr => fr.FolderExists(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
-      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
+      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>(), 0)).ReturnsAsync(new MemoryStream(buffer));
 
       var coordinateSystemFileContent = await TccHelper.GetFileContentFromTcc(_businessCenterFile, Log, serviceExceptionHandler, fileRepo.Object);
 

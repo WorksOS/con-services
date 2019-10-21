@@ -63,9 +63,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Determines if the file exists.
     /// </summary>
-    /// <param name="filename">The full path and file name</param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
     public async Task<bool> FileExists(string filename, IDictionary<string, string> customHeaders)
     {
       Log.LogDebug($"FileExists: {filename}");
@@ -77,9 +74,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Makes the folder structure. Can partially exist already i.e. parent folder. 
     /// </summary>
-    /// <param name="path">The folder structure to create</param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
     public async Task<bool> MakeFolder(string path, IDictionary<string, string> customHeaders)
     {
       Log.LogDebug($"MakeFolder: {path}");
@@ -91,11 +85,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Saves the file.
     /// </summary>
-    /// <param name="path">Where to save it</param>
-    /// <param name="filename">The name of the file</param>
-    /// <param name="contents">The contents of the file</param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
     public async Task<bool> PutFile(string path, string filename, Stream contents, IDictionary<string, string> customHeaders = null)
     {
       var fullName = Path.Combine(path, filename);
@@ -103,12 +92,14 @@ namespace VSS.DataOcean.Client
 
       var success = false;
       var parentFolder = await GetFolderMetadata(path, true, customHeaders);
+
       //Delete any existing file. To avoid 2 traversals just try it anyway without checking for existance.
       await DeleteFile(fullName, customHeaders);
 
       //1. Create the file
       var createResult = await CreateFile(filename, parentFolder?.Id, customHeaders);
       var newFile = createResult?.File;
+
       if (newFile != null)
       {
         //2. Upload the file
@@ -265,9 +256,8 @@ namespace VSS.DataOcean.Client
       var path = Path.GetDirectoryName(fullName);
       var parentFolder = await GetFolderMetadata(path, true, customHeaders);
 
-      var filename = Path.GetFileName(fullName);
-      var result = await BrowseFile(filename, parentFolder?.Id, customHeaders);
-      int? count = result?.Files?.Count;
+      var result = await BrowseFile(Path.GetFileName(fullName), parentFolder?.Id, customHeaders);
+      var count = result?.Files?.Count;
 
       if (count == 1)
       {
@@ -300,60 +290,50 @@ namespace VSS.DataOcean.Client
       var parts = path.Split(Path.DirectorySeparatorChar);
       DataOceanDirectory folder = null;
       Guid? parentId = null;
-      bool creatingPath = false;
+      var creatingPath = false;
+
       for (var i = 0; i < parts.Length; i++)
       {
-        if (!string.IsNullOrEmpty(parts[i]))
+        if (string.IsNullOrEmpty(parts[i])) { continue; }
+
+        //Once we know part of the path doesn't exist we can shortcut browsing to check for existance
+        int? count = 0;
+
+        if (!creatingPath)
         {
-          //Once we know part of the path doesn't exist we can shortcut browsing to check for existance
-          int? count = 0;
-          if (!creatingPath)
-          {
-            var result = await BrowseFolder(parts[i], parentId, customHeaders);
-            count = result?.Directories?.Count;
-            if (count == 1)
-            {
-              folder = result.Directories[0];
-              parentId = folder.Id;
-            }
-          }
+          var result = await BrowseFolder(parts[i], parentId, customHeaders);
+          count = result?.Directories?.Count;
 
-          if (count == 0)
+          if (count == 1)
           {
-            if (mustExist)
-            {
-              return null;
-            }
-
-            folder = (await CreateDirectory(parts[i], parentId, customHeaders)).Directory;
+            folder = result.Directories[0];
             parentId = folder.Id;
-            creatingPath = true;
           }
-          else if (count > 1)
-          {
-            //Should we throw an exception here?
-            Log.LogWarning($"Duplicate folders {parts[i]} in path {path}");
-            return null;
-          }
+        }
+
+        if (count == 0)
+        {
+          if (mustExist) { return null; }
+
+          folder = (await CreateDirectory(parts[i], parentId, customHeaders)).Directory;
+          parentId = folder.Id;
+          creatingPath = true;
+        }
+        else if (count > 1)
+        {
+          Log.LogWarning($"Duplicate folders {parts[i]} in path {path}");
+          return null;
         }
       }
 
       //Folders in path already exist or have been created successfully
       return folder;
     }
-
-
+    
     /// <summary>
     /// Gets the requested folder metadata at the specified level i.e. with the requested parent.
     /// </summary>
-    /// <param name="folderName">Folder name</param>
-    /// <param name="parentId">DataOcean ID of the parent folder</param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    private Task<BrowseDirectoriesResult> BrowseFolder(string folderName, Guid? parentId, IDictionary<string, string> customHeaders)
-    {
-      return BrowseItem<BrowseDirectoriesResult>(folderName, parentId, true, customHeaders);
-    }
+    private Task<BrowseDirectoriesResult> BrowseFolder(string folderName, Guid? parentId, IDictionary<string, string> customHeaders) => BrowseItem<BrowseDirectoriesResult>(folderName, parentId, true, customHeaders);
 
     /// <summary>
     /// Gets the requested file metadata at the specified level i.e. with the requested parent.
