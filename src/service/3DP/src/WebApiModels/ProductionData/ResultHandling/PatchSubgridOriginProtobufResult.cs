@@ -23,7 +23,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     [JsonProperty(PropertyName = "subgridOriginY")]
     public double SubgridOriginY { get; private set; }
 
-
     /// <summary>
     /// The elevation origin referenced by all cell elevations in the binary representation of the patch subgrids.
     /// UTC expressed as Unix time in seconds.
@@ -40,28 +39,23 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     public float ElevationOrigin { get; set; }
 
     /// <summary>
-    /// The grid of cells that make up this subgrid in the patch
+    /// Elevation at the cell center point
     /// </summary>
-    /// <remarks>
-    /// This class differs from <see cref="PatchSubgridOriginResult"/> in the way Cells is defined. Protobuf cannot serialize multi dimensional arrays so
-    /// in this case we linearize it.
-    ///
-    /// When the CellController 'api/v1/productiondata/patches/worldorigin' endpoint is no longer required for testing by the CTCT team we can remove it and
-    /// remove <see cref="PatchSubgridOriginResult"/> and associated methods/classes.
-    /// </remarks>
-    [ProtoMember(5, IsRequired = true)]
-    [JsonProperty(PropertyName = "cells")]
-    public PatchCellHeightResult[] Cells { get; set; }
+    [JsonProperty(PropertyName = "elevationOffsets")]
+    [ProtoMember(6, IsRequired = true, IsPacked = true)]
+    public ushort[] ElevationOffsets { get; private set; }
 
-    public bool ShouldSerializeTimeOrigin()
-    {
-      return TimeOrigin != uint.MaxValue;
-    }
+    /// <summary>
+    /// Elevation at the cell center point
+    /// </summary>
+    [JsonProperty(PropertyName = "timeOffsets")]
+    [ProtoMember(7, IsRequired = true, IsPacked = true)]
+    public uint[] TimeOffsets { get; private set; }
 
     /// <summary>
     /// Static constructor.
     /// </summary>
-    public static PatchSubgridOriginProtobufResult Create(double subgridOriginX, double subgridOriginY, float elevationOrigin, uint timeOrigin, PatchCellHeightResult[] cells)
+    public static PatchSubgridOriginProtobufResult Create(double subgridOriginX, double subgridOriginY, float elevationOrigin, uint timeOrigin, ushort[] elevationOffsets, uint[] timeOffsets)
     {
       return new PatchSubgridOriginProtobufResult
       {
@@ -69,7 +63,8 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
         SubgridOriginY = subgridOriginY,
         ElevationOrigin = elevationOrigin,
         TimeOrigin = timeOrigin,
-        Cells = cells
+        ElevationOffsets = elevationOffsets,
+        TimeOffsets = timeOffsets
       };
     }
   }

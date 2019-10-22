@@ -87,6 +87,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         configStore: ConfigStore, trexCompactionDataProxy: TRexCompactionDataProxy, customHeaders: CustomHeaders).ProcessAsync(request) as CompactionCellDatumResult;
     }
 
+
     /// <summary>
     /// Gets a single patch of subgrids for the project at the machines lat/long. 
     /// </summary>
@@ -99,15 +100,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     [HttpGet("api/v2/patches")]
     public async Task<IActionResult> GetSubGridPatches(string ecSerial, string radioSerial, string tccOrgUid,
       double machineLatitude, double machineLongitude,
-      double bottomLeftX, double bottomLeftY, double topRightX, double topRightY )
+      double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
     {
-      var patchesRequest = new PatchesRequest(ecSerial, radioSerial, tccOrgUid, machineLatitude, machineLongitude, 
+      var patchesRequest = new PatchesRequest(ecSerial, radioSerial, tccOrgUid, machineLatitude, machineLongitude,
         new BoundingBox2DGrid(bottomLeftX, bottomLeftY, topRightX, topRightY));
       Log.LogInformation($"{nameof(GetSubGridPatches)}: {JsonConvert.SerializeObject(patchesRequest)}");
-      
+
       // todoJeannie temporary to look into the DID info available.
       Log.LogDebug($"{nameof(GetSubGridPatches)}: customHeaders {CustomHeaders.LogHeaders()}");
-      
+
       patchesRequest.Validate();
 
       var requestPatchId = 0;
@@ -134,16 +135,16 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         Log.LogInformation(errorMessage);
         return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
       }
-           
+
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
       // Set customerUid for downstream service calls e.g. ProjectSvc
       Log.LogInformation($"{nameof(GetSubGridPatches)}: requestHeaders {JsonConvert.SerializeObject(Request.Headers)} PrincipalCustomerUID {((RaptorPrincipal)User).CustomerUid} authNContext {JsonConvert.SerializeObject(((RaptorPrincipal)User).authNContext)}");
-      if ( ((RaptorPrincipal)User).SetCustomerUid(tfaResult.CustomerUid))
+      if (((RaptorPrincipal)User).SetCustomerUid(tfaResult.CustomerUid))
         Request.Headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID] = tfaResult.CustomerUid;
 
-      var projectUid = Guid.Parse(tfaResult.ProjectUid);      
-      var projectId = ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
+      var projectUid = Guid.Parse(tfaResult.ProjectUid);
+      var projectId = ((RaptorPrincipal)User).GetLegacyProjectId(projectUid);
 
       // CTCT endpoint has no UserId so won't get any excludedSSs.
       var filter = SetupCompactionFilter(Guid.Parse(tfaResult.ProjectUid), patchesRequest.BoundingBox);

@@ -7,21 +7,6 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
 {
 
   [global::ProtoBuf.ProtoContract()]
-  public partial class PatchCellHeightResult : global::ProtoBuf.IExtensible
-  {
-    private global::ProtoBuf.IExtension __pbn__extensionData;
-    global::ProtoBuf.IExtension global::ProtoBuf.IExtensible.GetExtensionObject(bool createIfMissing)
-        => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
-
-    [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
-    public uint ElevationOffset { get; set; }
-
-    [global::ProtoBuf.ProtoMember(2, IsRequired = true)]
-    public uint TimeOffset { get; set; }
-
-  }
-
-  [global::ProtoBuf.ProtoContract()]
   public partial class PatchSubgridOriginProtobufResult : global::ProtoBuf.IExtensible
   {
     private global::ProtoBuf.IExtension __pbn__extensionData;
@@ -40,8 +25,11 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     [global::ProtoBuf.ProtoMember(4, IsRequired = true)]
     public float ElevationOrigin { get; set; }
 
-    [global::ProtoBuf.ProtoMember(5)]
-    public global::System.Collections.Generic.List<PatchCellHeightResult> Cells { get; } = new global::System.Collections.Generic.List<PatchCellHeightResult>();
+    [global::ProtoBuf.ProtoMember(6, IsPacked = true)]
+    public uint[] ElevationOffsets { get; set; }
+
+    [global::ProtoBuf.ProtoMember(7, IsPacked = true)]
+    public uint[] TimeOffsets { get; set; }
 
   }
 
@@ -55,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     [global::ProtoBuf.ProtoMember(1, IsRequired = true)]
     public double CellSize { get; set; }
 
-    [global::ProtoBuf.ProtoMember(2)]
+    [global::ProtoBuf.ProtoMember(4)]
     public global::System.Collections.Generic.List<PatchSubgridOriginProtobufResult> Subgrids { get; } = new global::System.Collections.Generic.List<PatchSubgridOriginProtobufResult>();
 
   }

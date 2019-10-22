@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling
     /// <summary>
     /// The collection of subgrids returned in this patch request result.
     /// </summary>
-    [ProtoMember(2, IsRequired = true)]
+    [ProtoMember(4, IsRequired = true)]
     [JsonProperty(PropertyName = "subgrids")]
     public PatchSubgridOriginProtobufResult[] Subgrids { get; protected set; }
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 
-namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
+namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
-  class CompactionSinglePatchResult
+  public class CompactionSinglePatchResult
   {
     public double elevation = -1;
     public DateTime dateTime = DateTime.MinValue;
@@ -30,14 +30,14 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       {
         for (int y = 0; y < 32; y++)
         {
-          if (subgrid.Cells[subGridIterator].ElevationOffset > 0)
+          if (subgrid.ElevationOffsets[subGridIterator] > 0)
           {
             result[x, y] = new CompactionSinglePatchResult(
               Math.Round(((subgrid.SubgridOriginX + (cellSize / 2)) + (cellSize * x)), 5),
               Math.Round(((subgrid.SubgridOriginY + (cellSize / 2)) + (cellSize * y)), 5),
               // elevation offsets are in mm
-              Math.Round((subgrid.ElevationOrigin + (subgrid.Cells[subGridIterator].ElevationOffset - 1) / 1000.0), 3),
-              (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(subgrid.TimeOrigin).AddSeconds(subgrid.Cells[subGridIterator].TimeOffset)
+              Math.Round((subgrid.ElevationOrigin + (subgrid.ElevationOffsets[subGridIterator] - 1) / 1000.0), 3),
+              (new DateTime(1970, 1, 1, 0, 0, 0, 0)).AddSeconds(subgrid.TimeOrigin).AddSeconds(subgrid.TimeOffsets[subGridIterator])
               );
           }
           subGridIterator++;

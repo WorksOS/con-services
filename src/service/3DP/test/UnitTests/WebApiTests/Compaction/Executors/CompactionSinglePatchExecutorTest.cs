@@ -27,6 +27,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Common.Models;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
 {
@@ -56,7 +57,6 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       // $ protogen --proto_path=C:\temp PatchResult.proto --csharp_out=C:\temp
       // .\protogen --proto_path=.\ PatchSubgridsProtobufResult.proto --csharp_out=.\
 
-      // var fileString = Serializer.GetProto<PatchSimpleListResult>();
       var fileString = Serializer.GetProto<PatchSubgridsProtobufResult>();
     }
 
@@ -194,11 +194,15 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       var delta = (uint) 0;
 
       // elevation offsets are in mm
-      var cells = new PatchCellHeightResult[cellSize * cellSize];
-      for (uint c = delta; c < (cellSize * cellSize); c++)
-        cells[c] = PatchCellHeightResult.Create((ushort)(c + 6), c + 3);
+      var elevationOffsets = new ushort[cellSize * cellSize];
+      var timeOffsets = new uint[cellSize * cellSize];
+      for (var c = delta; c < (cellSize * cellSize); c++)
+      {
+        elevationOffsets[c] = (ushort) (c + 6);
+        timeOffsets[c] = c + 3;
+      }
 
-      var resultStream = WriteAsPerTRex(1, 1, subgridOriginX, subgridOriginY, elevationOrigin, timeOrigin, cells);
+      var resultStream = WriteAsPerTRex(1, 1, subgridOriginX, subgridOriginY, elevationOrigin, timeOrigin, elevationOffsets, timeOffsets);
       tRexProxy.Setup(x => x.SendDataPostRequestWithStreamResponse(It.IsAny<PatchDataRequest>(), "/patches", It.IsAny<IDictionary<string, string>>()))
         .Returns(Task.FromResult<Stream>(resultStream));
 
@@ -209,11 +213,12 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       result.Should().NotBeNull();
       result.Subgrids.Should().NotBeNull();
       result.Subgrids.Length.Should().Be(1);
-      result.Subgrids[0].Cells.Length.Should().Be(cellSize * cellSize);
+      result.Subgrids[0].ElevationOffsets.Length.Should().Be(cellSize * cellSize);
       result.Subgrids[0].ElevationOrigin.Should().Be(elevationOrigin);
+      result.Subgrids[0].TimeOffsets.Length.Should().Be(cellSize * cellSize);
       result.Subgrids[0].TimeOrigin.Should().Be(timeOrigin);
-      result.Subgrids[0].Cells[0].ElevationOffset.Should().Be((ushort)(delta + 6 + 1)); // zero means no offset available
-      result.Subgrids[0].Cells[0].TimeOffset.Should().Be(delta + 3);
+      result.Subgrids[0].ElevationOffsets[0].Should().Be((ushort)(delta + 6 + 1)); // zero means no offset available
+      result.Subgrids[0].TimeOffsets[0].Should().Be(delta + 3);
 
       var doubleArrayResult = (new CompactionSinglePatchResult()).UnpackSubgrid(cellSize, result.Subgrids[0]);
       doubleArrayResult[0, 0].easting.Should().Be(subgridOriginX + (cellSize /2));
@@ -224,7 +229,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     }
 
     private MemoryStream WriteAsPerTRex(int totalPatchesRequired, int numSubgridsInPatch, 
-      double subgridOriginX, double subgridOriginY, float elevationOrigin, uint timeOrigin, PatchCellHeightResult[] cells)
+      double subgridOriginX, double subgridOriginY, float elevationOrigin, uint timeOrigin, ushort[] elevationOffsets, uint[] timeOffsets)
     {
       var resultStream = new MemoryStream();
       var writer = new BinaryWriter(resultStream);
@@ -242,8 +247,8 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       writer.Write((byte)2);
       for (uint c = 0; c < (cellSize * cellSize); c++)
       {
-        writer.Write((ushort)cells[c].ElevationOffset);
-        writer.Write((ushort)cells[c].TimeOffset);
+        writer.Write((ushort)elevationOffsets[c]);
+        writer.Write((ushort)timeOffsets[c]);
       }
       resultStream.Position = 0;
       return resultStream;

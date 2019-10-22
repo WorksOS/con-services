@@ -18,6 +18,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using System.Collections.Generic;
+using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
 {
@@ -73,6 +74,7 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
     {
       return new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Null patch returned");
     }
+
 #if RAPTOR
     private ContractExecutionResult ProcessWithRaptor(PatchRequest request)
     {
@@ -152,7 +154,8 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
           
           // Protobuf is limited to single dimension arrays so we cannot use the [32,32] layout used by other patch executors.
           const int arrayLength = 32 * 32;
-          var cells = new PatchCellHeightResult[arrayLength];
+          var elevationOffsets = new ushort[arrayLength];
+          var timeOffsets = new uint[arrayLength];
 
           for (var j = 0; j < arrayLength; j++)
           {
@@ -227,11 +230,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Executors
                 }
             }
 
-            cells[j] = PatchCellHeightResult.Create(elevationOffsetDelta, includeTimeOffsets ? time : uint.MaxValue);
+            elevationOffsets[j] = elevationOffsetDelta;
+            timeOffsets[j] = includeTimeOffsets ? time : uint.MaxValue;
           }
 
-          subgrids.Add(PatchSubgridOriginProtobufResult.Create(Math.Round(subgridOriginX, 5), Math.Round(subgridOriginY, 5), elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, cells));
-          // test: CompactionSinglePatchResult.UnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
+          subgrids.Add(PatchSubgridOriginProtobufResult.Create(Math.Round(subgridOriginX, 5), Math.Round(subgridOriginY, 5), elevationOrigin, includeTimeOffsets ? timeOrigin : uint.MaxValue, elevationOffsets, timeOffsets));
+          // test: var doubleArrayResult = (new CompactionSinglePatchPackedResult()).UnpackSubgrid(cellSize, subgrids[subgrids.Count - 1]);
+
         }
 
         log.LogDebug($"{nameof(ConvertPatchResult)} totalPatchesRequired: {totalPatchesRequired} numSubgridsInPatch: {numSubgridsInPatch} numSubgridsInResult: {numSubgridsInResult} subgridsCount: {subgrids.Count}");
