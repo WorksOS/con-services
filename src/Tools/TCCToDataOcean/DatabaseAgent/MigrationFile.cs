@@ -1,5 +1,4 @@
-﻿using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Models;
+﻿using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean.DatabaseAgent

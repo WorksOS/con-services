@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Interfaces
 {
   public interface ICSIBAgent
     { 

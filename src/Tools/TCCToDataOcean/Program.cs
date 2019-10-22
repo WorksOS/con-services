@@ -28,7 +28,8 @@ namespace TCCToDataOcean
   {
     private static void Main()
     {
-      MainAsync().GetAwaiter().GetResult();
+      MainAsync().GetAwaiter()
+                 .GetResult();
     }
 
     private static async Task MainAsync()
@@ -70,6 +71,7 @@ namespace TCCToDataOcean
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
       services.AddSingleton<ICSIBAgent, CSIBAgent>();
+      services.AddSingleton<ICalibrationFileAgent, CalibrationFileAgent>();
     }
   }
 }
