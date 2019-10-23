@@ -28,7 +28,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
         {
           request.Validate();
           log.LogDebug($"Job request validated, starting a new job {JsonConvert.SerializeObject(request)}");
-          RecurringJob.AddOrUpdate(recurringJobId, () => RunHangfireJob(request, false, null, null), request.Schedule, queue: QUEUE_NAME);
+          RecurringJob.AddOrUpdate(recurringJobId, () => RunHangfireJob(jobManager.GetJobName(request.JobUid), request, false, null, null), request.Schedule, queue: QUEUE_NAME);
         }
       }
       catch (Exception ex)

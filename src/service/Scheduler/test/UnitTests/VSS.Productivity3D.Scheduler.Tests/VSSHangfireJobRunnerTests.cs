@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var devOpsNotification = new Mock<IDevOpsNotification>();
       var jobRunner = new JobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory, jobManager, serviceProvider);
       var request = new JobRequest { JobUid = vssJobUid, RunParameters = new DxfTileGenerationRequest() };
-      var result = jobRunner.RunHangfireJob(request, false, null, context);
+      var result = jobRunner.RunHangfireJob("testjob",request, false, null, context);
       Assert.IsTrue(setupCalled);
       Assert.IsTrue(runCalled);
       Assert.IsTrue(tearDownCalled);
@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var jobRunner = new JobRunner(loggerFactory, errorProvider.Object, configStore.Object, jobFactory.Object, jobManager, serviceProvider);
       var vssJobUid = Guid.NewGuid();
       var request = new JobRequest { JobUid = vssJobUid, RunParameters = new DxfTileGenerationRequest() };
-      Assert.ThrowsException<AggregateException>(() => jobRunner.RunHangfireJob(request, false, null, context).Result);
+      Assert.ThrowsException<AggregateException>(() => jobRunner.RunHangfireJob("testjob",request, false, null, context).Result);
     }
 
     private void OnSetupInvoked(object sender, EventArgs e) => setupCalled = true;
