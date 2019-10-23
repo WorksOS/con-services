@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     public ScheduleJobResult StopRecurringJob([FromRoute] string jobId)
     {
       Log.LogInformation($"{nameof(StopRecurringJob)}: {jobId}");
-      string hangfireJobId;
+
       try
       {
         RecurringJobRunner.StopHangfireRecurringJob(jobId);

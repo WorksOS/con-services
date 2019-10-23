@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -71,7 +72,7 @@ namespace VSS.Pegasus.Client.UnitTests
 
       await ProcessWithFailure(gracefulMock, dataOceanMock,
         $"Failed to find coordinate system file {dcFullName}. Has it been uploaded successfully?", true);
-     }
+    }
 
     [Fact]
     public async Task CanGenerateDxfTilesFailToCreateExecution()
@@ -166,7 +167,7 @@ namespace VSS.Pegasus.Client.UnitTests
     [Fact]
     public async Task CanGenerateDxfTilesFailed()
     {
-      var  ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateDxfTiles("FAILED"));
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateDxfTiles("FAILED"));
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
       Assert.Equal($"Failed to generate tiles for {dxfFullName}", ex.GetResult.Message);
@@ -191,11 +192,12 @@ namespace VSS.Pegasus.Client.UnitTests
       var gracefulMock = new Mock<IWebRequest>();
 
       var dataOceanMock = new Mock<IDataOceanClient>();
-      string tileFolderFullName = new DataOceanFileUtil(fullName).GeneratedTilesFolder;
+      var tileFolderFullName = new DataOceanFileUtil(fullName).GeneratedTilesFolder;
+
       dataOceanMock.Setup(d => d.DeleteFile(tileFolderFullName, null)).ReturnsAsync(success);
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
-      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => dataOceanMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IPegasusClient>();
       var result = client.DeleteTiles(fullName, null).Result;
@@ -207,7 +209,8 @@ namespace VSS.Pegasus.Client.UnitTests
     public async Task CanGenerateGeoTiffTilesMissingGeoTiffFile()
     {
       var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
-      var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = geoTiffFileName, ParentId = expectedTopFolderResult.Id };
+      
+      _ = new DataOceanFile { Id = Guid.NewGuid(), Name = geoTiffFileName, ParentId = expectedTopFolderResult.Id };
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(geoTiffFullName, null)).ReturnsAsync((Guid?)null);
@@ -268,7 +271,8 @@ namespace VSS.Pegasus.Client.UnitTests
         NewGeoTiffPegasusExecution(expectedFileResult, subFolderName, "NOT_READY");
 
       var expectedExecutionResult = new PegasusExecutionResult { Execution = expectedExecution };
-      var expectedExecutionAttemptResult = new PegasusExecutionAttemptResult
+      
+      _ = new PegasusExecutionAttemptResult
       {
         ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = "EXECUTING" }
       };
@@ -326,18 +330,17 @@ namespace VSS.Pegasus.Client.UnitTests
     }
     #endregion
 
-    #region privates
     private Task<TileMetadata> CanGenerateDxfTiles(string status)
     {
       //Set up DataOcean stuff
-      var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };     
+      var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
       var expectedDcFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dcFileName, ParentId = expectedTopFolderResult.Id };
       var expectedDxfFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dxfFileName, ParentId = expectedTopFolderResult.Id };
 
       var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
       var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
-      var subFolderName = parts[parts.Length-1];
-     
+      var subFolderName = parts[parts.Length - 1];
+
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
@@ -430,7 +433,7 @@ namespace VSS.Pegasus.Client.UnitTests
           DcFileId = expectedDcFileResult.Id,
           DxfFileId = expectedDxfFileResult.Id,
           ParentId = expectedDxfFileResult.ParentId,
-          MaxZoom = 21,
+          MaxZoom = "21",
           TileType = "xyz",
           TileOrder = "YX",
           MultiFile = "true",
@@ -468,41 +471,45 @@ namespace VSS.Pegasus.Client.UnitTests
 
     private async Task ProcessWithFailure(Mock<IWebRequest> gracefulMock, Mock<IDataOceanClient> dataOceanMock, string expectedMessage, bool isDxf)
     {
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
-      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => dataOceanMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IPegasusClient>();
-      var ex =
-        await Assert.ThrowsAsync<ServiceException>(() => isDxf ?         
-          client.GenerateDxfTiles(dcFullName, dxfFullName, DxfUnitsType.Meters, null) :
-          client.GenerateGeoTiffTiles(geoTiffFullName, null));
+
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => isDxf
+                                                            ? client.GenerateDxfTiles(dcFullName, dxfFullName, DxfUnitsType.Meters, null, SetJobValues)
+                                                            : client.GenerateGeoTiffTiles(geoTiffFullName, null, SetJobValues));
+
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
       Assert.Equal(expectedMessage, ex.GetResult.Message);
     }
 
+    protected void SetJobValues(IDictionary<string, string> setJobIdAction)
+    { }
+
     private Task<TileMetadata> ProcessWithSuccess(Mock<IWebRequest> gracefulMock, Mock<IDataOceanClient> dataOceanMock, string subFolderPath, bool isDxf)
     {
       //Set up tile metadata stuff
-      byte[] byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(isDxf ? expectedDxfTileMetadata : expectedGeoTiffTileMetadata));
+      var byteArray = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(isDxf ? expectedDxfTileMetadata : expectedGeoTiffTileMetadata));
       var expectedStream = new MemoryStream(byteArray);
       var tileMetadataFileName = $"{subFolderPath}/tiles/{(isDxf ? "tiles" : "xyz")}.json";
 
       dataOceanMock.Setup(d => d.GetFile(tileMetadataFileName, null)).ReturnsAsync(expectedStream);
 
-      serviceCollection.AddTransient<IWebRequest>(g => gracefulMock.Object);
-      serviceCollection.AddTransient<IDataOceanClient>(g => dataOceanMock.Object);
+      serviceCollection.AddTransient(g => gracefulMock.Object);
+      serviceCollection.AddTransient(g => dataOceanMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IPegasusClient>();
-      var result =
-        isDxf ?
-        client.GenerateDxfTiles(
-          dcFullName, dxfFullName, DxfUnitsType.Meters, null) :
-        client.GenerateGeoTiffTiles(geoTiffFullName, null);
+
+      var result = isDxf
+        ? client.GenerateDxfTiles(dcFullName, dxfFullName, DxfUnitsType.Meters, null, SetJobValues)
+        : client.GenerateGeoTiffTiles(geoTiffFullName, null, SetJobValues);
+
       return result;
     }
 
-    private TileMetadata expectedDxfTileMetadata = new TileMetadata
+    private readonly TileMetadata expectedDxfTileMetadata = new TileMetadata
     {
       Extents = new Extents
       {
@@ -520,7 +527,7 @@ namespace VSS.Pegasus.Client.UnitTests
       TileCount = 79
     };
 
-    private TileMetadata expectedGeoTiffTileMetadata = new TileMetadata
+    private readonly TileMetadata expectedGeoTiffTileMetadata = new TileMetadata
     {
       Extents = new Extents
       {
@@ -542,10 +549,8 @@ namespace VSS.Pegasus.Client.UnitTests
     private const string geoTiffFileName = "dummy.tiff";
     private const string dcFileName = "dummy.dc";
     private const string dxfFileName = "dummy.dxf";
-    private string dxfFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dxfFileName}";
-    private string dcFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}";
-    private string geoTiffFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{geoTiffFileName}";
-
-    #endregion
+    private readonly string dxfFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dxfFileName}";
+    public string dcFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}";
+    private readonly string geoTiffFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{geoTiffFileName}";
   }
 }

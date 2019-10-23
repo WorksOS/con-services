@@ -1,5 +1,4 @@
-﻿using System;
-using VSS.Productivity3D.Scheduler.Models;
+﻿using VSS.Productivity3D.Scheduler.Models;
 
 namespace VSS.Productivity3D.Scheduler.Abstractions
 {
@@ -7,10 +6,4 @@ namespace VSS.Productivity3D.Scheduler.Abstractions
   {
     string QueueHangfireJob(JobRequest request, IJobCallback callback = null, string continuationJobname = "Default continuation job");
   }
-
-  public interface IJobCallback
-  {
-    JobRequest ExecuteCallback(object parameter, object context);
-  }
-
 }
