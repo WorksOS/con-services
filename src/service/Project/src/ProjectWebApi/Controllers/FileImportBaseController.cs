@@ -53,7 +53,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.tRexImportFileProxy = tRexImportFileProxy;
 
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
-      DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
+      DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
       UseTrexGatewayDesignImport = false;
       UseRaptorGatewayDesignImport = true;
       bool.TryParse(ConfigStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),

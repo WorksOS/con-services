@@ -207,7 +207,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
           //save copy to DataOcean
-          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
+          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
           if (string.IsNullOrEmpty(rootFolder))
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
