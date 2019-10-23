@@ -27,6 +27,8 @@ namespace VSS.Productivity3D.Scheduler.Models
     /// </summary>
     public object TearDownParameters { get; set; }
 
+    public SpecialFilters AttributeFilters { get; set; } = SpecialFilters.None;
+
     /// <summary>
     /// Validates all properties
     /// </summary>

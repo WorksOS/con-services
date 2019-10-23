@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.Server;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -43,9 +46,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
       var dxfFileName = $"{dxfRequest.DataOceanPath}{Path.DirectorySeparatorChar}{dxfRequest.FileName}";
       var dcFileName = $"{dxfRequest.DataOceanPath}{Path.DirectorySeparatorChar}{dxfRequest.DcFileName}";
 
-      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfRequest.DxfUnitsType, CustomHeaders());
+      return pegasusClient.GenerateDxfTiles(dcFileName, dxfFileName, dxfRequest.DxfUnitsType, CustomHeaders(), SetJobValues );
     }
-
 
   }
 }

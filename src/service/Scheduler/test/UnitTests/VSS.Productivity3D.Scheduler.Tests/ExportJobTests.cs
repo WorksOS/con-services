@@ -14,6 +14,7 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Scheduler.Jobs.ExportJob;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
 namespace VSS.Productivity3D.Scheduler.Tests

@@ -9,14 +9,14 @@ namespace VSS.Pegasus.Client
   public interface IPegasusClient
   {
     Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType,
-      IDictionary<string, string> customHeaders);
+      IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction);
 
     [Obsolete("Use DeleteTiles")]
 
 
     Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders);
 
-    Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders);
+    Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction);
 
     Task<bool> DeleteTiles(string fileName, IDictionary<string, string> customHeaders);
   }
