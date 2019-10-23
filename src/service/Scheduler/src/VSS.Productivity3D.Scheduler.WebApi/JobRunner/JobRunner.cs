@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
 
     private readonly IJobFactory jobFactory;
     private readonly string environment;
-    private readonly IJobRegistrationManager jobManager;
+    protected readonly IJobRegistrationManager jobManager;
     private readonly IServiceProvider serviceProvider;
 
     /// <summary>
@@ -61,11 +61,12 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
 
       if (request.AttributeFilters == SpecialFilters.ExportFilter)
       {
-        parentJob = client.Create(() => RunHangfireJobExportFilter(request, false, null, null), state);
+        parentJob = client.Create(() => RunHangfireJobExportFilter(jobManager.GetJobName(request.JobUid), request, false, null, null), state);
         if (onContinuation != null)
         {
           JobStorage.Current.GetConnection().SetJobParameter(parentJob, Tags.CONTINUATION_TYPE, onContinuation.GetType().FullName);
           return client.ContinueJobWith(parentJob, () => RunHangfireJobExportFilter(
+                                          onContinuation.GetType().Name,
                                           null,
                                           true,
                                           parentJob,
@@ -74,11 +75,12 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
       }
       else
       {
-        parentJob = client.Create(() => RunHangfireJob(request, false, null, null), state);
+        parentJob = client.Create(() => RunHangfireJob(jobManager.GetJobName(request.JobUid), request, false, null, null), state);
         if (onContinuation != null)
         {
           JobStorage.Current.GetConnection().SetJobParameter(parentJob, Tags.CONTINUATION_TYPE, onContinuation.GetType().FullName);
           return client.ContinueJobWith(parentJob, () => RunHangfireJob(
+                                          onContinuation.GetType().Name,
                                           null,
                                           true,
                                           parentJob,
@@ -94,7 +96,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     /// The filter ensures thath the failed job is executed on the same queue as the original one
     [AutomaticRetry(Attempts = 3)]
     [JobDisplayName("Job: {0}")]
-    public Task<ContractExecutionResult> RunHangfireJob(JobRequest request,
+    public Task<ContractExecutionResult> RunHangfireJob(string name,
+                                                        JobRequest request,
                                                         bool onContinuation,
                                                         string parentJobId,
                                                         PerformContext context)
@@ -118,7 +121,9 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     [AutomaticRetry(Attempts = 0, OnAttemptsExceeded = AttemptsExceededAction.Delete)]
     [JobDisplayName("Job: {0}")]
     // [MaximumConcurrentExecutions(3, 1200)]
-    public Task<ContractExecutionResult> RunHangfireJobExportFilter(JobRequest request,
+    public Task<ContractExecutionResult> RunHangfireJobExportFilter(
+                                                                    string name,
+                                                                    JobRequest request,
                                                                     bool onContinuation,
                                                                     string parentJobId,
                                                                     PerformContext context)

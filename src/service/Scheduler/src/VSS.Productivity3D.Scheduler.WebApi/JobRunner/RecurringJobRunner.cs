@@ -1,6 +1,7 @@
 ﻿using System;
 using Hangfire;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Scheduler.Abstractions;
@@ -23,10 +24,11 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
       var recurringJobId = Guid.NewGuid().ToString();
       try
       {
-        if (string.IsNullOrEmpty(request.Schedule))
+        if (!string.IsNullOrEmpty(request.Schedule))
         {
           request.Validate();
-          RecurringJob.AddOrUpdate(recurringJobId, () => RunHangfireJob(request, false, null, null), request.Schedule, queue: QUEUE_NAME);
+          log.LogDebug($"Job request validated, starting a new job {JsonConvert.SerializeObject(request)}");
+          RecurringJob.AddOrUpdate(recurringJobId, () => RunHangfireJob(jobManager.GetJobName(request.JobUid), request, false, null, null), request.Schedule, queue: QUEUE_NAME);
         }
       }
       catch (Exception ex)

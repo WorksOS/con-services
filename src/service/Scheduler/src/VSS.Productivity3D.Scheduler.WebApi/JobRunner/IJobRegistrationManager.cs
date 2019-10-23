@@ -9,5 +9,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     string GetQueueName(Guid guid);
     void RegisterJob(Guid uid, Type type);
     Dictionary<Guid, Type> ResolveVssJobs();
+    string GetJobName(Guid jobGuid);
   }
 }
