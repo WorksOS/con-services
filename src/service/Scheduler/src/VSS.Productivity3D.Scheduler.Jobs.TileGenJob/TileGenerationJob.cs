@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Pegasus.Client;
 using VSS.Pegasus.Client.Models;
 using VSS.Productivity.Push.Models.Notifications;
@@ -48,10 +44,12 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 
     public async Task Run(object o, object context)
     {
-      T request = o.GetConvertedObject<T>();
+      var request = o.GetConvertedObject<T>();
 
-      if (context is PerformContext )
-        jobContext = context as PerformContext;
+      if (context is PerformContext performContext)
+      {
+        jobContext = performContext;
+      }
 
       //Validate the parameters
       request.Validate();
@@ -83,8 +81,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     public Task TearDown(object o, object context) => Task.FromResult(true);
 
     protected abstract Task<TileMetadata> GenerateTiles(TileGenerationRequest request);
-   
-
+    
     protected Dictionary<string, string> CustomHeaders() =>
       new Dictionary<string, string>
       {
@@ -94,14 +91,12 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
 
     protected void SetJobValues(IDictionary<string, string> setJobIdAction)
     {
-      if (jobContext != null)
+      if (jobContext == null) { return; }
+
+      foreach (var item in setJobIdAction)
       {
-        foreach (var item in setJobIdAction)
-        {
-          JobStorage.Current.GetConnection().SetJobParameter(jobContext.BackgroundJob.Id, item.Key, item.Value);
-        }
+        JobStorage.Current.GetConnection().SetJobParameter(jobContext.BackgroundJob.Id, item.Key, item.Value);
       }
     }
-
   }
 }

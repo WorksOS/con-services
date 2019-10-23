@@ -332,19 +332,8 @@ namespace VSS.Pegasus.Client
       }
 
       Log.LogInformation($"{nameof(GenerateTiles)}: returning {(metadata == null ? "null" : JsonConvert.SerializeObject(metadata))}");
-      return metadata;
-    }
 
-    /// <summary>
-    /// Deletes the generated DXF tiles for the given DXF file
-    /// </summary>
-    /// <param name="dxfFileName">The path and file name of the DXF file</param>
-    /// <param name="customHeaders"></param>
-    /// <returns>True if successfully deleted otherwise false</returns>
-    [Obsolete("Use DeleteTiles")]
-    public Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders)
-    {
-      return DeleteTiles(dxfFileName, customHeaders);
+      return metadata;
     }
 
     /// <summary>

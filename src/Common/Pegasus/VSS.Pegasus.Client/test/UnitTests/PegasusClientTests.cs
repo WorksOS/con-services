@@ -37,8 +37,6 @@ namespace VSS.Pegasus.Client.UnitTests
         .AddTransient<IPegasusClient, PegasusClient>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
-
-      _ = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 
     #region DXF
@@ -125,7 +123,7 @@ namespace VSS.Pegasus.Client.UnitTests
       //Set up Pegasus stuff
       var units = DxfUnitsType.UsSurveyFeet.ToString();
       var expectedExecution =
-        NewDxfPegasusExecution(expectedDcFileResult, expectedDxfFileResult, subFolderName, units, "NOT_READY");
+        NewDxfPegasusExecution(expectedDcFileResult, expectedDxfFileResult, subFolderName, units, ExecutionStatus.NOT_READY);
 
       var expectedExecutionResult = new PegasusExecutionResult { Execution = expectedExecution };
 
@@ -147,9 +145,10 @@ namespace VSS.Pegasus.Client.UnitTests
     }
 
     [Fact]
-    public void CanGenerateDxfTilesSuccess()
+    public async Task CanGenerateDxfTilesSuccess()
     {
-      var result = CanGenerateDxfTiles("SUCCEEDED").Result;
+      var result = await CanGenerateDxfTiles(ExecutionStatus.SUCCEEDED);
+
       Assert.NotNull(result);
       Assert.NotNull(result.Extents);
       Assert.NotNull(result.Extents.CoordSystem);
@@ -167,18 +166,19 @@ namespace VSS.Pegasus.Client.UnitTests
     [Fact]
     public async Task CanGenerateDxfTilesFailed()
     {
-      var ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateDxfTiles("FAILED"));
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateDxfTiles(ExecutionStatus.FAILED));
+
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
       Assert.Equal($"Failed to generate tiles for {dxfFullName}", ex.GetResult.Message);
     }
 
     [Fact]
-    public void CanGenerateDxfTilesTimeout()
+    public async Task CanGenerateDxfTilesTimeout()
     {
-      var result = CanGenerateDxfTiles("EXECUTING").Result;
-      Assert.Null(result);
+      Assert.Null(await CanGenerateDxfTiles(ExecutionStatus.EXECUTING));
     }
+
     #endregion
 
     [Theory]
@@ -205,11 +205,12 @@ namespace VSS.Pegasus.Client.UnitTests
     }
 
     #region GeoTIFF   
+
     [Fact]
     public async Task CanGenerateGeoTiffTilesMissingGeoTiffFile()
     {
       var expectedTopFolderResult = new DataOceanDirectory { Id = Guid.NewGuid(), Name = topLevelFolderName };
-      
+
       _ = new DataOceanFile { Id = Guid.NewGuid(), Name = geoTiffFileName, ParentId = expectedTopFolderResult.Id };
 
       var dataOceanMock = new Mock<IDataOceanClient>();
@@ -268,13 +269,13 @@ namespace VSS.Pegasus.Client.UnitTests
 
       //Set up Pegasus stuff
       var expectedExecution =
-        NewGeoTiffPegasusExecution(expectedFileResult, subFolderName, "NOT_READY");
+        NewGeoTiffPegasusExecution(expectedFileResult, subFolderName, ExecutionStatus.NOT_READY);
 
       var expectedExecutionResult = new PegasusExecutionResult { Execution = expectedExecution };
-      
+
       _ = new PegasusExecutionAttemptResult
       {
-        ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = "EXECUTING" }
+        ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = ExecutionStatus.EXECUTING }
       };
 
       var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
@@ -296,9 +297,10 @@ namespace VSS.Pegasus.Client.UnitTests
     }
 
     [Fact]
-    public void CanGenerateGeoTiffTilesSuccess()
+    public async Task CanGenerateGeoTiffTilesSuccess()
     {
-      var result = CanGenerateGeoTiffTiles("SUCCEEDED").Result;
+      var result = await CanGenerateGeoTiffTiles(ExecutionStatus.SUCCEEDED);
+
       Assert.NotNull(result);
       Assert.NotNull(result.Extents);
       Assert.NotNull(result.Extents.CoordSystem);
@@ -316,18 +318,19 @@ namespace VSS.Pegasus.Client.UnitTests
     [Fact]
     public async Task CanGenerateGeoTiffTilesFailed()
     {
-      var ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateGeoTiffTiles("FAILED"));
+      var ex = await Assert.ThrowsAsync<ServiceException>(() => CanGenerateGeoTiffTiles(ExecutionStatus.FAILED));
+
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       Assert.Equal(ContractExecutionStatesEnum.InternalProcessingError, ex.GetResult.Code);
       Assert.Equal($"Failed to generate tiles for {geoTiffFullName}", ex.GetResult.Message);
     }
 
     [Fact]
-    public void CanGenerateGeoTiffTilesTimeout()
+    public async Task CanGenerateGeoTiffTilesTimeout()
     {
-      var result = CanGenerateGeoTiffTiles("EXECUTING").Result;
-      Assert.Null(result);
+      Assert.Null(await CanGenerateGeoTiffTiles(ExecutionStatus.EXECUTING));
     }
+
     #endregion
 
     private Task<TileMetadata> CanGenerateDxfTiles(string status)
@@ -354,7 +357,7 @@ namespace VSS.Pegasus.Client.UnitTests
       var expectedExecutionResult = new PegasusExecutionResult { Execution = expectedExecution };
       var expectedExecutionAttemptResult = new PegasusExecutionAttemptResult
       {
-        ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = "EXECUTING" }
+        ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = ExecutionStatus.EXECUTING }
       };
 
       var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
@@ -398,7 +401,7 @@ namespace VSS.Pegasus.Client.UnitTests
       var expectedExecutionResult = new PegasusExecutionResult { Execution = expectedExecution };
       var expectedExecutionAttemptResult = new PegasusExecutionAttemptResult
       {
-        ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = "EXECUTING" }
+        ExecutionAttempt = new PegasusExecutionAttempt { Id = Guid.NewGuid(), Status = ExecutionStatus.EXECUTING }
       };
 
       var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
