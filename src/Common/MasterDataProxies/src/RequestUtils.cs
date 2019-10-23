@@ -52,6 +52,14 @@ namespace VSS.MasterData.Proxies
       return customHeaders;
     }
 
+    public static IDictionary<string, string> AppendOrOverwriteCustomerHeader(this IDictionary<string, string> headers, string customerUid)
+    {
+      headers[HeaderConstants.X_VISION_LINK_CUSTOMER_UID] = customerUid;
+      return headers;
+    }
+
+
+
     public static void StripHeaders(this IDictionary<string, string> headers, bool isInternal)
     {
       if (headers == null)

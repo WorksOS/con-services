@@ -6,5 +6,9 @@ namespace VSS.WebApi.Common
   {
     string GetApplicationBearerToken();
     IDictionary<string, string> CustomHeaders();
+    IDictionary<string, string> CustomHeadersJWT();
+    IDictionary<string, string> CustomHeadersJWTAndBearer();
+
+
   }
 }

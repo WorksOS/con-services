@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       this._assetResolverProxy = assetResolverProxy;
     }
 
-    public Task Setup(object o)
+    public Task Setup(object o, object context)
     {
       if (_assetStatusServerHubClient.IsConnecting || _assetStatusServerHubClient.Connected)
         return Task.CompletedTask;
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       return _assetStatusServerHubClient.Connect();
     }
 
-    public async Task Run(object o)
+    public async Task Run(object o, object context)
     {
       _subscriptions = await _assetStatusServerHubClient.GetSubscriptions();
       _log.LogInformation($"Found {_subscriptions.Count} subscriptions to process");
@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
       await Task.WhenAll(tasks);
     }
 
-    public Task TearDown(object o)
+    public Task TearDown(object o, object context)
     {
       return Task.CompletedTask;
     }
