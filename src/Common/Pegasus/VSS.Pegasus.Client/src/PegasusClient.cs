@@ -263,10 +263,10 @@ namespace VSS.Pegasus.Client
           Log.LogDebug($"Executing monitoring request for {fileName} and jobid {executionResult.Execution.Id.ToString()}");
           executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Get);
           var status = executionResult.Execution.ExecutionStatus;
-          success = string.Compare(status, "FINISHED", StringComparison.OrdinalIgnoreCase) == 0 ||
-                    string.Compare(status, "SUCCEEDED", StringComparison.OrdinalIgnoreCase) == 0;
+          success = string.Compare(status, ExecutionStatus.FINISHED, StringComparison.OrdinalIgnoreCase) == 0 ||
+                    string.Compare(status, ExecutionStatus.SUCCEEDED, StringComparison.OrdinalIgnoreCase) == 0;
 
-          if (string.Compare(status, "FAILED", StringComparison.OrdinalIgnoreCase) == 0)
+          if (string.Compare(status, ExecutionStatus.FAILED, StringComparison.OrdinalIgnoreCase) == 0)
           {
             //Try to retrieve why it failed
             var jobEventsStream = await gracefulClient.ExecuteRequestAsStreamContent($"{pegasusBaseUrl}{executionRoute}/events", HttpMethod.Get, customHeaders);
@@ -283,7 +283,7 @@ namespace VSS.Pegasus.Client
             }
           }
 
-          done = success || string.Compare(status, "FAILED", StringComparison.OrdinalIgnoreCase) == 0;
+          done = success || string.Compare(status, ExecutionStatus.FAILED, StringComparison.OrdinalIgnoreCase) == 0;
 
           setJobIdAction?.Invoke(new Dictionary<string, string> { { PEGASUS_LOG_RESULT_KEY, status } });
 
