@@ -163,6 +163,8 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       Thread.Sleep(expirationManagerWaitMs);
       Log.LogDebug($"Scheduler: after ConfigureHangfireUse. expirationManagerWaitMs waitMs {expirationManagerWaitMs}.");
 
+      Log.LogInformation("Setting up scheduled jobs");
+
       ServiceProvider.GetRequiredService<IDefaultJobRunner>().StartDefaultJob(new RecurringJobRequest()
       {
         JobUid = AssetStatusJob.VSSJOB_UID, 
@@ -174,16 +176,24 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       if (!string.IsNullOrEmpty(config))
       {
-        schConfig = JsonConvert.DeserializeObject<ScheduleConfig>(config);
-      }
+        try
+        {
+          schConfig = JsonConvert.DeserializeObject<ScheduleConfig>(config);
+        }
+        catch (Exception ex)
+        {
+          Log.LogError(ex,"Configuration for MachinePasses is invalid");
+        }
 
-      ServiceProvider.GetRequiredService<IDefaultJobRunner>().StartDefaultJob(new RecurringJobRequest()
-      {
-        JobUid = Guid.Parse("39d6c48a-cc74-42d3-a839-1a6b77e8e076"),
-        Schedule = schConfig.schedule,
-        SetupParameters = schConfig.customerUid,
-        RunParameters = schConfig.emails
-      });
+
+        ServiceProvider.GetRequiredService<IDefaultJobRunner>().StartDefaultJob(new RecurringJobRequest()
+        {
+          JobUid = Guid.Parse("39d6c48a-cc74-42d3-a839-1a6b77e8e076"),
+          Schedule = schConfig.schedule,
+          SetupParameters = schConfig.customerUid,
+          RunParameters = schConfig.emails
+        });
+      }
     }
 
     public class ScheduleConfig

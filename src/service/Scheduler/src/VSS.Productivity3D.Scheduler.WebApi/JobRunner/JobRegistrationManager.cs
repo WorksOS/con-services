@@ -42,6 +42,15 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
       throw new ArgumentOutOfRangeException("Job Guid is not registered");
     }
 
+    public string GetJobName(Guid jobGuid)
+    {
+      if (vssJobs.ContainsKey(jobGuid))
+        return ResolveVssJobs()[jobGuid].Name;
+      else
+        throw new ArgumentOutOfRangeException($"Requested VSSJob {jobGuid} is not registered.");
+    }
+
+
     /// <summary>
     /// Register a VSS job.
     /// </summary>
