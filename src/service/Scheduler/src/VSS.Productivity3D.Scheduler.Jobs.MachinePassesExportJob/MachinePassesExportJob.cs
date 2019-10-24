@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.MachinePassesExportJob
   {
     public static Guid VSSJOB_UID = Guid.Parse("39d6c48a-cc74-42d3-a839-1a6b77e8e076");
 
-    private const string FILTER_JSON = "{\"filterType\":1,\"filterJson\":\"{\"dateRangeType\":1,\"elevationType\":null,\"vibeStateOn\":true}\"}";
+    private const string FILTER_JSON = "{\"dateRangeType\":1,\"elevationType\":null,\"vibeStateOn\":true}";
 
     public Guid VSSJobUid => VSSJOB_UID;
 
