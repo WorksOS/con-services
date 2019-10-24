@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
@@ -34,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     public static async Task WriteFileToDataOcean(
       Stream fileContents, string rootFolder, string customerUid, string projectUid,
-      string dataOceanFileName, bool isSurveyedSurface, DateTime? surveyedUtc,
+      string dataOceanFileName,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
       ITPaaSApplicationAuthentication authn, Guid fileUid, IConfigurationStore configStore)
     {
@@ -81,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       }
       else
       {
-        log.LogInformation($"WriteFileToDataOcean: File not saved. DataOcean disabled");
+        log.LogInformation("WriteFileToDataOcean: File not saved. DataOcean disabled");
       }
     }
 
@@ -91,8 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <returns></returns>
     public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(
       string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid, 
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, 
-      IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn, IConfigurationStore configStore)
+      ILogger log, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn, IConfigurationStore configStore)
     {
       var dataOceanEnabled = configStore.GetValueBool("ENABLE_DATA_OCEAN", false);
       if (dataOceanEnabled)
@@ -138,6 +134,5 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {"Accept", "*/*" }
       };
     }
-    
   }
 }

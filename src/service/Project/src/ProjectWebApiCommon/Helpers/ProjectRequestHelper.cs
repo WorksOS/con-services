@@ -202,7 +202,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
-            var fileDescriptor = await TccHelper.WriteFileToTCCRepository(
+            await TccHelper.WriteFileToTCCRepository(
               ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
               false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
@@ -217,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             await DataOceanHelper.WriteFileToDataOcean(
               ms, rootFolder, customerUid, projectUid.ToString(),
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
-              false, null, log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
+              log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
           }
         }
         catch (Exception e)

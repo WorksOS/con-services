@@ -13,15 +13,14 @@ namespace VSS.DataOcean.Client.UnitTests
     [InlineData("TIFF")]
     public void CanCreateValidDataOceanFileUtil(string extension)
     {
-      var fileName = $"/dev/folder-one/folder-two/dummy.{extension}";
-      _ = new DataOceanFileUtil(fileName);
+      var ex = Record.Exception(() => new DataOceanFileUtil($"/dev/folder-one/folder-two/dummy.{extension}"));
+      Assert.Null(ex);
     }
 
     [Fact]
     public void CannotCreateInvalidDataOceanFileUtil()
     {
-      var fileName = "/dev/folder-one/folder-two/dummy.ttm";
-      Assert.Throws<ArgumentException>(() => new DataOceanFileUtil(fileName));
+      Assert.Throws<ArgumentException>(() => new DataOceanFileUtil("/dev/folder-one/folder-two/dummy.ttm"));
     }
 
     [Theory]
@@ -64,6 +63,5 @@ namespace VSS.DataOcean.Client.UnitTests
       var datePart = Path.GetFileNameWithoutExtension(dataOceanFileName).Substring(fileUid.ToString().Length);
       Assert.False(string.IsNullOrEmpty(datePart));
     }
-
   }
 }
