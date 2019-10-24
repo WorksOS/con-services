@@ -253,7 +253,7 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"{nameof(GetFileMetadata)}: {fullName}");
 
-      var path = Path.GetDirectoryName(fullName);
+      var path = Path.GetDirectoryName(fullName)?.Replace(Path.DirectorySeparatorChar, DataOceanUtil.PathSeparator);
       var parentFolder = await GetFolderMetadata(path, true, customHeaders);
 
       var result = await BrowseFile(Path.GetFileName(fullName), parentFolder?.Id, customHeaders);
@@ -283,11 +283,11 @@ namespace VSS.DataOcean.Client
     {
       Log.LogDebug($"GetFolderMetadata: {path}");
 
-      //NOTE: DataOcean requires / regardless of OS. However we construct the path and split using Path.DirectorySeparatorChar.
+      //NOTE: DataOcean requires / regardless of OS. However we construct the path and split using DataOceanUtil.PathSeparator.
       //This is merely a convenience as DataOcean doesn't use paths but a hierarchy of folders above the file, linked using parent_id.
       //We traverse this hierarchy. The only place it matters is the multifile structure for tiles. This is contained in the multifile
       //download url so we don't have to worry about it.
-      var parts = path.Split(Path.DirectorySeparatorChar);
+      var parts = path.Split(DataOceanUtil.PathSeparator);
       DataOceanDirectory folder = null;
       Guid? parentId = null;
       var creatingPath = false;
@@ -329,7 +329,7 @@ namespace VSS.DataOcean.Client
       //Folders in path already exist or have been created successfully
       return folder;
     }
-    
+
     /// <summary>
     /// Gets the requested folder metadata at the specified level i.e. with the requested parent.
     /// </summary>
@@ -395,7 +395,7 @@ namespace VSS.DataOcean.Client
           Name = filename,
           ParentId = parentId,
           Multifile = false,
-          RegionPreferences = new List<string> { "us1" }
+          RegionPreferences = new List<string> { DataOceanUtil.RegionalPreferences.US1 }
         }
       };
 

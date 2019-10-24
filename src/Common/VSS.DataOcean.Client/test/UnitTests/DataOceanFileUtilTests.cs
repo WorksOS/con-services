@@ -28,18 +28,16 @@ namespace VSS.DataOcean.Client.UnitTests
     [InlineData("DXF")]
     [InlineData("tiff")]
     [InlineData("TIFF")]
-
     public void CanGetTileMetadataFileName(string extension)
     {
-      var sep = Path.DirectorySeparatorChar;
-      var pathAndName = $"{sep}dev{sep}folder-one{sep}folder-two{sep}dummy";
+      var pathAndName = $"{DataOceanUtil.PathSeparator}dev{DataOceanUtil.PathSeparator}folder-one{DataOceanUtil.PathSeparator}folder-two{DataOceanUtil.PathSeparator}dummy";
       var fullFileName = $"{pathAndName}.{extension}";
       var file = new DataOceanFileUtil(fullFileName);
       var metadataName = file.TilesMetadataFileName;
 
       var expectedName = "dxf".Equals(extension, StringComparison.OrdinalIgnoreCase) ? "tiles" : "xyz";
-      var expectedMetadata =
-        $"{pathAndName}{DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX}/tiles/{expectedName}.json";
+      var expectedMetadata = $"{pathAndName}{DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX}/tiles/{expectedName}.json";
+
       Assert.Equal(expectedMetadata, metadataName);
     }
 

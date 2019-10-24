@@ -199,7 +199,7 @@ namespace VSS.Pegasus.Client
       //In DataOcean this is actually a multifile not a folder
       string tileFolderFullName = new DataOceanFileUtil(fileName).GeneratedTilesFolder;
       //Get the parent folder id
-      var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
+      var parts = tileFolderFullName.Split(DataOceanUtil.PathSeparator);
       var tileFolderName = parts[parts.Length - 1];
       var parentPath = tileFolderFullName.Substring(0, tileFolderFullName.Length - tileFolderName.Length - 1);
       var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders);

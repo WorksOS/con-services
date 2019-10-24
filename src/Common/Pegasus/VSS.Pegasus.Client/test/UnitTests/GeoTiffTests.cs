@@ -45,7 +45,7 @@ namespace VSS.Pegasus.Client.UnitTests
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(geoTiffFullName, null)).ReturnsAsync(expectedFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{DataOceanUtil.PathSeparator}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
@@ -70,13 +70,13 @@ namespace VSS.Pegasus.Client.UnitTests
       var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = geoTiffFileName, ParentId = expectedTopFolderResult.Id };
 
       var subFolderPath = new DataOceanFileUtil(geoTiffFullName).GeneratedTilesFolder;
-      var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
+      var parts = subFolderPath.Split(DataOceanUtil.PathSeparator);
       var subFolderName = parts[parts.Length - 1];
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(geoTiffFullName, null)).ReturnsAsync(expectedFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{DataOceanUtil.PathSeparator}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var expectedExecution =
@@ -149,13 +149,13 @@ namespace VSS.Pegasus.Client.UnitTests
       var expectedFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = geoTiffFileName, ParentId = expectedTopFolderResult.Id };
 
       var subFolderPath = new DataOceanFileUtil(geoTiffFullName).GeneratedTilesFolder;
-      var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
+      var parts = subFolderPath.Split(DataOceanUtil.PathSeparator);
       var subFolderName = parts[parts.Length - 1];
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(geoTiffFullName, null)).ReturnsAsync(expectedFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{DataOceanUtil.PathSeparator}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var expectedExecution = NewGeoTiffPegasusExecution(expectedFileResult, subFolderName, status);

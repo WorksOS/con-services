@@ -16,7 +16,7 @@ namespace VSS.Pegasus.Client.UnitTests
     [InlineData(geoTiffFileName, false)]
     public void CanDeleteTiles(string fileName, bool success)
     {
-      var fullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{fileName}";
+      var fullName = $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{fileName}";
       var gracefulMock = new Mock<IWebRequest>();
 
       var dataOceanMock = new Mock<IDataOceanClient>();
