@@ -92,7 +92,7 @@ namespace TCCToDataOcean.Utils
       _log.LogInformation($"{Method.In()} Resolving project {job.Project.ProjectUID} CSIB from Raptor");
       var logMessage = $"Failed to fetch coordinate system file '{job.Project.CustomerUID}/{job.Project.ProjectUID}/{job.Project.CoordinateSystemFileName}' from TCC.";
 
-      _migrationDb.WriteWarning(job.Project.ProjectUID, logMessage);
+      _migrationDb.Insert(new MigrationMessage(job.Project.ProjectUID, logMessage), Table.Warnings);
       _log.LogWarning(logMessage);
 
       // Get the the CSIB for the project from Raptor.
@@ -101,9 +101,9 @@ namespace TCCToDataOcean.Utils
 
       if (csibResponse.Code != 0)
       {
-        var errorMessage = $"Failed to resolve CSIB for project: {job.Project.ProjectUID}";
+        var errorMessage = "Failed to resolve CSIB from Raptor";
         _migrationDb.SetResolveCSIBMessage(Table.Projects, job.Project.ProjectUID, csib);
-        _migrationDb.WriteError(job.Project.ProjectUID, errorMessage);
+        _migrationDb.Insert(new MigrationMessage(job.Project.ProjectUID, errorMessage), Table.Errors);
 
         _log.LogError(errorMessage);
 
@@ -156,7 +156,7 @@ namespace TCCToDataOcean.Utils
 
       _log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
 
-      return false;
+      return true;
     }
     
     /// <summary>
