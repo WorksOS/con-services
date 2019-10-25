@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -7,13 +9,15 @@ namespace TCCToDataOcean.DatabaseAgent
 {
   public interface ILiteDbAgent
   {
-    IEnumerable<T> GetTable<T>(string tableName);
     void DropTables(string[] tableNames);
+    IEnumerable<T> GetTable<T>(string tableName) where T : MigrationObj;
+
     T GetRecord<T>(string tableName, int id) where T : MigrationObj;
+    IEnumerable<MigrationObj> Find<T>(string tableName, Expression<Func<T, bool>> predicate) where T : MigrationObj;
+    bool Insert<T>(T obj, string Tablename = null) where T : MigrationObj;
+    void Update<T>(int id, Action<T> action) where T : MigrationObj;
     void WriteRecord(string tableName, Project project);
     void WriteRecord(string tableName, ImportedFileDescriptor file);
-    void WriteWarning(string projectUid, string message);
-    void WriteError(string projectUid, string message);
     void SetMigrationState(string tableName, MigrationJob job, MigrationState migrationState, string reason);
     void SetMigrationState(string tableName, ImportedFileDescriptor file, MigrationState migrationState);
     void SetFileSize(string tableName, ImportedFileDescriptor file, long length);
@@ -26,7 +30,6 @@ namespace TCCToDataOcean.DatabaseAgent
     void SetProjectCSIB(string tableName, string key, string csib);
 
     void InitDatabase();
-    void SetMigationInfo_EndTime();
     void SetMigationInfo_SetProjectCount(int projectCount);
     void SetMigationInfo_IncrementProjectsProcessed();
     void SetMigrationFilesTotal(int fileCount);

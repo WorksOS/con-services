@@ -11,6 +11,8 @@ namespace TCCToDataOcean.DatabaseAgent
     public int ProjectsCompleted { get; set; }
     public int FilesTotal { get; set; }
     public int FilesUploaded { get; set; }
+    public int ProjectsSuccessful { get; set; }
+    public int ProjectsFailed { get; set; }
 
     public MigrationInfo()
     {

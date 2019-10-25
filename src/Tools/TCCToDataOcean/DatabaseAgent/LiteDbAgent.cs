@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using LiteDB;
 using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
@@ -24,8 +25,6 @@ namespace TCCToDataOcean.DatabaseAgent
       db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE") + "-" + databaseSuffix + ".db"));
     }
 
-    public IEnumerable<T> GetTable<T>(string tableName) => db.GetCollection<T>(tableName).FindAll();
-
     public void DropTables(string[] tableNames)
     {
       foreach (var tablename in tableNames)
@@ -34,21 +33,42 @@ namespace TCCToDataOcean.DatabaseAgent
       }
     }
 
+    /// <summary>
+    /// Initializes the <see cref="MigrationInfo"/> record.
+    /// </summary>
+    public void InitDatabase() => db.GetCollection<MigrationInfo>(Table.MigrationInfo).Insert(new MigrationInfo());
+
+    /// <summary>
+    /// Returns all records for a given table.
+    /// </summary>
+    public IEnumerable<T> GetTable<T>(string tableName) where T : MigrationObj => db.GetCollection<T>(tableName).FindAll();
+
+    /// <summary>
+    /// Returns table entry by id.
+    /// </summary>
     public T GetRecord<T>(string tableName, int id) where T : MigrationObj => db.GetCollection<T>(tableName).FindById(id);
 
-    public void InitDatabase()
-    {
-      db.GetCollection<MigrationInfo>(Table.MigrationInfo).Insert(new MigrationInfo());
-    }
+    /// <summary>
+    /// Inserts a new object into it's associated table.
+    /// </summary>
+    public bool Insert<T>(T obj, string Tablename = null) where T : MigrationObj => db.GetCollection<T>(Tablename).Insert(obj).AsBoolean;
 
-    public void SetMigationInfo_EndTime()
-    {
-      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
-      var dbObj = objs.FindById(1);
+    /// <summary>
+    /// Returns all table entries where the predicate evaluates to true.
+    /// </summary>
+    public IEnumerable<MigrationObj> Find<T>(string tableName, Expression<Func<T, bool>> predicate) where T : MigrationObj => db.GetCollection<T>(tableName).Find(predicate);
 
-      var endTimeUtc = DateTime.Now;
-      dbObj.EndTime = endTimeUtc;
-      dbObj.Duration = endTimeUtc.Subtract(dbObj.StartTime).ToString();
+    /// <summary>
+    /// Updates an object using the supplied Action delegate.
+    /// </summary>
+    public void Update<T>(int id, Action<T> action) where T : MigrationObj
+    {
+      var objs = db.GetCollection<T>();
+      var dbObj = objs.FindById(id);
+
+      action(dbObj);
+      dbObj.DateTimeUpdated = DateTime.UtcNow;
+
       objs.Update(dbObj);
     }
 
@@ -85,9 +105,6 @@ namespace TCCToDataOcean.DatabaseAgent
         objs.Update(dbObj);
       }
     }
-
-    public void WriteWarning(string projectUid, string message) => db.GetCollection<MigrationMessage>(Table.Warnings).Insert(new MigrationMessage(projectUid, message));
-    public void WriteError(string projectUid, string message) => db.GetCollection<MigrationMessage>(Table.Errors).Insert(new MigrationMessage(projectUid, message));
 
     public void SetMigrationState(string tableName, MigrationJob job, MigrationState migrationState, string message)
     {
