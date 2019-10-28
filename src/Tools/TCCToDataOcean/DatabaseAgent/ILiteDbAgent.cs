@@ -12,27 +12,20 @@ namespace TCCToDataOcean.DatabaseAgent
     void DropTables(string[] tableNames);
     IEnumerable<T> GetTable<T>(string tableName) where T : MigrationObj;
 
-    T GetRecord<T>(string tableName, int id) where T : MigrationObj;
+    T Find<T>(int id = -1) where T : MigrationObj;
     IEnumerable<MigrationObj> Find<T>(string tableName, Expression<Func<T, bool>> predicate) where T : MigrationObj;
-    bool Insert<T>(T obj, string Tablename = null) where T : MigrationObj;
-    void Update<T>(int id, Action<T> action) where T : MigrationObj;
-    void WriteRecord(string tableName, Project project);
+    long Insert<T>(T obj, string Tablename = null) where T : MigrationObj;
+    void Update<T>(long id, Action<T> action, string tableName = null) where T : MigrationObj;
+    long WriteRecord(string tableName, Project project);
     void WriteRecord(string tableName, ImportedFileDescriptor file);
-    void SetMigrationState(string tableName, MigrationJob job, MigrationState migrationState, string reason);
-    void SetMigrationState(string tableName, ImportedFileDescriptor file, MigrationState migrationState);
+    void SetMigrationState(MigrationJob job, MigrationState migrationState, string reason);
     void SetFileSize(string tableName, ImportedFileDescriptor file, long length);
     void SetProjectCoordinateSystemDetails(Project project);
     void SetProjectDxfUnitsType(string tableName, Project project, DxfUnitsType? dxfUnitsType);
     void IncrementProjectFilesUploaded(Project project, int fileCount = 1);
     void IncrementProjectMigrationCounter(Project project, int count = 1);
-    void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount);
+    void SetProjectFilesDetails(Project project, int totalFileCount, int eligibleFileCount);
     void SetResolveCSIBMessage(string tableName, string key, string message);
     void SetProjectCSIB(string tableName, string key, string csib);
-
-    void InitDatabase();
-    void SetMigationInfo_SetProjectCount(int projectCount);
-    void SetMigationInfo_IncrementProjectsProcessed();
-    void SetMigrationFilesTotal(int fileCount);
-    void SetMigrationFilesUploaded(int fileCount);
   }
 }
