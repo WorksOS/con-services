@@ -64,6 +64,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [DataRow("ec520SerialNumber", "", "", 90, 180, 1, 200, 10, 210)]
     [DataRow("ec520SerialNumber", "sn941SerialNumber", "", -90, -180, 2000, 200, 2010, 210)]
     [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 210, 11, 260)]
+    [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 200, 11, 400)]
     public void SinglePatchRequest_Valid(string ecSerial, string radioSerial,
       string tccOrgUid,
       double machineLatitude, double machineLongitude,
@@ -84,7 +85,7 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
     [DataRow("ec520SerialNumber", "", "", 0, -1, 1, 200, 10, 210, "Invalid Machine Location")]
     [DataRow("ec520SerialNumber", "", "", 90, -180, 11, 200, 10, 210, "Invalid bounding box: corners are not bottom left and top right.")]
     [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 220, 10, 210, "Invalid bounding box: corners are not bottom left and top right.")]
-    [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 210, 11, 260.2, "Invalid bounding box: Must be 500m2 or less.")]
+    [DataRow("ec520SerialNumber", "", "", 90, -180, 1, 200, 11, 401, "Invalid bounding box: Must be 2000m2 or less.")]
     public void SinglePatchRequest_Invalid(string ecSerial, string radioSerial,
       string tccOrgUid,
       double machineLatitude, double machineLongitude,
