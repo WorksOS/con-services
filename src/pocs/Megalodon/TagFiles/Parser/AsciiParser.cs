@@ -1,0 +1,509 @@
+﻿using System;
+using System.Text;
+using TagFiles.Types;
+using TagFiles.Utils;
+using TagFiles.Common;
+
+/// <summary>
+/// Master class for parsing machine data packets and creating tagfiles for VL
+/// </summary>
+namespace TagFiles.Parser
+{
+  public class AsciiParser
+  {
+
+    private string TagName;
+    private string TagValue;
+    private bool HaveName = false;
+    private bool HaveValue = false;
+    private int HeaderRecordCount = 0;
+
+    public bool HeaderRequired = true;
+    public bool HeaderUpdated = false; // has there been a time epoch for header
+
+    public bool TrailerRequired = false;
+    public EpochRecord EpochRec = new EpochRecord(); // current epoch record
+    public TagContentList TagContent; // tagfile data content
+
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public AsciiParser()
+    {
+      TagValue = "";
+      TagName = "";
+      TagContent = new TagContentList();
+      //   EpochDict = new EpochDictionary();
+    }
+
+
+    private bool ValidateText(ref byte[] ba)
+    {
+      if (ba.Length <= 4)
+      {
+        // todo log error
+        return false;
+      }
+
+      // Should start with record seperator
+      if (ba[0] != TagConstants.RS)
+      {
+        // todo log error
+        return false;
+      }
+
+      return true;
+
+    }
+
+    /// <summary>
+    /// Store Epoch in list for writing later to disk
+    /// </summary>
+    private void SaveEpochToList()
+    {
+      // Write epoch and flush record
+   //   TagContent.
+    }
+
+    /// <summary>
+    /// Checks we have enough input data to create a tagfile epoch
+    /// </summary>
+    public void UpdateTagContentList()
+    {
+      // if (!EpochRec.HasTime)
+      //  return;
+
+      var timeAdded = false;
+
+      if (!HeaderUpdated)
+      {
+        if (EpochRec.HasTime)
+        {
+          TagContent.AddTimeEntry(new TagData_UnsignedInt() { Data = EpochRec.Time });
+          TagContent.AddWeekEntry(new TagData_UnsignedInt() { Data = EpochRec.Week });
+          EpochRec.HasTime = false; // reset
+          HeaderRecordCount++;
+          HeaderUpdated = true;
+          timeAdded = true;
+        }
+      }
+
+  //    if (HeaderRequired)
+   //   {
+        // todo refactor this code like AddTimeEntry
+
+        if (EpochRec.HasCoordSys)
+        {
+          TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CoordSys, DataType = TAGDataType.t4bitUInt, Data = EpochRec.CoordSys });
+          EpochRec.HasCoordSys = false;
+        }
+        if (EpochRec.HasMappingMode)
+        {
+          TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MappingMode, DataType = TAGDataType.t8bitUInt, Data = EpochRec.MappingMode });
+          EpochRec.HasMappingMode = false;
+        }
+
+        if (EpochRec.HasDES)
+        {
+          TagContent.AddEntry(new TagData_Unicode() { DictID = (short)DictionaryItem.Design, DataType = TAGDataType.tUnicodeString, Data = EpochRec.Design });
+          EpochRec.HasDES = false;
+        }
+        if (EpochRec.HasLAT)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Latitude, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LAT });
+          EpochRec.HasLAT = false;
+          HeaderRecordCount++;
+        }
+        if (EpochRec.HasLON)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Longtitude, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LON });
+          EpochRec.HasLON = false;
+          HeaderRecordCount++;
+        }
+        if (EpochRec.HasHGT)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.height, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.HGT });
+          EpochRec.HasHGT = false;
+        }
+
+        if (EpochRec.HasUTM)
+        {
+          TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.UTMZone, DataType = TAGDataType.t8bitUInt, Data = EpochRec.UTM });
+          EpochRec.HasUTM = false;
+        }
+
+      HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
+     
+     // };
+
+      if (EpochRec.HasTime & !timeAdded)
+      {
+        if (EpochRec.HasDeltaTime)
+          TagContent.AddTimeDeltaEntry(new TagData_UnsignedInt() { Data = EpochRec.DeltaTime });
+        else
+          TagContent.AddTimeEntry(new TagData_UnsignedInt() { Data = EpochRec.Time });
+        EpochRec.HasTime = false; // reset
+      }
+
+      if (EpochRec.HasLEB || EpochRec.HasLNB || EpochRec.HasLHB)
+      {
+        TagContent.AddEntry(new TagData_Empty() { DictID = (short)DictionaryItem.Left, DataType = TAGDataType.tEmptyType });
+        if (EpochRec.HasLEB)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Easting, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LEB });
+          EpochRec.HasLEB = false;
+        }
+        if (EpochRec.HasLNB)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Northing, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LNB });
+          EpochRec.HasLNB = false;
+        }
+        if (EpochRec.HasLHB)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Elevation, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LHB });
+          EpochRec.HasLHB = false;
+        }
+      }
+
+      if (EpochRec.HasREB || EpochRec.HasRNB || EpochRec.HasRHB)
+      {
+        TagContent.AddEntry(new TagData_Empty() { DictID = (short)DictionaryItem.Right, DataType = TAGDataType.tEmptyType });
+        if (EpochRec.HasREB)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Easting, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.REB });
+          EpochRec.HasREB = false;
+        }
+        if (EpochRec.HasRNB)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Northing, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.RNB });
+          EpochRec.HasRNB = false;
+        }
+        if (EpochRec.HasRHB)
+        {
+          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Elevation, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.RHB });
+          EpochRec.HasRHB = false;
+        }
+      }
+
+      if (EpochRec.HasHDG)
+      {
+        // special field todo. Heading does not go to tagfile. will go somewhere else eventually 
+        EpochRec.HasHDG = false;
+      }
+
+      if (EpochRec.HasMSD)
+      {
+        TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.MachineSpeed, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.MSD });
+        EpochRec.HasMSD = false;
+      }
+      if (EpochRec.HasGPM)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.GPSMode, DataType = TAGDataType.t4bitUInt, Data = EpochRec.GPM });
+        EpochRec.HasGPM = false;
+      }
+      if (EpochRec.HasBOG)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.BOG, DataType = TAGDataType.t4bitUInt, Data = EpochRec.BOG });
+        EpochRec.HasBOG = false;
+      }
+
+      if (TrailerRequired)
+      {
+        if (EpochRec.HasRadioSerial)
+        {
+          TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.RadioSerial, DataType = TAGDataType.tANSIString, Data = EpochRec.RadioSerial });
+          EpochRec.HasRadioSerial = false;
+        }
+        if (EpochRec.HasRadioType)
+        {
+          TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.RadioType, DataType = TAGDataType.tANSIString, Data = EpochRec.RadioType });
+          EpochRec.HasRadioType = false;
+        }
+        if (EpochRec.HasSER)
+        {
+          TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.FileSerial, DataType = TAGDataType.tANSIString, Data = EpochRec.Serial });
+          EpochRec.HasSER = false;
+        }
+        if (EpochRec.HasMID)
+        {
+          TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.MachineID, DataType = TAGDataType.tANSIString, Data = EpochRec.MID });
+          EpochRec.HasMID = false;
+        }
+        if (EpochRec.HasAppVersion)
+        {
+          TagContent.AddEntry(new TagData_String() { DictID = (short)DictionaryItem.ApplicationVersion, DataType = TAGDataType.tANSIString, Data = EpochRec.AppVersion });
+          EpochRec.HasAppVersion = false;
+        }
+        if (EpochRec.HasMTP)
+        {
+          TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MachineType, DataType = TAGDataType.t8bitUInt, Data = EpochRec.MTP });
+          EpochRec.HasMTP = false;
+        }
+
+      }
+
+    }
+
+    /// <summary>
+    /// Process field from datapacket
+    /// </summary>
+    private void ProcessField()
+    {
+      try
+      {
+
+        switch (TagName)
+        {
+          case TagConstants.TIME:
+            {
+              if (EpochRec.HasTime) // if we have an existing timestamp then save that epoch to list before continuing
+                SaveEpochToList();
+              // Starts new epoch
+              uint gpsTime;
+              uint gpsWeek;
+
+              // Comes in as UTC unix timestamp
+              var utcTime = TagUtils.UnixTimeStampToUTCDateTime(Convert.ToInt32(TagValue));
+              GPS.DateTimeToGPSOriginTime(utcTime, out gpsWeek, out gpsTime);
+              EpochRec.Time = gpsTime;
+              EpochRec.Week = gpsWeek;
+              break;
+            }
+          case TagConstants.LEFT_EASTING_BLADE:
+            {
+              if (EpochRec.HasLEB)
+                MegalodonLogger.LogError("Already have LEB value for epoch");
+              EpochRec.LEB = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.LEFT_NORTHING_BLADE:
+            {
+              if (EpochRec.HasLNB)
+                MegalodonLogger.LogError("Already have LNB value for epoch");
+              EpochRec.LNB = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.LEFT_HEIGHT_BLADE:
+            {
+              if (EpochRec.HasLHB)
+                MegalodonLogger.LogError("Already have LHB value for epoch");
+              EpochRec.LHB = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.RIGHT_EASTING_BLADE:
+            {
+              if (EpochRec.HasREB)
+                MegalodonLogger.LogError("Already have REB value for epoch");
+              EpochRec.REB = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.RIGHT_NORTHING_BLADE:
+            {
+              if (EpochRec.HasRNB)
+                MegalodonLogger.LogError("Already have RNB value for epoch");
+              EpochRec.RNB = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.RIGHT_HEIGHT_BLADE:
+            {
+              if (EpochRec.HasRHB)
+                MegalodonLogger.LogError("Already have RHB value for epoch");
+              EpochRec.RHB = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.GPS_MODE:
+            {
+              if (EpochRec.HasGPM)
+                MegalodonLogger.LogError("Already have LNB value for epoch");
+              EpochRec.GPM = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.BLADE_ON_GROUND:
+            {
+              if (EpochRec.HasBOG)
+                MegalodonLogger.LogError("Already have BOG value for epoch");
+              EpochRec.BOG = Convert.ToUInt16(TagValue);
+              break;
+            }
+          case TagConstants.DESIGN:
+            {
+              if (EpochRec.HasDES)
+                MegalodonLogger.LogError("Already have DES value for epoch");
+              EpochRec.Design = TagValue;
+              break;
+            }
+          case TagConstants.LATITUDE:
+            {
+              if (EpochRec.HasLAT)
+                MegalodonLogger.LogError("Already have LAT value for epoch");
+              EpochRec.LAT = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.LONTITUDE:
+            {
+              if (EpochRec.HasLON)
+                MegalodonLogger.LogError("Already have LON value for epoch");
+              EpochRec.LON = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.HEIGHT:
+            {
+              if (EpochRec.HasHGT)
+                MegalodonLogger.LogError("Already have HGT value for epoch");
+              EpochRec.HGT = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.MESSAGE_ID:
+            {
+              if (EpochRec.HasMID)
+                MegalodonLogger.LogError("Already have MID value for epoch");
+              EpochRec.MID = TagValue;
+              break;
+            }
+          case TagConstants.MACHINE_SPEED:
+            {
+              if (EpochRec.HasMSD)
+                MegalodonLogger.LogError("Already have MSD value for epoch");
+              EpochRec.MSD = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.MACHINE_TYPE:
+            {
+              if (EpochRec.HasMTP)
+                MegalodonLogger.LogError("Already have MTP value for epoch");
+              EpochRec.MTP = TagUtils.ConvertToMachineType(TagValue);
+              break;
+            }
+          case TagConstants.HEADING:
+            {
+              if (EpochRec.HasHDG)
+                MegalodonLogger.LogError("Already have HDG value for epoch");
+              EpochRec.HDG = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.SERIAL:
+            {
+              if (EpochRec.HasSER)
+                MegalodonLogger.LogError("Already have SER value for epoch");
+              EpochRec.Serial = TagValue;
+              EpochRec.RadioSerial = TagValue; // Yes assigned two places
+              break;
+            }
+          case TagConstants.UTM:
+            {
+              if (EpochRec.HasUTM)
+                MegalodonLogger.LogError("Already have UTM value for epoch");
+              EpochRec.UTM = Convert.ToByte(TagValue); 
+              EpochRec.RadioSerial = TagValue; // Yes assigned two places
+              break;
+            }
+          default:
+            MegalodonLogger.LogWarning($"ProcessField. Unknown TagName:{TagName} Value:{TagValue}");
+            break;
+        }
+
+
+      //  UpdateTagContentList();
+
+      }
+      catch (Exception ex)
+      {
+        MegalodonLogger.LogError($"Unexpected error in ProcessField. TagName:{TagName}, Value:{TagValue}, Error:{ex.Message}");
+      }
+    }
+
+
+    public bool ReadyToWriteEpoch()
+    {
+      // has time lapsed to close tagfile and is there data to write to tagefile etc
+      //  if HaveHeader
+      return true; // todo
+    }
+
+    /// <summary>
+    /// Clear all data to start new tagfile
+    /// </summary>
+    public void Reset()
+    {
+      //   EpochRec.ClearEpoch();
+      EpochRec = new EpochRecord();
+      TagName = "";
+      TagValue= "";
+      HaveName = false;
+      HaveValue = false;
+      HeaderRecordCount = 0;
+      HeaderRequired = true;
+      HeaderUpdated = false; 
+      TrailerRequired = false;
+      TagContent = new TagContentList(); // zero list
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="txt">Each field from data packet should be in the order RS+Name+Value</param>
+    /// <returns></returns>
+    public bool ParseText(string txt)
+    {
+      // Note STX and ETX, ENQ, ACK, NAK should not enter here as a rule. Ignored if it does
+
+      byte[] bArray = Encoding.UTF8.GetBytes(txt);
+      if (!ValidateText(ref bArray))
+      {
+        return false;
+      }
+
+      HaveName = false;
+      HaveValue = false;
+
+      // construct records(tagfile fields) byte by byte
+      for (int i = 0; i < bArray.Length; i++)
+      {
+        switch (bArray[i])
+        {
+          case TagConstants.STX:
+            continue;
+          case TagConstants.ETX:
+            continue;
+          case TagConstants.ENQ:
+            continue;
+          case TagConstants.ACK:
+            continue;
+          case TagConstants.NAK:
+            continue;
+          case TagConstants.RS:
+            if (HaveName && TagValue != "")
+              ProcessField();
+            //  UpdateTagContentList(); // save current epoch check
+            HaveName = false;
+            HaveValue = false;
+            TagValue = "";
+            TagName = "";
+            continue;
+          default:
+            if (!HaveName)
+            {
+              TagName = TagName + (char)bArray[i];
+              HaveName = TagName.Length == TagConstants.TAG_NAME_LENGHT;
+            }
+            else
+            {
+              TagValue = TagValue + (char)bArray[i];
+              if (!HaveValue)
+                HaveValue = true;
+              if (HaveName && i == bArray.Length - 1) // endoftext
+                if (HaveName && TagValue != "")
+                  ProcessField();
+            }
+            continue;
+        }
+
+      }
+
+      UpdateTagContentList(); // finally process all fields picked out of the datapacket
+
+      return true;
+    }
+  }
+}
