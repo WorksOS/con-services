@@ -135,11 +135,11 @@ namespace VSS.DataOcean.Client
     }
 
     /// <summary>
-    /// Construct the path in DataOcean
+    /// Construct the path in DataOcean.
     /// </summary>
     public static string DataOceanPath(string rootFolder, string customerUid, string projectUid)
     {
-      return $"{DataOceanUtil.PathSeparator}{rootFolder}{DataOceanUtil.PathSeparator}{customerUid}{DataOceanUtil.PathSeparator}{projectUid}";
+      return string.Join(DataOceanUtil.PathSeparator.ToString(), "", rootFolder, customerUid, projectUid);
     }
   }
 }

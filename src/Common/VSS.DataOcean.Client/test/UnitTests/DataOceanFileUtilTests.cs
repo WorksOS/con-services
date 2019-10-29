@@ -61,5 +61,17 @@ namespace VSS.DataOcean.Client.UnitTests
       var datePart = Path.GetFileNameWithoutExtension(dataOceanFileName).Substring(fileUid.ToString().Length);
       Assert.False(string.IsNullOrEmpty(datePart));
     }
+
+    [Fact]
+    public void DataOceanPath_is_constructed_correctly()
+    {
+      const string rootFolder = "rootFolder";
+      var customerUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+
+      var strResult = DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid);
+
+      Assert.Equal($"{DataOceanUtil.PathSeparator}{rootFolder}{DataOceanUtil.PathSeparator}{customerUid}{DataOceanUtil.PathSeparator}{projectUid}", strResult);
+    }
   }
 }

@@ -24,10 +24,10 @@ namespace VSS.Pegasus.Client
   public class PegasusClient : IPegasusClient
   {
     private const string PEGASUS_URL_KEY = "PEGASUS_URL";
-    private const string PEGASUS_EXECUTION_TIMEOUT_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
-    private const string PEGASUS_EXECUTION_WAIT_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS";
-    private const string PEGASUS_DXF_PROCEDURE_ID_KEY = "PEGASUS_DXF_PROCEDURE_ID";
-    private const string PEGASUS_GEOTIFF_PROCEDURE_ID_KEY = "PEGASUS_GEOTIFF_PROCEDURE_ID";
+    private const string PEGASUS_EXECUTION_TIMEOUT_MINS = "PEGASUS_EXECUTION_TIMEOUT_MINS";
+    private const string PEGASUS_EXECUTION_WAIT_MILLSECS = "PEGASUS_EXECUTION_WAIT_MILLSECS";
+    private const string PEGASUS_DXF_PROCEDURE_ID = "PEGASUS_DXF_PROCEDURE_ID";
+    private const string PEGASUS_GEOTIFF_PROCEDURE_ID = "PEGASUS_GEOTIFF_PROCEDURE_ID";
     private const string PEGASUS_LOG_JOBID_KEY = "pegasus_jobid";
     private const string PEGASUS_LOG_RESULT_KEY = "pegasus_result";
     private const string PEGASUS_LOG_EVENTS_KEY = "pegasus_events";
@@ -63,18 +63,18 @@ namespace VSS.Pegasus.Client
         throw new ArgumentException($"Missing environment variable {PEGASUS_URL_KEY}");
       }
       Log.LogInformation($"{PEGASUS_URL_KEY}={pegasusBaseUrl}");
-      executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_KEY, 1000);
-      executionTimeout = configuration.GetValueDouble(PEGASUS_EXECUTION_TIMEOUT_KEY, 5);
+      executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_MILLSECS, 1000);
+      executionTimeout = configuration.GetValueDouble(PEGASUS_EXECUTION_TIMEOUT_MINS, 5);
       maxZoomLevel = configuration.GetValueInt("TILE_RENDER_MAX_ZOOM_LEVEL", 21);
-      dxfProcedureId = configuration.GetValueGuid(PEGASUS_DXF_PROCEDURE_ID_KEY);
+      dxfProcedureId = configuration.GetValueGuid(PEGASUS_DXF_PROCEDURE_ID);
       if (dxfProcedureId == Guid.Empty)
       {
-        throw new ArgumentException($"Missing environment variable {PEGASUS_DXF_PROCEDURE_ID_KEY}");
+        throw new ArgumentException($"Missing environment variable {PEGASUS_DXF_PROCEDURE_ID}");
       }
-      geoTiffProcedureId = configuration.GetValueGuid(PEGASUS_GEOTIFF_PROCEDURE_ID_KEY);
+      geoTiffProcedureId = configuration.GetValueGuid(PEGASUS_GEOTIFF_PROCEDURE_ID);
       if (geoTiffProcedureId == Guid.Empty)
       {
-        throw new ArgumentException($"Missing environment variable {PEGASUS_GEOTIFF_PROCEDURE_ID_KEY}");
+        throw new ArgumentException($"Missing environment variable {PEGASUS_GEOTIFF_PROCEDURE_ID}");
       }
     }
 
@@ -85,6 +85,7 @@ namespace VSS.Pegasus.Client
     /// <param name="dxfFileName">The path and file name of the DXF file</param>
     /// <param name="dxfUnitsType">The units of the DXF file</param>
     /// <param name="customHeaders"></param>
+    /// <param name="setJobIdAction"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
     public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {

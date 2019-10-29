@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -27,13 +28,16 @@ namespace VSS.DataOcean.Client
     private readonly int _uploadWaitInterval;
     private readonly double _uploadTimeout;
 
+    private IMemoryCache _cache;
+
     /// <summary>
     /// Client for sending requests to the data ocean.
     /// </summary>
-    public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient)
+    public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient, IMemoryCache memoryCache)
     {
       Log = logger.CreateLogger<DataOceanClient>();
       _gracefulClient = gracefulClient;
+      _cache = memoryCache;
 
       const string DATA_OCEAN_URL_KEY = "DATA_OCEAN_URL";
       _dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
@@ -43,8 +47,8 @@ namespace VSS.DataOcean.Client
         throw new ArgumentException($"Missing environment variable {DATA_OCEAN_URL_KEY}");
       }
 
-      _uploadWaitInterval = configuration.GetValueInt("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", 1000); //Millisecs
-      _uploadTimeout = configuration.GetValueDouble("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", 5); //minutes
+      _uploadWaitInterval = configuration.GetValueInt("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", 1000);
+      _uploadTimeout = configuration.GetValueDouble("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", 5);
 
       Log.LogInformation($"{DATA_OCEAN_URL_KEY}={_dataOceanBaseUrl}");
     }
@@ -83,7 +87,7 @@ namespace VSS.DataOcean.Client
     }
 
     /// <summary>
-    /// Saves the file.
+    /// Uploads the file to Data Ocean, will upsert if necessary.
     /// </summary>
     public async Task<bool> PutFile(string path, string filename, Stream contents, IDictionary<string, string> customHeaders = null)
     {
@@ -142,7 +146,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Deletes the file.
     /// </summary>
-    /// 
     public async Task<bool> DeleteFile(string fullName, IDictionary<string, string> customHeaders)
     {
       Log.LogDebug($"DeleteFile: {fullName}");
@@ -161,7 +164,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the id of the lowest level folder metadata in the path 
     /// </summary>
-    /// 
     public async Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders)
     {
       Log.LogDebug($"GetFolderId: {path}");
@@ -173,7 +175,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the file id
     /// </summary>
-    /// 
     public async Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders)
     {
       Log.LogDebug($"GetFileId: {fullName}");
@@ -185,7 +186,6 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the file contents
     /// </summary>
-    /// 
     public async Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders)
     {
       Log.LogDebug($"GetFile: {fullName}");
@@ -281,7 +281,7 @@ namespace VSS.DataOcean.Client
     /// </summary>
     private async Task<DataOceanDirectory> GetFolderMetadata(string path, bool mustExist, IDictionary<string, string> customHeaders)
     {
-      Log.LogDebug($"GetFolderMetadata: {path}");
+      Log.LogDebug($"{nameof(GetFolderMetadata)}: path: {path}, mustExist: {mustExist}");
 
       //NOTE: DataOcean requires / regardless of OS. However we construct the path and split using DataOceanUtil.PathSeparator.
       //This is merely a convenience as DataOcean doesn't use paths but a hierarchy of folders above the file, linked using parent_id.
@@ -344,26 +344,22 @@ namespace VSS.DataOcean.Client
     /// Gets the requested folder or file metadata at the specified level i.e. with the requested parent.
     /// </summary>
     /// <typeparam name="T">The type of item, folder or file</typeparam>
-    /// <param name="name">Folder or file name</param>
-    /// <param name="parentId">DataOcean ID of the parent folder</param>
-    /// <param name="isFolder">True if gettig a folder otherwise false</param>
-    /// <param name="customHeaders"></param>
-    /// <returns></returns>
-    private Task<T> BrowseItem<T>(string name, Guid? parentId, bool isFolder, IDictionary<string, string> customHeaders)
+    private Task<T> BrowseItem<T>(string itemName, Guid? parentId, bool isFolder, IDictionary<string, string> customHeaders)
     {
-      Log.LogDebug($"BrowseItem: name={name}, parentId={parentId}");
+      Log.LogDebug($"BrowseItem ({(isFolder ? "FOLDER" : "FILE")}): name={itemName}, parentId={parentId}");
 
-      IDictionary<string, string> queryParameters = new Dictionary<string, string>();
-      queryParameters.Add("name", name);
-      queryParameters.Add("owner", "true");
+      var queryParameters = new Dictionary<string, string>
+      {
+        { "name", itemName },
+        { "owner", "true" }
+      };
 
       if (parentId.HasValue)
       {
         queryParameters.Add("parent_id", parentId.Value.ToString());
       }
 
-      var suffix = isFolder ? "directories" : "files";
-      return GetData<T>($"/api/browse/{suffix}", queryParameters, customHeaders);
+      return GetData<T>($"/api/browse/{(isFolder ? "directories" : "files")}", queryParameters, customHeaders);
     }
 
     /// <summary>
@@ -410,7 +406,6 @@ namespace VSS.DataOcean.Client
     /// <param name="message">The message payload</param>
     /// <param name="route">The route for the request</param>
     /// <param name="customHeaders"></param>
-    /// <returns></returns>
     private async Task<U> CreateItem<T, U>(T message, string route, IDictionary<string, string> customHeaders)
     {
       var payload = JsonConvert.SerializeObject(message);
@@ -431,7 +426,6 @@ namespace VSS.DataOcean.Client
     /// <param name="route">The route for the request</param>
     /// <param name="queryParameters">Query parameters for the request</param>
     /// <param name="customHeaders"></param>
-    /// <returns></returns>
     private async Task<T> GetData<T>(string route, IDictionary<string, string> queryParameters, IDictionary<string, string> customHeaders)
     {
       Log.LogDebug($"GetData: route={route}, queryParameters={JsonConvert.SerializeObject(queryParameters)}");

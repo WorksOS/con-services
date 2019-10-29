@@ -177,8 +177,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var transferProxy = transferProxyFunc(TransferProxyType.Default);
       transferProxy.Upload(fileStream, s3Path);
 
-      var baseUrl = Request.Host.ToUriComponent(); 
-    
+      var baseUrl = Request.Host.ToUriComponent();
+
       // The QueryString will have values in it, so it's safe to add extra queries with the & as opposed to ?, then &
       var callbackUrl = $"http://{baseUrl}/internal/v4/importedfile{Request.QueryString}";
       callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}&awsFilePath={WebUtility.UrlEncode(s3Path)}";
@@ -460,17 +460,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
            Logger, ProjectRepo, offset, parentUid)
         .ConfigureAwait(false);
 
-      bool creating = existing == null;
+      var creating = existing == null;
+
       Logger.LogInformation(
         creating
           ? $"{nameof(UpsertFileInternal)}. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
           : $"{nameof(UpsertFileInternal)}. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
-      if (importedFileType == ImportedFileType.GeoTiff)
-        uploadToTcc = false;
+      if (importedFileType == ImportedFileType.GeoTiff) { uploadToTcc = false; }
 
       ImportedFileDescriptorSingleResult importedFile;
-
       FileDescriptor fileDescriptor = null;
 
       var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
