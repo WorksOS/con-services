@@ -22,7 +22,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.MachinePassesExportJob
   {
     public static Guid VSSJOB_UID = Guid.Parse("39d6c48a-cc74-42d3-a839-1a6b77e8e076");
 
-    private const string FILTER_JSON = "{\"filterType\":1,\"filterJson\":\"{\"dateRangeType\":1,\"elevationType\":null,\"vibeStateOn\":true}\"}";
+    private const string FILTER_JSON = "{\"dateRangeType\":1,\"elevationType\":null,\"vibeStateOn\":true}";
 
     public Guid VSSJobUid => VSSJOB_UID;
 
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.MachinePassesExportJob
           log.LogDebug($"Generated filename {generatedFilename}");
           //generate uri
           var baseUri = await serviceResolution.ResolveService("productivity3dinternal_service_public_v2");
-          var requestUri = $"{baseUri.Endpoint}/api/v2/export/machinepasses?projectUid={project.ProjectUid}&filename={generatedFilename}&filterUid={filter.FilterDescriptor.FilterUid}&coordType=0&outputType=1&restrictOutput=False&rawDataOutput=False";
+          var requestUri = $"{baseUri.Endpoint}/api/v2/export/machinepasses?projectUid={project.ProjectUid}&filename={generatedFilename}&filterUid={filter.FilterDescriptor.FilterUid}&coordType=0&outputType=0&restrictOutput=False&rawDataOutput=False";
           log.LogDebug($"Export request url {requestUri}");
           var jobExportRequest = new ScheduleJobRequest() { Url = requestUri, Timeout = 9000000, Filename = generatedFilename };
           jobRequest = new JobRequest() { JobUid = Guid.Parse("c3cbb048-05c1-4961-a799-70434cb2f162"), SetupParameters = jobExportRequest, RunParameters = headers, AttributeFilters = SpecialFilters.ExportFilter };

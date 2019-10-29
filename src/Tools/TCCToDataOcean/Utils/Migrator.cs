@@ -33,6 +33,8 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     const int THROTTLE_ASYNC_FILE_UPLOAD_JOBS = 5;
 
+    private long _migrationInfoId = -1;
+
     private readonly IProjectRepository ProjectRepo;
     private readonly IFileRepository FileRepo;
     private readonly IImportFile ImportFile;
@@ -43,7 +45,6 @@ namespace TCCToDataOcean.Utils
     private readonly bool _resumeMigration;
     private readonly bool _reProcessFailedProjects;
     private readonly string _fileSpaceId;
-    private readonly string _projectApiUrl;
     private readonly string _uploadFileApiUrl;
     private readonly string _importedFileApiUrl;
     private readonly string _tempFolder;
@@ -74,7 +75,6 @@ namespace TCCToDataOcean.Utils
       _reProcessFailedProjects = configStore.GetValueBool("REPROCESS_FAILED_PROJECTS", true);
 
       _fileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
-      _projectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
       _uploadFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL2", 1);
       _importedFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL", 3);
       _tempFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
@@ -89,7 +89,7 @@ namespace TCCToDataOcean.Utils
     {
       var recoveryFile = Path.Combine(_tempFolder, "MigrationRecovery.log");
 
-      Log.LogInformation($"{Method.Info()} Fetching projects from: '{_projectApiUrl}'");
+      Log.LogInformation($"{Method.Info()} Fetching projects...");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
       Log.LogInformation($"{Method.Info()} Found {projects.Count} projects");
 
@@ -126,11 +126,13 @@ namespace TCCToDataOcean.Utils
 
       if (!_resumeMigration)
       {
-        Database.InitDatabase();
+        _migrationInfoId = Database.Insert(new MigrationInfo());
       }
 
-      var projectTasks = new List<Task<bool>>(projects.Count);
-      Database.SetMigationInfo_SetProjectCount(projects.Count);
+      var projectCount = projects.Count;
+      var projectTasks = new List<Task<bool>>(projectCount);
+
+      Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsTotal = projectCount);
 
       // Sort projects by most recently updated, so we process the (likely) most utilized first,
       // in-case of a race condition during production migration with projects receiving new files
@@ -139,12 +141,11 @@ namespace TCCToDataOcean.Utils
                          .Reverse()
                          .ToList();
 
-      var projectCount = projects.Count;
       var projectsProcessed = 0;
 
       foreach (var project in projects)
       {
-        var projectRecord = Database.GetRecord<MigrationProject>(Table.Projects, project.LegacyProjectID);
+        var projectRecord = Database.Find<MigrationProject>(project.LegacyProjectID);
 
         if (projectRecord == null)
         {
@@ -223,6 +224,17 @@ namespace TCCToDataOcean.Utils
           tw.Dispose();
         }
       }
+
+      // Set the final summary figures.
+      var completedCount = Database.Find<MigrationProject>(Table.Projects, x => x.MigrationState == MigrationState.Completed)
+                                   .Count();
+
+      Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsSuccessful = completedCount);
+
+      var failedCount = Database.Find<MigrationProject>(Table.Projects, x => x.MigrationState == MigrationState.Failed)
+                                .Count();
+
+      Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsFailed = failedCount);
     }
 
     private void DropTables()
@@ -246,13 +258,13 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     private async Task<bool> MigrateProject(MigrationJob job)
     {
-      var migrationResult = false;
+      var migrationResult = MigrationState.Unknown;
       var migrationStateMessage = "";
 
       try
       {
         Log.LogInformation($"{Method.In()} Migrating project {job.Project.ProjectUID}, Name: '{job.Project.Name}'");
-        Database.SetMigrationState(Table.Projects, job, MigrationState.InProgress, null);
+        Database.SetMigrationState(job, MigrationState.InProgress, null);
 
         // Resolve imported files for current project.
         var filesResult = await ImportFile.GetImportedFilesFromWebApi($"{_importedFileApiUrl}?projectUid={job.Project.ProjectUID}", job.Project);
@@ -260,7 +272,7 @@ namespace TCCToDataOcean.Utils
         if (filesResult == null)
         {
           Log.LogInformation($"{Method.Info()} Failed to fetch imported files for project {job.Project.ProjectUID}, aborting project migration");
-          Database.SetMigrationState(Table.Projects, job, MigrationState.Failed, "Failed to fetch imported file list");
+          Database.SetMigrationState(job, MigrationState.Failed, "Failed to fetch imported file list");
 
           migrationStateMessage = "Failed to fetch imported file list";
           return false;
@@ -269,10 +281,12 @@ namespace TCCToDataOcean.Utils
         if (filesResult.ImportedFileDescriptors == null || filesResult.ImportedFileDescriptors.Count == 0)
         {
           Log.LogInformation($"{Method.Info()} Project {job.Project.ProjectUID} contains no imported files, aborting project migration");
-          Database.SetMigrationState(Table.Projects, job, MigrationState.Failed, "No imported files");
+
+          Database.SetMigrationState(job, MigrationState.Failed, "No imported files");
+          Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsWithNoFiles += 1);
 
           migrationStateMessage = "Project contains no imported files";
-          migrationResult = true;
+          migrationResult = MigrationState.Skipped;
         }
         else
         {
@@ -280,7 +294,8 @@ namespace TCCToDataOcean.Utils
           var result = await DcFileAgent.ResolveProjectCoordinateSystemFile(job);
           if (!result)
           {
-            migrationStateMessage = "Unable to resolve coordinate system file";
+            migrationStateMessage = "Unable to resolve coordinate system file"; 
+            migrationResult = MigrationState.Failed;
             return false;
           }
 
@@ -288,8 +303,8 @@ namespace TCCToDataOcean.Utils
           var selectedFiles = filesResult.ImportedFileDescriptors
                                          .Where(f => MigrationFileTypes.Contains(f.ImportedFileType))
                                          .ToList();
-          
-          Database.SetProjectFilesDetails(Table.Projects, job.Project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
+
+          Database.SetProjectFilesDetails(job.Project, filesResult.ImportedFileDescriptors.Count, selectedFiles.Count);
 
           Log.LogInformation($"{Method.Info()} Found {selectedFiles.Count} eligible files out of {filesResult.ImportedFileDescriptors.Count} total to migrate for {job.Project.ProjectUID}");
 
@@ -297,8 +312,10 @@ namespace TCCToDataOcean.Utils
           {
             Log.LogInformation($"{Method.Info()} Project {job.Project.ProjectUID} contains no eligible files, skipping project migration");
 
+            Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsWithNoEligibleFiles += 1);
+
             migrationStateMessage = "Project contains no eligible files";
-            migrationResult = true;
+            migrationResult = MigrationState.Skipped;
           }
 
           var fileTasks = new List<Task<(bool, FileDataSingleResult)>>();
@@ -312,10 +329,7 @@ namespace TCCToDataOcean.Utils
               continue;
             }
 
-            if (!job.IsRetryAttempt)
-            {
-              Database.WriteRecord(Table.Files, file);
-            }
+            Database.WriteRecord(Table.Files, file);
 
             var migrationResultObj = MigrateFile(file, job.Project);
 
@@ -331,7 +345,7 @@ namespace TCCToDataOcean.Utils
 
           var importedFilesResult = fileTasks.All(t => t.Result.Item1);
 
-          migrationResult = importedFilesResult;
+          migrationResult = importedFilesResult ? MigrationState.Completed : MigrationState.Failed;
 
           Log.LogInformation($"{Method.Out()} Project '{job.Project.Name}' ({job.Project.ProjectUID}) {(importedFilesResult ? "succeeded" : "failed")}");
 
@@ -345,8 +359,20 @@ namespace TCCToDataOcean.Utils
       }
       finally
       {
-        Database.SetMigrationState(Table.Projects, job, migrationResult ? MigrationState.Completed : MigrationState.Failed, migrationStateMessage);
-        Database.SetMigationInfo_IncrementProjectsProcessed();
+        Database.SetMigrationState(job, migrationResult, migrationStateMessage);
+
+        Action<MigrationInfo> migrationResultAction;
+
+        switch (migrationResult)
+        {
+          case MigrationState.Skipped: migrationResultAction = x => x.ProjectsSkipped += 1; break;
+          case MigrationState.Completed: migrationResultAction = x => x.ProjectsCompleted += 1; break;
+          case MigrationState.Failed: migrationResultAction = x => x.ProjectsFailed += 1; break;
+          default:
+            throw new Exception($"Invalid migrationResult state for project {job.Project.ProjectUID}");
+        }
+
+        Database.Update(_migrationInfoId, migrationResultAction);
       }
 
       return false;
@@ -363,13 +389,13 @@ namespace TCCToDataOcean.Utils
 
       using (var fileContents = await FileRepo.GetFile(_fileSpaceId, $"{file.Path}/{file.Name}"))
       {
-        Database.SetMigrationState(Table.Files, file, MigrationState.InProgress);
+        Database.Update(file.LegacyFileId, (MigrationFile x) => x.MigrationState = MigrationState.InProgress, Table.Files);
 
         if (fileContents == null)
         {
           var message = $"Failed to fetch file '{file.Name}' ({file.LegacyFileId}), not found";
-          Database.SetMigrationState(Table.Files, file, MigrationState.FileNotFound);
-          Database.WriteWarning(file.ProjectUid, message);
+          Database.Update(file.LegacyFileId, (MigrationFile x) => x.MigrationState = MigrationState.FileNotFound, Table.Files);
+          Database.Insert(new MigrationMessage(file.ProjectUid, message));
 
           Log.LogWarning($"{Method.Out()} {message}");
 
@@ -408,12 +434,12 @@ namespace TCCToDataOcean.Utils
           tempFileName,
           new ImportOptions(HttpMethod.Put));
 
-        Database.SetMigrationState(Table.Files, file, MigrationState.Completed);
+        Database.Update(file.LegacyFileId, (MigrationFile x) => x.MigrationState = MigrationState.Completed, Table.Files);
         Database.IncrementProjectFilesUploaded(project);
       }
       else
       {
-        Database.SetMigrationState(Table.Files, file, MigrationState.Skipped);
+        Database.Update(file.LegacyFileId, (MigrationFile x) => x.MigrationState = MigrationState.Skipped, Table.Files);
         Log.LogDebug($"{Method.Info("DEBUG")} Skipped uploading file {file.ImportedFileUid}");
       }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using LiteDB;
 using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
@@ -12,7 +13,7 @@ namespace TCCToDataOcean.DatabaseAgent
 {
   public class LiteDbAgent : ILiteDbAgent, IDisposable
   {
-    private readonly LiteDatabase db;
+    private readonly LiteDatabase _db;
 
     public LiteDbAgent(IConfigurationStore configurationStore, IEnvironmentHelper environmentHelper)
     {
@@ -21,77 +22,75 @@ namespace TCCToDataOcean.DatabaseAgent
 
       if (!Directory.Exists(databasePath)) { Directory.CreateDirectory(databasePath); }
 
-      db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE") + "-" + databaseSuffix + ".db"));
+      _db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE") + "-" + databaseSuffix + ".db"));
     }
-
-    public IEnumerable<T> GetTable<T>(string tableName) => db.GetCollection<T>(tableName).FindAll();
 
     public void DropTables(string[] tableNames)
     {
       foreach (var tablename in tableNames)
       {
-        db.DropCollection(tablename);
+        _db.DropCollection(tablename);
       }
     }
 
-    public T GetRecord<T>(string tableName, int id) where T : MigrationObj => db.GetCollection<T>(tableName).FindById(id);
+    /// <summary>
+    /// Returns all records for a given table.
+    /// </summary>
+    public IEnumerable<T> GetTable<T>(string tableName) where T : MigrationObj => _db.GetCollection<T>(tableName).FindAll();
 
-    public void InitDatabase()
+    /// <summary>
+    /// Returns table entry by id or the most recently added if no id is provided.
+    /// </summary>
+    public T Find<T>(int id = -1) where T : MigrationObj
     {
-      db.GetCollection<MigrationInfo>(Table.MigrationInfo).Insert(new MigrationInfo());
+      return id < 0
+        ? _db.GetCollection<T>().FindById(id)
+        : _db.GetCollection<T>().FindOne(Query.All(Query.Descending));
     }
 
-    public void SetMigationInfo_EndTime()
-    {
-      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
-      var dbObj = objs.FindById(1);
+    /// <summary>
+    /// Inserts a new object into it's associated table.
+    /// </summary>
+    public long Insert<T>(T obj, string Tablename = null) where T : MigrationObj => _db.GetCollection<T>(Tablename).Insert(obj).AsInt64;
 
-      var endTimeUtc = DateTime.Now;
-      dbObj.EndTime = endTimeUtc;
-      dbObj.Duration = endTimeUtc.Subtract(dbObj.StartTime).ToString();
+    /// <summary>
+    /// Returns all table entries where the predicate evaluates to true.
+    /// </summary>
+    public IEnumerable<MigrationObj> Find<T>(string tableName, Expression<Func<T, bool>> predicate) where T : MigrationObj => _db.GetCollection<T>(tableName).Find(predicate);
+
+    /// <summary>
+    /// Updates an object using the supplied Action delegate.
+    /// </summary>
+    public void Update<T>(long id, Action<T> action, string tableName = null) where T : MigrationObj
+    {
+      var objs = _db.GetCollection<T>(tableName);
+      var dbObj = objs.FindById(id);
+
+      action(dbObj);
+      dbObj.DateTimeUpdated = DateTime.UtcNow;
+
       objs.Update(dbObj);
     }
 
-    public void SetMigationInfo_SetProjectCount(int projectCount)
+    public long WriteRecord(string tableName, Project project)
     {
-      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
-      var dbObj = objs.FindById(1);
-
-      dbObj.ProjectsTotal = projectCount;
-      objs.Update(dbObj);
-    }
-
-    public void SetMigationInfo_IncrementProjectsProcessed()
-    {
-      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
-      var dbObj = objs.FindById(1);
-
-      dbObj.ProjectsCompleted += 1;
-      objs.Update(dbObj);
-    }
-
-    public void WriteRecord(string tableName, Project project)
-    {
-      var objs = db.GetCollection<MigrationProject>(tableName);
+      var objs = _db.GetCollection<MigrationProject>(tableName);
       var dbObj = objs.FindById(project.LegacyProjectID);
 
       if (dbObj == null)
       {
-        db.GetCollection<MigrationProject>(tableName).Insert(new MigrationProject(project));
+        return _db.GetCollection<MigrationProject>(tableName).Insert(new MigrationProject(project)).AsInt64;
       }
-      else
-      {
-        dbObj = new MigrationProject(project);
-        objs.Update(dbObj);
-      }
+
+      dbObj = new MigrationProject(project);
+      objs.Update(dbObj);
+
+      return dbObj.Id;
     }
 
-    public void WriteWarning(string projectUid, string message) => db.GetCollection<MigrationMessage>(Table.Warnings).Insert(new MigrationMessage(projectUid, message));
-    public void WriteError(string projectUid, string message) => db.GetCollection<MigrationMessage>(Table.Errors).Insert(new MigrationMessage(projectUid, message));
-
-    public void SetMigrationState(string tableName, MigrationJob job, MigrationState migrationState, string message)
+    public void SetMigrationState(MigrationJob job, MigrationState migrationState, string message)
     {
-      var projects = db.GetCollection<MigrationProject>(tableName);
+      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
       var dbObj = projects.FindOne(x => x.ProjectUid == job.Project.ProjectUID);
 
       dbObj.MigrationState = migrationState;
@@ -101,32 +100,14 @@ namespace TCCToDataOcean.DatabaseAgent
       projects.Update(dbObj);
     }
 
-    public void SetMigrationFilesTotal(int fileCount)
-    {
-      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
-      var dbObj = objs.FindById(1);
-
-      dbObj.FilesTotal += fileCount;
-      objs.Update(dbObj);
-    }
-
-    public void SetMigrationFilesUploaded(int fileCount)
-    {
-      var objs = db.GetCollection<MigrationInfo>(Table.MigrationInfo);
-      var dbObj = objs.FindById(1);
-
-      dbObj.FilesUploaded += fileCount;
-      objs.Update(dbObj);
-    }
-
     public void WriteRecord(string tableName, ImportedFileDescriptor file)
     {
-      var objs = db.GetCollection<MigrationFile>(tableName);
+      var objs = _db.GetCollection<MigrationFile>(tableName);
       var dbObj = objs.FindById(file.LegacyFileId);
 
       if (dbObj == null)
       {
-        db.GetCollection<MigrationFile>(tableName).Insert(new MigrationFile(file));
+        _db.GetCollection<MigrationFile>(tableName).Insert(new MigrationFile(file));
       }
       else
       {
@@ -135,20 +116,9 @@ namespace TCCToDataOcean.DatabaseAgent
       }
     }
 
-    public void SetMigrationState(string tableName, ImportedFileDescriptor file, MigrationState migrationState)
-    {
-      var files = db.GetCollection<MigrationFile>(tableName);
-      var dbObj = files.FindById(file.LegacyFileId);
-
-      dbObj.MigrationState = migrationState;
-      dbObj.DateTimeUpdated = DateTime.UtcNow;
-
-      files.Update(dbObj);
-    }
-
     public void SetFileSize(string tableName, ImportedFileDescriptor file, long length)
     {
-      var files = db.GetCollection<MigrationFile>(tableName);
+      var files = _db.GetCollection<MigrationFile>(tableName);
       var dbObj = files.FindById(file.LegacyFileId);
 
       dbObj.Length = length;
@@ -159,7 +129,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void SetProjectCoordinateSystemDetails(Project project)
     {
-      var projects = db.GetCollection<MigrationProject>(Table.Projects);
+      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.DcFilename = project.CoordinateSystemFileName;
@@ -171,7 +141,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void SetProjectDxfUnitsType(string tableName, Project project, DxfUnitsType? dxfUnitsType)
     {
-      var projects = db.GetCollection<MigrationProject>(tableName);
+      var projects = _db.GetCollection<MigrationProject>(tableName);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.DxfUnitsType = dxfUnitsType;
@@ -182,7 +152,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void IncrementProjectFilesUploaded(Project project, int fileCount = 1)
     {
-      var projects = db.GetCollection<MigrationProject>(Table.Projects);
+      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.UploadedFileCount += fileCount;
@@ -193,7 +163,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void IncrementProjectMigrationCounter(Project project, int count = 1)
     {
-      var projects = db.GetCollection<MigrationProject>(Table.Projects);
+      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.MigrationAttempts += count;
@@ -202,9 +172,9 @@ namespace TCCToDataOcean.DatabaseAgent
       projects.Update(dbObj);
     }
 
-    public void SetProjectFilesDetails(string tableName, Project project, int totalFileCount, int eligibleFileCount)
+    public void SetProjectFilesDetails(Project project, int totalFileCount, int eligibleFileCount)
     {
-      var projects = db.GetCollection<MigrationProject>(tableName);
+      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.TotalFileCount = totalFileCount;
@@ -216,7 +186,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void SetResolveCSIBMessage(string tableName, string key, string message)
     {
-      var projects = db.GetCollection<MigrationProject>(tableName);
+      var projects = _db.GetCollection<MigrationProject>(tableName);
       var dbObj = projects.FindOne(x => x.ProjectUid == key);
 
       UpdateProject(projects, dbObj, () => dbObj.ResolveCSIBMessage = message);
@@ -224,7 +194,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void SetProjectCSIB(string tableName, string key, string csib)
     {
-      var projects = db.GetCollection<MigrationProject>(tableName);
+      var projects = _db.GetCollection<MigrationProject>(tableName);
       var dbObj = projects.FindOne(x => x.ProjectUid == key);
 
       UpdateProject(projects, dbObj, () => dbObj.CSIB = csib);
@@ -240,7 +210,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public void Dispose()
     {
-      db?.Dispose();
+      _db?.Dispose();
     }
   }
 }

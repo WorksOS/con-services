@@ -21,6 +21,7 @@ using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
+using IMigrator = TCCToDataOcean.Interfaces.IMigrator;
 
 namespace TCCToDataOcean
 {
@@ -43,7 +44,12 @@ namespace TCCToDataOcean
       await migrator.MigrateFilesForAllActiveProjects().ConfigureAwait(false);
 
       serviceProvider.GetRequiredService<ILiteDbAgent>()
-                     .SetMigationInfo_EndTime();
+                     .Update(1, delegate(MigrationInfo obj)
+                     {
+                       var endTimeUtc = DateTime.Now;
+                       obj.EndTime = endTimeUtc;
+                       obj.Duration = endTimeUtc.Subtract(obj.StartTime).ToString();
+                     });
     }
 
     private static void ConfigureServices(IServiceCollection services)
