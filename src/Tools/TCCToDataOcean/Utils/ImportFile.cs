@@ -24,7 +24,7 @@ namespace TCCToDataOcean.Utils
   {
     private readonly IRestClient RestClient;
     private readonly ILogger Log;
-    private readonly ILiteDbAgent _migrationDb;
+    private readonly ILiteDbAgent Database;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
@@ -33,12 +33,24 @@ namespace TCCToDataOcean.Utils
     private const int CHUNK_SIZE = 1024 * 1024;
     private readonly string BearerToken;
 
+    private long _migrationInfoId = -1;
+
+    private long MigrationInfoId
+    {
+      get
+      {
+        if (_migrationInfoId < 0) { _migrationInfoId = Database.Find<MigrationInfo>().Id; } 
+
+        return _migrationInfoId;
+      }
+    }
+
     public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient, ILiteDbAgent databaseAgent)
     {
       Log = loggerFactory.CreateLogger<ImportFile>();
       BearerToken = "Bearer " + authentication.GetApplicationBearerToken();
       RestClient = restClient;
-      _migrationDb = databaseAgent;
+      Database = databaseAgent;
     }
 
     /// <summary>
@@ -146,8 +158,6 @@ namespace TCCToDataOcean.Utils
           {
             FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
             result = DoHttpRequest(uri, httpMethod, content.ToArray(), customerUid, contentType);
-
-//            content.Dispose();
           }
         }
 
@@ -167,7 +177,7 @@ namespace TCCToDataOcean.Utils
     {
       Log.LogInformation($"{Method.In()} | {httpMethod.Method}, Uri: {resourceUri}");
 
-      _migrationDb.SetMigrationFilesTotal(1);
+      Database.Update(MigrationInfoId, (MigrationInfo x) => x.FilesTotal += 1);
 
       if (!(WebRequest.Create(resourceUri) is HttpWebRequest request)) { return string.Empty; }
 
@@ -209,7 +219,7 @@ namespace TCCToDataOcean.Utils
         }
       }
 
-      _migrationDb.SetMigrationFilesUploaded(1);
+      Database.Update(MigrationInfoId, (MigrationInfo x) => x.FilesUploaded += 1);
 
       return responseString;
     }
