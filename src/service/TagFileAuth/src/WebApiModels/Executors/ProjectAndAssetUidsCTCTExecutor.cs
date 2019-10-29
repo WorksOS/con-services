@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var request = item as GetProjectAndAssetUidsCTCTRequest;
       if (request == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          ProjectUidHelper.FormatResult(string.Empty, string.Empty, string.Empty, false, ContractExecutionStatesEnum.SerializationError));
+          GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: TagFileAuth.Models.ContractExecutionStatesEnum.SerializationError));
       
       var assetUid = string.Empty;
       var assetSubs = new List<Subscriptions>();
@@ -48,11 +48,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.RadioSerial))
       {
         var assetResult = await ProjectUidHelper.GetSNMAsset(log, dataRepository, request.RadioSerial, (int)DeviceTypeEnum.SNM940, true);
-        if (!string.IsNullOrEmpty(assetResult.Item1))
+        if (!string.IsNullOrEmpty(assetResult.assetUid))
         {
-          assetUid = assetResult.Item1;
-          assetOwningCustomerUid = assetResult.Item2;
-          assetSubs = assetResult.Item3;
+          assetUid = assetResult.assetUid;
+          assetOwningCustomerUid = assetResult.assetOwningCustomerUid;
+          assetSubs = assetResult.assetSubs;
         }
       }
 
@@ -62,16 +62,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (assetSubs.Count == 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         var assetResult = await ProjectUidHelper.GetEMAsset(log, dataRepository, request.Ec520Serial, (int) DeviceTypeEnum.EC520, true);
-        if (!string.IsNullOrEmpty(assetResult.Item1))
+        if (!string.IsNullOrEmpty(assetResult.assetUid))
         {
-          assetUid = assetResult.Item1;
-          assetOwningCustomerUid = assetResult.Item2;
-          assetSubs = assetResult.Item3;
+          assetUid = assetResult.assetUid;
+          assetOwningCustomerUid = assetResult.assetOwningCustomerUid;
+          assetSubs = assetResult.assetSubs;
         }
 
         // Unable to identify the EC in the 3dPM system, and no tccOrgId provided
         if (string.IsNullOrEmpty(request.TccOrgUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
-          return ProjectUidHelper.FormatResult(string.Empty, string.Empty, string.Empty, false, 33);
+          return GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 33);
       }
 
       return await LocateProjectsInProximity(request, assetUid, assetOwningCustomerUid, assetSubs);
@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       if (string.IsNullOrEmpty(tccCustomerUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
-        return ProjectUidHelper.FormatResult(string.Empty, assetUid, string.Empty, false, 47);
+        return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, uniqueCode: 47);
 
       var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, tccCustomerUid, request);
       log.LogDebug($"{nameof(LocateProjectsInProximity)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
@@ -102,15 +102,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         // with CTCT we allow assetCustomerUid LF/PM sub for landfill/pm projects
         if (string.IsNullOrEmpty(tccCustomerUid) && !string.IsNullOrEmpty(assetOwningCustomerUid) && !assetSubs.Any())
-          return ProjectUidHelper.FormatResult(string.Empty, assetUid, assetOwningCustomerUid, false, 52);
+          return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, customerUid: assetOwningCustomerUid, uniqueCode: 52);
 
-        return ProjectUidHelper.FormatResult(string.Empty, assetUid, assetOwningCustomerUid, false, 48);
+        return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, customerUid: assetOwningCustomerUid, uniqueCode: 48);
       }
 
       if (potentialProjects.Count > 1)
-        return ProjectUidHelper.FormatResult(string.Empty, assetUid, potentialProjects[0].CustomerUID, true, 49);
+        return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
 
-      return ProjectUidHelper.FormatResult(
+      return GetProjectAndAssetUidsCTCTResult.FormatResult(
         potentialProjects[0].ProjectUID, assetUid,
         potentialProjects[0].CustomerUID,
         ((potentialProjects[0].ProjectType == ProjectType.Standard && assetSubs.Any())

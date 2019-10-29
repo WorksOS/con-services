@@ -34,7 +34,7 @@ namespace WebApiTests.Executors
     {
       base.InitTest();
 
-      _loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       _assetRepo = new Mock<IAssetRepository>();
       _deviceRepo = new Mock<IDeviceRepository>();
@@ -1005,7 +1005,7 @@ namespace WebApiTests.Executors
     public async Task TRexExecutor_Sad_InvalidParameters()
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
-        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
         _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() =>
@@ -1041,7 +1041,7 @@ namespace WebApiTests.Executors
       _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(ec520Uid, It.IsAny<DateTime>())).ReturnsAsync(ec520Subs);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
-        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
         _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 

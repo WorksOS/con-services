@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.Models
@@ -68,22 +69,22 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       TimeOfPosition = timeOfPosition;
     }
 
-    public int Validate(bool validateForCTCT = false)
+    public int Validate()
     {
-      if (validateForCTCT && string.IsNullOrEmpty(Ec520Serial))
-        return 51;
+      if (string.IsNullOrEmpty(Ec520Serial))
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 51));
 
       if (string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(Ec520Serial) && string.IsNullOrEmpty(TccOrgUid))
-        return 37;
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 37));
 
       if (Latitude < -90 || Latitude > 90)
-        return 21;
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 21));
 
       if (Longitude < -180 || Longitude > 180)
-        return 22;
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 22));
 
       if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(30)))
-        return 23;
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 23));
 
       return 0;
     }

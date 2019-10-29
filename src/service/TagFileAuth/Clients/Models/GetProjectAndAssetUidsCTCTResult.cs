@@ -44,6 +44,15 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       Message = messageDetail;
     }
 
+    public static GetProjectAndAssetUidsCTCTResult FormatResult(string projectUid = "", string assetUid = "", string customerUid = "", bool hasValidSub = false, int uniqueCode = 0)
+    { 
+      var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+      return new GetProjectAndAssetUidsCTCTResult(projectUid, assetUid, customerUid, hasValidSub,
+        (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
+        (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
+          (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));
+    }
+
     public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>(){ ProjectUid };
   }
 }

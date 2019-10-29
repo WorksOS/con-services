@@ -6,20 +6,20 @@ using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
-  ///   Represents abstract container for all request executors. Uses abstract factory pattern to seperate executor logic
+  ///   Represents abstract container for all request executors. Uses abstract factory pattern to separate executor logic
   ///   from
   ///   controller logic for testability and possible executor versioning.
   /// </summary>
@@ -29,19 +29,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// Logger used in ProcessEx
     /// </summary>
     public ILogger Log;
-    protected IConfigurationStore ConfigStore;
+
+    private IConfigurationStore _configStore;
 
     /// <summary>
     /// Repository factory used in ProcessEx
     /// </summary>
-    protected IAssetRepository AssetRepository;
-    protected IDeviceRepository DeviceRepository;
-    protected ICustomerRepository CustomerRepository;
-    protected IProjectRepository ProjectRepository;
-    protected ISubscriptionRepository SubscriptionsRepository;
+    private readonly IAssetRepository _assetRepository;
+    private readonly IDeviceRepository _deviceRepository;
+    private readonly ICustomerRepository _customerRepository;
+    private readonly IProjectRepository _projectRepository;
+    private readonly ISubscriptionRepository _subscriptionsRepository;
 
-    protected IKafka Producer;
-    protected string KafkaTopicName;
+    private IKafka Producer;
+    private string KafkaTopicName;
 
 
     /// <summary>
@@ -55,14 +56,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       IKafka producer, string kafkaTopicName)
     {
       Log = logger;
-      this.ConfigStore = configStore;
-      this.AssetRepository = assetRepository;
-      this.DeviceRepository = deviceRepository;
-      this.CustomerRepository = customerRepository;
-      this.ProjectRepository = projectRepository;
-      this.SubscriptionsRepository = subscriptionsRepository;
-      this.Producer = producer;
-      this.KafkaTopicName = kafkaTopicName;
+      _configStore = configStore;
+      _assetRepository = assetRepository;
+      _deviceRepository = deviceRepository;
+      _customerRepository = customerRepository;
+      _projectRepository = projectRepository;
+      _subscriptionsRepository = subscriptionsRepository;
+      Producer = producer;
+      KafkaTopicName = kafkaTopicName;
     }
 
     public async Task<ProjectDataModel> LoadProject(long legacyProjectId)
@@ -71,7 +72,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (legacyProjectId > 0)
-          project = await ProjectRepository.GetProject(legacyProjectId);
+          project = await _projectRepository.GetProject(legacyProjectId);
       }
       catch (Exception e)
       {
@@ -89,7 +90,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(projectUid))
-          project = await ProjectRepository.GetProject(projectUid);
+          project = await _projectRepository.GetProject(projectUid);
       }
       catch (Exception e)
       {
@@ -108,7 +109,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var p = await ProjectRepository.GetProjectsForCustomer(customerUid);
+          var p = await _projectRepository.GetProjectsForCustomer(customerUid);
 
           if (p != null)
           {
@@ -137,7 +138,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var p = (await ProjectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition));
+          var p = (await _projectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition));
           if (p != null)
             projects = p.ToList();
         }
@@ -161,7 +162,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var p = await ProjectRepository.GetProjectMonitoringProject(customerUid,
+          var p = await _projectRepository.GetProjectMonitoringProject(customerUid,
             latitude, longitude, timeOfPosition,
             projectType,
             serviceType);
@@ -188,7 +189,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var p = await ProjectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes,
+          var p = await _projectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes,
               timeOfPosition);
           if (p != null)
             projects = p.ToList();
@@ -210,7 +211,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
-          assetDevice = await DeviceRepository.GetAssociatedAsset(radioSerial, deviceType);
+          assetDevice = await _deviceRepository.GetAssociatedAsset(radioSerial, deviceType);
       }
       catch (Exception e)
       {
@@ -230,7 +231,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var a = await CustomerRepository.GetCustomer(new Guid(customerUid));
+          var a = await _customerRepository.GetCustomer(new Guid(customerUid));
           if (a != null &&
               (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -256,7 +257,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(tccOrgUid))
         {
-          var customerTccOrg = await CustomerRepository.GetCustomerWithTccOrg(tccOrgUid);
+          var customerTccOrg = await _customerRepository.GetCustomerWithTccOrg(tccOrgUid);
           if (customerTccOrg != null &&
               (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -282,7 +283,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (customerUid != null)
         {
-          var a = await CustomerRepository.GetCustomerWithTccOrg(new Guid(customerUid));
+          var a = await _customerRepository.GetCustomerWithTccOrg(new Guid(customerUid));
           if (a != null &&
               (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
                a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
@@ -306,7 +307,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (legacyAssetId > 0)
-          asset = await AssetRepository.GetAsset(legacyAssetId);
+          asset = await _assetRepository.GetAsset(legacyAssetId);
       }
       catch (Exception e)
       {
@@ -328,7 +329,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var s = await SubscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate);
+          var s = await _subscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate);
           if (s != null)
           {
             subs = s
@@ -356,7 +357,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(assetUid))
         {
-          var s = await SubscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
+          var s = await _subscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
           if (s != null)
           {
             subs = s

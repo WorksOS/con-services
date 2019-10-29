@@ -35,7 +35,7 @@ namespace WebApiTests.Executors
     {
       base.InitTest();
 
-      _loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       _assetRepo = new Mock<IAssetRepository>();
       _deviceRepo = new Mock<IDeviceRepository>();
@@ -813,7 +813,7 @@ namespace WebApiTests.Executors
       _customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
-        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), configStore,
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
         _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 

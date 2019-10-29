@@ -14,7 +14,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -31,13 +31,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// </summary>
     protected ILogger log;
 
-    protected IConfigurationStore configStore;
+    private IConfigurationStore configStore;
 
-    protected AssetRepository assetRepository;
-    protected DeviceRepository deviceRepository;
-    protected CustomerRepository customerRepository;
-    protected ProjectRepository projectRepository;
-    protected SubscriptionRepository subscriptionsRepository;
+    private AssetRepository assetRepository;
+    private DeviceRepository deviceRepository;
+    private CustomerRepository customerRepository;
+    private ProjectRepository projectRepository;
+    private SubscriptionRepository subscriptionsRepository;
     protected IKafka producer;
     protected string kafkaTopicName;
 

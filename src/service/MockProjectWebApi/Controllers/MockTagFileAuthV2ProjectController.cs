@@ -15,7 +15,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public GetProjectAndAssetUidsCTCTResult GetProjectAndAssetUidsCTCT([FromBody]GetProjectAndAssetUidsCTCTRequest request)
     {
-      Logger.LogInformation($"MockTagFileAuthV2ProjectController: GetProjectAndAssetUids {JsonConvert.SerializeObject(request)}");
+      Logger.LogInformation($"{nameof(GetProjectAndAssetUidsCTCT)} request {JsonConvert.SerializeObject(request)}");
 
       // this SNM940 exists on `VSS-TagFileAuth-Alpha` with a valid 3d sub (it's not on Dev)
       // Dims project and customer are on alpha tfa
@@ -29,7 +29,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPost]
     public GetProjectAndAssetUidsResult GetProjectAndAssetUids([FromBody]GetProjectAndAssetUidsRequest request)
     {
-      Logger.LogInformation($"MockTagFileAuthV2ProjectController: GetProjectAndAssetUids {JsonConvert.SerializeObject(request)}");
+      Logger.LogInformation($"{nameof(GetProjectAndAssetUids)} request {JsonConvert.SerializeObject(request)}");
 
       // this SNM940 exists on `VSS-TagFileAuth-Alpha` with a valid 3d sub (it's not on Dev)
       if (request.RadioSerial == "5051593854")

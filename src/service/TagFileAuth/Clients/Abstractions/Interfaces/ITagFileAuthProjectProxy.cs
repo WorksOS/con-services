@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces

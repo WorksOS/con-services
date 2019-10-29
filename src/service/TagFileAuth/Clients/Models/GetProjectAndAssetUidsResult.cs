@@ -21,7 +21,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     ///    The Code is the unique code (or 0 for success) code to use for translations.
     ///       We re-purpose ContractExecutionResult.Code with this unique code.
     ///    For TFA, these are 3k based 
-    ///    Message is the english verion of any error
+    ///    Message is the english version of any error
     /// </summary>
     public GetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0, string messageDetail = "success")
     {
@@ -29,6 +29,15 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       AssetUid = assetUid;
       Code = uniqueCode;
       Message = messageDetail;
+    }
+
+    public static GetProjectAndAssetUidsResult FormatResult(string projectUid = "", string assetUid = "", int uniqueCode = 0)
+    {
+      var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
+      return new GetProjectAndAssetUidsResult(projectUid, assetUid,
+        (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
+        (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
+          (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));
     }
 
     public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>(){ ProjectUid };

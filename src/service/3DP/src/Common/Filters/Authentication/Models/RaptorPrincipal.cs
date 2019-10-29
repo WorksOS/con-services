@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
   public class RaptorPrincipal : TIDCustomPrincipal
   {
     private readonly IProjectProxy projectProxy;
-    public readonly IDictionary<string, string> authNContext;
+    private readonly IDictionary<string, string> authNContext;
     private static readonly ConcurrentDictionary<Guid, long> legacyProjectIdsCache;
     private static readonly ConcurrentDictionary<long, Guid> ProjectUidsCache;
 
@@ -51,6 +51,8 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       }
       return false;
     }
+
+    public IDictionary<string, string> GetAuthNContext() => authNContext;
 
     /// <summary>
     /// Get the project descriptor for the specified project id.

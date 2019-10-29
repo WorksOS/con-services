@@ -4,39 +4,18 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
-  public class ProjectUidHelper
+  public static class ProjectUidHelper
   {
-    protected static ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-
-    public static GetProjectAndAssetUidsResult FormatResult(string projectUid, string assetUid, int uniqueCode = 0)
-    {
-      return new GetProjectAndAssetUidsResult(projectUid, assetUid, 
-        (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
-        (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
-          (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));
-    }
-
-    public static GetProjectAndAssetUidsCTCTResult FormatResult(string projectUid, string assetUid, string customerUid, bool hasValidSub, int uniqueCode = 0)
-    {
-      return new GetProjectAndAssetUidsCTCTResult(projectUid, assetUid, customerUid, hasValidSub,
-        (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
-        (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
-          (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));
-    }
-
-    public static async Task<Tuple<string, string, List<Subscriptions>>> GetSNMAsset(ILogger log, DataRepository dataRepository, 
+    public static async Task<(string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)> GetSNMAsset(ILogger log, DataRepository dataRepository, 
       string radioSerial, int deviceType, bool getAssetSubs)
     {
       var assetUid = string.Empty;
       var assetSubs = new List<Subscriptions>();
-      string assetOwningCustomerUid = string.Empty;
+      var assetOwningCustomerUid = string.Empty;
 
       var assetDevice = await dataRepository.LoadAssetDevice(radioSerial, ((DeviceTypeEnum) deviceType).ToString());
 
@@ -64,11 +43,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug($"{nameof(GetSNMAsset)}: Unable to locate SNM assetDevice for radioSerial: {radioSerial} and deviceType: {deviceType}");
       }
 
-      var result = new Tuple<string, string, List<Subscriptions>>(assetUid, assetOwningCustomerUid, assetSubs);
-      return result;
+      return (assetUid: assetUid, assetOwningCustomerUid: assetOwningCustomerUid, assetSubs: assetSubs);
     }
 
-    public static async Task<Tuple<string, string, List<Subscriptions>>> GetEMAsset(ILogger log, DataRepository dataRepository,
+    public static async Task<(string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)> GetEMAsset(ILogger log, DataRepository dataRepository,
       string serialNumber, int deviceType, bool getAssetSubs)
     {
       var assetUid = string.Empty;
@@ -93,8 +71,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug($"{nameof(GetSNMAsset)}: Unable to locate SNM assetDevice for radioSerial: {serialNumber} and deviceType: {deviceType}");
       }
 
-      var result = new Tuple<string, string, List<Subscriptions>>(assetUid, assetOwningCustomerUid, assetSubs);
-      return result;
+      return (assetUid: assetUid, assetOwningCustomerUid: assetOwningCustomerUid, assetSubs: assetSubs);
     }
 
   }

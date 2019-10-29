@@ -106,7 +106,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     ///      same as #1
     /// 
     /// </summary>
-    public int Validate(bool validateForCTCT = false)
+    public int Validate()
     {
       // if it has a projectUid, then it's a manual import and must have either assetUid or radio/dt
       if (!string.IsNullOrEmpty(ProjectUid) && !Guid.TryParseExact(ProjectUid, "D", out var projectUid))
@@ -117,9 +117,6 @@ namespace VSS.Productivity3D.TagFileAuth.Models
 
       if (!isDeviceTypeValid)
         return 30;
-
-      if (validateForCTCT && string.IsNullOrEmpty(Ec520Serial))
-        return 51;
 
       if (string.IsNullOrEmpty(ProjectUid) && string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(Ec520Serial) && string.IsNullOrEmpty(TccOrgUid))
         return 37;

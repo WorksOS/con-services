@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -54,12 +55,12 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
-       return 
+      return 
         !(
-          (context.Request.Path.Value.Contains("api/v2/tagfiles") && context.Request.Method == "POST" &&
+          (context.Request.Path.Value.ToLower().Contains("api/v2/tagfiles") && context.Request.Method == "POST" &&
           !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
           ) ||
-          (context.Request.Path.Value.Contains("api/v2/patches") && context.Request.Method == "GET" &&
+          (context.Request.Path.Value.ToLower().Contains("api/v2/patches") && context.Request.Method == "GET" &&
           !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
           )
         );

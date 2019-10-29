@@ -72,7 +72,6 @@ namespace VSS.Productivity3D.Productivity3D.Models.Compaction
       BoundingBox.Validate();
 
       // NE are in meters  
-      var todoJeannie = (BoundingBox.TopRightX - BoundingBox.BottomLeftX) * (BoundingBox.TopRightY - BoundingBox.BottomleftY);
       if (((BoundingBox.TopRightX - BoundingBox.BottomLeftX) * (BoundingBox.TopRightY - BoundingBox.BottomleftY)) > MAX_PATCHES_SM_BOUNDARY)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

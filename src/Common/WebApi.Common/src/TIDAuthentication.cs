@@ -61,19 +61,20 @@ namespace VSS.WebApi.Common
       if (!InternalConnection(context))
       {
         bool isApplicationContext;
-        string applicationName = string.Empty;
-        string userUid = string.Empty;
-        string userEmail = string.Empty;
-        string customerUid = string.Empty;
-        string customerName = string.Empty;
+        string applicationName;
+        string userUid;
+        string userEmail;
+        var customerUid = string.Empty;
+        string customerName;
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
         // If no authorization header found, nothing to process further
+        // note keep these result messages vague (but distinct): https://www.gnucitizen.org/blog/username-enumeration-vulnerabilities/
         if (string.IsNullOrEmpty(authorization))
         {
-          log.LogWarning("No authorization provided for the request");
-          await SetResult("No authorization provided", context);
+          log.LogWarning("No account selected for the request");
+          await SetResult("No account selected", context);
           return;
         }
 
@@ -87,20 +88,20 @@ namespace VSS.WebApi.Common
         }
         catch (Exception e)
         {
-          log.LogWarning(e, "Invalid JWT token with exception");
-          await SetResult("Invalid JWT token", context);
+          log.LogWarning(e, "Invalid authentication with exception");
+          await SetResult("Invalid authentication", context);
           return;
         }
 
-        bool requireCustomerUid = RequireCustomerUid(context);
+        var requireCustomerUid = RequireCustomerUid(context);
         if (requireCustomerUid)
           customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
 
         // If required customer not provided, nothing to process further
         if (string.IsNullOrEmpty(customerUid) && requireCustomerUid)
         {
-          log.LogWarning("No customer provided for the request");
-          await SetResult("No customer provided", context);
+          log.LogWarning("No account found for the request");
+          await SetResult("No account found", context);
           return;
         }
 
