@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       TimeOfPosition = timeOfPosition;
     }
 
-    public int Validate()
+    public void Validate()
     {
       if (string.IsNullOrEmpty(Ec520Serial))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 51));
@@ -80,8 +80,6 @@ namespace VSS.Productivity3D.TagFileAuth.Models
 
       if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(30)))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 23));
-
-      return 0;
     }
   }
 }

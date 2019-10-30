@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.TagFileAuth.Models;

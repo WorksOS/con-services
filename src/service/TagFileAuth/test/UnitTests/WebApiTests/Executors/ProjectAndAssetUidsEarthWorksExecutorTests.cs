@@ -106,8 +106,7 @@ namespace WebApiTests.Executors
     public async Task ProjectUidExecutor_NoAssetDeviceAssociation()
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
+      _projectAndAssetUidsEarthWorksRequest.Validate();
 
       // asset
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((AssetDeviceIds)null);
@@ -123,9 +122,8 @@ namespace WebApiTests.Executors
     public async Task ProjectUidExecutor_StandardProjectAnd3dPmSubscription()
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
-
+      _projectAndAssetUidsEarthWorksRequest.Validate();
+      
       // asset, assetSub and standard project
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_assetDeviceIds);
 
@@ -156,8 +154,7 @@ namespace WebApiTests.Executors
     public async Task ProjectUidExecutor_StandardProjectAndNo3dPmSubscription()
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
+      _projectAndAssetUidsEarthWorksRequest.Validate();
 
       // asset, NO assetSub and standard project
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_assetDeviceIds);
@@ -180,9 +177,8 @@ namespace WebApiTests.Executors
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
       _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
-
+      _projectAndAssetUidsEarthWorksRequest.Validate();
+      
       // NO asset, No assetSub
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((AssetDeviceIds)null);
 
@@ -213,8 +209,7 @@ namespace WebApiTests.Executors
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
       _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
+      _projectAndAssetUidsEarthWorksRequest.Validate();
 
       // NO asset, No assetSub
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((AssetDeviceIds)null);
@@ -246,9 +241,8 @@ namespace WebApiTests.Executors
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
       _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
-
+      _projectAndAssetUidsEarthWorksRequest.Validate();
+     
       // NO asset
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((AssetDeviceIds)null);
 
@@ -279,9 +273,8 @@ namespace WebApiTests.Executors
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
       _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
-
+      _projectAndAssetUidsEarthWorksRequest.Validate();
+     
       // NO asset
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((AssetDeviceIds)null);
 
@@ -313,9 +306,8 @@ namespace WebApiTests.Executors
     {
       _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
       _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
-      Assert.AreEqual(0, errorCodeResult);
-
+      _projectAndAssetUidsEarthWorksRequest.Validate();
+      
       // asset, assetSub and standard project
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(_assetDeviceIds);
 
