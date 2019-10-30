@@ -5,32 +5,57 @@ using System.Net.Sockets;
 using System.Threading;
 using TagFiles.Common;
 using TagFiles.Utils;
+using VSS.Common.Abstractions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace TagFiles
 {
-  public class SocketManager
+  public class SocketManager : ISocketManager
   {
 
     public string StatusMessage;
     public int Port = 1500;
     public string TCIP = "127.0.0.1";
     public string TxtRecv;
-    public bool HeaderRequired = true;
+
+    private bool _HeaderRequired = true;
+    public bool HeaderRequired  // read-write instance property
+    {
+      get => _HeaderRequired;
+      set => _HeaderRequired = value;
+    }
+
     public bool DumpContent = false;
 
     SocketPermission permission;
-    public Socket SocketListener;
+
+    private Socket _SocketListener;
+    public Socket SocketListener
+    {
+      get => _SocketListener;
+      set => _SocketListener = value;
+
+    }
+
+
     IPEndPoint ipEndPoint;
     Socket handler;
 
+    private readonly ILogger _log;
+    private readonly IConfigurationStore _config;
+
 
     public delegate void CallbackEventHandler(string something, int mode);
+
     public event CallbackEventHandler Callback;
 
     public static ManualResetEvent allDone = new ManualResetEvent(false);
 
-    public SocketManager(ILoggerFactory blah, IConfigurationStore)
-    { }
+    public SocketManager(ILoggerFactory log, IConfigurationStore configStore)
+    {
+      _log = log.CreateLogger<SocketManager>();
+      _config = configStore;
+    }
 
     public void CreateSocket()
     {
@@ -45,7 +70,7 @@ namespace TagFiles
         );
 
         // Listening Socket object 
-        SocketListener = null;
+        _SocketListener = null;
 
         // Ensures the code to have permission to access a Socket 
         permission.Demand();
@@ -61,15 +86,17 @@ namespace TagFiles
         // Creates a network endpoint 
         ipEndPoint = new IPEndPoint(ipAddr, Port);
 
+        _log.LogInformation($"Opening socket at {ipAddr}:{Port}");
+
         // Create one Socket object to listen the incoming connection 
-        SocketListener = new Socket(
+        _SocketListener = new Socket(
             ipAddr.AddressFamily,
             SocketType.Stream,
             ProtocolType.Tcp
             );
 
         // Associates a Socket with a local endpoint 
-        SocketListener.Bind(ipEndPoint);
+        _SocketListener.Bind(ipEndPoint);
 
         StatusMessage = "Server started.";
       }
@@ -85,7 +112,7 @@ namespace TagFiles
       {
         // Places a Socket in a listening state and specifies the maximum 
         // Length of the pending connections queue 
-        SocketListener.Listen(10);
+        _SocketListener.Listen(10);
 
         // Begins an asynchronous operation to accept an attempt 
         //   AsyncCallback aCallback = new AsyncCallback(AcceptCallback);
@@ -117,9 +144,9 @@ namespace TagFiles
         StatusMessage = "Server is now listening on " + ipEndPoint.Address + " port: " + ipEndPoint.Port;
 
         //  sListener.BeginAccept(aCallback, sListener);
-        SocketListener.BeginAccept(
+        _SocketListener.BeginAccept(
           new AsyncCallback(AcceptCallback),
-          SocketListener);
+          _SocketListener);
 
         allDone.WaitOne();
 
@@ -283,13 +310,13 @@ namespace TagFiles
               {
                 case TagConstants.ENQ:
                   keepListening = true;
-                  if (HeaderRequired)
+                  if (_HeaderRequired)
                     byteData[0] = TagConstants.SOH;
                   else
                     byteData[0] = TagConstants.ACK;
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
                   if (Callback != null)
-                    if (HeaderRequired)
+                    if (_HeaderRequired)
                       Callback("ENQ recieved. Returning SOH", 0);
                     else
                       Callback("ENQ recieved. Returning ACK", 0);
@@ -327,7 +354,7 @@ namespace TagFiles
               if (Callback != null)
               {
                 Callback(str, 1); // process datapacket
-                if (HeaderRequired) // Prepare the reply message 
+                if (_HeaderRequired) // Prepare the reply message 
                 {
                   byteData[0] = TagConstants.SOH;
                   Callback("SOH returned", 0);

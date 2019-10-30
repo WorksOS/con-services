@@ -38,7 +38,6 @@
       this.txtPort = new System.Windows.Forms.TextBox();
       this.btnCloseTagFile = new System.Windows.Forms.Button();
       this.btnCloseListener = new System.Windows.Forms.Button();
-      this.button1 = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
       this.btnNewTagfile = new System.Windows.Forms.Button();
       this.chkDump = new System.Windows.Forms.CheckBox();
@@ -161,17 +160,6 @@
       this.btnCloseListener.Text = "Close Listener";
       this.btnCloseListener.UseVisualStyleBackColor = true;
       this.btnCloseListener.Click += new System.EventHandler(this.BtnCloseListener_Click);
-      // 
-      // button1
-      // 
-      this.button1.Location = new System.Drawing.Point(196, 42);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(75, 23);
-      this.button1.TabIndex = 10;
-      this.button1.Text = "Status";
-      this.button1.UseVisualStyleBackColor = true;
-      this.button1.Visible = false;
-      this.button1.Click += new System.EventHandler(this.Button1_Click);
       // 
       // label1
       // 
@@ -301,7 +289,6 @@
       this.Controls.Add(this.chkDump);
       this.Controls.Add(this.btnNewTagfile);
       this.Controls.Add(this.label1);
-      this.Controls.Add(this.button1);
       this.Controls.Add(this.btnCloseListener);
       this.Controls.Add(this.btnCloseTagFile);
       this.Controls.Add(this.txtPort);
@@ -331,7 +318,6 @@
     private System.Windows.Forms.TextBox txtPort;
     private System.Windows.Forms.Button btnCloseTagFile;
     private System.Windows.Forms.Button btnCloseListener;
-    private System.Windows.Forms.Button button1;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Button btnNewTagfile;
     private System.Windows.Forms.CheckBox chkDump;

@@ -13,4 +13,10 @@
     <PackageReference Include="System.Security.Permissions" Version="4.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="VSS.Common.Abstractions">
+      <HintPath>..\..\..\Common\VSS.Common.Abstractions\bin\Debug\netstandard2.0\VSS.Common.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

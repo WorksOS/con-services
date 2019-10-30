@@ -20,8 +20,7 @@ namespace MegalodonServer
     private string testTagfile = @"c:\megalodon\tagfile\test--180828014716.tag";
     private TagFile tagFile = new TagFile();
     private SocketListener sl;
-    private string recmsg;
-    private IMegalodon2 megaldon2;
+ //   private string recmsg;
 
     public Form1()
     {
@@ -184,9 +183,6 @@ namespace MegalodonServer
           sl.sListener.Close();
         }
 
-        if (megaldon2 != null)
-          megaldon2.EndProcess();
-
       }
       catch (Exception exc)
       {
@@ -194,10 +190,6 @@ namespace MegalodonServer
       }
     }
 
-    private void Button1_Click(object sender, EventArgs e)
-    {
-      label1.Text = recmsg;
-    }
 
     private void BtnNewTagfile_Click(object sender, EventArgs e)
     {
@@ -286,8 +278,6 @@ namespace MegalodonServer
 
     private void BtnInterface_Click(object sender, EventArgs e)
     {
-      megaldon2 = new Megalodon2();
-      megaldon2.StartProcess(txtTCIP.Text, Int32.Parse(txtPort.Text));
     }
   }
 }

@@ -9,7 +9,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegalodonServer", "Megalodo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagFiles", "TagFiles\TagFiles.csproj", "{D4E12115-371F-423B-8BF1-229CB2C2C2E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegalodonSvc", "MegalodonSvc\MegalodonSvc.csproj", "{CD4DC1E0-28B4-4E42-AA00-AB23D3F5B6AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MegalodonSvc", "MegalodonSvc\MegalodonSvc.csproj", "{CD4DC1E0-28B4-4E42-AA00-AB23D3F5B6AF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{5F1BF7FD-9FDE-479B-90C5-A41B1D591136}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{3C4AF40B-BEA3-417B-8DC1-FCB0D4FC16CC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SeriLogExtensions\VSS.Serilog.Extensions.csproj", "{EF5D5266-D443-414B-8171-972996809235}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj", "{84AACC86-A530-46D2-8F6A-0192F4B138F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +41,26 @@ Global
 		{CD4DC1E0-28B4-4E42-AA00-AB23D3F5B6AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD4DC1E0-28B4-4E42-AA00-AB23D3F5B6AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD4DC1E0-28B4-4E42-AA00-AB23D3F5B6AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C4AF40B-BEA3-417B-8DC1-FCB0D4FC16CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C4AF40B-BEA3-417B-8DC1-FCB0D4FC16CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C4AF40B-BEA3-417B-8DC1-FCB0D4FC16CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C4AF40B-BEA3-417B-8DC1-FCB0D4FC16CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF5D5266-D443-414B-8171-972996809235}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF5D5266-D443-414B-8171-972996809235}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF5D5266-D443-414B-8171-972996809235}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF5D5266-D443-414B-8171-972996809235}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84AACC86-A530-46D2-8F6A-0192F4B138F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84AACC86-A530-46D2-8F6A-0192F4B138F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84AACC86-A530-46D2-8F6A-0192F4B138F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84AACC86-A530-46D2-8F6A-0192F4B138F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3C4AF40B-BEA3-417B-8DC1-FCB0D4FC16CC} = {5F1BF7FD-9FDE-479B-90C5-A41B1D591136}
+		{EF5D5266-D443-414B-8171-972996809235} = {5F1BF7FD-9FDE-479B-90C5-A41B1D591136}
+		{84AACC86-A530-46D2-8F6A-0192F4B138F5} = {5F1BF7FD-9FDE-479B-90C5-A41B1D591136}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FC023812-B492-47F0-94A5-5998EDDDD72C}
