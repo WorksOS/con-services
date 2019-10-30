@@ -40,7 +40,7 @@
           TemperatureUnit = "Celsius",
           ThousandsSeparator = ".",
           TimeFormat = "HH: mm",
-          Timezone = "UTC",
+          Timezone = "Coordinated Universal Time",
           Units = "Metric"
       };
     }
