@@ -61,14 +61,16 @@ namespace VSS.WebApi.Common
       if (!InternalConnection(context))
       {
         bool isApplicationContext;
-        string applicationName = string.Empty;
-        string userUid = string.Empty;
-        string userEmail = string.Empty;
-        string customerUid = string.Empty;
-        string customerName = string.Empty;
+        string applicationName;
+        string userUid;
+        string userEmail;
+        var customerUid = string.Empty;
+        string customerName;
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
+        // If no authorization header found, nothing to process further
+        // note keep these result messages vague (but distinct): https://www.gnucitizen.org/blog/username-enumeration-vulnerabilities/
         if (string.IsNullOrEmpty(authorization))
         {
           log.LogWarning("No account selected for the request");
@@ -86,23 +88,20 @@ namespace VSS.WebApi.Common
         }
         catch (Exception e)
         {
-          log.LogWarning(e, "Invalid JWT token with exception");
+          log.LogWarning(e, "Invalid authentication with exception");
           await SetResult("Invalid authentication", context);
           return;
         }
 
-        bool requireCustomerUid = RequireCustomerUid(context);
-
+        var requireCustomerUid = RequireCustomerUid(context);
         if (requireCustomerUid)
-        {
           customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
-        }
 
-        // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
+        // If required customer not provided, nothing to process further
+        if (string.IsNullOrEmpty(customerUid) && requireCustomerUid)
         {
-          log.LogWarning("No account selected for the request");
-          await SetResult("No account selected", context);
+          log.LogWarning("No account found for the request");
+          await SetResult("No account found", context);
           return;
         }
 
@@ -144,8 +143,7 @@ namespace VSS.WebApi.Common
           customerName = "Unknown";
         }
 
-        log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
-          userEmail);
+        log.LogInformation($"Authorization: for Customer: {customerUid} userUid: {userUid} userEmail: {userEmail} allowed");
         //Set calling context Principal
         context.User = CreatePrincipal(userUid, customerUid, customerName, userEmail, isApplicationContext, customHeaders, applicationName);
       }

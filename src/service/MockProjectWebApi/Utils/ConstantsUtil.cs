@@ -4,6 +4,7 @@
   {
     public const int DIMENSIONS_PROJECT_ID = 1001158;
     public const string DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace";
+    public const string DIMENSIONS_CUSTOMER_UID = "87bdf851-44c5-e311-aa77-00505688274d";
 
     public const int CUSTOM_SETTINGS_DIMENSIONS_PROJECT_ID = 1001160;
     public const string CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID = "3335311a-f0e2-4dbe-8acd-f21135bafee4";

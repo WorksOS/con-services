@@ -21,22 +21,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class TerrainController : BaseController<TerrainController>, ITerrainContract
   {
-
-    /// <summary>
-    /// The TRex Gateway proxy for use by executor.
-    /// </summary>
-    private readonly ITRexCompactionDataProxy TRexCompactionDataProxy;
-
     private const string layer = "{  \"tilejson\": \"2.1.0\",  \"name\": \"VSS\",  \"description\": \"\",  \"version\": \"1.1.0\",  \"format\": \"quantized-mesh-1.0\",  \"attribution\": \"\",  \"schema\": \"tms\",  \"tiles\": [ \"{z}/{x}/{y}.terrain?v={version}\" ],  \"projection\": \"EPSG:4326\",  \"bounds\": [ 0.00, -90.00, 180.00, 90.00 ],  \"extensions\": [\"octvertexnormals\"], \"available\": [    [ { \"startX\": 0, \"startY\": 0, \"endX\": 1, \"endY\": 0 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 3, \"endY\": 1 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 7, \"endY\": 3 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 15, \"endY\": 7 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 31, \"endY\": 15 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 63, \"endY\": 31 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 127, \"endY\": 63 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 255, \"endY\": 127 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 511, \"endY\": 255 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 1023, \"endY\": 511 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 2047, \"endY\": 1023 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 4095, \"endY\": 2047 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 8191, \"endY\": 4095 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 16383, \"endY\": 8191 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 32767, \"endY\": 16383 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 65535, \"endY\": 32767 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 131071, \"endY\": 65535 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 262143, \"endY\": 131071 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 524287, \"endY\": 262143 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 1048575, \"endY\": 54287 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 2097151, \"endY\": 1048575 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 4194303, \"endY\": 2097151 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 8388607, \"endY\": 4194303 } ]   ,[ { \"startX\": 0, \"startY\": 0, \"endX\": 16777215, \"endY\": 8388607 } ]  ]}";
 
     /// <summary>
     /// Constructor with injection
     /// </summary>
     /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
-    public TerrainController(ILoggerFactory logger, IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy, ICompactionSettingsManager settingsManager, IFileImportProxy fileImportProxy) : base (configStore,fileImportProxy,settingsManager)
-    {
-      TRexCompactionDataProxy = trexCompactionDataProxy;
-    }
+    public TerrainController(ILoggerFactory logger, IConfigurationStore configStore, ICompactionSettingsManager settingsManager, IFileImportProxy fileImportProxy) : base (configStore,fileImportProxy,settingsManager)
+    { }
 
     /// <summary>
     /// Async call to make quantized mesh tile

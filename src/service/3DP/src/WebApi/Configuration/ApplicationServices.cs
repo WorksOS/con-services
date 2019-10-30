@@ -23,6 +23,8 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Proxy;
+using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.Productivity3D.WebApi.Compaction.ActionServices;
 using VSS.Productivity3D.WebApi.Configuration;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
@@ -93,7 +95,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddTransient<ITRexTagFileProxy, TRexTagFileV2Proxy>();
       services.AddTransient<ITRexConnectedSiteProxy, TRexConnectedSiteV1Proxy>();
       services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>();
-      
+      services.AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV2Proxy>();
+
       //Disable CAP for now #76666
       /*
       var serviceProvider = services.BuildServiceProvider();
