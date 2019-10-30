@@ -21,5 +21,29 @@
     public string PressureUnit { get; set; }
     public string MapProvider { get; set; }
     public string BrowserRefresh { get; set; }
+
+    public static UserPreferenceData GetDefaultSIPreferences()
+    {
+      return new UserPreferenceData()
+        {
+          AssetLabelDisplay = "Asset ID",
+          BrowserRefresh = "Hourly",
+          CurrencySymbol = "US Dollar",
+          DateFormat = "dd/MM/yy",
+          DecimalPrecision = "1",
+          DecimalSeparator = ",",
+          Language = "en-US",
+          LocationDisplay = "Address",
+          MapProvider = "ALK",
+          MeterLabelDisplay = "Hour Meter",
+          PressureUnit = "BAR",
+          TemperatureUnit = "Celsius",
+          ThousandsSeparator = ".",
+          TimeFormat = "HH: mm",
+          Timezone = "UTC",
+          Units = "Metric"
+      };
+    }
+
   }
 }
