@@ -4,7 +4,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 
 namespace VSS.Productivity3D.TagFileAuth.Models
 {
-  public class GetProjectAndAssetUidsCTCTResult : ContractExecutionResult, IMasterDataModel
+  public class GetProjectAndAssetUidsEarthWorksResult : ContractExecutionResult, IMasterDataModel
   {
     /// <summary>
     /// The Uid of the project. empty if none.
@@ -22,19 +22,19 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     public string CustomerUid { get; set; }
 
     /// <summary>
-    /// CTCT cutfill can return project, where no traditional sub is available
+    /// EarthWorks cutfill can return project, where no traditional sub is available
     /// tagFile endpoint will not return a project correct a sub is available
     /// </summary>
     public bool HasValidSub { get; set; } = false;
 
     /// <summary>
-    /// Create instance of GetProjectAndAssetUidsCTCTResult
+    /// Create instance of GetProjectAndAssetUidsEarthWorksResult
     ///    The Code is the unique code (or 0 for success) code to use for translations.
     ///       We re-purpose ContractExecutionResult.Code with this unique code.
     ///    For TFA, these are 3k based 
     ///    Message is the english verion of any error
     /// </summary>
-    public GetProjectAndAssetUidsCTCTResult(string projectUid, string assetUid, string customerUid, bool hasValidSub, int uniqueCode = 0, string messageDetail = "success")
+    public GetProjectAndAssetUidsEarthWorksResult(string projectUid, string assetUid, string customerUid, bool hasValidSub, int uniqueCode = 0, string messageDetail = "success")
     {
       ProjectUid = projectUid;
       AssetUid = assetUid;
@@ -44,10 +44,10 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       Message = messageDetail;
     }
 
-    public static GetProjectAndAssetUidsCTCTResult FormatResult(string projectUid = "", string assetUid = "", string customerUid = "", bool hasValidSub = false, int uniqueCode = 0)
+    public static GetProjectAndAssetUidsEarthWorksResult FormatResult(string projectUid = "", string assetUid = "", string customerUid = "", bool hasValidSub = false, int uniqueCode = 0)
     { 
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
-      return new GetProjectAndAssetUidsCTCTResult(projectUid, assetUid, customerUid, hasValidSub,
+      return new GetProjectAndAssetUidsEarthWorksResult(projectUid, assetUid, customerUid, hasValidSub,
         (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
         (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
           (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));

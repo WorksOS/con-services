@@ -47,14 +47,14 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
       }
     }
 
-    public async Task<GetProjectAndAssetUidsCTCTResult> GetProjectAndAssetUidsCTCT(GetProjectAndAssetUidsCTCTRequest request,
+    public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsEarthWorksRequest request,
       IDictionary<string, string> customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
-      log.LogDebug($"{nameof(GetProjectAndAssetUidsCTCT)}  getProjectAndAssetUidsCTCTRequest: {jsonData}");
+      log.LogDebug($"{nameof(GetProjectAndAssetUidsEarthWorks)}  getProjectAndAssetUidsEarthWorksRequest: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsCTCTResult>($"project/getUidsCTCT", customHeaders, HttpMethod.Post, payload: payload);
+        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsEarthWorksResult>($"project/getUidsEarthWorks", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
   }

@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///        current thinking is that:
     ///          1) if there is no traditional sub, they may get cutfill for surveyed surfaces only
     ///          2) if there is a traditional sub they get production data as well
-    ///          3) there may be a completely new type of subscription, specific to CTCT cutfill ...
+    ///          3) there may be a completely new type of subscription, specific to EarthWorks cutfill ...
     /// </summary>
     /// <returns>
     /// The project Uid which satisfies spatial and time requirements
@@ -57,17 +57,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///      and an indicator of subscription availability
     ///      otherwise a returnCode.
     /// </returns>
-    [Route("api/v2/project/getUidsCTCT")]
+    [Route("api/v2/project/getUidsEarthWorks")]
     [HttpPost]
-    public async Task<GetProjectAndAssetUidsCTCTResult> GetProjectAndAssetUidsCTCT([FromBody]GetProjectAndAssetUidsCTCTRequest request)
+    public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndAssetUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {
-      _log.LogDebug($"{nameof(GetProjectAndAssetUidsCTCT)}: request: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(GetProjectAndAssetUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
-      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsCTCTResult;
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository);
+      var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
-      _log.LogResult(nameof(GetProjectAndAssetUidsCTCT), request, result);
+      _log.LogResult(nameof(GetProjectAndAssetUidsEarthWorks), request, result);
       return result;
     }
 

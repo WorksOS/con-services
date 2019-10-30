@@ -20,7 +20,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 namespace WebApiTests.Executors
 {
   [TestClass]
-  public class ProjectAndAssetUidsCTCTExecutorTests : ExecutorBaseTests
+  public class ProjectAndAssetUidsEarthWorksExecutorTests : ExecutorBaseTests
   {
     private ILoggerFactory _loggerFactory;
     private string _projectUidToBeDiscovered;
@@ -29,7 +29,7 @@ namespace WebApiTests.Executors
     private string _assetOwningCustomerUid;
     private string _tccOwningCustomerUid;
 
-    private GetProjectAndAssetUidsCTCTRequest _projectAndAssetUidsCTCTRequest;
+    private GetProjectAndAssetUidsEarthWorksRequest _projectAndAssetUidsEarthWorksRequest;
     private string radioSerial = "radSer45";
     private string ec520Serial = "ecSer";
     private string tccOrgUid = "tccOrgUid_guid";
@@ -56,7 +56,7 @@ namespace WebApiTests.Executors
       _timeOfLocation = DateTime.UtcNow;
       _assetOwningCustomerUid = Guid.NewGuid().ToString();
       _tccOwningCustomerUid = Guid.NewGuid().ToString();
-      _projectAndAssetUidsCTCTRequest = new GetProjectAndAssetUidsCTCTRequest(string.Empty, radioSerial, string.Empty, 80, 160, _timeOfLocation);
+      _projectAndAssetUidsEarthWorksRequest = new GetProjectAndAssetUidsEarthWorksRequest(string.Empty, radioSerial, string.Empty, 80, 160, _timeOfLocation);
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       _assetDeviceIds = new AssetDeviceIds { OwningCustomerUID = _assetOwningCustomerUid, AssetUID = _assetUid };
@@ -92,10 +92,10 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_InvalidParameters()
     {
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, DeviceRepository, CustomerRepository, ProjectRepository, SubscriptionRepository);
 
-      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsCTCTRequest)null));
+      var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsEarthWorksRequest)null));
 
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual(-3, ex.GetResult.Code);
@@ -105,16 +105,16 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_NoAssetDeviceAssociation()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // asset
       _deviceRepo.Setup(d => d.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((AssetDeviceIds)null);
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, CustomerRepository, ProjectRepository, SubscriptionRepository);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
     }
@@ -122,8 +122,8 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_StandardProjectAnd3dPmSubscription()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // asset, assetSub and standard project
@@ -144,9 +144,9 @@ namespace WebApiTests.Executors
       };
       _projectRepo.Setup(d => d.GetIntersectingProjects(_assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.Standard }, _timeOfLocation)).ReturnsAsync(projects);
       
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, CustomerRepository, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, _assetUid, _assetOwningCustomerUid, true, 0);
     }
@@ -155,8 +155,8 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_StandardProjectAndNo3dPmSubscription()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // asset, NO assetSub and standard project
@@ -168,9 +168,9 @@ namespace WebApiTests.Executors
       _projects[0].ProjectType = ProjectType.Standard;
       _projectRepo.Setup(d => d.GetIntersectingProjects(_assetOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.Standard }, _timeOfLocation)).ReturnsAsync(_projects);
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, CustomerRepository, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, _assetUid, _assetOwningCustomerUid, false, 0);
     }
@@ -178,9 +178,9 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_PMProjectAndPMSubscription()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset, No assetSub
@@ -201,9 +201,9 @@ namespace WebApiTests.Executors
       };
       _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, true, 0);
     }
@@ -211,9 +211,9 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_PMProjectAndNoPMSubscription()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset, No assetSub
@@ -234,9 +234,9 @@ namespace WebApiTests.Executors
       };
       _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, false, 0);
     }
@@ -244,9 +244,9 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_LandfillProjectAndSubscription()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset
@@ -267,9 +267,9 @@ namespace WebApiTests.Executors
       };
       _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, true, 0);
     }
@@ -277,9 +277,9 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_LandfillProjectAndNoSubscription()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // NO asset
@@ -300,9 +300,9 @@ namespace WebApiTests.Executors
       };
       _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projects);
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, string.Empty, _tccOwningCustomerUid, false, 0);
     }
@@ -311,9 +311,9 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task ProjectUidExecutor_MultiProjectAndSubscription()
     {
-      _projectAndAssetUidsCTCTRequest.Ec520Serial = ec520Serial;
-      _projectAndAssetUidsCTCTRequest.TccOrgUid = tccOrgUid;
-      var errorCodeResult = _projectAndAssetUidsCTCTRequest.Validate();
+      _projectAndAssetUidsEarthWorksRequest.Ec520Serial = ec520Serial;
+      _projectAndAssetUidsEarthWorksRequest.TccOrgUid = tccOrgUid;
+      var errorCodeResult = _projectAndAssetUidsEarthWorksRequest.Validate();
       Assert.AreEqual(0, errorCodeResult);
 
       // asset, assetSub and standard project
@@ -351,15 +351,15 @@ namespace WebApiTests.Executors
       _projectRepo.Setup(d => d.GetIntersectingProjects(_tccOwningCustomerUid, It.IsAny<double>(), It.IsAny<double>(), new int[] { (int)ProjectType.ProjectMonitoring, (int)ProjectType.LandFill }, _timeOfLocation)).ReturnsAsync(projectsPM);
 
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsCTCTExecutor>(
-        _loggerFactory.CreateLogger<ProjectAndAssetUidsCTCTExecutorTests>(), ConfigStore,
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
         AssetRepository, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
-      var result = await executor.ProcessAsync(_projectAndAssetUidsCTCTRequest) as GetProjectAndAssetUidsCTCTResult;
+      var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, _assetUid, _assetOwningCustomerUid, true, 3049);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsCTCTResult result, string expectedProjectUid, string expectedAssetUid, string expectedCustomerUid, bool expectedHasValidSubscription, int expectedCode)
+    private void ValidateResult(GetProjectAndAssetUidsEarthWorksResult result, string expectedProjectUid, string expectedAssetUid, string expectedCustomerUid, bool expectedHasValidSubscription, int expectedCode)
     {
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectUid");

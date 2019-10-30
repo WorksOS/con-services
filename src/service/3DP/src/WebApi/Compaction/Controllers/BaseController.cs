@@ -384,13 +384,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       if (filterResult == null)
         filterResult = new FilterResult();
-      filterResult.PolygonGrid = new List<Point>
+      filterResult.SetBoundary(new List<Point>
       {
         new Point(boundingBox.BottomleftY, boundingBox.BottomLeftX),
         new Point(boundingBox.BottomleftY, boundingBox.TopRightX),
         new Point(boundingBox.TopRightY, boundingBox.TopRightX),
         new Point(boundingBox.TopRightY, boundingBox.BottomLeftX)
-      };
+      });
       return filterResult;
     }
 

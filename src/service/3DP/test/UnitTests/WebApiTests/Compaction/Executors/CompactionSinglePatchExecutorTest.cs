@@ -115,13 +115,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES")).Returns(true);
 
       var filterResult = new FilterResult();
-      filterResult.PolygonGrid = new List<Point>
+      filterResult.SetBoundary(new List<Point>
       {
         new Point(request.BoundingBox.BottomleftY, request.BoundingBox.BottomLeftX),
         new Point(request.BoundingBox.BottomleftY, request.BoundingBox.TopRightX),
         new Point(request.BoundingBox.TopRightY, request.BoundingBox.TopRightX),
         new Point(request.BoundingBox.TopRightY, request.BoundingBox.BottomLeftX)
-      };
+      });
       var patchRequest = new PatchRequest(
         projectId,
         projectUid,
@@ -164,13 +164,13 @@ namespace VSS.Productivity3D.WebApiTests.Compaction.Executors
       mockConfigStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_PATCHES")).Returns(true);
 
       var filterResult = new FilterResult();
-      filterResult.PolygonGrid = new List<Point>
+      filterResult.SetBoundary(new List<Point>
       {
         new Point(request.BoundingBox.BottomleftY, request.BoundingBox.BottomLeftX),
         new Point(request.BoundingBox.BottomleftY, request.BoundingBox.TopRightX),
         new Point(request.BoundingBox.TopRightY, request.BoundingBox.TopRightX),
         new Point(request.BoundingBox.TopRightY, request.BoundingBox.BottomLeftX)
-      };
+      });
       var patchRequest = new PatchRequest(
         projectId,
         projectUid,

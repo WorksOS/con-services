@@ -23,12 +23,13 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 
     public CompactionSinglePatchResult[,] UnpackSubgrid(double cellSize, PatchSubgridOriginProtobufResult subgrid)
     {
-      var result = new CompactionSinglePatchResult[32, 32];
+      var subgridDimension = 32;
+      var result = new CompactionSinglePatchResult[subgridDimension, subgridDimension];
       var subGridIterator = 0;
 
-      for (int x = 0; x < 32; x++)
+      for (var x = 0; x < subgridDimension; x++)
       {
-        for (int y = 0; y < 32; y++)
+        for (var y = 0; y < subgridDimension; y++)
         {
           if (subgrid.ElevationOffsets[subGridIterator] > 0)
           {

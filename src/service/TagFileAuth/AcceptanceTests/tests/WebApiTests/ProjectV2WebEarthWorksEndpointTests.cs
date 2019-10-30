@@ -11,7 +11,7 @@ using VSS.Productivity3D.TagFileAuth.Models;
 namespace WebApiTests
 {
   [TestClass]
-  public class ProjectV2WebCTCTEndpointTests
+  public class ProjectV2WebEarthWorksEndpointTests
   {
     private readonly Msg msg = new Msg();
 
@@ -217,16 +217,16 @@ namespace WebApiTests
     /// <param name="timeOfPosition">from tagfile-used to check against valid Project time range.</param>
     /// <param name="statusCode"></param>
     /// <returns>The project Uid result</returns>
-    private GetProjectAndAssetUidsCTCTResult CallWebApiGetProjectUid(TestSupport ts, string radioSerial, string ecSerial, string tccOrgId, double latitude,double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
+    private GetProjectAndAssetUidsEarthWorksResult CallWebApiGetProjectUid(TestSupport ts, string radioSerial, string ecSerial, string tccOrgId, double latitude,double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Thread.Sleep(500);
-      var request = new GetProjectAndAssetUidsCTCTRequest(ecSerial, radioSerial, tccOrgId, latitude,longitude, timeOfPosition);
+      var request = new GetProjectAndAssetUidsEarthWorksRequest(ecSerial, radioSerial, tccOrgId, latitude,longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
-      var uri = ts.GetBaseUri() + "api/v2/project/getUidsCTCT";
+      var uri = ts.GetBaseUri() + "api/v2/project/getUidsEarthWorks";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson, statusCode);
-      var actualResult = JsonConvert.DeserializeObject<GetProjectAndAssetUidsCTCTResult>(response, ts.jsonSettings);
+      var actualResult = JsonConvert.DeserializeObject<GetProjectAndAssetUidsEarthWorksResult>(response, ts.jsonSettings);
       return actualResult;
     }
   }

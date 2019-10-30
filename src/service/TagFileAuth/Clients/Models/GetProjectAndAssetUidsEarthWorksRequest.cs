@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.Models
 {
   /// <summary>
-  /// TFA v2 endpoint to retrieve ProjectUid and/or AssetUid for a tagfile
-  ///      this is used by TRex Gateway and possibly etal
+  /// TFA v2 endpoint to retrieve ProjectUid and/or AssetUid and subscription indicator for a tagfile.
+  ///      this is used by the 3dp GetSubGridPatches endpoint used by EarthWorks for cut-fill maps.
   /// </summary>
-  public class GetProjectAndAssetUidsCTCTRequest 
+  public class GetProjectAndAssetUidsEarthWorksRequest 
   {
     /// <summary>
     /// The EC520 serial number of the machine from the tagfile.
@@ -51,13 +49,13 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     /// <summary>
     /// Private constructor
     /// </summary>
-    private GetProjectAndAssetUidsCTCTRequest()
+    private GetProjectAndAssetUidsEarthWorksRequest()
     { }
 
     /// <summary>
-    /// Create instance of GetProjectAndAssetUidsCTCTRequest
+    /// Create instance of GetProjectAndAssetUidsEarthWorksRequest
     /// </summary>
-    public GetProjectAndAssetUidsCTCTRequest
+    public GetProjectAndAssetUidsEarthWorksRequest
     (string ec520Serial, string radioSerial, string tccOrgUid,
       double latitude, double longitude, DateTime timeOfPosition)
     {
@@ -72,19 +70,16 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     public int Validate()
     {
       if (string.IsNullOrEmpty(Ec520Serial))
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 51));
-
-      if (string.IsNullOrEmpty(RadioSerial) && string.IsNullOrEmpty(Ec520Serial) && string.IsNullOrEmpty(TccOrgUid))
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 37));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 51));
 
       if (Latitude < -90 || Latitude > 90)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 21));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 21));
 
       if (Longitude < -180 || Longitude > 180)
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 22));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 22));
 
       if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(30)))
-        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 23));
+        throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 23));
 
       return 0;
     }

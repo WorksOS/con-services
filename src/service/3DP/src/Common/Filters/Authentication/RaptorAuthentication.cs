@@ -51,7 +51,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     ///    The v1 TAG file submission end point does not require a customer UID to be provided
     ///        However there is some schizophrenia here as we need to support UI manual tag file submission 
     ///            WITH proper authn\z as well
-    ///    The v2 patches for CTCT cutfill end point does not require customerUID
+    ///    The v2 patches for EarthWorks cutfill end point does not require customerUID
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
           (context.Request.Path.Value.ToLower().Contains("api/v2/tagfiles") && context.Request.Method == "POST" &&
           !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
           ) ||
-          (context.Request.Path.Value.ToLower().Contains("api/v2/patches") && context.Request.Method == "GET" &&
+          (context.Request.Path.Value.ToLower().Contains("/patches?") && context.Request.Method == "GET" &&
           !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
           )
         );

@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
   /// The executor which tries to identify a project for the location,
-  ///      for use by CTCT EC devices to obtain cutfill map from 3dp.
+  ///      for use by CTCT EarthWorks devices to obtain cutfill map from 3dp.
   /// The customer, for which projects are fair game, can be determined from
   ///     1) SNM radioSerial
   ///     2) EC520 serialNumber
@@ -27,17 +27,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   ///                      else production data AND SS is provided
   ///      don't know what it would be for landfills and civil project using a TCCOrgId
   /// </summary>
-  public class ProjectAndAssetUidsCTCTExecutor : RequestExecutorContainer
+  public class ProjectAndAssetUidsEarthWorksExecutor : RequestExecutorContainer
   {
     ///  <summary>
     ///  Processes the get project Uid request and finds the Uid of the project corresponding to the given location and devices Customer and relavant subscriptions.
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as GetProjectAndAssetUidsCTCTRequest;
+      var request = item as GetProjectAndAssetUidsEarthWorksRequest;
       if (request == null)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: TagFileAuth.Models.ContractExecutionStatesEnum.SerializationError));
+          GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: TagFileAuth.Models.ContractExecutionStatesEnum.SerializationError));
       
       var assetUid = string.Empty;
       var assetSubs = new List<Subscriptions>();
@@ -71,17 +71,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         // Unable to identify the EC in the 3dPM system, and no tccOrgId provided
         if (string.IsNullOrEmpty(request.TccOrgUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
-          return GetProjectAndAssetUidsCTCTResult.FormatResult(uniqueCode: 33);
+          return GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 33);
       }
 
       return await LocateProjectsInProximity(request, assetUid, assetOwningCustomerUid, assetSubs);
     }
 
     /// <summary>
-    /// CTCT cut/fill doesn't necessarily REQUIRE a subscription, or of the type required for 3dp tagFiles
+    /// EarthWorks cut/fill doesn't necessarily REQUIRE a subscription, or of the type required for 3dp tagFiles
     /// Must be able to identify one or other customer for a) radioSerial b) EM520 c) tccOrgUid
     /// </summary>
-    private async Task<GetProjectAndAssetUidsCTCTResult> LocateProjectsInProximity(GetProjectAndAssetUidsCTCTRequest request,
+    private async Task<GetProjectAndAssetUidsEarthWorksResult> LocateProjectsInProximity(GetProjectAndAssetUidsEarthWorksRequest request,
       string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)
     {
       string tccCustomerUid = null;
@@ -93,24 +93,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       if (string.IsNullOrEmpty(tccCustomerUid) && string.IsNullOrEmpty(assetOwningCustomerUid))
-        return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, uniqueCode: 47);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: assetUid, uniqueCode: 47);
 
       var potentialProjects = await GetPotentialProjects(assetOwningCustomerUid, tccCustomerUid, request);
       log.LogDebug($"{nameof(LocateProjectsInProximity)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
       {
-        // with CTCT we allow assetCustomerUid LF/PM sub for landfill/pm projects
+        // with EarthWorks we allow assetCustomerUid LF/PM sub for landfill/pm projects
         if (string.IsNullOrEmpty(tccCustomerUid) && !string.IsNullOrEmpty(assetOwningCustomerUid) && !assetSubs.Any())
-          return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, customerUid: assetOwningCustomerUid, uniqueCode: 52);
+          return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: assetUid, customerUid: assetOwningCustomerUid, uniqueCode: 52);
 
-        return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, customerUid: assetOwningCustomerUid, uniqueCode: 48);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: assetUid, customerUid: assetOwningCustomerUid, uniqueCode: 48);
       }
 
       if (potentialProjects.Count > 1)
-        return GetProjectAndAssetUidsCTCTResult.FormatResult(assetUid: assetUid, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: assetUid, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
 
-      return GetProjectAndAssetUidsCTCTResult.FormatResult(
+      return GetProjectAndAssetUidsEarthWorksResult.FormatResult(
         potentialProjects[0].ProjectUID, assetUid,
         potentialProjects[0].CustomerUID,
         ((potentialProjects[0].ProjectType == ProjectType.Standard && assetSubs.Any())
@@ -120,10 +120,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     /// Look for projects with location inside their boundary
     ///     and belonging to asset or tccOrgId customers
-    /// CTCT cutfill doesn't necessarily need a traditional tagfile sub
+    /// EarthWorks cutfill doesn't necessarily need a traditional tagfile sub
     /// </summary>
     private async Task<List<Project.Abstractions.Models.DatabaseModels.Project>> GetPotentialProjects
-      (string assetOwningCustomerUid, string tccCustomerUid, GetProjectAndAssetUidsCTCTRequest request)
+      (string assetOwningCustomerUid, string tccCustomerUid, GetProjectAndAssetUidsEarthWorksRequest request)
     {
       var potentialProjects = new List<Project.Abstractions.Models.DatabaseModels.Project>();
 

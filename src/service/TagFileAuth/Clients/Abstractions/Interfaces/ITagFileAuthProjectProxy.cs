@@ -14,10 +14,10 @@ namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     /*
-     * [Route("api/v2/project/getUidsCTCT")]     [HttpPost]
-     * returns GetProjectAndAssetUidsCTCTResult
+     * [Route("api/v2/project/getUidsEarthWorks")]     [HttpPost]
+     * returns GetProjectAndAssetUidsEarthWorksResult
      */
-    Task<GetProjectAndAssetUidsCTCTResult> GetProjectAndAssetUidsCTCT(GetProjectAndAssetUidsCTCTRequest getProjectAndAssetUidsCTCTRequest,
+    Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsEarthWorksRequest getProjectAndAssetUidsEarthWorksRequest,
       IDictionary<string, string> customHeaders = null);
 
   }

@@ -30,16 +30,16 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// identify VSS projectUid (and potentially VSS AssetUID)
     /// tfa checks in this order: snm940; snm941; EC520
     /// </summary>
-    public async Task<GetProjectAndAssetUidsCTCTResult> GetProjectUid(string radioSerial, string eCSerial,
+    public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectUid(string radioSerial, string eCSerial,
         string tccOrgUid, double machineLatitude, double machineLongitude)
     {
-      var tfaRequest = new GetProjectAndAssetUidsCTCTRequest(eCSerial, radioSerial,
+      var tfaRequest = new GetProjectAndAssetUidsEarthWorksRequest(eCSerial, radioSerial,
         tccOrgUid, machineLatitude, machineLongitude, DateTime.UtcNow);
 
-      GetProjectAndAssetUidsCTCTResult result;
+      GetProjectAndAssetUidsEarthWorksResult result;
       try
       {
-        result = await _tagFileAuthProjectV2Proxy.GetProjectAndAssetUidsCTCT(tfaRequest);
+        result = await _tagFileAuthProjectV2Proxy.GetProjectAndAssetUidsEarthWorks(tfaRequest);
       }
       catch (Exception e)
       {
