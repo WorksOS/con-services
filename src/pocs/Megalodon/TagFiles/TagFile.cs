@@ -134,6 +134,7 @@ namespace TagFiles
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileNorthingTag, TAGDataType.tIEEEDouble, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileElevationTag, TAGDataType.tIEEEDouble, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileGPSModeTag, TAGDataType.t4bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileOnGroundTag, TAGDataType.t4bitUInt, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileBladeOnGroundTag, TAGDataType.t4bitUInt, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileDesignTag, TAGDataType.tUnicodeString, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagPositionLatitude, TAGDataType.tIEEEDouble, idx++);
@@ -146,6 +147,7 @@ namespace TagFiles
       TagFileDictionary.AddEntry(TAGValueNames.kTagFileApplicationVersion, TAGDataType.tANSIString, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagMachineSpeed, TAGDataType.tIEEEDouble, idx++);
       TagFileDictionary.AddEntry(TAGValueNames.kTagMachineType, TAGDataType.t8bitUInt, idx++);
+      TagFileDictionary.AddEntry(TAGValueNames.kTagFileValidPositionTag, TAGDataType.t4bitUInt, idx++);
     }
 
     /// <summary>
@@ -201,7 +203,6 @@ namespace TagFiles
         rs + "SERe6cd374b - 22d5 - 4512 - b60e - fd8152a0899b" +
         rs + "MTPHEX"
         );
-
 
       Header.TagfileName = TagUtils.MakeTagfileName("", Parser.EpochRec.MID);
 

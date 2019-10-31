@@ -325,7 +325,7 @@ namespace MegalodonClient
 
           lblStatus.Text = $"East:{east} Direction:{ direction} North:{north}";
 
-          System.Threading.Thread.Sleep(200);
+          System.Threading.Thread.Sleep(50);
 
           unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
           timeStamp = "TME" + unixTimestamp.ToString();
