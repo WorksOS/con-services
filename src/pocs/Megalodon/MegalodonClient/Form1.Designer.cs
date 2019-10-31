@@ -31,7 +31,7 @@
       this.btnTrack = new System.Windows.Forms.Button();
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-      this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+      this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
       this.txtPort = new System.Windows.Forms.TextBox();
       this.label1 = new System.Windows.Forms.Label();
       this.label2 = new System.Windows.Forms.Label();
@@ -68,7 +68,7 @@
       this.label17 = new System.Windows.Forms.Label();
       this.textBox18 = new System.Windows.Forms.TextBox();
       this.label18 = new System.Windows.Forms.Label();
-      this.textBox19 = new System.Windows.Forms.TextBox();
+      this.txtStartHgt = new System.Windows.Forms.TextBox();
       this.label19 = new System.Windows.Forms.Label();
       this.button1 = new System.Windows.Forms.Button();
       this.button2 = new System.Windows.Forms.Button();
@@ -80,6 +80,7 @@
       this.button7 = new System.Windows.Forms.Button();
       this.txtTCIP = new System.Windows.Forms.TextBox();
       this.label21 = new System.Windows.Forms.Label();
+      this.button8 = new System.Windows.Forms.Button();
       this.statusStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -98,7 +99,7 @@
       // 
       this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
-            this.toolStripStatusLabel2});
+            this.lblStatus});
       this.statusStrip1.Location = new System.Drawing.Point(0, 495);
       this.statusStrip1.Name = "statusStrip1";
       this.statusStrip1.Size = new System.Drawing.Size(752, 22);
@@ -111,11 +112,11 @@
       this.toolStripStatusLabel1.Size = new System.Drawing.Size(66, 17);
       this.toolStripStatusLabel1.Text = "LastAction:";
       // 
-      // toolStripStatusLabel2
+      // lblStatus
       // 
-      this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-      this.toolStripStatusLabel2.Size = new System.Drawing.Size(118, 17);
-      this.toolStripStatusLabel2.Text = "toolStripStatusLabel2";
+      this.lblStatus.Name = "lblStatus";
+      this.lblStatus.Size = new System.Drawing.Size(39, 17);
+      this.lblStatus.Text = "Status";
       // 
       // txtPort
       // 
@@ -411,21 +412,22 @@
       this.label18.TabIndex = 30;
       this.label18.Text = "Longtitude";
       // 
-      // textBox19
+      // txtStartHgt
       // 
-      this.textBox19.Location = new System.Drawing.Point(325, 220);
-      this.textBox19.Name = "textBox19";
-      this.textBox19.Size = new System.Drawing.Size(132, 20);
-      this.textBox19.TabIndex = 29;
+      this.txtStartHgt.Location = new System.Drawing.Point(410, 197);
+      this.txtStartHgt.Name = "txtStartHgt";
+      this.txtStartHgt.Size = new System.Drawing.Size(95, 20);
+      this.txtStartHgt.TabIndex = 29;
+      this.txtStartHgt.Text = "542.73037";
       // 
       // label19
       // 
       this.label19.AutoSize = true;
-      this.label19.Location = new System.Drawing.Point(326, 204);
+      this.label19.Location = new System.Drawing.Point(341, 200);
       this.label19.Name = "label19";
-      this.label19.Size = new System.Drawing.Size(45, 13);
+      this.label19.Size = new System.Drawing.Size(63, 13);
       this.label19.TabIndex = 28;
-      this.label19.Text = "Latitude";
+      this.label19.Text = "Start Height";
       // 
       // button1
       // 
@@ -498,11 +500,11 @@
       // 
       // button7
       // 
-      this.button7.Location = new System.Drawing.Point(45, 132);
+      this.button7.Location = new System.Drawing.Point(325, 162);
       this.button7.Name = "button7";
       this.button7.Size = new System.Drawing.Size(91, 23);
       this.button7.TabIndex = 47;
-      this.button7.Text = "Test SIM";
+      this.button7.Text = "Run SIM";
       this.button7.UseVisualStyleBackColor = true;
       this.button7.Click += new System.EventHandler(this.Button7_Click);
       // 
@@ -523,11 +525,22 @@
       this.label21.TabIndex = 49;
       this.label21.Text = "TCIP";
       // 
+      // button8
+      // 
+      this.button8.Location = new System.Drawing.Point(422, 162);
+      this.button8.Name = "button8";
+      this.button8.Size = new System.Drawing.Size(75, 23);
+      this.button8.TabIndex = 50;
+      this.button8.Text = "Stop";
+      this.button8.UseVisualStyleBackColor = true;
+      this.button8.Click += new System.EventHandler(this.Button8_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(752, 517);
+      this.Controls.Add(this.button8);
       this.Controls.Add(this.label21);
       this.Controls.Add(this.txtTCIP);
       this.Controls.Add(this.button7);
@@ -548,7 +561,7 @@
       this.Controls.Add(this.label17);
       this.Controls.Add(this.textBox18);
       this.Controls.Add(this.label18);
-      this.Controls.Add(this.textBox19);
+      this.Controls.Add(this.txtStartHgt);
       this.Controls.Add(this.label19);
       this.Controls.Add(this.textBox8);
       this.Controls.Add(this.label8);
@@ -629,11 +642,11 @@
     private System.Windows.Forms.Label label17;
     private System.Windows.Forms.TextBox textBox18;
     private System.Windows.Forms.Label label18;
-    private System.Windows.Forms.TextBox textBox19;
+    private System.Windows.Forms.TextBox txtStartHgt;
     private System.Windows.Forms.Label label19;
     private System.Windows.Forms.Button button1;
     private System.Windows.Forms.Button button2;
-    private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+    private System.Windows.Forms.ToolStripStatusLabel lblStatus;
     private System.Windows.Forms.Label label20;
     private System.Windows.Forms.Button button3;
     private System.Windows.Forms.Button button4;
@@ -642,6 +655,7 @@
     private System.Windows.Forms.Button button7;
     private System.Windows.Forms.TextBox txtTCIP;
     private System.Windows.Forms.Label label21;
+    private System.Windows.Forms.Button button8;
   }
 }
 

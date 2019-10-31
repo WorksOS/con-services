@@ -239,7 +239,7 @@ namespace MegalodonServer
           //     content2 += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
           if (Callback != null)
-            Callback($"Input Lenght:{content.Length}", 0);
+            Callback($"Input Lenght:{content.Length}", TagConstants.CALLBACK_LOG_INFO_MSG);
 
 
           if (DumpContent)
@@ -284,9 +284,9 @@ namespace MegalodonServer
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
                   if (Callback != null)
                     if (HeaderRequired)
-                      Callback("ENQ recieved. Returning SOH", 0);
+                      Callback("ENQ recieved. Returning SOH", TagConstants.CALLBACK_LOG_INFO_MSG);
                     else
-                      Callback("ENQ recieved. Returning ACK", 0);
+                      Callback("ENQ recieved. Returning ACK", TagConstants.CALLBACK_LOG_INFO_MSG);
 
                   if (DumpContent)
                     DumpPacketHelper.DumpPacket("ENQ");
@@ -294,7 +294,7 @@ namespace MegalodonServer
                   break;
                 case TagConstants.EOT:
                   if (Callback != null)
-                    Callback("EOT recieved. No responce sent", 0);
+                    Callback("EOT recieved. No responce sent", TagConstants.CALLBACK_LOG_INFO_MSG);
                   if (DumpContent)
                     DumpPacketHelper.DumpPacket("EOT");
 
@@ -305,7 +305,7 @@ namespace MegalodonServer
                   byteData[0] = TagConstants.NAK; // todo
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
                   if (Callback != null)
-                    Callback($"Unexpected control char recieved. Returning NAK. Value:{cb}", 0);
+                    Callback($"Unexpected control char recieved. Returning NAK. Value:{cb}", TagConstants.CALLBACK_LOG_INFO_MSG);
                   if (DumpContent)
                     DumpPacketHelper.DumpPacket("??");
 
@@ -320,16 +320,16 @@ namespace MegalodonServer
               str = str.Trim(_STX);
               if (Callback != null)
               {
-                Callback(str,1); // process datapacket
+                Callback(str,TagConstants.CALLBACK_PARSE_PACKET); // process datapacket
                 if (HeaderRequired) // Prepare the reply message 
                 {
                   byteData[0] = TagConstants.SOH;
-                  Callback("SOH returned", 0);
+                  Callback("SOH returned", TagConstants.CALLBACK_LOG_INFO_MSG);
                 }
                 else
                 {
                   byteData[0] = TagConstants.ACK;
-                  Callback("ACK returned", 0);
+                  Callback("ACK returned", TagConstants.CALLBACK_LOG_INFO_MSG);
                 }
                 // Sends data asynchronously to a connected Socket 
                 handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
@@ -339,7 +339,7 @@ namespace MegalodonServer
             if (keepListening)
             {
               if (Callback != null)
-                Callback("Listening...", 0);
+                Callback("Listening...", TagConstants.CALLBACK_LOG_INFO_MSG);
               byte[] buffernew = new byte[1024];
               obj[0] = buffernew;
               obj[1] = handler;
@@ -366,7 +366,7 @@ namespace MegalodonServer
           else
           {
             if (Callback != null)
-              Callback("No ETX continue. Returning NAK Listening...", 0);
+              Callback("No ETX continue. Returning NAK Listening...", TagConstants.CALLBACK_LOG_INFO_MSG);
 
             byteData[0] = TagConstants.NAK;
             handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);

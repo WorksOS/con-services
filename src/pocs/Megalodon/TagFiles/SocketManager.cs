@@ -272,7 +272,7 @@ namespace TagFiles
           //     content2 += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
           if (Callback != null)
-            Callback($"Input Lenght:{content.Length}", 0);
+            Callback($"Input Lenght:{content.Length}", TagConstants.CALLBACK_LOG_INFO_MSG);
 
 
           if (DumpContent)
@@ -317,9 +317,9 @@ namespace TagFiles
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
                   if (Callback != null)
                     if (_HeaderRequired)
-                      Callback("ENQ recieved. Returning SOH", 0);
+                      Callback("ENQ recieved. Returning SOH", TagConstants.CALLBACK_LOG_INFO_MSG);
                     else
-                      Callback("ENQ recieved. Returning ACK", 0);
+                      Callback("ENQ recieved. Returning ACK", TagConstants.CALLBACK_LOG_INFO_MSG);
 
                   if (DumpContent)
                     DebugPacketHelper.DumpPacket("ENQ");
@@ -327,7 +327,7 @@ namespace TagFiles
                   break;
                 case TagConstants.EOT:
                   if (Callback != null)
-                    Callback("EOT recieved. No responce sent", 0);
+                    Callback("EOT recieved. No responce sent", TagConstants.CALLBACK_LOG_INFO_MSG);
                   if (DumpContent)
                     DebugPacketHelper.DumpPacket("EOT");
 
@@ -338,7 +338,7 @@ namespace TagFiles
                   byteData[0] = TagConstants.NAK; // todo
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
                   if (Callback != null)
-                    Callback($"Unexpected control char recieved. Returning NAK. Value:{cb}", 0);
+                    Callback($"Unexpected control char recieved. Returning NAK. Value:{cb}", TagConstants.CALLBACK_LOG_INFO_MSG);
                   if (DumpContent)
                     DebugPacketHelper.DumpPacket("??");
 
@@ -353,16 +353,16 @@ namespace TagFiles
               str = str.Trim(_STX);
               if (Callback != null)
               {
-                Callback(str, 1); // process datapacket
+                Callback(str, TagConstants.CALLBACK_PARSE_PACKET); // process datapacket
                 if (_HeaderRequired) // Prepare the reply message 
                 {
                   byteData[0] = TagConstants.SOH;
-                  Callback("SOH returned", 0);
+                  Callback("SOH returned", TagConstants.CALLBACK_LOG_INFO_MSG);
                 }
                 else
                 {
                   byteData[0] = TagConstants.ACK;
-                  Callback("ACK returned", 0);
+                  Callback("ACK returned", TagConstants.CALLBACK_LOG_INFO_MSG);
                 }
                 // Sends data asynchronously to a connected Socket 
                 handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
@@ -399,7 +399,7 @@ namespace TagFiles
           else
           {
             if (Callback != null)
-              Callback("No ETX continue. Returning NAK Listening...", 0);
+              Callback("No ETX continue. Returning NAK Listening...", TagConstants.CALLBACK_LOG_INFO_MSG);
 
             byteData[0] = TagConstants.NAK;
             handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);

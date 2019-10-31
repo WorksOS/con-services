@@ -81,5 +81,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TagFiles\TagFiles.csproj">
+      <Project>{D4E12115-371F-423B-8BF1-229CB2C2C2E7}</Project>
+      <Name>TagFiles</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -271,7 +271,8 @@ namespace TagFiles.Parser
               uint gpsWeek;
 
               // Comes in as UTC unix timestamp
-              var utcTime = TagUtils.UnixTimeStampToUTCDateTime(Convert.ToInt32(TagValue));
+              //   var utcTime = TagUtils.UnixTimeStampToUTCDateTime(Convert.ToInt64(TagValue));
+              var utcTime = TagUtils.DateTimeFromUnixTimestampMillis(Convert.ToInt64(TagValue));
               GPS.DateTimeToGPSOriginTime(utcTime, out gpsWeek, out gpsTime);
               EpochRec.Time = gpsTime;
               EpochRec.Week = gpsWeek;
