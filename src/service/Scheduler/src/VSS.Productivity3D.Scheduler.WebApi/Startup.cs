@@ -35,6 +35,17 @@ using VSS.Productivity3D.Scheduler.Models;
 using VSS.Productivity3D.Scheduler.WebApi.JobRunner;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
+using System.Linq;
+using Hangfire.Common;
+using System.Collections.Generic;
+using VSS.Productivity3D.Scheduler.WebAPI;
+using VSS.Productivity3D.Scheduler.WebAPI.Metrics;
+using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Filter.Proxy;
+using VSS.Productivity3D.Scheduler.Jobs.ExportJob;
+using VSS.Productivity3D.Scheduler.Jobs.SendEmailJob;
 
 namespace VSS.Productivity3D.Scheduler.WebApi
 {
@@ -82,15 +93,21 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddSingleton<RecurringJobRunner>();
       services.AddSingleton<IJobRunner>(s => s.GetRequiredService<WebAPI.JobRunner.JobRunner>());
       services.AddSingleton<IRecurringJobRunner>(s => s.GetRequiredService<RecurringJobRunner>());
-      services.AddTransient<IDevOpsNotification, SlackNotification>();
       services.AddTransient<IDefaultJobRunner, DefaultJobsManager>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddPushServiceClient<IAssetStatusServerHubClient, AssetStatusServerHubClient>();
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
+      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
+      services.AddTransient<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
+      services.AddTransient<ITpaasEmailProxy, TpaasEmailProxy>();
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IAssetResolverProxy, AssetResolverProxy>();
+      services.AddSingleton<IJobRegistrationManager, JobRegistrationManager>();
+      services.AddSingleton<IHangfireMetricScheduler,HangfireMetricScheduler>();
+      services.AddTransient<IExportEmailGenerator, ExportEmailGenerator>();
 
       services.AddOpenTracing(builder =>
       {
@@ -146,11 +163,48 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       Thread.Sleep(expirationManagerWaitMs);
       Log.LogDebug($"Scheduler: after ConfigureHangfireUse. expirationManagerWaitMs waitMs {expirationManagerWaitMs}.");
 
+      Log.LogInformation("Setting up scheduled jobs");
+
       ServiceProvider.GetRequiredService<IDefaultJobRunner>().StartDefaultJob(new RecurringJobRequest()
       {
         JobUid = AssetStatusJob.VSSJOB_UID, 
         Schedule = "* * * * *"
       });
+
+      var config = Configuration.GetValueString("MACHINE_EXPORT", "");
+      ScheduleConfig schConfig = new ScheduleConfig();
+
+      if (!string.IsNullOrEmpty(config))
+      {
+        try
+        {
+          schConfig = JsonConvert.DeserializeObject<ScheduleConfig>(config);
+        }
+        catch (Exception ex)
+        {
+          Log.LogError(ex,"Configuration for MachinePasses is invalid");
+        }
+
+
+        ServiceProvider.GetRequiredService<IDefaultJobRunner>().StartDefaultJob(new RecurringJobRequest()
+        {
+          JobUid = Guid.Parse("39d6c48a-cc74-42d3-a839-1a6b77e8e076"),
+          Schedule = schConfig.schedule,
+          SetupParameters = schConfig.customerUid,
+          RunParameters = schConfig.emails
+        });
+      }
+    }
+
+    public class ScheduleConfig
+    {
+      [JsonProperty(PropertyName = "customerUid", Required = Required.Always)]
+      public string customerUid { get; set; }
+
+      [JsonProperty(PropertyName = "emails", Required = Required.Always)]
+      public string[] emails{ get; set; }
+      [JsonProperty(PropertyName = "schedule", Required = Required.Always)]
+      public string schedule { get; set; }
     }
 
     
@@ -225,13 +279,22 @@ namespace VSS.Productivity3D.Scheduler.WebApi
           out var schedulePollingIntervalSeconds))
           schedulePollingIntervalSeconds = 2;
 
+        var registrationManager = app.ApplicationServices.GetRequiredService<IJobRegistrationManager>();
+        var queues = registrationManager.ResolveVssJobs().Values.Select(item => registrationManager.GetQueueName(item)).Prepend(RecurringJobRunner.QUEUE_NAME).ToArray();
+
+        Log.LogInformation($"Available job queues: {queues.Aggregate((i, j) => i + ';' + j)}");
+
         var options = new BackgroundJobServerOptions
         {
           ServerName = hangfireServerName,
           WorkerCount = workerCount,
           SchedulePollingInterval = TimeSpan.FromSeconds(schedulePollingIntervalSeconds),
+          Queues = queues
         };
         Log.LogDebug($"Scheduler.Configure: hangfire options: {JsonConvert.SerializeObject(options)}.");
+
+        // Launch metrics
+        app.ApplicationServices.GetRequiredService<IHangfireMetricScheduler>().Start();
 
         // do we need the dashboard?
         app.UseHangfireDashboard(options: new DashboardOptions
@@ -241,7 +304,6 @@ namespace VSS.Productivity3D.Scheduler.WebApi
             new HangfireAuthorizationFilter()
           }
         });
-
         app.UseHangfireServer(options);
         Log.LogDebug("Scheduler.Startup: after UseHangfireServer.");
       }
@@ -268,4 +330,5 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     }
 
   }
+ 
 }

@@ -53,6 +53,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Schedule
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TagFileAuth Service", "TagFileAuth Service", "{81938ED3-5E50-4DBD-B906-3A52A8EE478E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{03B133A9-7828-4C09-A2DD-976C12C366E9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -189,6 +193,14 @@ Global
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}.Release|x64.ActiveCfg = Release|Any CPU
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}.Release|x64.Build.0 = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|x64.Build.0 = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|x64.ActiveCfg = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,6 +227,8 @@ Global
 		{F249F7B8-DC91-4AFD-B262-CB86818A0C50} = {3F3FBF0B-36DA-405A-AB23-0E29729AED6E}
 		{6E070DF5-581A-4FD6-AD11-F99E89DA631C} = {8E35DAC0-3A35-48DA-A0E3-0F01B48A877F}
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3} = {B9517281-F8F3-475C-9FF2-A074223489CF}
+		{81938ED3-5E50-4DBD-B906-3A52A8EE478E} = {87BFF03E-CA3F-4773-B4F9-E112A5516CED}
+		{03B133A9-7828-4C09-A2DD-976C12C366E9} = {81938ED3-5E50-4DBD-B906-3A52A8EE478E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6524D83-9E29-4F62-8C9A-E01BA4C38D05}

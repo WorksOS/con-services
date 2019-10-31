@@ -2,19 +2,16 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
-using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean.Utils
 {
   public class WebApiUtils : IWebApiUtils
   {
     private readonly IRestClient RestClient;
-    private readonly IConfigurationStore _configuration;
 
     private readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
     {
@@ -22,35 +19,33 @@ namespace TCCToDataOcean.Utils
       NullValueHandling = NullValueHandling.Ignore
     };
 
-    public WebApiUtils(IRestClient restClient, IConfigurationStore configurationStore)
+    public WebApiUtils(IRestClient restClient)
     {
       RestClient = restClient;
-      _configuration = configurationStore;
     }
 
     /// <summary>
     /// Update the project via the web api. 
     /// </summary>
-    public Task<ProjectDataSingleResult> UpdateProjectCoordinateSystemFile(string uriRoot, Project project, byte[] coordSystemFileContent)
+    public Task<ProjectDataSingleResult> UpdateProjectCoordinateSystemFile(string uriRoot, MigrationJob job)
     {
-      var updateProjectEvt = new UpdateProjectEvent
-      {
-        ProjectUID = Guid.Parse(project.ProjectUID),
-        ProjectName = project.Name,
-        ProjectType = project.ProjectType,
-        ProjectEndDate = project.EndDate,
-        ProjectTimezone = project.ProjectTimeZone,
-        CoordinateSystemFileName = project.CoordinateSystemFileName,
-        CoordinateSystemFileContent = coordSystemFileContent,
-        ProjectBoundary = project.GeometryWKT,
-        Description = project.Description,
-        ReceivedUTC = DateTime.UtcNow,
-        ActionUTC = project.LastActionedUTC
-      };
+      var filename = !string.IsNullOrEmpty(job.Project.CoordinateSystemFileName)
+        ? job.Project.CoordinateSystemFileName
+        : "CoordinateData.dc";
+
+      var updateProjectEvt = UpdateProjectRequest.CreateUpdateProjectRequest(
+        Guid.Parse(job.Project.ProjectUID),
+        job.Project.ProjectType,
+        job.Project.Name,
+        job.Project.Description,
+        job.Project.EndDate,
+        filename,
+        job.CoordinateSystemFileBytes,
+        job.Project.GeometryWKT);
 
       var jsonString = JsonConvert.SerializeObject(updateProjectEvt, JsonSettings);
 
-      return RestClient.SendHttpClientRequest<ProjectDataSingleResult>(uriRoot, HttpMethod.Put, Types.MediaType.APPLICATION_JSON, Types.MediaType.APPLICATION_JSON, project.CustomerUID, jsonString);
+      return RestClient.SendHttpClientRequest<ProjectDataSingleResult>(uriRoot, HttpMethod.Put, Types.MediaType.APPLICATION_JSON, Types.MediaType.APPLICATION_JSON, job.Project.CustomerUID, jsonString);
     }
   }
 }

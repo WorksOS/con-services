@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -9,6 +9,7 @@
     <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
     <ProjectReference Include="..\Abstractions\VSS.Productivity3D.TagFileAuth.Abstractions.csproj" />
+    <ProjectReference Include="..\Models\VSS.Productivity3D.TagFileAuth.Models.csproj" />
   </ItemGroup>
 
 </Project>

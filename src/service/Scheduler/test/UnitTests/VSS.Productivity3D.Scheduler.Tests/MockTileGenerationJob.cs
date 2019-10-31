@@ -12,19 +12,19 @@ namespace VSS.Productivity3D.Scheduler.Tests
 
     public Guid VSSJobUid => Guid.Parse("5b4b0f10-ec2c-4308-a282-7a538dc087f0");
 
-    public Task Setup(object o)
+    public Task Setup(object o, object context)
     {
       SetupInvoked?.Invoke(this, null);
       return Task.FromResult(true);
     }
 
-    public Task Run(object o)
+    public Task Run(object o, object context)
     {
       RunInvoked?.Invoke(this, null);
       return Task.FromResult(true);
     }
 
-    public Task TearDown(object o)
+    public Task TearDown(object o, object context)
     {
       TearDownInvoked?.Invoke(this, null);
       return Task.FromResult(true);

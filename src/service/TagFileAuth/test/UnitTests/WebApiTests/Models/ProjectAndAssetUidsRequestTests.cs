@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace WebApiTests.Models
 {
@@ -8,38 +11,46 @@ namespace WebApiTests.Models
   public class ProjectAndAssetUidsRequestTests : ModelBaseTests
   {
     [TestMethod]
-    [DataRow("", 999, "snm940Serial", "", "", 89, 179, 30)] // invalid deviceType
+    [DataRow("", 999, "snm940Serial", "", "", 89, 179, 3030)] // invalid deviceType
     public void ValidateGetProjectAndAssetUidsRequest_InvalidDeviceType
       (string projectUid, int deviceType, string radioSerial, string ec520Serial, 
         string tccOrgUid,
         double latitude, double longitude, int errorCode)
     {
       var timeOfPosition = DateTime.UtcNow;
-      GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
+      var projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest
         (projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, 
           latitude, longitude, timeOfPosition);
-      var errorCodeResult = projectAndAssetUidsRequest.Validate();
-      Assert.AreEqual(errorCode, errorCodeResult);
+      var ex = Assert.ThrowsException<ServiceException>(() => projectAndAssetUidsRequest.Validate());
+
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+      Assert.AreEqual(errorCode, ex.GetResult.Code);
     }
 
     [TestMethod]
-    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 91, 179, 21)] // invalid lat
-    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 89, 181, 22)] // invalid long
-    [DataRow("scooby", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 89, 179, 36)] // invalid projectUid
-    [DataRow("", DeviceTypeEnum.MANUALDEVICE, "", "", "", 89, 179, 37)] // missing radioSerial, ec520 and tccOrgId
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 91, 179, 3021)] // invalid lat
+    [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 89, 181, 3022)] // invalid long
+    [DataRow("scooby", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 89, 179, 3036)] // invalid projectUid
+    [DataRow("", DeviceTypeEnum.MANUALDEVICE, "", "", "", 89, 179, 3037)] // missing radioSerial, ec520 and tccOrgId
     public void ValidateGetProjectAndAssetUidsRequest_ValidationErrors
     (string projectUid, DeviceTypeEnum deviceType, string radioSerial, string ec520Serial,
       string tccOrgUid,
       double latitude, double longitude, int errorCode)
     {
       var timeOfPosition = DateTime.UtcNow;
-      GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
+      var projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest
         (projectUid, (int)deviceType, radioSerial, ec520Serial, tccOrgUid,
           latitude, longitude, timeOfPosition);
-      var errorCodeResult = projectAndAssetUidsRequest.Validate();
-      Assert.AreEqual(errorCode, errorCodeResult);
+
+      var ex = Assert.ThrowsException<ServiceException>(() => projectAndAssetUidsRequest.Validate());
+
+      Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
+      Assert.AreEqual(errorCode, ex.GetResult.Code);
+     
+      //var errorCodeResult = projectAndAssetUidsRequest.Validate();
+      //Assert.AreEqual(errorCode, errorCodeResult);
     }
 
     [TestMethod]
@@ -53,12 +64,11 @@ namespace WebApiTests.Models
       double latitude, double longitude, int errorCode)
     {
       var timeOfPosition = DateTime.UtcNow;
-      GetProjectAndAssetUidsRequest projectAndAssetUidsRequest =
-        GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest
-          (projectUid, (int)deviceType, radioSerial, ec520Serial,
+      var projectAndAssetUidsRequest =
+        new GetProjectAndAssetUidsRequest
+        (projectUid, (int)deviceType, radioSerial, ec520Serial,
           tccOrgUid, latitude, longitude, timeOfPosition);
-      var errorCodeResult = projectAndAssetUidsRequest.Validate();
-      Assert.AreEqual(errorCode, errorCodeResult);
+      projectAndAssetUidsRequest.Validate();
     }
   }
 }

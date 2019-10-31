@@ -1,4 +1,6 @@
 ﻿
+using VSS.Productivity3D.TagFileAuth.Models;
+
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   /// <summary>

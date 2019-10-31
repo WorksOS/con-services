@@ -52,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           updateImportedFile.ImportedFileType, updateImportedFile.FileDescriptor.FileName, updateImportedFile.ImportedFileUid,
           updateImportedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
-          tRexImportFileProxy, projectRepo);
+          tRexImportFileProxy);
       }
 
       if (useRaptorGatewayDesignImport && updateImportedFile.ImportedFileType != ImportedFileType.GeoTiff)

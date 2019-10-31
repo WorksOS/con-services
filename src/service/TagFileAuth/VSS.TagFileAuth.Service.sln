@@ -22,7 +22,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.KafkaConsumer", "..\..\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{20B4DB89-A1E2-4A91-9548-5A279CA4889F}"
 	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
 		..\..\..\.editorconfig = ..\..\..\.editorconfig
 	EndProjectSection
 EndProject
@@ -83,6 +82,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{B1A88CDC-4074-485B-8388-7C8F8B532ED5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Repository", "..\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj", "{CBE63778-1690-486E-A840-D8CDC84E1C74}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -418,6 +419,18 @@ Global
 		{CBE63778-1690-486E-A840-D8CDC84E1C74}.Release|x64.Build.0 = Release|Any CPU
 		{CBE63778-1690-486E-A840-D8CDC84E1C74}.Release|x86.ActiveCfg = Release|Any CPU
 		{CBE63778-1690-486E-A840-D8CDC84E1C74}.Release|x86.Build.0 = Release|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Debug|x64.Build.0 = Debug|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Debug|x86.Build.0 = Debug|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Release|x64.ActiveCfg = Release|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Release|x64.Build.0 = Release|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Release|x86.ActiveCfg = Release|Any CPU
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -458,6 +471,7 @@ Global
 		{DBB1C551-2F70-451F-A5AA-3CC828ED2F0F} = {230252DC-1F87-4D2B-B013-39AE536834D8}
 		{B1A88CDC-4074-485B-8388-7C8F8B532ED5} = {F4C4B5AC-4CF2-4018-9230-7FD0AD1445DF}
 		{CBE63778-1690-486E-A840-D8CDC84E1C74} = {F4C4B5AC-4CF2-4018-9230-7FD0AD1445DF}
+		{07D98B5F-ED44-43BD-833A-1CBA812AD0FD} = {230252DC-1F87-4D2B-B013-39AE536834D8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7AD682FF-5E0D-401B-8727-6AF5403DC985}

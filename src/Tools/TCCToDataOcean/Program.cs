@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
 using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
@@ -20,6 +21,7 @@ using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
+using IMigrator = TCCToDataOcean.Interfaces.IMigrator;
 
 namespace TCCToDataOcean
 {
@@ -27,7 +29,8 @@ namespace TCCToDataOcean
   {
     private static void Main()
     {
-      MainAsync().GetAwaiter().GetResult();
+      MainAsync().GetAwaiter()
+                 .GetResult();
     }
 
     private static async Task MainAsync()
@@ -41,7 +44,12 @@ namespace TCCToDataOcean
       await migrator.MigrateFilesForAllActiveProjects().ConfigureAwait(false);
 
       serviceProvider.GetRequiredService<ILiteDbAgent>()
-                     .SetMigationInfo_EndTime();
+                     .Update(1, delegate(MigrationInfo obj)
+                     {
+                       var endTimeUtc = DateTime.Now;
+                       obj.EndTime = endTimeUtc;
+                       obj.Duration = endTimeUtc.Subtract(obj.StartTime).ToString();
+                     });
     }
 
     private static void ConfigureServices(IServiceCollection services)
@@ -69,6 +77,7 @@ namespace TCCToDataOcean
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
       services.AddSingleton<ICSIBAgent, CSIBAgent>();
+      services.AddSingleton<ICalibrationFileAgent, CalibrationFileAgent>();
     }
   }
 }

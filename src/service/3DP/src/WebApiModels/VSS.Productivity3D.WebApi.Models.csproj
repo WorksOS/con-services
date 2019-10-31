@@ -39,6 +39,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\TagFileAuth\Clients\Abstractions\VSS.Productivity3D.TagFileAuth.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\TagFileAuth\Clients\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\Models\VSS.Productivity.Push.Models\VSS.Productivity.Push.Models.csproj" />

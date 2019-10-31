@@ -52,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           deleteImportedFile.ImportedFileUid,
           deleteImportedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
-          tRexImportFileProxy, projectRepo).ConfigureAwait(false);
+          tRexImportFileProxy).ConfigureAwait(false);
 
         // DB change must be made before productivity3dV2ProxyNotification.DeleteFile is called as it calls back here to get list of Active files
         deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
@@ -83,7 +83,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           {
             await TccHelper.DeleteFileFromTCCRepository
               (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
-                log, serviceExceptionHandler, fileRepo, projectRepo)
+                log, serviceExceptionHandler, fileRepo)
               .ConfigureAwait(false);
 
             var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(deleteImportedFile.FileDescriptor.FileName,
@@ -92,8 +92,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
             importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
               dataOceanFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
-              deleteImportedFile.ProjectUid,
-              deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn, configStore);
+              deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, log, dataOceanClient, authn, configStore);
 
             if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
                 deleteImportedFile.ImportedFileType == ImportedFileType.Linework ||
@@ -109,8 +108,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                 //Do we care if deleting generated DXF file fails?
                 tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
                   dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
-                  deleteImportedFile.ProjectUid,
-                  deleteImportedFile.ImportedFileUid, log, serviceExceptionHandler, dataOceanClient, authn, configStore));
+                  deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, log, dataOceanClient, authn, configStore));
               }
               await Task.WhenAll(tasks);
             }
