@@ -10,7 +10,7 @@ namespace TagFiles
   public static class MegalodonLogger
   {
 
-
+    
     private static void WriteToLog(string msg)
     { 
       string pathString = @"c:\megalodon\log";
@@ -46,6 +46,6 @@ namespace TagFiles
       WriteToLog(msg);
       System.Diagnostics.Trace.WriteLine("Warning. "+msg);
     }
-
+    
   }
 }

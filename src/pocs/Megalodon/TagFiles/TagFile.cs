@@ -11,20 +11,37 @@ namespace TagFiles
 {
   public class TagFile
   {
-
+    private readonly object updateLock = new object();
     private readonly TAGDictionary Dictionary = new TAGDictionary();
     private Timer TagTimer = new System.Timers.Timer();
-
+    private bool readyToWrite = false;
     public TagHeader Header = new TagHeader();
-    // Create the state and sink
     public TAGDictionary TagFileDictionary;
     public AsciiParser Parser = new AsciiParser();
-    public string TagOutputFolder;
-    private UserSettings userSettings;
-    
+    public string MachineSerial;
+    public string MachineID;
+
+    public string TagfileFolder = "c:\\megalodon\\tagfiles";
+    private bool _EnableTagFileCreationTimer = false;
+    public bool EnableTagFileCreationTimer  // read-write instance property
+    {
+      get => _EnableTagFileCreationTimer;
+      set {
+            _EnableTagFileCreationTimer = value;
+            TagTimer.Enabled = value;
+            if (value)
+            {
+              TagTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+              TagTimer.Interval = TagConstants.NEW_TAG_FILE_INTERVAL;
+              TagTimer.Start();
+            }
+          }
+    }
+
+
     public TagFile()
     {
-      userSettings = new UserSettings();
+      CreateTagfileDictionary();
     }
 
     /// <summary>
@@ -34,31 +51,26 @@ namespace TagFiles
     /// <param name="e"></param>
     private void OnTimedEvent(object source, ElapsedEventArgs e)
     {
-      if (Parser.ReadyToWriteEpoch())
-        WriteTagFileToDisk();
-      MegalodonLogger.LogInfo("Closing off tagfile"); 
-    }
+      // signal at next epoch to write file
 
-    private void StartTimer()
-    {
-      TagTimer.Enabled = false;
-      TagTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-      TagTimer.Interval = TagConstants.TAG_FILE_INTERVAL;
-      TagTimer.Start();
-    }
-
-    private void StartNewTagFile()
-    {
+      if (!readyToWrite)
+      {
+        readyToWrite = true;
+        lock (updateLock)
+        {
+          WriteTagFileToDisk();
+          readyToWrite = false;
+        }
+      }
 
     }
+
 
     /// <summary>
     /// Outputs current tagfile in memory to disk
     /// </summary>
     public void WriteTagFileToDisk()
     {
-
-      // Close off tagfile content list
 
       if (Parser.HeaderRequired) // could check further for more epoch data 
       {
@@ -68,9 +80,11 @@ namespace TagFiles
 
       Parser.TrailerRequired = true;
       Parser.UpdateTagContentList();
-      Header.UpdateTagfileName(Parser.EpochRec.Serial, Parser.EpochRec.MID);
-      Directory.CreateDirectory(userSettings.TagfileFolder); 
-      var newFilename = System.IO.Path.Combine(userSettings.TagfileFolder, Header.TagfileName);
+      var serial = Parser.EpochRec.Serial == string.Empty ? MachineSerial : Parser.EpochRec.Serial;
+      var mid = Parser.EpochRec.MID == string.Empty ? MachineID : Parser.EpochRec.MID;
+      Header.UpdateTagfileName(serial,mid);
+      Directory.CreateDirectory(TagfileFolder); 
+      var newFilename = System.IO.Path.Combine(TagfileFolder, Header.TagfileName);
       var outStream = new NybbleFileStream(newFilename, FileMode.Create);
       try
       {
@@ -78,6 +92,7 @@ namespace TagFiles
         {
           Parser.Reset();
           MegalodonLogger.LogInfo($"{newFilename} written to disk.");
+          readyToWrite = false;
         }
         else
           MegalodonLogger.LogInfo($"{newFilename} failed to write to disk.");
@@ -91,15 +106,19 @@ namespace TagFiles
 
     public void ParseText(string txt)
     {
-      Parser.ParseText(txt);
-  //    if (Parser.ReadyToWriteEpoch())
-    //    WriteTagFileToDisk();
+
+      lock (updateLock)
+      {
+        Parser.ParseText(txt);
+     //   if (readyToWrite) // timer interval up
+       //   WriteTagFileToDisk();
+      }
     }
 
     /// <summary>
     /// Create tagfile dictionary for all supported types
     /// </summary>
-    public void CreateTagfileDictionary()
+    private void CreateTagfileDictionary()
     {
       short idx = 1; // start idx from 1
       TagFileDictionary = new TAGDictionary();
@@ -129,6 +148,9 @@ namespace TagFiles
       TagFileDictionary.AddEntry(TAGValueNames.kTagMachineType, TAGDataType.t8bitUInt, idx++);
     }
 
+    /// <summary>
+    /// Used in testing this class
+    /// </summary>
     public void CreateTestData()
     {
 

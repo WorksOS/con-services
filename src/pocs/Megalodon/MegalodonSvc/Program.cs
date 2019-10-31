@@ -10,7 +10,9 @@ using TagFiles.Interface;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Serilog.Extensions;
-
+/// <summary>
+/// Runs as a Windows service converting packet data from TMC software into Trimble tagfiles.
+/// </summary>
 namespace MegalodonSvc
 {
   class Program
@@ -27,26 +29,25 @@ namespace MegalodonSvc
             .UseWindowsService()
             .ConfigureAppConfiguration((context, config) =>
             {
-              config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
               // Configure the app here.
+              config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             })
             .ConfigureServices((hostContext, services) =>
             {
-              services.AddHostedService<MegalodonService>();
+              services.AddHostedService<MegalodonService>(); // main app
               services.AddSingleton<IConfigurationStore, GenericConfiguration>();
               services.AddSingleton<ISocketManager, SocketManager>();
             })
-              .ConfigureLogging((hostContext, loggingBuilder) =>
-              {
+            .ConfigureLogging((hostContext, loggingBuilder) =>
+            {
 
-                var generalConfig = new ConfigurationBuilder()
-                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-                  .Build();
-
-                loggingBuilder.AddProvider(
-                  p => new SerilogLoggerProvider(
-                    SerilogExtensions.Configure(config: generalConfig, httpContextAccessor: p.GetService<IHttpContextAccessor>())));
-              });
+              var generalConfig = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .Build();
+              loggingBuilder.AddProvider(
+                p => new SerilogLoggerProvider(
+                  SerilogExtensions.Configure(config: generalConfig, httpContextAccessor: p.GetService<IHttpContextAccessor>())));
+            });
 
   }
 }

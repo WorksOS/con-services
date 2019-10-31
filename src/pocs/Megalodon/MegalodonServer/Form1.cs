@@ -5,8 +5,6 @@ using System.Net.Sockets;
 using System.Windows.Forms;
 using TagFiles;
 using TagFiles.Common;
-using TagFiles.Interface;
-using TagFiles.Types;
 
 namespace MegalodonServer
 {
@@ -123,7 +121,7 @@ namespace MegalodonServer
     // Callback for socket listener
     void sr_Callback(string packet, int mode)
     {
-      if (mode == TagConstants.CALLBACK_MODE_PARSE)
+      if (mode == TagConstants.CALLBACK_PARSE_PACKET)
       {
         tagFile.ParseText(packet);
         if (chkDump.Checked)
@@ -149,7 +147,7 @@ namespace MegalodonServer
     private void BtnOpenPort_Click(object sender, EventArgs e)
     {
 
-      tagFile.CreateTagfileDictionary();
+
 
       // method 2
       if (sl == null)

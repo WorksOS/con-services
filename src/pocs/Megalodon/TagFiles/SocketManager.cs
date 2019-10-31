@@ -13,16 +13,25 @@ namespace TagFiles
   public class SocketManager : ISocketManager
   {
 
-    public string StatusMessage;
-    public int Port = 1500;
-    public string TCIP = "127.0.0.1";
-    public string TxtRecv;
+   // public string StatusMessage;
+
+    private int port = 1500;
+    private string tcip = "127.0.0.1";
+
+    //public string TxtRecv;
 
     private bool _HeaderRequired = true;
     public bool HeaderRequired  // read-write instance property
     {
       get => _HeaderRequired;
       set => _HeaderRequired = value;
+    }
+
+    public bool _PortRestartNeeded = false;
+    public bool PortRestartNeeded 
+    {
+      get => _PortRestartNeeded;
+      set => _PortRestartNeeded = value;
     }
 
     public bool DumpContent = false;
@@ -46,21 +55,38 @@ namespace TagFiles
 
 
     public delegate void CallbackEventHandler(string something, int mode);
-
     public event CallbackEventHandler Callback;
-
     public static ManualResetEvent allDone = new ManualResetEvent(false);
+
 
     public SocketManager(ILoggerFactory log, IConfigurationStore configStore)
     {
       _log = log.CreateLogger<SocketManager>();
       _config = configStore;
+
+      var _TCIP = configStore.GetValueString("TCIP");
+      if (string.IsNullOrEmpty(_TCIP))
+      {
+        throw new ArgumentException($"Missing variable TCIP in appsettings.json");
+      }
+      else
+        tcip = _TCIP;
+
+      var _Port = configStore.GetValueString("Port");
+      if (string.IsNullOrEmpty(_Port))
+      {
+        throw new ArgumentException($"Missing variable Port in appsettings.json");
+      }
+      else
+        port = Int32.Parse(_Port);
+
     }
 
     public void CreateSocket()
     {
       try
       {
+        _PortRestartNeeded = false;
         // Creates one SocketPermission object for access restrictions
         permission = new SocketPermission(
         NetworkAccess.Accept,     // Allowed to accept connections 
@@ -81,12 +107,12 @@ namespace TagFiles
         // Gets first IP address associated with a localhost 
         //  IPAddress ipAddr = ipHost.AddressList[0];
 
-        IPAddress ipAddr = System.Net.IPAddress.Parse(TCIP);
+        IPAddress ipAddr = System.Net.IPAddress.Parse(tcip);
 
         // Creates a network endpoint 
-        ipEndPoint = new IPEndPoint(ipAddr, Port);
+        ipEndPoint = new IPEndPoint(ipAddr, port);
 
-        _log.LogInformation($"Opening socket at {ipAddr}:{Port}");
+        _log.LogInformation($"Opening socket at {ipAddr}:{port}");
 
         // Create one Socket object to listen the incoming connection 
         _SocketListener = new Socket(
@@ -98,11 +124,11 @@ namespace TagFiles
         // Associates a Socket with a local endpoint 
         _SocketListener.Bind(ipEndPoint);
 
-        StatusMessage = "Server started.";
+        //StatusMessage = "Server started.";
       }
       catch (Exception exc)
       {
-        MegalodonLogger.LogError($"Exception. {exc.ToString()}");
+        MegalodonLogger.LogError($"CreateSocket Exception. {exc.ToString()}");
       }
     }
 
@@ -114,36 +140,13 @@ namespace TagFiles
         // Length of the pending connections queue 
         _SocketListener.Listen(10);
 
-        // Begins an asynchronous operation to accept an attempt 
-        //   AsyncCallback aCallback = new AsyncCallback(AcceptCallback);
-
-
-        /*
-
-        while (true)
-        {
-
-          // Set the event to nonsignaled state.
-          allDone.Reset();
-
-          StatusMessage = "Server is now listening on " + ipEndPoint.Address + " port: " + ipEndPoint.Port;
-
-          //  sListener.BeginAccept(aCallback, sListener);
-          sListener.BeginAccept(
-            new AsyncCallback(AcceptCallback),
-            sListener);
-
-          allDone.WaitOne();
-        }
-
-        */
-
         // Set the event to nonsignaled state.
         allDone.Reset();
 
-        StatusMessage = "Server is now listening on " + ipEndPoint.Address + " port: " + ipEndPoint.Port;
+        var msg =$"Server is now listening on {ipEndPoint.Address} port: {ipEndPoint.Port}";
+        Console.WriteLine(msg);
+        _log.LogInformation(msg);
 
-        //  sListener.BeginAccept(aCallback, sListener);
         _SocketListener.BeginAccept(
           new AsyncCallback(AcceptCallback),
           _SocketListener);
@@ -153,8 +156,7 @@ namespace TagFiles
       }
       catch (Exception exc)
       {
-        StatusMessage = $"Exception. {exc.ToString()}";
-        MegalodonLogger.LogError(StatusMessage);
+        _log.LogError($"ListenOnPort Exception. {exc.ToString()}");
       }
     }
 
@@ -162,13 +164,11 @@ namespace TagFiles
     public void AcceptCallback(IAsyncResult ar)
     {
 
-
-
       // Signal the main thread to continue.  
       allDone.Set();
 
       if (Callback != null)
-        Callback("Connection made", 0);
+        Callback("Connection made", TagConstants.CALLBACK_CONNECTION_MADE);
 
       Socket listener = null;
 
@@ -207,7 +207,7 @@ namespace TagFiles
       }
       catch (Exception exc)
       {
-        MegalodonLogger.LogError($"Error. {exc.ToString()}");
+        _log.LogError($"AcceptCallback Exception. {exc.ToString()}");
       }
     }
 
@@ -414,7 +414,7 @@ namespace TagFiles
           }
 
 
-          TxtRecv = content;
+      //    TxtRecv = content;
 
           /*
           this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
@@ -428,7 +428,10 @@ namespace TagFiles
       }
       catch (Exception exc)
       {
-        MegalodonLogger.LogError($"Error. {exc.ToString()}");
+        // This is where we can handle a forced break by client
+
+        _log.LogError($"ReceiveCallback Exception. {exc.ToString()}");
+        _PortRestartNeeded = true; // tell manger we lost connection to client
       }
     }
 

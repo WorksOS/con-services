@@ -50,9 +50,15 @@ namespace TagFiles.Parser
       set
       {
         _Time = value;
+       
         // workout time delta
         if (HasPrevTime)
+        {
           DeltaTime = value - _PrevTime;
+          if (DeltaTime < 0)
+            DeltaTime = 0;
+        }
+        
         PrevTime = value;
         HasTime = true;
       }

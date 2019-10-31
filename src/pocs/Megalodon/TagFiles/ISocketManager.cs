@@ -11,6 +11,12 @@ namespace TagFiles
       set;
     }
 
+    bool PortRestartNeeded
+    {
+      get;
+      set;
+    }
+
     Socket SocketListener
     {
       get;

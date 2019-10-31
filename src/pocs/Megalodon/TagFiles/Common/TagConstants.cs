@@ -5,11 +5,14 @@
   /// </summary>
   public static class TagConstants
   {
-    public const short CALLBACK_MODE_DISPLAY = 0;
-    public const short CALLBACK_MODE_PARSE = 1;
+    public const short CALLBACK_LOG_INFO_MSG = 0;
+    public const short CALLBACK_LOG_ERROR_MSG = 1;
+    public const short CALLBACK_PARSE_PACKET = 2;
+    public const short CALLBACK_CONNECTION_MADE = 3;
+
     public const int TAG_NAME_LENGHT = 3;
-    public const double TAG_FILE_INTERVAL = 60000;
-    public const double TAG_FILE_INTERVAL_SECS = 60;
+    public const double NEW_TAG_FILE_INTERVAL = 30000; // 60000
+    public const double TAG_FILE_MONITOR_SECS = 10; // 60
     public const byte SOH = 0x01;
     public const byte STX = 0x02;
     public const byte ETX = 0x03;

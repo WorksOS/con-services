@@ -179,15 +179,13 @@ namespace MegalodonClient
         rs + "LAT-0.759971" +
         rs + "LON3.012268" +
         rs + "HGT-37.600" +
-        rs + "MIDVessel1" +
+        rs + "MIDMyVessel1" +
         rs + "BOG0" +
-        //        rs + "UTM0" +
+        rs + "UTM0" +
         rs + "HDG92" +
-        rs + "HDG92" +
-        rs + "HDG92" +
-        rs + "SERe6cd374b - 22d5 - 4512 - b60e - fd8152a0899b" +
+        rs + "SERe6cd374b-22d5-4512-b60e-fd8152a0899b" +
         rs + "MTPHEX" + etx;
-//        rs + "MTPHEX";
+
 
 
       try
@@ -272,12 +270,10 @@ namespace MegalodonClient
         rs + "HGT-37.600" +
         rs + "MIDVL HEX" +
         rs + "BOG0" +
-        rs + "VPN1" +
         rs + "UTM0" +
         rs + "HDG360" +
-       // rs + "SERe6cd374b - 22d5 - 4512 - b60e - fd8152a0899b" +
+        rs + "SERe6cd374b-22d5-4512-b60e-fd8152a0899b" +
         rs + "MTPHEX" + etx;
-      //        rs + "MTPHEX";
 
       byte[] dataPacket = Encoding.UTF8.GetBytes(toSend1);
 
@@ -303,7 +299,7 @@ namespace MegalodonClient
         var toSend = stx + rs + timeStamp2 +
           rs + "LEB504383.841" + rs + "LNB7043871.371" + rs + "LHB-20.882" +
           rs + "REB504384.745" + rs + "RNB7043869.853" + rs + "RHB-20.899" +
-          rs + "BOG0" + rs + "MSD0.0" + rs + "HDG360" + etx;
+          rs + "BOG1" + rs + "MSD0.1" + rs + "HDG360" + etx;
 
         // var dataPacket = Encoding.Unicode.GetBytes(toSend);
         byte[] dataPacket2 = Encoding.UTF8.GetBytes(toSend);

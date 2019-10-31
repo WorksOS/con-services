@@ -73,7 +73,7 @@ namespace MegalodonServer
       }
       catch (Exception exc)
       {
-        MegalodonLogger.LogError($"Error. {exc.ToString()}");
+        log($"Exception. {exc.ToString()}",true);
       }
     }
 
@@ -124,8 +124,7 @@ namespace MegalodonServer
       }
       catch (Exception exc)
       {
-        StatusMessage = $"Error. {exc.ToString()}";
-        MegalodonLogger.LogError(StatusMessage);
+        log($"Exception. {exc.ToString()}",true); 
       }
     }
 
@@ -133,13 +132,10 @@ namespace MegalodonServer
     public void AcceptCallback(IAsyncResult ar)
     {
 
-
-
       // Signal the main thread to continue.  
       allDone.Set();
 
-      if (Callback != null)
-        Callback("Connection made", 0);
+      log($"Connection Made", false);
 
       Socket listener = null;
 
@@ -178,7 +174,7 @@ namespace MegalodonServer
       }
       catch (Exception exc)
       {
-        MegalodonLogger.LogError($"Error. {exc.ToString()}");
+        log($"AcceptCallback Exception. {exc.ToString()}", true);
       }
     }
 
@@ -399,8 +395,17 @@ namespace MegalodonServer
       }
       catch (Exception exc)
       {
-        MegalodonLogger.LogError($"Error. {exc.ToString()}");
+        log($"Exception. {exc.ToString()}",true);
       }
+    }
+
+    private void log(string msg, bool error)
+    {
+      if (Callback != null)
+        if (error)
+          Callback(msg, TagConstants.CALLBACK_LOG_ERROR_MSG);
+       else
+          Callback(msg, TagConstants.CALLBACK_LOG_INFO_MSG);
     }
 
 

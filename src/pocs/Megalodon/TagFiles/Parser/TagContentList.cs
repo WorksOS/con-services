@@ -44,7 +44,7 @@ namespace TagFiles
     /// <param name="td"></param>
     public void AddTimeDeltaEntry(TagData td)
     {
-      td.DataType = TAGDataType.t16bitUInt;
+      td.DataType = TAGDataType.t4bitUInt;
       td.DictID = (short)DictionaryItem.TimeDelta;
       Entries.Add(td);
     }

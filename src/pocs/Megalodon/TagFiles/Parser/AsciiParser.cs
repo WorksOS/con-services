@@ -76,6 +76,12 @@ namespace TagFiles.Parser
 
       var timeAdded = false;
 
+      if (!HeaderUpdated & !EpochRec.HasMTP) // dont process any epoch before recieving a header
+      {
+        EpochRec.ClearEpoch();
+        return;
+      }
+
       if (!HeaderUpdated)
       {
         if (EpochRec.HasTime)
@@ -143,6 +149,7 @@ namespace TagFiles.Parser
           TagContent.AddTimeDeltaEntry(new TagData_UnsignedInt() { Data = EpochRec.DeltaTime });
         else
           TagContent.AddTimeEntry(new TagData_UnsignedInt() { Data = EpochRec.Time });
+        EpochRec.HasDeltaTime = false;
         EpochRec.HasTime = false; // reset
       }
 
@@ -413,13 +420,6 @@ namespace TagFiles.Parser
       }
     }
 
-
-    public bool ReadyToWriteEpoch()
-    {
-      // has time lapsed to close tagfile and is there data to write to tagefile etc
-      //  if HaveHeader
-      return true; // todo
-    }
 
     /// <summary>
     /// Clear all data to start new tagfile
