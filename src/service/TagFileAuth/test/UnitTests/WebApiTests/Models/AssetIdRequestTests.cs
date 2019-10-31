@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
+using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Models
 {
@@ -14,7 +14,7 @@ namespace WebApiTests.Models
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase1()
     {
-      GetAssetIdRequest assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
+      var assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
       var ex = Assert.ThrowsException<ServiceException>(() => assetIdRequest.Validate());
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
 

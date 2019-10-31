@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using TestUtility;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
@@ -602,4 +603,3 @@ namespace WebApiTests
 }
 
       
-  

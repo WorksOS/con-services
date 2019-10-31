@@ -8,6 +8,7 @@ using TestUtility;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests
@@ -167,7 +168,7 @@ namespace WebApiTests
     private GetProjectAndAssetUidsResult CallWebApiGetProjectAndAssetUids(TestSupport ts, string projectUid, int deviceType, string radioSerial, string ec520Serial, string tccOrgUid, double latitude, double longitude, DateTime timeOfPosition, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Thread.Sleep(500);
-      var request = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, latitude, longitude, timeOfPosition);
+      var request = new GetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, latitude, longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
       var restClient = new RestClient();
       var uri = ts.GetBaseUri() + "api/v2/project/getUids";
@@ -180,4 +181,3 @@ namespace WebApiTests
 }
 
       
-  

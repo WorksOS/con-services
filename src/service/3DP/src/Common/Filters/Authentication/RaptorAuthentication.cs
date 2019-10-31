@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -47,15 +48,22 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
 
     /// <summary>
     /// 3dpm specific logic for requiring customerUid
+    ///    The v1 TAG file submission end point does not require a customer UID to be provided
+    ///        However there is some schizophrenia here as we need to support UI manual tag file submission 
+    ///            WITH proper authn\z as well
+    ///    The v2 patches for EarthWorks cutfill end point does not require customerUID
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
-      // The v1 TAG file submission end point does not require a customer UID to be provided
-      // However there is some schizophrenia here as we need to support UI manual tag file submission WITH proper authn\z as well
-      return !(
-          context.Request.Path.Value.Contains("api/v2/tagfiles") && context.Request.Method == "POST" &&
+      return 
+        !(
+          (context.Request.Path.Value.ToLower().Contains("api/v2/tagfiles") && context.Request.Method == "POST" &&
           !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
-              );
+          ) ||
+          (context.Request.Path.Value.ToLower().Contains("/patches?") && context.Request.Method == "GET" &&
+          !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
+          )
+        );
     }
 
     /// <summary>

@@ -45,14 +45,14 @@ namespace WebApiTests.Executors
       customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
 
       var producer = new Mock<IKafka>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
-          assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionRepository, 
-          producer.Object, kafkaTopicName);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), ConfigStore, 
+          AssetRepository, DeviceRepository,
+          customerRepo.Object, ProjectRepository, SubscriptionRepository, 
+          producer.Object, KafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -79,14 +79,14 @@ namespace WebApiTests.Executors
       var customerRepo = new Mock<ICustomerRepository>();
 
       var producer = new Mock<IKafka>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
-          assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionRepository, 
-          producer.Object, kafkaTopicName);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), ConfigStore, 
+          AssetRepository, DeviceRepository,
+          customerRepo.Object, ProjectRepository, SubscriptionRepository, 
+          producer.Object, KafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -112,14 +112,14 @@ namespace WebApiTests.Executors
       tagFileProcessingErrorRequest.Validate();
 
       var producer = new Mock<IKafka>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore, 
-          assetRepository, deviceRepository,
-          customerRepository, projectRepository, subscriptionRepository,
-          producer.Object, kafkaTopicName);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), ConfigStore, 
+          AssetRepository, DeviceRepository,
+          CustomerRepository, ProjectRepository, SubscriptionRepository,
+          producer.Object, KafkaTopicName);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync(tagFileProcessingErrorRequest));
       Assert.AreEqual(HttpStatusCode.InternalServerError, ex.Code);
@@ -152,14 +152,14 @@ namespace WebApiTests.Executors
       projectRepo.Setup(c => c.GetProject(It.IsAny<long>())).ReturnsAsync(project);
 
       var producer = new Mock<IKafka>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
-          assetRepository, deviceRepository,
-          customerRepository, projectRepo.Object, subscriptionRepository,
-          producer.Object, kafkaTopicName);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), ConfigStore,
+          AssetRepository, DeviceRepository,
+          CustomerRepository, projectRepo.Object, SubscriptionRepository,
+          producer.Object, KafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -192,14 +192,14 @@ namespace WebApiTests.Executors
       assetRepo.Setup(c => c.GetAsset(It.IsAny<long>())).ReturnsAsync(asset);
 
       var producer = new Mock<IKafka>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
-          assetRepo.Object, deviceRepository,
-          customerRepository, projectRepository, subscriptionRepository,
-          producer.Object, kafkaTopicName);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), ConfigStore,
+          assetRepo.Object, DeviceRepository,
+          CustomerRepository, ProjectRepository, SubscriptionRepository,
+          producer.Object, KafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -241,14 +241,14 @@ namespace WebApiTests.Executors
       deviceRepo.Setup(c => c.GetAssociatedAsset(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(assetDeviceIds);
 
       var producer = new Mock<IKafka>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
-          assetRepository, deviceRepo.Object,
-          customerRepo.Object, projectRepository, subscriptionRepository,
-          producer.Object, kafkaTopicName);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), ConfigStore,
+          AssetRepository, deviceRepo.Object,
+          customerRepo.Object, ProjectRepository, SubscriptionRepository,
+          producer.Object, KafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -279,14 +279,14 @@ namespace WebApiTests.Executors
       customerRepo.Setup(c => c.GetCustomerWithTccOrg(It.IsAny<string>())).ReturnsAsync(customerTccOrg);
 
       var producer = new Mock<IKafka>();
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor =
         RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(
-          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), configStore,
-          assetRepository, deviceRepository,
-          customerRepo.Object, projectRepository, subscriptionRepository,
-          producer.Object, kafkaTopicName);
+          loggerFactory.CreateLogger<TagFileProcessingErrorV2ExecutorTests>(), ConfigStore,
+          AssetRepository, DeviceRepository,
+          customerRepo.Object, ProjectRepository, SubscriptionRepository,
+          producer.Object, KafkaTopicName);
       var result = await executor.ProcessAsync(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

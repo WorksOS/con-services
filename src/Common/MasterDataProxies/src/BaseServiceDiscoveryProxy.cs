@@ -153,15 +153,15 @@ namespace VSS.MasterData.Proxies
             
     #endregion
 
-    #region Private Methods
-
-    private Task<string> GetUrl(string route, IDictionary<string, string> customHeaders, IList<KeyValuePair<string, string>> queryParameters = null)
+    protected Task<string> GetUrl(string route, IDictionary<string, string> customHeaders, IList<KeyValuePair<string, string>> queryParameters = null)
     {
       var serviceName = ResolveServiceNameFromHeaders(customHeaders);
       return (IsInsideAuthBoundary
         ? serviceResolution.ResolveLocalServiceEndpoint(serviceName, Type, Version, route, queryParameters)
         : serviceResolution.ResolveRemoteServiceEndpoint(serviceName, Type, Version, route, queryParameters));
     }
+
+    #region Private Methods
 
     /// <summary>
     /// In some cases we want to be able to override service discovery checks externally, custom headers allow us to override services

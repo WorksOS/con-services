@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -36,6 +37,22 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       this.projectProxy = projectProxy;
       authNContext = contextHeaders;
     }
+
+    // the api/v2/patches endpoint doesn't come with a customerUid 
+    //     which is needed for downstream service calls e.g. ProjectSvc.
+    //     For this endpoint we obtain it from TFA and add it to our customHeaders
+    public new bool SetCustomerUid(string customerUid)
+    {
+      if (string.IsNullOrEmpty(CustomerUid) && !authNContext.ContainsKey(HeaderConstants.X_VISION_LINK_CUSTOMER_UID))
+      {
+        base.SetCustomerUid(customerUid);
+        authNContext[HeaderConstants.X_VISION_LINK_CUSTOMER_UID] = customerUid;
+        return true;
+      }
+      return false;
+    }
+
+    public IDictionary<string, string> GetAuthNContext() => authNContext;
 
     /// <summary>
     /// Get the project descriptor for the specified project id.

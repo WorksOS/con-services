@@ -36,6 +36,11 @@ namespace VSS.WebApi.Common
       _logMaxChar = configuration.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
     }
 
+    private string GetApplicationJWT()
+    {
+      return configuration.GetValueString("INTERNAL_JWT");
+    }
+
 
     /// <summary>
     /// Gets a temporary bearer token for an application. Refreshes the token as required.
@@ -109,6 +114,20 @@ namespace VSS.WebApi.Common
           $"GetApplicationBearerToken()  Using bearer token: {_applicationBearerToken}");
         return _applicationBearerToken;
       }
+    }
+
+    public IDictionary<string,string> CustomHeadersJWT()
+    {
+      return new Dictionary<string, string>
+      {
+        {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson},
+        {HeaderConstants.X_JWT_ASSERTION, GetApplicationJWT() }
+      };
+    }
+
+    public IDictionary<string, string> CustomHeadersJWTAndBearer()
+    {
+      return CustomHeaders().MergeDifference(CustomHeadersJWT());
     }
 
     public IDictionary<string, string> CustomHeaders()

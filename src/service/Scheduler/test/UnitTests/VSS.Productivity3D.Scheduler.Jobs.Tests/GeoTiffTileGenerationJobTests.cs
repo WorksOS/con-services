@@ -44,10 +44,10 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     }
 
     [TestMethod]
-    public void CanSetupGeoTiffJob() => CreateGeoTiffJobWithMocks().Setup(null);
+    public void CanSetupGeoTiffJob() => CreateGeoTiffJobWithMocks().Setup(null, null);
 
     [TestMethod]
-    public void CanTearDownGeoTiffJob() => CreateGeoTiffJobWithMocks().TearDown(null);
+    public void CanTearDownGeoTiffJob() => CreateGeoTiffJobWithMocks().TearDown(null, null);
 
     [TestMethod]
     [DataRow(false)]
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       mockPegasus.Setup(x => x.GenerateGeoTiffTiles(
                            It.IsAny<string>(),
-                           It.IsAny<Dictionary<string, string>>()))
+                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string, string>>>()))
                  .ReturnsAsync(new TileMetadata());
 
       var mockNotification = new Mock<INotificationHubClient>();
@@ -88,25 +88,25 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var job = new GeoTiffTileGenerationJob(configStore.Object, mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, loggerFactory);
 
-      await job.Run(obj);
+      await job.Run(obj, null);
 
       var runTimes = enableGeoTiffTileGeneration ? Times.Once() : Times.Never();
 
       // Verify based on the value of SCHEDULER_ENABLE_DXF_TILE_GENERATION the execution of GenerateGeoTiffTiles().
       mockPegasus.Verify(x => x.GenerateGeoTiffTiles(
                            It.IsAny<string>(),
-                           It.IsAny<Dictionary<string, string>>()), runTimes);
+                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string, string>>>()), runTimes);
     }
 
     [TestMethod]
-    public async Task CanRunGeoTiffJobFailureMissingRequest() => await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateGeoTiffJobWithMocks().Run(null));
+    public async Task CanRunGeoTiffJobFailureMissingRequest() => await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateGeoTiffJobWithMocks().Run(null, null));
 
     [TestMethod]
     public async Task CanRunGeoTiffJobFailureWrongRequest()
     {
       var obj = JObject.Parse(JsonConvert.SerializeObject(new JobRequest())); //any model which is not TileGenerationRequest
 
-      await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateGeoTiffJobWithMocks().Run(obj));
+      await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateGeoTiffJobWithMocks().Run(obj, null));
     }
 
     private GeoTiffTileGenerationJob CreateGeoTiffJobWithMocks()

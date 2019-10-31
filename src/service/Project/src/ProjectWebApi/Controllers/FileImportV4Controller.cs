@@ -391,7 +391,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var deleteImportedFile = new DeleteImportedFile(
         projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor),
         Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId,
-        DataOceanRootFolder, existing.SurveyedUtc);
+        DataOceanRootFolderId, existing.SurveyedUtc);
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -487,8 +487,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         //save copy to DataOcean      
         await DataOceanHelper.WriteFileToDataOcean(
-            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
-            true, surveyedUtc, Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+            fileStream, DataOceanRootFolderId, customerUid, projectUid.ToString(), dataOceanFileName,
+            Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
@@ -533,9 +534,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
           //save copy to DataOcean      
           await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
-              importedFileType == ImportedFileType.SurveyedSurface,
-              surveyedUtc, Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore)
+              fileStream, DataOceanRootFolderId, customerUid, projectUid.ToString(), dataOceanFileName,
+              Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore)
             .ConfigureAwait(false);
         }
       }
@@ -544,7 +544,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         var createImportedFile = new CreateImportedFile(
           projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset, importedFileUid, dataOceanFileName);
+          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolderId, parentUid, offset, importedFileUid, dataOceanFileName);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -572,7 +572,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
           Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder, offset, dataOceanFileName
+          DataOceanRootFolderId, offset, dataOceanFileName
         );
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>

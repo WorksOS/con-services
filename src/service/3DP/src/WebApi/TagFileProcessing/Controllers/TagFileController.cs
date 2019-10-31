@@ -162,6 +162,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       _log.LogDebug($"{nameof(PostTagFileDirectSubmission)}: request {serializedRequest}");
 
+      // todoJeannie temporary to look into the device info available.
+      _log.LogDebug($"{nameof(PostTagFileDirectSubmission)}: customHeaders {CustomHeaders.LogHeaders()}");
+
       var result = await RequestExecutorContainerFactory
         .Build<TagFileDirectSubmissionExecutor>(_logger,
 #if RAPTOR

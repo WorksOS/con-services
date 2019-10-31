@@ -7,7 +7,7 @@ using TestUtility;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum;
+using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace IntegrationTests
 {
@@ -305,7 +305,7 @@ namespace IntegrationTests
        $"| CustomerTccOrg  | 0d+09:00:00 | {customerUid} | {tccOrg} |"};
       ts.PublishEventCollection(custTccOrg);
       var actualResult = CallWebApiGetProjectBoundariesAtDateResult(ts, legacyAssetId, ts.FirstEventDate.AddDays(10));
-      if (actualResult.Code != VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling.ContractExecutionStatesEnum.ExecutedSuccessfully)
+      if (actualResult.Code != VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum.ExecutedSuccessfully)
       {
         Assert.IsTrue(actualResult.Code != ContractExecutionStatesEnum.ExecutedSuccessfully," Web Api end point not successfull");
       }
