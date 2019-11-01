@@ -24,5 +24,10 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
 
     Task<BaseMasterDataResult> ValidateProjectSettings(ProjectSettingsRequest request,
       IDictionary<string, string> customHeaders = null);
+
+    Task<TagFileDirectSubmissionResult> SendTagfileDirect(
+      string pathtToFile,
+      IDictionary<string, string> customHeaders = null);
+
   }
 }

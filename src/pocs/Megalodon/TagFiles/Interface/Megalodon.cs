@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TagFiles.Common;
 using VSS.Common.Abstractions.Configuration;
+using VSS.WebApi.Common;
 
 namespace TagFiles.Interface
 {
@@ -28,7 +29,7 @@ namespace TagFiles.Interface
     /// <param name="log"></param>
     /// <param name="configStore"></param>
     /// <param name="socketManager"></param>
-    public MegalodonService(ILoggerFactory log, IConfigurationStore configStore, ISocketManager socketManager)
+    public MegalodonService(ILoggerFactory log, IConfigurationStore configStore, ISocketManager socketManager )
     {
       _log = log.CreateLogger<MegalodonService>();
       _config = configStore;

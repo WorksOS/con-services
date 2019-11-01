@@ -27,6 +27,8 @@ using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
 {

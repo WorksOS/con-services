@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.Models.Enums
+﻿namespace VSS.Productivity3D.Productivity3D.Models.Enums
 {
   /// <summary>
   /// The set of generic response codes various parts of the system emit...

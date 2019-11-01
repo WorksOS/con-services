@@ -78,6 +78,33 @@ namespace VSS.MasterData.Proxies
 
     #region Protected Methods
 
+    protected Stream SerializeToStream<T>(T instance)
+    {
+      var stream = new MemoryStream();
+      using (StreamWriter writer = new StreamWriter(stream))
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
+      {
+        JsonSerializer ser = new JsonSerializer();
+        ser.Serialize(jsonWriter, instance);
+        jsonWriter.Flush();
+      }
+
+      return stream;
+    }
+
+
+    protected void SerializeToStream<T>(T instance, Stream stream)
+    {
+      using (StreamWriter writer = new StreamWriter(stream))
+      using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
+      {
+        JsonSerializer ser = new JsonSerializer();
+        ser.Serialize(jsonWriter, instance);
+        jsonWriter.Flush();
+      }
+    }
+
+
     /// <summary>
     /// Execute a Post to an endpoint, and cache the result
     /// NOTE: Must have a uid or userid for cache key
@@ -127,9 +154,9 @@ namespace VSS.MasterData.Proxies
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
     protected Task<T> MasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null) where T : ContractExecutionResult
+      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 3) where T : ContractExecutionResult
     {
-      return RequestAndReturnResult<T>(customHeaders, method, route, queryParameters, payload);
+      return RequestAndReturnResult<T>(customHeaders, method, route, queryParameters, payload, retries);
     }
 
     /// <summary>
@@ -202,28 +229,28 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) where TResult : class, IMasterDataModel
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null, int retries = 3) where TResult : class, IMasterDataModel
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method);
+      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method, retries: retries);
       log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
 
       return result;
     }
 
     private async Task<T> RequestAndReturnResult<T>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) where T : ContractExecutionResult
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null, int retries = 3) where T : ContractExecutionResult
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<T>(url, payload: payload, customHeaders: customHeaders, method: method);
+      var result = await webRequest.ExecuteRequest<T>(url, payload: payload, customHeaders: customHeaders, method: method, retries: retries);
       log.LogDebug($"{nameof(RequestAndReturnResult)} Result: {JsonConvert.SerializeObject(result)}");
 
       return result;

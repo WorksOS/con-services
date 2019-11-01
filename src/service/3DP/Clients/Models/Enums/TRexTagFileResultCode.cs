@@ -1,9 +1,9 @@
-﻿namespace VSS.Productivity3D.Models.Enums
-{
+﻿namespace VSS.Productivity3D.Productivity3D.Models.Enums
+{ 
   /// <summary>
   /// TagFile submitted to TRex Gateway result codes
   /// </summary>
-  public enum TRexTagFileResultCode
+public enum TRexTagFileResultCode
   {
     // TFA codes are in the 3000 range
     // Trex Mutable Server codes are < 3000

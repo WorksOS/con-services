@@ -6,6 +6,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Productivity3D.Productivity3D.Models.Enums;
 
 namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 {

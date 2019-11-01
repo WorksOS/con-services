@@ -5,11 +5,22 @@ using Microsoft.Extensions.Hosting;
 using Serilog.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using TagFiles;
 using TagFiles.Interface;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Cache.MemoryCache;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Serilog.Extensions;
+using VSS.WebApi.Common;
+
 /// <summary>
 /// Runs as a Windows service converting packet data from TMC software into Trimble tagfiles.
 /// </summary>
@@ -32,11 +43,18 @@ namespace MegalodonSvc
               // Configure the app here.
               config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
             })
-            .ConfigureServices((hostContext, services) =>
-            {
-              services.AddHostedService<MegalodonService>(); // main app
-              services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-              services.AddSingleton<ISocketManager, SocketManager>();
+            .ConfigureServices((hostContext, services) => { services.AddHostedService<MegalodonService>()
+                                                                    .AddHostedService<TagFileDispatchSvc>()
+                                                                    .AddSingleton<IConfigurationStore, GenericConfiguration>()
+                                                                    .AddSingleton<ISocketManager, SocketManager>()
+                                                                    .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
+                                                                    .AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>()
+                                                                    .AddSingleton<ITPaasProxy,TPaasProxy>()
+                                                                    .AddSingleton<IWebRequest, GracefulWebRequest>()
+                                                                    .AddSingleton<IDataCache, InMemoryDataCache>()
+                                                                    .AddSingleton<IMemoryCache,MemoryCache>()
+                                                                    .AddServiceDiscovery(); 
+
             })
             .ConfigureLogging((hostContext, loggingBuilder) =>
             {
@@ -44,6 +62,7 @@ namespace MegalodonSvc
               var generalConfig = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .Build();
+              loggingBuilder.ClearProviders();
               loggingBuilder.AddProvider(
                 p => new SerilogLoggerProvider(
                   SerilogExtensions.Configure(config: generalConfig, httpContextAccessor: p.GetService<IHttpContextAccessor>())));

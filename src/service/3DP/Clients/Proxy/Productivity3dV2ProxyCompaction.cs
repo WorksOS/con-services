@@ -12,6 +12,7 @@ using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
@@ -102,6 +103,28 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       log.LogDebug($"{nameof(ValidateProjectSettings)} Failed to post request");
       return null;
     }
+
+    public async Task<TagFileDirectSubmissionResult> SendTagfileDirect(string pathtToFile, IDictionary<string, string> customHeaders = null)
+    {
+      var fileData = File.ReadAllBytes(pathtToFile);
+      var request = new CompactionTagFileRequest()
+      {
+        FileName = Path.GetFileName(pathtToFile),
+        Data = fileData
+      };
+
+      log.LogDebug($"{nameof(CompactionTagFileRequest)}");
+
+      var response = await MasterDataItemServiceDiscoveryNoCache<TagFileDirectSubmissionResult>(
+        "/tagfiles/direct",
+        customHeaders,
+        method: HttpMethod.Post,
+        payload: this.SerializeToStream(request),
+        retries: 1);
+      log.LogDebug($"{nameof(ExecuteGenericV2Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
+      return response;
+    }
+
 
   }
 }
