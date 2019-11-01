@@ -16,7 +16,7 @@ using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
-  public class DataOceanHelper
+  public static class DataOceanHelper
   {
     /// <summary>
     /// Writes the importedFile to DataOcean as a create or update, so ok if it already exists already.
@@ -47,14 +47,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           log.LogInformation($"{nameof(WriteFileToDataOcean)}: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
 
-          folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
+          folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders, true);
 
           if (folderAlreadyExists == false)
           {
-            await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);
+            await dataOceanClient.MakeFolder(dataOceanPath, customHeaders, true);
           }
 
-          ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, customHeaders);
+          ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, customHeaders, true);
         }
         catch (Exception e)
         {

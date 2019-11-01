@@ -11,6 +11,7 @@ using VSS.DataOcean.Client.ResultHandling;
 using VSS.DataOcean.Client.Models;
 using System.Collections.Generic;
 using System.Net.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Serilog.Extensions;
@@ -27,7 +28,8 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceCollection = new ServiceCollection()
         .AddLogging()
         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.DataOcean.Client.UnitTests.log")))
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddTransient<IMemoryCache, MemoryCache>();
 
       //This is real one to be added in services using DataOcean client. We mock it below for unit tests.
       //serviceCollection.AddSingleton<IWebRequest, GracefulWebRequest>();
@@ -46,7 +48,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
+      var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
@@ -78,8 +80,9 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseTopUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={topLevelFolderName}&owner=true";
-      var browseSubUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={subFolderName}&owner=true";
+      var dataOceanRootFolderId = config.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
+      var browseTopUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={topLevelFolderName}&owner=true&parent_id={dataOceanRootFolderId}";
+      var browseSubUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={subFolderName}&owner=true";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -106,7 +109,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
+      var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
@@ -133,8 +136,9 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var dataOceanRootFolderId = config.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -166,8 +170,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -195,7 +199,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
+      var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
       var createUrl = $"{dataOceanBaseUrl}/api/directories";
 
       var gracefulMock = new Mock<IWebRequest>();
@@ -237,8 +241,9 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseTopUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={topLevelFolderName}&owner=true";
-      var browseSubUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={subFolderName}&owner=true";
+      var dataOceanRootFolderId = config.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
+      var browseTopUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={topLevelFolderName}&owner=true&parent_id={dataOceanRootFolderId}";
+      var browseSubUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={subFolderName}&owner=true";
       var createUrl = $"{dataOceanBaseUrl}/api/directories";
 
       var gracefulMock = new Mock<IWebRequest>();
@@ -290,8 +295,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
       var deleteFileUrl = $"{dataOceanBaseUrl}/api/files/{expectedFileResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
@@ -327,8 +332,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -357,7 +362,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
+      var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
@@ -378,7 +383,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
+      var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock.Setup(g => g.ExecuteRequest<BrowseDirectoriesResult>(browseUrl, null, null, HttpMethod.Get, null, 3, false))
@@ -405,8 +410,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -438,8 +443,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -485,8 +490,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -526,8 +531,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={fileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -590,8 +595,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={multiFileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={multiFileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -645,8 +650,8 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
-      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/files?name={multiFileName}&owner=true&parent_id={expectedFolderResult.Id}";
+      var browseFolderUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
+      var browseFileUrl = $"{dataOceanBaseUrl}/api/browse/keyset_files?name={multiFileName}&owner=true&parent_id={expectedFolderResult.Id}";
 
       var gracefulMock = new Mock<IWebRequest>();
       gracefulMock
@@ -687,7 +692,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       var config = serviceProvider.GetRequiredService<IConfigurationStore>();
       var dataOceanBaseUrl = config.GetValueString("DATA_OCEAN_URL");
-      var browseUrl = $"{dataOceanBaseUrl}/api/browse/directories?name={folderName}&owner=true";
+      var browseUrl = $"{dataOceanBaseUrl}/api/browse/keyset_directories?name={folderName}&owner=true";
       var createUrl = $"{dataOceanBaseUrl}/api/files";
       var getUrl = $"{createUrl}/{expectedFile.Id}";
       var deleteFileUrl = $"{dataOceanBaseUrl}/api/files/{expectedFileResult.File.Id}";
