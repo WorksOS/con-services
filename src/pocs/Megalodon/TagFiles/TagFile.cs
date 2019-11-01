@@ -20,6 +20,7 @@ namespace TagFiles
     public AsciiParser Parser = new AsciiParser();
     public string MachineSerial;
     public string MachineID;
+    public bool SendTagFilesToProduction = false;
 
     public string TagfileFolder = "c:\\megalodon\\tagfiles";
     private bool _EnableTagFileCreationTimer = false;
@@ -71,6 +72,7 @@ namespace TagFiles
     /// </summary>
     public void WriteTagFileToDisk()
     {
+      string newFilename;
 
       if (Parser.HeaderRequired) // could check further for more epoch data 
       {
@@ -83,8 +85,18 @@ namespace TagFiles
       var serial = Parser.EpochRec.Serial == string.Empty ? MachineSerial : Parser.EpochRec.Serial;
       var mid = Parser.EpochRec.MID == string.Empty ? MachineID : Parser.EpochRec.MID;
       Header.UpdateTagfileName(serial,mid);
-      Directory.CreateDirectory(TagfileFolder); 
-      var newFilename = System.IO.Path.Combine(TagfileFolder, Header.TagfileName);
+
+      Directory.CreateDirectory(TagfileFolder);
+
+      if (!SendTagFilesToProduction)
+      {
+        var toSendFolder = System.IO.Path.Combine(TagfileFolder, "ToSend");
+        Directory.CreateDirectory(toSendFolder);
+        newFilename = System.IO.Path.Combine(toSendFolder, Header.TagfileName);
+      }
+      else
+        newFilename = System.IO.Path.Combine(TagfileFolder, Header.TagfileName);
+
       var outStream = new NybbleFileStream(newFilename, FileMode.Create);
       try
       {
@@ -100,6 +112,12 @@ namespace TagFiles
       finally
       {
         outStream.Dispose();
+        if (File.Exists(newFilename))
+        {
+          FileInfo f = new FileInfo(newFilename);
+          f.MoveTo(Path.ChangeExtension(newFilename, ".tag")); // turn into tagfile extension for monitor
+        }
+
       }
 
     }
@@ -232,21 +250,22 @@ namespace TagFiles
     /// <returns></returns>
     public bool Write(NybbleStream nStream)
     {
+      // write header
       nStream.NybblePosition = 0;
       Header.TypeTableOffset = 0; // overriden later
       Header.Write(nStream);
 
       // write contents
-
       Parser.TagContent.Write(nStream);
       nStream.Pad(); // have to pad the dictionary
       var pos = nStream.stream.Position;
-
+      // dictionary writtten last
       TagFileDictionary.Write(nStream);
 
       Header.TypeTableOffset = pos;
       nStream.NybblePosition = 0;
       nStream.HighNybble = false;
+      // update header offset position for dictionary
       Header.Write(nStream);
 
       return true;

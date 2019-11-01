@@ -39,7 +39,7 @@ namespace TagFiles.Utils
         deviceID = "unknown";
       if (machineName == "")
         machineName = "Megalodon";
-      return $"{deviceID}--{machineName}--{DateTime.UtcNow.ToString("yyMMddHHmmss")}.tag"; 
+      return $"{deviceID}--{machineName}--{DateTime.UtcNow.ToString("yyMMddHHmmss")}.new"; // gets extension renamed later
     }
 
     public static DateTime UnixTimeStampToUTCDateTime(double unixTimeStamp)

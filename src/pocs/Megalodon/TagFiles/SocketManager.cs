@@ -282,8 +282,8 @@ namespace TagFiles
 
 
             byte[] cbytes = Encoding.ASCII.GetBytes(content);
-            DebugPacketHelper.SaveData2(ref cbytes);
-            DebugPacketHelper.DumpPacket(content);
+         //   DebugPacketHelper.SaveData2(ref cbytes);
+          //  DebugPacketHelper.DumpPacket(content);
             //    DumpPacketHelper.DumpPacket2(content2);
 
           }
@@ -302,7 +302,7 @@ namespace TagFiles
               {
                 byte[] byteData2 = new byte[1];
                 byteData2[0] = cb;
-                DebugPacketHelper.SaveData(ref byteData2); //.DumpPacket(content);
+          //      DebugPacketHelper.SaveData(ref byteData2); //.DumpPacket(content);
               }
 
 

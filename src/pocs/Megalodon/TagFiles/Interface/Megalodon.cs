@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using TagFiles.Common;
 using VSS.Common.Abstractions.Configuration;
-using VSS.WebApi.Common;
 
 namespace TagFiles.Interface
 {
@@ -56,6 +55,7 @@ namespace TagFiles.Interface
 
       tagFile.MachineSerial = configStore.GetValueString("Serial");
       tagFile.MachineID = configStore.GetValueString("MachineName");
+      tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false; 
 
       DualLog($"Socket Settings: {_TCIP}:{_Port}");
     }
