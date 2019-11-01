@@ -57,14 +57,6 @@ namespace TagFiles.Parser
 
     }
 
-    /// <summary>
-    /// Store Epoch in list for writing later to disk
-    /// </summary>
-    private void SaveEpochToList()
-    {
-      // Write epoch and flush record
-   //   TagContent.
-    }
 
     /// <summary>
     /// Checks we have enough input data to create a tagfile epoch
@@ -92,56 +84,66 @@ namespace TagFiles.Parser
           HeaderRecordCount++;
           HeaderUpdated = true;
           timeAdded = true;
+
+          // Some fields are defaulted by Trimble set them up here now
+          // todo add these to appsettings as defaults
+          EpochRec.CoordSys = 3; // coordinate system
+          EpochRec.MappingMode = 1; // min elevation
+          EpochRec.RadioType = "torch"; // torch
+          EpochRec.AppVersion = "1"; // app version
+          EpochRec.ValidPosition = 1; // has valid position
+
         }
       }
 
-  //    if (HeaderRequired)
-   //   {
-        // todo refactor this code like AddTimeEntry
+      if (EpochRec.HasCoordSys)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CoordSys, DataType = TAGDataType.t4bitUInt, Data = EpochRec.CoordSys });
+        EpochRec.HasCoordSys = false;
+      }
+      if (EpochRec.HasValidPosition)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.ValidPosition, DataType = TAGDataType.t4bitUInt, Data = EpochRec.ValidPosition });
+        EpochRec.HasValidPosition = false;
+      }
+      if (EpochRec.HasMappingMode)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MappingMode, DataType = TAGDataType.t8bitUInt, Data = EpochRec.MappingMode });
+        EpochRec.HasMappingMode = false;
+      }
 
-        if (EpochRec.HasCoordSys)
-        {
-          TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.CoordSys, DataType = TAGDataType.t4bitUInt, Data = EpochRec.CoordSys });
-          EpochRec.HasCoordSys = false;
-        }
-        if (EpochRec.HasMappingMode)
-        {
-          TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.MappingMode, DataType = TAGDataType.t8bitUInt, Data = EpochRec.MappingMode });
-          EpochRec.HasMappingMode = false;
-        }
+      if (EpochRec.HasDES)
+      {
+        TagContent.AddEntry(new TagData_Unicode() { DictID = (short)DictionaryItem.Design, DataType = TAGDataType.tUnicodeString, Data = EpochRec.Design });
+        EpochRec.HasDES = false;
+      }
+      if (EpochRec.HasLAT)
+      {
+        TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Latitude, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LAT });
+        EpochRec.HasLAT = false;
+        HeaderRecordCount++;
+      }
+      if (EpochRec.HasLON)
+      {
+        TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Longtitude, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LON });
+        EpochRec.HasLON = false;
+        HeaderRecordCount++;
+      }
+      if (EpochRec.HasHGT)
+      {
+        TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.height, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.HGT });
+        EpochRec.HasHGT = false;
+      }
 
-        if (EpochRec.HasDES)
-        {
-          TagContent.AddEntry(new TagData_Unicode() { DictID = (short)DictionaryItem.Design, DataType = TAGDataType.tUnicodeString, Data = EpochRec.Design });
-          EpochRec.HasDES = false;
-        }
-        if (EpochRec.HasLAT)
-        {
-          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Latitude, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LAT });
-          EpochRec.HasLAT = false;
-          HeaderRecordCount++;
-        }
-        if (EpochRec.HasLON)
-        {
-          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.Longtitude, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.LON });
-          EpochRec.HasLON = false;
-          HeaderRecordCount++;
-        }
-        if (EpochRec.HasHGT)
-        {
-          TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.height, DataType = TAGDataType.tIEEEDouble, Data = EpochRec.HGT });
-          EpochRec.HasHGT = false;
-        }
-
-        if (EpochRec.HasUTM)
-        {
-          TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.UTMZone, DataType = TAGDataType.t8bitUInt, Data = EpochRec.UTM });
-          EpochRec.HasUTM = false;
-        }
+      if (EpochRec.HasUTM)
+      {
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.UTMZone, DataType = TAGDataType.t8bitUInt, Data = EpochRec.UTM });
+        EpochRec.HasUTM = false;
+      }
 
       HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
-     
-     // };
+
+      // };
 
       if (EpochRec.HasTime & !timeAdded)
       {
@@ -211,6 +213,8 @@ namespace TagFiles.Parser
       }
       if (EpochRec.HasBOG)
       {
+        // writes On_GROUND and BLADE_ON_GROUND together
+        TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.OG, DataType = TAGDataType.t4bitUInt, Data = EpochRec.BOG });
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.BOG, DataType = TAGDataType.t4bitUInt, Data = EpochRec.BOG });
         EpochRec.HasBOG = false;
       }
@@ -264,8 +268,9 @@ namespace TagFiles.Parser
         {
           case TagConstants.TIME:
             {
-              if (EpochRec.HasTime) // if we have an existing timestamp then save that epoch to list before continuing
-                SaveEpochToList();
+              //  if (EpochRec.HasTime) // if we have an existing timestamp then save that epoch to list before continuing
+              //  SaveEpochToList();
+
               // Starts new epoch
               uint gpsTime;
               uint gpsWeek;
@@ -323,12 +328,15 @@ namespace TagFiles.Parser
           case TagConstants.GPS_MODE:
             {
               if (EpochRec.HasGPM)
-                MegalodonLogger.LogError("Already have LNB value for epoch");
+                MegalodonLogger.LogError("Already have GPM value for epoch");
               EpochRec.GPM = Convert.ToUInt16(TagValue);
               break;
             }
           case TagConstants.BLADE_ON_GROUND:
             {
+              ushort val = Convert.ToUInt16(TagValue);
+              if (EpochRec.HasPrevBOG & val == EpochRec.PREV_BOG)
+                break; // no change so dont record
               if (EpochRec.HasBOG)
                 MegalodonLogger.LogError("Already have BOG value for epoch");
               EpochRec.BOG = Convert.ToUInt16(TagValue);
@@ -402,7 +410,7 @@ namespace TagFiles.Parser
             {
               if (EpochRec.HasUTM)
                 MegalodonLogger.LogError("Already have UTM value for epoch");
-              EpochRec.UTM = Convert.ToByte(TagValue); 
+              EpochRec.UTM = Convert.ToByte(TagValue);
               EpochRec.RadioSerial = TagValue; // Yes assigned two places
               break;
             }
@@ -412,7 +420,7 @@ namespace TagFiles.Parser
         }
 
 
-      //  UpdateTagContentList();
+        //  UpdateTagContentList();
 
       }
       catch (Exception ex)
@@ -430,12 +438,12 @@ namespace TagFiles.Parser
       //   EpochRec.ClearEpoch();
       EpochRec = new EpochRecord();
       TagName = "";
-      TagValue= "";
+      TagValue = "";
       HaveName = false;
       HaveValue = false;
       HeaderRecordCount = 0;
       HeaderRequired = true;
-      HeaderUpdated = false; 
+      HeaderUpdated = false;
       TrailerRequired = false;
       TagContent = new TagContentList(); // zero list
     }

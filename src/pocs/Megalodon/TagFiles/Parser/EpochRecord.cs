@@ -12,9 +12,9 @@ namespace TagFiles.Parser
     public bool HasTime = false;
     public bool HasDeltaTime = false;
     public bool HasPrevTime = false;
+    public bool HasPrevBOG = false;
     public bool HasWeek = false;
     public bool HasCoordSys = false;
-    public bool HasUTMZone = false;
     public bool HasLEB = false;
     public bool HasLNB = false;
     public bool HasLHB = false;
@@ -37,6 +37,7 @@ namespace TagFiles.Parser
     public bool HasRadioType = false;
     public bool HasMappingMode = false;
     public bool HasAppVersion = false;
+    public bool HasValidPosition = false;
 
     // Fields
 
@@ -205,13 +206,16 @@ namespace TagFiles.Parser
     /// Blade On Ground
     /// </summary>
     private ushort _BOG = 0;
+    public ushort PREV_BOG = 0;
     public ushort BOG
     {
       get => _BOG;
       set
       {
         _BOG = value;
+        PREV_BOG = value;
         HasBOG = true;
+        HasPrevBOG = true;
       }
     }
 
@@ -369,6 +373,22 @@ namespace TagFiles.Parser
       }
     }
 
+
+
+    /// <summary>
+    /// Coordinate System
+    /// </summary>
+    private ushort _ValidPosition = 1;
+    public ushort ValidPosition
+    {
+      get => _ValidPosition;
+      set
+      {
+        _ValidPosition = value;
+        HasValidPosition = true;
+      }
+    }
+
     /// <summary>
     /// UTM Zone
     /// </summary>
@@ -379,7 +399,7 @@ namespace TagFiles.Parser
       set
       {
         _UTM = value;
-        HasUTMZone = true;
+        HasUTM = true;
       }
     }
 
@@ -444,9 +464,9 @@ namespace TagFiles.Parser
       HasTime = false;
       HasDeltaTime = false;
       HasPrevTime = false;
+      HasPrevBOG = false;
       HasWeek = false;
       HasCoordSys = false;
-      HasUTMZone = false;
       HasLEB = false;
       HasLNB = false;
       HasLHB = false;
@@ -468,6 +488,7 @@ namespace TagFiles.Parser
       HasRadioType = false;
       HasMappingMode = false;
       HasAppVersion = false;
+      HasValidPosition = false;
     }
 
   }

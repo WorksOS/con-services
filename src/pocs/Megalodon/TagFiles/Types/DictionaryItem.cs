@@ -16,6 +16,7 @@ namespace TagFiles.Types
     Northing,
     Elevation,
     GPSMode,
+    OG,
     BOG,
     Design,
     Latitude,
@@ -27,6 +28,7 @@ namespace TagFiles.Types
     MachineID,
     ApplicationVersion,
     MachineSpeed,
-    MachineType
+    MachineType,
+    ValidPosition
   }
 }
