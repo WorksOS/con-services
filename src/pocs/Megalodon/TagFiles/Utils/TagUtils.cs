@@ -56,8 +56,8 @@ namespace TagFiles.Utils
       switch (upperValue)
       {
         case "HEX": return 25;
-        case "WCN": return 50; // todo assign real id
-        case "CSD": return 51; // todo
+        case "WCN": return 47; //???
+        case "CSD": return 46; // todo
         default:
           {
             MegalodonLogger.LogError($"Unknown machine type supplied. value:{value}");

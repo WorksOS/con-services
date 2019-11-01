@@ -25,6 +25,8 @@ namespace MegalodonClient
     private string soh = Convert.ToChar(TagConstants.SOH).ToString();
     private string eot = Convert.ToChar(TagConstants.EOT).ToString();
 
+    private bool portOpen = false;
+
     private bool keepGoing = true;
     private bool wantHeader = true;
 
@@ -48,17 +50,6 @@ namespace MegalodonClient
       private void BtnTrack_Click(object sender, EventArgs e)
     {
 
-      SocketWriter.AsynchronousClient.StartClient();
-
-      /*
-      string pathString = System.IO.Path.Combine(workFolder, "track");
-      System.IO.Directory.CreateDirectory(pathString);
-      //string fileString = System.IO.Path.Combine(pathString, $"track{DateTime.Now.ToString("yyyyMMddHHmmss")}");
-      //  string fileString = System.IO.Path.Combine(pathString, $"track{DateTime.Now.ToString("yyyyMMdd")}.txt");
-      string fileString = System.IO.Path.Combine(pathString, "track.txt");
-      MakeTrack(fileString);
-      toolStripStatusLabel1.Text = $"LastAction: Output:{fileString}";
-      */
     }
 
     private void Form1_Load(object sender, EventArgs e)
@@ -66,11 +57,9 @@ namespace MegalodonClient
       
     }
 
+    // Open Port
     private void Button2_Click(object sender, EventArgs e)
     {
-
-
-
 
       try
       {
@@ -107,7 +96,7 @@ namespace MegalodonClient
         // Establishes a connection to a remote host 
         senderSock.Connect(ipEndPoint);
         label20.Text = "Socket connected to " + senderSock.RemoteEndPoint.ToString();
-
+        portOpen = true;
       }
       catch (Exception exc) { MessageBox.Show(exc.ToString()); }
 
@@ -138,6 +127,8 @@ namespace MegalodonClient
           {
             wantHeader = true;
             label20.Text = $"The server reply SOH";
+            if (chkSOH.Checked)
+              listBox1.Items.Add($"{DateTime.Now.ToString()} : SOH");
           }
           else if (sb == TagConstants.ACK)
             label20.Text = $"The server reply ACK";
@@ -256,39 +247,53 @@ namespace MegalodonClient
     // Test SIM
     private void Button7_Click(object sender, EventArgs e)
     {
-    //  var unixTimestamp = (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
-      var unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
 
+      if (!portOpen)
+        Button2_Click(sender,e);
+
+      //  var unixTimestamp = (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+      var unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+      listBox1.Items.Clear();
       int east = 0;
       int north = 0;
-      double direction = 0.3; // 30cm
+      double eDirection = Convert.ToDouble(txtEast.Text);
+      double nDirection = Convert.ToDouble(txtNorth.Text);
+      double currrentHgt = Convert.ToDouble(txtStartHgt.Text);
+      double maxHgt = currrentHgt + 2.0;
+      double minHgt = currrentHgt - 2.0;
+      double hgtInterval = 0.01;
 
       var timeStamp = "TME" + unixTimestamp.ToString();
-      var startHgt = Convert.ToDouble(txtStartHgt.Text);
+     // var startHgt = currrentHgt;
+
       var startLat = Convert.ToDouble("36.206979");
       var startLon = Convert.ToDouble("-115.020131");
-      var startLEB = Convert.ToDouble("2744.351658");
-      var startLNB = Convert.ToDouble("1165.214447");
-      var startLHB = Convert.ToDouble("595.656315");
-      var startREB = Convert.ToDouble("2744.239249");
-      var startRNB = Convert.ToDouble("1163.217788");
-      var startRHB = Convert.ToDouble("595.630574");
+
+      var startLEB = Convert.ToDouble(txtLE.Text);
+      var startLNB = Convert.ToDouble(txtLN.Text);
+      var startLHB = currrentHgt.ToString();
+
+      var startREB = Convert.ToDouble(txtRE.Text);
+      var startRNB = Convert.ToDouble(txtRN.Text);
+      var startRHB = currrentHgt.ToString(); 
 
       // this would normally be read from socket
       var thdr = stx + rs + timeStamp;
+      var machineType = "MTP" + cboType.Text;
+      var heading = "HDG90";
 
       var hdr =
         rs + "GPM3" +
         rs + "DES" +
         rs + "LAT" + TagUtils.ToRadians(startLat).ToString() + // 36.206979 Dimensions
         rs + "LON" + TagUtils.ToRadians(startLon).ToString() + //-115.020131
-        rs + "HGT" + startHgt.ToString() +
-        rs + "MIDVL HEX" +
+        rs + "HGT" + currrentHgt.ToString() +
+        rs + "MID" + txtVName.Text +
         rs + "BOG0" +
         rs + "UTM0" +
-        rs + "HDG360" +
+        rs + heading +
         rs + "SERe6cd374b-22d5-4512-b60e-fd8152a0899b" +
-        rs + "MTPHEX" + etx;
+        rs + machineType + etx;
 
       var toSend = thdr + hdr;
       byte[] dataPacket = Encoding.UTF8.GetBytes(toSend);
@@ -305,6 +310,7 @@ namespace MegalodonClient
         ReceiveDataFromServer();
 
 
+        // Loop epoch updates
         while (keepGoing)
         {
 
@@ -314,16 +320,27 @@ namespace MegalodonClient
           if (east == 100)
           {
             east = 1;
-            direction = -direction;
+            eDirection = -eDirection;
             north++;
-            startLNB = startLNB + 0.3;
-            startRNB = startRNB + 0.3;
+            startLNB = startLNB + nDirection;
+            startRNB = startRNB + nDirection;
           }
 
-          startLEB = startLEB + direction;
-          startREB = startREB + direction;
+          startLEB = startLEB + eDirection;
+          startREB = startREB + eDirection;
 
-          lblStatus.Text = $"East:{east} Direction:{ direction} North:{north}";
+          if (chkVaryHgt.Checked)
+          {
+            if (currrentHgt < minHgt | currrentHgt > maxHgt)
+              hgtInterval = hgtInterval * -1;
+            currrentHgt = currrentHgt + hgtInterval;
+            if (hgtInterval < 0)
+              heading = "HDG270";
+            else
+              heading = "HDG90";
+          }
+
+          lblStatus.Text = $"East:{east} E-Direction:{ eDirection} North:{north} Hgt:{currrentHgt}";
 
           System.Threading.Thread.Sleep(50);
 
@@ -337,9 +354,9 @@ namespace MegalodonClient
           else
           {
             toSend = thdr +
-            rs + "LEB"+ startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + startLHB.ToString() +
-            rs + "REB" + startREB.ToString() + rs + "RNB" + startRNB.ToString() + rs + "RHB" + startRHB.ToString() +
-            rs + "BOG1" + rs + "MSD0.1" + rs + "HDG360" + etx;
+            rs + "LEB"+ startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + currrentHgt.ToString() +
+            rs + "REB" + startREB.ToString() + rs + "RNB" + startRNB.ToString() + rs + "RHB" + currrentHgt.ToString() +
+            rs + "BOG1" + rs + "MSD0.1" + rs + heading + etx;
           }
           // var dataPacket = Encoding.Unicode.GetBytes(toSend);
           byte[] dataPacket2 = Encoding.UTF8.GetBytes(toSend);
@@ -362,6 +379,11 @@ namespace MegalodonClient
     private void Button8_Click(object sender, EventArgs e)
     {
       keepGoing = false;
+    }
+
+    private void Button1_Click(object sender, EventArgs e)
+    {
+
     }
   }
 }
