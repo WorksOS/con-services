@@ -3,6 +3,7 @@ using System.Text;
 using TagFiles.Types;
 using TagFiles.Utils;
 using TagFiles.Common;
+using Microsoft.Extensions.Logging;
 
 /// <summary>
 /// Master class for parsing machine data packets and creating tagfiles for VL
@@ -24,7 +25,7 @@ namespace TagFiles.Parser
     public bool TrailerRequired = false;
     public EpochRecord EpochRec = new EpochRecord(); // current epoch record
     public TagContentList TagContent; // tagfile data content
-
+    public ILogger Log;
 
     /// <summary>
     /// Constructor
@@ -286,49 +287,49 @@ namespace TagFiles.Parser
           case TagConstants.LEFT_EASTING_BLADE:
             {
               if (EpochRec.HasLEB)
-                MegalodonLogger.LogError("Already have LEB value for epoch");
+                Log.LogWarning("Already have LEB value for epoch");
               EpochRec.LEB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.LEFT_NORTHING_BLADE:
             {
               if (EpochRec.HasLNB)
-                MegalodonLogger.LogError("Already have LNB value for epoch");
+                Log.LogWarning("Already have LNB value for epoch");
               EpochRec.LNB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.LEFT_HEIGHT_BLADE:
             {
               if (EpochRec.HasLHB)
-                MegalodonLogger.LogError("Already have LHB value for epoch");
+                Log.LogWarning("Already have LHB value for epoch");
               EpochRec.LHB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_EASTING_BLADE:
             {
               if (EpochRec.HasREB)
-                MegalodonLogger.LogError("Already have REB value for epoch");
+                Log.LogWarning("Already have REB value for epoch");
               EpochRec.REB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_NORTHING_BLADE:
             {
               if (EpochRec.HasRNB)
-                MegalodonLogger.LogError("Already have RNB value for epoch");
+                Log.LogWarning("Already have RNB value for epoch");
               EpochRec.RNB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_HEIGHT_BLADE:
             {
               if (EpochRec.HasRHB)
-                MegalodonLogger.LogError("Already have RHB value for epoch");
+                Log.LogWarning("Already have RHB value for epoch");
               EpochRec.RHB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.GPS_MODE:
             {
               if (EpochRec.HasGPM)
-                MegalodonLogger.LogError("Already have GPM value for epoch");
+                Log.LogWarning("Already have GPM value for epoch");
               EpochRec.GPM = Convert.ToUInt16(TagValue);
               break;
             }
@@ -338,70 +339,70 @@ namespace TagFiles.Parser
               if (EpochRec.HasPrevBOG & val == EpochRec.PREV_BOG)
                 break; // no change so dont record
               if (EpochRec.HasBOG)
-                MegalodonLogger.LogError("Already have BOG value for epoch");
+                Log.LogWarning("Already have BOG value for epoch");
               EpochRec.BOG = Convert.ToUInt16(TagValue);
               break;
             }
           case TagConstants.DESIGN:
             {
               if (EpochRec.HasDES)
-                MegalodonLogger.LogError("Already have DES value for epoch");
+                Log.LogWarning("Already have DES value for epoch");
               EpochRec.Design = TagValue;
               break;
             }
           case TagConstants.LATITUDE:
             {
               if (EpochRec.HasLAT)
-                MegalodonLogger.LogError("Already have LAT value for epoch");
+                Log.LogWarning("Already have LAT value for epoch");
               EpochRec.LAT = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.LONTITUDE:
             {
               if (EpochRec.HasLON)
-                MegalodonLogger.LogError("Already have LON value for epoch");
+                Log.LogWarning("Already have LON value for epoch");
               EpochRec.LON = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.HEIGHT:
             {
               if (EpochRec.HasHGT)
-                MegalodonLogger.LogError("Already have HGT value for epoch");
+                Log.LogWarning("Already have HGT value for epoch");
               EpochRec.HGT = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.MESSAGE_ID:
             {
               if (EpochRec.HasMID)
-                MegalodonLogger.LogError("Already have MID value for epoch");
+                Log.LogWarning("Already have MID value for epoch");
               EpochRec.MID = TagValue;
               break;
             }
           case TagConstants.MACHINE_SPEED:
             {
               if (EpochRec.HasMSD)
-                MegalodonLogger.LogError("Already have MSD value for epoch");
+                Log.LogWarning("Already have MSD value for epoch");
               EpochRec.MSD = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.MACHINE_TYPE:
             {
               if (EpochRec.HasMTP)
-                MegalodonLogger.LogError("Already have MTP value for epoch");
+                Log.LogWarning("Already have MTP value for epoch");
               EpochRec.MTP = TagUtils.ConvertToMachineType(TagValue);
               break;
             }
           case TagConstants.HEADING:
             {
               if (EpochRec.HasHDG)
-                MegalodonLogger.LogError("Already have HDG value for epoch");
+                Log.LogWarning("Already have HDG value for epoch");
               EpochRec.HDG = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.SERIAL:
             {
               if (EpochRec.HasSER)
-                MegalodonLogger.LogError("Already have SER value for epoch");
+                Log.LogWarning("Already have SER value for epoch");
               EpochRec.Serial = TagValue;
               EpochRec.RadioSerial = TagValue; // Yes assigned two places
               break;
@@ -409,23 +410,20 @@ namespace TagFiles.Parser
           case TagConstants.UTM:
             {
               if (EpochRec.HasUTM)
-                MegalodonLogger.LogError("Already have UTM value for epoch");
+                Log.LogWarning("Already have UTM value for epoch");
               EpochRec.UTM = Convert.ToByte(TagValue);
               EpochRec.RadioSerial = TagValue; // Yes assigned two places
               break;
             }
           default:
-            MegalodonLogger.LogWarning($"ProcessField. Unknown TagName:{TagName} Value:{TagValue}");
+            Log.LogWarning($"ProcessField. Unknown TagName:{TagName} Value:{TagValue}");
             break;
         }
-
-
-        //  UpdateTagContentList();
 
       }
       catch (Exception ex)
       {
-        MegalodonLogger.LogError($"Unexpected error in ProcessField. TagName:{TagName}, Value:{TagValue}, Error:{ex.Message}");
+        Log.LogError($"Unexpected error in ProcessField. TagName:{TagName}, Value:{TagValue}, Error:{ex.Message}");
       }
     }
 

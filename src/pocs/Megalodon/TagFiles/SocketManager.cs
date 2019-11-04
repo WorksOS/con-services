@@ -4,28 +4,19 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using TagFiles.Common;
-using TagFiles.Utils;
 using VSS.Common.Abstractions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace TagFiles
 {
+  /// <summary>
+  /// Handles all aspects of incoming data through the socket
+  /// </summary>
   public class SocketManager : ISocketManager
   {
 
-   // public string StatusMessage;
-
     private int port = 1500;
     private string tcip = "127.0.0.1";
-
-    //public string TxtRecv;
-
-    private bool _HeaderRequired = true;
-    public bool HeaderRequired  // read-write instance property
-    {
-      get => _HeaderRequired;
-      set => _HeaderRequired = value;
-    }
 
     public bool _PortRestartNeeded = false;
     public bool PortRestartNeeded 
@@ -34,7 +25,14 @@ namespace TagFiles
       set => _PortRestartNeeded = value;
     }
 
-    public bool DumpContent = false;
+    private bool _HeaderRequired = true;
+    public bool HeaderRequired  // read-write instance property
+    {
+      get => _HeaderRequired;
+      set => _HeaderRequired = value;
+    }
+
+    private bool _TraceDump = false;
 
     SocketPermission permission;
 
@@ -43,22 +41,23 @@ namespace TagFiles
     {
       get => _SocketListener;
       set => _SocketListener = value;
-
     }
-
 
     IPEndPoint ipEndPoint;
     Socket handler;
 
     private readonly ILogger _log;
     private readonly IConfigurationStore _config;
-
-
     public delegate void CallbackEventHandler(string something, int mode);
     public event CallbackEventHandler Callback;
     public static ManualResetEvent allDone = new ManualResetEvent(false);
 
 
+    /// <summary>
+    /// Intialize SocketManager
+    /// </summary>
+    /// <param name="log"></param>
+    /// <param name="configStore"></param>
     public SocketManager(ILoggerFactory log, IConfigurationStore configStore)
     {
       _log = log.CreateLogger<SocketManager>();
@@ -80,8 +79,13 @@ namespace TagFiles
       else
         port = Int32.Parse(_Port);
 
+      _TraceDump = configStore.GetValueBool("TraceDump") ?? false;
+
     }
 
+    /// <summary>
+    /// Create the socket 
+    /// </summary>
     public void CreateSocket()
     {
       try
@@ -102,8 +106,7 @@ namespace TagFiles
         permission.Demand();
 
         // Resolves a host name to an IPHostEntry instance 
-        IPHostEntry ipHost = Dns.GetHostEntry("");
-
+        //IPHostEntry ipHost = Dns.GetHostEntry("");
         // Gets first IP address associated with a localhost 
         //  IPAddress ipAddr = ipHost.AddressList[0];
 
@@ -124,14 +127,16 @@ namespace TagFiles
         // Associates a Socket with a local endpoint 
         _SocketListener.Bind(ipEndPoint);
 
-        //StatusMessage = "Server started.";
       }
       catch (Exception exc)
       {
-        MegalodonLogger.LogError($"CreateSocket Exception. {exc.ToString()}");
+        _log.LogError($"CreateSocket Exception. {exc.ToString()}");
       }
     }
 
+    /// <summary>
+    /// Go into a wait state for client connection
+    /// </summary>
     public void ListenOnPort()
     {
       try
@@ -160,7 +165,10 @@ namespace TagFiles
       }
     }
 
-
+    /// <summary>
+    /// Trigger when a client connects
+    /// </summary>
+    /// <param name="ar"></param>    
     public void AcceptCallback(IAsyncResult ar)
     {
 
@@ -211,8 +219,11 @@ namespace TagFiles
       }
     }
 
-
-
+   
+    /// <summary>
+    /// Callback on send
+    /// </summary>
+    /// <param name="ar"></param>
     public void SendCallback(IAsyncResult ar)
     {
       try
@@ -222,12 +233,11 @@ namespace TagFiles
 
         // The number of bytes sent to the Socket 
         int bytesSend = handler.EndSend(ar);
-        Console.WriteLine(
-            "Sent {0} bytes to Client", bytesSend);
+      //  Console.WriteLine( "Sent {0} bytes to Client", bytesSend);
       }
       catch (Exception exc)
       {
-        //  MessageBox.Show(exc.ToString());
+        _log.LogError($"SendCallback Exception. {exc.ToString()}");
       }
     }
 
@@ -237,11 +247,6 @@ namespace TagFiles
     /// <param name="ar"></param>
     public void ReceiveCallback(IAsyncResult ar)
     {
-      var _ETX = (char)TagConstants.ETX;
-      var _STX = (char)TagConstants.STX;
-      var _ACK = (char)TagConstants.ACK;
-      var _ENQ = (char)TagConstants.ENQ;
-      var _EOT = (char)TagConstants.EOT;
 
       bool keepListening = false;
 
@@ -259,52 +264,29 @@ namespace TagFiles
 
         // Received message 
         string content = string.Empty;
-        string content2 = string.Empty;
 
         // The number of bytes received. 
         int bytesRead = handler.EndReceive(ar);
 
         if (bytesRead > 0)
         {
-          // content += Encoding.Unicode.GetString(buffer, 0, bytesRead);
           content += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-          //     content2 += Encoding.UTF8.GetString(buffer, 0, bytesRead);
-
-          if (Callback != null)
-            Callback($"Input Lenght:{content.Length}", TagConstants.CALLBACK_LOG_INFO_MSG);
-
-
-          if (DumpContent)
-          {
-            //            DumpPacketHelper.SaveData(ref buffer); //.DumpPacket(content);
-            //    DumpPacketHelper.SaveData2(content); //.DumpPacket(content);
-
-
-            byte[] cbytes = Encoding.ASCII.GetBytes(content);
-         //   DebugPacketHelper.SaveData2(ref cbytes);
-          //  DebugPacketHelper.DumpPacket(content);
-            //    DumpPacketHelper.DumpPacket2(content2);
-
+          if (_TraceDump)
+          { // write content to log for debugging
+            if (Callback != null)
+              Callback($"Input Lenght:{content.Length}", TagConstants.CALLBACK_LOG_INFO_MSG);
+            _log.LogDebug(content);
           }
 
           byte[] byteData = new byte[1]; // response buffer
 
-          if (bytesRead == 1 | content.IndexOf(_ETX) > -1)
+          if (bytesRead == 1 | content.IndexOf(TagConstants.CHAR_ETX) > -1)
           {
 
             if (bytesRead == 1)
             {
               byte cb = buffer[0]; // control byte coming from client 
-
-
-              if (DumpContent)
-              {
-                byte[] byteData2 = new byte[1];
-                byteData2[0] = cb;
-          //      DebugPacketHelper.SaveData(ref byteData2); //.DumpPacket(content);
-              }
-
 
               switch (cb)
               {
@@ -320,18 +302,13 @@ namespace TagFiles
                       Callback("ENQ recieved. Returning SOH", TagConstants.CALLBACK_LOG_INFO_MSG);
                     else
                       Callback("ENQ recieved. Returning ACK", TagConstants.CALLBACK_LOG_INFO_MSG);
-
-                  if (DumpContent)
-                    DebugPacketHelper.DumpPacket("ENQ");
-
                   break;
+
                 case TagConstants.EOT:
                   if (Callback != null)
                     Callback("EOT recieved. No responce sent", TagConstants.CALLBACK_LOG_INFO_MSG);
-                  if (DumpContent)
-                    DebugPacketHelper.DumpPacket("EOT");
-
                   break;
+
                 default:
                   // log warning
                   keepListening = true;
@@ -339,8 +316,6 @@ namespace TagFiles
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
                   if (Callback != null)
                     Callback($"Unexpected control char recieved. Returning NAK. Value:{cb}", TagConstants.CALLBACK_LOG_INFO_MSG);
-                  if (DumpContent)
-                    DebugPacketHelper.DumpPacket("??");
 
                   break;
               }
@@ -349,8 +324,8 @@ namespace TagFiles
             {
               keepListening = true;
               // Convert byte array to string
-              string str = content.Substring(0, content.LastIndexOf(_ETX));
-              str = str.Trim(_STX);
+              string str = content.Substring(0, content.LastIndexOf(TagConstants.CHAR_ETX));
+              str = str.Trim(TagConstants.CHAR_STX);
               if (Callback != null)
               {
                 Callback(str, TagConstants.CALLBACK_PARSE_PACKET); // process datapacket
@@ -380,21 +355,7 @@ namespace TagFiles
                   SocketFlags.None,
                   new AsyncCallback(ReceiveCallback), obj);
             }
-
-            //   TxtRecv = "Read " + str.Length * 2 + " bytes from client.\n Data: " + str;
-
-            //this is used because the UI couldn't be accessed from an external Thread
-            /*
-            this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
-            {
-              tbAux.Text = "Read " + str.Length * 2 + " bytes from client.\n Data: " + str;
-            }
-
-            );*/
-
             // Continues to asynchronously receive data
-
-
           }
           else
           {
@@ -412,26 +373,13 @@ namespace TagFiles
                 SocketFlags.None,
                 new AsyncCallback(ReceiveCallback), obj);
           }
-
-
-      //    TxtRecv = content;
-
-          /*
-          this.Dispatcher.BeginInvoke(DispatcherPriority.Normal, (ThreadStart)delegate ()
-          {
-            tbAux.Text = content;
-          }
-          
-
-          );*/
         }
       }
       catch (Exception exc)
       {
-        // This is where we can handle a forced break by client
-
+        // This is where we can handle a forced socket break by client
         _log.LogError($"ReceiveCallback Exception. {exc.ToString()}");
-        _PortRestartNeeded = true; // tell manger we lost connection to client
+        _PortRestartNeeded = true; // tell the controller we lost connection to client
       }
     }
 

@@ -13,6 +13,11 @@ namespace TagFiles.Utils
       return (long)(DateTime.UtcNow - UnixEpoch).TotalMilliseconds;
     }
 
+    public static long GetCustomTimestampMillis(DateTime customDate)
+    {
+      return (long)(customDate - UnixEpoch).TotalMilliseconds;
+    }
+
     public static DateTime DateTimeFromUnixTimestampMillis(long millis)
     {
       return UnixEpoch.AddMilliseconds(millis);
@@ -60,8 +65,7 @@ namespace TagFiles.Utils
         case "CSD": return 46; // todo
         default:
           {
-            MegalodonLogger.LogError($"Unknown machine type supplied. value:{value}");
-            return 0;
+            throw new System.ArgumentException($"Unknown machine type supplied. value:{value}");
           }
       }
     }

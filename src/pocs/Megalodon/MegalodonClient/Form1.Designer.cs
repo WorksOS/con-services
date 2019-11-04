@@ -64,6 +64,11 @@
       this.cboType = new System.Windows.Forms.ComboBox();
       this.listBox1 = new System.Windows.Forms.ListBox();
       this.chkSOH = new System.Windows.Forms.CheckBox();
+      this.chkTwoEpochsOnly = new System.Windows.Forms.CheckBox();
+      this.dtpStart = new System.Windows.Forms.DateTimePicker();
+      this.label6 = new System.Windows.Forms.Label();
+      this.chkUseCustomDate = new System.Windows.Forms.CheckBox();
+      this.label7 = new System.Windows.Forms.Label();
       this.statusStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -122,7 +127,7 @@
       this.txtEast.Name = "txtEast";
       this.txtEast.Size = new System.Drawing.Size(64, 20);
       this.txtEast.TabIndex = 5;
-      this.txtEast.Text = "2.0";
+      this.txtEast.Text = "0.5";
       // 
       // txtLE
       // 
@@ -353,7 +358,7 @@
       this.chkVaryHgt.AutoSize = true;
       this.chkVaryHgt.Checked = true;
       this.chkVaryHgt.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkVaryHgt.Location = new System.Drawing.Point(109, 285);
+      this.chkVaryHgt.Location = new System.Drawing.Point(248, 293);
       this.chkVaryHgt.Name = "chkVaryHgt";
       this.chkVaryHgt.Size = new System.Drawing.Size(81, 17);
       this.chkVaryHgt.TabIndex = 51;
@@ -384,6 +389,8 @@
       // chkSOH
       // 
       this.chkSOH.AutoSize = true;
+      this.chkSOH.Checked = true;
+      this.chkSOH.CheckState = System.Windows.Forms.CheckState.Checked;
       this.chkSOH.Location = new System.Drawing.Point(454, 271);
       this.chkSOH.Name = "chkSOH";
       this.chkSOH.Size = new System.Drawing.Size(128, 17);
@@ -391,11 +398,63 @@
       this.chkSOH.Text = "Show SOH Recieved";
       this.chkSOH.UseVisualStyleBackColor = true;
       // 
+      // chkTwoEpochsOnly
+      // 
+      this.chkTwoEpochsOnly.AutoSize = true;
+      this.chkTwoEpochsOnly.Location = new System.Drawing.Point(248, 316);
+      this.chkTwoEpochsOnly.Name = "chkTwoEpochsOnly";
+      this.chkTwoEpochsOnly.Size = new System.Drawing.Size(92, 17);
+      this.chkTwoEpochsOnly.TabIndex = 55;
+      this.chkTwoEpochsOnly.Text = "2 epochs only";
+      this.chkTwoEpochsOnly.UseVisualStyleBackColor = true;
+      // 
+      // dtpStart
+      // 
+      this.dtpStart.CustomFormat = "MM/dd/yyyy hh:mm:ss";
+      this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+      this.dtpStart.Location = new System.Drawing.Point(117, 374);
+      this.dtpStart.Name = "dtpStart";
+      this.dtpStart.Size = new System.Drawing.Size(200, 20);
+      this.dtpStart.TabIndex = 56;
+      // 
+      // label6
+      // 
+      this.label6.AutoSize = true;
+      this.label6.Location = new System.Drawing.Point(56, 380);
+      this.label6.Name = "label6";
+      this.label6.Size = new System.Drawing.Size(55, 13);
+      this.label6.TabIndex = 57;
+      this.label6.Text = "Start Time";
+      // 
+      // chkUseCustomDate
+      // 
+      this.chkUseCustomDate.AutoSize = true;
+      this.chkUseCustomDate.Location = new System.Drawing.Point(117, 351);
+      this.chkUseCustomDate.Name = "chkUseCustomDate";
+      this.chkUseCustomDate.Size = new System.Drawing.Size(106, 17);
+      this.chkUseCustomDate.TabIndex = 58;
+      this.chkUseCustomDate.Text = "Use CustomDate";
+      this.chkUseCustomDate.UseVisualStyleBackColor = true;
+      // 
+      // label7
+      // 
+      this.label7.AutoSize = true;
+      this.label7.Location = new System.Drawing.Point(33, 271);
+      this.label7.Name = "label7";
+      this.label7.Size = new System.Drawing.Size(67, 13);
+      this.label7.TabIndex = 59;
+      this.label7.Text = "(blade width)";
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(752, 439);
+      this.Controls.Add(this.label7);
+      this.Controls.Add(this.chkUseCustomDate);
+      this.Controls.Add(this.label6);
+      this.Controls.Add(this.dtpStart);
+      this.Controls.Add(this.chkTwoEpochsOnly);
       this.Controls.Add(this.chkSOH);
       this.Controls.Add(this.listBox1);
       this.Controls.Add(this.cboType);
@@ -477,6 +536,11 @@
     private System.Windows.Forms.ComboBox cboType;
     private System.Windows.Forms.ListBox listBox1;
     private System.Windows.Forms.CheckBox chkSOH;
+    private System.Windows.Forms.CheckBox chkTwoEpochsOnly;
+    private System.Windows.Forms.DateTimePicker dtpStart;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.CheckBox chkUseCustomDate;
+    private System.Windows.Forms.Label label7;
   }
 }
 

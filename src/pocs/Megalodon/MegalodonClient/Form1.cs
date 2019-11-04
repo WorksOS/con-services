@@ -11,7 +11,7 @@ namespace MegalodonClient
   public partial class Form1 : Form
   {
 
- //   private string workFolder  = @"c:\data\megalodon";
+    //   private string workFolder  = @"c:\data\megalodon";
     // Receiving byte array  
     byte[] bytes = new byte[1024];
     Socket senderSock;
@@ -47,14 +47,14 @@ namespace MegalodonClient
       }
     }
 
-      private void BtnTrack_Click(object sender, EventArgs e)
+    private void BtnTrack_Click(object sender, EventArgs e)
     {
 
     }
 
     private void Form1_Load(object sender, EventArgs e)
     {
-      
+
     }
 
     // Open Port
@@ -148,41 +148,40 @@ namespace MegalodonClient
     {
 
       var unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
-
-      // from local time to unix time
-      //     var dateTime = new DateTime(2015, 05, 24, 10, 2, 0, DateTimeKind.Local);
-      //    var dateTimeOffset = new DateTimeOffset(dateTime);
-      //   var unixDateTime = dateTimeOffset.ToUnixTimeSeconds();
-
-      // going back again 
-      //   var localDateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixDateTime)
-      //   .DateTime.ToLocalTime();
-
+      listBox1.Items.Clear();
+      double currrentHgt = Convert.ToDouble(txtStartHgt.Text);
       var timeStamp = "TME" + unixTimestamp.ToString();
+      // var startHgt = currrentHgt;
 
+      var startLat = Convert.ToDouble("36.206979");
+      var startLon = Convert.ToDouble("-115.020131");
 
       // this would normally be read from socket
-      var toSend = stx + rs + timeStamp +
+      var thdr = stx + rs + timeStamp;
+      var machineType = "MTP" + cboType.Text;
+      var heading = "HDG90";
+
+      var hdr =
         rs + "GPM3" +
-        rs + "DESPlanB" +
-        rs + "LAT-0.759971" +
-        rs + "LON3.012268" +
-        rs + "HGT-37.600" +
-        rs + "MIDMyVessel1" +
-        rs + "BOG0" +
+        rs + "DES" +
+        rs + "LAT" + TagUtils.ToRadians(startLat).ToString() + // 36.206979 Dimensions
+        rs + "LON" + TagUtils.ToRadians(startLon).ToString() + //-115.020131
+        rs + "HGT" + currrentHgt.ToString() +
+        rs + "MID" + txtVName.Text +
+        rs + "BOG1" +
         rs + "UTM0" +
-        rs + "HDG92" +
+        rs + heading +
         rs + "SERe6cd374b-22d5-4512-b60e-fd8152a0899b" +
-        rs + "MTPHEX" + etx;
+        rs + machineType + etx;
+
+      var toSend = thdr + hdr;
+      var dataPacket = Encoding.UTF8.GetBytes(toSend);
 
 
 
       try
       {
-       // string theMessageToSend = toSend;
-       // byte[] dataPacket = Encoding.Unicode.GetBytes(theMessageToSend);
 
-        byte[] dataPacket = Encoding.UTF8.GetBytes(toSend);
         // Sends data to a connected Socket. 
         int bytesSend = senderSock.Send(dataPacket);
 
@@ -227,32 +226,90 @@ namespace MegalodonClient
     // Send Epoch Update
     private void Button6_Click(object sender, EventArgs e)
     {
+      //  var unixTimestamp = (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
       var unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+      int east = 0;
+      int north = 0;
+      double eDirection = Convert.ToDouble(txtEast.Text);
+      double nDirection = Convert.ToDouble(txtNorth.Text);
+      double currrentHgt = Convert.ToDouble(txtStartHgt.Text);
+      double maxHgt = currrentHgt + 2.0;
+      double minHgt = currrentHgt - 2.0;
+      double hgtInterval = 0.01;
+
       var timeStamp = "TME" + unixTimestamp.ToString();
 
-      // stx should be one byte not two
-      var toSend = stx + rs + timeStamp +
-        rs + "LEB504383.841" + rs + "LNB7043871.371" + rs + "LHB-20.882" +
-        rs + "REB504384.745" + rs + "RNB7043869.853" + rs + "RHB-20.899" +
-        rs + "BOG1" + rs + "MSD0.2" + rs + "HDG93" + etx;
+      var startLEB = Convert.ToDouble(txtLE.Text);
+      var startLNB = Convert.ToDouble(txtLN.Text);
 
-      // var dataPacket = Encoding.Unicode.GetBytes(toSend);
-      byte[] dataPacket = Encoding.UTF8.GetBytes(toSend);
-      // Sends data to a connected Socket. 
-      var bytesSend = senderSock.Send(dataPacket);
+      var startREB = Convert.ToDouble(txtRE.Text);
+      var startRNB = Convert.ToDouble(txtRN.Text);
 
+      // this would normally be read from socket
+      var thdr = stx + rs + timeStamp;
+      var machineType = "MTP" + cboType.Text;
+      var heading = "HDG90";
+
+
+      east++;
+      if (east == 100)
+      {
+        east = 1;
+        eDirection = -eDirection;
+        north++;
+        startLNB = startLNB + nDirection;
+        startRNB = startRNB + nDirection;
+      }
+
+      startLEB = startLEB + eDirection;
+      startREB = startREB + eDirection;
+
+      if (chkVaryHgt.Checked)
+      {
+        if (currrentHgt < minHgt | currrentHgt > maxHgt)
+          hgtInterval = hgtInterval * -1;
+        currrentHgt = currrentHgt + hgtInterval;
+        if (hgtInterval < 0)
+          heading = "HDG270";
+        else
+          heading = "HDG90";
+      }
+
+      lblStatus.Text = $"East:{east} E-Direction:{ eDirection} North:{north} Hgt:{currrentHgt}";
+
+      unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+      timeStamp = "TME" + unixTimestamp.ToString();
+
+      thdr = stx + rs + timeStamp;
+
+      var toSend = thdr +
+      rs + "LEB" + startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + currrentHgt.ToString() +
+      rs + "REB" + startREB.ToString() + rs + "RNB" + startRNB.ToString() + rs + "RHB" + currrentHgt.ToString() +
+      rs + "BOG1" + rs + "MSD0.1" + rs + heading + etx;
+      var dataPacketEpoch = Encoding.UTF8.GetBytes(toSend);
+      senderSock.Send(dataPacketEpoch);
       ReceiveDataFromServer();
+
     }
 
-    // Test SIM
+    // Test SIM for Dimensions Project
     private void Button7_Click(object sender, EventArgs e)
     {
 
+      int loopCount = 0;
+      keepGoing = true;
+
       if (!portOpen)
-        Button2_Click(sender,e);
+        Button2_Click(sender, e);
 
       //  var unixTimestamp = (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
-      var unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+      long unixTimestamp;
+
+      if  (chkUseCustomDate.Checked)
+        unixTimestamp = TagUtils.GetCustomTimestampMillis(dtpStart.Value);
+      else
+        unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+
       listBox1.Items.Clear();
       int east = 0;
       int north = 0;
@@ -264,18 +321,18 @@ namespace MegalodonClient
       double hgtInterval = 0.01;
 
       var timeStamp = "TME" + unixTimestamp.ToString();
-     // var startHgt = currrentHgt;
+      // var startHgt = currrentHgt;
 
       var startLat = Convert.ToDouble("36.206979");
       var startLon = Convert.ToDouble("-115.020131");
 
       var startLEB = Convert.ToDouble(txtLE.Text);
       var startLNB = Convert.ToDouble(txtLN.Text);
-      var startLHB = currrentHgt.ToString();
+  //    var startLHB = currrentHgt.ToString();
 
       var startREB = Convert.ToDouble(txtRE.Text);
       var startRNB = Convert.ToDouble(txtRN.Text);
-      var startRHB = currrentHgt.ToString(); 
+    //  var startRHB = currrentHgt.ToString();
 
       // this would normally be read from socket
       var thdr = stx + rs + timeStamp;
@@ -289,21 +346,21 @@ namespace MegalodonClient
         rs + "LON" + TagUtils.ToRadians(startLon).ToString() + //-115.020131
         rs + "HGT" + currrentHgt.ToString() +
         rs + "MID" + txtVName.Text +
-        rs + "BOG0" +
+        rs + "BOG1" +
         rs + "UTM0" +
         rs + heading +
         rs + "SERe6cd374b-22d5-4512-b60e-fd8152a0899b" +
         rs + machineType + etx;
 
       var toSend = thdr + hdr;
-      byte[] dataPacket = Encoding.UTF8.GetBytes(toSend);
+      var dataPacket = Encoding.UTF8.GetBytes(toSend);
 
-   //   var dataPacket = Encoding.UTF8.GetString(bytes);
+      //   var dataPacket = Encoding.UTF8.GetString(bytes);
 
       try
       {
-      //  string theMessageToSend = toSend;
-      //  byte[] dataPacket = Encoding.Unicode.GetBytes(theMessageToSend);
+        //  string theMessageToSend = toSend;
+        //  byte[] dataPacket = Encoding.Unicode.GetBytes(theMessageToSend);
         // Sends data to a connected Socket. 
         int bytesSend = senderSock.Send(dataPacket);
 
@@ -311,19 +368,31 @@ namespace MegalodonClient
 
 
         // Loop epoch updates
-        while (keepGoing)
+        while (keepGoing & loopCount < 2 )
         {
+
+          if (chkTwoEpochsOnly.Checked)
+            loopCount++;
 
           Application.DoEvents();
 
           east++;
-          if (east == 100)
+
+          if (east == 50) // 50 epochs turn around
           {
             east = 1;
             eDirection = -eDirection;
             north++;
+
+            if (north > 10)
+            {
+              north = 1;
+              startLNB = Convert.ToDouble(txtLN.Text);
+              startRNB = Convert.ToDouble(txtRN.Text);
+            }
             startLNB = startLNB + nDirection;
             startRNB = startRNB + nDirection;
+         
           }
 
           startLEB = startLEB + eDirection;
@@ -344,29 +413,37 @@ namespace MegalodonClient
 
           System.Threading.Thread.Sleep(50);
 
-          unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+          //          unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+
+          TimeSpan duration = DateTime.Now - dtpStart.Value;
+          if (chkUseCustomDate.Checked)
+            unixTimestamp = TagUtils.GetCustomTimestampMillis(dtpStart.Value + duration);
+          else
+            unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
+
+
           timeStamp = "TME" + unixTimestamp.ToString();
 
           thdr = stx + rs + timeStamp;
 
           if (wantHeader)
-            toSend = thdr + hdr;
-          else
           {
-            toSend = thdr +
-            rs + "LEB"+ startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + currrentHgt.ToString() +
-            rs + "REB" + startREB.ToString() + rs + "RNB" + startRNB.ToString() + rs + "RHB" + currrentHgt.ToString() +
-            rs + "BOG1" + rs + "MSD0.1" + rs + heading + etx;
+            toSend = thdr + hdr;
+            var dataPacketHdr = Encoding.UTF8.GetBytes(toSend);
+            // Sends data to a connected Socket. 
+            senderSock.Send(dataPacketHdr);
+            ReceiveDataFromServer();
           }
-          // var dataPacket = Encoding.Unicode.GetBytes(toSend);
-          byte[] dataPacket2 = Encoding.UTF8.GetBytes(toSend);
-          // Sends data to a connected Socket. 
-          var bytesSend2 = senderSock.Send(dataPacket2);
 
-          Array.Resize(ref dataPacket2, 0);
-
+          toSend = thdr +
+          rs + "LEB" + startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + currrentHgt.ToString() +
+          rs + "REB" + startREB.ToString() + rs + "RNB" + startRNB.ToString() + rs + "RHB" + currrentHgt.ToString() +
+//          rs + "BOG1" + rs + "MSD0.1" + rs + heading + etx;
+          rs + "BOG1" + rs + heading + etx;
+          var dataPacketEpoch = Encoding.UTF8.GetBytes(toSend);
+          senderSock.Send(dataPacketEpoch);
+          Array.Resize(ref dataPacketEpoch, 0);
           ReceiveDataFromServer();
-
         }
 
       }

@@ -11,7 +11,7 @@
     public const short CALLBACK_CONNECTION_MADE = 3;
 
     public const int TAG_NAME_LENGHT = 3;
-    public const double NEW_TAG_FILE_INTERVAL = 30000; // 60000
+    public const double NEW_TAG_FILE_INTERVAL_MSECS = 60000; // 60 seonds
     public const double TAG_FILE_MONITOR_SECS = 10; // 60
     public const byte SOH = 0x01;
     public const byte STX = 0x02;
@@ -21,6 +21,13 @@
     public const byte ACK = 0x06;
     public const byte NAK = 0x15;
     public const byte RS  = 0x1E;
+
+    public const char CHAR_ETX = (char)TagConstants.ETX;
+    public const char CHAR_STX = (char)TagConstants.STX;
+    public const char CHAR_ACK = (char)TagConstants.ACK;
+    public const char CHAR_ENQ = (char)TagConstants.ENQ;
+    public const char CHAR_EOT = (char)TagConstants.EOT;
+
     public const string TIME = "TME";
     public const string LEFT_EASTING_BLADE = "LEB";
     public const string LEFT_NORTHING_BLADE = "LNB";

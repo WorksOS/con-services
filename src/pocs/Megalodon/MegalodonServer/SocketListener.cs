@@ -3,12 +3,14 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using TagFiles;
 using TagFiles.Common;
+using System.Windows.Forms;
 
 namespace MegalodonServer
 {
-
+  /// <summary>
+  /// Test Only Class. Use SockManager instead
+  /// </summary>
   public class SocketListener
   {
 
@@ -194,7 +196,7 @@ namespace MegalodonServer
       }
       catch (Exception exc)
       {
-      //  MessageBox.Show(exc.ToString());
+        MessageBox.Show(exc.ToString());
       }
     }
 
@@ -204,11 +206,6 @@ namespace MegalodonServer
     /// <param name="ar"></param>
     public void ReceiveCallback(IAsyncResult ar)
     {
-      var _ETX = (char)TagConstants.ETX;
-      var _STX = (char)TagConstants.STX;
-      var _ACK = (char)TagConstants.ACK;
-      var _ENQ = (char)TagConstants.ENQ;
-      var _EOT = (char)TagConstants.EOT;
 
       bool keepListening = false;
 
@@ -257,7 +254,7 @@ namespace MegalodonServer
 
           byte[] byteData = new byte[1]; // response buffer
 
-          if (bytesRead == 1 | content.IndexOf(_ETX) > -1)
+          if (bytesRead == 1 | content.IndexOf(TagConstants.CHAR_ETX) > -1)
           {
 
             if (bytesRead == 1)
@@ -316,8 +313,8 @@ namespace MegalodonServer
             {
               keepListening = true;
               // Convert byte array to string
-              string str = content.Substring(0, content.LastIndexOf(_ETX));
-              str = str.Trim(_STX);
+              string str = content.Substring(0, content.LastIndexOf(TagConstants.CHAR_ETX));
+              str = str.Trim(TagConstants.CHAR_STX);
               if (Callback != null)
               {
                 Callback(str,TagConstants.CALLBACK_PARSE_PACKET); // process datapacket
@@ -329,7 +326,9 @@ namespace MegalodonServer
                 else
                 {
                   byteData[0] = TagConstants.ACK;
-                  Callback("ACK returned", TagConstants.CALLBACK_LOG_INFO_MSG);
+                  Console.WriteLine("ACK returned");
+                 // Callback("ACK returned", TagConstants.CALLBACK_LOG_INFO_MSG);
+                 
                 }
                 // Sends data asynchronously to a connected Socket 
                 handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
@@ -338,8 +337,9 @@ namespace MegalodonServer
 
             if (keepListening)
             {
-              if (Callback != null)
-                Callback("Listening...", TagConstants.CALLBACK_LOG_INFO_MSG);
+            //  if (Callback != null)
+                //Callback("Listening...", TagConstants.CALLBACK_LOG_INFO_MSG);
+              Console.WriteLine("Listening...");
               byte[] buffernew = new byte[1024];
               obj[0] = buffernew;
               obj[1] = handler;

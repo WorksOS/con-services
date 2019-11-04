@@ -55,8 +55,8 @@ namespace TagFiles.Interface
 
       tagFile.MachineSerial = configStore.GetValueString("Serial");
       tagFile.MachineID = configStore.GetValueString("MachineName");
-      tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false; 
-
+      tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false;
+      tagFile.Log = _log;
       DualLog($"Socket Settings: {_TCIP}:{_Port}");
     }
 

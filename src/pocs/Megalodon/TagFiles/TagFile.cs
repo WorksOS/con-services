@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Timers;
+using Microsoft.Extensions.Logging;
 using TagFiles.Common;
 using TagFiles.Parser;
 using TagFiles.Types;
@@ -9,20 +10,29 @@ using TAGFiles.Common;
 
 namespace TagFiles
 {
+  /// <summary>
+  /// TagFile library is a stand alone class for creating tagfiles
+  /// Input is via the method ParseText
+  /// </summary>
   public class TagFile
   {
     private readonly object updateLock = new object();
     private readonly TAGDictionary Dictionary = new TAGDictionary();
     private Timer TagTimer = new System.Timers.Timer();
     private bool readyToWrite = false;
+
     public TagHeader Header = new TagHeader();
     public TAGDictionary TagFileDictionary;
     public AsciiParser Parser = new AsciiParser();
     public string MachineSerial;
     public string MachineID;
     public bool SendTagFilesToProduction = false;
-
     public string TagfileFolder = "c:\\megalodon\\tagfiles";
+    public ILogger Log;
+
+    /// <summary>
+    /// Tagfile cutoff controlled by timer
+    /// </summary>
     private bool _EnableTagFileCreationTimer = false;
     public bool EnableTagFileCreationTimer  // read-write instance property
     {
@@ -33,27 +43,26 @@ namespace TagFiles
             if (value)
             {
               TagTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-              TagTimer.Interval = TagConstants.NEW_TAG_FILE_INTERVAL;
+              TagTimer.Interval = TagConstants.NEW_TAG_FILE_INTERVAL_MSECS;
               TagTimer.Start();
             }
           }
     }
 
-
     public TagFile()
     {
+      // Setup Tagfile Directory
       CreateTagfileDictionary();
     }
 
     /// <summary>
-    /// Timer Event for closing tagfile
+    /// Timer event for closing off tagfile
     /// </summary>
     /// <param name="source"></param>
     /// <param name="e"></param>
     private void OnTimedEvent(object source, ElapsedEventArgs e)
     {
-      // signal at next epoch to write file
-
+      
       if (!readyToWrite)
       {
         readyToWrite = true;
@@ -63,7 +72,6 @@ namespace TagFiles
           readyToWrite = false;
         }
       }
-
     }
 
 
@@ -74,9 +82,9 @@ namespace TagFiles
     {
       string newFilename;
 
-      if (Parser.HeaderRequired) // could check further for more epoch data 
+      if (Parser.HeaderRequired)
       {
-        MegalodonLogger.LogInfo($"WriteTagFileToDisk. No data to create tagfile.");
+        Log.LogDebug($"WriteTagFileToDisk. No data to create tagfile.");
         return;
       }
 
@@ -85,29 +93,30 @@ namespace TagFiles
       var serial = Parser.EpochRec.Serial == string.Empty ? MachineSerial : Parser.EpochRec.Serial;
       var mid = Parser.EpochRec.MID == string.Empty ? MachineID : Parser.EpochRec.MID;
       Header.UpdateTagfileName(serial,mid);
-
+      // Make sure folder exists
       Directory.CreateDirectory(TagfileFolder);
 
       if (!SendTagFilesToProduction)
       {
+        // Put tagfile in a ToSend folder
         var toSendFolder = System.IO.Path.Combine(TagfileFolder, "ToSend");
         Directory.CreateDirectory(toSendFolder);
         newFilename = System.IO.Path.Combine(toSendFolder, Header.TagfileName);
       }
-      else
+      else // tagfile will be sent by another thread to VL
         newFilename = System.IO.Path.Combine(TagfileFolder, Header.TagfileName);
 
       var outStream = new NybbleFileStream(newFilename, FileMode.Create);
       try
       {
-        if (Write(outStream))
+        if (Write(outStream)) // write tagfile to stream
         {
           Parser.Reset();
-          MegalodonLogger.LogInfo($"{newFilename} written to disk.");
+          Log.LogInformation($"{newFilename} successfully written to disk.");
           readyToWrite = false;
         }
         else
-          MegalodonLogger.LogInfo($"{newFilename} failed to write to disk.");
+          Log.LogWarning($"{newFilename} failed to write to disk.");
       }
       finally
       {
@@ -115,21 +124,23 @@ namespace TagFiles
         if (File.Exists(newFilename))
         {
           FileInfo f = new FileInfo(newFilename);
-          f.MoveTo(Path.ChangeExtension(newFilename, ".tag")); // turn into tagfile extension for monitor
+          f.MoveTo(Path.ChangeExtension(newFilename, ".tag")); // turn into tagfile extension for monitor to pickup
         }
 
       }
 
     }
 
+    /// <summary>
+    /// Input from socket is parsed and processed
+    /// </summary>
+    /// <param name="txt"></param>
     public void ParseText(string txt)
     {
-
+      // protect thread
       lock (updateLock)
       {
         Parser.ParseText(txt);
-     //   if (readyToWrite) // timer interval up
-       //   WriteTagFileToDisk();
       }
     }
 
@@ -185,9 +196,7 @@ namespace TagFiles
       Parser.EpochRec.RadioType = "torch";
       //Parser.EpochRec.RadioSerial = "123456";
    //   Parser.EpochRec.Serial = "e6cd374b-22d5-4512-b60e-fd8152a0899b";
-
-      //    StartTimer();
-
+      
       // handy code
       
       Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
