@@ -57,7 +57,7 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
-      var success = await client.FolderExists($"{DataOceanUtil.PathSeparator}{folderName}", null);
+      var success = await client.FolderExists($"{DataOceanUtil.PathSeparator}{folderName}", null, false);
       Assert.True(success);
     }
 
@@ -97,7 +97,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
         await client.FolderExists(
-          $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{subFolderName}", null);
+          $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{subFolderName}", null, false);
       Assert.True(success);
     }
 
@@ -118,7 +118,7 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
-      var success = await client.FolderExists($"{DataOceanUtil.PathSeparator}{folderName}", null);
+      var success = await client.FolderExists($"{DataOceanUtil.PathSeparator}{folderName}", null, false);
       Assert.False(success);
     }
 
@@ -153,7 +153,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
         await client.FileExists($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-          null);
+          null, false);
       Assert.True(success);
     }
 
@@ -186,7 +186,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
         await client.FileExists($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-          null);
+          null, false);
       Assert.False(success);
     }
 
@@ -212,12 +212,12 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
-      var success = await client.MakeFolder($"{DataOceanUtil.PathSeparator}{folderName}", null);
+      var success = await client.MakeFolder($"{DataOceanUtil.PathSeparator}{folderName}", null, false);
       Assert.True(success);
 
       //Check it also succeeds when the folder already exists
       expectedBrowseResult.Directories = new List<DataOceanDirectory> { expectedFolderResult };
-      success = await client.MakeFolder($"{DataOceanUtil.PathSeparator}{folderName}", null);
+      success = await client.MakeFolder($"{DataOceanUtil.PathSeparator}{folderName}", null, false);
       Assert.True(success);
 
     }
@@ -262,13 +262,13 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
         await client.MakeFolder(
-          $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{subFolderName}", null);
+          $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{subFolderName}", null, false);
       Assert.True(success);
 
       //Check it also succeeds when the folder already exists
       expectedSubBrowseResult.Directories = new List<DataOceanDirectory> { expectedSubFolderResult };
       success = await client.MakeFolder(
-        $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{subFolderName}", null);
+        $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{subFolderName}", null, false);
       Assert.True(success);
     }
 
@@ -315,7 +315,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
         await client.DeleteFile($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-          null);
+          null, false);
       Assert.True(success);
     }
 
@@ -348,7 +348,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var success =
         await client.DeleteFile($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-          null);
+          null, false);
       Assert.False(success);
     }
 
@@ -371,7 +371,7 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
-      var Id = await client.GetFolderId($"{DataOceanUtil.PathSeparator}{folderName}", null);
+      var Id = await client.GetFolderId($"{DataOceanUtil.PathSeparator}{folderName}", null, false);
       Assert.Equal(expectedFolderResult.Id, Id);
     }
 
@@ -392,7 +392,7 @@ namespace VSS.DataOcean.Client.UnitTests
       serviceCollection.AddTransient(g => gracefulMock.Object);
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
-      var Id = await client.GetFolderId($"{DataOceanUtil.PathSeparator}{folderName}", null);
+      var Id = await client.GetFolderId($"{DataOceanUtil.PathSeparator}{folderName}", null, false);
       Assert.Null(Id);
     }
 
@@ -426,7 +426,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var Id =
         await client.GetFileId($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-          null);
+          null, false);
       Assert.Equal(expectedFileResult.Id, Id);
     }
 
@@ -459,7 +459,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
       var Id =
         await client.GetFileId($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-          null);
+          null, false);
       Assert.Null(Id);
     }
 
@@ -509,7 +509,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
       var resultStream = await client.GetFile($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-        null);
+        null, false);
       using (var ms = new MemoryStream())
       {
         resultStream.CopyTo(ms);
@@ -547,7 +547,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
       var resultStream = await client.GetFile($"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{fileName}",
-        null);
+        null, false);
       Assert.Null(resultStream);
     }
 
@@ -614,7 +614,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
       var fullFileName = $"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{multiFileName}{fileName}";
-      var resultStream = await client.GetFile(fullFileName, null);
+      var resultStream = await client.GetFile(fullFileName, null, false);
       using (var ms = new MemoryStream())
       {
         resultStream.CopyTo(ms);
@@ -669,7 +669,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
       var fullFileName = $"{DataOceanUtil.PathSeparator}{folderName}{DataOceanUtil.PathSeparator}{multiFileName}{fileName}";
-      var resultStream = await client.GetFile(fullFileName, null);
+      var resultStream = await client.GetFile(fullFileName, null, false);
       Assert.Null(resultStream);
     }
 
@@ -716,7 +716,7 @@ namespace VSS.DataOcean.Client.UnitTests
       var serviceProvider2 = serviceCollection.BuildServiceProvider();
       var client = serviceProvider2.GetRequiredService<IDataOceanClient>();
 
-      return client.PutFile(folderName, fileName, null);
+      return client.PutFile(folderName, fileName, null, false);
     }
   }
 }

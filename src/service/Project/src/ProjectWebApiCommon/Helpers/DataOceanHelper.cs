@@ -38,6 +38,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         }
 
         var customHeaders = authn.CustomHeaders();
+        customHeaders.Remove("Authorization"); // todoJeannie
+        customHeaders.Add("Authorization", "Bearer b4fd6470b056247eca1c939968a9ff48");
         var dataOceanPath = DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid);
 
         var ccPutFileResult = false;
@@ -54,7 +56,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             await dataOceanClient.MakeFolder(dataOceanPath, customHeaders, true);
           }
 
-          ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, customHeaders, true);
+          ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, true, customHeaders);
         }
         catch (Exception e)
         {
@@ -94,7 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
         try
         {
-          ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders);
+          ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders, true);
         }
         catch (Exception e)
         {
