@@ -9,11 +9,11 @@ namespace VSS.DataOcean.Client.Models
   /// We want to only step this structure once and cache the folder ids, which are used as parents to the next level
   ///     so that subsequently we can go straight to that folder level
   /// </summary>
-  public class DataOceanFilePathCache
+  public class DataOceanCustomerProjectCache
   {
     private IMemoryCache _cache;
 
-    public DataOceanFilePathCache(IMemoryCache memoryCache)
+    public DataOceanCustomerProjectCache(IMemoryCache memoryCache)
     {
       _cache = memoryCache;
     }

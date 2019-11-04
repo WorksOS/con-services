@@ -27,8 +27,8 @@ namespace VSS.DataOcean.Client
     private readonly string _dataOceanBaseUrl;
     private readonly int _uploadWaitInterval;
     private readonly double _uploadTimeout;
-
-    private DataOceanFilePathCache _customerFilePathCache;
+    
+    private DataOceanCustomerProjectCache _customerFilePathCache;
 
     /// <summary>
     /// Client for sending requests to the data ocean.
@@ -37,7 +37,7 @@ namespace VSS.DataOcean.Client
     {
       Log = logger.CreateLogger<DataOceanClient>();
       _gracefulClient = gracefulClient;
-      _customerFilePathCache = new DataOceanFilePathCache(memoryCache);
+      _customerFilePathCache = new DataOceanCustomerProjectCache(memoryCache);
 
       const string DATA_OCEAN_URL_KEY = "DATA_OCEAN_URL";
       _dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
@@ -56,33 +56,33 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Determines if the folder path exists.
     /// </summary>
-    public async Task<bool> FolderExists(string path, IDictionary<string, string> customHeaders, bool isFullPath = false)
+    public async Task<bool> FolderExists(string path, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"FolderExists: {path}");
 
-      var folder = await GetFolderMetadata(path, true, customHeaders, isFullPath);
+      var folder = await GetFolderMetadata(path, true, customHeaders, isDataOceanCustomerProjectFolderStructure);
       return folder != null;
     }
 
     /// <summary>
     /// Determines if the file exists.
     /// </summary>
-    public async Task<bool> FileExists(string filename, IDictionary<string, string> customHeaders)
+    public async Task<bool> FileExists(string filename, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"FileExists: {filename}");
 
-      var result = await GetFileMetadata(filename, customHeaders);
+      var result = await GetFileMetadata(filename, customHeaders, isDataOceanCustomerProjectFolderStructure);
       return result != null;
     }
 
     /// <summary>
     /// Makes the folder structure. Can partially exist already i.e. parent folder. 
     /// </summary>
-    public async Task<bool> MakeFolder(string path, IDictionary<string, string> customHeaders, bool isFullPath = false)
+    public async Task<bool> MakeFolder(string path, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"MakeFolder: {path}");
 
-      var folder = await GetFolderMetadata(path, false, customHeaders, isFullPath);
+      var folder = await GetFolderMetadata(path, false, customHeaders, isDataOceanCustomerProjectFolderStructure);
       return folder != null;
     }
 
@@ -90,16 +90,16 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Uploads the file to Data Ocean, will upsert if necessary.
     /// </summary>
-    public async Task<bool> PutFile(string path, string filename, Stream contents, IDictionary<string, string> customHeaders = null, bool isFullPath = false)
+    public async Task<bool> PutFile(string path, string filename, Stream contents, bool isDataOceanCustomerProjectFolderStructure, IDictionary<string, string> customHeaders = null)
     {
       var fullName = Path.Combine(path, filename);
       Log.LogDebug($"{nameof(PutFile)}: {fullName}");
 
       var success = false;
-      var parentFolder = await GetFolderMetadata(path, true, customHeaders, isFullPath);
+      var parentFolder = await GetFolderMetadata(path, true, customHeaders, isDataOceanCustomerProjectFolderStructure);
 
       //Delete any existing file. To avoid 2 traversals just try it anyway without checking for existence.
-      await DeleteFile(fullName, customHeaders);
+      await DeleteFile(fullName, customHeaders, isDataOceanCustomerProjectFolderStructure);
 
       //1. Create the file
       var createResult = await CreateFile(filename, parentFolder?.Id, customHeaders);
@@ -147,11 +147,11 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Deletes the file.
     /// </summary>
-    public async Task<bool> DeleteFile(string fullName, IDictionary<string, string> customHeaders)
+    public async Task<bool> DeleteFile(string fullName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"DeleteFile: {fullName}");
 
-      var result = await GetFileMetadata(fullName, customHeaders);
+      var result = await GetFileMetadata(fullName, customHeaders, isDataOceanCustomerProjectFolderStructure);
       if (result != null)
       {
         var route = $"/api/files/{result.Id}";
@@ -165,29 +165,29 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the id of the lowest level folder metadata in the path 
     /// </summary>
-    public async Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders, bool isFullPath = false)
+    public async Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"GetFolderId: {path}");
 
-      var folder = await GetFolderMetadata(path, true, customHeaders, isFullPath);
+      var folder = await GetFolderMetadata(path, true, customHeaders, isDataOceanCustomerProjectFolderStructure);
       return folder?.Id;
     }
 
     /// <summary>
     /// Gets the file id
     /// </summary>
-    public async Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders, bool isFullPath = false)
+    public async Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"GetFileId: {fullName}");
 
-      var result = await GetFileMetadata(fullName, customHeaders, isFullPath);
+      var result = await GetFileMetadata(fullName, customHeaders, isDataOceanCustomerProjectFolderStructure);
       return result?.Id;
     }
 
     /// <summary>
     /// Gets the file contents
     /// </summary>
-    public async Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders, bool isFullPath = false)
+    public async Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"GetFile: {fullName}");
 
@@ -201,7 +201,7 @@ namespace VSS.DataOcean.Client
         nameForMetadata = fullName.Substring(0, fullName.Length - tileFolderAndFileName.Length);
       }
 
-      var result = await GetFileMetadata(nameForMetadata, customHeaders, isFullPath);
+      var result = await GetFileMetadata(nameForMetadata, customHeaders, isDataOceanCustomerProjectFolderStructure);
       if (result == null)
       {
         Log.LogWarning($"Failed to find file {fullName}");
@@ -250,12 +250,12 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the file metadata.
     /// </summary>
-    private async Task<DataOceanFile> GetFileMetadata(string fullName, IDictionary<string, string> customHeaders, bool isFullPath = false)
+    private async Task<DataOceanFile> GetFileMetadata(string fullName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"{nameof(GetFileMetadata)}: {fullName}");
 
       var path = Path.GetDirectoryName(fullName)?.Replace(Path.DirectorySeparatorChar, DataOceanUtil.PathSeparator);
-      var parentFolder = await GetFolderMetadata(path, true, customHeaders, isFullPath);
+      var parentFolder = await GetFolderMetadata(path, true, customHeaders, isDataOceanCustomerProjectFolderStructure);
 
       var result = await BrowseFile(Path.GetFileName(fullName), parentFolder?.Id, customHeaders);
       var count = result?.Files?.Count;
@@ -280,7 +280,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Gets the lowest level folder metadata in the path. Creates it unless it this is purely a query and therefore must exist.
     /// </summary>
-    private async Task<DataOceanDirectory> GetFolderMetadata(string path, bool mustExist, IDictionary<string, string> customHeaders, bool isFullPath)
+    private async Task<DataOceanDirectory> GetFolderMetadata(string path, bool mustExist, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
       Log.LogDebug($"{nameof(GetFolderMetadata)}: path: {path}, mustExist: {mustExist}");
 
@@ -290,7 +290,7 @@ namespace VSS.DataOcean.Client
       //download url so we don't have to worry about it.
       var parts = path.Split(DataOceanUtil.PathSeparator);
 
-      if (isFullPath)
+      if (isDataOceanCustomerProjectFolderStructure)
         return await GetFolderMetadata(parts[1], parts[2], parts[3], mustExist, customHeaders);
 
       DataOceanDirectory folder = null;
@@ -350,7 +350,10 @@ namespace VSS.DataOcean.Client
       {
         customerFileCache.Projects.TryGetValue(projectUid, out var projectDataOceanFolderIdFromCache);
         if (projectDataOceanFolderIdFromCache != null)
+        {
+          Log.LogDebug($"{nameof(GetFolderMetadata)} Customer/Project found in cache {customerUid}/{projectUid}");
           return new DataOceanDirectory() {Id = Guid.Parse(projectDataOceanFolderIdFromCache), Name = projectUid, ParentId = Guid.Parse(customerFileCache.DataOceanFolderId)};
+        }
       }
 
       if (customerFileCache == null)
@@ -393,6 +396,7 @@ namespace VSS.DataOcean.Client
         {
           folder = result.Directories[0];
           _customerFilePathCache.GetOrCreateProject(customerUid, projectUid, folder.Id.ToString());
+          Log.LogDebug($"{nameof(GetFolderMetadata)} Project inserted in cache {customerUid}/{projectUid}");
         }
 
         if (count == 0)

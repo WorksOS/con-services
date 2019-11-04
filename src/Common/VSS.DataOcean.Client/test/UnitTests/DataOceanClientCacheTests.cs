@@ -13,7 +13,7 @@ namespace VSS.DataOcean.Client.UnitTests
     [Fact]
     public void DataOceanMemoryCache_NoCustomer()
     {
-      var customerCache = new DataOceanFilePathCache(new MemoryCache(new MemoryCacheOptions()));
+      var customerCache = new DataOceanCustomerProjectCache(new MemoryCache(new MemoryCacheOptions()));
 
       var customerUid = Guid.NewGuid().ToString();
       var dataOceanCustomerFolderId = Guid.NewGuid().ToString();
@@ -38,7 +38,7 @@ namespace VSS.DataOcean.Client.UnitTests
     [Fact]
     public void DataOceanMemoryCache_NoProject()
     {
-      var customerCache = new DataOceanFilePathCache(new MemoryCache(new MemoryCacheOptions()));
+      var customerCache = new DataOceanCustomerProjectCache(new MemoryCache(new MemoryCacheOptions()));
 
       var customerUid = Guid.NewGuid().ToString();
       var dataOceanCustomerFolderId = Guid.NewGuid().ToString();
@@ -61,7 +61,7 @@ namespace VSS.DataOcean.Client.UnitTests
     [Fact]
     public void DataOceanMemoryCache_AddDuplicateCustomer()
     {
-      var customerCache = new DataOceanFilePathCache(new MemoryCache(new MemoryCacheOptions()));
+      var customerCache = new DataOceanCustomerProjectCache(new MemoryCache(new MemoryCacheOptions()));
 
       var customerUid = Guid.NewGuid().ToString();
       var dataOceanCustomerFolderId = Guid.NewGuid().ToString();
@@ -78,7 +78,7 @@ namespace VSS.DataOcean.Client.UnitTests
     [Fact]
     public void DataOceanMemoryCache_AddDuplicateProject()
     {
-      var customerCache = new DataOceanFilePathCache(new MemoryCache(new MemoryCacheOptions()));
+      var customerCache = new DataOceanCustomerProjectCache(new MemoryCache(new MemoryCacheOptions()));
 
       var customerUid = Guid.NewGuid().ToString();
       var dataOceanCustomerFolderId = Guid.NewGuid().ToString();
@@ -103,7 +103,7 @@ namespace VSS.DataOcean.Client.UnitTests
     [Fact]
     public void DataOceanMemoryCache_MultipleProjects()
     {
-      var customerCache = new DataOceanFilePathCache(new MemoryCache(new MemoryCacheOptions()));
+      var customerCache = new DataOceanCustomerProjectCache(new MemoryCache(new MemoryCacheOptions()));
 
       var customerUid = Guid.NewGuid().ToString();
       var dataOceanCustomerFolderId = Guid.NewGuid().ToString();
