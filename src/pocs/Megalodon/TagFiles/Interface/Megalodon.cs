@@ -169,12 +169,7 @@ namespace TagFiles.Interface
       else if (mode == TagConstants.CALLBACK_CONNECTION_MADE)
       {
         tagFile.EnableTagFileCreationTimer = true;
-        DualLog(packet);
       }
-      else if (mode == TagConstants.CALLBACK_LOG_INFO_MSG)
-        DualLog(packet);
-      else if (mode == TagConstants.CALLBACK_LOG_ERROR_MSG)
-        DualLog(packet,true);
     }
 
     /// <summary>

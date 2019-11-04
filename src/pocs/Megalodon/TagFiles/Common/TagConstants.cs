@@ -5,10 +5,8 @@
   /// </summary>
   public static class TagConstants
   {
-    public const short CALLBACK_LOG_INFO_MSG = 0;
-    public const short CALLBACK_LOG_ERROR_MSG = 1;
-    public const short CALLBACK_PARSE_PACKET = 2;
-    public const short CALLBACK_CONNECTION_MADE = 3;
+    public const short CALLBACK_PARSE_PACKET = 0;
+    public const short CALLBACK_CONNECTION_MADE = 1;
 
     public const int TAG_NAME_LENGHT = 3;
     public const double NEW_TAG_FILE_INTERVAL_MSECS = 60000; // 60 seonds
@@ -27,6 +25,7 @@
     public const char CHAR_ACK = (char)TagConstants.ACK;
     public const char CHAR_ENQ = (char)TagConstants.ENQ;
     public const char CHAR_EOT = (char)TagConstants.EOT;
+    public const char CHAR_RS  = (char)TagConstants.RS;
 
     public const string TIME = "TME";
     public const string LEFT_EASTING_BLADE = "LEB";

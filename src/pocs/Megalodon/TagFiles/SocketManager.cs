@@ -79,7 +79,7 @@ namespace TagFiles
       else
         port = Int32.Parse(_Port);
 
-      _DebugTraceToLog = configStore.GetValueBool("TraceDump") ?? false;
+      _DebugTraceToLog = configStore.GetValueBool("DebugTraceToLog") ?? false;
 
     }
 
@@ -241,6 +241,12 @@ namespace TagFiles
       }
     }
 
+    private string FormatTrace(string msg)
+    {
+      return msg.Replace(TagConstants.CHAR_STX.ToString(), "<STX>").Replace(TagConstants.CHAR_ETX.ToString(), "<ETX>").
+                 Replace(TagConstants.CHAR_RS.ToString(), "<RS>").Replace(TagConstants.CHAR_ENQ.ToString(), "<ENQ>");
+    }
+
     /// <summary>
     /// Handles incoming data packets
     /// </summary>
@@ -274,9 +280,7 @@ namespace TagFiles
 
           if (_DebugTraceToLog)
           { // write content to log for debugging
-            if (Callback != null)
-              Callback($"Input Lenght:{content.Length}", TagConstants.CALLBACK_LOG_INFO_MSG);
-            _log.LogDebug(content);
+            _log.LogDebug(FormatTrace(content));
           }
 
           byte[] byteData = new byte[1]; // response buffer
@@ -297,16 +301,14 @@ namespace TagFiles
                   else
                     byteData[0] = TagConstants.ACK;
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
-                  if (Callback != null)
                     if (_HeaderRequired)
-                      Callback("ENQ recieved. Returning SOH", TagConstants.CALLBACK_LOG_INFO_MSG);
+                    _log.LogDebug("ENQ recieved. Returning SOH");
                     else
-                      Callback("ENQ recieved. Returning ACK", TagConstants.CALLBACK_LOG_INFO_MSG);
+                    _log.LogDebug("ENQ recieved. Returning ACK");
                   break;
 
-                case TagConstants.EOT:
-                  if (Callback != null)
-                    Callback("EOT recieved. No responce sent", TagConstants.CALLBACK_LOG_INFO_MSG);
+                case TagConstants.EOT: // not used by TMC client
+                  _log.LogDebug("EOT recieved. No responce sent");
                   break;
 
                 default:
@@ -314,9 +316,7 @@ namespace TagFiles
                   keepListening = true;
                   byteData[0] = TagConstants.NAK; // todo
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
-                  if (Callback != null)
-                    Callback($"Unexpected control char recieved. Returning NAK. Value:{cb}", TagConstants.CALLBACK_LOG_INFO_MSG);
-
+                  _log.LogError($"Unexpected control char recieved. Returning NAK. Value:{cb}");
                   break;
               }
             }
@@ -332,12 +332,12 @@ namespace TagFiles
                 if (_HeaderRequired) // Prepare the reply message 
                 {
                   byteData[0] = TagConstants.SOH;
-                  Callback("SOH returned", TagConstants.CALLBACK_LOG_INFO_MSG);
+                  _log.LogDebug("SOH returned");
                 }
                 else
                 {
                   byteData[0] = TagConstants.ACK;
-                  Callback("ACK returned", TagConstants.CALLBACK_LOG_INFO_MSG);
+                  _log.LogDebug("ACK returned");
                 }
                 // Sends data asynchronously to a connected Socket 
                 handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
@@ -359,9 +359,8 @@ namespace TagFiles
           }
           else
           {
-            if (Callback != null)
-              Callback("No ETX continue. Returning NAK Listening...", TagConstants.CALLBACK_LOG_INFO_MSG);
-
+            
+            _log.LogWarning("No ETX continue. Returning NAK Listening...");
             byteData[0] = TagConstants.NAK;
             handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
 
