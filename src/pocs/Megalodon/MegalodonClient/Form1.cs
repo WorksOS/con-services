@@ -6,6 +6,9 @@ using System.Text;
 using System.Windows.Forms;
 using TagFiles.Utils;
 
+/// <summary>
+/// For developer use to test Megalodon server
+/// </summary>
 namespace MegalodonClient
 {
   public partial class Form1 : Form
@@ -35,27 +38,6 @@ namespace MegalodonClient
       InitializeComponent();
     }
 
-
-    private void MakeTrack(string path)
-    {
-      // Create a file to write to.
-      using (StreamWriter sw = File.CreateText(path))
-      {
-        sw.WriteLine("Hello");
-        sw.WriteLine("And");
-        sw.WriteLine("Welcome");
-      }
-    }
-
-    private void BtnTrack_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void Form1_Load(object sender, EventArgs e)
-    {
-
-    }
 
     // Open Port
     private void Button2_Click(object sender, EventArgs e)
@@ -177,8 +159,6 @@ namespace MegalodonClient
       var toSend = thdr + hdr;
       var dataPacket = Encoding.UTF8.GetBytes(toSend);
 
-
-
       try
       {
 
@@ -226,7 +206,7 @@ namespace MegalodonClient
     // Send Epoch Update
     private void Button6_Click(object sender, EventArgs e)
     {
-      //  var unixTimestamp = (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+
       var unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
       int east = 0;
       int north = 0;
@@ -249,7 +229,6 @@ namespace MegalodonClient
       var thdr = stx + rs + timeStamp;
       var machineType = "MTP" + cboType.Text;
       var heading = "HDG90";
-
 
       east++;
       if (east == 100)
@@ -292,20 +271,28 @@ namespace MegalodonClient
 
     }
 
-    // Test SIM for Dimensions Project
-    private void Button7_Click(object sender, EventArgs e)
-    {
 
+    private void Button8_Click(object sender, EventArgs e)
+    {
+      keepGoing = false;
+    }
+
+
+    private void BtnRunSim_Click(object sender, EventArgs e)
+    {
       int loopCount = 0;
       keepGoing = true;
 
       if (!portOpen)
         Button2_Click(sender, e);
 
+      // start with an enquiry
+      SendENQ();
+
       //  var unixTimestamp = (DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
       long unixTimestamp;
 
-      if  (chkUseCustomDate.Checked)
+      if (chkUseCustomDate.Checked)
         unixTimestamp = TagUtils.GetCustomTimestampMillis(dtpStart.Value);
       else
         unixTimestamp = TagUtils.GetCurrentUnixTimestampMillis();
@@ -319,6 +306,7 @@ namespace MegalodonClient
       double maxHgt = currrentHgt + 2.0;
       double minHgt = currrentHgt - 2.0;
       double hgtInterval = 0.01;
+      int nSteps = Convert.ToInt32(txtNSteps.Text);
 
       var timeStamp = "TME" + unixTimestamp.ToString();
       // var startHgt = currrentHgt;
@@ -328,11 +316,11 @@ namespace MegalodonClient
 
       var startLEB = Convert.ToDouble(txtLE.Text);
       var startLNB = Convert.ToDouble(txtLN.Text);
-  //    var startLHB = currrentHgt.ToString();
+      //    var startLHB = currrentHgt.ToString();
 
       var startREB = Convert.ToDouble(txtRE.Text);
       var startRNB = Convert.ToDouble(txtRN.Text);
-    //  var startRHB = currrentHgt.ToString();
+      //  var startRHB = currrentHgt.ToString();
 
       // this would normally be read from socket
       var thdr = stx + rs + timeStamp;
@@ -368,7 +356,7 @@ namespace MegalodonClient
 
 
         // Loop epoch updates
-        while (keepGoing & loopCount < 2 )
+        while (keepGoing & loopCount < 2)
         {
 
           if (chkTwoEpochsOnly.Checked)
@@ -384,7 +372,7 @@ namespace MegalodonClient
             eDirection = -eDirection;
             north++;
 
-            if (north > 10)
+            if (north > nSteps) // is it time to start whole cycle again
             {
               north = 1;
               startLNB = Convert.ToDouble(txtLN.Text);
@@ -392,7 +380,7 @@ namespace MegalodonClient
             }
             startLNB = startLNB + nDirection;
             startRNB = startRNB + nDirection;
-         
+
           }
 
           startLEB = startLEB + eDirection;
@@ -438,7 +426,7 @@ namespace MegalodonClient
           toSend = thdr +
           rs + "LEB" + startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + currrentHgt.ToString() +
           rs + "REB" + startREB.ToString() + rs + "RNB" + startRNB.ToString() + rs + "RHB" + currrentHgt.ToString() +
-//          rs + "BOG1" + rs + "MSD0.1" + rs + heading + etx;
+          //          rs + "BOG1" + rs + "MSD0.1" + rs + heading + etx;
           rs + "BOG1" + rs + heading + etx;
           var dataPacketEpoch = Encoding.UTF8.GetBytes(toSend);
           senderSock.Send(dataPacketEpoch);
@@ -453,12 +441,7 @@ namespace MegalodonClient
       }
     }
 
-    private void Button8_Click(object sender, EventArgs e)
-    {
-      keepGoing = false;
-    }
-
-    private void Button1_Click(object sender, EventArgs e)
+    private void BtnRunSim_Click_1(object sender, EventArgs e)
     {
 
     }

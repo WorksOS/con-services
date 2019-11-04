@@ -57,7 +57,7 @@ namespace TagFiles.Interface
       tagFile.MachineID = configStore.GetValueString("MachineName");
       tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false;
       tagFile.Log = _log;
-      DualLog($"Socket Settings: {_TCIP}:{_Port}");
+      _log.LogInformation($"Socket Settings: {_TCIP}:{_Port}");
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ namespace TagFiles.Interface
     /// </summary>
     private void SetupPort()
     {
-      DualLog("Opening port");
+      _log.LogInformation("Opening port");
       _socketManager.Callback += new SocketManager.CallbackEventHandler(SocketManagerCallback);
       _socketManager.CreateSocket();
       _log.LogInformation($"Waiting connection on");
@@ -77,7 +77,7 @@ namespace TagFiles.Interface
     /// </summary>
     private void StopPort()
     {
-      DualLog("Closing Port.");
+      _log.LogInformation("Closing Port.");
 
       _timer?.Change(Timeout.Infinite, 0);
 
@@ -103,7 +103,7 @@ namespace TagFiles.Interface
     /// <returns></returns>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-      DualLog("Starting Megalodon Service");
+      _log.LogInformation("Starting Megalodon Service");
       SetupPort();
       _timer = new Timer(TimerDoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
       return Task.CompletedTask;
@@ -116,7 +116,7 @@ namespace TagFiles.Interface
     /// <returns></returns>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-      DualLog("Stopping Megalodon Service");
+      _log.LogInformation("Stopping Megalodon Service");
       StopPort();
       return Task.CompletedTask;
     }
@@ -126,7 +126,7 @@ namespace TagFiles.Interface
     /// </summary>
     private void RestartPort()
     {
-      DualLog("Port Restart Required");
+      _log.LogInformation("Port Restart Required");
       _socketManager.ListenOnPort();
       _timer?.Change(TimeSpan.Zero,TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
     }
@@ -141,15 +141,9 @@ namespace TagFiles.Interface
       if (_socketManager.PortRestartNeeded)
       {
         _socketManager.PortRestartNeeded = false;
+        _log.LogInformation("Restarting port due to lost connection");
         RestartPort();
       }
-
-      /* Debug Only
-      executionCount++;
-      var msg = $"Megalodon service Timed Hosted Service is working. Count: {executionCount}";
-      Console.WriteLine(msg);
-      _log.LogInformation(msg);
-      */
 
     }
 
@@ -163,7 +157,6 @@ namespace TagFiles.Interface
       if (mode == TagConstants.CALLBACK_PARSE_PACKET)
       {
         tagFile.ParseText(packet);
-        // DebugPacketHelper.(ref packet);
         _socketManager.HeaderRequired = tagFile.Parser.HeaderRequired;
       }
       else if (mode == TagConstants.CALLBACK_CONNECTION_MADE)
@@ -172,19 +165,6 @@ namespace TagFiles.Interface
       }
     }
 
-    /// <summary>
-    /// Outputs to console and serilog
-    /// </summary>
-    /// <param name="msg"></param>
-    private void DualLog(string msg, bool error = false)
-    {
-      // Console.Write(msg); turns out serilog goes to console anyway
-      // leaving as might be handy for alternative debug logging
-      if (error)
-        _log.LogError(msg);
-      else
-        _log.LogInformation(msg);
-    }
 
   }
 
