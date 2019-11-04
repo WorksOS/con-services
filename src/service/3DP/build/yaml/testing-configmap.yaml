@@ -21,6 +21,7 @@ data:
   productivity3d_service: http://localhost:5001
   project_service: http://localhost:5001
   scheduler_service: http://localhost:5001
+  tagfileauth_service: http://localhost:5001
   TCCFILESPACENAME: "vldatastore-dev"
   TCCORG: "vldev"
   TCCPWD: "vldev_key"

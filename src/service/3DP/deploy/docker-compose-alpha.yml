@@ -13,6 +13,7 @@ services:
      - scheduler_service=http://scheduler.alpha.eks.vspengg.com
      - project_service=http://project.alpha.eks.vspengg.com
      - filter_service=http://filter.alpha.eks.vspengg.com
+     - tagfileauth_service=http://tagfileauth.alpha.eks.vspengg.com
      - trex_service_connectedsite=http://connectedsite.alpha.eks.vspengg.com
      - trex_service_immutable=http://trex.immutable.dev.eks.vspengg.com
      - trex_service_mutable=http://trex.mutable.dev.eks.vspengg.com

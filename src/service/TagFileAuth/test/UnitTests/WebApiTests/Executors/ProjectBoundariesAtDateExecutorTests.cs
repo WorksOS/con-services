@@ -16,10 +16,10 @@ namespace WebApiTests.Executors
     public async Task CanCallProjectBoundariesAtDateExecutorNoValidInput()
     {
       GetProjectBoundariesAtDateRequest ProjectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(-1, DateTime.UtcNow);
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>(), ConfigStore,
+        AssetRepository, DeviceRepository, CustomerRepository, ProjectRepository, SubscriptionRepository);
       var result = await executor.ProcessAsync(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

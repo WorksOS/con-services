@@ -537,6 +537,8 @@ namespace VSS.Productivity3D.Models.Models
       PassCountRangeMax = filter?.PassCountRangeMax;
     }
 
+    public void SetBoundary(List<Point> polygonGrid) => PolygonGrid = polygonGrid;
+
     /// <summary>
     /// Validates all properties
     /// </summary>

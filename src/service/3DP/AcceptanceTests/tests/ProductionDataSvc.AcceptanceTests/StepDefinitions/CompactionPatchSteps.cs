@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using ProductionDataSvc.AcceptanceTests.Models;
 using ProtoBuf;
+using VSS.Productivity3D.WebApi.Models.ProductionData.ResultHandling;
 using Xunit;
 using Xunit.Gherkin.Quick;
 
@@ -20,7 +20,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
       using (var stream = new MemoryStream(GetResponseHandler.ByteContent))  
       {  
-        var binaryResult = Serializer.Deserialize<PatchResult>(stream);  
+        var binaryResult = Serializer.Deserialize<PatchSubgridsProtobufResult>(stream);  
         actualResultAsString = JsonConvert.SerializeObject(binaryResult);
       }
 

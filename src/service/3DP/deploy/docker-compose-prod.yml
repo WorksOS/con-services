@@ -11,6 +11,7 @@ services:
      - scheduler_service=http://scheduler.prod.prod-eks.services.myvisionlink.com
      - project_service=http://project.prod.prod-eks.services.myvisionlink.com
      - filter_service=http://filter.prod.prod-eks.services.myvisionlink.com
+     - tagfileauth_service=http://tagfileauth.prod.prod-eks.services.myvisionlink.com
      - trex_service_connectedsite=http://connectedsite.prod.prod-eks.services.myvisionlink.com
      - trex_service_immutable=http://trex.immutable.dev.k8s.vspengg.com
      - trex_service_mutable=http://trex.mutable.dev.k8s.vspengg.com
