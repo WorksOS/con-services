@@ -32,7 +32,7 @@ namespace TagFiles
       set => _HeaderRequired = value;
     }
 
-    private bool _TraceDump = false;
+    private bool _DebugTraceToLog = false;
 
     SocketPermission permission;
 
@@ -79,7 +79,7 @@ namespace TagFiles
       else
         port = Int32.Parse(_Port);
 
-      _TraceDump = configStore.GetValueBool("TraceDump") ?? false;
+      _DebugTraceToLog = configStore.GetValueBool("TraceDump") ?? false;
 
     }
 
@@ -272,7 +272,7 @@ namespace TagFiles
         {
           content += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-          if (_TraceDump)
+          if (_DebugTraceToLog)
           { // write content to log for debugging
             if (Callback != null)
               Callback($"Input Lenght:{content.Length}", TagConstants.CALLBACK_LOG_INFO_MSG);
