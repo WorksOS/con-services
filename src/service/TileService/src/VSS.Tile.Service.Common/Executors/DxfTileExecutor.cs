@@ -269,7 +269,7 @@ namespace VSS.Tile.Service.Common.Executors
     private async Task<byte[]> DownloadTile(string fullTileName, string what)
     {
       byte[] tileData = null;
-      var stream = await dataOceanClient.GetFile(fullTileName, authn.CustomHeaders());
+      var stream = await dataOceanClient.GetFile(fullTileName, authn.CustomHeaders(), true);
       if (stream != null)
       {
         log.LogDebug($"DxfTileExecutor: {what} tile downloaded with size of {stream.Length} bytes");
@@ -295,7 +295,7 @@ namespace VSS.Tile.Service.Common.Executors
     /// </summary>
     private static string GetFullTileName(Point topLeftTile, int zoomLevel, string path, string fileName)
     {
-      return new DataOceanFileUtil(fileName, path).GetTileFileName(zoomLevel, (int)topLeftTile.y, (int)topLeftTile.x);
+      return new DataOceanFileUtil($"{path}{DataOceanUtil.PathSeparator}{fileName}").GetTileFileName(zoomLevel, (int)topLeftTile.y, (int)topLeftTile.x);
     }
   }
 }

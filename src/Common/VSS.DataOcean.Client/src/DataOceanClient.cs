@@ -290,7 +290,8 @@ namespace VSS.DataOcean.Client
       //download url so we don't have to worry about it.
       var parts = path.Split(DataOceanUtil.PathSeparator);
 
-      // todo genericise customer/project structure when we have time
+      // todo customer/project structure when we have time
+      //      remove references to rootFolder e.g. DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid). Also in TileService etc
       if (isDataOceanCustomerProjectFolderStructure)
         return await GetFolderMetadata(parts[1], parts[2], parts[3], mustExist, customHeaders);
 

@@ -144,14 +144,14 @@ namespace VSS.Tile.Service.Common.Services
     }
     private async Task JoinDataOceanTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
     {
-      var dataOceanFileUtil = new DataOceanFileUtil(dxfFile.Name, dxfFile.Path);
+      var dataOceanFileUtil = new DataOceanFileUtil($"{dxfFile.Path}{DataOceanUtil.PathSeparator}{dxfFile.Name}");
       for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
       {
         for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)
         {
           var targetFile = dataOceanFileUtil.GetTileFileName(zoomLevel, yTile, xTile);
           log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
-          var file = await dataOceanClient.GetFile(targetFile, authn.CustomHeaders());
+          var file = await dataOceanClient.GetFile(targetFile, authn.CustomHeaders(), true);
           if (file != null)
           {
             Image<Rgba32> tile = Image.Load<Rgba32>(file);
