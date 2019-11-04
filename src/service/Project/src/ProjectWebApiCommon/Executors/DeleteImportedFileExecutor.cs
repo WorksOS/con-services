@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -101,7 +102,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
               var tasks = new List<Task>();
               //delete generated DXF tiles
               string dxfFileName = DataOceanFileUtil.GeneratedFileName(dataOceanFileName, deleteImportedFile.ImportedFileType);
-              tasks.Add(pegasusClient.DeleteTiles(dxfFileName, DataOceanHelper.CustomHeaders(authn), true));
+              var dataOceanPath = DataOceanFileUtil.DataOceanPath(deleteImportedFile.DataOceanRootFolder, customerUid, deleteImportedFile.ProjectUid.ToString());
+              var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{dxfFileName}";
+              tasks.Add(pegasusClient.DeleteTiles(fullFileName, DataOceanHelper.CustomHeaders(authn), true));
 
               if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
               {

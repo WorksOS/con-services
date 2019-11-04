@@ -289,8 +289,12 @@ namespace VSS.DataOcean.Client
       //We traverse this hierarchy. The only place it matters is the multi-file structure for tiles. This is contained in the multifile
       //download url so we don't have to worry about it.
       var parts = path.Split(DataOceanUtil.PathSeparator);
+      var gotValidPart = false;
+      foreach (var part in parts)
+        if (!string.IsNullOrEmpty(part)) gotValidPart = true;
+      if (!gotValidPart) return null;
 
-      // todo customer/project structure when we have time
+      // todo genericise customer/project structure when we have time
       //      remove references to rootFolder e.g. DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid). Also in TileService etc
       if (isDataOceanCustomerProjectFolderStructure)
         return await GetFolderMetadata(parts[1], parts[2], parts[3], mustExist, customHeaders);

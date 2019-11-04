@@ -340,15 +340,13 @@ namespace VSS.Pegasus.Client
     /// <summary>
     /// Deletes generated tiles for the given file
     /// </summary>
-    /// <param name="fileName">DXF or GeoTIFF file</param>
-    /// <param name="customHeaders"></param>
     /// <returns>True if successfully deleted otherwise false</returns>
-    public Task<bool> DeleteTiles(string fileName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
+    public Task<bool> DeleteTiles(string fullFileName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
     {
-      //In DataOcean this is actually a multifile not a folder
-      string tileFolderFullName = new DataOceanFileUtil(fileName).GeneratedTilesFolder;
+      //In DataOcean this is actually a multi-file not a folder
+      var tileFullFileName = new DataOceanFileUtil(fullFileName).GeneratedTilesFolder;
       //To avoid 2 traversals just try the delete anyway without checking for existance.
-      return dataOceanClient.DeleteFile(tileFolderFullName, customHeaders, isDataOceanCustomerProjectFolderStructure);
+      return dataOceanClient.DeleteFile(tileFullFileName, customHeaders, isDataOceanCustomerProjectFolderStructure);
     }
   }
 }
