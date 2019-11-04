@@ -8,7 +8,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
-using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -80,7 +79,7 @@ namespace VSS.Tile.Service.Common.Executors
       log.LogDebug(string.Join(",", files.Select(f => f.Name).ToList()));
 
       var tileList = new List<byte[]>();
-      var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+      var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
 
       //For GeoTIFF files, use the latest version of a file
       var geoTiffFiles = files.Where(x => x.ImportedFileType == ImportedFileType.GeoTiff).ToList();
