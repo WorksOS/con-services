@@ -24,10 +24,10 @@ namespace VSS.Pegasus.Client
   public class PegasusClient : IPegasusClient
   {
     private const string PEGASUS_URL_KEY = "PEGASUS_URL";
-    private const string PEGASUS_EXECUTION_TIMEOUT_MINS_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS_KEY";
-    private const string PEGASUS_EXECUTION_WAIT_MILLSECS_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS_KEY";
-    private const string PEGASUS_DXF_PROCEDURE_ID_KEY = "PEGASUS_DXF_PROCEDURE_ID_KEY";
-    private const string PEGASUS_GEOTIFF_PROCEDURE_ID_KEY = "PEGASUS_GEOTIFF_PROCEDURE_ID_KEY";
+    private const string PEGASUS_EXECUTION_TIMEOUT_MINS_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
+    private const string PEGASUS_EXECUTION_WAIT_MILLSECS_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS";
+    private const string PEGASUS_DXF_PROCEDURE_ID_KEY = "PEGASUS_DXF_PROCEDURE_ID";
+    private const string PEGASUS_GEOTIFF_PROCEDURE_ID_KEY = "PEGASUS_GEOTIFF_PROCEDURE_ID";
     private const string PEGASUS_LOG_JOBID_KEY = "pegasus_jobid";
     private const string PEGASUS_LOG_RESULT_KEY = "pegasus_result";
     private const string PEGASUS_LOG_EVENTS_KEY = "pegasus_events";
