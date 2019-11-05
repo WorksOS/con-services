@@ -20,6 +20,6 @@ namespace VSS.Pegasus.Client
       IDictionary<string, string> customHeaders,
       Action<IDictionary<string, string>> setJobIdAction);
 
-    Task<bool> DeleteTiles(string fileName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
+    Task<bool> DeleteTiles(string fileName, IDictionary<string, string> customHeaders);
   }
 }

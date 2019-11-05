@@ -387,9 +387,9 @@ namespace VSS.MasterData.ProjectTests.Executors
           It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
         var dataOceanClient = new Mock<IDataOceanClient>();
-        dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
+        dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
         dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
-          true, It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+           It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
         var authn = new Mock<ITPaaSApplicationAuthentication>();
         authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -581,9 +581,9 @@ namespace VSS.MasterData.ProjectTests.Executors
         It.IsAny<Stream>(), It.IsAny<long>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
-        true, It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");

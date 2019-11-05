@@ -297,8 +297,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -593,8 +593,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -897,8 +897,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");
@@ -987,8 +987,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.DeleteFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       var dataOceanClient = new Mock<IDataOceanClient>();
-      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
-      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), true)).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.FileExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+      dataOceanClient.Setup(f => f.DeleteFile(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");

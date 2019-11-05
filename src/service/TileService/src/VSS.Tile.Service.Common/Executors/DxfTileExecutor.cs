@@ -268,7 +268,7 @@ namespace VSS.Tile.Service.Common.Executors
     private async Task<byte[]> DownloadTile(string fullTileName, string what)
     {
       byte[] tileData = null;
-      var stream = await dataOceanClient.GetFile(fullTileName, authn.CustomHeaders(), true);
+      var stream = await dataOceanClient.GetFile(fullTileName, authn.CustomHeaders());
       if (stream != null)
       {
         log.LogDebug($"DxfTileExecutor: {what} tile downloaded with size of {stream.Length} bytes");

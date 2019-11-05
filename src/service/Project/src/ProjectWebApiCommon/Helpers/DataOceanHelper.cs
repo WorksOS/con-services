@@ -38,8 +38,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         }
 
         var customHeaders = authn.CustomHeaders();
-        customHeaders.Remove("Authorization"); // todoJeannie
-        customHeaders.Add("Authorization", "Bearer b4fd6470b056247eca1c939968a9ff48");
         var dataOceanPath = DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid);
 
         var ccPutFileResult = false;
@@ -49,14 +47,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           log.LogInformation($"{nameof(WriteFileToDataOcean)}: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
 
-          folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders, true);
+          folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
 
           if (folderAlreadyExists == false)
           {
-            await dataOceanClient.MakeFolder(dataOceanPath, customHeaders, true);
+            await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);
           }
 
-          ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, true, customHeaders);
+          ccPutFileResult = await dataOceanClient.PutFile(dataOceanPath, dataOceanFileName, fileContents, customHeaders);
         }
         catch (Exception e)
         {
@@ -96,7 +94,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
         try
         {
-          ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders, true);
+          ccDeleteFileResult = await dataOceanClient.DeleteFile(fullFileName, customHeaders);
         }
         catch (Exception e)
         {

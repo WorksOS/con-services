@@ -7,14 +7,14 @@ namespace VSS.DataOcean.Client
 {
   public interface IDataOceanClient
   {
-    Task<bool> FolderExists(string path, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
-    Task<bool> FileExists(string filename, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
-    Task<bool> MakeFolder(string path, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
-    Task<bool> PutFile(string path, string filename, Stream contents, bool isDataOceanCustomerProjectFolderStructure, IDictionary<string, string> customHeaders = null);
-    Task<bool> DeleteFile(string fullName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
+    Task<bool> FolderExists(string path, IDictionary<string, string> customHeaders);
+    Task<bool> FileExists(string filename, IDictionary<string, string> customHeaders);
+    Task<bool> MakeFolder(string path, IDictionary<string, string> customHeaders);
+    Task<bool> PutFile(string path, string filename, Stream contents, IDictionary<string, string> customHeaders = null);
+    Task<bool> DeleteFile(string fullName, IDictionary<string, string> customHeaders);
 
-    Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
-    Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
-    Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure);
+    Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders);
+    Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders);
+    Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders);
   }
 }

@@ -92,14 +92,14 @@ namespace VSS.Pegasus.Client
       Log.LogInformation($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
 
       //Get the DataOcean file ids.
-      var dcFileId = await dataOceanClient.GetFileId(dcFileName, customHeaders, true);
+      var dcFileId = await dataOceanClient.GetFileId(dcFileName, customHeaders);
       if (dcFileId == null)
       {
         var message = $"Failed to find coordinate system file {dcFileName}. Has it been uploaded successfully?";
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
-      var dxfFileId = await dataOceanClient.GetFileId(dxfFileName, customHeaders, true);
+      var dxfFileId = await dataOceanClient.GetFileId(dxfFileName, customHeaders);
       if (dxfFileId == null)
       {
         var message = $"Failed to find DXF file {dxfFileName}. Has it been uploaded successfully?";
@@ -140,7 +140,7 @@ namespace VSS.Pegasus.Client
         }
       };
 
-      return await GenerateTiles(dxfFileName, createExecutionMessage, customHeaders, setJobIdAction, true);
+      return await GenerateTiles(dxfFileName, createExecutionMessage, customHeaders, setJobIdAction);
     }
 
 
@@ -155,7 +155,7 @@ namespace VSS.Pegasus.Client
       Log.LogInformation($"{nameof(GenerateGeoTiffTiles)}: geoTiffFileName={geoTiffFileName}");
 
       //Get the DataOcean file id.
-      var geoTiffFileId = await dataOceanClient.GetFileId(geoTiffFileName, customHeaders, true);
+      var geoTiffFileId = await dataOceanClient.GetFileId(geoTiffFileName, customHeaders);
       if (geoTiffFileId == null)
       {
         var message = $"Failed to find GeoTIFF file {geoTiffFileName}. Has it been uploaded successfully?";
@@ -179,7 +179,7 @@ namespace VSS.Pegasus.Client
         }
       };
 
-      return await GenerateTiles(geoTiffFileName, createExecutionMessage, customHeaders, setJobIdAction, true);
+      return await GenerateTiles(geoTiffFileName, createExecutionMessage, customHeaders, setJobIdAction);
     }
 
     /// <summary>
@@ -190,12 +190,12 @@ namespace VSS.Pegasus.Client
     /// <param name="createExecutionMessage">The details of tile generation for Pegasus</param>
     /// <param name="customHeaders"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
-    private async Task<TileMetadata> GenerateTiles(string fileName, CreateExecutionMessage createExecutionMessage, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction, bool isDataOceanCustomerProjectFolderStructure)
+    private async Task<TileMetadata> GenerateTiles(string fileName, CreateExecutionMessage createExecutionMessage, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
       TileMetadata metadata = null;
 
-      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
-      await DeleteTiles(fileName, customHeaders, isDataOceanCustomerProjectFolderStructure);
+      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existence.
+      await DeleteTiles(fileName, customHeaders);
 
       //In DataOcean this is actually a multifile not a folder
       string tileFolderFullName = new DataOceanFileUtil(fileName).GeneratedTilesFolder;
@@ -203,7 +203,7 @@ namespace VSS.Pegasus.Client
       var parts = tileFolderFullName.Split(DataOceanUtil.PathSeparator);
       var tileFolderName = parts[parts.Length - 1];
       var parentPath = tileFolderFullName.Substring(0, tileFolderFullName.Length - tileFolderName.Length - 1);
-      var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders, isDataOceanCustomerProjectFolderStructure);
+      var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders);
       //Set common parameters
       createExecutionMessage.Execution.Parameters.ParentId = parentId;
       createExecutionMessage.Execution.Parameters.Name = tileFolderName;
@@ -323,7 +323,7 @@ namespace VSS.Pegasus.Client
         //5. Get the zoom range from the tile metadata file 
         var metadataFileName = new DataOceanFileUtil(fileName).TilesMetadataFileName;
         Log.LogDebug($"Getting tiles metadata for {metadataFileName}");
-        var stream = await dataOceanClient.GetFile(metadataFileName, customHeaders, isDataOceanCustomerProjectFolderStructure);
+        var stream = await dataOceanClient.GetFile(metadataFileName, customHeaders);
 
         using (var sr = new StreamReader(stream))
         using (var jtr = new JsonTextReader(sr))
@@ -341,12 +341,12 @@ namespace VSS.Pegasus.Client
     /// Deletes generated tiles for the given file
     /// </summary>
     /// <returns>True if successfully deleted otherwise false</returns>
-    public Task<bool> DeleteTiles(string fullFileName, IDictionary<string, string> customHeaders, bool isDataOceanCustomerProjectFolderStructure)
+    public Task<bool> DeleteTiles(string fullFileName, IDictionary<string, string> customHeaders)
     {
       //In DataOcean this is actually a multi-file not a folder
       var tileFullFileName = new DataOceanFileUtil(fullFileName).GeneratedTilesFolder;
       //To avoid 2 traversals just try the delete anyway without checking for existance.
-      return dataOceanClient.DeleteFile(tileFullFileName, customHeaders, isDataOceanCustomerProjectFolderStructure);
+      return dataOceanClient.DeleteFile(tileFullFileName, customHeaders);
     }
   }
 }

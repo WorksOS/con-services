@@ -104,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
               string dxfFileName = DataOceanFileUtil.GeneratedFileName(dataOceanFileName, deleteImportedFile.ImportedFileType);
               var dataOceanPath = DataOceanFileUtil.DataOceanPath(deleteImportedFile.DataOceanRootFolder, customerUid, deleteImportedFile.ProjectUid.ToString());
               var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{dxfFileName}";
-              tasks.Add(pegasusClient.DeleteTiles(fullFileName, DataOceanHelper.CustomHeaders(authn), true));
+              tasks.Add(pegasusClient.DeleteTiles(fullFileName, DataOceanHelper.CustomHeaders(authn)));
 
               if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment)
               {

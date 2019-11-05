@@ -151,7 +151,7 @@ namespace VSS.Tile.Service.Common.Services
         {
           var targetFile = dataOceanFileUtil.GetTileFileName(zoomLevel, yTile, xTile);
           log.LogDebug($"JoinDxfTiles: getting tile {targetFile}");
-          var file = await dataOceanClient.GetFile(targetFile, authn.CustomHeaders(), true);
+          var file = await dataOceanClient.GetFile(targetFile, authn.CustomHeaders());
           if (file != null)
           {
             Image<Rgba32> tile = Image.Load<Rgba32>(file);
