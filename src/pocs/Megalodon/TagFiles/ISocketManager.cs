@@ -26,6 +26,8 @@ namespace TagFiles
     void CreateSocket();
     void ListenOnPort();
     event CallbackEventHandler Callback;
-    
+    void SendAck();
+
+
   }
 }

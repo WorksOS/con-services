@@ -301,10 +301,13 @@ namespace TagFiles
                   else
                     byteData[0] = TagConstants.ACK;
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
+                  if (_DebugTraceToLog)
+                  {
                     if (_HeaderRequired)
-                    _log.LogDebug("ENQ recieved. Returning SOH");
+                      _log.LogDebug("ENQ recieved. Returning SOH");
                     else
-                    _log.LogDebug("ENQ recieved. Returning ACK");
+                      _log.LogDebug("ENQ recieved. Returning ACK");
+                  }
                   break;
 
                 case TagConstants.EOT: // not used by TMC client
@@ -332,12 +335,14 @@ namespace TagFiles
                 if (_HeaderRequired) // Prepare the reply message 
                 {
                   byteData[0] = TagConstants.SOH;
-                  _log.LogDebug("SOH returned");
+                  if (_DebugTraceToLog)
+                    _log.LogDebug("SOH returned");
                 }
                 else
                 {
                   byteData[0] = TagConstants.ACK;
-                  _log.LogDebug("ACK returned");
+                  if (_DebugTraceToLog)
+                    _log.LogDebug("ACK returned");
                 }
                 // Sends data asynchronously to a connected Socket 
                 handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
@@ -346,8 +351,8 @@ namespace TagFiles
 
             if (keepListening)
             {
-              if (Callback != null)
-                Callback("Listening...", 0);
+              if (_DebugTraceToLog)
+               _log.LogDebug("Listening...");
               byte[] buffernew = new byte[1024];
               obj[0] = buffernew;
               obj[1] = handler;
@@ -382,7 +387,13 @@ namespace TagFiles
       }
     }
 
-
+    public void SendAck()
+    {
+      _log.LogInformation("Sending an ACK to Client");
+      byte[] byteData = new byte[1]; // response buffer
+      byteData[0] = TagConstants.ACK;
+      handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
+    }
 
 
   }

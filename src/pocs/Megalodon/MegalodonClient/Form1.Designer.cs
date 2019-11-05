@@ -33,17 +33,16 @@
       this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
       this.txtPort = new System.Windows.Forms.TextBox();
       this.label1 = new System.Windows.Forms.Label();
-      this.button2 = new System.Windows.Forms.Button();
+      this.btnOpenPort = new System.Windows.Forms.Button();
       this.label20 = new System.Windows.Forms.Label();
       this.txtTCIP = new System.Windows.Forms.TextBox();
       this.label21 = new System.Windows.Forms.Label();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
-      this.button3 = new System.Windows.Forms.Button();
-      this.button6 = new System.Windows.Forms.Button();
-      this.button4 = new System.Windows.Forms.Button();
-      this.button5 = new System.Windows.Forms.Button();
+      this.btnSendHeader = new System.Windows.Forms.Button();
+      this.btnSendEpoch = new System.Windows.Forms.Button();
+      this.btnSendENQ = new System.Windows.Forms.Button();
+      this.btnSendEOT = new System.Windows.Forms.Button();
       this.groupBox2 = new System.Windows.Forms.GroupBox();
-      this.label7 = new System.Windows.Forms.Label();
       this.chkUseCustomDate = new System.Windows.Forms.CheckBox();
       this.label6 = new System.Windows.Forms.Label();
       this.dtpStart = new System.Windows.Forms.DateTimePicker();
@@ -73,6 +72,14 @@
       this.listBox1 = new System.Windows.Forms.ListBox();
       this.txtNSteps = new System.Windows.Forms.TextBox();
       this.label8 = new System.Windows.Forms.Label();
+      this.txtLong = new System.Windows.Forms.TextBox();
+      this.label7 = new System.Windows.Forms.Label();
+      this.txtLat = new System.Windows.Forms.TextBox();
+      this.label9 = new System.Windows.Forms.Label();
+      this.txtDesign = new System.Windows.Forms.TextBox();
+      this.label10 = new System.Windows.Forms.Label();
+      this.txtSerial = new System.Windows.Forms.TextBox();
+      this.label14 = new System.Windows.Forms.Label();
       this.statusStrip1.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
@@ -85,7 +92,7 @@
             this.lblStatus});
       this.statusStrip1.Location = new System.Drawing.Point(0, 511);
       this.statusStrip1.Name = "statusStrip1";
-      this.statusStrip1.Size = new System.Drawing.Size(819, 22);
+      this.statusStrip1.Size = new System.Drawing.Size(825, 22);
       this.statusStrip1.TabIndex = 1;
       this.statusStrip1.Text = "LastAction:";
       // 
@@ -98,9 +105,9 @@
       // lblStatus
       // 
       this.lblStatus.Name = "lblStatus";
-      this.lblStatus.Size = new System.Drawing.Size(681, 17);
-      this.lblStatus.Text = "Sim works by moving left to right, north, then right to left and repeats pattern." +
-    " Finally after x steps north the whole cycle repeats.";
+      this.lblStatus.Size = new System.Drawing.Size(662, 17);
+      this.lblStatus.Text = "Sim works by moving left to right, north, then right to left. Repeat pattern. Fin" +
+    "ally after x steps north, the whole cycle repeats.";
       // 
       // txtPort
       // 
@@ -119,15 +126,15 @@
       this.label1.TabIndex = 3;
       this.label1.Text = "Port";
       // 
-      // button2
+      // btnOpenPort
       // 
-      this.button2.Location = new System.Drawing.Point(45, 12);
-      this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(101, 23);
-      this.button2.TabIndex = 41;
-      this.button2.Text = "Open Socket";
-      this.button2.UseVisualStyleBackColor = true;
-      this.button2.Click += new System.EventHandler(this.Button2_Click);
+      this.btnOpenPort.Location = new System.Drawing.Point(45, 12);
+      this.btnOpenPort.Name = "btnOpenPort";
+      this.btnOpenPort.Size = new System.Drawing.Size(101, 23);
+      this.btnOpenPort.TabIndex = 41;
+      this.btnOpenPort.Text = "Open Socket";
+      this.btnOpenPort.UseVisualStyleBackColor = true;
+      this.btnOpenPort.Click += new System.EventHandler(this.BtnOpenPort_Click);
       // 
       // label20
       // 
@@ -157,59 +164,70 @@
       // 
       // groupBox1
       // 
-      this.groupBox1.Controls.Add(this.button5);
-      this.groupBox1.Controls.Add(this.button4);
-      this.groupBox1.Controls.Add(this.button6);
-      this.groupBox1.Controls.Add(this.button3);
+      this.groupBox1.Controls.Add(this.btnSendEOT);
+      this.groupBox1.Controls.Add(this.btnSendENQ);
+      this.groupBox1.Controls.Add(this.btnSendEpoch);
+      this.groupBox1.Controls.Add(this.btnSendHeader);
       this.groupBox1.Location = new System.Drawing.Point(243, 12);
       this.groupBox1.Name = "groupBox1";
-      this.groupBox1.Size = new System.Drawing.Size(223, 91);
+      this.groupBox1.Size = new System.Drawing.Size(223, 108);
       this.groupBox1.TabIndex = 60;
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Manual Update";
       // 
-      // button3
+      // btnSendHeader
       // 
-      this.button3.Location = new System.Drawing.Point(22, 23);
-      this.button3.Name = "button3";
-      this.button3.Size = new System.Drawing.Size(91, 23);
-      this.button3.TabIndex = 44;
-      this.button3.Text = "Send Header";
-      this.button3.UseVisualStyleBackColor = true;
+      this.btnSendHeader.Location = new System.Drawing.Point(22, 23);
+      this.btnSendHeader.Name = "btnSendHeader";
+      this.btnSendHeader.Size = new System.Drawing.Size(91, 23);
+      this.btnSendHeader.TabIndex = 44;
+      this.btnSendHeader.Text = "Send Header";
+      this.btnSendHeader.UseVisualStyleBackColor = true;
+      this.btnSendHeader.Click += new System.EventHandler(this.BtnSendHeader_Click);
       // 
-      // button6
+      // btnSendEpoch
       // 
-      this.button6.Location = new System.Drawing.Point(22, 49);
-      this.button6.Name = "button6";
-      this.button6.Size = new System.Drawing.Size(91, 23);
-      this.button6.TabIndex = 47;
-      this.button6.Text = "Send Epoch";
-      this.button6.UseVisualStyleBackColor = true;
+      this.btnSendEpoch.Location = new System.Drawing.Point(22, 49);
+      this.btnSendEpoch.Name = "btnSendEpoch";
+      this.btnSendEpoch.Size = new System.Drawing.Size(91, 23);
+      this.btnSendEpoch.TabIndex = 47;
+      this.btnSendEpoch.Text = "Send Epoch";
+      this.btnSendEpoch.UseVisualStyleBackColor = true;
+      this.btnSendEpoch.Click += new System.EventHandler(this.BtnSendEpoch_Click);
       // 
-      // button4
+      // btnSendENQ
       // 
-      this.button4.Location = new System.Drawing.Point(119, 23);
-      this.button4.Name = "button4";
-      this.button4.Size = new System.Drawing.Size(91, 23);
-      this.button4.TabIndex = 48;
-      this.button4.Text = "Send ENQ";
-      this.button4.UseVisualStyleBackColor = true;
+      this.btnSendENQ.Location = new System.Drawing.Point(119, 23);
+      this.btnSendENQ.Name = "btnSendENQ";
+      this.btnSendENQ.Size = new System.Drawing.Size(91, 23);
+      this.btnSendENQ.TabIndex = 48;
+      this.btnSendENQ.Text = "Send ENQ";
+      this.btnSendENQ.UseVisualStyleBackColor = true;
+      this.btnSendENQ.Click += new System.EventHandler(this.BtnSendENQ_Click);
       // 
-      // button5
+      // btnSendEOT
       // 
-      this.button5.Location = new System.Drawing.Point(119, 49);
-      this.button5.Name = "button5";
-      this.button5.Size = new System.Drawing.Size(91, 23);
-      this.button5.TabIndex = 49;
-      this.button5.Text = "Send EOT";
-      this.button5.UseVisualStyleBackColor = true;
+      this.btnSendEOT.Location = new System.Drawing.Point(119, 49);
+      this.btnSendEOT.Name = "btnSendEOT";
+      this.btnSendEOT.Size = new System.Drawing.Size(91, 23);
+      this.btnSendEOT.TabIndex = 49;
+      this.btnSendEOT.Text = "Send EOT";
+      this.btnSendEOT.UseVisualStyleBackColor = true;
+      this.btnSendEOT.Click += new System.EventHandler(this.BtnSendEOT_Click);
       // 
       // groupBox2
       // 
+      this.groupBox2.Controls.Add(this.txtSerial);
+      this.groupBox2.Controls.Add(this.label14);
+      this.groupBox2.Controls.Add(this.txtDesign);
+      this.groupBox2.Controls.Add(this.label10);
+      this.groupBox2.Controls.Add(this.txtLong);
+      this.groupBox2.Controls.Add(this.label7);
+      this.groupBox2.Controls.Add(this.txtLat);
+      this.groupBox2.Controls.Add(this.label9);
       this.groupBox2.Controls.Add(this.label8);
       this.groupBox2.Controls.Add(this.txtNSteps);
       this.groupBox2.Controls.Add(this.listBox1);
-      this.groupBox2.Controls.Add(this.label7);
       this.groupBox2.Controls.Add(this.chkUseCustomDate);
       this.groupBox2.Controls.Add(this.label6);
       this.groupBox2.Controls.Add(this.dtpStart);
@@ -236,26 +254,17 @@
       this.groupBox2.Controls.Add(this.label3);
       this.groupBox2.Controls.Add(this.txtEast);
       this.groupBox2.Controls.Add(this.label2);
-      this.groupBox2.Location = new System.Drawing.Point(45, 126);
+      this.groupBox2.Location = new System.Drawing.Point(16, 126);
       this.groupBox2.Name = "groupBox2";
-      this.groupBox2.Size = new System.Drawing.Size(760, 377);
+      this.groupBox2.Size = new System.Drawing.Size(783, 377);
       this.groupBox2.TabIndex = 61;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Simulator (Default Dimensions)";
       // 
-      // label7
-      // 
-      this.label7.AutoSize = true;
-      this.label7.Location = new System.Drawing.Point(184, 148);
-      this.label7.Name = "label7";
-      this.label7.Size = new System.Drawing.Size(67, 13);
-      this.label7.TabIndex = 86;
-      this.label7.Text = "(blade width)";
-      // 
       // chkUseCustomDate
       // 
       this.chkUseCustomDate.AutoSize = true;
-      this.chkUseCustomDate.Location = new System.Drawing.Point(302, 186);
+      this.chkUseCustomDate.Location = new System.Drawing.Point(302, 253);
       this.chkUseCustomDate.Name = "chkUseCustomDate";
       this.chkUseCustomDate.Size = new System.Drawing.Size(134, 17);
       this.chkUseCustomDate.TabIndex = 85;
@@ -265,7 +274,7 @@
       // label6
       // 
       this.label6.AutoSize = true;
-      this.label6.Location = new System.Drawing.Point(299, 203);
+      this.label6.Location = new System.Drawing.Point(299, 270);
       this.label6.Name = "label6";
       this.label6.Size = new System.Drawing.Size(55, 13);
       this.label6.TabIndex = 84;
@@ -275,7 +284,7 @@
       // 
       this.dtpStart.CustomFormat = "MM/dd/yyyy hh:mm:ss";
       this.dtpStart.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-      this.dtpStart.Location = new System.Drawing.Point(299, 219);
+      this.dtpStart.Location = new System.Drawing.Point(299, 286);
       this.dtpStart.Name = "dtpStart";
       this.dtpStart.Size = new System.Drawing.Size(200, 20);
       this.dtpStart.TabIndex = 83;
@@ -296,7 +305,7 @@
       this.chkSOH.AutoSize = true;
       this.chkSOH.Checked = true;
       this.chkSOH.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkSOH.Location = new System.Drawing.Point(574, 19);
+      this.chkSOH.Location = new System.Drawing.Point(535, 19);
       this.chkSOH.Name = "chkSOH";
       this.chkSOH.Size = new System.Drawing.Size(128, 17);
       this.chkSOH.TabIndex = 81;
@@ -335,6 +344,7 @@
       this.btnStop.TabIndex = 78;
       this.btnStop.Text = "Stop Sim";
       this.btnStop.UseVisualStyleBackColor = true;
+      this.btnStop.Click += new System.EventHandler(this.BtnStop_Click);
       // 
       // btnRunSim
       // 
@@ -344,7 +354,7 @@
       this.btnRunSim.TabIndex = 77;
       this.btnRunSim.Text = "Run SIM";
       this.btnRunSim.UseVisualStyleBackColor = true;
-      this.btnRunSim.Click += new System.EventHandler(this.BtnRunSim_Click_1);
+      this.btnRunSim.Click += new System.EventHandler(this.BtnRunSim_Click);
       // 
       // txtVName
       // 
@@ -494,10 +504,10 @@
       // listBox1
       // 
       this.listBox1.FormattingEnabled = true;
-      this.listBox1.Location = new System.Drawing.Point(574, 35);
+      this.listBox1.Location = new System.Drawing.Point(535, 42);
       this.listBox1.Name = "listBox1";
       this.listBox1.ScrollAlwaysVisible = true;
-      this.listBox1.Size = new System.Drawing.Size(167, 316);
+      this.listBox1.Size = new System.Drawing.Size(231, 316);
       this.listBox1.TabIndex = 87;
       // 
       // txtNSteps
@@ -517,17 +527,85 @@
       this.label8.TabIndex = 89;
       this.label8.Text = "Northward steps";
       // 
+      // txtLong
+      // 
+      this.txtLong.Location = new System.Drawing.Point(423, 176);
+      this.txtLong.Name = "txtLong";
+      this.txtLong.Size = new System.Drawing.Size(97, 20);
+      this.txtLong.TabIndex = 93;
+      this.txtLong.Text = "-115.020131";
+      // 
+      // label7
+      // 
+      this.label7.AutoSize = true;
+      this.label7.Location = new System.Drawing.Point(424, 160);
+      this.label7.Name = "label7";
+      this.label7.Size = new System.Drawing.Size(59, 13);
+      this.label7.TabIndex = 92;
+      this.label7.Text = "Seed Long";
+      // 
+      // txtLat
+      // 
+      this.txtLat.Location = new System.Drawing.Point(302, 176);
+      this.txtLat.Name = "txtLat";
+      this.txtLat.Size = new System.Drawing.Size(104, 20);
+      this.txtLat.TabIndex = 91;
+      this.txtLat.Text = "36.206979";
+      // 
+      // label9
+      // 
+      this.label9.AutoSize = true;
+      this.label9.Location = new System.Drawing.Point(303, 160);
+      this.label9.Name = "label9";
+      this.label9.Size = new System.Drawing.Size(50, 13);
+      this.label9.TabIndex = 90;
+      this.label9.Text = "Seed Lat";
+      // 
+      // txtDesign
+      // 
+      this.txtDesign.Location = new System.Drawing.Point(299, 217);
+      this.txtDesign.Name = "txtDesign";
+      this.txtDesign.Size = new System.Drawing.Size(104, 20);
+      this.txtDesign.TabIndex = 95;
+      this.txtDesign.Text = "DesignA";
+      // 
+      // label10
+      // 
+      this.label10.AutoSize = true;
+      this.label10.Location = new System.Drawing.Point(300, 201);
+      this.label10.Name = "label10";
+      this.label10.Size = new System.Drawing.Size(40, 13);
+      this.label10.TabIndex = 94;
+      this.label10.Text = "Design";
+      // 
+      // txtSerial
+      // 
+      this.txtSerial.Location = new System.Drawing.Point(118, 320);
+      this.txtSerial.Name = "txtSerial";
+      this.txtSerial.Size = new System.Drawing.Size(222, 20);
+      this.txtSerial.TabIndex = 97;
+      this.txtSerial.Text = "e6cd374b-22d5-4512-b60e-fd8152a0899b";
+      // 
+      // label14
+      // 
+      this.label14.AutoSize = true;
+      this.label14.Location = new System.Drawing.Point(79, 323);
+      this.label14.Name = "label14";
+      this.label14.Size = new System.Drawing.Size(33, 13);
+      this.label14.TabIndex = 96;
+      this.label14.Text = "Serial";
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(819, 533);
+      this.ClientSize = new System.Drawing.Size(825, 533);
       this.Controls.Add(this.groupBox2);
       this.Controls.Add(this.groupBox1);
       this.Controls.Add(this.label21);
       this.Controls.Add(this.txtTCIP);
       this.Controls.Add(this.label20);
-      this.Controls.Add(this.button2);
+      this.Controls.Add(this.btnOpenPort);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.txtPort);
       this.Controls.Add(this.statusStrip1);
@@ -548,19 +626,18 @@
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     private System.Windows.Forms.TextBox txtPort;
     private System.Windows.Forms.Label label1;
-    private System.Windows.Forms.Button button2;
+    private System.Windows.Forms.Button btnOpenPort;
     private System.Windows.Forms.ToolStripStatusLabel lblStatus;
     private System.Windows.Forms.Label label20;
     private System.Windows.Forms.TextBox txtTCIP;
     private System.Windows.Forms.Label label21;
     private System.Windows.Forms.GroupBox groupBox1;
-    private System.Windows.Forms.Button button5;
-    private System.Windows.Forms.Button button4;
-    private System.Windows.Forms.Button button6;
-    private System.Windows.Forms.Button button3;
+    private System.Windows.Forms.Button btnSendEOT;
+    private System.Windows.Forms.Button btnSendENQ;
+    private System.Windows.Forms.Button btnSendEpoch;
+    private System.Windows.Forms.Button btnSendHeader;
     private System.Windows.Forms.GroupBox groupBox2;
     private System.Windows.Forms.ListBox listBox1;
-    private System.Windows.Forms.Label label7;
     private System.Windows.Forms.CheckBox chkUseCustomDate;
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.DateTimePicker dtpStart;
@@ -589,6 +666,14 @@
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label8;
     private System.Windows.Forms.TextBox txtNSteps;
+    private System.Windows.Forms.TextBox txtLong;
+    private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.TextBox txtLat;
+    private System.Windows.Forms.Label label9;
+    private System.Windows.Forms.TextBox txtDesign;
+    private System.Windows.Forms.Label label10;
+    private System.Windows.Forms.TextBox txtSerial;
+    private System.Windows.Forms.Label label14;
   }
 }
 

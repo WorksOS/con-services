@@ -5,7 +5,7 @@
 namespace TagFiles.Parser
 {
 
-  public class EpochRecord
+  public class EpochRecord 
   {
 
     public bool HasHeader = false;
@@ -39,6 +39,8 @@ namespace TagFiles.Parser
     public bool HasAppVersion = false;
     public bool HasValidPosition = false;
 
+
+
     // Fields
 
     /// <summary>
@@ -51,7 +53,7 @@ namespace TagFiles.Parser
       set
       {
         _Time = value;
-       
+
         // workout time delta
         if (HasPrevTime)
         {
@@ -59,7 +61,7 @@ namespace TagFiles.Parser
           if (DeltaTime < 0)
             DeltaTime = 0;
         }
-        
+
         PrevTime = value;
         HasTime = true;
       }
@@ -490,6 +492,48 @@ namespace TagFiles.Parser
       HasAppVersion = false;
       HasValidPosition = false;
     }
+
+    public bool IsFullPositionEpoch()
+    {
+      return HasLEB & HasLHB & HasLNB & HasREB & HasRHB & HasRNB;
+    }
+
+    public bool IsHeaderEpoch()
+    {
+      return HasTime & HasWeek & HasCoordSys & HasAppVersion;
+    }
+
+    /// <summary>
+    /// Used for an update Epoch
+    /// </summary>
+    /// <param name="eRec"></param>
+    public void EpochCopy(ref EpochRecord eRec)
+    {
+      Time = eRec.Time;
+      LEB = eRec.LEB;
+      LNB = eRec.LNB;
+      LHB = eRec.LHB;
+      REB = eRec.REB;
+      RNB = eRec.RNB;
+      RHB = eRec.RHB;
+      BOG = eRec.BOG;
+      HDG = eRec.HDG;
+      MSD = eRec.MSD;
+    }
+
+    /// <summary>
+    /// is this the same epoch update
+    /// </summary>
+    /// <param name="eRec"></param>
+    public bool NotEpochSamePosition(ref EpochRecord eRec)
+    {
+      if (IsFullPositionEpoch() & eRec.IsFullPositionEpoch())
+        return !(LEB == eRec.LEB & LNB == eRec.LNB & LHB == eRec.LHB & REB == eRec.REB & RNB == eRec.RNB & RHB == eRec.RHB);
+      else
+        return true;
+
+    }
+
 
   }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +19,6 @@ namespace TagFiles.Interface
     private TagFile tagFile = new TagFile();
     private ISocketManager _socketManager;
     private Timer _timer;
-    private int executionCount = 0;
     private readonly IConfigurationStore _config;
     private readonly ILogger _log;
 
@@ -51,12 +51,16 @@ namespace TagFiles.Interface
         throw new ArgumentException($"Missing variable TagfileFolder in appsettings.json");
       }
       else
+      {
+        // Make sure folder exists for monitor
+        Directory.CreateDirectory(_Folder);
         tagFile.TagfileFolder = _Folder;
-
+      }
       tagFile.MachineSerial = configStore.GetValueString("Serial");
       tagFile.MachineID = configStore.GetValueString("MachineName");
       tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false;
       tagFile.Log = _log;
+      tagFile.Parser.Log = _log;
       _log.LogInformation($"Socket Settings: {_TCIP}:{_Port}");
     }
 
@@ -78,7 +82,6 @@ namespace TagFiles.Interface
     private void StopPort()
     {
       _log.LogInformation("Closing Port.");
-
       _timer?.Change(Timeout.Infinite, 0);
 
       try
@@ -143,6 +146,7 @@ namespace TagFiles.Interface
         _socketManager.PortRestartNeeded = false;
         _log.LogInformation("Restarting port due to lost connection");
         RestartPort();
+        _socketManager.SendAck(); // in case they are waiting on response
       }
 
     }
@@ -161,6 +165,7 @@ namespace TagFiles.Interface
       }
       else if (mode == TagConstants.CALLBACK_CONNECTION_MADE)
       {
+        _log.LogInformation("Connection made by client");
         tagFile.EnableTagFileCreationTimer = true;
       }
     }

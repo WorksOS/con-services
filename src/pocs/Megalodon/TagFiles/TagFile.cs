@@ -20,6 +20,9 @@ namespace TagFiles
     private readonly TAGDictionary Dictionary = new TAGDictionary();
     private Timer TagTimer = new System.Timers.Timer();
     private bool readyToWrite = false;
+    private ulong tagFileCount = 0;
+    private bool _NewTagfileStarted = false;
+    private bool tmpNR = false;
 
     public TagHeader Header = new TagHeader();
     public TAGDictionary TagFileDictionary;
@@ -29,6 +32,7 @@ namespace TagFiles
     public bool SendTagFilesToProduction = false;
     public string TagfileFolder = "c:\\megalodon\\tagfiles";
     public ILogger Log;
+
 
     /// <summary>
     /// Tagfile cutoff controlled by timer
@@ -89,7 +93,9 @@ namespace TagFiles
       }
 
       Parser.TrailerRequired = true;
-      Parser.UpdateTagContentList();
+      Parser.CloneLastEpoch(); // used in new tagfile
+      Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR);
+
       var serial = Parser.EpochRec.Serial == string.Empty ? MachineSerial : Parser.EpochRec.Serial;
       var mid = Parser.EpochRec.MID == string.Empty ? MachineID : Parser.EpochRec.MID;
       Header.UpdateTagfileName(serial,mid);
@@ -111,8 +117,10 @@ namespace TagFiles
       {
         if (Write(outStream)) // write tagfile to stream
         {
+          _NewTagfileStarted = true;
           Parser.Reset();
-          Log.LogInformation($"{newFilename} successfully written to disk.");
+          tagFileCount++;
+          Log.LogInformation($"{newFilename} successfully written to disk. Total Tagfiles:{tagFileCount}");
           readyToWrite = false;
         }
         else
