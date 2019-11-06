@@ -38,11 +38,22 @@
       this.txtTCIP = new System.Windows.Forms.TextBox();
       this.label21 = new System.Windows.Forms.Label();
       this.groupBox1 = new System.Windows.Forms.GroupBox();
-      this.btnSendHeader = new System.Windows.Forms.Button();
-      this.btnSendEpoch = new System.Windows.Forms.Button();
-      this.btnSendENQ = new System.Windows.Forms.Button();
       this.btnSendEOT = new System.Windows.Forms.Button();
+      this.btnSendENQ = new System.Windows.Forms.Button();
+      this.btnSendEpoch = new System.Windows.Forms.Button();
+      this.btnSendHeader = new System.Windows.Forms.Button();
       this.groupBox2 = new System.Windows.Forms.GroupBox();
+      this.txtSerial = new System.Windows.Forms.TextBox();
+      this.label14 = new System.Windows.Forms.Label();
+      this.txtDesign = new System.Windows.Forms.TextBox();
+      this.label10 = new System.Windows.Forms.Label();
+      this.txtLong = new System.Windows.Forms.TextBox();
+      this.label7 = new System.Windows.Forms.Label();
+      this.txtLat = new System.Windows.Forms.TextBox();
+      this.label9 = new System.Windows.Forms.Label();
+      this.label8 = new System.Windows.Forms.Label();
+      this.txtNSteps = new System.Windows.Forms.TextBox();
+      this.listBox1 = new System.Windows.Forms.ListBox();
       this.chkUseCustomDate = new System.Windows.Forms.CheckBox();
       this.label6 = new System.Windows.Forms.Label();
       this.dtpStart = new System.Windows.Forms.DateTimePicker();
@@ -69,17 +80,8 @@
       this.label3 = new System.Windows.Forms.Label();
       this.txtEast = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
-      this.listBox1 = new System.Windows.Forms.ListBox();
-      this.txtNSteps = new System.Windows.Forms.TextBox();
-      this.label8 = new System.Windows.Forms.Label();
-      this.txtLong = new System.Windows.Forms.TextBox();
-      this.label7 = new System.Windows.Forms.Label();
-      this.txtLat = new System.Windows.Forms.TextBox();
-      this.label9 = new System.Windows.Forms.Label();
-      this.txtDesign = new System.Windows.Forms.TextBox();
-      this.label10 = new System.Windows.Forms.Label();
-      this.txtSerial = new System.Windows.Forms.TextBox();
-      this.label14 = new System.Windows.Forms.Label();
+      this.txtSleep = new System.Windows.Forms.TextBox();
+      this.label15 = new System.Windows.Forms.Label();
       this.statusStrip1.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
@@ -175,25 +177,15 @@
       this.groupBox1.TabStop = false;
       this.groupBox1.Text = "Manual Update";
       // 
-      // btnSendHeader
+      // btnSendEOT
       // 
-      this.btnSendHeader.Location = new System.Drawing.Point(22, 23);
-      this.btnSendHeader.Name = "btnSendHeader";
-      this.btnSendHeader.Size = new System.Drawing.Size(91, 23);
-      this.btnSendHeader.TabIndex = 44;
-      this.btnSendHeader.Text = "Send Header";
-      this.btnSendHeader.UseVisualStyleBackColor = true;
-      this.btnSendHeader.Click += new System.EventHandler(this.BtnSendHeader_Click);
-      // 
-      // btnSendEpoch
-      // 
-      this.btnSendEpoch.Location = new System.Drawing.Point(22, 49);
-      this.btnSendEpoch.Name = "btnSendEpoch";
-      this.btnSendEpoch.Size = new System.Drawing.Size(91, 23);
-      this.btnSendEpoch.TabIndex = 47;
-      this.btnSendEpoch.Text = "Send Epoch";
-      this.btnSendEpoch.UseVisualStyleBackColor = true;
-      this.btnSendEpoch.Click += new System.EventHandler(this.BtnSendEpoch_Click);
+      this.btnSendEOT.Location = new System.Drawing.Point(119, 49);
+      this.btnSendEOT.Name = "btnSendEOT";
+      this.btnSendEOT.Size = new System.Drawing.Size(91, 23);
+      this.btnSendEOT.TabIndex = 49;
+      this.btnSendEOT.Text = "Send EOT";
+      this.btnSendEOT.UseVisualStyleBackColor = true;
+      this.btnSendEOT.Click += new System.EventHandler(this.BtnSendEOT_Click);
       // 
       // btnSendENQ
       // 
@@ -205,18 +197,30 @@
       this.btnSendENQ.UseVisualStyleBackColor = true;
       this.btnSendENQ.Click += new System.EventHandler(this.BtnSendENQ_Click);
       // 
-      // btnSendEOT
+      // btnSendEpoch
       // 
-      this.btnSendEOT.Location = new System.Drawing.Point(119, 49);
-      this.btnSendEOT.Name = "btnSendEOT";
-      this.btnSendEOT.Size = new System.Drawing.Size(91, 23);
-      this.btnSendEOT.TabIndex = 49;
-      this.btnSendEOT.Text = "Send EOT";
-      this.btnSendEOT.UseVisualStyleBackColor = true;
-      this.btnSendEOT.Click += new System.EventHandler(this.BtnSendEOT_Click);
+      this.btnSendEpoch.Location = new System.Drawing.Point(22, 49);
+      this.btnSendEpoch.Name = "btnSendEpoch";
+      this.btnSendEpoch.Size = new System.Drawing.Size(91, 23);
+      this.btnSendEpoch.TabIndex = 47;
+      this.btnSendEpoch.Text = "Send Epoch";
+      this.btnSendEpoch.UseVisualStyleBackColor = true;
+      this.btnSendEpoch.Click += new System.EventHandler(this.BtnSendEpoch_Click);
+      // 
+      // btnSendHeader
+      // 
+      this.btnSendHeader.Location = new System.Drawing.Point(22, 23);
+      this.btnSendHeader.Name = "btnSendHeader";
+      this.btnSendHeader.Size = new System.Drawing.Size(91, 23);
+      this.btnSendHeader.TabIndex = 44;
+      this.btnSendHeader.Text = "Send Header";
+      this.btnSendHeader.UseVisualStyleBackColor = true;
+      this.btnSendHeader.Click += new System.EventHandler(this.BtnSendHeader_Click);
       // 
       // groupBox2
       // 
+      this.groupBox2.Controls.Add(this.label15);
+      this.groupBox2.Controls.Add(this.txtSleep);
       this.groupBox2.Controls.Add(this.txtSerial);
       this.groupBox2.Controls.Add(this.label14);
       this.groupBox2.Controls.Add(this.txtDesign);
@@ -260,6 +264,100 @@
       this.groupBox2.TabIndex = 61;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Simulator (Default Dimensions)";
+      // 
+      // txtSerial
+      // 
+      this.txtSerial.Location = new System.Drawing.Point(118, 312);
+      this.txtSerial.Name = "txtSerial";
+      this.txtSerial.Size = new System.Drawing.Size(222, 20);
+      this.txtSerial.TabIndex = 97;
+      this.txtSerial.Text = "e6cd374b-22d5-4512-b60e-fd8152a0899b";
+      // 
+      // label14
+      // 
+      this.label14.AutoSize = true;
+      this.label14.Location = new System.Drawing.Point(79, 315);
+      this.label14.Name = "label14";
+      this.label14.Size = new System.Drawing.Size(33, 13);
+      this.label14.TabIndex = 96;
+      this.label14.Text = "Serial";
+      // 
+      // txtDesign
+      // 
+      this.txtDesign.Location = new System.Drawing.Point(299, 217);
+      this.txtDesign.Name = "txtDesign";
+      this.txtDesign.Size = new System.Drawing.Size(104, 20);
+      this.txtDesign.TabIndex = 95;
+      this.txtDesign.Text = "DesignA";
+      // 
+      // label10
+      // 
+      this.label10.AutoSize = true;
+      this.label10.Location = new System.Drawing.Point(300, 201);
+      this.label10.Name = "label10";
+      this.label10.Size = new System.Drawing.Size(40, 13);
+      this.label10.TabIndex = 94;
+      this.label10.Text = "Design";
+      // 
+      // txtLong
+      // 
+      this.txtLong.Location = new System.Drawing.Point(423, 176);
+      this.txtLong.Name = "txtLong";
+      this.txtLong.Size = new System.Drawing.Size(97, 20);
+      this.txtLong.TabIndex = 93;
+      this.txtLong.Text = "-115.020131";
+      // 
+      // label7
+      // 
+      this.label7.AutoSize = true;
+      this.label7.Location = new System.Drawing.Point(424, 160);
+      this.label7.Name = "label7";
+      this.label7.Size = new System.Drawing.Size(59, 13);
+      this.label7.TabIndex = 92;
+      this.label7.Text = "Seed Long";
+      // 
+      // txtLat
+      // 
+      this.txtLat.Location = new System.Drawing.Point(302, 176);
+      this.txtLat.Name = "txtLat";
+      this.txtLat.Size = new System.Drawing.Size(104, 20);
+      this.txtLat.TabIndex = 91;
+      this.txtLat.Text = "36.206979";
+      // 
+      // label9
+      // 
+      this.label9.AutoSize = true;
+      this.label9.Location = new System.Drawing.Point(303, 160);
+      this.label9.Name = "label9";
+      this.label9.Size = new System.Drawing.Size(50, 13);
+      this.label9.TabIndex = 90;
+      this.label9.Text = "Seed Lat";
+      // 
+      // label8
+      // 
+      this.label8.AutoSize = true;
+      this.label8.Location = new System.Drawing.Point(28, 288);
+      this.label8.Name = "label8";
+      this.label8.Size = new System.Drawing.Size(84, 13);
+      this.label8.TabIndex = 89;
+      this.label8.Text = "Northward steps";
+      // 
+      // txtNSteps
+      // 
+      this.txtNSteps.Location = new System.Drawing.Point(118, 285);
+      this.txtNSteps.Name = "txtNSteps";
+      this.txtNSteps.Size = new System.Drawing.Size(100, 20);
+      this.txtNSteps.TabIndex = 88;
+      this.txtNSteps.Text = "10";
+      // 
+      // listBox1
+      // 
+      this.listBox1.FormattingEnabled = true;
+      this.listBox1.Location = new System.Drawing.Point(535, 42);
+      this.listBox1.Name = "listBox1";
+      this.listBox1.ScrollAlwaysVisible = true;
+      this.listBox1.Size = new System.Drawing.Size(231, 316);
+      this.listBox1.TabIndex = 87;
       // 
       // chkUseCustomDate
       // 
@@ -501,99 +599,22 @@
       this.label2.TabIndex = 60;
       this.label2.Text = "East Step (m)";
       // 
-      // listBox1
+      // txtSleep
       // 
-      this.listBox1.FormattingEnabled = true;
-      this.listBox1.Location = new System.Drawing.Point(535, 42);
-      this.listBox1.Name = "listBox1";
-      this.listBox1.ScrollAlwaysVisible = true;
-      this.listBox1.Size = new System.Drawing.Size(231, 316);
-      this.listBox1.TabIndex = 87;
+      this.txtSleep.Location = new System.Drawing.Point(119, 338);
+      this.txtSleep.Name = "txtSleep";
+      this.txtSleep.Size = new System.Drawing.Size(100, 20);
+      this.txtSleep.TabIndex = 98;
+      this.txtSleep.Text = "200";
       // 
-      // txtNSteps
+      // label15
       // 
-      this.txtNSteps.Location = new System.Drawing.Point(118, 285);
-      this.txtNSteps.Name = "txtNSteps";
-      this.txtNSteps.Size = new System.Drawing.Size(100, 20);
-      this.txtNSteps.TabIndex = 88;
-      this.txtNSteps.Text = "10";
-      // 
-      // label8
-      // 
-      this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(28, 288);
-      this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(84, 13);
-      this.label8.TabIndex = 89;
-      this.label8.Text = "Northward steps";
-      // 
-      // txtLong
-      // 
-      this.txtLong.Location = new System.Drawing.Point(423, 176);
-      this.txtLong.Name = "txtLong";
-      this.txtLong.Size = new System.Drawing.Size(97, 20);
-      this.txtLong.TabIndex = 93;
-      this.txtLong.Text = "-115.020131";
-      // 
-      // label7
-      // 
-      this.label7.AutoSize = true;
-      this.label7.Location = new System.Drawing.Point(424, 160);
-      this.label7.Name = "label7";
-      this.label7.Size = new System.Drawing.Size(59, 13);
-      this.label7.TabIndex = 92;
-      this.label7.Text = "Seed Long";
-      // 
-      // txtLat
-      // 
-      this.txtLat.Location = new System.Drawing.Point(302, 176);
-      this.txtLat.Name = "txtLat";
-      this.txtLat.Size = new System.Drawing.Size(104, 20);
-      this.txtLat.TabIndex = 91;
-      this.txtLat.Text = "36.206979";
-      // 
-      // label9
-      // 
-      this.label9.AutoSize = true;
-      this.label9.Location = new System.Drawing.Point(303, 160);
-      this.label9.Name = "label9";
-      this.label9.Size = new System.Drawing.Size(50, 13);
-      this.label9.TabIndex = 90;
-      this.label9.Text = "Seed Lat";
-      // 
-      // txtDesign
-      // 
-      this.txtDesign.Location = new System.Drawing.Point(299, 217);
-      this.txtDesign.Name = "txtDesign";
-      this.txtDesign.Size = new System.Drawing.Size(104, 20);
-      this.txtDesign.TabIndex = 95;
-      this.txtDesign.Text = "DesignA";
-      // 
-      // label10
-      // 
-      this.label10.AutoSize = true;
-      this.label10.Location = new System.Drawing.Point(300, 201);
-      this.label10.Name = "label10";
-      this.label10.Size = new System.Drawing.Size(40, 13);
-      this.label10.TabIndex = 94;
-      this.label10.Text = "Design";
-      // 
-      // txtSerial
-      // 
-      this.txtSerial.Location = new System.Drawing.Point(118, 320);
-      this.txtSerial.Name = "txtSerial";
-      this.txtSerial.Size = new System.Drawing.Size(222, 20);
-      this.txtSerial.TabIndex = 97;
-      this.txtSerial.Text = "e6cd374b-22d5-4512-b60e-fd8152a0899b";
-      // 
-      // label14
-      // 
-      this.label14.AutoSize = true;
-      this.label14.Location = new System.Drawing.Point(79, 323);
-      this.label14.Name = "label14";
-      this.label14.Size = new System.Drawing.Size(33, 13);
-      this.label14.TabIndex = 96;
-      this.label14.Text = "Serial";
+      this.label15.AutoSize = true;
+      this.label15.Location = new System.Drawing.Point(32, 341);
+      this.label15.Name = "label15";
+      this.label15.Size = new System.Drawing.Size(80, 13);
+      this.label15.TabIndex = 99;
+      this.label15.Text = "Loop Sleep(ms)";
       // 
       // Form1
       // 
@@ -674,6 +695,8 @@
     private System.Windows.Forms.Label label10;
     private System.Windows.Forms.TextBox txtSerial;
     private System.Windows.Forms.Label label14;
+    private System.Windows.Forms.Label label15;
+    private System.Windows.Forms.TextBox txtSleep;
   }
 }
 

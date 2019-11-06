@@ -463,7 +463,6 @@ namespace TagFiles.Parser
     }
 
 
-
     /// <summary>
     /// Process field from datapacket
     /// </summary>
@@ -493,43 +492,43 @@ namespace TagFiles.Parser
             }
           case TagConstants.LEFT_EASTING_BLADE:
             {
-              if (EpochRec.HasLEB)
-                Log.LogWarning("Already have LEB value for epoch");
+        //      if (EpochRec.HasLEB)
+         //       Log.LogWarning("Already have LEB value for epoch");
               EpochRec.LEB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.LEFT_NORTHING_BLADE:
             {
-              if (EpochRec.HasLNB)
-                Log.LogWarning("Already have LNB value for epoch");
+       //       if (EpochRec.HasLNB)
+       //         Log.LogWarning("Already have LNB value for epoch");
               EpochRec.LNB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.LEFT_HEIGHT_BLADE:
             {
-              if (EpochRec.HasLHB)
-                Log.LogWarning("Already have LHB value for epoch");
+        //      if (EpochRec.HasLHB)
+         //       Log.LogWarning("Already have LHB value for epoch");
               EpochRec.LHB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_EASTING_BLADE:
             {
-              if (EpochRec.HasREB)
-                Log.LogWarning("Already have REB value for epoch");
+         //     if (EpochRec.HasREB)
+           //     Log.LogWarning("Already have REB value for epoch");
               EpochRec.REB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_NORTHING_BLADE:
             {
-              if (EpochRec.HasRNB)
-                Log.LogWarning("Already have RNB value for epoch");
+          //    if (EpochRec.HasRNB)
+          //      Log.LogWarning("Already have RNB value for epoch");
               EpochRec.RNB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_HEIGHT_BLADE:
             {
-              if (EpochRec.HasRHB)
-                Log.LogWarning("Already have RHB value for epoch");
+         //     if (EpochRec.HasRHB)
+         //       Log.LogWarning("Already have RHB value for epoch");
               EpochRec.RHB = Convert.ToDouble(TagValue);
               break;
             }
@@ -601,8 +600,8 @@ namespace TagFiles.Parser
             }
           case TagConstants.HEADING:
             {
-              if (EpochRec.HasHDG)
-                Log.LogWarning("Already have HDG value for epoch");
+          //    if (EpochRec.HasHDG)
+          //      Log.LogWarning("Already have HDG value for epoch");
               EpochRec.HDG = Convert.ToDouble(TagValue);
               break;
             }

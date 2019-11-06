@@ -21,7 +21,8 @@ namespace TagFiles
     private Timer TagTimer = new System.Timers.Timer();
     private bool readyToWrite = false;
     private ulong tagFileCount = 0;
-    private bool _NewTagfileStarted = false;
+    private ulong epochCount = 0;
+    //  private bool _NewTagfileStarted = false;
     private bool tmpNR = false;
 
     public TagHeader Header = new TagHeader();
@@ -66,9 +67,14 @@ namespace TagFiles
     /// <param name="e"></param>
     private void OnTimedEvent(object source, ElapsedEventArgs e)
     {
-      
+
       if (!readyToWrite)
       {
+        var hertz = 0.0;
+        if (epochCount > 0)
+          hertz =  epochCount / (TagTimer.Interval / 1000);
+        Log.LogInformation($"TimerInterval:{(TagTimer.Interval / 1000)}s, Epochs:{epochCount}, Hertz:{hertz.ToString("#.#")}");
+        epochCount = 0;
         readyToWrite = true;
         lock (updateLock)
         {
@@ -88,7 +94,7 @@ namespace TagFiles
 
       if (Parser.HeaderRequired)
       {
-        Log.LogDebug($"WriteTagFileToDisk. No data to create tagfile.");
+       // Log.LogDebug($"WriteTagFileToDisk. No data to create tagfile.");
         return;
       }
 
@@ -117,7 +123,7 @@ namespace TagFiles
       {
         if (Write(outStream)) // write tagfile to stream
         {
-          _NewTagfileStarted = true;
+        //  _NewTagfileStarted = true;
           Parser.Reset();
           tagFileCount++;
           Log.LogInformation($"{newFilename} successfully written to disk. Total Tagfiles:{tagFileCount}");
@@ -148,6 +154,7 @@ namespace TagFiles
       // protect thread
       lock (updateLock)
       {
+        epochCount++;
         Parser.ParseText(txt);
       }
     }

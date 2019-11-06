@@ -182,6 +182,7 @@ namespace MegalodonClient
             loopCount++;
 
           Application.DoEvents();
+          System.Threading.Thread.Sleep(Convert.ToInt32(txtSleep.Text));
 
           east++;
 
@@ -219,8 +220,6 @@ namespace MegalodonClient
           }
 
           lblStatus.Text = $"East:{east} E-Direction:{ eDirection} North:{north} Hgt:{currrentHgt}";
-
-          System.Threading.Thread.Sleep(50);
 
           TimeSpan duration = DateTime.Now - dtpStart.Value;
           if (chkUseCustomDate.Checked)
