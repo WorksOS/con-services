@@ -312,6 +312,7 @@ namespace VSS.DataOcean.Client
         {
           currentDataOceanFolderPath = retrievedCurrentDataOceanFolderPath;
           folder = new DataOceanDirectory() { Id = Guid.Parse(currentDataOceanFolderPath.DataOceanFolderId), Name = parts[i], ParentId = Guid.Parse(parentId) };
+          _log.LogDebug($"{nameof(GetFolderMetadata)}: found cached folder. parts[i]: {parts[i]}, Id: {currentDataOceanFolderPath.DataOceanFolderId}, ParentId: {parentId}");
           parentId = currentDataOceanFolderPath.DataOceanFolderId;
         }
         else
@@ -327,6 +328,7 @@ namespace VSS.DataOcean.Client
               folder = result.Directories[0];
               parentId = folder.Id.ToString();
               currentDataOceanFolderPath = CacheCreateNode(currentDataOceanFolderPath, parentId, parts[i]);
+              _log.LogDebug($"{nameof(GetFolderMetadata)}: create cache for existing folder. parts[i]: {parts[i]}, Id: {currentDataOceanFolderPath.DataOceanFolderId}, ParentId: {parentId}");
             }
           }
 
@@ -337,6 +339,7 @@ namespace VSS.DataOcean.Client
             folder = (await CreateDirectory(parts[i], Guid.Parse(parentId), customHeaders)).Directory;
             parentId = folder.Id.ToString();
             currentDataOceanFolderPath = CacheCreateNode(currentDataOceanFolderPath, parentId, parts[i]);
+            _log.LogDebug($"{nameof(GetFolderMetadata)}: create cache for created folder. parts[i]: {parts[i]}, Id: {currentDataOceanFolderPath.DataOceanFolderId}, ParentId: {parentId}");
             creatingPath = true;
           }
           else if (directoriesCount > 1)
