@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.Server;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Pegasus.Client;
@@ -19,7 +21,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     public static Guid VSSJOB_UID = Guid.Parse("2d9f4eb2-1991-49c7-a1b0-87e75c770cc1");
     public override Guid VSSJobUid => VSSJOB_UID;
 
-
+  
     public GeoTiffTileGenerationJob(IConfigurationStore configurationStore, IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient, ILoggerFactory logger)
     : base(configurationStore, pegasusClient, authn, notificationHubClient, logger)
     {
@@ -30,7 +32,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     {
       var geoTiffFileName = $"{request.DataOceanPath}{Path.DirectorySeparatorChar}{request.FileName}";
 
-      return pegasusClient.GenerateGeoTiffTiles(geoTiffFileName, CustomHeaders());
+      return pegasusClient.GenerateGeoTiffTiles(geoTiffFileName, CustomHeaders(), SetJobValues );
     }
 
   }

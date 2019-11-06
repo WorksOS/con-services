@@ -23,15 +23,4 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
         $"{environment}: {string.Format(FirstNameWithOffset((int)errorNumber), errorMessage1 ?? "null", errorMessage2 ?? "null")}");
     }    
   }
-
-  /// <summary>
-  /// Scheduler specific error codes
-  /// </summary>
-  public enum SchedulerErrorCodes
-  {
-    Success = 0,
-    VSSJobExecutionFailure = 1,
-    VSSJobCreationFailure = 2,
-    MissingVSSJob = 3
-  }
 }

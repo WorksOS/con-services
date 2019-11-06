@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.Server;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Pegasus.Client;
 using VSS.Pegasus.Client.Models;
 using VSS.Productivity.Push.Models.Notifications;
@@ -16,6 +14,7 @@ using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
+using VSS.Productivity3D.Scheduler.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
@@ -30,6 +29,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     protected readonly ILogger log;
     private readonly IConfigurationStore configStore;
 
+    protected PerformContext jobContext;
+
     public TileGenerationJob(IConfigurationStore configurationStore, IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient, ILoggerFactory logger)
     {
       configStore = configurationStore;
@@ -39,22 +40,17 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
       log = logger.CreateLogger<DxfTileGenerationJob>();
     }
 
-    public Task Setup(object o) => Task.FromResult(true);
+    public Task Setup(object o, object context) => Task.FromResult(true);
 
-    public async Task Run(object o)
+    public async Task Run(object o, object context)
     {
-      T request;
-      try
+      var request = o.GetConvertedObject<T>();
+
+      if (context is PerformContext performContext)
       {
-        request = (o as JObject).ToObject<T>();
+        jobContext = performContext;
       }
-      catch (Exception e)
-      {
-        log.LogError(e, "Exception when converting parameters to tile generation request");
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "Missing or Wrong parameters passed to tile generation job"));
-      }
+
       //Validate the parameters
       request.Validate();
 
@@ -82,16 +78,25 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
       }
     }
 
-    public Task TearDown(object o) => Task.FromResult(true);
+    public Task TearDown(object o, object context) => Task.FromResult(true);
 
     protected abstract Task<TileMetadata> GenerateTiles(TileGenerationRequest request);
-   
-
+    
     protected Dictionary<string, string> CustomHeaders() =>
       new Dictionary<string, string>
       {
         {"Content-Type", ContentTypeConstants.ApplicationJson},
         {"Authorization", $"Bearer {authentication.GetApplicationBearerToken()}"}
       };
+
+    protected void SetJobValues(IDictionary<string, string> setJobIdAction)
+    {
+      if (jobContext == null) { return; }
+
+      foreach (var item in setJobIdAction)
+      {
+        JobStorage.Current.GetConnection().SetJobParameter(jobContext.BackgroundJob.Id, item.Key, item.Value);
+      }
+    }
   }
 }

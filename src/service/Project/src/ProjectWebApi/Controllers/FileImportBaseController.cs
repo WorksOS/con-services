@@ -30,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected ITRexImportFileProxy tRexImportFileProxy;
 
     protected string FileSpaceId;
-    protected string DataOceanRootFolder;
+    protected string DataOceanRootFolderId;
     protected bool UseTrexGatewayDesignImport;
     protected bool UseRaptorGatewayDesignImport;
 
@@ -53,14 +53,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.tRexImportFileProxy = tRexImportFileProxy;
 
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
-      DataOceanRootFolder = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+      DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
       UseTrexGatewayDesignImport = false;
       UseRaptorGatewayDesignImport = true;
       bool.TryParse(ConfigStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),
         out UseTrexGatewayDesignImport);
       bool.TryParse(ConfigStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),
         out UseRaptorGatewayDesignImport);
-
     }
 
     /// <summary>
@@ -141,7 +140,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
       projectSettingsRequest.Validate();
 
-      var result = await WithServiceExceptionTryExecuteAsync(() =>
+      _ = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, headers: customHeaders,
@@ -152,6 +151,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var changedUids = fileUids.Keys.Except(missingUids);
       Logger.LogDebug($"SetFileActivatedState: {changedUids.Count()} changedUids");
+
       return changedUids;
     }
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Polly;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
@@ -27,6 +28,9 @@ namespace VSS.Pegasus.Client
     private const string PEGASUS_EXECUTION_WAIT_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS";
     private const string PEGASUS_DXF_PROCEDURE_ID_KEY = "PEGASUS_DXF_PROCEDURE_ID";
     private const string PEGASUS_GEOTIFF_PROCEDURE_ID_KEY = "PEGASUS_GEOTIFF_PROCEDURE_ID";
+    private const string PEGASUS_LOG_JOBID_KEY = "pegasus_jobid";
+    private const string PEGASUS_LOG_RESULT_KEY = "pegasus_result";
+    private const string PEGASUS_LOG_EVENTS_KEY = "pegasus_events";
 
     private const string TILE_TYPE = "xyz";
     private const string TILE_ORDER = "YX";
@@ -39,7 +43,7 @@ namespace VSS.Pegasus.Client
     private readonly IDataOceanClient dataOceanClient;
     private readonly string pegasusBaseUrl;
     private readonly int executionWaitInterval;
-    private readonly int executionTimeout;
+    private readonly double executionTimeout;
     private readonly int maxZoomLevel;
     private readonly Guid dxfProcedureId;
     private readonly Guid geoTiffProcedureId;
@@ -59,8 +63,8 @@ namespace VSS.Pegasus.Client
         throw new ArgumentException($"Missing environment variable {PEGASUS_URL_KEY}");
       }
       Log.LogInformation($"{PEGASUS_URL_KEY}={pegasusBaseUrl}");
-      executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_KEY, 1000);//Millisecs
-      executionTimeout = configuration.GetValueInt(PEGASUS_EXECUTION_TIMEOUT_KEY, 5);//minutes
+      executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_KEY, 1000);
+      executionTimeout = configuration.GetValueDouble(PEGASUS_EXECUTION_TIMEOUT_KEY, 5);
       maxZoomLevel = configuration.GetValueInt("TILE_RENDER_MAX_ZOOM_LEVEL", 21);
       dxfProcedureId = configuration.GetValueGuid(PEGASUS_DXF_PROCEDURE_ID_KEY);
       if (dxfProcedureId == Guid.Empty)
@@ -74,7 +78,6 @@ namespace VSS.Pegasus.Client
       }
     }
 
-
     /// <summary>
     /// Generates DXF tiles using the Pegasus API and stores them in the data ocean.
     /// </summary>
@@ -83,7 +86,7 @@ namespace VSS.Pegasus.Client
     /// <param name="dxfUnitsType">The units of the DXF file</param>
     /// <param name="customHeaders"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
-    public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders)
+    public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
       Log.LogInformation($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
 
@@ -92,7 +95,7 @@ namespace VSS.Pegasus.Client
       if (dcFileId == null)
       {
         var message = $"Failed to find coordinate system file {dcFileName}. Has it been uploaded successfully?";
-        throw new ServiceException(HttpStatusCode.InternalServerError, 
+        throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, message));
       }
       var dxfFileId = await dataOceanClient.GetFileId(dxfFileName, customHeaders);
@@ -135,17 +138,18 @@ namespace VSS.Pegasus.Client
           }
         }
       };
-      return await GenerateTiles(dxfFileName, createExecutionMessage, customHeaders);
+
+      return await GenerateTiles(dxfFileName, createExecutionMessage, customHeaders, setJobIdAction);
     }
 
-  
+
     /// <summary>
     /// Generates GeoTIFF tiles using the Pegasus API and stores them in the data ocean.
     /// </summary>
     /// <param name="geoTiffFileName">The path and file name of the GeoTIFF file</param>
     /// <param name="customHeaders"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
-    public async Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders)
+    public async Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
       Log.LogInformation($"{nameof(GenerateGeoTiffTiles)}: geoTiffFileName={geoTiffFileName}");
 
@@ -173,7 +177,8 @@ namespace VSS.Pegasus.Client
           }
         }
       };
-      return await GenerateTiles(geoTiffFileName, createExecutionMessage, customHeaders);
+
+      return await GenerateTiles(geoTiffFileName, createExecutionMessage, customHeaders, setJobIdAction);
     }
 
     /// <summary>
@@ -184,7 +189,7 @@ namespace VSS.Pegasus.Client
     /// <param name="createExecutionMessage">The details of tile generation for Pegasus</param>
     /// <param name="customHeaders"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
-    private async Task<TileMetadata> GenerateTiles(string fileName, CreateExecutionMessage createExecutionMessage, IDictionary<string, string> customHeaders)
+    private async Task<TileMetadata> GenerateTiles(string fileName, CreateExecutionMessage createExecutionMessage, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
       TileMetadata metadata = null;
 
@@ -207,22 +212,26 @@ namespace VSS.Pegasus.Client
 
       const string baseRoute = "/api/executions";
       var payload = JsonConvert.SerializeObject(createExecutionMessage);
-      PegasusExecutionResult executionResult = null;
+      PegasusExecutionResult executionResult;
+
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post, null, 3, false);
+        executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{baseRoute}", ms, customHeaders, HttpMethod.Post);
       }
+
       if (executionResult == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Failed to create execution for {fileName}"));
       }
 
+      setJobIdAction?.Invoke(new Dictionary<string, string> { { PEGASUS_LOG_JOBID_KEY, executionResult.Execution.Id.ToString() } });
+
       //2. Start the execution
       Log.LogDebug($"Starting execution for {fileName}");
       var executionRoute = $"{baseRoute}/{executionResult.Execution.Id}";
       var startExecutionRoute = $"{executionRoute}/start";
-      var startResult = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post, null, 3, false);
+      var startResult = await gracefulClient.ExecuteRequest<PegasusExecutionAttemptResult>($"{pegasusBaseUrl}{startExecutionRoute}", null, customHeaders, HttpMethod.Post);
       if (startResult == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -231,17 +240,62 @@ namespace VSS.Pegasus.Client
 
       //3. Monitor status of execution until done
       Log.LogDebug($"Monitoring execution status for {fileName}");
-      DateTime endJob = DateTime.Now + TimeSpan.FromMinutes(executionTimeout);
+
+      var endJob = DateTime.Now + TimeSpan.FromMinutes(executionTimeout);
       var done = false;
       var success = true;
+
       while (!done && DateTime.Now <= endJob)
       {
-        if (executionWaitInterval > 0) await Task.Delay(executionWaitInterval);
-        executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Get, null, 3, false);
-        var status = executionResult.Execution.ExecutionStatus.ToUpper();
-        success = string.Compare(status, "FINISHED", true) == 0 || string.Compare(status, "SUCCEEDED", true) == 0;
-        done = success || string.Compare(status, "FAILED", true) == 0;
-        Log.LogDebug($"Execution status {status} for {fileName}");
+        if (executionWaitInterval > 0) { await Task.Delay(executionWaitInterval); }
+
+        var policyResult = await Policy
+        .Handle<Exception>()
+        .WaitAndRetryAsync(
+          3,
+          attempt => TimeSpan.FromMilliseconds(1000),
+          (exception, calculatedWaitDuration) =>
+          {
+            Log.LogError(exception, $"PollyAsync: Failed attempt to query Pegasus. Jobid {executionResult.Execution.Id.ToString()}");
+          })
+        .ExecuteAndCaptureAsync(async () =>
+        {
+          Log.LogDebug($"Executing monitoring request for {fileName} and jobid {executionResult.Execution.Id.ToString()}");
+          executionResult = await gracefulClient.ExecuteRequest<PegasusExecutionResult>($"{pegasusBaseUrl}{executionRoute}", null, customHeaders, HttpMethod.Get);
+          var status = executionResult.Execution.ExecutionStatus;
+          success = string.Compare(status, ExecutionStatus.FINISHED, StringComparison.OrdinalIgnoreCase) == 0 ||
+                    string.Compare(status, ExecutionStatus.SUCCEEDED, StringComparison.OrdinalIgnoreCase) == 0;
+
+          if (string.Compare(status, ExecutionStatus.FAILED, StringComparison.OrdinalIgnoreCase) == 0)
+          {
+            //Try to retrieve why it failed
+            var jobEventsStream = await gracefulClient.ExecuteRequestAsStreamContent($"{pegasusBaseUrl}{executionRoute}/events", HttpMethod.Get, customHeaders);
+
+            if (jobEventsStream != null)
+            {
+              var jobEvents = await jobEventsStream.ReadAsStringAsync();
+              Log.LogError($"Pegasus job {executionResult.Execution.Id.ToString()} failed to execute with the events: {jobEvents}");
+              setJobIdAction?.Invoke(new Dictionary<string, string> { { PEGASUS_LOG_EVENTS_KEY, jobEvents } });
+            }
+            else
+            {
+              Log.LogDebug($"Unable to resolve jobEventsStream for execution id {executionResult.Execution.Id}");
+            }
+          }
+
+          done = success || string.Compare(status, ExecutionStatus.FAILED, StringComparison.OrdinalIgnoreCase) == 0;
+
+          setJobIdAction?.Invoke(new Dictionary<string, string> { { PEGASUS_LOG_RESULT_KEY, status } });
+
+          Log.LogDebug($"Execution status {status} for {fileName} and jobid {executionResult.Execution.Id.ToString()}");
+        });
+
+        if (policyResult.FinalException != null)
+        {
+          Log.LogCritical(policyResult.FinalException,
+            $"TileGeneration PollyAsync: {GetType().FullName} failed with exception for jobid {executionResult.Execution.Id.ToString()}: ");
+          throw policyResult.FinalException;
+        }
       }
 
       if (!done)
@@ -273,25 +327,13 @@ namespace VSS.Pegasus.Client
         using (var sr = new StreamReader(stream))
         using (var jtr = new JsonTextReader(sr))
         {
-          var js = new JsonSerializer();
-          metadata = js.Deserialize<TileMetadata>(jtr);
+          metadata = new JsonSerializer().Deserialize<TileMetadata>(jtr);
         }
       }
 
       Log.LogInformation($"{nameof(GenerateTiles)}: returning {(metadata == null ? "null" : JsonConvert.SerializeObject(metadata))}");
-      return metadata;
-    }
 
-    /// <summary>
-    /// Deletes the generated DXF tiles for the given DXF file
-    /// </summary>
-    /// <param name="dxfFileName">The path and file name of the DXF file</param>
-    /// <param name="customHeaders"></param>
-    /// <returns>True if successfully deleted otherwise false</returns>
-    [Obsolete("Use DeleteTiles")]
-    public Task<bool> DeleteDxfTiles(string dxfFileName, IDictionary<string, string> customHeaders)
-    {
-      return DeleteTiles(dxfFileName, customHeaders);
+      return metadata;
     }
 
     /// <summary>
@@ -307,6 +349,5 @@ namespace VSS.Pegasus.Client
       //To avoid 2 traversals just try the delete anyway without checking for existance.
       return dataOceanClient.DeleteFile(tileFolderFullName, customHeaders);
     }
-
   }
 }
