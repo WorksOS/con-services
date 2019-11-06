@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// The response patch of subgrids is lean and decorated for use with Protobuf-net.
     ///     See GeneratePatchResultProtoFile unit test for generating .proto file for injest by client.
     /// </remarks>
-    [HttpGet("api/v2/patches")]
+    [HttpGet("api/v2/device/patches")]
     public async Task<IActionResult> GetSubGridPatches(string ecSerial, string radioSerial, string tccOrgUid,
       double machineLatitude, double machineLongitude,
       double bottomLeftX, double bottomLeftY, double topRightX, double topRightY)
@@ -129,12 +129,13 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       // rules to be determined if returns a projectUid but HasValidSub = false. 
       //       e.g. Can Raptor/TRex return only ground from surveyedSurfaces, and NOT productionData?
-      if (!string.IsNullOrEmpty(tfaResult.ProjectUid) && !tfaResult.HasValidSub)
-      {
-        var errorMessage = $"Unique project was found, however no valid subscription was found. ProjectUid: {tfaResult?.ProjectUid} AssetUid: {tfaResult?.AssetUid} CustomerUid: {tfaResult?.CustomerUid}";
-        Log.LogInformation(errorMessage);
-        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
-      }
+      // as per Dimitry on 6Nov2019 we allow if project found, even if no subscription
+      //if (!string.IsNullOrEmpty(tfaResult.ProjectUid) && !tfaResult.HasValidSub)
+      //{
+      //  var errorMessage = $"Unique project was found, however no valid subscription was found. ProjectUid: {tfaResult?.ProjectUid} AssetUid: {tfaResult?.AssetUid} CustomerUid: {tfaResult?.CustomerUid}";
+      //  Log.LogInformation(errorMessage);
+      //  return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, errorMessage));
+      //}
 
       Log.LogInformation($"{nameof(GetSubGridPatches)}: tfaResult {JsonConvert.SerializeObject(tfaResult)}");
 
