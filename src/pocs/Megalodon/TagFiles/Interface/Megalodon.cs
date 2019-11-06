@@ -62,6 +62,9 @@ namespace TagFiles.Interface
       tagFile.Log = _log;
       tagFile.Parser.Log = _log;
       _log.LogInformation($"Socket Settings: {_TCIP}:{_Port}");
+
+      var hackathon = configStore.GetValueBool("RunInBrokenMode") ?? false;
+      tagFile.Parser.Hackathon = hackathon;
     }
 
     /// <summary>

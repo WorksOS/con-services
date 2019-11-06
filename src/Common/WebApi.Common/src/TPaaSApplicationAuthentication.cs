@@ -49,6 +49,12 @@ namespace VSS.WebApi.Common
     {
       const int TOKEN_EXPIRY_GRACE_SECONDS = 60;
       const string grantType = "client_credentials";
+      string key;
+      var runOnAlpha = configuration.GetValueBool("RunOnAlpha") ?? false;
+      if (runOnAlpha)
+        key = configuration.GetValueString("TPAAS_APP_TOKENKEYS");
+      else
+        key = configuration.GetValueString("TPAAS_APP_TOKENKEYS_PROD");
 
       lock (_lock)
       {
@@ -57,9 +63,12 @@ namespace VSS.WebApi.Common
         {
           var customHeaders = new Dictionary<string, string>
           {
-            {HeaderConstants.ACCEPT, ContentTypeConstants.ApplicationJson},
+
+
+            { HeaderConstants.ACCEPT, ContentTypeConstants.ApplicationJson},
             {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationFormUrlEncoded},
-            {HeaderConstants.AUTHORIZATION, string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
+            { HeaderConstants.AUTHORIZATION, string.Format($"Basic {key}")}
+        //    { HeaderConstants.AUTHORIZATION, string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
           TPaasOauthResult tPaasOauthResult; 
 

@@ -30,5 +30,11 @@
     public const string MACHINE_TYPE = "MTP";
     public const string HEADING = "HDG";
     public const string SERIAL = "SER";
+    // bad driver 
+    public const string RIGHT_EASTING_BLADE2 = "RBE";
+    public const string RIGHT_NORTHING_BLADE2 = "RBN";
+    public const string RIGHT_HEIGHT_BLADE2 = "RBH";
+
+
   }
 }

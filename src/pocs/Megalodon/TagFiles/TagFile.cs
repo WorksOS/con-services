@@ -24,7 +24,8 @@ namespace TagFiles
     private ulong epochCount = 0;
     //  private bool _NewTagfileStarted = false;
     private bool tmpNR = false;
-
+    private DateTime lastEpochTime = DateTime.MinValue;
+    private TimeSpan ts = TimeSpan.FromSeconds(10);
     public TagHeader Header = new TagHeader();
     public TAGDictionary TagFileDictionary;
     public AsciiParser Parser = new AsciiParser();
@@ -33,7 +34,6 @@ namespace TagFiles
     public bool SendTagFilesToProduction = false;
     public string TagfileFolder = "c:\\megalodon\\tagfiles";
     public ILogger Log;
-
 
     /// <summary>
     /// Tagfile cutoff controlled by timer
@@ -58,6 +58,8 @@ namespace TagFiles
     {
       // Setup Tagfile Directory
       CreateTagfileDictionary();
+
+
     }
 
     /// <summary>
@@ -146,11 +148,25 @@ namespace TagFiles
     }
 
     /// <summary>
-    /// Input from socket is parsed and processed
+    /// Epoch input from socket is parsed and processed
     /// </summary>
     /// <param name="txt"></param>
     public void ParseText(string txt)
     {
+
+      // Need logic to prevent swathing between two epochs over a given time limit
+      /* Logic done to tagprocessor
+      if (lastEpochTime == DateTime.MinValue)
+        lastEpochTime = DateTime.Now;
+      else
+      {
+        if ((DateTime.Now - lastEpochTime) > ts)
+        {
+
+        } 
+      }
+  */
+
       // protect thread
       lock (updateLock)
       {

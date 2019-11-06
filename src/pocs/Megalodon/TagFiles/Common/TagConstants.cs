@@ -9,7 +9,7 @@
     public const short CALLBACK_CONNECTION_MADE = 1;
 
     public const int TAG_NAME_LENGHT = 3;
-    public const double NEW_TAG_FILE_INTERVAL_MSECS = 60000; // 60 seonds
+    public const double NEW_TAG_FILE_INTERVAL_MSECS = 20000; // 60 seonds
     public const double TAG_FILE_MONITOR_SECS = 10; // 60
     public const byte SOH = 0x01;
     public const byte STX = 0x02;
@@ -46,5 +46,9 @@
     public const string HEADING = "HDG";
     public const string SERIAL = "SER";
     public const string UTM = "UTM";
+    // bad driver 
+    public const string RIGHT_EASTING_BLADE2 = "RBE";
+    public const string RIGHT_NORTHING_BLADE2 = "RBN";
+    public const string RIGHT_HEIGHT_BLADE2 = "RBH";
   }
 }

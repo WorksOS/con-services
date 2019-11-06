@@ -30,6 +30,8 @@ namespace TagFiles.Parser
     public TagContentList TagContent; // tagfile data content
     public ILogger Log;
 
+    public bool Hackathon = false;
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -484,6 +486,9 @@ namespace TagFiles.Parser
 
               // Comes in as UTC unix timestamp
               //   var utcTime = TagUtils.UnixTimeStampToUTCDateTime(Convert.ToInt64(TagValue));
+              if (Hackathon)
+                TagValue = TagUtils.GetCurrentUnixTimestampMillis().ToString(); // make time with milliseconds
+
               var utcTime = TagUtils.DateTimeFromUnixTimestampMillis(Convert.ToInt64(TagValue));
               GPS.DateTimeToGPSOriginTime(utcTime, out gpsWeek, out gpsTime);
               EpochRec.Time = gpsTime;
@@ -518,6 +523,14 @@ namespace TagFiles.Parser
               EpochRec.REB = Convert.ToDouble(TagValue);
               break;
             }
+          case TagConstants.RIGHT_EASTING_BLADE2:
+            {
+              //     if (EpochRec.HasREB)
+              //     Log.LogWarning("Already have REB value for epoch");
+              EpochRec.REB = Convert.ToDouble(TagValue);
+              break;
+            }
+
           case TagConstants.RIGHT_NORTHING_BLADE:
             {
           //    if (EpochRec.HasRNB)
@@ -525,10 +538,24 @@ namespace TagFiles.Parser
               EpochRec.RNB = Convert.ToDouble(TagValue);
               break;
             }
+          case TagConstants.RIGHT_NORTHING_BLADE2:
+            {
+              //    if (EpochRec.HasRNB)
+              //      Log.LogWarning("Already have RNB value for epoch");
+              EpochRec.RNB = Convert.ToDouble(TagValue);
+              break;
+            }
           case TagConstants.RIGHT_HEIGHT_BLADE:
             {
          //     if (EpochRec.HasRHB)
          //       Log.LogWarning("Already have RHB value for epoch");
+              EpochRec.RHB = Convert.ToDouble(TagValue);
+              break;
+            }
+          case TagConstants.RIGHT_HEIGHT_BLADE2:
+            {
+              //     if (EpochRec.HasRHB)
+              //       Log.LogWarning("Already have RHB value for epoch");
               EpochRec.RHB = Convert.ToDouble(TagValue);
               break;
             }
