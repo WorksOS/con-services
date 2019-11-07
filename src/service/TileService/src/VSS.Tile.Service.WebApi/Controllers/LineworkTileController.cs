@@ -137,6 +137,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
     {
       Log.LogDebug($"{nameof(GetLineworkTile3dRaw)}: { Request.QueryString}");
 
+      // todo look at caching entities e.g. customer/project/importedFiles?
+      //    or somehow, perhaps in the dataOceanCache, the tileFolderId
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTile3dRequest = DxfTile3dRequest.Create(requiredFiles, z, y, x);
 
