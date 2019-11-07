@@ -110,6 +110,7 @@ namespace TagFiles.Interface
     /// </summary>
     private void StopPort()
     {
+      // This is highly unsafe
       _log.LogInformation("Closing Port.");
       _timer?.Change(Timeout.Infinite, 0);
 
@@ -135,9 +136,12 @@ namespace TagFiles.Interface
     /// <returns></returns>
     public Task StartAsync(CancellationToken cancellationToken)
     {
-      _log.LogInformation("Starting Megalodon Service");
-      SetupPort();
-      _timer = new Timer(TimerDoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
+      new Thread(() =>
+      {
+        _log.LogInformation("Starting Megalodon Service");
+        SetupPort();
+        _timer = new Timer(TimerDoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
+      }).Start();
       return Task.CompletedTask;
     }
 

@@ -51,10 +51,17 @@ namespace MegalodonSvc
     private Task ScanAndUpload()
     {
       return Task.WhenAll(GetFilenames().Select(f => UploadFile(f).ContinueWith(t => {
-        if (t.Result.Code == 0)
+        if (!t.IsFaulted)
         {
-          _log.LogInformation($"Deleting file {f}");
-          File.Delete(f);
+          if (t.Result.Code == 0)
+          {
+            _log.LogInformation($"Deleting file {f}");
+            File.Delete(f);
+          }
+        }
+        else
+        {
+          _log.LogInformation($"Can't submit file {f}");
         }
       })));
     }

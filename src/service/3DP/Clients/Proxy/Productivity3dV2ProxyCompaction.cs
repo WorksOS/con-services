@@ -113,13 +113,17 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
         Data = fileData
       };
 
+      string ser = JsonConvert.SerializeObject(request);
+
+      var stream = new MemoryStream(Encoding.ASCII.GetBytes(ser));
+
       log.LogDebug($"{nameof(CompactionTagFileRequest)}");
 
       var response = await MasterDataItemServiceDiscoveryNoCache<TagFileDirectSubmissionResult>(
         "/tagfiles/direct",
         customHeaders,
         method: HttpMethod.Post,
-        payload: this.SerializeToStream(request),
+        payload: stream, // this.SerializeToStream(request, stream),
         retries: 1);
       log.LogDebug($"{nameof(ExecuteGenericV2Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;

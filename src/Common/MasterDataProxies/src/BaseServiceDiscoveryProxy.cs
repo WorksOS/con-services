@@ -78,10 +78,9 @@ namespace VSS.MasterData.Proxies
 
     #region Protected Methods
 
-    protected Stream SerializeToStream<T>(T instance)
+    protected Stream SerializeToStream<T>(T instance, Stream stream)
     {
-      var stream = new MemoryStream();
-      using (StreamWriter writer = new StreamWriter(stream))
+      using (StreamWriter writer = new StreamWriter(stream, Encoding.UTF8,1024,true))
       using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
       {
         JsonSerializer ser = new JsonSerializer();
@@ -90,18 +89,6 @@ namespace VSS.MasterData.Proxies
       }
 
       return stream;
-    }
-
-
-    protected void SerializeToStream<T>(T instance, Stream stream)
-    {
-      using (StreamWriter writer = new StreamWriter(stream))
-      using (JsonTextWriter jsonWriter = new JsonTextWriter(writer))
-      {
-        JsonSerializer ser = new JsonSerializer();
-        ser.Serialize(jsonWriter, instance);
-        jsonWriter.Flush();
-      }
     }
 
 
