@@ -85,10 +85,10 @@ services:
      - TCCSynchSubscriptionIssueFolder=Subscription (Issue)
      - TCCUSERNAME=vlbeta
      - TILE_BASE_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-tile/1.0
-     - TILE_RENDER_JOB_TIMEOUT=00:00:10
+     - TILE_RENDER_JOB_TIMEOUT=00:02:00
      - TILE_RENDER_MAX_ZOOM_LEVEL=21
      - TILE_RENDER_MAX_ZOOM_RANGE=14
-     - TILE_RENDER_WAIT_INTERVAL=2000    
+     - TILE_RENDER_WAIT_INTERVAL=5000    
     ports:
       - "4001:80"
 networks:
