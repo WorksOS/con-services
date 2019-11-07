@@ -43,6 +43,8 @@
       this.btnSendEpoch = new System.Windows.Forms.Button();
       this.btnSendHeader = new System.Windows.Forms.Button();
       this.groupBox2 = new System.Windows.Forms.GroupBox();
+      this.label15 = new System.Windows.Forms.Label();
+      this.txtSleep = new System.Windows.Forms.TextBox();
       this.txtSerial = new System.Windows.Forms.TextBox();
       this.label14 = new System.Windows.Forms.Label();
       this.txtDesign = new System.Windows.Forms.TextBox();
@@ -80,8 +82,6 @@
       this.label3 = new System.Windows.Forms.Label();
       this.txtEast = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
-      this.txtSleep = new System.Windows.Forms.TextBox();
-      this.label15 = new System.Windows.Forms.Label();
       this.statusStrip1.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
@@ -264,6 +264,23 @@
       this.groupBox2.TabIndex = 61;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Simulator (Default Dimensions)";
+      // 
+      // label15
+      // 
+      this.label15.AutoSize = true;
+      this.label15.Location = new System.Drawing.Point(32, 341);
+      this.label15.Name = "label15";
+      this.label15.Size = new System.Drawing.Size(80, 13);
+      this.label15.TabIndex = 99;
+      this.label15.Text = "Loop Sleep(ms)";
+      // 
+      // txtSleep
+      // 
+      this.txtSleep.Location = new System.Drawing.Point(119, 338);
+      this.txtSleep.Name = "txtSleep";
+      this.txtSleep.Size = new System.Drawing.Size(100, 20);
+      this.txtSleep.TabIndex = 98;
+      this.txtSleep.Text = "200";
       // 
       // txtSerial
       // 
@@ -598,23 +615,6 @@
       this.label2.Size = new System.Drawing.Size(70, 13);
       this.label2.TabIndex = 60;
       this.label2.Text = "East Step (m)";
-      // 
-      // txtSleep
-      // 
-      this.txtSleep.Location = new System.Drawing.Point(119, 338);
-      this.txtSleep.Name = "txtSleep";
-      this.txtSleep.Size = new System.Drawing.Size(100, 20);
-      this.txtSleep.TabIndex = 98;
-      this.txtSleep.Text = "200";
-      // 
-      // label15
-      // 
-      this.label15.AutoSize = true;
-      this.label15.Location = new System.Drawing.Point(32, 341);
-      this.label15.Name = "label15";
-      this.label15.Size = new System.Drawing.Size(80, 13);
-      this.label15.TabIndex = 99;
-      this.label15.Text = "Loop Sleep(ms)";
       // 
       // Form1
       // 

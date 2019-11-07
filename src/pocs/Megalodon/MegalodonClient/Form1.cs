@@ -161,7 +161,7 @@ namespace MegalodonClient
         rs + "BOG1" +
         rs + "UTM0" +
         rs + heading +
-        rs + "SER" + txtSerial.Text +
+    //    rs + "SER" + txtSerial.Text +
         rs + machineType + etx;
 
       var toSend = thdr + hdr;

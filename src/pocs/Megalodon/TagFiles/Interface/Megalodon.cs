@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using TagFiles.Common;
+using TagFiles.Utils;
 using VSS.Common.Abstractions.Configuration;
 
 namespace TagFiles.Interface
@@ -56,7 +57,29 @@ namespace TagFiles.Interface
         Directory.CreateDirectory(_Folder);
         tagFile.TagfileFolder = _Folder;
       }
+
+      var _seedLat = configStore.GetValueString("SeedLat");
+      if (!string.IsNullOrEmpty(_seedLat))
+      {
+        tagFile.Parser.SeedLat =  TagUtils.ToRadians(Convert.ToDouble(_seedLat));
+      }
+
+      var _seedLon = configStore.GetValueString("SeedLon");
+      if (!string.IsNullOrEmpty(_seedLon))
+      {
+        tagFile.Parser.SeedLon = TagUtils.ToRadians(Convert.ToDouble(_seedLon));
+      }
+
       tagFile.MachineSerial = configStore.GetValueString("Serial");
+      tagFile.Parser.ForceSerial = configStore.GetValueString("Serial");
+
+      var _ForceHgt = configStore.GetValueString("ForceHeight");
+      if (!string.IsNullOrEmpty(_ForceHgt))
+      {
+        tagFile.Parser.ForceHeight = Convert.ToDouble(_ForceHgt);
+      }
+            
+
       tagFile.MachineID = configStore.GetValueString("MachineName");
       tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false;
       tagFile.Log = _log;
@@ -65,6 +88,9 @@ namespace TagFiles.Interface
 
       var hackathon = configStore.GetValueBool("RunInBrokenMode") ?? false;
       tagFile.Parser.Hackathon = hackathon;
+      var fcsd = configStore.GetValueBool("ForceCSD") ?? false;
+      tagFile.Parser.ForceCSD = fcsd;
+
     }
 
     /// <summary>

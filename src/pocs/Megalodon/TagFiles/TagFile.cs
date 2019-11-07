@@ -33,6 +33,9 @@ namespace TagFiles
     public string MachineID;
     public bool SendTagFilesToProduction = false;
     public string TagfileFolder = "c:\\megalodon\\tagfiles";
+    public double SeedLat = 0;
+    public double SeedLon = 0;
+
     public ILogger Log;
 
     /// <summary>
