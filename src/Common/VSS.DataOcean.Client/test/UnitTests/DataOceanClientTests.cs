@@ -33,7 +33,7 @@ namespace VSS.DataOcean.Client.UnitTests
 
       //This is real one to be added in services using DataOcean client. We mock it below for unit tests.
       //serviceCollection.AddSingleton<IWebRequest, GracefulWebRequest>();
-      serviceCollection.AddTransient<IDataOceanClient, DataOceanClient>();
+      serviceCollection.AddSingleton<IDataOceanClient, DataOceanClient>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
     }

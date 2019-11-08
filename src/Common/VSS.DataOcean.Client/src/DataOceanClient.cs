@@ -314,7 +314,6 @@ namespace VSS.DataOcean.Client
           folder = new DataOceanDirectory() { Id = Guid.Parse(currentDataOceanFolderPath.DataOceanFolderId), Name = parts[i], ParentId = Guid.Parse(parentId) };
           _log.LogDebug($"{nameof(GetFolderMetadata)}: found cached folder. parts[i]: {parts[i]}, Id: {currentDataOceanFolderPath.DataOceanFolderId}, ParentId: {parentId}");
           parentId = currentDataOceanFolderPath.DataOceanFolderId;
-          _log.LogDebug($"{nameof(GetFolderMetadata)} folderPath exists in cache. key {parts[i]} parentId {parentId}");
         }
         else
         {
@@ -329,7 +328,7 @@ namespace VSS.DataOcean.Client
               folder = result.Directories[0];
               parentId = folder.Id.ToString();
               currentDataOceanFolderPath = currentDataOceanFolderPath.CreateNode(parentId, parts[i]);
-              _log.LogDebug($"{nameof(GetFolderMetadata)}: create cache for existing folder. parts[i]: {parts[i]}, Id: {currentDataOceanFolderPath.DataOceanFolderId}, ParentId: {parentId}");
+              _log.LogDebug($"{nameof(GetFolderMetadata)}: create cache for existing folder. parts[i]: {parts[i]}, Id: {currentDataOceanFolderPath.DataOceanFolderId}");
             }
           }
 

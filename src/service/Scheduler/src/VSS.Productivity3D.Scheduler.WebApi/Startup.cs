@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, SchedulerErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();      
-      services.AddScoped<IDataOceanClient, DataOceanClient>();
+      services.AddSingleton<IDataOceanClient, DataOceanClient>();
       services.AddScoped<IPegasusClient, PegasusClient>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();

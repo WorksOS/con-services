@@ -10,6 +10,9 @@ namespace VSS.DataOcean.Client.Models
   ///     starting with DO rootFolder e.g.  rootFolder/customer/project, which contains a list of imported files.
   /// We want to only step this structure once and cache the folder ids, which are used as parents to the next level
   ///     so that subsequently we can go straight to that folder level
+  ///
+  /// note: DataOceanClient must be instantiated in DI as a singleton,
+  ///         so that memory of newly created Nodes will also be retained in memoryCache
   /// </summary>
   public class DataOceanFolderCache
   {
