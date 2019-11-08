@@ -78,7 +78,6 @@ namespace TagFiles.Interface
       {
         tagFile.Parser.ForceHeight = Convert.ToDouble(_ForceHgt);
       }
-            
 
       tagFile.MachineID = configStore.GetValueString("MachineName");
       tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false;

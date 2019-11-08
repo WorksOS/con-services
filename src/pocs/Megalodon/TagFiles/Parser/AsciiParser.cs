@@ -393,7 +393,7 @@ namespace TagFiles.Parser
                 break; // no change so dont record
               if (EpochRec.HasBOG)
                 Log.LogWarning("Already have BOG value for epoch");
-              EpochRec.BOG = Convert.ToUInt16(TagValue);
+              EpochRec.BOG = 1; // Convert.ToUInt16(TagValue);
               break;
             }
           case TagConstants.DESIGN:
@@ -580,7 +580,9 @@ namespace TagFiles.Parser
       if (_Prev_EpochRec != null)
       {
         // Check if its the same position and elevation
-        if (EpochRec.NotEpochSamePosition(ref _Prev_EpochRec))
+        if (EpochRec.HasLAT) // if header
+          UpdateTagContentList(ref EpochRec, ref newHeader);
+        else if (EpochRec.NotEpochSamePosition(ref _Prev_EpochRec))
           UpdateTagContentList(ref EpochRec, ref newHeader);
       }
       else
