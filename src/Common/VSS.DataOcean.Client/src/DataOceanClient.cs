@@ -211,7 +211,7 @@ namespace VSS.DataOcean.Client
         return null;
       }
       var downloadUrl = result.DataOceanDownload.Url;
-      //PNG tiles files and tiles.json metadata file are in a DataOcean multifile
+      //PNG tiles files and tiles.json metadata file are in a DataOcean multi-file
       if (result.Multifile)
       {
         if (string.IsNullOrEmpty(tileFolderAndFileName))
@@ -265,7 +265,7 @@ namespace VSS.DataOcean.Client
 
       if (count == 1) return result.Files[0];
 
-      if (count == 0) _log.LogInformation($"File {fullName} not found");
+      if (count == 0) _log.LogInformation($"{nameof(GetFileMetadata)}: File {fullName} not found");
 
       if (count > 1)
       {

@@ -19,7 +19,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   public static class DataOceanHelper
   {
     /// <summary>
-    /// Writes the importedFile to DataOcean as a create or update, so ok if it already exists already.
+    /// Writes the importedFile to DataOcean as a create or update,
+    ///       if it already exists, old version will be deleted first.
     /// </summary>
     public static async Task WriteFileToDataOcean(
       Stream fileContents, string rootFolder, string customerUid, string projectUid, string dataOceanFileName,
@@ -87,7 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         var dataOceanPath = DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
         var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
-        log.LogInformation($"DeleteFileFromDataOcean: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
+        log.LogInformation($"{nameof(DeleteFileFromDataOcean)}: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
 
         var customHeaders = authn.CustomHeaders();
         bool ccDeleteFileResult;
@@ -98,21 +99,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         }
         catch (Exception e)
         {
-          log.LogError(e, $"DeleteFileFromDataOcean failed for {fileName} (importedFileUid:{importedFileUid}) with exception {e.Message}");
+          log.LogError(e, $"{nameof(DeleteFileFromDataOcean)}: failed for {fileName} (importedFileUid:{importedFileUid}) with exception {e.Message}");
           return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "dataOceanClient.DeleteFile", e.Message);
         }
 
         if (ccDeleteFileResult == false)
         {
           log.LogWarning(
-            $"DeleteFileFromDataOcean failed to delete {fileName} (importedFileUid:{importedFileUid}).");
+            $"{nameof(DeleteFileFromDataOcean)}: failed to delete {fileName} (importedFileUid:{importedFileUid}).");
           //Not an error if it doesn't delete the file?
           //return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 117);
         }
       }
       else
       {
-        log.LogInformation("DeleteFileFromDataOcean: File not deleted. DataOcean disabled");
+        log.LogInformation($"{nameof(DeleteFileFromDataOcean)}: File not deleted. DataOcean disabled");
       }
 
       return null;
