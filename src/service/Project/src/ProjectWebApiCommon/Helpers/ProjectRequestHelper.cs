@@ -30,17 +30,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// </summary>
   public partial class ProjectRequestHelper
   {
-
-    #region project
-
     /// <summary>
-    /// Gets the project.
+    /// Gets a Project by customer uid.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <param name="customerUid"></param>
-    /// <param name="log"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="projectRepo"></param>
     public static async Task<ProjectDatabaseModel> GetProject(string projectUid, string customerUid,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
@@ -58,7 +50,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return project;
     }
 
-
     public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
       DateTime projectEndDate, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
@@ -72,9 +63,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"No overlapping projects for: {projectUid}");
       return overlaps;
     }
-
-    #endregion project
-
 
     #region coordSystem
 
@@ -207,7 +195,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
           //save copy to DataOcean
-          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+          var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
           if (string.IsNullOrEmpty(rootFolder))
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);

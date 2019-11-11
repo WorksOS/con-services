@@ -27,7 +27,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// <summary>
   ///
   /// </summary>
-  public class ImportedFileRequestHelper
+  public static class ImportedFileRequestHelper
   {
     #region productivity3D
 

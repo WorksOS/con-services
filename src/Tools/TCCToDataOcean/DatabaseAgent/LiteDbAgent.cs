@@ -44,8 +44,8 @@ namespace TCCToDataOcean.DatabaseAgent
     public T Find<T>(int id = -1) where T : MigrationObj
     {
       return id < 0
-        ? _db.GetCollection<T>().FindById(id)
-        : _db.GetCollection<T>().FindOne(Query.All(Query.Descending));
+        ? _db.GetCollection<T>().FindOne(Query.All(Query.Descending))
+        : _db.GetCollection<T>().FindById(id);
     }
 
     /// <summary>

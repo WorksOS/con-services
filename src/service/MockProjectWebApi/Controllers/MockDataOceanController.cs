@@ -27,6 +27,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [HttpGet("/api/browse/directories")]
+    [HttpGet("/api/browse/keyset_directories")]
     public IActionResult BrowseDirectories([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
     {
       Logger.LogInformation($"{nameof(BrowseDirectories)}: {Request.QueryString}");
@@ -49,6 +50,7 @@ namespace MockProjectWebApi.Controllers
     }
 
     [HttpGet("/api/browse/files")]
+    [HttpGet("/api/browse/keyset_files")]
     public IActionResult BrowseFiles([FromQuery]string name, [FromQuery]bool owner, [FromQuery]Guid? parent_id)
     {
       Logger.LogInformation($"{nameof(BrowseFiles)}: {Request.QueryString}");

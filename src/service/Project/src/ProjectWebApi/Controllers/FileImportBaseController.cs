@@ -53,7 +53,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.tRexImportFileProxy = tRexImportFileProxy;
 
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
-      DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+      DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
       UseTrexGatewayDesignImport = false;
       UseRaptorGatewayDesignImport = true;
       bool.TryParse(ConfigStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"),
@@ -65,8 +65,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Validates a project identifier.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
     protected async Task ValidateProjectId(string projectUid)
     {
       var customerUid = LogCustomerDetails("GetProject", projectUid);
