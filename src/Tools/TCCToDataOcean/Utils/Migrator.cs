@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
@@ -41,6 +41,7 @@ namespace TCCToDataOcean.Utils
     private readonly ILogger Log;
     private readonly ILiteDbAgent Database;
     private readonly ICalibrationFileAgent DcFileAgent;
+    private readonly IConfiguration _appSettings;
 
     private readonly bool _resumeMigration;
     private readonly bool _reProcessFailedProjects;
@@ -60,7 +61,7 @@ namespace TCCToDataOcean.Utils
       ImportedFileType.Alignment // SVL
     };
 
-    public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfigurationStore configStore,
+    public Migrator(ILoggerFactory logger, IProjectRepository projectRepository, IConfiguration configuration, IConfigurationStore configStore,
                     ILiteDbAgent liteDbAgent, IFileRepository fileRepo, IImportFile importFile,
                     IEnvironmentHelper environmentHelper, ICalibrationFileAgent dcFileAgent)
     {
@@ -70,6 +71,8 @@ namespace TCCToDataOcean.Utils
       ImportFile = importFile;
       Database = liteDbAgent;
       DcFileAgent = dcFileAgent;
+
+      _appSettings = configuration;
 
       _resumeMigration = configStore.GetValueBool("RESUME_MIGRATION", true);
       _reProcessFailedProjects = configStore.GetValueBool("REPROCESS_FAILED_PROJECTS", true);
@@ -87,23 +90,28 @@ namespace TCCToDataOcean.Utils
 
     public async Task MigrateFilesForAllActiveProjects()
     {
-      var recoveryFile = Path.Combine(_tempFolder, "MigrationRecovery.log");
-
       Log.LogInformation($"{Method.Info()} Fetching projects...");
       var projects = (await ProjectRepo.GetActiveProjects()).ToList();
       Log.LogInformation($"{Method.Info()} Found {projects.Count} projects");
 
-      if (File.Exists(recoveryFile))
+      var inputProjects = _appSettings.GetSection("Projects")
+                                      .Get<string[]>();
+
+      // Are we processing only a subset of projects from the appSettings::Projects array?
+      if (inputProjects != null && inputProjects.Any())
       {
-        Log.LogInformation($"{Method.Info()} Fetching projects from: '{recoveryFile}'");
-        var fileContents = File.ReadAllLines(recoveryFile, Encoding.UTF8).ToList();
-        Log.LogInformation($"{Method.Info()} Found {fileContents.Count} projects to reprocess");
+        Log.LogInformation($"{Method.Info()} Found {inputProjects.Length} input projects from appsettings.json to process.");
 
-        var tmpProjects = new List<Project>();
+        var tmpProjects = new List<Project>(inputProjects.Length);
 
-        foreach (var project in projects)
+        foreach (var projectUid in inputProjects)
         {
-          if (fileContents.Contains(project.ProjectUID)) tmpProjects.Add(project);
+          var project = projects.Find(x => x.ProjectUID == projectUid);
+
+          if (project != null)
+          {
+            tmpProjects.Add(project);
+          }
         }
 
         DropTables();
@@ -205,20 +213,25 @@ namespace TCCToDataOcean.Utils
         var processedProjects = Database.GetTable<MigrationProject>(Table.Projects);
         var logFilename = Path.Combine(_tempFolder, $"MigrationRecovery_{DateTime.Now.Date.ToShortDateString().Replace('/', '-')}_{DateTime.Now.Hour}{DateTime.Now.Minute}{DateTime.Now.Second}.log");
 
-        if (!Directory.Exists(_tempFolder)) Directory.CreateDirectory(_tempFolder);
+        if (!Directory.Exists(_tempFolder))
+        {
+          Directory.CreateDirectory(_tempFolder);
+        }
 
         using (TextWriter tw = new StreamWriter(logFilename))
         {
           foreach (var project in processedProjects)
           {
-            if (project.MigrationState != MigrationState.Completed)
+            if (project.MigrationState == MigrationState.Completed)
             {
-              var message = string.IsNullOrEmpty(project.MigrationStateMessage)
-                ? null
-                : $" // {project.MigrationStateMessage}";
-
-              tw.WriteLine($"{project.ProjectUid}{message}");
+              continue;
             }
+
+            var message = string.IsNullOrEmpty(project.MigrationStateMessage)
+              ? null
+              : $" // {project.MigrationStateMessage}";
+
+            tw.WriteLine($"{project.ProjectUid}{message}");
           }
 
           tw.Dispose();
@@ -236,7 +249,7 @@ namespace TCCToDataOcean.Utils
 
       Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsFailed = failedCount);
     }
-
+ 
     private void DropTables()
     {
       if (_resumeMigration) { return; }
@@ -294,7 +307,7 @@ namespace TCCToDataOcean.Utils
           var result = await DcFileAgent.ResolveProjectCoordinateSystemFile(job);
           if (!result)
           {
-            migrationStateMessage = "Unable to resolve coordinate system file"; 
+            migrationStateMessage = "Unable to resolve coordinate system file";
             migrationResult = MigrationState.Failed;
             return false;
           }
