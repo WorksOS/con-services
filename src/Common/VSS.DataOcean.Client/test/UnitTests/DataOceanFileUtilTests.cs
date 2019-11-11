@@ -28,18 +28,16 @@ namespace VSS.DataOcean.Client.UnitTests
     [InlineData("DXF")]
     [InlineData("tiff")]
     [InlineData("TIFF")]
-
     public void CanGetTileMetadataFileName(string extension)
     {
-      var sep = Path.DirectorySeparatorChar;
-      var pathAndName = $"{sep}dev{sep}folder-one{sep}folder-two{sep}dummy";
+      var pathAndName = $"{DataOceanUtil.PathSeparator}dev{DataOceanUtil.PathSeparator}folder-one{DataOceanUtil.PathSeparator}folder-two{DataOceanUtil.PathSeparator}dummy";
       var fullFileName = $"{pathAndName}.{extension}";
       var file = new DataOceanFileUtil(fullFileName);
       var metadataName = file.TilesMetadataFileName;
 
       var expectedName = "dxf".Equals(extension, StringComparison.OrdinalIgnoreCase) ? "tiles" : "xyz";
-      var expectedMetadata =
-        $"{pathAndName}{DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX}/tiles/{expectedName}.json";
+      var expectedMetadata = $"{pathAndName}{DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX}/tiles/{expectedName}.json";
+
       Assert.Equal(expectedMetadata, metadataName);
     }
 
@@ -62,6 +60,18 @@ namespace VSS.DataOcean.Client.UnitTests
       Assert.StartsWith(fileUid.ToString(), dataOceanFileName);
       var datePart = Path.GetFileNameWithoutExtension(dataOceanFileName).Substring(fileUid.ToString().Length);
       Assert.False(string.IsNullOrEmpty(datePart));
+    }
+
+    [Fact]
+    public void DataOceanPath_is_constructed_correctly()
+    {
+      const string rootFolder = "rootFolder";
+      var customerUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+
+      var strResult = DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid);
+
+      Assert.Equal($"{DataOceanUtil.PathSeparator}{rootFolder}{DataOceanUtil.PathSeparator}{customerUid}{DataOceanUtil.PathSeparator}{projectUid}", strResult);
     }
   }
 }
