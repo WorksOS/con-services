@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       authNContext = contextHeaders;
     }
 
-    // the api/v2/patches endpoint doesn't come with a customerUid 
+    // the api/v2/device/patches endpoint doesn't come with a customerUid 
     //     which is needed for downstream service calls e.g. ProjectSvc.
     //     For this endpoint we obtain it from TFA and add it to our customHeaders
     public new bool SetCustomerUid(string customerUid)

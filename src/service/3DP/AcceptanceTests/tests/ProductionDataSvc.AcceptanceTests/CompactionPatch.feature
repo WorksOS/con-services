@@ -2,7 +2,7 @@
   I should be able to request Production Data Patch
 
 Scenario Outline: Patch - Good Request
-  Given the service route "/api/v2/patches" and result repo "CompactionPatchResponse.json"
+  Given the service route "/api/v2/device/patches" and result repo "CompactionPatchResponse.json"
   And with parameter "ecSerial" with value "<EcSerial>"
   And with parameter "radioSerial" with value "<RadioSerial>"
   And with parameter "tccOrgUid" with value "<TccOrgUid>"
@@ -19,7 +19,7 @@ Scenario Outline: Patch - Good Request
   | 6667J006YU  | 5051593854  |           | -43.518         | 172.448          | 2709.12     | 1218.56     | 2710      | 1220      | OneSubGrid           | 200      |
 
 Scenario Outline: Patch - Good Request Protobuf
-  Given the service route "/api/v2/patches" and result repo "CompactionPatchResponse.json"
+  Given the service route "/api/v2/device/patches" and result repo "CompactionPatchResponse.json"
   And with parameter "ecSerial" with value "<EcSerial>"
   And with parameter "radioSerial" with value "<RadioSerial>"
   And with parameter "tccOrgUid" with value "<TccOrgUid>"
@@ -36,7 +36,7 @@ Scenario Outline: Patch - Good Request Protobuf
   | 6667J006YU  | 5051593854  |           | -43.518         | 172.448          | 2709.12     | 1218.56     | 2710      | 1220      | OneSubGridProtobuf   | 200      |
 
 Scenario Outline: Patch - Bad Request
-  Given the service route "/api/v2/patches" and result repo "CompactionPatchResponse.json"
+  Given the service route "/api/v2/device/patches" and result repo "CompactionPatchResponse.json"
   And with parameter "ecSerial" with value "<EcSerial>"
   And with parameter "radioSerial" with value "<RadioSerial>"
   And with parameter "tccOrgUid" with value "<TccOrgUid>"
