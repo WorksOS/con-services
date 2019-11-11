@@ -142,7 +142,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var dataOceanClient = new Mock<IDataOceanClient>();
       dataOceanClient.Setup(f => f.FolderExists(It.IsAny<string>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
       dataOceanClient.Setup(f => f.PutFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Stream>(),
-        It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
+         It.IsAny<IDictionary<string, string>>())).ReturnsAsync(true);
 
       var authn = new Mock<ITPaaSApplicationAuthentication>();
       authn.Setup(a => a.GetApplicationBearerToken()).Returns("some token");

@@ -24,8 +24,8 @@ namespace VSS.Pegasus.Client
   public class PegasusClient : IPegasusClient
   {
     private const string PEGASUS_URL_KEY = "PEGASUS_URL";
-    private const string PEGASUS_EXECUTION_TIMEOUT_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
-    private const string PEGASUS_EXECUTION_WAIT_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS";
+    private const string PEGASUS_EXECUTION_TIMEOUT_MINS_KEY = "PEGASUS_EXECUTION_TIMEOUT_MINS";
+    private const string PEGASUS_EXECUTION_WAIT_MILLSECS_KEY = "PEGASUS_EXECUTION_WAIT_MILLSECS";
     private const string PEGASUS_DXF_PROCEDURE_ID_KEY = "PEGASUS_DXF_PROCEDURE_ID";
     private const string PEGASUS_GEOTIFF_PROCEDURE_ID_KEY = "PEGASUS_GEOTIFF_PROCEDURE_ID";
     private const string PEGASUS_LOG_JOBID_KEY = "pegasus_jobid";
@@ -63,8 +63,8 @@ namespace VSS.Pegasus.Client
         throw new ArgumentException($"Missing environment variable {PEGASUS_URL_KEY}");
       }
       Log.LogInformation($"{PEGASUS_URL_KEY}={pegasusBaseUrl}");
-      executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_KEY, 1000);
-      executionTimeout = configuration.GetValueDouble(PEGASUS_EXECUTION_TIMEOUT_KEY, 5);
+      executionWaitInterval = configuration.GetValueInt(PEGASUS_EXECUTION_WAIT_MILLSECS_KEY, 1000);
+      executionTimeout = configuration.GetValueDouble(PEGASUS_EXECUTION_TIMEOUT_MINS_KEY, 5);
       maxZoomLevel = configuration.GetValueInt("TILE_RENDER_MAX_ZOOM_LEVEL", 21);
       dxfProcedureId = configuration.GetValueGuid(PEGASUS_DXF_PROCEDURE_ID_KEY);
       if (dxfProcedureId == Guid.Empty)
@@ -85,6 +85,7 @@ namespace VSS.Pegasus.Client
     /// <param name="dxfFileName">The path and file name of the DXF file</param>
     /// <param name="dxfUnitsType">The units of the DXF file</param>
     /// <param name="customHeaders"></param>
+    /// <param name="setJobIdAction"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
     public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
@@ -193,13 +194,13 @@ namespace VSS.Pegasus.Client
     {
       TileMetadata metadata = null;
 
-      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existance.
+      //Delete any old tiles. To avoid 2 traversals just try the delete anyway without checking for existence.
       await DeleteTiles(fileName, customHeaders);
 
       //In DataOcean this is actually a multifile not a folder
       string tileFolderFullName = new DataOceanFileUtil(fileName).GeneratedTilesFolder;
       //Get the parent folder id
-      var parts = tileFolderFullName.Split(Path.DirectorySeparatorChar);
+      var parts = tileFolderFullName.Split(DataOceanUtil.PathSeparator);
       var tileFolderName = parts[parts.Length - 1];
       var parentPath = tileFolderFullName.Substring(0, tileFolderFullName.Length - tileFolderName.Length - 1);
       var parentId = await dataOceanClient.GetFolderId(parentPath, customHeaders);
@@ -339,15 +340,13 @@ namespace VSS.Pegasus.Client
     /// <summary>
     /// Deletes generated tiles for the given file
     /// </summary>
-    /// <param name="fileName">DXF or GeoTIFF file</param>
-    /// <param name="customHeaders"></param>
     /// <returns>True if successfully deleted otherwise false</returns>
-    public Task<bool> DeleteTiles(string fileName, IDictionary<string, string> customHeaders)
+    public Task<bool> DeleteTiles(string fullFileName, IDictionary<string, string> customHeaders)
     {
-      //In DataOcean this is actually a multifile not a folder
-      string tileFolderFullName = new DataOceanFileUtil(fileName).GeneratedTilesFolder;
+      //In DataOcean this is actually a multi-file not a folder
+      var tileFullFileName = new DataOceanFileUtil(fullFileName).GeneratedTilesFolder;
       //To avoid 2 traversals just try the delete anyway without checking for existance.
-      return dataOceanClient.DeleteFile(tileFolderFullName, customHeaders);
+      return dataOceanClient.DeleteFile(tileFullFileName, customHeaders);
     }
   }
 }

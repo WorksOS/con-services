@@ -64,7 +64,7 @@ namespace VSS.Pegasus.Client.UnitTests
       dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{DataOceanUtil.PathSeparator}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var config = serviceProvider.GetRequiredService<Common.Abstractions.Configuration.IConfigurationStore>();
@@ -89,14 +89,14 @@ namespace VSS.Pegasus.Client.UnitTests
       var expectedDxfFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dxfFileName, ParentId = expectedTopFolderResult.Id };
 
       var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
-      var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
+      var parts = subFolderPath.Split(DataOceanUtil.PathSeparator);
       var subFolderName = parts[parts.Length - 1];
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{DataOceanUtil.PathSeparator}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var units = DxfUnitsType.UsSurveyFeet.ToString();
@@ -165,14 +165,14 @@ namespace VSS.Pegasus.Client.UnitTests
       var expectedDxfFileResult = new DataOceanFile { Id = Guid.NewGuid(), Name = dxfFileName, ParentId = expectedTopFolderResult.Id };
 
       var subFolderPath = new DataOceanFileUtil(dxfFullName).GeneratedTilesFolder;
-      var parts = subFolderPath.Split(Path.DirectorySeparatorChar);
+      var parts = subFolderPath.Split(DataOceanUtil.PathSeparator);
       var subFolderName = parts[parts.Length - 1];
 
       var dataOceanMock = new Mock<IDataOceanClient>();
       dataOceanMock.Setup(d => d.GetFileId(dcFullName, null)).ReturnsAsync(expectedDcFileResult.Id);
       dataOceanMock.Setup(d => d.GetFileId(dxfFullName, null)).ReturnsAsync(expectedDxfFileResult.Id);
       dataOceanMock.Setup(d => d.MakeFolder(subFolderPath, null)).ReturnsAsync(true);
-      dataOceanMock.Setup(d => d.GetFolderId($"{Path.DirectorySeparatorChar}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
+      dataOceanMock.Setup(d => d.GetFolderId($"{DataOceanUtil.PathSeparator}{topLevelFolderName}", null)).ReturnsAsync(expectedTopFolderResult.Id);
 
       //Set up Pegasus stuff
       var units = DxfUnitsType.UsSurveyFeet.ToString();

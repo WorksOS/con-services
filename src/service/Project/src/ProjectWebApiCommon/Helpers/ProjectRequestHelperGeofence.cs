@@ -10,7 +10,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
@@ -23,24 +22,24 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static void ValidateProjectBoundary(string projectBoundary, IServiceExceptionHandler serviceExceptionHandler)
     {
       var result = GeofenceValidation.ValidateWKT(projectBoundary);
-      if (String.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
+      if (string.CompareOrdinal(result, GeofenceValidation.ValidationOk) != 0)
       {
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
+        if (string.CompareOrdinal(result, GeofenceValidation.ValidationNoBoundary) == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 23);
         }
 
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
+        if (string.CompareOrdinal(result, GeofenceValidation.ValidationLessThan3Points) == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 24);
         }
 
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
+        if (string.CompareOrdinal(result, GeofenceValidation.ValidationInvalidFormat) == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 25);
         }
 
-        if (String.CompareOrdinal(result, GeofenceValidation.ValidationInvalidPointValue) == 0)
+        if (string.CompareOrdinal(result, GeofenceValidation.ValidationInvalidPointValue) == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 111);
         }
@@ -86,7 +85,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogInformation($"Geofence list contains {notAssociated.Count} available geofences");
       return notAssociated;
     }
-   
+
 
     /// <summary>
     /// Associates the geofence to the project.

@@ -39,7 +39,7 @@ namespace TCCToDataOcean.Utils
     {
       get
       {
-        if (_migrationInfoId < 0) { _migrationInfoId = Database.Find<MigrationInfo>().Id; } 
+        if (_migrationInfoId < 0) { _migrationInfoId = (Database.Find<MigrationInfo>()).Id; } 
 
         return _migrationInfoId;
       }

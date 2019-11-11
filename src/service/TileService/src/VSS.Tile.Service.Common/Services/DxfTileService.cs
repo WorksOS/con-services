@@ -144,7 +144,7 @@ namespace VSS.Tile.Service.Common.Services
     }
     private async Task JoinDataOceanTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
     {
-      var dataOceanFileUtil = new DataOceanFileUtil(dxfFile.Name, dxfFile.Path);
+      var dataOceanFileUtil = new DataOceanFileUtil($"{dxfFile.Path}{DataOceanUtil.PathSeparator}{dxfFile.Name}");
       for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
       {
         for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)

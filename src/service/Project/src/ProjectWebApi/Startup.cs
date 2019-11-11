@@ -77,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<IFileRepository, FileRepository>();
-      services.AddTransient<IDataOceanClient, DataOceanClient>();
+      services.AddSingleton<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
       services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
       services.AddSingleton<IWebRequest, GracefulWebRequest>();

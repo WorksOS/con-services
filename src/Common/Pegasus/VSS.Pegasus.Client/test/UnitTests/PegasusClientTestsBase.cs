@@ -30,9 +30,9 @@ namespace VSS.Pegasus.Client.UnitTests
     protected const string geoTiffFileName = "dummy.tiff";
     protected const string dcFileName = "dummy.dc";
     protected const string dxfFileName = "dummy.dxf";
-    protected readonly string dxfFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dxfFileName}";
-    protected string dcFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{dcFileName}";
-    protected readonly string geoTiffFullName = $"{Path.DirectorySeparatorChar}{topLevelFolderName}{Path.DirectorySeparatorChar}{geoTiffFileName}";
+    protected readonly string dxfFullName = $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{dxfFileName}";
+    protected string dcFullName = $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{dcFileName}";
+    protected readonly string geoTiffFullName = $"{DataOceanUtil.PathSeparator}{topLevelFolderName}{DataOceanUtil.PathSeparator}{geoTiffFileName}";
 
     public PegasusClientTestsBase()
     {

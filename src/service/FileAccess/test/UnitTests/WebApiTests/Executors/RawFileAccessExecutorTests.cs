@@ -58,7 +58,7 @@ namespace WebApiTests.Executors
 
       var fileRepo = new Mock<IFileRepository>();
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
-      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(new MemoryStream(buffer));
+      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new MemoryStream(buffer));
 
       var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore,
         fileRepo.Object);
@@ -79,7 +79,7 @@ namespace WebApiTests.Executors
       var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var fileRepo = new Mock<IFileRepository>();
-      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync((MemoryStream)null);
+      fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync((MemoryStream)null);
 
       var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore,
         fileRepo.Object);
