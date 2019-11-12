@@ -31,13 +31,11 @@ namespace TagFiles.Parser
     public ILogger Log;
 
     // hacks
-    public bool Hackathon = false;
-    public bool ForceCSD = false;
+    public bool ForceBOG = false;
     public double SeedLat = 0;
     public double SeedLon = 0;
     public string ForceSerial = "";
-    public double ForceHeight = 0.0;
-
+    
     /// <summary>
     /// Constructor
     /// </summary>
@@ -48,6 +46,8 @@ namespace TagFiles.Parser
       TagContent = new TagContentList();
       //   EpochDict = new EpochDictionary();
     }
+
+
 
 
     private bool ValidateText(ref byte[] ba)
@@ -297,12 +297,6 @@ namespace TagFiles.Parser
               // Starts new epoch
               uint gpsTime;
               uint gpsWeek;
-
-              // Comes in as UTC unix timestamp
-              //   var utcTime = TagUtils.UnixTimeStampToUTCDateTime(Convert.ToInt64(TagValue));
-              if (Hackathon)
-                TagValue = TagUtils.GetCurrentUnixTimestampMillis().ToString(); // make time with milliseconds
-
               var utcTime = TagUtils.DateTimeFromUnixTimestampMillis(Convert.ToInt64(TagValue));
               GPS.DateTimeToGPSOriginTime(utcTime, out gpsWeek, out gpsTime);
               EpochRec.Time = gpsTime;
@@ -327,10 +321,7 @@ namespace TagFiles.Parser
             {
               //      if (EpochRec.HasLHB)
               //       Log.LogWarning("Already have LHB value for epoch");
-              if (ForceHeight > 0)
-                EpochRec.LHB = ForceHeight;
-              else
-                EpochRec.LHB = Convert.ToDouble(TagValue);
+              EpochRec.LHB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_EASTING_BLADE:
@@ -366,9 +357,6 @@ namespace TagFiles.Parser
             {
               //     if (EpochRec.HasRHB)
               //       Log.LogWarning("Already have RHB value for epoch");
-              if (ForceHeight > 0)
-                EpochRec.RHB = ForceHeight;
-              else
                 EpochRec.RHB = Convert.ToDouble(TagValue);
               break;
             }
@@ -381,8 +369,8 @@ namespace TagFiles.Parser
             }
           case TagConstants.GPS_MODE:
             {
-              if (EpochRec.HasGPM)
-                Log.LogWarning("Already have GPM value for epoch");
+         //     if (EpochRec.HasGPM)
+          //      Log.LogWarning("Already have GPM value for epoch");
               EpochRec.GPM = Convert.ToUInt16(TagValue);
               break;
             }
@@ -393,13 +381,13 @@ namespace TagFiles.Parser
                 break; // no change so dont record
               if (EpochRec.HasBOG)
                 Log.LogWarning("Already have BOG value for epoch");
-              EpochRec.BOG = 1; // Convert.ToUInt16(TagValue);
+              EpochRec.BOG = Convert.ToUInt16(TagValue);
               break;
             }
           case TagConstants.DESIGN:
             {
-              if (EpochRec.HasDES)
-                Log.LogWarning("Already have DES value for epoch");
+      //        if (EpochRec.HasDES)
+       //         Log.LogWarning("Already have DES value for epoch");
               EpochRec.Design = TagValue;
               break;
             }
@@ -448,10 +436,7 @@ namespace TagFiles.Parser
             {
    //           if (EpochRec.HasMTP)
      //           Log.LogWarning("Already have MTP value for epoch");
-              if (ForceCSD)
-                EpochRec.MTP = TagUtils.ConvertToMachineType("CSD");
-              else
-                EpochRec.MTP = TagUtils.ConvertToMachineType(TagValue);
+              EpochRec.MTP = TagUtils.ConvertToMachineType(TagValue);
               break;
             }
           case TagConstants.HEADING:
@@ -463,16 +448,16 @@ namespace TagFiles.Parser
             }
           case TagConstants.SERIAL:
             {
-              if (EpochRec.HasSER)
-                Log.LogWarning("Already have SER value for epoch");
+        //      if (EpochRec.HasSER)
+         //       Log.LogWarning("Already have SER value for epoch");
               EpochRec.Serial = TagValue;
               EpochRec.RadioSerial = TagValue; // Yes assigned two places
               break;
             }
           case TagConstants.UTM:
             {
-              if (EpochRec.HasUTM)
-                Log.LogWarning("Already have UTM value for epoch");
+          //    if (EpochRec.HasUTM)
+          //      Log.LogWarning("Already have UTM value for epoch");
               EpochRec.UTM = Convert.ToByte(TagValue);
               break;
             }
@@ -591,9 +576,11 @@ namespace TagFiles.Parser
       if (newHeader)
       {
         if (_PrevTagFile_EpochRec != null) // epoch from last tagfile
+        {
           if (_PrevTagFile_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
             UpdateTagContentList(ref _PrevTagFile_EpochRec, ref tmpNR);
-
+          _PrevTagFile_EpochRec = null;
+        }
         if (_Prev_EpochRec != null) // epoch missed to SOH request
           if (_Prev_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
             UpdateTagContentList(ref _Prev_EpochRec, ref tmpNR);

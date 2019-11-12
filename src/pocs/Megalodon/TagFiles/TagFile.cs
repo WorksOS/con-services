@@ -22,19 +22,19 @@ namespace TagFiles
     private bool readyToWrite = false;
     private ulong tagFileCount = 0;
     private ulong epochCount = 0;
-    //  private bool _NewTagfileStarted = false;
     private bool tmpNR = false;
-    private DateTime lastEpochTime = DateTime.MinValue;
-    private TimeSpan ts = TimeSpan.FromSeconds(10);
+//    private DateTime lastEpochTime = DateTime.MinValue;
+  //  private TimeSpan ts = TimeSpan.FromSeconds(10);
     public TagHeader Header = new TagHeader();
     public TAGDictionary TagFileDictionary;
     public AsciiParser Parser = new AsciiParser();
-    public string MachineSerial;
-    public string MachineID;
-    public bool SendTagFilesToProduction = false;
-    public string TagfileFolder = "c:\\megalodon\\tagfiles";
+    public string MachineSerial = "UnknownSerial";
+    public string MachineID = "UnknownID";
+    public bool SendTagFilesDirect = false;
+    public string TagFileFolder = "c:\\megalodon\\tagfiles";
     public double SeedLat = 0;
     public double SeedLon = 0;
+    public double TagFileIntervalMilliSecs = 60000; // dewfault 60 seconds
 
     public ILogger Log;
 
@@ -51,7 +51,7 @@ namespace TagFiles
             if (value)
             {
               TagTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-              TagTimer.Interval = TagConstants.NEW_TAG_FILE_INTERVAL_MSECS;
+              TagTimer.Interval = TagFileIntervalMilliSecs; //TagConstants.NEW_TAG_FILE_INTERVAL_MSECS;
               TagTimer.Start();
             }
           }
@@ -61,8 +61,6 @@ namespace TagFiles
     {
       // Setup Tagfile Directory
       CreateTagfileDictionary();
-
-
     }
 
     /// <summary>
@@ -89,6 +87,22 @@ namespace TagFiles
       }
     }
 
+    /// <summary>
+    /// Shut down tagfile and write to disk
+    /// </summary>
+    public void ShutDown()
+    {
+      if (epochCount > 0)
+      { 
+        lock (updateLock)
+        {
+          WriteTagFileToDisk();
+          // allow time for tagfile to be sent to VL
+          System.Threading.Thread.Sleep(6000);
+        }
+      }
+    }
+
 
     /// <summary>
     /// Outputs current tagfile in memory to disk
@@ -111,17 +125,17 @@ namespace TagFiles
       var mid = Parser.EpochRec.MID == string.Empty ? MachineID : Parser.EpochRec.MID;
       Header.UpdateTagfileName(serial,mid);
       // Make sure folder exists
-      Directory.CreateDirectory(TagfileFolder);
+      Directory.CreateDirectory(TagFileFolder);
 
-      if (!SendTagFilesToProduction)
+      if (!SendTagFilesDirect)
       {
         // Put tagfile in a ToSend folder
-        var toSendFolder = System.IO.Path.Combine(TagfileFolder, "ToSend");
+        var toSendFolder = System.IO.Path.Combine(TagFileFolder, "ToSend");
         Directory.CreateDirectory(toSendFolder);
         newFilename = System.IO.Path.Combine(toSendFolder, Header.TagfileName);
       }
       else // tagfile will be sent by another thread to VL
-        newFilename = System.IO.Path.Combine(TagfileFolder, Header.TagfileName);
+        newFilename = System.IO.Path.Combine(TagFileFolder, Header.TagfileName);
 
       var outStream = new NybbleFileStream(newFilename, FileMode.Create);
       try

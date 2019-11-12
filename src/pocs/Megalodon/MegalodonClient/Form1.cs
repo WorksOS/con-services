@@ -102,9 +102,12 @@ namespace MegalodonClient
 
     private void BtnRunSim_Click(object sender, EventArgs e)
     {
-      uint totalCycles = 0;
+   //   uint totalCycles = 0;
 
-      int loopCount = 0;
+      bool IsBOG = true;
+      int epochCount = 0;
+      int passCount = 1;
+
       keepGoing = true;
 
       if (!portOpen)
@@ -131,6 +134,7 @@ namespace MegalodonClient
       double minHgt = currrentHgt - 2.0;
       double hgtInterval = 0.01;
       int nSteps = Convert.ToInt32(txtNSteps.Text);
+      int eSteps = Convert.ToInt32(txtESteps.Text);
 
       var timeStamp = "TME" + unixTimestamp.ToString();
       // var startHgt = currrentHgt;
@@ -150,6 +154,7 @@ namespace MegalodonClient
       var thdr = stx + rs + timeStamp;
       var machineType = "MTP" + cboType.Text;
       var heading = "HDG90";
+      var valBOG = "0";
 
       var hdr =
         rs + "GPM3" +
@@ -158,13 +163,12 @@ namespace MegalodonClient
         rs + "LON" + TagUtils.ToRadians(startLon).ToString() + //-115.020131
         rs + "HGT" + currrentHgt.ToString() +
         rs + "MID" + txtVName.Text +
-        rs + "BOG1" +
         rs + "UTM0" +
         rs + heading +
-    //    rs + "SER" + txtSerial.Text +
+        rs + "SER" + txtSerial.Text +
         rs + machineType + etx;
 
-      var toSend = thdr + hdr;
+      var toSend = thdr + rs + "BOG0" +  hdr;
       var dataPacket = Encoding.UTF8.GetBytes(toSend);
 
       try
@@ -173,36 +177,39 @@ namespace MegalodonClient
         int bytesSend = senderSock.Send(dataPacket);
 
         ReceiveDataFromServer();
+        int epochLimit = Convert.ToInt32(txtEpochLimit.Text);
 
         // Loop epoch updates
-        while (keepGoing & loopCount < 2)
+        while (keepGoing & epochCount < epochLimit)
         {
 
           if (chkTwoEpochsOnly.Checked)
-            loopCount++;
+            epochCount++;
 
           Application.DoEvents();
           System.Threading.Thread.Sleep(Convert.ToInt32(txtSleep.Text));
 
           east++;
 
-          if (east == 50) // 50 epochs turn around
+          if (east == eSteps) // # epochs b4 turn around
           {
-            east = 1;
-            eDirection = -eDirection;
+            east = 1; // step counter for easting
+            eDirection = -eDirection; // direction easting goes
             north++;
-
+            IsBOG = false;
             if (north > nSteps) // is it time to start whole cycle again
             {
-              totalCycles++;
-              listBox1.Items.Add($"Sim. Total Full Cycles(passes):{totalCycles}");
+              listBox1.Items.Add($"Sim. Total passcount cycles: {passCount}");
+              passCount++;
               north = 1;
               startLNB = Convert.ToDouble(txtLN.Text);
               startRNB = Convert.ToDouble(txtRN.Text);
             }
-            startLNB = startLNB + nDirection;
-            startRNB = startRNB + nDirection;
-
+            else
+            {
+              startLNB = startLNB + nDirection;
+              startRNB = startRNB + nDirection;
+            }
           }
 
           startLEB = startLEB + eDirection;
@@ -219,7 +226,8 @@ namespace MegalodonClient
               heading = "HDG90";
           }
 
-          lblStatus.Text = $"East:{east} E-Direction:{ eDirection} North:{north} Hgt:{currrentHgt}";
+          var dir = eDirection < 0 ? "Left" : "Right";
+          lblStatus.Text = $"Passcount:{passCount}, NorthStep:{north}, EastStep:{east}, Heading:{ dir}, Hgt:{currrentHgt}";
 
           TimeSpan duration = DateTime.Now - dtpStart.Value;
           if (chkUseCustomDate.Checked)
@@ -231,21 +239,38 @@ namespace MegalodonClient
 
           thdr = stx + rs + timeStamp;
 
+
+          if (IsBOG)
+            valBOG = "1";
+          else
+          {
+            valBOG = "0";
+            IsBOG = true; // false only for the turn around
+          }
+
           if (wantHeader)
           {
 
-            toSend = thdr + hdr;
+            toSend = thdr + rs + valBOG + hdr;
             var dataPacketHdr = Encoding.UTF8.GetBytes(toSend);
             // Sends data to a connected Socket. 
             senderSock.Send(dataPacketHdr);
             ReceiveDataFromServer();
+            if (IsBOG)
+              valBOG = "1";
+            else
+            {
+              valBOG = "0";
+              IsBOG = true; // false only for the turn around
+            }
           }
+
+
 
           toSend = thdr +
           rs + "LEB" + startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + currrentHgt.ToString() +
           rs + "REB" + startREB.ToString() + rs + "RNB" + startRNB.ToString() + rs + "RHB" + currrentHgt.ToString() +
-          //          rs + "BOG1" + rs + "MSD0.1" + rs + heading + etx;
-          rs + "BOG1" + rs + heading + etx;
+          rs + "BOG" + valBOG + rs + heading + etx;
           var dataPacketEpoch = Encoding.UTF8.GetBytes(toSend);
           senderSock.Send(dataPacketEpoch);
           Array.Resize(ref dataPacketEpoch, 0);
@@ -428,6 +453,29 @@ namespace MegalodonClient
         portOpen = true;
       }
       catch (Exception exc) { MessageBox.Show(exc.ToString()); }
+    }
+
+    private void BtnDefChch_Click(object sender, EventArgs e)
+    {
+      txtStartHgt.Text = "-3.0";
+      txtLE.Text = "1576594.0";
+      txtLN.Text = "5177503.0";
+      txtRE.Text = "1576597.0";
+      txtRN.Text = "5177503.0";
+      txtLat.Text = "-43.555278";
+      txtLong.Text = "172.709705";
+    }
+
+    private void BtnDefDimensions_Click(object sender, EventArgs e)
+    {
+      txtStartHgt.Text = "542.0";
+      txtLE.Text = "2744.0";
+      txtLN.Text = "1163.0";
+      txtRE.Text = "2748.0";
+      txtRN.Text = "1163.0";
+      txtLat.Text = "36.206979";
+      txtLong.Text = "-115.020131";
+
     }
   }
 }

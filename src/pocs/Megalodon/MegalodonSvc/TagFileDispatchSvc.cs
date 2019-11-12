@@ -29,7 +29,7 @@ namespace MegalodonSvc
       _authn = authn;
       _config = config;
       _serviceProxy = serviceProxy;
-      _path = _config.GetValueString("TagfileFolder");
+      _path = _config.GetValueString("TagFileFolder");
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

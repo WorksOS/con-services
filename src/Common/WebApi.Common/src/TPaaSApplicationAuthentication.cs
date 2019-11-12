@@ -49,12 +49,7 @@ namespace VSS.WebApi.Common
     {
       const int TOKEN_EXPIRY_GRACE_SECONDS = 60;
       const string grantType = "client_credentials";
-      string key;
-      var runOnAlpha = configuration.GetValueBool("RunOnAlpha") ?? false;
-      if (runOnAlpha)
-        key = configuration.GetValueString("TPAAS_APP_TOKENKEYS");
-      else
-        key = configuration.GetValueString("TPAAS_APP_TOKENKEYS_PROD");
+      var key = configuration.GetValueString("TPAAS_APP_TOKENKEYS");
 
       lock (_lock)
       {

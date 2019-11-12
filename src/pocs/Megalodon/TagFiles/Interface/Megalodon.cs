@@ -55,7 +55,7 @@ namespace TagFiles.Interface
       {
         // Make sure folder exists for monitor
         Directory.CreateDirectory(_Folder);
-        tagFile.TagfileFolder = _Folder;
+        tagFile.TagFileFolder = _Folder;
       }
 
       var _seedLat = configStore.GetValueString("SeedLat");
@@ -70,25 +70,29 @@ namespace TagFiles.Interface
         tagFile.Parser.SeedLon = TagUtils.ToRadians(Convert.ToDouble(_seedLon));
       }
 
-      tagFile.MachineSerial = configStore.GetValueString("Serial");
-      tagFile.Parser.ForceSerial = configStore.GetValueString("Serial");
-
-      var _ForceHgt = configStore.GetValueString("ForceHeight");
-      if (!string.IsNullOrEmpty(_ForceHgt))
+      var _SerialOverride = configStore.GetValueString("SerialOverride");
+      if (!string.IsNullOrEmpty(_SerialOverride))
       {
-        tagFile.Parser.ForceHeight = Convert.ToDouble(_ForceHgt);
+        tagFile.MachineSerial = _SerialOverride;
+        tagFile.Parser.ForceSerial = _SerialOverride;
       }
 
       tagFile.MachineID = configStore.GetValueString("MachineName");
-      tagFile.SendTagFilesToProduction = configStore.GetValueBool("SendTagFilesToProduction") ?? false;
+      tagFile.SendTagFilesDirect = configStore.GetValueBool("SendTagFilesDirect") ?? false;
+
+      var fBOG = configStore.GetValueBool("ForceBOG") ?? false;
+      tagFile.Parser.ForceBOG = fBOG;
+
       tagFile.Log = _log;
       tagFile.Parser.Log = _log;
       _log.LogInformation($"Socket Settings: {_TCIP}:{_Port}");
 
-      var hackathon = configStore.GetValueBool("RunInBrokenMode") ?? false;
-      tagFile.Parser.Hackathon = hackathon;
-      var fcsd = configStore.GetValueBool("ForceCSD") ?? false;
-      tagFile.Parser.ForceCSD = fcsd;
+      var _TagFileIntervalSecs = configStore.GetValueString("TagFileIntervalSecs");
+      if (!string.IsNullOrEmpty(_TagFileIntervalSecs))
+      {
+        tagFile.TagFileIntervalMilliSecs = Convert.ToInt32(_TagFileIntervalSecs) * 1000;
+      }
+
 
     }
 
@@ -112,6 +116,7 @@ namespace TagFiles.Interface
       // This is highly unsafe
       _log.LogInformation("Closing Port.");
       _timer?.Change(Timeout.Infinite, 0);
+      tagFile.ShutDown(); // close existing tagfile
 
       try
       {

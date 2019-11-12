@@ -43,6 +43,10 @@
       this.btnSendEpoch = new System.Windows.Forms.Button();
       this.btnSendHeader = new System.Windows.Forms.Button();
       this.groupBox2 = new System.Windows.Forms.GroupBox();
+      this.btnDefChch = new System.Windows.Forms.Button();
+      this.btnDefDimensions = new System.Windows.Forms.Button();
+      this.label16 = new System.Windows.Forms.Label();
+      this.txtESteps = new System.Windows.Forms.TextBox();
       this.label15 = new System.Windows.Forms.Label();
       this.txtSleep = new System.Windows.Forms.TextBox();
       this.txtSerial = new System.Windows.Forms.TextBox();
@@ -82,6 +86,7 @@
       this.label3 = new System.Windows.Forms.Label();
       this.txtEast = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
+      this.txtEpochLimit = new System.Windows.Forms.TextBox();
       this.statusStrip1.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
@@ -92,9 +97,9 @@
       this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
             this.lblStatus});
-      this.statusStrip1.Location = new System.Drawing.Point(0, 511);
+      this.statusStrip1.Location = new System.Drawing.Point(0, 541);
       this.statusStrip1.Name = "statusStrip1";
-      this.statusStrip1.Size = new System.Drawing.Size(825, 22);
+      this.statusStrip1.Size = new System.Drawing.Size(816, 22);
       this.statusStrip1.TabIndex = 1;
       this.statusStrip1.Text = "LastAction:";
       // 
@@ -107,9 +112,9 @@
       // lblStatus
       // 
       this.lblStatus.Name = "lblStatus";
-      this.lblStatus.Size = new System.Drawing.Size(662, 17);
-      this.lblStatus.Text = "Sim works by moving left to right, north, then right to left. Repeat pattern. Fin" +
-    "ally after x steps north, the whole cycle repeats.";
+      this.lblStatus.Size = new System.Drawing.Size(694, 17);
+      this.lblStatus.Text = "Sim works by moving left to right, north, then right to left.  Pattern then repea" +
+    "ts. Finally after x steps north, the whole cycle repeats.";
       // 
       // txtPort
       // 
@@ -219,6 +224,11 @@
       // 
       // groupBox2
       // 
+      this.groupBox2.Controls.Add(this.txtEpochLimit);
+      this.groupBox2.Controls.Add(this.btnDefChch);
+      this.groupBox2.Controls.Add(this.btnDefDimensions);
+      this.groupBox2.Controls.Add(this.label16);
+      this.groupBox2.Controls.Add(this.txtESteps);
       this.groupBox2.Controls.Add(this.label15);
       this.groupBox2.Controls.Add(this.txtSleep);
       this.groupBox2.Controls.Add(this.txtSerial);
@@ -260,15 +270,52 @@
       this.groupBox2.Controls.Add(this.label2);
       this.groupBox2.Location = new System.Drawing.Point(16, 126);
       this.groupBox2.Name = "groupBox2";
-      this.groupBox2.Size = new System.Drawing.Size(783, 377);
+      this.groupBox2.Size = new System.Drawing.Size(783, 412);
       this.groupBox2.TabIndex = 61;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Simulator (Default Dimensions)";
       // 
+      // btnDefChch
+      // 
+      this.btnDefChch.Location = new System.Drawing.Point(408, 31);
+      this.btnDefChch.Name = "btnDefChch";
+      this.btnDefChch.Size = new System.Drawing.Size(112, 23);
+      this.btnDefChch.TabIndex = 103;
+      this.btnDefChch.Text = "Def Chch";
+      this.btnDefChch.UseVisualStyleBackColor = true;
+      this.btnDefChch.Click += new System.EventHandler(this.BtnDefChch_Click);
+      // 
+      // btnDefDimensions
+      // 
+      this.btnDefDimensions.Location = new System.Drawing.Point(278, 31);
+      this.btnDefDimensions.Name = "btnDefDimensions";
+      this.btnDefDimensions.Size = new System.Drawing.Size(125, 23);
+      this.btnDefDimensions.TabIndex = 102;
+      this.btnDefDimensions.Text = "Def Dimensions";
+      this.btnDefDimensions.UseVisualStyleBackColor = true;
+      this.btnDefDimensions.Click += new System.EventHandler(this.BtnDefDimensions_Click);
+      // 
+      // label16
+      // 
+      this.label16.AutoSize = true;
+      this.label16.Location = new System.Drawing.Point(21, 285);
+      this.label16.Name = "label16";
+      this.label16.Size = new System.Drawing.Size(89, 13);
+      this.label16.TabIndex = 101;
+      this.label16.Text = "Eastward epochs";
+      // 
+      // txtESteps
+      // 
+      this.txtESteps.Location = new System.Drawing.Point(118, 282);
+      this.txtESteps.Name = "txtESteps";
+      this.txtESteps.Size = new System.Drawing.Size(46, 20);
+      this.txtESteps.TabIndex = 100;
+      this.txtESteps.Text = "50";
+      // 
       // label15
       // 
       this.label15.AutoSize = true;
-      this.label15.Location = new System.Drawing.Point(32, 341);
+      this.label15.Location = new System.Drawing.Point(31, 233);
       this.label15.Name = "label15";
       this.label15.Size = new System.Drawing.Size(80, 13);
       this.label15.TabIndex = 99;
@@ -276,24 +323,24 @@
       // 
       // txtSleep
       // 
-      this.txtSleep.Location = new System.Drawing.Point(119, 338);
+      this.txtSleep.Location = new System.Drawing.Point(118, 230);
       this.txtSleep.Name = "txtSleep";
-      this.txtSleep.Size = new System.Drawing.Size(100, 20);
+      this.txtSleep.Size = new System.Drawing.Size(65, 20);
       this.txtSleep.TabIndex = 98;
       this.txtSleep.Text = "200";
       // 
       // txtSerial
       // 
-      this.txtSerial.Location = new System.Drawing.Point(118, 312);
+      this.txtSerial.Location = new System.Drawing.Point(118, 357);
       this.txtSerial.Name = "txtSerial";
-      this.txtSerial.Size = new System.Drawing.Size(222, 20);
+      this.txtSerial.Size = new System.Drawing.Size(235, 20);
       this.txtSerial.TabIndex = 97;
-      this.txtSerial.Text = "e6cd374b-22d5-4512-b60e-fd8152a0899b";
+      this.txtSerial.Text = "7g2b0b13-5b31-4ac7-b67a-4f16d76c9b30";
       // 
       // label14
       // 
       this.label14.AutoSize = true;
-      this.label14.Location = new System.Drawing.Point(79, 315);
+      this.label14.Location = new System.Drawing.Point(77, 360);
       this.label14.Name = "label14";
       this.label14.Size = new System.Drawing.Size(33, 13);
       this.label14.TabIndex = 96;
@@ -322,7 +369,7 @@
       this.txtLong.Name = "txtLong";
       this.txtLong.Size = new System.Drawing.Size(97, 20);
       this.txtLong.TabIndex = 93;
-      this.txtLong.Text = "-115.020131";
+      this.txtLong.Text = "172.709705";
       // 
       // label7
       // 
@@ -339,7 +386,7 @@
       this.txtLat.Name = "txtLat";
       this.txtLat.Size = new System.Drawing.Size(104, 20);
       this.txtLat.TabIndex = 91;
-      this.txtLat.Text = "36.206979";
+      this.txtLat.Text = "-43.555278";
       // 
       // label9
       // 
@@ -353,17 +400,17 @@
       // label8
       // 
       this.label8.AutoSize = true;
-      this.label8.Location = new System.Drawing.Point(28, 288);
+      this.label8.Location = new System.Drawing.Point(22, 259);
       this.label8.Name = "label8";
-      this.label8.Size = new System.Drawing.Size(84, 13);
+      this.label8.Size = new System.Drawing.Size(89, 13);
       this.label8.TabIndex = 89;
-      this.label8.Text = "Northward steps";
+      this.label8.Text = "Northward cycles";
       // 
       // txtNSteps
       // 
-      this.txtNSteps.Location = new System.Drawing.Point(118, 285);
+      this.txtNSteps.Location = new System.Drawing.Point(118, 256);
       this.txtNSteps.Name = "txtNSteps";
-      this.txtNSteps.Size = new System.Drawing.Size(100, 20);
+      this.txtNSteps.Size = new System.Drawing.Size(46, 20);
       this.txtNSteps.TabIndex = 88;
       this.txtNSteps.Text = "10";
       // 
@@ -408,11 +455,11 @@
       // chkTwoEpochsOnly
       // 
       this.chkTwoEpochsOnly.AutoSize = true;
-      this.chkTwoEpochsOnly.Location = new System.Drawing.Point(118, 253);
+      this.chkTwoEpochsOnly.Location = new System.Drawing.Point(161, 333);
       this.chkTwoEpochsOnly.Name = "chkTwoEpochsOnly";
-      this.chkTwoEpochsOnly.Size = new System.Drawing.Size(128, 17);
+      this.chkTwoEpochsOnly.Size = new System.Drawing.Size(84, 17);
       this.chkTwoEpochsOnly.TabIndex = 82;
-      this.chkTwoEpochsOnly.Text = "2 epoch updates only";
+      this.chkTwoEpochsOnly.Text = "Epochs only";
       this.chkTwoEpochsOnly.UseVisualStyleBackColor = true;
       // 
       // chkSOH
@@ -437,14 +484,12 @@
       this.cboType.Name = "cboType";
       this.cboType.Size = new System.Drawing.Size(133, 21);
       this.cboType.TabIndex = 80;
-      this.cboType.Text = "HEX";
+      this.cboType.Text = "CSD";
       // 
       // chkVaryHgt
       // 
       this.chkVaryHgt.AutoSize = true;
-      this.chkVaryHgt.Checked = true;
-      this.chkVaryHgt.CheckState = System.Windows.Forms.CheckState.Checked;
-      this.chkVaryHgt.Location = new System.Drawing.Point(119, 230);
+      this.chkVaryHgt.Location = new System.Drawing.Point(118, 308);
       this.chkVaryHgt.Name = "chkVaryHgt";
       this.chkVaryHgt.Size = new System.Drawing.Size(81, 17);
       this.chkVaryHgt.TabIndex = 79;
@@ -477,16 +522,16 @@
       this.txtVName.Name = "txtVName";
       this.txtVName.Size = new System.Drawing.Size(132, 20);
       this.txtVName.TabIndex = 76;
-      this.txtVName.Text = "Megalodon";
+      this.txtVName.Text = "Sandpiper";
       // 
       // label18
       // 
       this.label18.AutoSize = true;
-      this.label18.Location = new System.Drawing.Point(43, 176);
+      this.label18.Location = new System.Drawing.Point(12, 176);
       this.label18.Name = "label18";
-      this.label18.Size = new System.Drawing.Size(69, 13);
+      this.label18.Size = new System.Drawing.Size(98, 13);
       this.label18.TabIndex = 75;
-      this.label18.Text = "Vessel Name";
+      this.label18.Text = "Vessel Name (MID)";
       // 
       // txtStartHgt
       // 
@@ -494,16 +539,16 @@
       this.txtStartHgt.Name = "txtStartHgt";
       this.txtStartHgt.Size = new System.Drawing.Size(95, 20);
       this.txtStartHgt.TabIndex = 74;
-      this.txtStartHgt.Text = "542.000";
+      this.txtStartHgt.Text = "-3.0";
       // 
       // label19
       // 
       this.label19.AutoSize = true;
-      this.label19.Location = new System.Drawing.Point(52, 96);
+      this.label19.Location = new System.Drawing.Point(37, 96);
       this.label19.Name = "label19";
-      this.label19.Size = new System.Drawing.Size(63, 13);
+      this.label19.Size = new System.Drawing.Size(77, 13);
       this.label19.TabIndex = 73;
-      this.label19.Text = "Start Height";
+      this.label19.Text = "Start Height(m)";
       // 
       // txtRN
       // 
@@ -511,7 +556,7 @@
       this.txtRN.Name = "txtRN";
       this.txtRN.Size = new System.Drawing.Size(97, 20);
       this.txtRN.TabIndex = 72;
-      this.txtRN.Text = "1163.0";
+      this.txtRN.Text = "5177503.0";
       // 
       // label11
       // 
@@ -528,7 +573,7 @@
       this.txtRE.Name = "txtRE";
       this.txtRE.Size = new System.Drawing.Size(97, 20);
       this.txtRE.TabIndex = 70;
-      this.txtRE.Text = "2744.0";
+      this.txtRE.Text = "1576597.0";
       // 
       // label12
       // 
@@ -545,16 +590,16 @@
       this.txtNorth.Name = "txtNorth";
       this.txtNorth.Size = new System.Drawing.Size(64, 20);
       this.txtNorth.TabIndex = 68;
-      this.txtNorth.Text = "2.0";
+      this.txtNorth.Text = "5.0";
       // 
       // label13
       // 
       this.label13.AutoSize = true;
       this.label13.Location = new System.Drawing.Point(38, 148);
       this.label13.Name = "label13";
-      this.label13.Size = new System.Drawing.Size(75, 13);
+      this.label13.Size = new System.Drawing.Size(72, 13);
       this.label13.TabIndex = 67;
-      this.label13.Text = "North Step (m)";
+      this.label13.Text = "Step North(m)";
       // 
       // label5
       // 
@@ -571,7 +616,7 @@
       this.txtLN.Name = "txtLN";
       this.txtLN.Size = new System.Drawing.Size(104, 20);
       this.txtLN.TabIndex = 65;
-      this.txtLN.Text = "1165.0";
+      this.txtLN.Text = "5177503.0";
       // 
       // label4
       // 
@@ -588,7 +633,7 @@
       this.txtLE.Name = "txtLE";
       this.txtLE.Size = new System.Drawing.Size(104, 20);
       this.txtLE.TabIndex = 63;
-      this.txtLE.Text = "2744.0";
+      this.txtLE.Text = "1576594.0";
       // 
       // label3
       // 
@@ -605,22 +650,30 @@
       this.txtEast.Name = "txtEast";
       this.txtEast.Size = new System.Drawing.Size(64, 20);
       this.txtEast.TabIndex = 61;
-      this.txtEast.Text = "0.5";
+      this.txtEast.Text = "0.3";
       // 
       // label2
       // 
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(43, 122);
+      this.label2.Location = new System.Drawing.Point(46, 122);
       this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(70, 13);
+      this.label2.Size = new System.Drawing.Size(67, 13);
       this.label2.TabIndex = 60;
-      this.label2.Text = "East Step (m)";
+      this.label2.Text = "Step East(m)";
+      // 
+      // txtEpochLimit
+      // 
+      this.txtEpochLimit.Location = new System.Drawing.Point(118, 331);
+      this.txtEpochLimit.Name = "txtEpochLimit";
+      this.txtEpochLimit.Size = new System.Drawing.Size(37, 20);
+      this.txtEpochLimit.TabIndex = 104;
+      this.txtEpochLimit.Text = "2";
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(825, 533);
+      this.ClientSize = new System.Drawing.Size(816, 563);
       this.Controls.Add(this.groupBox2);
       this.Controls.Add(this.groupBox1);
       this.Controls.Add(this.label21);
@@ -697,6 +750,11 @@
     private System.Windows.Forms.Label label14;
     private System.Windows.Forms.Label label15;
     private System.Windows.Forms.TextBox txtSleep;
+    private System.Windows.Forms.Label label16;
+    private System.Windows.Forms.TextBox txtESteps;
+    private System.Windows.Forms.Button btnDefChch;
+    private System.Windows.Forms.Button btnDefDimensions;
+    private System.Windows.Forms.TextBox txtEpochLimit;
   }
 }
 
