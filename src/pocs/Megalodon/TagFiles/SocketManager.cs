@@ -48,6 +48,8 @@ namespace TagFiles
 
     private readonly ILogger _log;
     private readonly IConfigurationStore _config;
+    private bool logStartup = true;
+    private uint epochsSeen = 0;
     public delegate void CallbackEventHandler(string something, int mode);
     public event CallbackEventHandler Callback;
     public static ManualResetEvent allDone = new ManualResetEvent(false);
@@ -278,7 +280,16 @@ namespace TagFiles
         {
           content += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-          if (_DebugTraceToLog)
+          if (logStartup)
+          { // record first 5 entries for possible trouble shooting
+            epochsSeen++;
+            if (epochsSeen == 1)
+              _log.LogInformation("** Logging first five datapackets **");
+            _log.LogInformation(FormatTrace(content));
+            if (epochsSeen > 5)
+              logStartup = false; 
+          }
+          else if (_DebugTraceToLog)
           { // write content to log for debugging
             _log.LogDebug(FormatTrace(content));
           }

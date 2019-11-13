@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TagFiles.Common;
 using TagFiles.Utils;
 using VSS.Common.Abstractions.Configuration;
+using System.Diagnostics;
 
 namespace TagFiles.Interface
 {
@@ -32,6 +33,9 @@ namespace TagFiles.Interface
     public MegalodonService(ILoggerFactory log, IConfigurationStore configStore, ISocketManager socketManager )
     {
       _log = log.CreateLogger<MegalodonService>();
+
+      _log.LogInformation("Configuring Megalodon Service.");
+     // Debugger.Break();
       _config = configStore;
       _socketManager = socketManager;
       // Check we have important settings
@@ -46,16 +50,20 @@ namespace TagFiles.Interface
         throw new ArgumentException($"Missing variable Port in appsettings.json");
       }
 
-      var _Folder = configStore.GetValueString("TagfileFolder");
+      var _Folder = configStore.GetValueString("InstallFolder");
       if (string.IsNullOrEmpty(_Folder))
       {
-        throw new ArgumentException($"Missing variable TagfileFolder in appsettings.json");
+        throw new ArgumentException($"Missing variable InstallFolder in appsettings.json");
       }
       else
       {
         // Make sure folder exists for monitor
-        Directory.CreateDirectory(_Folder);
-        tagFile.TagFileFolder = _Folder;
+
+        var tmpPath = Path.Combine(_Folder, TagConstants.TAGFILE_FOLDER);
+        Directory.CreateDirectory(tmpPath);
+        tagFile.TagFileFolder = tmpPath;
+        tmpPath = Path.Combine(_Folder, TagConstants.LOG_FOLDER);
+        Directory.CreateDirectory(tmpPath);
       }
 
       var _seedLat = configStore.GetValueString("SeedLat");

@@ -331,13 +331,6 @@ namespace TagFiles.Parser
               EpochRec.REB = Convert.ToDouble(TagValue);
               break;
             }
-          case TagConstants.RIGHT_EASTING_BLADE2:
-            {
-              //     if (EpochRec.HasREB)
-              //     Log.LogWarning("Already have REB value for epoch");
-              EpochRec.REB = Convert.ToDouble(TagValue);
-              break;
-            }
 
           case TagConstants.RIGHT_NORTHING_BLADE:
             {
@@ -346,25 +339,11 @@ namespace TagFiles.Parser
               EpochRec.RNB = Convert.ToDouble(TagValue);
               break;
             }
-          case TagConstants.RIGHT_NORTHING_BLADE2:
-            {
-              //    if (EpochRec.HasRNB)
-              //      Log.LogWarning("Already have RNB value for epoch");
-              EpochRec.RNB = Convert.ToDouble(TagValue);
-              break;
-            }
           case TagConstants.RIGHT_HEIGHT_BLADE:
             {
               //     if (EpochRec.HasRHB)
               //       Log.LogWarning("Already have RHB value for epoch");
                 EpochRec.RHB = Convert.ToDouble(TagValue);
-              break;
-            }
-          case TagConstants.RIGHT_HEIGHT_BLADE2:
-            {
-              //     if (EpochRec.HasRHB)
-              //       Log.LogWarning("Already have RHB value for epoch");
-              EpochRec.RHB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.GPS_MODE:
@@ -379,8 +358,8 @@ namespace TagFiles.Parser
               ushort val = Convert.ToUInt16(TagValue);
               if (EpochRec.HasPrevBOG & val == EpochRec.PREV_BOG)
                 break; // no change so dont record
-              if (EpochRec.HasBOG)
-                Log.LogWarning("Already have BOG value for epoch");
+//              if (EpochRec.HasBOG)
+  //              Log.LogWarning("Already have BOG value for epoch");
               EpochRec.BOG = Convert.ToUInt16(TagValue);
               break;
             }

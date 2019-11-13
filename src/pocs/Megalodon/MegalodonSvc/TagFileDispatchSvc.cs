@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TagFiles.Common;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
@@ -29,7 +30,7 @@ namespace MegalodonSvc
       _authn = authn;
       _config = config;
       _serviceProxy = serviceProxy;
-      _path = _config.GetValueString("TagFileFolder");
+      _path = Path.Combine(_config.GetValueString("InstallFolder"), TagConstants.TAGFILE_FOLDER);
     }
 
     public Task StartAsync(CancellationToken cancellationToken)

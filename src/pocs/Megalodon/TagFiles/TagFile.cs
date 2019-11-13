@@ -31,7 +31,7 @@ namespace TagFiles
     public string MachineSerial = "UnknownSerial";
     public string MachineID = "UnknownID";
     public bool SendTagFilesDirect = false;
-    public string TagFileFolder = "c:\\megalodon\\tagfiles";
+    public string TagFileFolder = "c:\\Trimble\\tagfiles";
     public double SeedLat = 0;
     public double SeedLon = 0;
     public double TagFileIntervalMilliSecs = 60000; // dewfault 60 seconds

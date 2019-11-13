@@ -46,9 +46,9 @@
     public const string HEADING = "HDG";
     public const string SERIAL = "SER";
     public const string UTM = "UTM";
-    // bad driver 
-    public const string RIGHT_EASTING_BLADE2 = "RBE";
-    public const string RIGHT_NORTHING_BLADE2 = "RBN";
-    public const string RIGHT_HEIGHT_BLADE2 = "RBH";
+
+    public const string TAGFILE_FOLDER = "Tagfiles";
+    public const string LOG_FOLDER = "Logs";
+
   }
 }
