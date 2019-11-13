@@ -159,14 +159,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
     private void SetupScheduledJobs()
     {
-      var inputProjects = Configuration.GetSection("ScheduledJobs")
+      var scheduleConfigs = Configuration.GetSection("ScheduledJobs")
                                        .Get<ScheduleConfig[]>();
 
-      if (inputProjects.Length <= 0) { return; }
+      if (scheduleConfigs.Length <= 0) { return; }
 
       Log.LogInformation("Setting up scheduled jobs...");
 
-      foreach (var job in inputProjects)
+      foreach (var job in scheduleConfigs)
       {
         if (!job.IsEnabled) { continue; }
 
