@@ -57,11 +57,14 @@ namespace TagFiles.Interface
       }
       else
       {
-        // Make sure folder exists for monitor
-
+        // Make sure folder exists early for monitor
+        // tagfile path
         var tmpPath = Path.Combine(_Folder, TagConstants.TAGFILE_FOLDER);
         Directory.CreateDirectory(tmpPath);
         tagFile.TagFileFolder = tmpPath;
+        tmpPath = Path.Combine(tmpPath, TagConstants.TAGFILE_FOLDER_TOSEND);
+        Directory.CreateDirectory(tmpPath);
+        // logging path
         tmpPath = Path.Combine(_Folder, TagConstants.LOG_FOLDER);
         Directory.CreateDirectory(tmpPath);
       }
@@ -86,6 +89,7 @@ namespace TagFiles.Interface
       }
 
       tagFile.MachineID = configStore.GetValueString("MachineName");
+
       tagFile.SendTagFilesDirect = configStore.GetValueBool("SendTagFilesDirect") ?? false;
 
       var fBOG = configStore.GetValueBool("ForceBOG") ?? false;

@@ -109,7 +109,7 @@ namespace TagFiles
     /// </summary>
     public void WriteTagFileToDisk()
     {
-      string newFilename;
+     // string newFilename;
 
       if (Parser.HeaderRequired)
       {
@@ -127,17 +127,12 @@ namespace TagFiles
       // Make sure folder exists
       Directory.CreateDirectory(TagFileFolder);
 
-      if (!SendTagFilesDirect)
-      {
-        // Put tagfile in a ToSend folder
-        var toSendFolder = System.IO.Path.Combine(TagFileFolder, "ToSend");
-        Directory.CreateDirectory(toSendFolder);
-        newFilename = System.IO.Path.Combine(toSendFolder, Header.TagfileName);
-      }
-      else // tagfile will be sent by another thread to VL
-        newFilename = System.IO.Path.Combine(TagFileFolder, Header.TagfileName);
+      // Put tagfile in a ToSend folder
+      var toSendFolder = System.IO.Path.Combine(TagFileFolder, TagConstants.TAGFILE_FOLDER_TOSEND);
+      var toSendFilePath = System.IO.Path.Combine(toSendFolder, Header.TagfileName);
+      var directFilePath = System.IO.Path.Combine(TagFileFolder, Header.TagfileName);
 
-      var outStream = new NybbleFileStream(newFilename, FileMode.Create);
+      var outStream = new NybbleFileStream(toSendFilePath, FileMode.Create);
       try
       {
         if (Write(outStream)) // write tagfile to stream
@@ -145,19 +140,22 @@ namespace TagFiles
         //  _NewTagfileStarted = true;
           Parser.Reset();
           tagFileCount++;
-          Log.LogInformation($"{newFilename} successfully written to disk. Total Tagfiles:{tagFileCount}");
+          Log.LogInformation($"{toSendFilePath} successfully written to disk. Total Tagfiles:{tagFileCount}");
           readyToWrite = false;
         }
         else
-          Log.LogWarning($"{newFilename} failed to write to disk.");
+          Log.LogWarning($"{toSendFilePath} failed to write to disk.");
       }
       finally
       {
         outStream.Dispose();
-        if (File.Exists(newFilename))
+        if (SendTagFilesDirect) // move up one folder for direct send
         {
-          FileInfo f = new FileInfo(newFilename);
-          f.MoveTo(Path.ChangeExtension(newFilename, ".tag")); // turn into tagfile extension for monitor to pickup
+          if (File.Exists(toSendFilePath))
+          {
+            FileInfo f = new FileInfo(toSendFilePath);
+            f.MoveTo(directFilePath); // move tagfile up one folder for direct send
+          }
         }
 
       }

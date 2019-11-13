@@ -41,10 +41,10 @@ namespace TagFiles.Utils
     public static string MakeTagfileName(string deviceID, string machineName)
     {
       if (deviceID == "")
-        deviceID = "unknown";
+        deviceID = "unknowndeviceid";
       if (machineName == "")
-        machineName = "Megalodon";
-      return $"{deviceID}--{machineName}--{DateTime.UtcNow.ToString("yyMMddHHmmss")}.new"; // gets extension renamed later
+        machineName = "unknownname";
+      return $"{deviceID}--{machineName}--{DateTime.UtcNow.ToString("yyMMddHHmmss")}.tag"; 
     }
 
     public static DateTime UnixTimeStampToUTCDateTime(double unixTimeStamp)

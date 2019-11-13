@@ -6,6 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Documentation\Installation.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Documentation\Installation.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.0.0" />
   </ItemGroup>
 

@@ -7,10 +7,8 @@
   {
     public const short CALLBACK_PARSE_PACKET = 0;
     public const short CALLBACK_CONNECTION_MADE = 1;
-
     public const int TAG_NAME_LENGHT = 3;
- //   public const double NEW_TAG_FILE_INTERVAL_MSECS = 30000; // 60 seonds
-    public const double TAG_FILE_MONITOR_SECS = 10; // 60
+    public const double TAG_FILE_MONITOR_SECS = 10; 
     public const byte SOH = 0x01;
     public const byte STX = 0x02;
     public const byte ETX = 0x03;
@@ -48,6 +46,7 @@
     public const string UTM = "UTM";
 
     public const string TAGFILE_FOLDER = "Tagfiles";
+    public const string TAGFILE_FOLDER_TOSEND = "ToSend";
     public const string LOG_FOLDER = "Logs";
 
   }
