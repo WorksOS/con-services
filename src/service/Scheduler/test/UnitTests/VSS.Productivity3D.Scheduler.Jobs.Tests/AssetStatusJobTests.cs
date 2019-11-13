@@ -17,12 +17,10 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
-using VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob;
 using VSS.Serilog.Extensions;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.Tests
@@ -58,7 +56,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
                        .AddSingleton(mockAssetSummaryProxy.Object)
                        .AddSingleton(mockProductivity3dV2ProxyNotification.Object)
                        .AddSingleton(mockAssetResolverProxy.Object)
-                       .AddTransient<IJob, AssetStatusJob>() // This is the class we are testing
+                       .AddTransient<IJob, AssetStatusJob.AssetStatusJob>() // This is the class we are testing
                        .BuildServiceProvider();
 
       mockAssetStatusServerHubClient.Reset();
@@ -76,8 +74,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     {
       var job = serviceProvider.GetService<IJob>();
       Assert.IsNotNull(job);
-      Assert.IsInstanceOfType(job, typeof(AssetStatusJob));
-      Assert.AreEqual(AssetStatusJob.VSSJOB_UID, job.VSSJobUid);
+      Assert.IsInstanceOfType(job, typeof(AssetStatusJob.AssetStatusJob));
+      Assert.AreEqual(AssetStatusJob.AssetStatusJob.VSSJOB_UID, job.VSSJobUid);
     }
 
 
