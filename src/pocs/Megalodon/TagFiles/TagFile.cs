@@ -98,7 +98,7 @@ namespace TagFiles
         {
           WriteTagFileToDisk();
           // allow time for tagfile to be sent to VL
-          System.Threading.Thread.Sleep(6000);
+          System.Threading.Thread.Sleep(1000);
         }
       }
     }

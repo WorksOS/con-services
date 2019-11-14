@@ -34,8 +34,8 @@ namespace TagFiles.Interface
     {
       _log = log.CreateLogger<MegalodonService>();
 
-      _log.LogInformation("Configuring Megalodon Service.");
-     // Debugger.Break();
+      _log.LogInformation($"Configuring {TagConstants.APP_NAME}.");
+
       _config = configStore;
       _socketManager = socketManager;
       // Check we have important settings
@@ -141,7 +141,7 @@ namespace TagFiles.Interface
       }
       catch (Exception exc)
       {
-        _log.LogError($"StopAsync. Exception shutting down Megalodon. {exc.ToString()}");
+        _log.LogError($"StopAsync. Exception shutting down {TagConstants.APP_NAME}. {exc.ToString()}");
       }
     }
 
@@ -154,7 +154,7 @@ namespace TagFiles.Interface
     {
       new Thread(() =>
       {
-        _log.LogInformation("Starting Megalodon Service");
+        _log.LogInformation($"Starting {TagConstants.APP_NAME}");
         SetupPort();
         _timer = new Timer(TimerDoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
       }).Start();
@@ -168,7 +168,7 @@ namespace TagFiles.Interface
     /// <returns></returns>
     public Task StopAsync(CancellationToken cancellationToken)
     {
-      _log.LogInformation("Stopping Megalodon Service");
+      _log.LogInformation($"Stopping {TagConstants.APP_NAME}");
       StopPort();
       return Task.CompletedTask;
     }

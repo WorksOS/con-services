@@ -14,7 +14,7 @@ namespace MegalodonClient
   public partial class Form1 : Form
   {
 
-    //   private string workFolder  = @"c:\data\megalodon";
+    
     // Receiving byte array  
     byte[] bytes = new byte[1024];
     Socket senderSock;

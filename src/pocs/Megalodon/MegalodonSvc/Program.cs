@@ -20,6 +20,7 @@ using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
+using TagFiles.Common;
 
 /// <summary>
 /// Runs as a Windows service converting packet data from TMC software into Trimble tagfiles.
@@ -30,7 +31,7 @@ namespace MegalodonSvc
   {
     public static async Task Main(string[] args)
     {
-      Console.WriteLine("Megalodon Service");
+      Console.WriteLine($"MegalodonSvc Main. App:{TagConstants.APP_NAME}");
       await CreateHostBuilder(args).Build().RunAsync();
     }
 

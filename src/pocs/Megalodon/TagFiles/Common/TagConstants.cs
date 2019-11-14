@@ -48,6 +48,7 @@
     public const string TAGFILE_FOLDER = "Tagfiles";
     public const string TAGFILE_FOLDER_TOSEND = "ToSend";
     public const string LOG_FOLDER = "Logs";
+    public const string APP_NAME = "Tagfile Service";
 
   }
 }
