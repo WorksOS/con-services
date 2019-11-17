@@ -6,7 +6,6 @@ using Hangfire.MySql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -127,7 +126,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       if (startupWaitMs > 0)
       {
         Log.LogInformation(($"Scheduler: Startup: startupWaitMs {startupWaitMs}"));
-        Thread.Sleep(startupWaitMs);
+    //    Thread.Sleep(startupWaitMs);
       }
       else
       {
@@ -159,34 +158,38 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
     private void SetupScheduledJobs()
     {
-      var scheduleConfigs = Configuration.GetSection("ScheduledJobs")
-                                       .Get<ScheduleConfig[]>();
-
-      if (scheduleConfigs.Length <= 0) { return; }
-
       Log.LogInformation("Setting up scheduled jobs...");
 
-      foreach (var job in scheduleConfigs)
-      {
-        if (!job.IsEnabled) { continue; }
+      // Disabling AssetStatusJob until we are using 'dot on the map'. Until then it's redundant.
+      //ServiceProvider.GetRequiredService<IDefaultJobRunner>()
+      //               .StartDefaultJob(new RecurringJobRequest
+      //               {
+      //                 JobUid = AssetStatusJob.VSSJOB_UID,
+      //                 Schedule = "* * * * *"
+      //               });
 
+      var config = Configuration.GetValueString("MACHINE_EXPORT", "");
+      var schConfig = new ScheduleConfig();
+
+      if (!string.IsNullOrEmpty(config))
+      {
         try
         {
-          ServiceProvider.GetRequiredService<IDefaultJobRunner>().StartDefaultJob(
-            new RecurringJobRequest
-            {
-              JobUid = Guid.Parse(job.JobId),
-              Schedule = job.Schedule,
-              SetupParameters = job.CustomerUid,
-              RunParameters = job.Emails
-            });
-
-          Log.LogInformation($"Added {job.Name} job");
+          schConfig = JsonConvert.DeserializeObject<ScheduleConfig>(config);
         }
         catch (Exception ex)
         {
-          Log.LogError(ex, $"Configuration for {job.Name ?? "UNKNOWN"} is invalid");
+          Log.LogError(ex, "Configuration for MachinePasses is invalid");
         }
+
+        ServiceProvider.GetRequiredService<IDefaultJobRunner>()
+                       .StartDefaultJob(new RecurringJobRequest
+                       {
+                         JobUid = Guid.Parse("39d6c48a-cc74-42d3-a839-1a6b77e8e076"),
+                         Schedule = schConfig.Schedule,
+                         SetupParameters = schConfig.CustomerUid,
+                         RunParameters = schConfig.Emails
+                       });
       }
     }
 
