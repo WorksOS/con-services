@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean.DatabaseAgent
 {
@@ -16,12 +15,10 @@ namespace TCCToDataOcean.DatabaseAgent
     IEnumerable<MigrationObj> Find<T>(string tableName, Expression<Func<T, bool>> predicate) where T : MigrationObj;
     long Insert<T>(T obj, string Tablename = null) where T : MigrationObj;
     void Update<T>(long id, Action<T> action, string tableName = null) where T : MigrationObj;
-    long WriteRecord(string tableName, Project project);
     void WriteRecord(string tableName, ImportedFileDescriptor file);
     void SetMigrationState(MigrationJob job, MigrationState migrationState, string reason);
     void SetFileSize(string tableName, ImportedFileDescriptor file, long length);
     void SetProjectCoordinateSystemDetails(Project project);
-    void SetProjectDxfUnitsType(string tableName, Project project, DxfUnitsType? dxfUnitsType);
     void IncrementProjectFilesUploaded(Project project, int fileCount = 1);
     void IncrementProjectMigrationCounter(Project project, int count = 1);
     void SetProjectFilesDetails(Project project, int totalFileCount, int eligibleFileCount);

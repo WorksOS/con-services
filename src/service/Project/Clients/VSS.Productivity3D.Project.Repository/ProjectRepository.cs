@@ -1518,7 +1518,7 @@ namespace VSS.Productivity3D.Project.Repository
     /// <summary>
     /// There may be 0 or n subscriptions for each project. None/many may be current.
     /// This method gets the latest EndDate so at most 1 sub per project
-    /// Also returns the GeofenceWRK. List returned excludes archived projects.
+    /// Also returns the GeofenceWRK.
     /// </summary>
     /// <remarks>
     /// Transient, required only until the DataOcean migration is complete.
@@ -1544,7 +1544,7 @@ namespace VSS.Productivity3D.Project.Repository
       // Also if there are >1 projectGeofences.. hmm.. it will just return either
       return projects.OrderByDescending(proj => proj.SubscriptionEndDate)
                      .GroupBy(d => d.ProjectUID)
-                     .Select(g => g.First()).ToList();
+                     .Select(g => g.First());
     }
 
     /// <summary>

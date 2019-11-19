@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Types;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -24,6 +26,7 @@ namespace TCCToDataOcean.Utils
     private readonly string _projectApiUrl;
     private readonly string _fileSpaceId;
     private readonly bool _updateProjectCoordinateSystemFile;
+    private readonly bool _skipProjectsWithNoCoordinateSystemFile;
 
     public CalibrationFileAgent(ILoggerFactory loggerFactory, ILiteDbAgent liteDbAgent, IConfigurationStore configStore, IEnvironmentHelper environmentHelper, IFileRepository fileRepo, IWebApiUtils webApiUtils, ICSIBAgent csibAgent)
     {
@@ -40,18 +43,46 @@ namespace TCCToDataOcean.Utils
       _tempFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
 
       _updateProjectCoordinateSystemFile = configStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
+      _skipProjectsWithNoCoordinateSystemFile = configStore.GetValueBool("SKIP_PROJECTS_WITH_NO_COORDINATE_SYSTEM_FILE", defaultValue: true);
     }
 
     /// <summary>
-    /// Resolves the Distance Unit from .dc file content.
+    /// Resolves the Distance Unit from a coordinate system file.
     /// </summary>
-    private DxfUnitsType GetDxfUnitsType(byte[] coordSystemFileContent)
+    private static DxfUnitsType GetDxfUnitsType(byte[] coordSystemFileContent)
     {
       var dxfUnitsType = Encoding.UTF8.GetString(coordSystemFileContent).Substring(41, 1);
       int.TryParse(dxfUnitsType, out var dxfUnits);
 
       // DXF Unit types in the .dc file are 1 based.
       return (DxfUnitsType)dxfUnits - 1;
+    }
+
+    /// <summary>
+    /// Resolves the Projection Type Code from a coordinate system file.
+    /// </summary>
+    private static (string id, string name) GetProjectionTypeCode(MigrationJob job, byte[] dcFileArray)
+    {
+      const string projectionKey = "64";
+      var fs = new MemoryStream(dcFileArray);
+
+      using (var sr = new StreamReader(fs, Encoding.UTF8))
+      {
+        string line;
+
+        while ((line = sr.ReadLine()) != null)
+        {
+          if (!line.StartsWith(projectionKey)) { continue; }
+
+          var projectionTypeCode = line[4].ToString();
+
+          if (projectionTypeCode.Length == 2) Debugger.Break();
+
+          return (projectionTypeCode, Projection.GetProjectionName(projectionTypeCode));
+        }
+      }
+
+      throw new Exception($"Calibration file for project {job.Project.ProjectUID} doesn't contain Projection data");
     }
 
     /// <summary>
@@ -62,6 +93,7 @@ namespace TCCToDataOcean.Utils
       if (string.IsNullOrEmpty(job.Project.CoordinateSystemFileName))
       {
         _log.LogDebug($"Project '{job.Project.ProjectUID}' contains NULL CoordinateSystemFileName field.");
+
         if (!await ResolveCoordinateSystemFromRaptor(job))
         {
           return false;
@@ -70,6 +102,7 @@ namespace TCCToDataOcean.Utils
       else
       {
         var fileDownloadResult = await DownloadCoordinateSystemFileFromTCC(job);
+
         if (!fileDownloadResult)
         {
           if (!await ResolveCoordinateSystemFromRaptor(job))
@@ -138,6 +171,13 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     private async Task<bool> UpdateProjectCoordinateSystemInfo(MigrationJob job)
     {
+      if (_skipProjectsWithNoCoordinateSystemFile)
+      {
+        _log.LogWarning($"{Method.Info()} Skipping project {job.Project.ProjectUID} as SKIP_PROJECTS_WITH_NO_COORDINATE_SYSTEM_FILE=true");
+
+        return false;
+      }
+
       if (_updateProjectCoordinateSystemFile)
       {
         var updateProjectResult = await _webApiUtils.UpdateProjectCoordinateSystemFile(_projectApiUrl, job);
@@ -158,7 +198,7 @@ namespace TCCToDataOcean.Utils
 
       return true;
     }
-    
+
     /// <summary>
     /// Downloads the coordinate system file for a given project.
     /// </summary>
@@ -180,6 +220,12 @@ namespace TCCToDataOcean.Utils
         }
 
         return SaveDCFileToDisk(job, memStream);
+      }
+      catch (Exception exception)
+      {
+        _log.LogError(exception, $"Unexpected error processing calibration file for project {job.Project.ProjectUID}");
+
+        return false;
       }
       finally
       {
@@ -204,21 +250,34 @@ namespace TCCToDataOcean.Utils
       {
         dcFileContent.CopyTo(memoryStream);
         var dcFileArray = memoryStream.ToArray();
-        var dxfUnitsType = GetDxfUnitsType(dcFileArray);
+        var projectionType = GetProjectionTypeCode(job, dcFileArray);
+
+        var coordinateSystemInfo = new MigrationCoordinateSystemInfo
+        {
+          ProjectUid = job.Project.ProjectUID,
+          DxfUnitsType = GetDxfUnitsType(dcFileArray),
+          ProjectionTypeCode = projectionType.id,
+          ProjectionName = projectionType.name
+        };
+
         job.CoordinateSystemFileBytes = dcFileArray;
 
-        _log.LogDebug($"{Method.Info()} Coordinate system file for project {job.Project.ProjectUID} uses {dxfUnitsType} units.");
-        _migrationDb.SetProjectDxfUnitsType(Table.Projects, job.Project, dxfUnitsType);
+        _migrationDb.Update(
+          job.Project.LegacyProjectID, (MigrationProject x) =>
+          {
+            x.CoordinateSystemInfo = coordinateSystemInfo;
+            x.CalibrationFile = new CalibrationFile { Content = Encoding.Default.GetString(dcFileArray) };
+          },
+          tableName: Table.Projects);
+
+        _migrationDb.Insert(coordinateSystemInfo);
       }
 
       try
       {
         var dcFilePath = Path.Combine(_tempFolder, job.Project.CustomerUID, job.Project.ProjectUID);
 
-        if (!Directory.Exists(dcFilePath))
-        {
-          Directory.CreateDirectory(dcFilePath);
-        }
+        Directory.CreateDirectory(dcFilePath);
 
         var coordinateSystemFilename = job.Project.CoordinateSystemFileName;
 

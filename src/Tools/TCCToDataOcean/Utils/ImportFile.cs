@@ -39,7 +39,10 @@ namespace TCCToDataOcean.Utils
     {
       get
       {
-        if (_migrationInfoId < 0) { _migrationInfoId = (Database.Find<MigrationInfo>()).Id; } 
+        if (_migrationInfoId < 0)
+        {
+          _migrationInfoId = (Database.Find<MigrationInfo>()).Id;
+        }
 
         return _migrationInfoId;
       }
@@ -56,9 +59,9 @@ namespace TCCToDataOcean.Utils
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
-    public Task<ImportedFileDescriptorListResult> GetImportedFilesFromWebApi(string uri, Project project) => 
+    public Task<ImportedFileDescriptorListResult> GetImportedFilesFromWebApi(string uri, Project project) =>
       RestClient.SendHttpClientRequest<ImportedFileDescriptorListResult>(
-        uri, 
+        uri,
         HttpMethod.Get,
         MediaType.APPLICATION_JSON,
         MediaType.APPLICATION_JSON,
@@ -142,6 +145,7 @@ namespace TCCToDataOcean.Utils
         {
           var startByte = offset * CHUNK_SIZE;
           var endByte = Math.Min(fileSize, (offset + 1) * CHUNK_SIZE);
+
           if (fileSize - endByte < CHUNK_SIZE)
           {
             // The last chunk will be bigger than the chunk size but less than 2*chunkSize
@@ -227,9 +231,8 @@ namespace TCCToDataOcean.Utils
     /// <summary>
     /// Sets the attributes for uploading using flow.
     /// </summary>
-    private static FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize)
-    {
-      var flowFileUpload = new FlowFileUpload
+    private static FlowFileUpload SetAllAttributesForFlowFile(long fileSize, string name, int currentChunkNumber, int totalChunks, int currentChunkSize) =>
+      new FlowFileUpload
       {
         flowChunkNumber = currentChunkNumber,
         flowChunkSize = CHUNK_SIZE,
@@ -240,9 +243,6 @@ namespace TCCToDataOcean.Utils
         flowRelativePath = name,
         flowTotalChunks = totalChunks
       };
-
-      return flowFileUpload;
-    }
 
     /// <summary>
     /// Format the Content Disposition. This is very specific / fussy with the boundary
