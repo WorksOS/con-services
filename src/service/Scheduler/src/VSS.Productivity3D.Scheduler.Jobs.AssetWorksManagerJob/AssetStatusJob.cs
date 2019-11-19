@@ -11,13 +11,12 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity.Push.Models;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
 
-namespace VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob
+namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
 {
   public class AssetStatusJob : IJob
   {

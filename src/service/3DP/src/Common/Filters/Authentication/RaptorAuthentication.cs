@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -55,15 +54,22 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
-      return 
-        !(
-          (context.Request.Path.Value.ToLower().Contains("api/v2/tagfiles") && context.Request.Method == "POST" &&
-          !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
-          ) ||
-          (context.Request.Path.Value.ToLower().Contains("/patches?") && context.Request.Method == "GET" &&
-          !context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid")
-          )
-        );
+      var isTagFile = context.Request.Path.Value.ToLower().Contains("api/v2/tagfiles");
+      var isPatch = context.Request.Path.Value.ToLower().Contains("/device/patches");
+
+      var containsCustomerUid = context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid");
+      if (isTagFile && context.Request.Method == "POST" && !containsCustomerUid)
+      {
+        log.LogDebug($"{nameof(RequireCustomerUid)} Tagfiles request doesn't require customerUid. path: {context.Request.Path}");
+        return false;
+      }
+      if (isPatch && context.Request.Method == "GET" && !containsCustomerUid)
+      {
+        log.LogDebug($"{nameof(RequireCustomerUid)} Patch request doesn't require customerUid. path: {context.Request.Path}");
+        return false;
+      }
+
+      return true;
     }
 
     /// <summary>

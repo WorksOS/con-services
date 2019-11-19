@@ -20,7 +20,7 @@ namespace VSS.WebApi.Common
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
-    private readonly ILogger<TIDAuthentication> log;
+    protected readonly ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
 
