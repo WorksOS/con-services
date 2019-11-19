@@ -19,6 +19,7 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public MigrationInfo()
     {
+      TableName = Table.MigrationInfo;
       StartTime = DateTime.Now;
     }
   }

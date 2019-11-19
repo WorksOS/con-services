@@ -7,7 +7,6 @@ using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean.DatabaseAgent
 {
@@ -21,7 +20,7 @@ namespace TCCToDataOcean.DatabaseAgent
       var databaseSuffix = environmentHelper.GetVariable("MIGRATION_TARGET", 1);
 
       if (!Directory.Exists(databasePath)) { Directory.CreateDirectory(databasePath); }
-
+      
       _db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE") + "-" + databaseSuffix + ".db"));
     }
 
@@ -51,7 +50,7 @@ namespace TCCToDataOcean.DatabaseAgent
     /// <summary>
     /// Inserts a new object into it's associated table.
     /// </summary>
-    public long Insert<T>(T obj, string Tablename = null) where T : MigrationObj => _db.GetCollection<T>(Tablename).Insert(obj).AsInt64;
+    public long Insert<T>(T obj, string Tablename = null) where T : MigrationObj => _db.GetCollection<T>(obj.TableName ?? Tablename).Insert(obj).AsInt64;
 
     /// <summary>
     /// Returns all table entries where the predicate evaluates to true.
@@ -70,22 +69,6 @@ namespace TCCToDataOcean.DatabaseAgent
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
       objs.Update(dbObj);
-    }
-
-    public long WriteRecord(string tableName, Project project)
-    {
-      var objs = _db.GetCollection<MigrationProject>(tableName);
-      var dbObj = objs.FindById(project.LegacyProjectID);
-
-      if (dbObj == null)
-      {
-        return _db.GetCollection<MigrationProject>(tableName).Insert(new MigrationProject(project)).AsInt64;
-      }
-
-      dbObj = new MigrationProject(project);
-      objs.Update(dbObj);
-
-      return dbObj.Id;
     }
 
     public void SetMigrationState(MigrationJob job, MigrationState migrationState, string message)
@@ -134,17 +117,6 @@ namespace TCCToDataOcean.DatabaseAgent
 
       dbObj.DcFilename = project.CoordinateSystemFileName;
       dbObj.HasValidDcFile = !string.IsNullOrEmpty(project.CoordinateSystemFileName);
-      dbObj.DateTimeUpdated = DateTime.UtcNow;
-
-      projects.Update(dbObj);
-    }
-
-    public void SetProjectDxfUnitsType(string tableName, Project project, DxfUnitsType? dxfUnitsType)
-    {
-      var projects = _db.GetCollection<MigrationProject>(tableName);
-      var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
-
-      dbObj.DxfUnitsType = dxfUnitsType;
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
       projects.Update(dbObj);

@@ -4,7 +4,7 @@ using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean.DatabaseAgent
 {
-  public class MigrationProject : MigrationObj
+  public sealed class MigrationProject : MigrationObj
   {
     public string ProjectUid { get; set; }
     public long ProjectId { get; set; }
@@ -16,7 +16,6 @@ namespace TCCToDataOcean.DatabaseAgent
     public string MigrationStateMessage { get; set; }
     public bool HasValidDcFile { get; set; }
     public string DcFilename { get; set; }
-    public DxfUnitsType? DxfUnitsType { get; set; }
     public int TotalFileCount { get; set; }
     public int EligibleFileCount { get; set; }
     public int UploadedFileCount { get; set; }
@@ -24,11 +23,16 @@ namespace TCCToDataOcean.DatabaseAgent
     public string CSIB { get; set; }
     public int MigrationAttempts { get; set; }
 
+    public CalibrationFile CalibrationFile { get; set; }
+    public MigrationCoordinateSystemInfo CoordinateSystemInfo { get; set; }
+
     public MigrationProject()
     { }
 
     public MigrationProject(Project project)
     {
+      TableName = Table.Projects;
+
       Id = project.LegacyProjectID;
       ProjectId = project.LegacyProjectID;
       ProjectUid = project.ProjectUID;
@@ -37,6 +41,8 @@ namespace TCCToDataOcean.DatabaseAgent
       IsDeleted = project.IsDeleted;
       SubscriptionEndDate = project.SubscriptionEndDate;
       DcFilename = project.CoordinateSystemFileName;
+
+      CoordinateSystemInfo = new MigrationCoordinateSystemInfo();
     }
   }
 }

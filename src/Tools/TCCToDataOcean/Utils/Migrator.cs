@@ -26,7 +26,7 @@ namespace TCCToDataOcean.Utils
     /// which results in file stream errors in production. (TCC becomes overwhelmed by the file upload
     /// queue). This should be mitigated by setting UPLOAD_TO_TCC=false.
     /// </summary>
-    private const int THROTTLE_ASYNC_PROJECT_JOBS = 5;
+    private const int THROTTLE_ASYNC_PROJECT_JOBS = 1;
 
     /// <summary>
     /// Throttle the uploading of files per project. Generally set to 1 for development testing.
@@ -54,6 +54,7 @@ namespace TCCToDataOcean.Utils
     private readonly bool _downloadProjectFiles;
     private readonly bool _uploadProjectFiles;
     private readonly bool _saveFailedProjects;
+    private readonly bool _skipProjectsWithNoCoordinateSystemFile;
 
     private readonly List<ImportedFileType> MigrationFileTypes = new List<ImportedFileType>
     {
@@ -86,6 +87,7 @@ namespace TCCToDataOcean.Utils
       _downloadProjectFiles = configStore.GetValueBool("DOWNLOAD_PROJECT_FILES", defaultValue: false);
       _uploadProjectFiles = configStore.GetValueBool("UPLOAD_PROJECT_FILES", defaultValue: false);
       _saveFailedProjects = configStore.GetValueBool("SAVE_FAILED_PROJECT_IDS", defaultValue: true);
+      _skipProjectsWithNoCoordinateSystemFile = configStore.GetValueBool("SKIP_PROJECTS_WITH_NO_COORDINATE_SYSTEM_FILE", defaultValue: true);
     }
 
     public async Task MigrateFilesForAllActiveProjects()
@@ -158,7 +160,7 @@ namespace TCCToDataOcean.Utils
         if (projectRecord == null)
         {
           Log.LogInformation($"{Method.Info()} Creating new migration record for project {project.ProjectUID}");
-          Database.WriteRecord(Table.Projects, project);
+          Database.Insert(new MigrationProject(project));
         }
         else
         {
@@ -190,7 +192,7 @@ namespace TCCToDataOcean.Utils
 
         projectTasks.Add(MigrateProject(job));
 
-        if (projectTasks.Count != THROTTLE_ASYNC_PROJECT_JOBS) continue;
+        if (projectTasks.Count <= THROTTLE_ASYNC_PROJECT_JOBS) { continue; }
 
         var completed = await Task.WhenAny(projectTasks);
         projectTasks.Remove(completed);
@@ -249,7 +251,7 @@ namespace TCCToDataOcean.Utils
 
       Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsFailed = failedCount);
     }
- 
+
     private void DropTables()
     {
       if (_resumeMigration) { return; }
@@ -261,6 +263,7 @@ namespace TCCToDataOcean.Utils
         Table.MigrationInfo,
         Table.Projects,
         Table.Files,
+        Table.CoordinateSystemInfo,
         Table.Errors,
         Table.Warnings
       });
@@ -295,7 +298,7 @@ namespace TCCToDataOcean.Utils
         {
           Log.LogInformation($"{Method.Info()} Project {job.Project.ProjectUID} contains no imported files, aborting project migration");
 
-          Database.SetMigrationState(job, MigrationState.Failed, "No imported files");
+          Database.SetMigrationState(job, MigrationState.Skipped, "No imported files");
           Database.Update(_migrationInfoId, (MigrationInfo x) => x.ProjectsWithNoFiles += 1);
 
           migrationStateMessage = "Project contains no imported files";
@@ -307,8 +310,12 @@ namespace TCCToDataOcean.Utils
           var result = await DcFileAgent.ResolveProjectCoordinateSystemFile(job);
           if (!result)
           {
+            migrationResult = _skipProjectsWithNoCoordinateSystemFile
+              ? MigrationState.Skipped
+              : MigrationState.Failed;
+
             migrationStateMessage = "Unable to resolve coordinate system file";
-            migrationResult = MigrationState.Failed;
+
             return false;
           }
 
