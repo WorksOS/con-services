@@ -80,17 +80,7 @@ namespace TCCToDataOcean.Utils
 
           return (projectionTypeCode, Projection.GetProjectionName(projectionTypeCode));
         }
-
       }
-
-      //foreach (var line in allLines)
-      //{
-      //  if (!line.StartsWith(projectionKey)) { continue; }
-
-      //  var projectionTypeCode = line[4].ToString();
-
-      //  return (projectionTypeCode, Projection.GetProjectionName(projectionTypeCode));
-      //}
 
       throw new Exception($"Calibration file for project {job.Project.ProjectUID} doesn't contain Projection data");
     }

@@ -26,7 +26,7 @@ namespace TCCToDataOcean.Utils
     /// which results in file stream errors in production. (TCC becomes overwhelmed by the file upload
     /// queue). This should be mitigated by setting UPLOAD_TO_TCC=false.
     /// </summary>
-    private const int THROTTLE_ASYNC_PROJECT_JOBS = 1;
+    private const int THROTTLE_ASYNC_PROJECT_JOBS = 5;
 
     /// <summary>
     /// Throttle the uploading of files per project. Generally set to 1 for development testing.
