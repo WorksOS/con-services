@@ -20,7 +20,7 @@ namespace MegalodonSvc
     private readonly ITPaaSApplicationAuthentication _authn;
     private readonly IConfigurationStore _config;
     private readonly IProductivity3dV2ProxyCompaction _serviceProxy;
-    private Timer _timer;
+//    private Timer _timer;
     private FileSystemWatcher fileSystemWatcher;
     private readonly string _path;
 
@@ -84,7 +84,7 @@ namespace MegalodonSvc
       return null;
     }
 
-    private IEnumerable<string> GetFilenames() => Directory.GetFiles(_path, "*.tag").Where(f => File.GetCreationTimeUtc(f) > DateTime.UtcNow.AddMinutes(-30));
+    private IEnumerable<string> GetFilenames() => Directory.GetFiles(_path, "*.tag").Where(f => File.GetCreationTimeUtc(f) > DateTime.UtcNow.AddMinutes(TagConstants.NEGATIVE_MINUTES_AGED_TAGFILES));
 
     private void MonitorDirectory(string path)
 

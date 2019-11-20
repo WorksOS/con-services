@@ -65,10 +65,6 @@ namespace TagFiles
         Entries.Add(id, new TAGDictionaryItem(fieldName, fieldType, id));
       }
 
-     // if (Entries.Count > DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY)
-      //  return false; // todo log etc
-      //  Log.LogInformation($"TAG file schema dictionary final size of {Entries.Count} exceeds default capacity for dictionary of {DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY}. Consider increasing it.");
-
       return true;
     }
 

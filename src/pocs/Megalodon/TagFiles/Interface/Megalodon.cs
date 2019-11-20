@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TagFiles.Common;
 using TagFiles.Utils;
 using VSS.Common.Abstractions.Configuration;
-using System.Diagnostics;
+
 
 namespace TagFiles.Interface
 {
@@ -23,6 +23,8 @@ namespace TagFiles.Interface
     private Timer _timer;
     private readonly IConfigurationStore _config;
     private readonly ILogger _log;
+    private DateTime lastLogfileCheckTime = DateTime.MinValue;
+    private string _logPath;
 
     /// <summary>
     /// Configure Megalodon
@@ -65,8 +67,8 @@ namespace TagFiles.Interface
         tmpPath = Path.Combine(tmpPath, TagConstants.TAGFILE_FOLDER_TOSEND);
         Directory.CreateDirectory(tmpPath);
         // logging path
-        tmpPath = Path.Combine(_Folder, TagConstants.LOG_FOLDER);
-        Directory.CreateDirectory(tmpPath);
+        _logPath = Path.Combine(_Folder, TagConstants.LOG_FOLDER);
+        Directory.CreateDirectory(_logPath);
       }
 
       var _seedLat = configStore.GetValueString("SeedLat");
@@ -196,6 +198,19 @@ namespace TagFiles.Interface
         _log.LogInformation("Restarting port due to lost connection");
         RestartPort();
         _socketManager.SendAck(); // in case they are waiting on response
+      }
+
+      // keep log files to x days
+      if (DateTime.Now - lastLogfileCheckTime  > TimeSpan.FromSeconds(60*60*24))
+      {
+        string[] files = Directory.GetFiles(_logPath);
+        foreach (string file in files)
+        {
+          FileInfo fi = new FileInfo(file);
+          if (fi.LastAccessTime < DateTime.Now.AddDays(TagConstants.NEGATIVE_DAYS_KEEP_LOGS))
+            fi.Delete();
+        }
+        lastLogfileCheckTime = DateTime.Now;
       }
 
     }

@@ -23,8 +23,6 @@ namespace TagFiles
     private ulong tagFileCount = 0;
     private ulong epochCount = 0;
     private bool tmpNR = false;
-//    private DateTime lastEpochTime = DateTime.MinValue;
-  //  private TimeSpan ts = TimeSpan.FromSeconds(10);
     public TagHeader Header = new TagHeader();
     public TAGDictionary TagFileDictionary;
     public AsciiParser Parser = new AsciiParser();
@@ -35,7 +33,6 @@ namespace TagFiles
     public double SeedLat = 0;
     public double SeedLon = 0;
     public double TagFileIntervalMilliSecs = 60000; // dewfault 60 seconds
-
     public ILogger Log;
 
     /// <summary>
@@ -61,6 +58,13 @@ namespace TagFiles
     {
       // Setup Tagfile Directory
       CreateTagfileDictionary();
+    }
+
+
+    public void SetupLog(ILogger log)
+    {
+      Log = log;
+      Parser.Log = log;
     }
 
     /// <summary>
@@ -166,28 +170,21 @@ namespace TagFiles
     /// Epoch input from socket is parsed and processed
     /// </summary>
     /// <param name="txt"></param>
-    public void ParseText(string txt)
+    public bool ParseText(string txt)
     {
 
-      // Need logic to prevent swathing between two epochs over a given time limit
-      /* Logic done to tagprocessor
-      if (lastEpochTime == DateTime.MinValue)
-        lastEpochTime = DateTime.Now;
-      else
-      {
-        if ((DateTime.Now - lastEpochTime) > ts)
-        {
-
-        } 
-      }
-  */
-
-      // protect thread
+      // protected thread
       lock (updateLock)
       {
         epochCount++;
-        Parser.ParseText(txt);
+        if (!Parser.ParseText(txt))
+        {
+          Log.LogWarning($"Failed to parse data packet:{txt}");
+          return false;
+        }
       }
+
+      return true;
     }
 
     /// <summary>
@@ -233,18 +230,14 @@ namespace TagFiles
 
       CreateTagfileDictionary();
 
-      // todo Setup header defaults for test
       Parser.EpochRec.Week = 1;
       Parser.EpochRec.CoordSys = 3;
       Parser.EpochRec.UTM = 0; // not needed so default
       Parser.EpochRec.MappingMode = 1;
       // vss supplied
       Parser.EpochRec.RadioType = "torch";
-      //Parser.EpochRec.RadioSerial = "123456";
-   //   Parser.EpochRec.Serial = "e6cd374b-22d5-4512-b60e-fd8152a0899b";
       
       // handy code
-      
       Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 
       // from local time to unix time
@@ -269,9 +262,7 @@ namespace TagFiles
         rs + "HGT-37.600" +
         rs + "MIDVessel1" +
         rs + "BOG0" +
-        //        rs + "UTM0" +
-        rs + "HDG92" +
-        rs + "HDG92" +
+        rs + "UTM0" +
         rs + "HDG92" +
         rs + "SERe6cd374b - 22d5 - 4512 - b60e - fd8152a0899b" +
         rs + "MTPHEX"

@@ -8,7 +8,10 @@
     public const short CALLBACK_PARSE_PACKET = 0;
     public const short CALLBACK_CONNECTION_MADE = 1;
     public const int TAG_NAME_LENGHT = 3;
-    public const double TAG_FILE_MONITOR_SECS = 10; 
+    public const double TAG_FILE_MONITOR_SECS = 10;
+    public const double MIN_EPOCH_INTERVAL_SECS = 5;
+    public const double NEGATIVE_DAYS_KEEP_LOGS = -7;
+    public const double NEGATIVE_MINUTES_AGED_TAGFILES = (60 * 24) * 7 * -1; // 7 days
     public const byte SOH = 0x01;
     public const byte STX = 0x02;
     public const byte ETX = 0x03;

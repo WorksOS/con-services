@@ -19,7 +19,7 @@ namespace TagFiles.Parser
     private bool HaveValue = false;
     private int HeaderRecordCount = 0;
     private bool tmpNR = false;
-
+    private DateTime prevEpochTime = DateTime.MinValue;
     public bool HeaderRequired = true;
     public bool HeaderUpdated = false; // has there been a time epoch for header
 
@@ -44,26 +44,35 @@ namespace TagFiles.Parser
       TagValue = "";
       TagName = "";
       TagContent = new TagContentList();
-      //   EpochDict = new EpochDictionary();
     }
 
-
-
-
+    /// <summary>
+    /// Validation for data packet
+    /// </summary>
+    /// <param name="ba"></param>
+    /// <returns></returns>
     private bool ValidateText(ref byte[] ba)
     {
       if (ba.Length <= 4)
       {
-        // todo log error
+        Log.LogWarning("Data packet less than 4 bytes");
         return false;
       }
 
       // Should start with record seperator
       if (ba[0] != TagConstants.RS)
       {
-        // todo log error
+        Log.LogWarning("Data packet missing record seperator. 0x1E");
         return false;
       }
+
+      // Should start with record seperator
+      if (ba[ba.Length-1] == TagConstants.ETX)
+      {
+        Log.LogWarning("Data packet to parse should not have ETX as last charartor");
+        return false;
+      }
+
 
       return true;
 
@@ -77,17 +86,8 @@ namespace TagFiles.Parser
       newHeader = false;
       var timeAdded = false;
 
-  //    if (_Prev_EpochRec != null)
-    //    EpochSamePosition
-
-
       if (!HeaderUpdated & !eRecord.HasMTP) // dont process any epoch before recieving a header
-      {
-      //  _Prev_EpochRec = new EpochRecord();
-     //   _Prev_EpochRec.EpochCopy(ref eRecord); // important for new tagfiles and checking for delta updates
-//        eRecord.ClearEpoch();
         return;
-      }
 
       if (!HeaderUpdated)
       {
@@ -282,7 +282,7 @@ namespace TagFiles.Parser
     /// <summary>
     /// Process field from datapacket
     /// </summary>
-    private void ProcessField()
+    private bool ProcessField()
     {
       try
       {
@@ -449,7 +449,10 @@ namespace TagFiles.Parser
       catch (Exception ex)
       {
         Log.LogError($"Unexpected error in ProcessField. TagName:{TagName}, Value:{TagValue}, Error:{ex.Message.ToString()} Trace:{ex.StackTrace.ToString()}");
+        return false;
       }
+
+      return true;
     }
 
 
@@ -458,12 +461,6 @@ namespace TagFiles.Parser
     /// </summary>
     public void Reset()
     {
-    //  if (EpochRec.IsFullPositionEpoch())
-     // {
-      //  _Prev_EpochRec = new EpochRecord();
-       // _Prev_EpochRec.EpochCopy(ref EpochRec); // important for new tagfiles and checking for delta updates
-     // }
-
       EpochRec = new EpochRecord();
       TagName = "";
       TagValue = "";
@@ -483,92 +480,118 @@ namespace TagFiles.Parser
     /// <returns></returns>
     public bool ParseText(string txt)
     {
-      // Note STX and ETX, ENQ, ACK, NAK should not enter here as a rule. Ignored if it does
+      // Note STX and ETX, ENQ, ACK, NAK should not enter here as a rule. 
 
-      byte[] bArray = Encoding.UTF8.GetBytes(txt);
-      if (!ValidateText(ref bArray))
+      if (prevEpochTime != DateTime.MinValue)
       {
+        // this check is here to prevent two epochs seprated by a min time interval being stitched together
+        TimeSpan minSpanAllowed = TimeSpan.FromSeconds(TagConstants.MIN_EPOCH_INTERVAL_SECS);
+        TimeSpan currentSpan = DateTime.Now - prevEpochTime;
+        if (currentSpan > minSpanAllowed)
+        {
+          if (_Prev_EpochRec != null)
+            _Prev_EpochRec = null; // stops the previous epoch being associated to this epoch
+          if (_PrevTagFile_EpochRec != null)
+            _PrevTagFile_EpochRec = null;
+        }
+      }
+      prevEpochTime = DateTime.Now;
+
+      try
+      {
+        byte[] bArray = Encoding.UTF8.GetBytes(txt);
+        if (!ValidateText(ref bArray))
+        {
+          return false;
+        }
+
+        HaveName = false;
+        HaveValue = false;
+
+        // construct records(tagfile fields) byte by byte
+        for (int i = 0; i < bArray.Length; i++)
+        {
+          switch (bArray[i])
+          {
+            case TagConstants.STX:
+              continue;
+            case TagConstants.ETX:
+              continue;
+            case TagConstants.ENQ:
+              continue;
+            case TagConstants.ACK:
+              continue;
+            case TagConstants.NAK:
+              continue;
+            case TagConstants.RS:
+              if (HaveName && TagValue != "")
+                ProcessField();
+              HaveName = false;
+              HaveValue = false;
+              TagValue = "";
+              TagName = "";
+              continue;
+            default:
+              if (!HaveName)
+              {
+                TagName = TagName + (char)bArray[i];
+                HaveName = TagName.Length == TagConstants.TAG_NAME_LENGHT;
+              }
+              else
+              {
+                TagValue = TagValue + (char)bArray[i];
+                if (!HaveValue)
+                  HaveValue = true;
+                if (HaveName && i == bArray.Length - 1) // endoftext
+                  if (HaveName && TagValue != "")
+                  {
+                    var res = ProcessField();
+                    if (res == false)
+                      return false;
+                  }
+              }
+              continue;
+          }
+
+        }
+
+        // finally process all fields picked out of the datapacket
+        var newHeader = false;
+
+        if (_Prev_EpochRec != null)
+        {
+          // Check if its the same position and elevation
+          if (EpochRec.HasLAT) // if header
+            UpdateTagContentList(ref EpochRec, ref newHeader);
+          else if (EpochRec.NotEpochSamePosition(ref _Prev_EpochRec))
+            UpdateTagContentList(ref EpochRec, ref newHeader);
+        }
+        else
+          UpdateTagContentList(ref EpochRec, ref newHeader);
+
+        if (newHeader)
+        {
+          if (_PrevTagFile_EpochRec != null) // epoch from last tagfile
+          {
+            if (_PrevTagFile_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
+              UpdateTagContentList(ref _PrevTagFile_EpochRec, ref tmpNR);
+            _PrevTagFile_EpochRec = null;
+          }
+          if (_Prev_EpochRec != null) // epoch missed to SOH request
+            if (_Prev_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
+              UpdateTagContentList(ref _Prev_EpochRec, ref tmpNR);
+        }
+
+        _Prev_EpochRec = new EpochRecord();
+        _Prev_EpochRec.EpochCopy(ref EpochRec);
+
+        return true;
+      }
+      catch (Exception e)
+      {
+        Log.LogError($"Unexpected error occured in ParseText. Error:{e.Message}, {e.StackTrace}");
         return false;
       }
-
-      HaveName = false;
-      HaveValue = false;
-
-      // construct records(tagfile fields) byte by byte
-      for (int i = 0; i < bArray.Length; i++)
-      {
-        switch (bArray[i])
-        {
-          case TagConstants.STX:
-            continue;
-          case TagConstants.ETX:
-            continue;
-          case TagConstants.ENQ:
-            continue;
-          case TagConstants.ACK:
-            continue;
-          case TagConstants.NAK:
-            continue;
-          case TagConstants.RS:
-            if (HaveName && TagValue != "")
-              ProcessField();
-            //  UpdateTagContentList(); // save current epoch check
-            HaveName = false;
-            HaveValue = false;
-            TagValue = "";
-            TagName = "";
-            continue;
-          default:
-            if (!HaveName)
-            {
-              TagName = TagName + (char)bArray[i];
-              HaveName = TagName.Length == TagConstants.TAG_NAME_LENGHT;
-            }
-            else
-            {
-              TagValue = TagValue + (char)bArray[i];
-              if (!HaveValue)
-                HaveValue = true;
-              if (HaveName && i == bArray.Length - 1) // endoftext
-                if (HaveName && TagValue != "")
-                  ProcessField();
-            }
-            continue;
-        }
-
-      }
-
-      // finally process all fields picked out of the datapacket
-      var newHeader = false;
-
-      if (_Prev_EpochRec != null)
-      {
-        // Check if its the same position and elevation
-        if (EpochRec.HasLAT) // if header
-          UpdateTagContentList(ref EpochRec, ref newHeader);
-        else if (EpochRec.NotEpochSamePosition(ref _Prev_EpochRec))
-          UpdateTagContentList(ref EpochRec, ref newHeader);
-      }
-      else
-        UpdateTagContentList(ref EpochRec, ref newHeader);
-
-      if (newHeader)
-      {
-        if (_PrevTagFile_EpochRec != null) // epoch from last tagfile
-        {
-          if (_PrevTagFile_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
-            UpdateTagContentList(ref _PrevTagFile_EpochRec, ref tmpNR);
-          _PrevTagFile_EpochRec = null;
-        }
-        if (_Prev_EpochRec != null) // epoch missed to SOH request
-          if (_Prev_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
-            UpdateTagContentList(ref _Prev_EpochRec, ref tmpNR);
-      }
-
-      _Prev_EpochRec = new EpochRecord();
-      _Prev_EpochRec.EpochCopy(ref EpochRec); 
-
-      return true;
     }
 
     /// <summary>

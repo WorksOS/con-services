@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{6E0FBEC7-35EF-4D7F-85C7-B088D4A1B84D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegalodonUnitTests", "MegalodonUnitTests\MegalodonUnitTests.csproj", "{A6D61713-ED5B-482B-8416-59EC8BF9AAEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{6E0FBEC7-35EF-4D7F-85C7-B088D4A1B84D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E0FBEC7-35EF-4D7F-85C7-B088D4A1B84D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E0FBEC7-35EF-4D7F-85C7-B088D4A1B84D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6D61713-ED5B-482B-8416-59EC8BF9AAEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6D61713-ED5B-482B-8416-59EC8BF9AAEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6D61713-ED5B-482B-8416-59EC8BF9AAEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6D61713-ED5B-482B-8416-59EC8BF9AAEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
