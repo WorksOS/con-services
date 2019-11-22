@@ -29,6 +29,8 @@ namespace VSS.DataOcean.Client
     private readonly double _uploadTimeout;
     
     private readonly DataOceanFolderCache _dataOceanFolderCache;
+    private readonly List<string> _missingTileList;
+
 
     /// <summary>
     /// Client for sending requests to the data ocean.
@@ -46,6 +48,8 @@ namespace VSS.DataOcean.Client
 
       const string DATA_OCEAN_URL_KEY = "DATA_OCEAN_URL";
       _dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
+
+      _missingTileList = new List<string>();
 
       if (string.IsNullOrEmpty(_dataOceanBaseUrl))
         throw new ArgumentException($"Missing environment variable {DATA_OCEAN_URL_KEY}");
@@ -197,17 +201,24 @@ namespace VSS.DataOcean.Client
       //1. Get the download url
       string tileFolderAndFileName = null;
       string nameForMetadata = fullName;
+      string tileDetail = null;
 
       if (fullName.Contains(DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX))
       {
         tileFolderAndFileName = DataOceanFileUtil.ExtractTileNameFromTileFullName(fullName);
         nameForMetadata = fullName.Substring(0, fullName.Length - tileFolderAndFileName.Length);
+        tileDetail = fullName.Split(DataOceanUtil.PathSeparator)[4] + tileFolderAndFileName;
+        if (_missingTileList.Contains(tileDetail))
+        {
+          _log.LogDebug($"{nameof(GetFile)}: Tile is known to be missing {tileDetail}");
+          return null;
+        }
       }
 
       var result = await GetFileMetadata(nameForMetadata, customHeaders);
       if (result == null)
       {
-        _log.LogWarning($"{nameof(GetFile)} Failed to find file {fullName}");
+        _log.LogWarning($"{nameof(GetFile)}: Failed to find file {fullName}");
         return null;
       }
       var downloadUrl = result.DataOceanDownload.Url;
@@ -237,6 +248,7 @@ namespace VSS.DataOcean.Client
         {
           throw;
         }
+        _missingTileList.Add(tileDetail);
       }
       //Check if anything returned. File may not exist.
       if (response == null)
