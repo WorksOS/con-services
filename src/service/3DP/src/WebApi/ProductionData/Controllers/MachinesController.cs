@@ -577,6 +577,8 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       {
         return dateResult;
       }
+
+      return null;
     }
 
     /// <summary>
