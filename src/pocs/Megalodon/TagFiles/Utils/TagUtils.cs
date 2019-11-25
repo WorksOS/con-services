@@ -61,8 +61,8 @@ namespace TagFiles.Utils
       switch (upperValue)
       {
         case "HEX": return 25;
-        case "WCN": return 47; //???
-        case "CSD": return 46; // todo
+        case "WCN": return 47; 
+        case "CSD": return 46; 
         default:
           {
             throw new System.ArgumentException($"Unknown machine type supplied. value:{value}");

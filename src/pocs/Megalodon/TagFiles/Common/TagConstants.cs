@@ -41,7 +41,7 @@
     public const string LATITUDE = "LAT";
     public const string LONTITUDE = "LON";
     public const string HEIGHT = "HGT";
-    public const string MESSAGE_ID = "MID";
+    public const string MACHINE_ID = "MID";
     public const string MACHINE_SPEED = "MSD";
     public const string MACHINE_TYPE = "MTP";
     public const string HEADING = "HDG";
@@ -52,6 +52,12 @@
     public const string TAGFILE_FOLDER_TOSEND = "ToSend";
     public const string LOG_FOLDER = "Logs";
     public const string APP_NAME = "Tagfile Service";
+
+    public const ushort DEFAULT_COORDSYS = 3;
+    public const ushort DEFAULT_MAPPINGMODE = 1;
+    public const string DEFAULT_RADIOTYPE = "torch";
+    public const string DEFAULT_APPVERSION = "1";
+    public const ushort DEFAULT_VALID_POSITION = 1;
 
   }
 }

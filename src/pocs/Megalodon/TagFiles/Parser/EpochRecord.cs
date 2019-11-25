@@ -1,11 +1,10 @@
-﻿using System;
-/// <summary>
+﻿/// <summary>
 /// Acts like a state machine for each epoch
 /// </summary>
 namespace TagFiles.Parser
 {
 
-  public class EpochRecord 
+  public class EpochRecord
   {
 
     public bool HasHeader = false;
@@ -38,8 +37,6 @@ namespace TagFiles.Parser
     public bool HasMappingMode = false;
     public bool HasAppVersion = false;
     public bool HasValidPosition = false;
-
-
 
     // Fields
 
@@ -375,8 +372,6 @@ namespace TagFiles.Parser
       }
     }
 
-
-
     /// <summary>
     /// Coordinate System
     /// </summary>
@@ -405,7 +400,6 @@ namespace TagFiles.Parser
       }
     }
 
-
     /// <summary>
     /// Mapping Mode
     /// </summary>
@@ -419,7 +413,6 @@ namespace TagFiles.Parser
         HasMappingMode = true;
       }
     }
-
 
     /// <summary>
     /// Application Version

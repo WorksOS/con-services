@@ -1,9 +1,11 @@
-﻿using TagFiles.Parser;
-using TagFiles.Utils;
+﻿using TagFiles.Utils;
 
 namespace TagFiles.Parser
 {
 
+  /// <summary>
+  /// Header record for tagfile
+  /// </summary>
   public class TagHeader
   {
     public string TagfileName;
@@ -18,7 +20,6 @@ namespace TagFiles.Parser
     {
       TagfileName = TagUtils.MakeTagfileName("", ""); // setup default
     }
-
 
     public void UpdateTagfileName(string serial, string machineID)
     {
@@ -42,7 +43,6 @@ namespace TagFiles.Parser
       DictionaryID = 1;
       DictionaryMajor = 1;
       DictionaryMinor = 4;
-   //   TypeTableOffset = 0; // gets set later after data content written
 
       stream.WriteNybble(FileMajor);
       stream.WriteNybble(FileMinor);
@@ -57,7 +57,6 @@ namespace TagFiles.Parser
     {
       return $"FileMajor:{FileMajor}, FileMinor:{FileMinor}, DictionaryID:{FileMinor}, DictionaryMajor:{DictionaryMajor}, DictionaryMinor:{DictionaryMinor}, TypeTableOffset:{TypeTableOffset}";
     }
-
 
   }
 

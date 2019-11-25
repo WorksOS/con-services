@@ -39,7 +39,6 @@ namespace TagFiles.Parser
       set => SetNybblePosition(value);
     }
 
-
     /// <summary>
     /// Make sure we end content on a full padded byte
     /// </summary>
@@ -130,8 +129,7 @@ namespace TagFiles.Parser
           WriteNybble((byte)(data & 0x0F));
           break;
         default:
-          // logError 'Variable sized unsigned integer cannot have more than 4 nybbles'
-          break;
+          throw new InvalidOperationException("Variable sized unsigned integer cannot have more than 4 nybbles");
       }
     }
 
@@ -145,8 +143,8 @@ namespace TagFiles.Parser
         WriteVarSizeUnsignedInt(data - 72, 3);
       else if (data <= 4679)
         WriteVarSizeUnsignedInt(data - 584, 4);
-//      else MegalodonLogger('Variable sized unsigned integer cannot be greater than 4679');
-
+      else
+        throw new InvalidOperationException("Variable sized unsigned integer cannot be greater than 4679");
     }
 
 
@@ -297,7 +295,6 @@ namespace TagFiles.Parser
         readANSIString_ByteBuffer = new byte[100]; // todo
       }
 
-      //while ((b = ReadANSIChar) != 0)
       while ((b = (byte)((ReadNybble() << BITS_PER_NYBBLE) | ReadNybble())) != 0)
       {
         readANSIString_ByteBuffer[count++] = b;
@@ -395,7 +392,5 @@ namespace TagFiles.Parser
       // This is an invalid VarInt in the file.
       return false;
     }
-
-
   }
 }

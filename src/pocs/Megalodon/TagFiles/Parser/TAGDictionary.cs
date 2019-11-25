@@ -11,7 +11,6 @@ namespace TagFiles
   /// </summary>
   public class TAGDictionary
   {
-//    private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGDictionary>();
 
     private const int DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY = 100;
 
@@ -30,7 +29,7 @@ namespace TagFiles
     public TAGDictionary()
     {
       //   Entries = new Dictionary<short, TAGDictionaryItem>(DEFAULT_TAG_FILE_SCHEMA_DICTIONARY_CAPACITY);
-         Entries = new Dictionary<short, TAGDictionaryItem>();
+      Entries = new Dictionary<short, TAGDictionaryItem>();
     }
 
     /// <summary>
@@ -38,7 +37,6 @@ namespace TagFiles
     /// </summary>
     /// <returns></returns>
     public bool Read(NybbleStream reader)
-  //  public bool Read(TAGReader reader)
     {
       string fieldName;
       while ((fieldName = reader.ReadANSIString()) != string.Empty)
@@ -68,6 +66,10 @@ namespace TagFiles
       return true;
     }
 
+    /// <summary>
+    /// Write stream of nybbles
+    /// </summary>
+    /// <param name="stream"></param>
     public void Write(NybbleStream stream)
     {
 
@@ -82,16 +84,14 @@ namespace TagFiles
           // bytes[i];
           stream.WriteFixedSizeUnsignedInt((uint)bytes[i], 2);
         }
-        stream.WriteFixedSizeUnsignedInt(0,2); // end of name marker
-        
+        stream.WriteFixedSizeUnsignedInt(0, 2); // end of name marker
+
         stream.WriteNybble((byte)(theElement.Type));
         stream.WriteVarSizeUnsignedInt((uint)theElement.ID);
       }
 
       stream.WriteFixedSizeUnsignedInt(0, 2); // end of dictionary marker
     }
-
-
   }
 
 }

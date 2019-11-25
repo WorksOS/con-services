@@ -20,7 +20,6 @@ namespace MegalodonSvc
     private readonly ITPaaSApplicationAuthentication _authn;
     private readonly IConfigurationStore _config;
     private readonly IProductivity3dV2ProxyCompaction _serviceProxy;
-//    private Timer _timer;
     private FileSystemWatcher fileSystemWatcher;
     private readonly string _path;
 

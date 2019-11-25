@@ -35,7 +35,7 @@ namespace TagFiles.Parser
     public double SeedLat = 0;
     public double SeedLon = 0;
     public string ForceSerial = "";
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -67,12 +67,11 @@ namespace TagFiles.Parser
       }
 
       // Should start with record seperator
-      if (ba[ba.Length-1] == TagConstants.ETX)
+      if (ba[ba.Length - 1] == TagConstants.ETX)
       {
         Log.LogWarning("Data packet to parse should not have ETX as last charartor");
         return false;
       }
-
 
       return true;
 
@@ -102,11 +101,11 @@ namespace TagFiles.Parser
 
           // Some fields are defaulted by Trimble set them up here now
           // todo add these to appsettings as defaults
-          eRecord.CoordSys = 3; // coordinate system
-          eRecord.MappingMode = 1; // min elevation
-          eRecord.RadioType = "torch"; // torch
-          eRecord.AppVersion = "1"; // app version
-          eRecord.ValidPosition = 1; // has valid position
+          eRecord.CoordSys = TagConstants.DEFAULT_COORDSYS; // coordinate system
+          eRecord.MappingMode = TagConstants.DEFAULT_MAPPINGMODE; // min elevation
+          eRecord.RadioType = TagConstants.DEFAULT_RADIOTYPE; // torch
+          eRecord.AppVersion = TagConstants.DEFAULT_APPVERSION; // app version
+          eRecord.ValidPosition = TagConstants.DEFAULT_VALID_POSITION; // has valid position
           newHeader = true;
         }
       }
@@ -149,7 +148,6 @@ namespace TagFiles.Parser
         TagContent.AddEntry(new TagData_Double() { DictID = (short)DictionaryItem.height, DataType = TAGDataType.tIEEEDouble, Data = eRecord.HGT });
         eRecord.HasHGT = false;
       }
-
       if (eRecord.HasUTM)
       {
         TagContent.AddEntry(new TagData_UnsignedInt() { DictID = (short)DictionaryItem.UTMZone, DataType = TAGDataType.t8bitUInt, Data = eRecord.UTM });
@@ -157,8 +155,6 @@ namespace TagFiles.Parser
       }
 
       HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
-
-      // };
 
       if (eRecord.HasTime & !timeAdded)
       {
@@ -278,7 +274,6 @@ namespace TagFiles.Parser
       }
     }
 
-
     /// <summary>
     /// Process field from datapacket
     /// </summary>
@@ -291,9 +286,6 @@ namespace TagFiles.Parser
         {
           case TagConstants.TIME:
             {
-              //  if (EpochRec.HasTime) // if we have an existing timestamp then save that epoch to list before continuing
-              //  SaveEpochToList();
-
               // Starts new epoch
               uint gpsTime;
               uint gpsWeek;
@@ -305,51 +297,37 @@ namespace TagFiles.Parser
             }
           case TagConstants.LEFT_EASTING_BLADE:
             {
-        //      if (EpochRec.HasLEB)
-         //       Log.LogWarning("Already have LEB value for epoch");
               EpochRec.LEB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.LEFT_NORTHING_BLADE:
             {
-       //       if (EpochRec.HasLNB)
-       //         Log.LogWarning("Already have LNB value for epoch");
               EpochRec.LNB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.LEFT_HEIGHT_BLADE:
             {
-              //      if (EpochRec.HasLHB)
-              //       Log.LogWarning("Already have LHB value for epoch");
               EpochRec.LHB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_EASTING_BLADE:
             {
-         //     if (EpochRec.HasREB)
-           //     Log.LogWarning("Already have REB value for epoch");
               EpochRec.REB = Convert.ToDouble(TagValue);
               break;
             }
 
           case TagConstants.RIGHT_NORTHING_BLADE:
             {
-          //    if (EpochRec.HasRNB)
-          //      Log.LogWarning("Already have RNB value for epoch");
               EpochRec.RNB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.RIGHT_HEIGHT_BLADE:
             {
-              //     if (EpochRec.HasRHB)
-              //       Log.LogWarning("Already have RHB value for epoch");
-                EpochRec.RHB = Convert.ToDouble(TagValue);
+              EpochRec.RHB = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.GPS_MODE:
             {
-         //     if (EpochRec.HasGPM)
-          //      Log.LogWarning("Already have GPM value for epoch");
               EpochRec.GPM = Convert.ToUInt16(TagValue);
               break;
             }
@@ -358,22 +336,16 @@ namespace TagFiles.Parser
               ushort val = Convert.ToUInt16(TagValue);
               if (EpochRec.HasPrevBOG & val == EpochRec.PREV_BOG)
                 break; // no change so dont record
-//              if (EpochRec.HasBOG)
-  //              Log.LogWarning("Already have BOG value for epoch");
               EpochRec.BOG = Convert.ToUInt16(TagValue);
               break;
             }
           case TagConstants.DESIGN:
             {
-      //        if (EpochRec.HasDES)
-       //         Log.LogWarning("Already have DES value for epoch");
               EpochRec.Design = TagValue;
               break;
             }
           case TagConstants.LATITUDE:
             {
-        //      if (EpochRec.HasLAT)
-         //       Log.LogWarning("Already have LAT value for epoch");
               if (SeedLat != 0)
                 EpochRec.LAT = SeedLat;
               else
@@ -382,8 +354,6 @@ namespace TagFiles.Parser
             }
           case TagConstants.LONTITUDE:
             {
-    //          if (EpochRec.HasLON)
-      //          Log.LogWarning("Already have LON value for epoch");
               if (SeedLon != 0)
                 EpochRec.LON = SeedLon;
               else
@@ -392,51 +362,37 @@ namespace TagFiles.Parser
             }
           case TagConstants.HEIGHT:
             {
-          //    if (EpochRec.HasHGT)
-          //      Log.LogWarning("Already have HGT value for epoch");
               EpochRec.HGT = Convert.ToDouble(TagValue);
               break;
             }
-          case TagConstants.MESSAGE_ID:
+          case TagConstants.MACHINE_ID:
             {
-       //       if (EpochRec.HasMID)
-         //       Log.LogWarning("Already have MID value for epoch");
               EpochRec.MID = TagValue;
               break;
             }
           case TagConstants.MACHINE_SPEED:
             {
-          //    if (EpochRec.HasMSD)
-           //     Log.LogWarning("Already have MSD value for epoch");
               EpochRec.MSD = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.MACHINE_TYPE:
             {
-   //           if (EpochRec.HasMTP)
-     //           Log.LogWarning("Already have MTP value for epoch");
               EpochRec.MTP = TagUtils.ConvertToMachineType(TagValue);
               break;
             }
           case TagConstants.HEADING:
             {
-          //    if (EpochRec.HasHDG)
-          //      Log.LogWarning("Already have HDG value for epoch");
               EpochRec.HDG = Convert.ToDouble(TagValue);
               break;
             }
           case TagConstants.SERIAL:
             {
-        //      if (EpochRec.HasSER)
-         //       Log.LogWarning("Already have SER value for epoch");
               EpochRec.Serial = TagValue;
               EpochRec.RadioSerial = TagValue; // Yes assigned two places
               break;
             }
           case TagConstants.UTM:
             {
-          //    if (EpochRec.HasUTM)
-          //      Log.LogWarning("Already have UTM value for epoch");
               EpochRec.UTM = Convert.ToByte(TagValue);
               break;
             }

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Windows.Forms;
+using TagFiles.Common;
 using TagFiles.Utils;
 
 /// <summary>
@@ -13,7 +13,6 @@ namespace MegalodonClient
 {
   public partial class Form1 : Form
   {
-
     
     // Receiving byte array  
     byte[] bytes = new byte[1024];

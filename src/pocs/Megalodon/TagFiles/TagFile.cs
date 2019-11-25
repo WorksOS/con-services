@@ -32,7 +32,7 @@ namespace TagFiles
     public string TagFileFolder = "c:\\Trimble\\tagfiles";
     public double SeedLat = 0;
     public double SeedLon = 0;
-    public double TagFileIntervalMilliSecs = 60000; // dewfault 60 seconds
+    public double TagFileIntervalMilliSecs = 60000; // default 60 seconds
     public ILogger Log;
 
     /// <summary>

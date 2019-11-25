@@ -32,7 +32,7 @@ namespace TagFiles.Interface
     /// <param name="log"></param>
     /// <param name="configStore"></param>
     /// <param name="socketManager"></param>
-    public MegalodonService(ILoggerFactory log, IConfigurationStore configStore, ISocketManager socketManager )
+    public MegalodonService(ILoggerFactory log, IConfigurationStore configStore, ISocketManager socketManager)
     {
       _log = log.CreateLogger<MegalodonService>();
 
@@ -74,7 +74,7 @@ namespace TagFiles.Interface
       var _seedLat = configStore.GetValueString("SeedLat");
       if (!string.IsNullOrEmpty(_seedLat))
       {
-        tagFile.Parser.SeedLat =  TagUtils.ToRadians(Convert.ToDouble(_seedLat));
+        tagFile.Parser.SeedLat = TagUtils.ToRadians(Convert.ToDouble(_seedLat));
       }
 
       var _seedLon = configStore.GetValueString("SeedLon");
@@ -107,11 +107,10 @@ namespace TagFiles.Interface
         tagFile.TagFileIntervalMilliSecs = Convert.ToInt32(_TagFileIntervalSecs) * 1000;
       }
 
-
     }
 
     /// <summary>
-    /// Open Port
+    /// Open Socket Port
     /// </summary>
     private void SetupPort()
     {
@@ -123,7 +122,7 @@ namespace TagFiles.Interface
     }
 
     /// <summary>
-    /// Close Port
+    /// Close Socket Port
     /// </summary>
     private void StopPort()
     {
@@ -139,7 +138,6 @@ namespace TagFiles.Interface
           _socketManager.SocketListener.Shutdown(SocketShutdown.Receive);
           _socketManager.SocketListener.Close();
         }
-
       }
       catch (Exception exc)
       {
@@ -182,7 +180,7 @@ namespace TagFiles.Interface
     {
       _log.LogInformation("Port Restart Required");
       _socketManager.ListenOnPort();
-      _timer?.Change(TimeSpan.Zero,TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
+      _timer?.Change(TimeSpan.Zero, TimeSpan.FromSeconds(TagConstants.TAG_FILE_MONITOR_SECS));
     }
 
     /// <summary>
@@ -191,7 +189,7 @@ namespace TagFiles.Interface
     /// <param name="state"></param>
     private void TimerDoWork(object state)
     {
-      
+
       if (_socketManager.PortRestartNeeded)
       {
         _socketManager.PortRestartNeeded = false;
@@ -201,7 +199,7 @@ namespace TagFiles.Interface
       }
 
       // keep log files to x days
-      if (DateTime.Now - lastLogfileCheckTime  > TimeSpan.FromSeconds(60*60*24))
+      if (DateTime.Now - lastLogfileCheckTime > TimeSpan.FromSeconds(60 * 60 * 24))
       {
         string[] files = Directory.GetFiles(_logPath);
         foreach (string file in files)
@@ -233,7 +231,6 @@ namespace TagFiles.Interface
         tagFile.EnableTagFileCreationTimer = true;
       }
     }
-
 
   }
 
