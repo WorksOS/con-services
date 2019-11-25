@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegalodonClient", "Megalodo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagFiles", "TagFiles\TagFiles.csproj", "{D4E12115-371F-423B-8BF1-229CB2C2C2E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MegalodonSvc", "MegalodonSvc\MegalodonSvc.csproj", "{CD4DC1E0-28B4-4E42-AA00-AB23D3F5B6AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TagfileSvc", "MegalodonSvc\TagfileSvc.csproj", "{CD4DC1E0-28B4-4E42-AA00-AB23D3F5B6AF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{5F1BF7FD-9FDE-479B-90C5-A41B1D591136}"
 EndProject
@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{6E0FBEC7-35EF-4D7F-85C7-B088D4A1B84D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MegalodonUnitTests", "MegalodonUnitTests\MegalodonUnitTests.csproj", "{A6D61713-ED5B-482B-8416-59EC8BF9AAEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MegalodonUnitTests", "MegalodonUnitTests\MegalodonUnitTests.csproj", "{A6D61713-ED5B-482B-8416-59EC8BF9AAEB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
