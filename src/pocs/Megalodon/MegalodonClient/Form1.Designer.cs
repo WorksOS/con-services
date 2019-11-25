@@ -43,6 +43,7 @@
       this.btnSendEpoch = new System.Windows.Forms.Button();
       this.btnSendHeader = new System.Windows.Forms.Button();
       this.groupBox2 = new System.Windows.Forms.GroupBox();
+      this.txtEpochLimit = new System.Windows.Forms.TextBox();
       this.btnDefChch = new System.Windows.Forms.Button();
       this.btnDefDimensions = new System.Windows.Forms.Button();
       this.label16 = new System.Windows.Forms.Label();
@@ -86,7 +87,7 @@
       this.label3 = new System.Windows.Forms.Label();
       this.txtEast = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
-      this.txtEpochLimit = new System.Windows.Forms.TextBox();
+      this.chkVaryBOG = new System.Windows.Forms.CheckBox();
       this.statusStrip1.SuspendLayout();
       this.groupBox1.SuspendLayout();
       this.groupBox2.SuspendLayout();
@@ -224,6 +225,7 @@
       // 
       // groupBox2
       // 
+      this.groupBox2.Controls.Add(this.chkVaryBOG);
       this.groupBox2.Controls.Add(this.txtEpochLimit);
       this.groupBox2.Controls.Add(this.btnDefChch);
       this.groupBox2.Controls.Add(this.btnDefDimensions);
@@ -274,6 +276,14 @@
       this.groupBox2.TabIndex = 61;
       this.groupBox2.TabStop = false;
       this.groupBox2.Text = "Simulator (Default Dimensions)";
+      // 
+      // txtEpochLimit
+      // 
+      this.txtEpochLimit.Location = new System.Drawing.Point(118, 331);
+      this.txtEpochLimit.Name = "txtEpochLimit";
+      this.txtEpochLimit.Size = new System.Drawing.Size(37, 20);
+      this.txtEpochLimit.TabIndex = 104;
+      this.txtEpochLimit.Text = "2";
       // 
       // btnDefChch
       // 
@@ -661,13 +671,15 @@
       this.label2.TabIndex = 60;
       this.label2.Text = "Step East(m)";
       // 
-      // txtEpochLimit
+      // chkVaryBOG
       // 
-      this.txtEpochLimit.Location = new System.Drawing.Point(118, 331);
-      this.txtEpochLimit.Name = "txtEpochLimit";
-      this.txtEpochLimit.Size = new System.Drawing.Size(37, 20);
-      this.txtEpochLimit.TabIndex = 104;
-      this.txtEpochLimit.Text = "2";
+      this.chkVaryBOG.AutoSize = true;
+      this.chkVaryBOG.Location = new System.Drawing.Point(118, 386);
+      this.chkVaryBOG.Name = "chkVaryBOG";
+      this.chkVaryBOG.Size = new System.Drawing.Size(73, 17);
+      this.chkVaryBOG.TabIndex = 105;
+      this.chkVaryBOG.Text = "Vary BOG";
+      this.chkVaryBOG.UseVisualStyleBackColor = true;
       // 
       // Form1
       // 
@@ -755,6 +767,7 @@
     private System.Windows.Forms.Button btnDefChch;
     private System.Windows.Forms.Button btnDefDimensions;
     private System.Windows.Forms.TextBox txtEpochLimit;
+    private System.Windows.Forms.CheckBox chkVaryBOG;
   }
 }
 

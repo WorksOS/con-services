@@ -252,6 +252,7 @@ namespace MegalodonClient
           {
 
             toSend = thdr + rs + valBOG + hdr;
+
             var dataPacketHdr = Encoding.UTF8.GetBytes(toSend);
             // Sends data to a connected Socket. 
             senderSock.Send(dataPacketHdr);
@@ -265,7 +266,9 @@ namespace MegalodonClient
             }
           }
 
-
+          if (chkVaryBOG.Checked) 
+            if (eDirection < 0)
+              valBOG = "0";
 
           toSend = thdr +
           rs + "LEB" + startLEB.ToString() + rs + "LNB" + startLNB.ToString() + rs + "LHB" + currrentHgt.ToString() +
