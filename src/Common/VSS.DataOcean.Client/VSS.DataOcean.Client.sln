@@ -48,6 +48,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\..\ser
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Push.Clients", "..\..\service\Push\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj", "{4427F084-D28B-4CCD-8C30-C92DE56F7C77}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Push.Abstractions", "..\..\service\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj", "{41B9F324-3A95-4AEC-AC99-AD016F0F3BE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,10 @@ Global
 		{4427F084-D28B-4CCD-8C30-C92DE56F7C77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4427F084-D28B-4CCD-8C30-C92DE56F7C77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4427F084-D28B-4CCD-8C30-C92DE56F7C77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41B9F324-3A95-4AEC-AC99-AD016F0F3BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41B9F324-3A95-4AEC-AC99-AD016F0F3BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41B9F324-3A95-4AEC-AC99-AD016F0F3BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41B9F324-3A95-4AEC-AC99-AD016F0F3BE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{F97C6F16-6B26-46AA-A9B5-78144017F7A5} = {1CBB9128-104C-4136-947D-417082EFE4F3}
 		{959054F8-95E3-4B92-9AFE-76DF0CB031C5} = {1CBB9128-104C-4136-947D-417082EFE4F3}
 		{4427F084-D28B-4CCD-8C30-C92DE56F7C77} = {1CBB9128-104C-4136-947D-417082EFE4F3}
+		{41B9F324-3A95-4AEC-AC99-AD016F0F3BE3} = {1CBB9128-104C-4136-947D-417082EFE4F3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E8F7398D-71E4-46F1-9B9A-D493988D1913}

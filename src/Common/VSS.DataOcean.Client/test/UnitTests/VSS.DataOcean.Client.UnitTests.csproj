@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\service\Push\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj" />
     <ProjectReference Include="..\..\src\VSS.DataOcean.Client.csproj" />
   </ItemGroup>
 
