@@ -55,11 +55,13 @@ namespace TCCToDataOcean
     {
       var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                                              .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ENVIRONMENT_NAME")}.json", optional: true, reloadOnChange: false)
+                                             .AddJsonFile($"./DeploymentData/projects.{Environment.GetEnvironmentVariable("ENVIRONMENT_NAME")}.json", optional: false, reloadOnChange: false)
                                              .Build();
 
       var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("TCCToDataOcean.log"));
 
       services.AddLogging()
+              .AddMemoryCache()
               .AddSingleton(loggerFactory);
 
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
@@ -77,6 +79,7 @@ namespace TCCToDataOcean
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
       services.AddSingleton<ICSIBAgent, CSIBAgent>();
+      services.AddSingleton<IDataOceanAgent, DataOceanAgent>();
       services.AddSingleton<ICalibrationFileAgent, CalibrationFileAgent>();
     }
   }

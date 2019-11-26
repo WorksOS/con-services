@@ -10,8 +10,9 @@ namespace TCCToDataOcean.Interfaces
       HttpMethod method,
       string acceptHeader,
       string contentType,
-      string customerUid,
+      string customerUid = null,
       string requestBodyJson = null,
-      byte[] payloadData = null) where TResponse : class;
+      byte[] payloadData = null,
+      bool setJWTHeader = true) where TResponse : class;
   }
 }

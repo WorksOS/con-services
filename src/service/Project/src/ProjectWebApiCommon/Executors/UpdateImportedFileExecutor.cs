@@ -57,13 +57,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useRaptorGatewayDesignImport && updateImportedFile.ImportedFileType != ImportedFileType.GeoTiff)
       {
-        await ImportedFileRequestHelper.NotifyRaptorAddFile(
-                                         updateImportedFile.LegacyProjectId, Guid.Parse(updateImportedFile.ProjectUid.ToString()),
-                                         updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
-                                         updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
-                                         Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
-                                         serviceExceptionHandler, productivity3dV2ProxyNotification,
-                                         projectRepo);
+        if (updateImportedFile.UploadToTcc)
+        {
+          await ImportedFileRequestHelper.NotifyRaptorAddFile(
+                                           updateImportedFile.LegacyProjectId, Guid.Parse(updateImportedFile.ProjectUid.ToString()),
+                                           updateImportedFile.ImportedFileType, updateImportedFile.DxfUnitsTypeId,
+                                           updateImportedFile.FileDescriptor, updateImportedFile.ImportedFileId,
+                                           Guid.Parse(updateImportedFile.ImportedFileUid.ToString()), false, log, customHeaders,
+                                           serviceExceptionHandler, productivity3dV2ProxyNotification,
+                                           projectRepo);
+        }
 
         var dxfFileName = updateImportedFile.DataOceanFileName;
         if (updateImportedFile.ImportedFileType == ImportedFileType.Alignment)

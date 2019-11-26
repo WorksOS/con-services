@@ -9,6 +9,8 @@ namespace VSS.DataOcean.Client.Models
     [JsonProperty(PropertyName = "id", Required = Required.Default)]
     public Guid Id { get; set; }
     [JsonProperty(PropertyName = "name", Required = Required.Always)]
+    public string Path { get; set; }
+    [JsonProperty(PropertyName = "path")]
     public string Name { get; set; }
     [JsonProperty(PropertyName = "status", Required = Required.Default)]
     public string Status { get; set; }

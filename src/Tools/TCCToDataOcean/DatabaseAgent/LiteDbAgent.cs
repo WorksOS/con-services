@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using LiteDB;
-using TCCToDataOcean.Utils;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -14,14 +14,24 @@ namespace TCCToDataOcean.DatabaseAgent
   {
     private readonly LiteDatabase _db;
 
-    public LiteDbAgent(IConfigurationStore configurationStore, IEnvironmentHelper environmentHelper)
+    public LiteDbAgent(IConfigurationStore configurationStore, ILoggerFactory loggerFactory)
     {
-      var databasePath = Path.Combine(Directory.GetCurrentDirectory(), "database");
-      var databaseSuffix = environmentHelper.GetVariable("MIGRATION_TARGET", 1);
+      var log = loggerFactory.CreateLogger(GetType());
 
-      if (!Directory.Exists(databasePath)) { Directory.CreateDirectory(databasePath); }
-      
-      _db = new LiteDatabase(Path.Combine(databasePath, configurationStore.GetValueString("LITEDB_MIGRATION_DATABASE") + "-" + databaseSuffix + ".db"));
+      var connectionString = configurationStore.GetValueString("LITEDB_CONNECTION_STRING");
+
+      // Leverage the LiteDB ConnectionString type to do the parameter composition for us.
+      var connectionStringObj = new ConnectionString(connectionString);
+
+      var dbPath = Path.GetDirectoryName(connectionStringObj.Filename);
+      if (!Directory.Exists(dbPath))
+      {
+        Directory.CreateDirectory(dbPath);
+      }
+
+      log.LogInformation($"Initializing LiteDb with connection string: {connectionString}");
+
+      _db = new LiteDatabase(connectionString);
     }
 
     public void DropTables(string[] tableNames)
@@ -97,17 +107,6 @@ namespace TCCToDataOcean.DatabaseAgent
         dbObj = new MigrationFile(file);
         objs.Update(dbObj);
       }
-    }
-
-    public void SetFileSize(string tableName, ImportedFileDescriptor file, long length)
-    {
-      var files = _db.GetCollection<MigrationFile>(tableName);
-      var dbObj = files.FindById(file.LegacyFileId);
-
-      dbObj.Length = length;
-      dbObj.DateTimeUpdated = DateTime.UtcNow;
-
-      files.Update(dbObj);
     }
 
     public void SetProjectCoordinateSystemDetails(Project project)

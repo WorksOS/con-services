@@ -22,16 +22,18 @@ namespace TCCToDataOcean.Utils
 {
   public class ImportFile : IImportFile
   {
-    private readonly IRestClient RestClient;
-    private readonly ILogger Log;
-    private readonly ILiteDbAgent Database;
+    private readonly IRestClient _restClient;
+    private readonly ILogger _log;
+    private readonly ILiteDbAgent _database;
 
     private const string CONTENT_DISPOSITION = "Content-Disposition: form-data; name=";
     private const string NEWLINE = "\r\n";
     private const string BOUNDARY_BLOCK_DELIMITER = "--";
     private const string BOUNDARY_START = "-----";
     private const int CHUNK_SIZE = 1024 * 1024;
-    private readonly string BearerToken;
+    private readonly string _bearerToken;
+    private readonly string _jwtToken;
+    private readonly int _maxFileSize;
 
     private long _migrationInfoId = -1;
 
@@ -41,26 +43,28 @@ namespace TCCToDataOcean.Utils
       {
         if (_migrationInfoId < 0)
         {
-          _migrationInfoId = (Database.Find<MigrationInfo>()).Id;
+          _migrationInfoId = _database.Find<MigrationInfo>().Id;
         }
 
         return _migrationInfoId;
       }
     }
 
-    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient, ILiteDbAgent databaseAgent)
+    public ImportFile(ILoggerFactory loggerFactory, ITPaaSApplicationAuthentication authentication, IRestClient restClient, ILiteDbAgent databaseAgent, IEnvironmentHelper environmentHelper)
     {
-      Log = loggerFactory.CreateLogger<ImportFile>();
-      BearerToken = "Bearer " + authentication.GetApplicationBearerToken();
-      RestClient = restClient;
-      Database = databaseAgent;
+      _log = loggerFactory.CreateLogger<ImportFile>();
+      _bearerToken = "Bearer " + authentication.GetApplicationBearerToken();
+      _jwtToken = environmentHelper.GetVariable("JWT_TOKEN", 1);
+      _restClient = restClient;
+      _database = databaseAgent;
+      _maxFileSize =  int.Parse(environmentHelper.GetVariable("MAX_FILE_SIZE", 1));
     }
 
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
     public Task<ImportedFileDescriptorListResult> GetImportedFilesFromWebApi(string uri, Project project) =>
-      RestClient.SendHttpClientRequest<ImportedFileDescriptorListResult>(
+      _restClient.SendHttpClientRequest<ImportedFileDescriptorListResult>(
         uri,
         HttpMethod.Get,
         MediaType.APPLICATION_JSON,
@@ -76,7 +80,7 @@ namespace TCCToDataOcean.Utils
                                                           ImportOptions importOptions = new ImportOptions(),
                                                           bool uploadToTCC = false)
     {
-      Log.LogInformation(Method.In());
+      _log.LogInformation(Method.In());
 
       var createdDt = fileDescr.FileCreatedUtc.ToUniversalTime().ToString("o");
       var updatedDt = fileDescr.FileUpdatedUtc.ToUniversalTime().ToString("o");
@@ -105,7 +109,7 @@ namespace TCCToDataOcean.Utils
       var response = UploadFileToWebApi(
         fullFileName,
         uri,
-        fileDescr.CustomerUid,
+        fileDescr,
         importOptions.HttpMethod);
 
       try
@@ -118,8 +122,8 @@ namespace TCCToDataOcean.Utils
       }
       catch (Exception exception)
       {
-        Log.LogInformation(response);
-        Log.LogError(exception.Message);
+        _log.LogInformation(response);
+        _log.LogError(exception.Message);
       }
 
       return null;
@@ -128,10 +132,9 @@ namespace TCCToDataOcean.Utils
     /// <summary>
     /// Upload a single file to the web api 
     /// </summary>
-    /// <returns>Repsonse from web api as string</returns>
-    private string UploadFileToWebApi(string fullFileName, string uri, string customerUid, HttpMethod httpMethod)
+    private string UploadFileToWebApi(string fullFileName, string uri, ImportedFileDescriptor fileDescriptor, HttpMethod httpMethod)
     {
-      Log.LogInformation($"{Method.In()} | Filename: {fullFileName}, CustomerUid: {customerUid}");
+      _log.LogInformation($"{Method.In()} | Filename: {fullFileName}, CustomerUid: {fileDescriptor.CustomerUid}");
 
       try
       {
@@ -141,8 +144,17 @@ namespace TCCToDataOcean.Utils
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
 
+        if (fileSize > _maxFileSize)
+        {
+          return $"Skipping file {fullFileName}, exceeds MAX_FILE_SIZE of {_maxFileSize} bytes";
+        }
+
+        _log.LogInformation($"{Method.Info()} | {httpMethod.Method}, Uri: {uri}");
+
         for (var offset = 0; offset < chunks; offset++)
         {
+          _log.LogInformation($"{Method.Info()} | {fileDescriptor.Name}: {(int)Math.Round((double)(100 * offset) / chunks)}% completed ");
+
           var startByte = offset * CHUNK_SIZE;
           var endByte = Math.Min(fileSize, (offset + 1) * CHUNK_SIZE);
 
@@ -161,7 +173,7 @@ namespace TCCToDataOcean.Utils
           using (var content = new MemoryStream())
           {
             FormatTheContentDisposition(flowFileUpload, currentBytes, name, $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
-            result = DoHttpRequest(uri, httpMethod, content.ToArray(), customerUid, contentType);
+            result = DoHttpRequest(uri, httpMethod, content.ToArray(), fileDescriptor, contentType);
           }
         }
 
@@ -177,18 +189,16 @@ namespace TCCToDataOcean.Utils
     /// <summary>
     /// Send HTTP request for importing a file
     /// </summary>
-    private string DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, string customerUid, string contentType)
+    private string DoHttpRequest(string resourceUri, HttpMethod httpMethod, byte[] payloadData, ImportedFileDescriptor fileDescriptor, string contentType)
     {
-      Log.LogInformation($"{Method.In()} | {httpMethod.Method}, Uri: {resourceUri}");
-
-      Database.Update(MigrationInfoId, (MigrationInfo x) => x.FilesTotal += 1);
+      _database.Update(MigrationInfoId, (MigrationInfo x) => x.FilesTotal += 1);
 
       if (!(WebRequest.Create(resourceUri) is HttpWebRequest request)) { return string.Empty; }
 
       request.Method = httpMethod.Method;
-      request.Headers.Add("Authorization", BearerToken);
-      request.Headers.Add("X-VisionLink-CustomerUid", customerUid);
-      request.Headers.Add("X-JWT-Assertion", "eyJ0eXAiOiJKV1QiLCJhbGciOiJTSEEyNTZ3aXRoUlNBIiwieDV0IjoiWW1FM016UTRNVFk0TkRVMlpEWm1PRGRtTlRSbU4yWmxZVGt3TVdFelltTmpNVGt6TURFelpnPT0ifQ==.eyJpc3MiOiJ3c28yLm9yZy9wcm9kdWN0cy9hbSIsImV4cCI6IjE0NTU1Nzc4MjM5MzAiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3N1YnNjcmliZXIiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hcHBsaWNhdGlvbmlkIjoxMDc5LCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2FwcGxpY2F0aW9ubmFtZSI6IlV0aWxpemF0aW9uIERldmVsb3AgQ0kiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2FwcGxpY2F0aW9udGllciI6IiIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvYXBpY29udGV4dCI6Ii90L3RyaW1ibGUuY29tL3V0aWxpemF0aW9uYWxwaGFlbmRwb2ludCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvdmVyc2lvbiI6IjEuMCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvdGllciI6IlVubGltaXRlZCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMva2V5dHlwZSI6IlBST0RVQ1RJT04iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3VzZXJ0eXBlIjoiQVBQTElDQVRJT04iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2VuZHVzZXIiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbmR1c2VyVGVuYW50SWQiOiIxIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbWFpbGFkZHJlc3MiOiJjbGF5X2FuZGVyc29uQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9naXZlbm5hbWUiOiJDbGF5IiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9sYXN0bmFtZSI6IkFuZGVyc29uIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9vbmVUaW1lUGFzc3dvcmQiOm51bGwsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvcm9sZSI6IlN1YnNjcmliZXIscHVibGlzaGVyIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy91dWlkIjoiMjM4ODY5YWYtY2E1Yy00NWUyLWI0ZjgtNzUwNjE1YzhhOGFiIn0=.kTaMf1IY83fPHqUHTtVHn6m6aQ9wFch6c0FsNDQ7x1k=");
+      request.Headers.Add("Authorization", _bearerToken);
+      request.Headers.Add("X-VisionLink-CustomerUid", fileDescriptor.CustomerUid);
+      request.Headers.Add("X-JWT-Assertion", JWTFactory.CreateToken(_jwtToken, fileDescriptor.ImportedBy));
 
       if (payloadData != null)
       {
@@ -203,14 +213,18 @@ namespace TCCToDataOcean.Utils
       {
         using (var response = (HttpWebResponse)request.GetResponseAsync().Result)
         {
-          Log.LogInformation($"{nameof(DoHttpRequest)}: Response returned status code: {response.StatusCode}");
+          if (response.StatusCode != HttpStatusCode.Accepted)
+          {
+            _log.LogInformation($"{nameof(DoHttpRequest)}: Response returned status code: {response.StatusCode}");
+          }
+
           responseString = GetStringFromResponseStream(response);
-          Log.LogTrace($"{nameof(DoHttpRequest)}: {responseString}");
+          _log.LogTrace($"{nameof(DoHttpRequest)}: {responseString}");
         }
       }
       catch (AggregateException ex)
       {
-        Log.LogError($"{nameof(DoHttpRequest)}: {ex.Message}");
+        _log.LogError($"{nameof(DoHttpRequest)}: {ex.Message}");
         foreach (var e in ex.InnerExceptions)
         {
           if (!(e is WebException)) { continue; }
@@ -223,7 +237,7 @@ namespace TCCToDataOcean.Utils
         }
       }
 
-      Database.Update(MigrationInfoId, (MigrationInfo x) => x.FilesUploaded += 1);
+      _database.Update(MigrationInfoId, (MigrationInfo x) => x.FilesUploaded += 1);
 
       return responseString;
     }
@@ -262,13 +276,13 @@ namespace TCCToDataOcean.Utils
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"flowTotalChunks\"{NEWLINE}{NEWLINE}{flowFileUpload.flowTotalChunks}{NEWLINE}" +
         $"{boundary}{NEWLINE}{CONTENT_DISPOSITION}\"file\"; filename=\"{name}\"{NEWLINE}Content-Type: application/octet-stream{NEWLINE}{NEWLINE}");
 
-      var header = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      var header = Encoding.UTF8.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(header, 0, header.Length);
       resultingStream.Write(chunkContent, 0, chunkContent.Length);
 
       sb = new StringBuilder();
       sb.Append($"{NEWLINE}{boundary}{BOUNDARY_BLOCK_DELIMITER}{NEWLINE}");
-      var tail = Encoding.ASCII.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
+      var tail = Encoding.UTF8.GetBytes(Regex.Replace(sb.ToString(), "(?<!\r)\n", NEWLINE));
       resultingStream.Write(tail, 0, tail.Length);
     }
 

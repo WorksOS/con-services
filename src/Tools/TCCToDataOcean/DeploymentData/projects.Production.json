@@ -1,0 +1,30 @@
+{
+  "Projects": [
+    "af03f6f9-1f16-42c3-aa27-31c4b4f8ed92",
+    "b101f611-c2df-4721-ae51-c3a35c0df4f3",
+    "eb6ef6f5-77d7-e511-80dc-a0369f4c5117",
+    "7eed05e0-b8dd-49e5-8744-408508da1753",
+    "54da936c-4fdf-40ba-a471-f68734e23bde",
+    "4ba0abab-593e-46e6-95ea-c2e84f972269",
+    "d7b28e0e-a2ce-4ae6-94e4-f9f78a40f679",
+    "35e9afa5-03d3-4f25-bab3-98a7b3574902",
+    "54cd2a34-206b-48a9-8b99-a06cd10d3f5a",
+    "a6fa07b4-f7b6-4da3-b1b9-7c8f6f289469",
+    "54bd48b9-d4de-4e77-9d22-a02a017f628c",
+    "34bb15fc-cace-414a-8f50-738c76428f2c",
+    "a1baddea-0f29-46c6-8ce1-81e9397dd580",
+    "d382d47a-b1f8-437b-aec0-aa0e89b4a1a5",
+    "da6ff6f5-77d7-e511-80dc-a0369f4c5117"
+  ],
+  "IgnoredProjects": [
+    "4e0ea5f6-7af8-4691-aa87-ac42b22daba7" // Phillipsburg 
+  ],
+  "CompletedProjects": [
+    "88e484ad-6d53-4899-b0a1-a98500f77705",
+    "a9a6c4fa-04c0-4e65-b24a-2beaf6f9dab2",
+    "976b2a97-4085-4f27-a327-cbcf02edc30c",
+    "235d75ae-dd16-47f9-bbb3-2f8e0418e0fd",
+    "4fe49ead-0aab-452e-9c22-b0b14554f0f1"
+
+  ]
+}
