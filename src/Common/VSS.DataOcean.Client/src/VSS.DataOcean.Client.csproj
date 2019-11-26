@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\service\Push\Models\VSS.Productivity.Push.Models\VSS.Productivity.Push.Models.csproj" />
     <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />

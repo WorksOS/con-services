@@ -9,10 +9,16 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client.Models;
 using VSS.DataOcean.Client.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity.Push.Models.Attributes;
+using VSS.Productivity.Push.Models.Enums;
+using VSS.Productivity.Push.Models.Notifications;
+using VSS.Productivity.Push.Models.Notifications.Models;
 
 namespace VSS.DataOcean.Client
 {
@@ -29,13 +35,15 @@ namespace VSS.DataOcean.Client
     private readonly double _uploadTimeout;
     
     private readonly DataOceanFolderCache _dataOceanFolderCache;
-    private readonly List<string> _missingTileList;
+    private readonly DataOceanTileCache _dataOceanTileCache;
 
+    public DataOceanFolderCache GetFolderCache() {return _dataOceanFolderCache; }
+    public DataOceanTileCache GetTileCache() { return _dataOceanTileCache; }
 
     /// <summary>
     /// Client for sending requests to the data ocean.
     /// </summary>
-    public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient, IMemoryCache memoryCache)
+    public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient, IMemoryCache memoryCache, IDataCache dataCache)
     {
       _log = logger.CreateLogger<DataOceanClient>();
       _gracefulClient = gracefulClient;
@@ -48,16 +56,37 @@ namespace VSS.DataOcean.Client
 
       const string DATA_OCEAN_URL_KEY = "DATA_OCEAN_URL";
       _dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
-
-      _missingTileList = new List<string>();
-
       if (string.IsNullOrEmpty(_dataOceanBaseUrl))
         throw new ArgumentException($"Missing environment variable {DATA_OCEAN_URL_KEY}");
+
+      _dataOceanTileCache = new DataOceanTileCache(dataCache, configuration);
 
       _uploadWaitInterval = configuration.GetValueInt("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", 1000);
       _uploadTimeout = configuration.GetValueDouble("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", 5);
 
       _log.LogInformation($"{nameof(DataOceanClient)} {DATA_OCEAN_URL_KEY}={_dataOceanBaseUrl}");
+    }
+
+
+    /// <summary>
+    /// Handles the notification for DXF tiles having been generated
+    /// </summary>
+    [Notification(NotificationUidType.File, ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY)]
+    public async Task RemoveFromTileCache(object parameters)
+    {
+      RasterTileNotificationParameters result;
+      try
+      {
+        result = JObject.FromObject(parameters).ToObject<RasterTileNotificationParameters>();
+      }
+      catch (Exception e)
+      {
+        _log.LogError(e, "Wong parameters passed to dataOcean Tile Cache");
+        return;
+      }
+
+      _log.LogInformation($"Received {ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY} notification: {JsonConvert.SerializeObject(result)}");
+      _dataOceanTileCache.RemoveForFileUid(result.FileUid.ToString());
     }
 
     /// <summary>
@@ -208,7 +237,7 @@ namespace VSS.DataOcean.Client
         tileFolderAndFileName = DataOceanFileUtil.ExtractTileNameFromTileFullName(fullName);
         nameForMetadata = fullName.Substring(0, fullName.Length - tileFolderAndFileName.Length);
         tileDetail = fullName.Split(DataOceanUtil.PathSeparator)[4] + tileFolderAndFileName;
-        if (_missingTileList.Contains(tileDetail))
+        if (await _dataOceanTileCache.IsTileKnownToBeMissing(tileDetail))
         {
           _log.LogDebug($"{nameof(GetFile)}: Tile is known to be missing {tileDetail}");
           return null;
@@ -248,11 +277,12 @@ namespace VSS.DataOcean.Client
         {
           throw;
         }
-        _missingTileList.Add(tileDetail);
+        await _dataOceanTileCache.CreateMissingTile(tileDetail);
       }
       //Check if anything returned. File may not exist.
       if (response == null)
         return null;
+
       using (var responseStream = await response.ReadAsStreamAsync())
       {
         responseStream.Position = 0;

@@ -24,7 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\service\Push\Clients\VSS.Productivity3D.Push.Clients\VSS.Productivity3D.Push.Clients.csproj" />
     <ProjectReference Include="..\..\src\VSS.DataOcean.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="VSS.Productivity3D.Push.Abstractions">
+      <HintPath>..\..\..\..\service\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\bin\Debug\netstandard2.0\VSS.Productivity3D.Push.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -13,7 +13,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Serilog;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Cache.MemoryCache;
 using VSS.Serilog.Extensions;
 
 namespace VSS.DataOcean.Client.UnitTests
@@ -29,7 +31,8 @@ namespace VSS.DataOcean.Client.UnitTests
         .AddLogging()
         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.DataOcean.Client.UnitTests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
-        .AddTransient<IMemoryCache, MemoryCache>();
+        .AddSingleton<IMemoryCache, MemoryCache>()
+        .AddSingleton<IDataCache, InMemoryDataCache>();
 
       //This is real one to be added in services using DataOcean client. We mock it below for unit tests.
       //serviceCollection.AddSingleton<IWebRequest, GracefulWebRequest>();

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.DataOcean.Client.Models;
 
 namespace VSS.DataOcean.Client
 {
@@ -16,5 +18,9 @@ namespace VSS.DataOcean.Client
     Task<Guid?> GetFolderId(string path, IDictionary<string, string> customHeaders);
     Task<Guid?> GetFileId(string fullName, IDictionary<string, string> customHeaders);
     Task<Stream> GetFile(string fullName, IDictionary<string, string> customHeaders);
+
+    // interface for testing
+    DataOceanFolderCache GetFolderCache();
+    DataOceanTileCache GetTileCache();
   }
 }
