@@ -28,12 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="VSS.Productivity3D.Push.Abstractions">
-      <HintPath>..\..\..\..\service\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\bin\Debug\netstandard2.0\VSS.Productivity3D.Push.Abstractions.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
