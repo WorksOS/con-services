@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -85,6 +86,17 @@ namespace VSS.WebApi.Common
           applicationName = jwtToken.ApplicationName;
           userEmail = isApplicationContext ? applicationName : jwtToken.EmailAddress;
           userUid = isApplicationContext ? jwtToken.ApplicationId : jwtToken.UserUid.ToString();
+          if (isApplicationContext)
+          {
+            // Applications can override the User ID, so we can fetch 'per user' information
+            // E.g Scheduled reports needs to get the Preferences for the user they are running on behalf of, not the Report Server settings.
+            var overrideUserUid = context.Request.Headers[HeaderConstants.X_VISION_LINK_USER_UID];
+            if (!string.IsNullOrEmpty(overrideUserUid))
+            {
+              log.LogInformation($"Overriding User ID via {HeaderConstants.X_VISION_LINK_USER_UID} header with {overrideUserUid}, for application request from {applicationName}.");
+              userUid = overrideUserUid;
+            }
+          }
         }
         catch (Exception e)
         {
