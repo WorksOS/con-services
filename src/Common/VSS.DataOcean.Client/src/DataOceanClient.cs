@@ -37,8 +37,8 @@ namespace VSS.DataOcean.Client
     private readonly DataOceanFolderCache _dataOceanFolderCache;
     private readonly DataOceanTileCache _dataOceanTileCache;
 
-    public DataOceanFolderCache GetFolderCache() {return _dataOceanFolderCache; }
-    public DataOceanTileCache GetTileCache() { return _dataOceanTileCache; }
+    public DataOceanFolderCache GetFolderCache() => _dataOceanFolderCache;
+    public DataOceanTileCache GetTileCache() => _dataOceanTileCache;
 
     /// <summary>
     /// Client for sending requests to the data ocean.
@@ -85,7 +85,7 @@ namespace VSS.DataOcean.Client
         return;
       }
 
-      _log.LogInformation($"Received {ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY} notification: {JsonConvert.SerializeObject(result)}");
+      _log.LogInformation($"{nameof(RemoveFromTileCache)}: Received {ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY} notification: {JsonConvert.SerializeObject(result)}. Clear tileCache for fileUid.");
       _dataOceanTileCache.RemoveForFileUid(result.FileUid.ToString());
     }
 
@@ -277,6 +277,7 @@ namespace VSS.DataOcean.Client
         {
           throw;
         }
+        _log.LogDebug($"{nameof(GetFile)}: Tile is missing, add to cache {tileDetail}");
         await _dataOceanTileCache.CreateMissingTile(tileDetail);
       }
       //Check if anything returned. File may not exist.

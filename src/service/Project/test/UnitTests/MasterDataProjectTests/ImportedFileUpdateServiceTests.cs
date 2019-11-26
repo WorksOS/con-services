@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.Common.Cache.MemoryCache;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Services;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
@@ -31,9 +36,12 @@ namespace VSS.MasterData.ProjectTests
 
       serviceCollection.AddLogging();
       serviceCollection.AddSingleton(loggerFactory);
-      serviceCollection.AddSingleton(new Mock<IConfigurationStore>().Object);
+      serviceCollection.AddSingleton<IConfigurationStore, GenericConfiguration>();
       serviceCollection.AddSingleton(new Mock<IServiceResolution>().Object);
       serviceCollection.AddSingleton(new Mock<IServiceExceptionHandler>().Object);
+      serviceCollection.AddSingleton(new Mock<IWebRequest>().Object);
+      serviceCollection.AddSingleton<IMemoryCache, MemoryCache>();
+      serviceCollection.AddSingleton<IDataCache, InMemoryDataCache>();
       serviceCollection.AddSingleton(projectMock.Object);
       serviceCollection.AddTransient<INotificationHubClient, NotificationHubClient>(); // We are testing this will call the ImportedFileUpdateService 
 
