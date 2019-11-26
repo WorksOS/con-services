@@ -9,16 +9,11 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client.Models;
 using VSS.DataOcean.Client.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity.Push.Models.Attributes;
-using VSS.Productivity.Push.Models.Enums;
-using VSS.Productivity.Push.Models.Notifications;
-using VSS.Productivity.Push.Models.Notifications.Models;
 
 namespace VSS.DataOcean.Client
 {
@@ -35,10 +30,10 @@ namespace VSS.DataOcean.Client
     private readonly double _uploadTimeout;
     
     private readonly DataOceanFolderCache _dataOceanFolderCache;
-    private readonly DataOceanTileCache _dataOceanTileCache;
+    private readonly DataOceanMissingTileCache _dataOceanMissingTileCache;
 
     public DataOceanFolderCache GetFolderCache() => _dataOceanFolderCache;
-    public DataOceanTileCache GetTileCache() => _dataOceanTileCache;
+    public DataOceanMissingTileCache GetTileCache() => _dataOceanMissingTileCache;
 
     /// <summary>
     /// Client for sending requests to the data ocean.
@@ -59,34 +54,12 @@ namespace VSS.DataOcean.Client
       if (string.IsNullOrEmpty(_dataOceanBaseUrl))
         throw new ArgumentException($"Missing environment variable {DATA_OCEAN_URL_KEY}");
 
-      _dataOceanTileCache = new DataOceanTileCache(dataCache, configuration);
+      _dataOceanMissingTileCache = new DataOceanMissingTileCache(dataCache, configuration, logger);
 
       _uploadWaitInterval = configuration.GetValueInt("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", 1000);
       _uploadTimeout = configuration.GetValueDouble("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", 5);
 
       _log.LogInformation($"{nameof(DataOceanClient)} {DATA_OCEAN_URL_KEY}={_dataOceanBaseUrl}");
-    }
-
-
-    /// <summary>
-    /// Handles the notification for DXF tiles having been generated
-    /// </summary>
-    [Notification(NotificationUidType.File, ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY)]
-    public async Task RemoveFromTileCache(object parameters)
-    {
-      RasterTileNotificationParameters result;
-      try
-      {
-        result = JObject.FromObject(parameters).ToObject<RasterTileNotificationParameters>();
-      }
-      catch (Exception e)
-      {
-        _log.LogError(e, "Wong parameters passed to dataOcean Tile Cache");
-        return;
-      }
-
-      _log.LogInformation($"{nameof(RemoveFromTileCache)}: Received {ProjectFileRasterTilesGeneratedNotification.PROJECT_FILE_RASTER_TILES_GENERATED_KEY} notification: {JsonConvert.SerializeObject(result)}. Clear tileCache for fileUid.");
-      _dataOceanTileCache.RemoveForFileUid(result.FileUid.ToString());
     }
 
     /// <summary>
@@ -237,7 +210,7 @@ namespace VSS.DataOcean.Client
         tileFolderAndFileName = DataOceanFileUtil.ExtractTileNameFromTileFullName(fullName);
         nameForMetadata = fullName.Substring(0, fullName.Length - tileFolderAndFileName.Length);
         tileDetail = fullName.Split(DataOceanUtil.PathSeparator)[4] + tileFolderAndFileName;
-        if (await _dataOceanTileCache.IsTileKnownToBeMissing(tileDetail))
+        if (await _dataOceanMissingTileCache.IsTileKnownToBeMissing(tileDetail))
         {
           _log.LogDebug($"{nameof(GetFile)}: Tile is known to be missing {tileDetail}");
           return null;
@@ -278,7 +251,7 @@ namespace VSS.DataOcean.Client
           throw;
         }
         _log.LogDebug($"{nameof(GetFile)}: Tile is missing, add to cache {tileDetail}");
-        await _dataOceanTileCache.CreateMissingTile(tileDetail);
+        await _dataOceanMissingTileCache.CreateMissingTile(tileDetail);
       }
       //Check if anything returned. File may not exist.
       if (response == null)

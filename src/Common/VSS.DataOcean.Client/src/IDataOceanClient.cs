@@ -21,6 +21,6 @@ namespace VSS.DataOcean.Client
 
     // interface for testing
     DataOceanFolderCache GetFolderCache();
-    DataOceanTileCache GetTileCache();
+    DataOceanMissingTileCache GetTileCache();
   }
 }
