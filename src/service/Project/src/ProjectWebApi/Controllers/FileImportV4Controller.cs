@@ -571,8 +571,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
           Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolderId, offset, dataOceanFileName
-        );
+          DataOceanRootFolderId, offset, dataOceanFileName,
+          uploadToTcc: uploadToTcc);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory

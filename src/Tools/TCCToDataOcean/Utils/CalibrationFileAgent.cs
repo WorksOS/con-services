@@ -1,13 +1,17 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
 using VSS.Common.Abstractions.Configuration;
+using VSS.DataOcean.Client.Models;
 using VSS.TCCFileAccess;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -15,20 +19,22 @@ namespace TCCToDataOcean.Utils
 {
   public class CalibrationFileAgent : ICalibrationFileAgent
   {
+    private const string COORDINATE_SYSTEM_FILES_KEY = "coordfiles";
     private readonly ILogger _log;
     private readonly ILiteDbAgent _migrationDb;
     private readonly ICSIBAgent _csibAgent;
-    private readonly IFileRepository FileRepo;
+    private readonly IDataOceanAgent _dataOceanAgent;
+    private readonly IFileRepository _fileRepo;
     private readonly IWebApiUtils _webApiUtils;
+    private readonly IMemoryCache _cache;
 
     private readonly string _tempFolder;
 
     private readonly string _projectApiUrl;
     private readonly string _fileSpaceId;
     private readonly bool _updateProjectCoordinateSystemFile;
-    private readonly bool _skipProjectsWithNoCoordinateSystemFile;
 
-    public CalibrationFileAgent(ILoggerFactory loggerFactory, ILiteDbAgent liteDbAgent, IConfigurationStore configStore, IEnvironmentHelper environmentHelper, IFileRepository fileRepo, IWebApiUtils webApiUtils, ICSIBAgent csibAgent)
+    public CalibrationFileAgent(ILoggerFactory loggerFactory, ILiteDbAgent liteDbAgent, IConfigurationStore configStore, IEnvironmentHelper environmentHelper, IFileRepository fileRepo, IWebApiUtils webApiUtils, ICSIBAgent csibAgent, IDataOceanAgent dataOceanAgent, IMemoryCache memoryCache)
     {
       _log = loggerFactory.CreateLogger<CalibrationFileAgent>();
       _log.LogInformation(Method.In());
@@ -36,14 +42,19 @@ namespace TCCToDataOcean.Utils
       _migrationDb = liteDbAgent;
       _webApiUtils = webApiUtils;
       _csibAgent = csibAgent;
-      FileRepo = fileRepo;
+      _dataOceanAgent = dataOceanAgent;
+      _fileRepo = fileRepo;
+      _cache = memoryCache;
+      _cache.Set(COORDINATE_SYSTEM_FILES_KEY, new List<string>());
 
       _projectApiUrl = environmentHelper.GetVariable("PROJECT_API_URL", 1);
       _fileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
-      _tempFolder = Path.Combine(environmentHelper.GetVariable("TEMPORARY_FOLDER", 2), "DataOceanMigrationTmp");
+      _tempFolder = Path.Combine(
+        environmentHelper.GetVariable("TEMPORARY_FOLDER", 2),
+        "DataOceanMigrationTmp",
+        environmentHelper.GetVariable("MIGRATION_ENVIRONMENT", 2));
 
       _updateProjectCoordinateSystemFile = configStore.GetValueBool("UPDATE_PROJECT_COORDINATE_SYSTEM_FILE", defaultValue: false);
-      _skipProjectsWithNoCoordinateSystemFile = configStore.GetValueBool("SKIP_PROJECTS_WITH_NO_COORDINATE_SYSTEM_FILE", defaultValue: true);
     }
 
     /// <summary>
@@ -76,8 +87,6 @@ namespace TCCToDataOcean.Utils
 
           var projectionTypeCode = line[4].ToString();
 
-          if (projectionTypeCode.Length == 2) Debugger.Break();
-
           return (projectionTypeCode, Projection.GetProjectionName(projectionTypeCode));
         }
       }
@@ -90,14 +99,13 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     public async Task<bool> ResolveProjectCoordinateSystemFile(MigrationJob job)
     {
+      if (await ResolveCoordinateSystemFromDataOcean(job)) { return true; }
+
       if (string.IsNullOrEmpty(job.Project.CoordinateSystemFileName))
       {
         _log.LogDebug($"Project '{job.Project.ProjectUID}' contains NULL CoordinateSystemFileName field.");
 
-        if (!await ResolveCoordinateSystemFromRaptor(job))
-        {
-          return false;
-        }
+        if (!await ResolveCoordinateSystemFromRaptor(job)) { return false; }
       }
       else
       {
@@ -105,21 +113,99 @@ namespace TCCToDataOcean.Utils
 
         if (!fileDownloadResult)
         {
-          if (!await ResolveCoordinateSystemFromRaptor(job))
-          {
-            return false;
-          }
+          if (!await ResolveCoordinateSystemFromRaptor(job)) { return false; }
         }
+      }
+
+      _log.LogInformation("Successfully resolved coordinate system information from Raptor");
+
+      // Push the file information back to the Project service and by proxy DataOcean.
+      var projectUpdateResult = await UpdateProjectCoordinateSystemInfo(job);
+
+      if (!projectUpdateResult)
+      {
+        _log.LogError($"Unable to update Project database with new coordinate system file data for project {job.Project.ProjectUID}.");
+        return false;
       }
 
       _migrationDb.SetProjectCoordinateSystemDetails(job.Project);
 
-      return true;
+      // Wait for the coordinate system file to be pushed to DataOcean, then recheck it's present.
+      await Task.Delay(2000);
+      return await ResolveCoordinateSystemFromDataOcean(job);
     }
 
-    /// <summary>
-    /// Failed to download coordinate system file from TCC, try and resolve it using what we know from Raptor.
-    /// </summary>
+    private async Task<bool> ResolveCoordinateSystemFromDataOcean(MigrationJob job)
+    {
+      _log.LogInformation($"{Method.In()} Resolving project {job.Project.ProjectUID} coordination file from DataOcean.");
+
+      _cache.TryGetValue(COORDINATE_SYSTEM_FILES_KEY, out List<string> fileList);
+
+      if (fileList.Contains(job.Project.ProjectUID))
+      {
+        _log.LogDebug($"Resolving DataOcean calibration file from cache for project {job.Project.ProjectUID}.");
+        return true;
+      }
+
+      // Resolve the customer id from DataOcean using the .Name, our CustomerUid value.
+      if (!_cache.TryGetValue(job.Project.CustomerUID, out DataOceanDirectory customer))
+      {
+        var directoryResponse = await _dataOceanAgent.GetCustomerByName(job.Project.CustomerUID);
+
+        if (!directoryResponse.Directories.Any())
+        {
+          _log.LogWarning($"Unable to resolve DataOcean customer {job.Project.CustomerUID}, project {job.Project.ProjectUID}");
+          return false;
+        }
+
+        _cache.Set(job.Project.CustomerUID, customer);
+        customer = directoryResponse.Directories[0];
+      }
+
+      // Resolve the project folder's id from DataOcean using the .Name, our ProjectUid value.
+      if (!_cache.TryGetValue(job.Project.ProjectUID, out DataOceanDirectory project))
+      {
+        var dirProjectResponse = await _dataOceanAgent.GetProjectForCustomerById(customer.Id.ToString(), job.Project.ProjectUID);
+
+        if (!dirProjectResponse.Directories.Any())
+        {
+          _log.LogError($"Unable to resolve DataOcean project folder {job.Project.ProjectUID} for customer {job.Project.CustomerUID}.");
+          return false;
+        }
+
+        _cache.Set(job.Project.ProjectUID, project);
+        project = dirProjectResponse.Directories[0];
+      }
+
+      // Iterate all files, 25 at a time, until we find a .DC or .CAL file.
+      long metaKeyOffset = -1;
+
+      do
+      {
+        var dirFilesResponse = await _dataOceanAgent.GetFilesForProjectById(project.Id.ToString(), metaKeyOffset);
+
+        if (dirFilesResponse.Files.Length == 0) { return false; }
+
+        foreach (var file in dirFilesResponse.Files)
+        {
+          if (!file.Path.EndsWith(job.Project.ProjectUID + ".dc") && !file.Path.EndsWith(job.Project.ProjectUID + ".cal"))
+          {
+            continue;
+          }
+
+          fileList.Add(job.Project.ProjectUID);
+
+          return true;
+        }
+
+        if (dirFilesResponse.Files.Length < 25) { return false; }
+
+        // Setup the Key_Offset for the next DataOcean request; moving us to the next page of results.
+        metaKeyOffset = dirFilesResponse.Meta.Key_Offset;
+
+      } while (true);
+    }
+
     private async Task<bool> ResolveCoordinateSystemFromRaptor(MigrationJob job)
     {
       _log.LogInformation($"{Method.In()} Resolving project {job.Project.ProjectUID} CSIB from Raptor");
@@ -134,7 +220,7 @@ namespace TCCToDataOcean.Utils
 
       if (csibResponse.Code != 0)
       {
-        var errorMessage = "Failed to resolve CSIB from Raptor";
+        const string errorMessage = "Failed to resolve CSIB from Raptor";
         _migrationDb.SetResolveCSIBMessage(Table.Projects, job.Project.ProjectUID, csib);
         _migrationDb.Insert(new MigrationMessage(job.Project.ProjectUID, errorMessage), Table.Errors);
 
@@ -149,17 +235,10 @@ namespace TCCToDataOcean.Utils
       var dcFileContent = await _csibAgent.GetCalibrationFileForCoordSysId(job.Project, coordSysInfo["coordinateSystem"]["id"].ToString());
 
       var coordSystemFileContent = Encoding.UTF8.GetBytes(dcFileContent);
-      bool result;
 
       using (var stream = new MemoryStream(coordSystemFileContent))
       {
-        result = SaveDCFileToDisk(job, stream);
-      }
-
-      if (result)
-      {
-        _log.LogInformation("Successfully resolved coordinate system information from Raptor");
-        return await UpdateProjectCoordinateSystemInfo(job);
+        if (SaveDCFileToDisk(job, stream)) { return true; }
       }
 
       _log.LogError("Failed to resolve coordinate system information from Raptor");
@@ -171,30 +250,23 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     private async Task<bool> UpdateProjectCoordinateSystemInfo(MigrationJob job)
     {
-      if (_skipProjectsWithNoCoordinateSystemFile)
+      if (!_updateProjectCoordinateSystemFile)
       {
-        _log.LogWarning($"{Method.Info()} Skipping project {job.Project.ProjectUID} as SKIP_PROJECTS_WITH_NO_COORDINATE_SYSTEM_FILE=true");
-
-        return false;
-      }
-
-      if (_updateProjectCoordinateSystemFile)
-      {
-        var updateProjectResult = await _webApiUtils.UpdateProjectCoordinateSystemFile(_projectApiUrl, job);
-
-        if (updateProjectResult.Code != 0)
-        {
-          _log.LogError($"{Method.Info()} Error: Unable to update project coordinate system file; '{updateProjectResult.Message}' ({updateProjectResult.Code})");
-
-          return false;
-        }
-
-        _log.LogInformation($"{Method.Info()} Update result '{updateProjectResult.Message}' ({updateProjectResult.Code})");
+        _log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
 
         return true;
       }
 
-      _log.LogDebug($"{Method.Info("DEBUG")} Skipping updating project coordinate system file step");
+      var updateProjectResult = await _webApiUtils.UpdateProjectCoordinateSystemFile(_projectApiUrl, job);
+
+      if (updateProjectResult.Code != 0)
+      {
+        _log.LogError($"{Method.Info()} Error: Unable to update project coordinate system file; '{updateProjectResult.Message}' ({updateProjectResult.Code})");
+
+        return false;
+      }
+
+      _log.LogInformation($"{Method.Info()} Update result '{updateProjectResult.Message}' ({updateProjectResult.Code})");
 
       return true;
     }
@@ -210,14 +282,11 @@ namespace TCCToDataOcean.Utils
 
       try
       {
-        memStream = await FileRepo.GetFile(_fileSpaceId, $"/{job.Project.CustomerUID}/{job.Project.ProjectUID}/{job.Project.CoordinateSystemFileName}");
+        memStream = await DownloadFile(job, job.Project.CoordinateSystemFileName);
 
-        if (memStream == null)
-        {
-          _log.LogWarning($"{Method.Info()} Unable to download '{job.Project.CoordinateSystemFileName}' from TCC, unexpected error.");
-
-          return false;
-        }
+        if (memStream == null) { memStream = await DownloadFile(job, job.Project.LegacyCustomerID + ".dc"); }
+        if (memStream == null) { memStream = await DownloadFile(job, job.Project.LegacyProjectID + ".dc"); }
+        if (memStream == null) { return false; }
 
         return SaveDCFileToDisk(job, memStream);
       }
@@ -231,6 +300,18 @@ namespace TCCToDataOcean.Utils
       {
         memStream?.Dispose();
       }
+    }
+
+    private async Task<Stream> DownloadFile(MigrationJob job, string filename)
+    {
+      var memStream = await _fileRepo.GetFile(_fileSpaceId, $"/{job.Project.CustomerUID}/{job.Project.ProjectUID}/{filename}");
+
+      if (memStream == null)
+      {
+        _log.LogWarning($"{Method.Info()} Unable to download '{filename}' from TCC, unexpected error.");
+      }
+
+      return memStream;
     }
 
     /// <summary>

@@ -17,7 +17,6 @@ namespace TCCToDataOcean.DatabaseAgent
     void Update<T>(long id, Action<T> action, string tableName = null) where T : MigrationObj;
     void WriteRecord(string tableName, ImportedFileDescriptor file);
     void SetMigrationState(MigrationJob job, MigrationState migrationState, string reason);
-    void SetFileSize(string tableName, ImportedFileDescriptor file, long length);
     void SetProjectCoordinateSystemDetails(Project project);
     void IncrementProjectFilesUploaded(Project project, int fileCount = 1);
     void IncrementProjectMigrationCounter(Project project, int count = 1);

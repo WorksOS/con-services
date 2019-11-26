@@ -67,6 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             log, customHeaders, serviceExceptionHandler,
             tRexImportFileProxy, projectRepo)
           .ConfigureAwait(false);
+
       }
 
       if (useRaptorGatewayDesignImport && createimportedfile.ImportedFileType != ImportedFileType.GeoTiff)

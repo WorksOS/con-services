@@ -19,6 +19,8 @@ namespace TCCToDataOcean.DatabaseAgent
 
     public MigrationFile(ImportedFileDescriptor file)
     {
+      TableName = Table.Files;
+
       Id = (int)file.LegacyFileId;
       ProjectUid = file.ProjectUid;
       ImportedFileType = file.ImportedFileType;

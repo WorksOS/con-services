@@ -13,13 +13,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public Guid ImportedFileUid { get; set; }
     public long ImportedFileId { get; set; }
     public double? Offset { get; set; }
+    public bool UploadToTcc { get; set; }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// uploadToTCC parameter is used for the TCC to DataOcean migration; when this is completed the parameter could be removed.
+    /// It's presence here is to prevent calling into Raptor on file upsert and not generate extra files, e.g. .prg.
+    /// </remarks>
     public UpdateImportedFile(
       Guid projectUid, long legacyProjectId, ImportedFileType importedFileTypeId,
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
       FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
-      string dataOceanRootFolder, double? offset, string dataOceanFileName)
+      string dataOceanRootFolder, double? offset, string dataOceanFileName,
+      bool uploadToTcc = true)
     {
       ProjectUid = projectUid;
       LegacyProjectId = legacyProjectId;
@@ -34,6 +43,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       DataOceanRootFolder = dataOceanRootFolder;
       Offset = offset;
       DataOceanFileName = dataOceanFileName;
+      UploadToTcc = uploadToTcc;
     }
   }
 }
