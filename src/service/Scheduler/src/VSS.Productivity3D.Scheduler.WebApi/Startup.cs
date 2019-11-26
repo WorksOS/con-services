@@ -273,7 +273,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
         var schedulePollingIntervalSeconds = GetValueString("SCHEDULER_SCHEDULE_POLLING_INTERVAL_SECONDS", 2);
 
         var registrationManager = app.ApplicationServices.GetRequiredService<IJobRegistrationManager>();
-        var queues = registrationManager.ResolveVssJobs().Values.Select(item => registrationManager.GetQueueName(item)).Prepend(RecurringJobRunner.QUEUE_NAME).ToArray();
+        string[] queues;
+
+        if (!string.IsNullOrEmpty(Configuration.GetValueString("SCHEDULER_QUEUES")))
+          queues = Configuration.GetValueString("SCHEDULER_QUEUES").Split(',').ToArray();
+        else
+          queues = registrationManager.ResolveVssJobs().Values.Select(item => registrationManager.GetQueueName(item)).Prepend(RecurringJobRunner.QUEUE_NAME).ToArray();
 
         Log.LogInformation($"Available job queues: {queues.Aggregate((i, j) => i + ';' + j)}");
 
