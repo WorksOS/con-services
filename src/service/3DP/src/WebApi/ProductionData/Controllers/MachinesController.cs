@@ -562,10 +562,23 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
     private DateTime? ParseUtcDate(string utcDate)
     {
-      return string.IsNullOrEmpty(utcDate)
-        ? (DateTime?) null
-        : DateTime.ParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture,
-          DateTimeStyles.AdjustToUniversal);
+      if (string.IsNullOrEmpty(utcDate))
+        return null;
+
+      DateTime dateResult;
+
+      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out dateResult))
+      {
+        _log.LogWarning($"{nameof(ParseUtcDate)}: Inappropriate ISO date format being parsed: '{utcDate}' against 'yyyy-MM-ddTHH:mm:ssZ'");
+        return dateResult;
+      }
+
+      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ss.sssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out dateResult))
+      {
+        return dateResult;
+      }
+
+      return null;
     }
 
     /// <summary>
