@@ -6,6 +6,7 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Models.Enums;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.TAGFiles.GridFabric.Arguments;

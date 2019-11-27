@@ -18,6 +18,7 @@ using VSS.TRex.TAGFiles.Types;
 using System.IO;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.Productivity3D.Models.Enums;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {

@@ -138,15 +138,29 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
 
     private SwatherBase CreateSwather(Fence InterpolationFence)
     {
-      // Decide which swather to create. Currently it's just a standard terrain swather
-      return new TerrainSwather(this,
-          MachineTargetValueChangesAggregator,
-          SiteModel,
-          SiteModelGridAggregator,
-          InterpolationFence)
+      // Decide which swather to create
+      if (Machine.MachineType == MachineType.SuctionDredge)
       {
-        ProcessedEpochNumber = ProcessedEpochCount
-      };
+        return new CSDSwather(this,
+            MachineTargetValueChangesAggregator,
+            SiteModel,
+            SiteModelGridAggregator,
+            InterpolationFence)
+        {
+          ProcessedEpochNumber = ProcessedEpochCount
+        };
+      }
+      else
+      {
+        return new TerrainSwather(this,
+            MachineTargetValueChangesAggregator,
+            SiteModel,
+            SiteModelGridAggregator,
+            InterpolationFence)
+        {
+          ProcessedEpochNumber = ProcessedEpochCount
+        };
+      }
     }
 
     protected override void SetDataTime(DateTime Value)

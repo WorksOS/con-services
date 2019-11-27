@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
+using VSS.Productivity3D.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;

@@ -12,6 +12,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models.Enums;
 using VSS.TRex.ConnectedSite.Gateway.Abstractions;
 using VSS.TRex.ConnectedSite.Gateway.Executors;
 using VSS.TRex.ConnectedSite.Gateway.Models;
