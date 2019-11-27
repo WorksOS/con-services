@@ -510,35 +510,6 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       Assert.AreEqual(assetId3Good, result.AssetOnDesignPeriods[5].MachineId, "Wrong legacyAssetId3 (5)");
     }
 
-
-    private DateTime? ParseUtcDate(string utcDate)
-    {
-      if (string.IsNullOrEmpty(utcDate))
-        return null;
-
-      DateTime dateResult;
-
-      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out dateResult))
-      {
-        return dateResult;
-      }
-
-      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out dateResult))
-      {
-        return dateResult;
-      }
-
-      return null;
-    }
-
-    [TestMethod]
-    public void MachinesController_ParseUtcDate()
-    {
-      var date = ParseUtcDate("2001-01-01T01:01:01.001Z");
-
-      Assert.IsTrue(date.HasValue);
-    }
-
     [TestMethod]
     public async Task GetAssetOnDesignPeriodsExecutor_RaptorJohnDoe_Success()
     {
@@ -607,5 +578,32 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     }
 #endif
 
+    private DateTime? ParseUtcDate(string utcDate)
+    {
+      if (string.IsNullOrEmpty(utcDate))
+        return null;
+
+      DateTime dateResult;
+
+      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out dateResult))
+      {
+        return dateResult;
+      }
+
+      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out dateResult))
+      {
+        return dateResult;
+      }
+
+      return null;
+    }
+
+    [TestMethod]
+    public void MachinesController_ParseUtcDate()
+    {
+      var date = ParseUtcDate("2001-01-01T01:01:01.001Z");
+
+      Assert.IsTrue(date.HasValue);
+    }
   }
 }
