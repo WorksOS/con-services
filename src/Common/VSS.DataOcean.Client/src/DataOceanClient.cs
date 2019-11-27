@@ -229,7 +229,7 @@ namespace VSS.DataOcean.Client
       {
         if (string.IsNullOrEmpty(tileFolderAndFileName))
         {
-          _log.LogError($"{nameof(GetFile)} Getting a multi-file other than tiles is not implemented");
+          _log.LogError($"{nameof(GetFile)}: Getting a multi-file other than tiles is not implemented");
           return null;
         }
         tileFolderAndFileName = tileFolderAndFileName.Substring(1);//Skip leading / as it's in the URL already
@@ -244,9 +244,13 @@ namespace VSS.DataOcean.Client
       }
       catch (HttpRequestException ex)
       {
-        //If tile does not exist DataOcean returns 403
+        //If tile does not exist DataOcean returns 403. The message can include either text as follows
         if (!result.Multifile ||
-            !(string.CompareOrdinal(ex.Message.Substring(0, 3), "403") == 0 || string.Compare(ex.Message.Substring(0, 9), "Forbidden", StringComparison.OrdinalIgnoreCase) == 0))
+            !(string.CompareOrdinal(ex.Message.Substring(0, 3), "403") == 0
+              || string.Compare(ex.Message.Substring(0, 9),  "Forbidden", StringComparison.OrdinalIgnoreCase) == 0
+              || string.Compare(ex.Message.Substring(0, 13), "Access Denied", StringComparison.OrdinalIgnoreCase) == 0
+              )
+            )
         {
           throw;
         }
