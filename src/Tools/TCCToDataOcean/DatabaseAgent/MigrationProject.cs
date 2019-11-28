@@ -23,8 +23,7 @@ namespace TCCToDataOcean.DatabaseAgent
     public string ResolveCSIBMessage { get; set; }
     public string CSIB { get; set; }
     public int MigrationAttempts { get; set; }
-    public bool FoundDCFileInDataOcean { get; set; }
-    public double ProjectArea { get; private set; }
+    public double ProjectArea { get; }
 
     public CalibrationFile CalibrationFile { get; set; }
     public MigrationCoordinateSystemInfo CoordinateSystemInfo { get; set; }

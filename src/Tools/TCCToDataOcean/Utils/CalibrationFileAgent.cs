@@ -194,7 +194,7 @@ namespace TCCToDataOcean.Utils
 
         foreach (var file in dirFilesResponse.Files)
         {
-          if (!file.Path.EndsWith(job.Project.ProjectUID + ".dc", StringComparison.OrdinalIgnoreCase) && 
+          if (!file.Path.EndsWith(job.Project.ProjectUID + ".dc", StringComparison.OrdinalIgnoreCase) &&
               !file.Path.EndsWith(job.Project.ProjectUID + ".cal", StringComparison.OrdinalIgnoreCase))
           {
             continue;
@@ -202,7 +202,10 @@ namespace TCCToDataOcean.Utils
 
           fileList.Add(job.Project.ProjectUID);
 
-          _migrationDb.Update<MigrationProject>(job.Project.LegacyProjectID, x => x.FoundDCFileInDataOcean = true, Table.Projects);
+          _migrationDb.Update(job.Project.LegacyProjectID, (MigrationProject x) =>
+          {
+            x.HasValidDcFile = true;
+          }, Table.Projects);
 
           return true;
         }
