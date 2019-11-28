@@ -50,11 +50,11 @@ namespace TCCToDataOcean.DatabaseAgent
     /// <summary>
     /// Returns table entry by id or the most recently added if no id is provided.
     /// </summary>
-    public T Find<T>(int id = -1) where T : MigrationObj
+    public T Find<T>(string tableName, int id = -1) where T : MigrationObj
     {
       return id == -1
-        ? _db.GetCollection<T>().FindOne(Query.All(Query.Descending)) // Retrieve last added object.
-        : _db.GetCollection<T>().FindById(id);
+        ? _db.GetCollection<T>(tableName).FindOne(Query.All(Query.Descending)) // Retrieve last added object.
+        : _db.GetCollection<T>(tableName).FindById(id);
     }
 
     /// <summary>
@@ -109,18 +109,6 @@ namespace TCCToDataOcean.DatabaseAgent
       }
     }
 
-    public void SetProjectCoordinateSystemDetails(Project project)
-    {
-      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
-      var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
-
-      dbObj.DcFilename = project.CoordinateSystemFileName;
-      dbObj.HasValidDcFile = !string.IsNullOrEmpty(project.CoordinateSystemFileName);
-      dbObj.DateTimeUpdated = DateTime.UtcNow;
-
-      projects.Update(dbObj);
-    }
-
     public void IncrementProjectFilesUploaded(Project project, int fileCount = 1)
     {
       var projects = _db.GetCollection<MigrationProject>(Table.Projects);
@@ -138,18 +126,6 @@ namespace TCCToDataOcean.DatabaseAgent
       var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
 
       dbObj.MigrationAttempts += count;
-      dbObj.DateTimeUpdated = DateTime.UtcNow;
-
-      projects.Update(dbObj);
-    }
-
-    public void SetProjectFilesDetails(Project project, int totalFileCount, int eligibleFileCount)
-    {
-      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
-      var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
-
-      dbObj.TotalFileCount = totalFileCount;
-      dbObj.EligibleFileCount = eligibleFileCount;
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
       projects.Update(dbObj);

@@ -1526,17 +1526,17 @@ namespace VSS.Productivity3D.Project.Repository
     {
       return await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT
-              c.CustomerUID, cp.LegacyCustomerID, 
-              p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-              p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-              p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-              ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-            FROM Customer c  
-              JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID 
-              JOIN Project p on p.ProjectUID = cp.fk_ProjectUID
-              LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-              LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID
-            WHERE p.IsDeleted = 0"
+           c.CustomerUID, cp.LegacyCustomerID,
+           p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+           p.LastActionedUTC, p.IsDeleted, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
+           p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
+           null AS SubscriptionUID, null AS SubscriptionStartDate, null AS SubscriptionEndDate, null AS ServiceTypeID
+         FROM Customer c  
+           JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID
+           JOIN Project p on p.ProjectUID = cp.fk_ProjectUID
+           AND UTC_TIMESTAMP between p.StartDate and p.EndDate      
+         GROUP BY ProjectUID
+         ORDER BY p.LastActionedUTC DESC"
       );
     }
 
