@@ -1534,6 +1534,7 @@ namespace VSS.Productivity3D.Project.Repository
          FROM Customer c  
            JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID
            JOIN Project p on p.ProjectUID = cp.fk_ProjectUID
+         WHERE p.IsDeleted = 0  
            AND UTC_TIMESTAMP between p.StartDate and p.EndDate      
          GROUP BY ProjectUID
          ORDER BY p.LastActionedUTC DESC"
