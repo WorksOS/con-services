@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -11,6 +12,9 @@ using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 #if RAPTOR
 using VLPDDecls;
+using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.Productivity3D.WebApi.ProductionData.Controllers;
+
 #endif
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
@@ -574,5 +578,32 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     }
 #endif
 
+    private DateTime? ParseUtcDate(string utcDate)
+    {
+      if (string.IsNullOrEmpty(utcDate))
+        return null;
+
+      DateTime dateResult;
+
+      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out dateResult))
+      {
+        return dateResult;
+      }
+
+      if (DateTime.TryParseExact(utcDate, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out dateResult))
+      {
+        return dateResult;
+      }
+
+      return null;
+    }
+
+    [TestMethod]
+    public void MachinesController_ParseUtcDate()
+    {
+      var date = ParseUtcDate("2001-01-01T01:01:01.001Z");
+
+      Assert.IsTrue(date.HasValue);
+    }
   }
 }

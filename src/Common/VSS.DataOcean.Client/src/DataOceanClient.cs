@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client.Models;
 using VSS.DataOcean.Client.ResultHandling;
@@ -29,11 +30,15 @@ namespace VSS.DataOcean.Client
     private readonly double _uploadTimeout;
     
     private readonly DataOceanFolderCache _dataOceanFolderCache;
+    private readonly DataOceanMissingTileCache _dataOceanMissingTileCache;
+
+    public DataOceanFolderCache GetFolderCache() => _dataOceanFolderCache;
+    public DataOceanMissingTileCache GetTileCache() => _dataOceanMissingTileCache;
 
     /// <summary>
     /// Client for sending requests to the data ocean.
     /// </summary>
-    public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient, IMemoryCache memoryCache)
+    public DataOceanClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient, IMemoryCache memoryCache, IDataCache dataCache)
     {
       _log = logger.CreateLogger<DataOceanClient>();
       _gracefulClient = gracefulClient;
@@ -46,9 +51,10 @@ namespace VSS.DataOcean.Client
 
       const string DATA_OCEAN_URL_KEY = "DATA_OCEAN_URL";
       _dataOceanBaseUrl = configuration.GetValueString(DATA_OCEAN_URL_KEY);
-
       if (string.IsNullOrEmpty(_dataOceanBaseUrl))
         throw new ArgumentException($"Missing environment variable {DATA_OCEAN_URL_KEY}");
+
+      _dataOceanMissingTileCache = new DataOceanMissingTileCache(dataCache, configuration, logger);
 
       _uploadWaitInterval = configuration.GetValueInt("DATA_OCEAN_UPLOAD_WAIT_MILLSECS", 1000);
       _uploadTimeout = configuration.GetValueDouble("DATA_OCEAN_UPLOAD_TIMEOUT_MINS", 5);
@@ -197,17 +203,24 @@ namespace VSS.DataOcean.Client
       //1. Get the download url
       string tileFolderAndFileName = null;
       string nameForMetadata = fullName;
+      string tileDetail = null;
 
       if (fullName.Contains(DataOceanFileUtil.GENERATED_TILE_FOLDER_SUFFIX))
       {
         tileFolderAndFileName = DataOceanFileUtil.ExtractTileNameFromTileFullName(fullName);
         nameForMetadata = fullName.Substring(0, fullName.Length - tileFolderAndFileName.Length);
+        tileDetail = fullName.Split(DataOceanUtil.PathSeparator)[4] + tileFolderAndFileName;
+        if (await _dataOceanMissingTileCache.IsTileKnownToBeMissing(tileDetail))
+        {
+          _log.LogDebug($"{nameof(GetFile)}: Tile is known to be missing {tileDetail}");
+          return null;
+        }
       }
 
       var result = await GetFileMetadata(nameForMetadata, customHeaders);
       if (result == null)
       {
-        _log.LogWarning($"{nameof(GetFile)} Failed to find file {fullName}");
+        _log.LogWarning($"{nameof(GetFile)}: Failed to find file {fullName}");
         return null;
       }
       var downloadUrl = result.DataOceanDownload.Url;
@@ -216,7 +229,7 @@ namespace VSS.DataOcean.Client
       {
         if (string.IsNullOrEmpty(tileFolderAndFileName))
         {
-          _log.LogError($"{nameof(GetFile)} Getting a multi-file other than tiles is not implemented");
+          _log.LogError($"{nameof(GetFile)}: Getting a multi-file other than tiles is not implemented");
           return null;
         }
         tileFolderAndFileName = tileFolderAndFileName.Substring(1);//Skip leading / as it's in the URL already
@@ -231,16 +244,23 @@ namespace VSS.DataOcean.Client
       }
       catch (HttpRequestException ex)
       {
-        //If tile does not exist DataOcean returns 403
+        //If tile does not exist DataOcean returns 403. The message can include either text as follows
         if (!result.Multifile ||
-            !(string.CompareOrdinal(ex.Message.Substring(0, 3), "403") == 0 || string.Compare(ex.Message.Substring(0, 9), "Forbidden", StringComparison.OrdinalIgnoreCase) == 0))
+            !(string.CompareOrdinal(ex.Message.Substring(0, 3), "403") == 0
+              || string.Compare(ex.Message.Substring(0, 9),  "Forbidden", StringComparison.OrdinalIgnoreCase) == 0
+              || string.Compare(ex.Message.Substring(0, 13), "Access Denied", StringComparison.OrdinalIgnoreCase) == 0
+              )
+            )
         {
           throw;
         }
+        _log.LogDebug($"{nameof(GetFile)}: Tile is missing, add to cache {tileDetail}");
+        await _dataOceanMissingTileCache.CreateMissingTile(tileDetail);
       }
       //Check if anything returned. File may not exist.
       if (response == null)
         return null;
+
       using (var responseStream = await response.ReadAsStreamAsync())
       {
         responseStream.Position = 0;
