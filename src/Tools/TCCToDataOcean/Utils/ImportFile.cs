@@ -43,7 +43,7 @@ namespace TCCToDataOcean.Utils
       {
         if (_migrationInfoId < 0)
         {
-          _migrationInfoId = _database.Find<MigrationInfo>().Id;
+          _migrationInfoId = _database.Find<MigrationInfo>(Table.MigrationInfo).Id;
         }
 
         return _migrationInfoId;
@@ -57,7 +57,7 @@ namespace TCCToDataOcean.Utils
       _jwtToken = environmentHelper.GetVariable("JWT_TOKEN", 1);
       _restClient = restClient;
       _database = databaseAgent;
-      _maxFileSize =  int.Parse(environmentHelper.GetVariable("MAX_FILE_SIZE", 1));
+      _maxFileSize = int.Parse(environmentHelper.GetVariable("MAX_FILE_SIZE", 1));
     }
 
     /// <summary>
@@ -114,11 +114,14 @@ namespace TCCToDataOcean.Utils
 
       try
       {
-        return JsonConvert.DeserializeObject<FileDataSingleResult>(response, new JsonSerializerSettings
+        if (response != null)
         {
-          DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
-          NullValueHandling = NullValueHandling.Ignore
-        });
+          return JsonConvert.DeserializeObject<FileDataSingleResult>(response, new JsonSerializerSettings
+          {
+            DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
+            NullValueHandling = NullValueHandling.Ignore
+          });
+        }
       }
       catch (Exception exception)
       {
@@ -146,7 +149,8 @@ namespace TCCToDataOcean.Utils
 
         if (fileSize > _maxFileSize)
         {
-          return $"Skipping file {fullFileName}, exceeds MAX_FILE_SIZE of {_maxFileSize} bytes";
+          _log.LogWarning($"Skipping file {fullFileName}, exceeds MAX_FILE_SIZE of {_maxFileSize} bytes");
+          return null;
         }
 
         _log.LogInformation($"{Method.Info()} | {httpMethod.Method}, Uri: {uri}");

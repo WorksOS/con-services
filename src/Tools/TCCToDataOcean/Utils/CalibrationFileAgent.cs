@@ -128,7 +128,13 @@ namespace TCCToDataOcean.Utils
         return false;
       }
 
-      _migrationDb.SetProjectCoordinateSystemDetails(job.Project);
+      _migrationDb.Update(
+        job.Project.LegacyProjectID, (MigrationProject x) =>
+        {
+          x.DcFilename = job.Project.CoordinateSystemFileName;
+          x.HasValidDcFile = !string.IsNullOrEmpty(job.Project.CoordinateSystemFileName);
+        },
+        tableName: Table.Projects);
 
       // Wait for the coordinate system file to be pushed to DataOcean, then recheck it's present.
       await Task.Delay(2000);
@@ -169,7 +175,7 @@ namespace TCCToDataOcean.Utils
 
         if (!dirProjectResponse.Directories.Any())
         {
-          _log.LogError($"Unable to resolve DataOcean project folder {job.Project.ProjectUID} for customer {job.Project.CustomerUID}.");
+          _log.LogWarning($"Unable to resolve DataOcean project folder {job.Project.ProjectUID} for customer {job.Project.CustomerUID}.");
           return false;
         }
 
@@ -188,12 +194,15 @@ namespace TCCToDataOcean.Utils
 
         foreach (var file in dirFilesResponse.Files)
         {
-          if (!file.Path.EndsWith(job.Project.ProjectUID + ".dc") && !file.Path.EndsWith(job.Project.ProjectUID + ".cal"))
+          if (!file.Path.EndsWith(job.Project.ProjectUID + ".dc", StringComparison.OrdinalIgnoreCase) && 
+              !file.Path.EndsWith(job.Project.ProjectUID + ".cal", StringComparison.OrdinalIgnoreCase))
           {
             continue;
           }
 
           fileList.Add(job.Project.ProjectUID);
+
+          _migrationDb.Update<MigrationProject>(job.Project.LegacyProjectID, x => x.FoundDCFileInDataOcean = true, Table.Projects);
 
           return true;
         }
@@ -224,7 +233,7 @@ namespace TCCToDataOcean.Utils
         _migrationDb.SetResolveCSIBMessage(Table.Projects, job.Project.ProjectUID, csib);
         _migrationDb.Insert(new MigrationMessage(job.Project.ProjectUID, errorMessage), Table.Errors);
 
-        _log.LogError(errorMessage);
+        _log.LogWarning(errorMessage);
 
         return false;
       }

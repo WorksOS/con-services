@@ -1,4 +1,5 @@
 ﻿using System;
+using TCCToDataOcean.Utils;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -22,6 +23,8 @@ namespace TCCToDataOcean.DatabaseAgent
     public string ResolveCSIBMessage { get; set; }
     public string CSIB { get; set; }
     public int MigrationAttempts { get; set; }
+    public bool FoundDCFileInDataOcean { get; set; }
+    public double ProjectArea { get; private set; }
 
     public CalibrationFile CalibrationFile { get; set; }
     public MigrationCoordinateSystemInfo CoordinateSystemInfo { get; set; }
@@ -41,6 +44,7 @@ namespace TCCToDataOcean.DatabaseAgent
       IsDeleted = project.IsDeleted;
       SubscriptionEndDate = project.SubscriptionEndDate;
       DcFilename = project.CoordinateSystemFileName;
+      ProjectArea = GeoJSON.Area(project.GeometryWKT);
 
       CoordinateSystemInfo = new MigrationCoordinateSystemInfo();
     }
