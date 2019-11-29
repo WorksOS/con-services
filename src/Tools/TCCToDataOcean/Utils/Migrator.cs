@@ -45,11 +45,13 @@ namespace TCCToDataOcean.Utils
 
     private readonly bool _resumeMigration;
     private readonly bool _reProcessFailedProjects;
+    private readonly bool _reProcessSkippedFiles;
     private readonly string _fileSpaceId;
     private readonly string _uploadFileApiUrl;
     private readonly string _importedFileApiUrl;
     private readonly string _tempFolder;
     private readonly int _capMigrationCount;
+    private string[] _ignoredFiles;
 
     // Diagnostic settings
     private readonly bool _downloadProjectFiles;
@@ -77,6 +79,7 @@ namespace TCCToDataOcean.Utils
 
       _resumeMigration = configStore.GetValueBool("RESUME_MIGRATION", true);
       _reProcessFailedProjects = configStore.GetValueBool("REPROCESS_FAILED_PROJECTS", true);
+      _reProcessSkippedFiles = configStore.GetValueBool("REPROCESS_SKIPPED_FILES", true);
 
       _fileSpaceId = environmentHelper.GetVariable("TCCFILESPACEID", 48);
       _uploadFileApiUrl = environmentHelper.GetVariable("IMPORTED_FILE_API_URL2", 1);
@@ -119,6 +122,9 @@ namespace TCCToDataOcean.Utils
 
       var ignoredProjects = _appSettings.GetSection("IgnoredProjects")
                                         .Get<string[]>();
+
+      _ignoredFiles = _appSettings.GetSection("IgnoredFiles")
+                                  .Get<string[]>();
 
       // Are we processing only a subset of projects from the appSettings::Projects array?
       if (inputProjects != null && inputProjects.Any())
@@ -196,7 +202,7 @@ namespace TCCToDataOcean.Utils
 
           // TODO Check completed=true & eligibleFiles > 0 && uploadedFiles=0; should retry.
 
-          if (projectRecord.MigrationState == MigrationState.Completed)
+          if (projectRecord.MigrationState == MigrationState.Completed && !_reProcessSkippedFiles)
           {
             Log.LogInformation($"{Method.Info()} Skipping project {project.ProjectUID}, marked as COMPLETED");
             continue;
@@ -372,7 +378,7 @@ namespace TCCToDataOcean.Utils
                                          .Where(f => MigrationFileTypes.Contains(f.ImportedFileType))
                                          .ToList();
 
-          _database.Update(job.Project.LegacyProjectID, (MigrationProject x)  => 
+          _database.Update(job.Project.LegacyProjectID, (MigrationProject x) =>
           {
             x.TotalFileCount = filesResult.ImportedFileDescriptors.Count;
             x.EligibleFileCount = selectedFiles.Count;
@@ -401,8 +407,23 @@ namespace TCCToDataOcean.Utils
               continue;
             }
 
-            _database.WriteRecord(Table.Files, file);
+            var migrationFile = _database.Find<MigrationFile>(Table.Files, file.LegacyFileId);
 
+            if (migrationFile == null)
+            {
+              _database.Insert(new MigrationFile(file), Table.Files);
+            }
+            else
+            {
+              if (migrationFile.MigrationState == MigrationState.Completed ||
+                  migrationFile.MigrationState == MigrationState.Skipped && !_reProcessSkippedFiles)
+              {
+                Log.LogInformation($"{Method.Info()} Skipping file {file.ImportedFileUid}, migrationState={Enum.GetName(typeof(MigrationState), migrationFile.MigrationState)?.ToUpper()} and REPROCESS_SKIPPED_FILES={_reProcessSkippedFiles}");
+
+                continue;
+              }
+            }
+            
             var migrationResultObj = MigrateFile(file, job.Project);
 
             fileTasks.Add(migrationResultObj);
@@ -462,6 +483,13 @@ namespace TCCToDataOcean.Utils
     /// </summary>
     private async Task<(bool success, FileDataSingleResult file)> MigrateFile(ImportedFileDescriptor file, Project project)
     {
+      if (_ignoredFiles != null && _ignoredFiles.Contains(file.ImportedFileUid))
+      {
+        Log.LogWarning($"{Method.Info()} Migrating file '{file.Name}', Uid: {file.ImportedFileUid} aborted, found in exclusion list.");
+
+        return (success: false, file: null);
+      }
+
       Log.LogInformation($"{Method.In()} Migrating file '{file.Name}', Uid: {file.ImportedFileUid}");
 
       string tempFileName;
@@ -518,12 +546,19 @@ namespace TCCToDataOcean.Utils
           new ImportOptions(HttpMethod.Put));
 
         _database.Update(file.LegacyFileId, (MigrationFile x) => x.MigrationState = MigrationState.Completed, Table.Files);
-        _database.IncrementProjectFilesUploaded(project);
+        _database.Update(project.LegacyProjectID, (MigrationProject x) => x.UploadedFileCount += 1, Table.Projects);
       }
       else
       {
-        _database.Update(file.LegacyFileId, (MigrationFile x) => x.MigrationState = MigrationState.Skipped, Table.Files);
-        Log.LogDebug($"{Method.Info("DEBUG")} Skipped uploading file {file.ImportedFileUid}");
+        var skippedMessage = $"Skipped because DOWNLOAD_PROJECT_FILES={_downloadProjectFiles} && UPLOAD_PROJECT_FILES={_uploadProjectFiles}";
+
+        _database.Update(file.LegacyFileId, (MigrationFile x) =>
+        {
+          x.MigrationState = MigrationState.Skipped;
+          x.MigrationStateMessage = skippedMessage;
+        }, Table.Files);
+
+        Log.LogDebug($"{Method.Info("DEBUG")} {skippedMessage}");
       }
 
       Log.LogInformation($"{Method.Out()} File {file.ImportedFileUid} update result {result.Code} {result.Message}");

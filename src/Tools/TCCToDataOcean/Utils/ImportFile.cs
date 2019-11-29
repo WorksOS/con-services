@@ -125,8 +125,7 @@ namespace TCCToDataOcean.Utils
       }
       catch (Exception exception)
       {
-        _log.LogInformation(response);
-        _log.LogError(exception.Message);
+        _log.LogError(exception, response);
       }
 
       return null;
@@ -147,7 +146,7 @@ namespace TCCToDataOcean.Utils
         var chunks = (int)Math.Max(Math.Floor((double)fileSize / CHUNK_SIZE), 1);
         string result = null;
 
-        if (fileSize > _maxFileSize)
+        if (_maxFileSize > 0 && fileSize > _maxFileSize)
         {
           _log.LogWarning($"Skipping file {fullFileName}, exceeds MAX_FILE_SIZE of {_maxFileSize} bytes");
           return null;
@@ -229,6 +228,8 @@ namespace TCCToDataOcean.Utils
       catch (AggregateException ex)
       {
         _log.LogError($"{nameof(DoHttpRequest)}: {ex.Message}");
+        _log.LogError(JsonConvert.SerializeObject(request));
+
         foreach (var e in ex.InnerExceptions)
         {
           if (!(e is WebException)) { continue; }

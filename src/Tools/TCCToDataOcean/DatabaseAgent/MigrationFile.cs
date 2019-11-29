@@ -13,6 +13,7 @@ namespace TCCToDataOcean.DatabaseAgent
     public MigrationState MigrationState { get; set; }
     public long Length { get; set; }
     public DxfUnitsType DxfUnitsType { get; set; }
+    public string MigrationStateMessage { get; set; }
 
     public MigrationFile()
     { }

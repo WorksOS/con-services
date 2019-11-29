@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using LiteDB;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
 namespace TCCToDataOcean.DatabaseAgent
@@ -50,7 +49,7 @@ namespace TCCToDataOcean.DatabaseAgent
     /// <summary>
     /// Returns table entry by id or the most recently added if no id is provided.
     /// </summary>
-    public T Find<T>(string tableName, int id = -1) where T : MigrationObj
+    public T Find<T>(string tableName, long id = -1) where T : MigrationObj
     {
       return id == -1
         ? _db.GetCollection<T>(tableName).FindOne(Query.All(Query.Descending)) // Retrieve last added object.
@@ -81,6 +80,27 @@ namespace TCCToDataOcean.DatabaseAgent
       objs.Update(dbObj);
     }
 
+    public long UpdateOrInsert<T>(T obj, long? id = null, string tableName = null) where T : MigrationObj
+    {
+      var objs = _db.GetCollection<T>(tableName);
+      var dbObj = objs.FindById(id);
+
+      if (dbObj == null)
+      {
+        return _db.GetCollection<T>(tableName).Insert(obj).AsInt64;
+      }
+
+      if (!id.HasValue)
+      {
+        throw new Exception("Cannot update database object without valid Id."); 
+      }
+
+      dbObj = obj;
+      objs.Update(dbObj);
+
+      return Find<T>(tableName, id.Value).Id;
+    }
+
     public void SetMigrationState(MigrationJob job, MigrationState migrationState, string message)
     {
       var projects = _db.GetCollection<MigrationProject>(Table.Projects);
@@ -88,33 +108,6 @@ namespace TCCToDataOcean.DatabaseAgent
 
       dbObj.MigrationState = migrationState;
       dbObj.MigrationStateMessage = message;
-      dbObj.DateTimeUpdated = DateTime.UtcNow;
-
-      projects.Update(dbObj);
-    }
-
-    public void WriteRecord(string tableName, ImportedFileDescriptor file)
-    {
-      var objs = _db.GetCollection<MigrationFile>(tableName);
-      var dbObj = objs.FindById(file.LegacyFileId);
-
-      if (dbObj == null)
-      {
-        _db.GetCollection<MigrationFile>(tableName).Insert(new MigrationFile(file));
-      }
-      else
-      {
-        dbObj = new MigrationFile(file);
-        objs.Update(dbObj);
-      }
-    }
-
-    public void IncrementProjectFilesUploaded(Project project, int fileCount = 1)
-    {
-      var projects = _db.GetCollection<MigrationProject>(Table.Projects);
-      var dbObj = projects.FindOne(x => x.ProjectUid == project.ProjectUID);
-
-      dbObj.UploadedFileCount += fileCount;
       dbObj.DateTimeUpdated = DateTime.UtcNow;
 
       projects.Update(dbObj);
