@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.Models.Models;
+﻿using VSS.MasterData.Models;
+using VSS.Productivity3D.Models.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.ActionServices
 {

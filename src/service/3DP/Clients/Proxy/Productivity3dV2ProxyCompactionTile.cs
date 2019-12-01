@@ -80,6 +80,33 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     }
 
     /// <summary>
+    /// Gets a production data tile from the 3dpm WMS service.
+    /// </summary>
+    public async Task<byte[]> GetLineworkTile(Guid projectUid, ushort width, ushort height,
+      string bbox, string filetype, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetLineworkTile)}: projectUid={projectUid}, width={width}, height={height},  bbox={bbox} ");
+
+      var queryParams = new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("SERVICE", "WMS"), new KeyValuePair<string, string>("VERSION", "1.3.0"),
+        new KeyValuePair<string, string>("REQUEST", "GetMap"), new KeyValuePair<string, string>("FORMAT", ContentTypeConstants.ImagePng),
+        new KeyValuePair<string, string>("TRANSPARENT", "true"), new KeyValuePair<string, string>("LAYERS", "Layers"),
+        new KeyValuePair<string, string>("CRS", "EPSG:4326"), new KeyValuePair<string, string>("STYLES", string.Empty),
+        new KeyValuePair<string, string>("filetype", filetype),
+        new KeyValuePair<string, string>("projectUid", projectUid.ToString()),
+        new KeyValuePair<string, string>("width", width.ToString()), new KeyValuePair<string, string>("height", height.ToString()),
+        new KeyValuePair<string, string>("bbox", bbox)
+      };
+      var stream = await GetMasterDataStreamItemServiceDiscoveryNoCache
+        ("/lineworktiles/png", customHeaders, HttpMethod.Get, queryParams);
+
+      byte[] byteArray = new byte[stream.Length];
+      stream.Read(byteArray, 0, (int)stream.Length);
+      return byteArray;
+    }
+
+    /// <summary>
     /// Get the points for all active alignment files for a project.
     /// </summary>
     public async Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null)

@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Net;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Tile.Service.Common.Interfaces;
@@ -75,6 +77,11 @@ namespace VSS.Tile.Service.Common.Helpers
       }
 
       return new BoundingBox2DLatLon(blLong, blLat, trLong, trLat);
+    }
+
+    public string GetBoundingBox(BoundingBox2DLatLon bbox)
+    {
+      return $"{bbox.BottomLeftLat.LatRadiansToDegrees()},{bbox.BottomLeftLon.LonRadiansToDegrees()},{bbox.TopRightLat.LatRadiansToDegrees()},{bbox.TopRightLon.LonRadiansToDegrees()}";
     }
   }
 }

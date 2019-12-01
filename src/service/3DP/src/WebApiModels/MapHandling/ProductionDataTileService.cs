@@ -28,6 +28,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Serilog.Extensions;
+using VSS.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {

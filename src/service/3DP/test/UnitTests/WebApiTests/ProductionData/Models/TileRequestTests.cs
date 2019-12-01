@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models;
 using VSS.MasterData.Models.Converters;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Common.Models;

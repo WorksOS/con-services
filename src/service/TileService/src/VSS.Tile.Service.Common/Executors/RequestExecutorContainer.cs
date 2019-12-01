@@ -7,6 +7,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Tile.Service.Common.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.Common.Executors
@@ -36,6 +38,10 @@ namespace VSS.Tile.Service.Common.Executors
     protected IDataOceanClient dataOceanClient;
 
     protected ITPaaSApplicationAuthentication authn;
+
+    protected IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
+
+    protected  IBoundingBoxHelper bboxHelper;
 
     /// <summary>
     /// Gets the available contract execution error states.
@@ -120,13 +126,15 @@ namespace VSS.Tile.Service.Common.Executors
 
     public void Initialise(ILogger logger,  IConfigurationStore configStore, 
       IDictionary<string, string> customHeaders, IDataOceanClient dataOceanClient, 
-      ITPaaSApplicationAuthentication authn)
+      ITPaaSApplicationAuthentication authn, IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IBoundingBoxHelper bboxHelper)
     {
       log = logger;
       this.configStore = configStore;
       this.customHeaders = customHeaders;
       this.dataOceanClient = dataOceanClient;
       this.authn = authn;
+      this.productivity3DProxyCompactionTile = productivity3DProxyCompactionTile;
+      this.bboxHelper = bboxHelper;
     }
 
     protected void ThrowRequestTypeCastException<T>(string errorMessage = null)

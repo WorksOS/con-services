@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
 using VSS.DataOcean.Client;
+using VSS.MasterData.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -34,10 +36,12 @@ namespace VSS.Tile.Service.Common.Executors
       int zoomLevel = 0;
       Point topLeftTile = null;
       int numTiles = 0;
+      BoundingBox2DLatLon bbox = null;
 
       if (item is DxfTileRequest request)
       {
         files = request.files?.ToList();
+        bbox = request.bbox;
 
         //Calculate zoom level
         zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.TopRightLat - request.bbox.BottomLeftLat,
@@ -53,6 +57,7 @@ namespace VSS.Tile.Service.Common.Executors
       else if (item is DxfTile3dRequest request3d)
       {
         files = request3d.files?.ToList();
+
         zoomLevel = request3d.zoomLevel;
         numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
         topLeftTile = new Point {x = request3d.xTile, y = request3d.yTile};
@@ -60,6 +65,17 @@ namespace VSS.Tile.Service.Common.Executors
       else
       {
         ThrowRequestTypeCastException<DxfTileRequest>();
+      }
+
+      //Fallback here
+      if (files.Any(f => f.ImportedUtc < configStore.GetValueDateTime("TCC_TILE_FALLBACK_DATE", DateTime.Parse("11/22/2019", CultureInfo.CreateSpecificCulture("en-US")))))
+      {
+        var projectUid = files.First().ProjectUid;
+        if (bbox == null && item is DxfTile3dRequest request3d)
+          bbox = WebMercatorProjection.FromXyzToBoundingBox2DLatLon(request3d.xTile, request3d.yTile, request3d.zoomLevel);
+
+        var tileData = await productivity3DProxyCompactionTile.GetLineworkTile(Guid.Parse(projectUid), 256, 256, bboxHelper.GetBoundingBox(bbox), files.First().ImportedFileType.ToString(), customHeaders);
+        return new TileResult(tileData);
       }
 
       log.LogDebug($"DxfTileExecutor: {files?.Count ?? 0} files");

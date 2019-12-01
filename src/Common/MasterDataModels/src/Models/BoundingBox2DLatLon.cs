@@ -1,12 +1,11 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Models.Models
+namespace VSS.MasterData.Models
 {
   /// <summary>
   /// Defines a bounding box representing a WGS84 latitude/longitude coordinate area 

@@ -26,6 +26,7 @@ using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using __Global = ProductionServer_TLB.__Global;
+using VSS.MasterData.Models;
 
 namespace VSS.Productivity3D.Common.Proxies
 {
