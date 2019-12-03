@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.Push.UnitTests
       state.AddSubscription(clientId1, new AssetUpdateSubscriptionModel()
       {
         CustomerUid = customerUid1,
-        ProjectUid = projectUid2
+        ProjectUid = projectUid1
       });
 
       state.AddSubscription(clientId2, new AssetUpdateSubscriptionModel()

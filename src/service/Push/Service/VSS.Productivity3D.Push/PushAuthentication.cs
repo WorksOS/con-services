@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Push
@@ -11,16 +14,20 @@ namespace VSS.Productivity3D.Push
   public class PushAuthentication : TIDAuthentication
   {
     private ILogger log;
-    
+    private readonly IProjectProxy projectProxy;
 
-    public PushAuthentication(RequestDelegate next, ICustomerProxy customerProxy, IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler) : base(next, customerProxy, store, logger, serviceExceptionHandler)
+
+    public PushAuthentication(RequestDelegate next, ICustomerProxy customerProxy, IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IProjectProxy projectProxy)
+      : base(next, customerProxy, store, logger, serviceExceptionHandler)
     {
       log = logger.CreateLogger<PushAuthentication>();
+      this.projectProxy = projectProxy;
     }
 
     public override bool RequireCustomerUid(HttpContext context)
     {
-      return false;
+      log.LogDebug($"{nameof(RequireCustomerUid)} path: {context.Request.Path}");
+      return (context.Request.Path.Value.ToLower().Contains("projectevent"));
     }
 
     public override bool InternalConnection(HttpContext context)
@@ -46,6 +53,17 @@ namespace VSS.Productivity3D.Push
       }
       
       return base.InternalConnection(context);
+    }
+
+    /// <summary>
+    /// Create 3dpm principal
+    /// </summary>
+    public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName,
+      string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName)
+    {
+      //Delegate customer->project association resolution to the principal object for now as it has execution context and can invalidate cache if required
+      // note that userUid may actually be the ApplicationId if isApplicationContext
+      return new PushPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName, projectProxy, contextHeaders);
     }
   }
 }

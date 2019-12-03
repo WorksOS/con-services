@@ -9,17 +9,21 @@ using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
+using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.Hubs;
 using VSS.Productivity3D.Push.Hubs.AssetLocations;
+using VSS.Productivity3D.Push.Hubs.UINotifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
@@ -47,6 +51,8 @@ namespace VSS.Productivity3D.Push
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddServiceDiscovery();
+      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, PushResult>();
@@ -81,6 +87,10 @@ namespace VSS.Productivity3D.Push
         route.MapHub<NotificationHub>(HubRoutes.NOTIFICATIONS);
         route.MapHub<AssetStatusClientHub>(HubRoutes.ASSET_STATUS_CLIENT);
         route.MapHub<AssetStatusServerHub>(HubRoutes.ASSET_STATUS_SERVER);
+
+        // todoJeannie client and server?
+        route.MapHub<ProjectEventClientHub>(HubRoutes.PROJECT_EVENT_CLIENT);
+        route.MapHub<ProjectEventServerHub>(HubRoutes.PROJECT_EVENT_SERVER);
       });
       
       app.UseMvc();

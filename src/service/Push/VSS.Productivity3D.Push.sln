@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.705
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Push", "Service\VSS.Productivity3D.Push\VSS.Productivity3D.Push.csproj", "{9BE94CB1-488F-4764-8093-6921B330C82E}"
 EndProject
@@ -79,6 +79,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Productivity3D Service", "Productivity3D Service", "{59AF077D-0A91-45F8-85AC-840C39645736}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TRex Service", "TRex Service", "{E50D053D-4633-4359-9CB8-5E67C26E76C4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project Service", "Project Service", "{A547AB55-2A53-4FEA-816D-B2CA47F54D94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{C2BA98E0-1242-4A87-BAF5-2D863BF7EA4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Proxy", "..\Project\Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj", "{8643634E-9A7C-49CC-8F10-AD2BEDF30FD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -190,6 +196,14 @@ Global
 		{0CD3D6B7-5CFB-41F3-B6F2-DF86CA72C3BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CD3D6B7-5CFB-41F3-B6F2-DF86CA72C3BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CD3D6B7-5CFB-41F3-B6F2-DF86CA72C3BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2BA98E0-1242-4A87-BAF5-2D863BF7EA4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2BA98E0-1242-4A87-BAF5-2D863BF7EA4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2BA98E0-1242-4A87-BAF5-2D863BF7EA4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2BA98E0-1242-4A87-BAF5-2D863BF7EA4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8643634E-9A7C-49CC-8F10-AD2BEDF30FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8643634E-9A7C-49CC-8F10-AD2BEDF30FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8643634E-9A7C-49CC-8F10-AD2BEDF30FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8643634E-9A7C-49CC-8F10-AD2BEDF30FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -227,6 +241,9 @@ Global
 		{B1DCBB54-B9F0-439E-96F5-4E728968CAEF} = {7D33A1DC-58B0-406E-8210-B7862FCD7C7D}
 		{59AF077D-0A91-45F8-85AC-840C39645736} = {7D33A1DC-58B0-406E-8210-B7862FCD7C7D}
 		{E50D053D-4633-4359-9CB8-5E67C26E76C4} = {7D33A1DC-58B0-406E-8210-B7862FCD7C7D}
+		{A547AB55-2A53-4FEA-816D-B2CA47F54D94} = {7D33A1DC-58B0-406E-8210-B7862FCD7C7D}
+		{C2BA98E0-1242-4A87-BAF5-2D863BF7EA4E} = {A547AB55-2A53-4FEA-816D-B2CA47F54D94}
+		{8643634E-9A7C-49CC-8F10-AD2BEDF30FD9} = {A547AB55-2A53-4FEA-816D-B2CA47F54D94}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BFE4CFD0-6FE9-49B2-9465-9D9778699F4A}
