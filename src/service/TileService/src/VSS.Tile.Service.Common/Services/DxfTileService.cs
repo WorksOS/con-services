@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -146,7 +147,13 @@ namespace VSS.Tile.Service.Common.Services
     }
     private async Task JoinDataOceanTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
     {
-      var dataOceanFileUtil = new DataOceanFileUtil($"{DataOceanUtil.PathSeparator}{dataOceanRootFolder}{dxfFile.Path}{DataOceanUtil.PathSeparator}{dxfFile.Name}");
+      var fileName = DataOceanFileUtil.DataOceanFileName(dxfFile.Name,
+        dxfFile.ImportedFileType == ImportedFileType.SurveyedSurface || dxfFile.ImportedFileType == ImportedFileType.GeoTiff,
+        Guid.Parse(dxfFile.ImportedFileUid), dxfFile.SurveyedUtc);
+      fileName = DataOceanFileUtil.GeneratedFileName(fileName, dxfFile.ImportedFileType);
+      var dataOceanFileUtil = new DataOceanFileUtil($"{DataOceanUtil.PathSeparator}{dataOceanRootFolder}{dxfFile.Path}{DataOceanUtil.PathSeparator}{fileName}");
+      log.LogDebug($"{nameof(JoinDataOceanTiles)}: fileName: {fileName} dataOceanFileUtil.FullFileName {dataOceanFileUtil.FullFileName}");
+
       for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
       {
         for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)
