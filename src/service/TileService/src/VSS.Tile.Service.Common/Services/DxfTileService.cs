@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -31,7 +32,6 @@ namespace VSS.Tile.Service.Common.Services
     private readonly ILogger log;
     private readonly ITPaaSApplicationAuthentication authn;
     private readonly string tccFilespaceId;
-    private readonly bool useDataOcean;
     private readonly string dataOceanRootFolder;
 
     public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn, IFileRepository tccRepository)
@@ -41,7 +41,6 @@ namespace VSS.Tile.Service.Common.Services
       log = logger.CreateLogger<DxfTileService>();
       this.authn = authn;
       tccFilespaceId = config.GetValueString("TCCFILESPACEID");
-      useDataOcean = config.GetValueBool("USE_DATA_OCEAN", false);
       dataOceanRootFolder = configuration.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
       tccFileRepo = tccRepository;
     }
@@ -120,10 +119,10 @@ namespace VSS.Tile.Service.Common.Services
           clipHeight += yClipTopLeft;
           yClipTopLeft = 0;
         }
-        Rectangle clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
+        var clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
 
         //Join all the DXF tiles into one large tile
-        if (useDataOcean)
+        if (dxfFile.ImportedUtc >= config.GetValueDateTime("TCC_TILE_FALLBACK_DATE", DateTime.Parse("11/22/2019", CultureInfo.CreateSpecificCulture("en-US"))))
           await JoinDataOceanTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
         else
           await JoinTccTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
