@@ -31,6 +31,7 @@ namespace VSS.Tile.Service.Common.Services
     private readonly ITPaaSApplicationAuthentication authn;
     private readonly string tccFilespaceId;
     private readonly bool useDataOcean;
+    private readonly string dataOceanRootFolder;
 
     public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn, IFileRepository tccRepository)
     {
@@ -40,6 +41,7 @@ namespace VSS.Tile.Service.Common.Services
       this.authn = authn;
       tccFilespaceId = config.GetValueString("TCCFILESPACEID");
       useDataOcean = config.GetValueBool("USE_DATA_OCEAN", false);
+      dataOceanRootFolder = configuration.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
       tccFileRepo = tccRepository;
     }
 
@@ -144,7 +146,7 @@ namespace VSS.Tile.Service.Common.Services
     }
     private async Task JoinDataOceanTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
     {
-      var dataOceanFileUtil = new DataOceanFileUtil($"{dxfFile.Path}{DataOceanUtil.PathSeparator}{dxfFile.Name}");
+      var dataOceanFileUtil = new DataOceanFileUtil($"{DataOceanUtil.PathSeparator}{dataOceanRootFolder}{DataOceanUtil.PathSeparator}{dxfFile.Path}{DataOceanUtil.PathSeparator}{dxfFile.Name}");
       for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
       {
         for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)
