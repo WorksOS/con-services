@@ -41,7 +41,12 @@ namespace VSS.Tile.Service.Common.Services
       log = logger.CreateLogger<DxfTileService>();
       this.authn = authn;
       tccFilespaceId = config.GetValueString("TCCFILESPACEID");
-      dataOceanRootFolder = configuration.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
+
+      const string DATA_OCEAN_ROOT_FOLDER_ID_KEY = "DATA_OCEAN_ROOT_FOLDER_ID";
+      dataOceanRootFolder = configuration.GetValueString(DATA_OCEAN_ROOT_FOLDER_ID_KEY);
+      if (string.IsNullOrEmpty(dataOceanRootFolder))
+        throw new ArgumentException($"Missing environment variable {DATA_OCEAN_ROOT_FOLDER_ID_KEY}");
+
       tccFileRepo = tccRepository;
     }
 
