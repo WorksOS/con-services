@@ -77,6 +77,9 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
+      services.AddSingleton<IHostedService, AddFileProcessingService>();
+      services.AddSingleton(provider => (IEnqueueItem<ProjectFileDescriptor>) provider.GetServices<IHostedService>()
+                                                                                      .First(service => service.GetType() == typeof(AddFileProcessingService)));
       services.AddSingleton<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IRaptorFileUploadUtility, RaptorFileUploadUtility>();
 

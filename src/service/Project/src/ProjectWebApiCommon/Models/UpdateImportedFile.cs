@@ -13,7 +13,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public Guid ImportedFileUid { get; set; }
     public long ImportedFileId { get; set; }
     public double? Offset { get; set; }
-    public bool UploadToTcc { get; set; }
 
     /// <summary>
     /// 
@@ -27,8 +26,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
       FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
-      string dataOceanRootFolder, double? offset, string dataOceanFileName,
-      bool uploadToTcc = true)
+      string dataOceanRootFolder, double? offset, string dataOceanFileName)
     {
       ProjectUid = projectUid;
       LegacyProjectId = legacyProjectId;
@@ -43,7 +41,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       DataOceanRootFolder = dataOceanRootFolder;
       Offset = offset;
       DataOceanFileName = dataOceanFileName;
-      UploadToTcc = uploadToTcc;
     }
   }
 }
