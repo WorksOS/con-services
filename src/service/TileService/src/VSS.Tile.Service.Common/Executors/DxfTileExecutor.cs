@@ -95,7 +95,10 @@ namespace VSS.Tile.Service.Common.Executors
       log.LogDebug(string.Join(",", files.Select(f => f.Name).ToList()));
 
       var tileList = new List<byte[]>();
-      var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
+      const string DATA_OCEAN_ROOT_FOLDER_ID_KEY = "DATA_OCEAN_ROOT_FOLDER_ID";
+      var dataOceanRootFolder = configStore.GetValueString(DATA_OCEAN_ROOT_FOLDER_ID_KEY);
+      if (string.IsNullOrEmpty(dataOceanRootFolder))
+        throw new ArgumentException($"Missing environment variable {DATA_OCEAN_ROOT_FOLDER_ID_KEY}");
 
       //For GeoTIFF files, use the latest version of a file
       var geoTiffFiles = files.Where(x => x.ImportedFileType == ImportedFileType.GeoTiff).ToList();
@@ -120,7 +123,7 @@ namespace VSS.Tile.Service.Common.Executors
             file.ImportedFileType == ImportedFileType.Alignment ||
             file.ImportedFileType == ImportedFileType.GeoTiff)
         {
-          var fullPath = DataOceanFileUtil.DataOceanPath(rootFolder, file.CustomerUid, file.ProjectUid);
+          var fullPath = DataOceanFileUtil.DataOceanPath(dataOceanRootFolder, file.CustomerUid, file.ProjectUid);
           var fileName = DataOceanFileUtil.DataOceanFileName(file.Name,
             file.ImportedFileType == ImportedFileType.SurveyedSurface || file.ImportedFileType == ImportedFileType.GeoTiff,
             Guid.Parse(file.ImportedFileUid), file.SurveyedUtc);

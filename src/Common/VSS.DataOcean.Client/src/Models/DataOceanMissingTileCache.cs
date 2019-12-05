@@ -90,7 +90,7 @@ namespace VSS.DataOcean.Client.Models
       }
       catch (Exception e)
       {
-        _log.LogError(e, "Wong parameters passed to dataOcean missing tile Cache");
+        _log.LogError(e, "Wrong parameters passed to dataOcean missing tile Cache");
         return;
       }
 
