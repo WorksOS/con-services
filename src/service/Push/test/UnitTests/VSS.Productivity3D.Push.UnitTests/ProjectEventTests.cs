@@ -20,10 +20,10 @@ using VSS.Productivity3D.Push.Hubs;
 using VSS.Serilog.Extensions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity.Push.Models.Notifications.Models;
+using VSS.Productivity3D.Push.Hubs.Authentication;
 
 namespace VSS.Productivity3D.Push.UnitTests
 {
-
   public class ProjectEventTests
   {
     private readonly IServiceProvider _serviceProvider;
@@ -87,10 +87,10 @@ namespace VSS.Productivity3D.Push.UnitTests
       //var groupManager = new Mock<IGroupManager>();
       //groupManager.Setup(gm => gm.AddToGroupAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()));
 
-      var importedfileStatus = new ImportedFileStatus(projectUid);
+      var importedFileStatus = new ImportedFileStatus(projectUid);
       mockClients.Setup(clients => clients.All).Returns(mockProjectEventClientHubProxy.Object);
       mockClients.Setup(clients => clients.Group(It.IsAny<string>())).Returns(mockProjectEventClientHubProxy.Object);
-      groups.Setup(g => g.OnFileImportCompleted(importedfileStatus)).Verifiable();
+      groups.Setup(g => g.OnFileImportCompleted(importedFileStatus)).Verifiable();
       mockClients.Setup(clients => clients.Group(groupName)).Returns(groups.Object);
 
       var mockProjectProxy = new Mock<IProjectProxy>();
@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.Push.UnitTests
       // need to find a way to mock Groups which is an extension method, i.e. difficult to mock
       await Assert.ThrowsAsync<NullReferenceException>(async () => await projectEventHub.StartProcessingProject(projectUid).ConfigureAwait(false));
       mockProjectProxy.Verify(clients => clients.GetProjectForCustomer(It.IsAny<string>(), projectUid.ToString(), contextHeaders), Times.Once);
-      await Assert.ThrowsAsync<NullReferenceException>(async () => await projectEventHub.SendImportedFileEventToClients(importedfileStatus).ConfigureAwait(false));
+      await Assert.ThrowsAsync<NullReferenceException>(async () => await projectEventHub.SendImportedFileEventToClients(importedFileStatus).ConfigureAwait(false));
 
       var mockClientProxy = new Mock<IClientProxy>();
       mockClientProxy.Verify(

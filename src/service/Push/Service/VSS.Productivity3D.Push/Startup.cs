@@ -23,6 +23,7 @@ using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.Hubs;
 using VSS.Productivity3D.Push.Hubs.AssetLocations;
+using VSS.Productivity3D.Push.Hubs.Authentication;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Push.Abstractions.UINotifications;
+using VSS.Productivity3D.Push.Hubs.Authentication;
 
 namespace VSS.Productivity3D.Push.Hubs
 {

@@ -9,25 +9,25 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Push
+namespace VSS.Productivity3D.Push.Hubs.Authentication
 {
   public class PushAuthentication : TIDAuthentication
   {
-    private ILogger log;
-    private readonly IProjectProxy projectProxy;
+    private ILogger _log;
+    private readonly IProjectProxy _projectProxy;
 
 
     public PushAuthentication(RequestDelegate next, ICustomerProxy customerProxy, IConfigurationStore store, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler, IProjectProxy projectProxy)
       : base(next, customerProxy, store, logger, serviceExceptionHandler)
     {
-      log = logger.CreateLogger<PushAuthentication>();
-      this.projectProxy = projectProxy;
+      _log = logger.CreateLogger<PushAuthentication>();
+      _projectProxy = projectProxy;
     }
 
     public override bool RequireCustomerUid(HttpContext context)
     {
-      log.LogDebug($"{nameof(RequireCustomerUid)} path: {context.Request.Path}");
-      return (context.Request.Path.Value.ToLower().Contains("projectevent"));
+      _log.LogDebug($"{nameof(RequireCustomerUid)} path: {context.Request.Path}");
+      return (context.Request.Path.Value.ToLower().Contains("projectevents"));
     }
 
     public override bool InternalConnection(HttpContext context)
@@ -36,13 +36,13 @@ namespace VSS.Productivity3D.Push
       // https://github.com/aspnet/SignalR/issues/875#issuecomment-333390304
       if (context.Request.Query.ContainsKey(HeaderConstants.AUTHORIZATION))
       {
-        log.LogInformation($"Found {HeaderConstants.AUTHORIZATION} in a query param for url `{context.Request.Path}`");
+        _log.LogInformation($"Found {HeaderConstants.AUTHORIZATION} in a query param for url `{context.Request.Path}`");
         context.Request.Headers.Add(HeaderConstants.AUTHORIZATION, context.Request.Query[HeaderConstants.AUTHORIZATION]);
       }
 
       if (context.Request.Query.ContainsKey(HeaderConstants.X_JWT_ASSERTION))
       {
-        log.LogInformation($"Found {HeaderConstants.X_JWT_ASSERTION} in a query param for url `{context.Request.Path}`");
+        _log.LogInformation($"Found {HeaderConstants.X_JWT_ASSERTION} in a query param for url `{context.Request.Path}`");
         context.Request.Headers.Add(HeaderConstants.X_JWT_ASSERTION, context.Request.Query[HeaderConstants.X_JWT_ASSERTION]);
       }
 
@@ -55,15 +55,13 @@ namespace VSS.Productivity3D.Push
       return base.InternalConnection(context);
     }
 
-    /// <summary>
-    /// Create 3dpm principal
-    /// </summary>
     public override TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName,
       string userEmail, bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName)
     {
       //Delegate customer->project association resolution to the principal object for now as it has execution context and can invalidate cache if required
       // note that userUid may actually be the ApplicationId if isApplicationContext
-      return new PushPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName, projectProxy, contextHeaders);
+      // note that there may be a use-case for userUid rather than project, but not for now...
+      return new PushPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName, _projectProxy, contextHeaders);
     }
   }
 }

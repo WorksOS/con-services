@@ -8,22 +8,22 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.Push
+namespace VSS.Productivity3D.Push.Hubs.Authentication
 {
   /// <summary>
   /// Custom principal for Raptor with list of projects.
   /// </summary>
   public class PushPrincipal : TIDCustomPrincipal
   {
-    private readonly IProjectProxy projectProxy;
-    private readonly IDictionary<string, string> authNContext;
+    private readonly IProjectProxy _projectProxy;
+    private readonly IDictionary<string, string> _authNContext;
 
     public PushPrincipal(ClaimsIdentity identity, string customerUid, string customerName, string userEmail, bool isApplication, string tpaasApplicationName,
       IProjectProxy projectProxy, IDictionary<string, string> contextHeaders)
       : base(identity, customerUid, customerName, userEmail, isApplication, tpaasApplicationName)
     {
-      this.projectProxy = projectProxy;
-      authNContext = contextHeaders;
+      _projectProxy = projectProxy;
+      _authNContext = contextHeaders;
     }
 
     /// <summary>
@@ -38,10 +38,10 @@ namespace VSS.Productivity3D.Push
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "Missing project UID"));
       }
 
-      var projectDescr = await projectProxy.GetProjectForCustomer(CustomerUid, projectUid, authNContext);
-      if (projectDescr != null)
+      var projectDescription = await _projectProxy.GetProjectForCustomer(CustomerUid, projectUid, _authNContext);
+      if (projectDescription != null)
       {
-        return projectDescr;
+        return projectDescription;
       }
 
       throw new ServiceException(HttpStatusCode.Unauthorized,
