@@ -8,7 +8,7 @@
 
     public const string NOTIFICATIONS = "/notifications";
 
-    public const string PROJECT_EVENTS = "api/v1/projectevents";
+    public const string PROJECT_EVENTS = "/public/v1/projectevents";
 
   }
 }
