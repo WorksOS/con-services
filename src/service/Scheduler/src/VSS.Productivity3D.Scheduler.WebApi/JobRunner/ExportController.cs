@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -44,13 +45,13 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 
     [Route("jeannietestprojectevent")]
     [HttpPost]
-    public ContractExecutionResult Startjeannietestprojectevent()
+    public async Task<ContractExecutionResult> Startjeannietestprojectevent()
     {
       // todoJeannie temp for testing
       log.LogInformation($"Startjeannietestprojectevent: ");
 
       var importedFileStatus = new ImportedFileStatus( Guid.NewGuid(), Guid.NewGuid());
-      _projectEventHubClient.FileImportIsComplete(importedFileStatus);
+      await _projectEventHubClient.FileImportIsComplete(importedFileStatus);
 
       return new ContractExecutionResult();
     }
