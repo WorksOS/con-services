@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Pegasus.Client;
 using VSS.Pegasus.Client.Models;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.WebApi.Common;
 
@@ -22,8 +23,11 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     public static Guid VSSJOB_UID = Guid.Parse("5f3eed28-58e8-451e-8459-5f5a39d5c3b6");
     public override Guid VSSJobUid => VSSJOB_UID;
 
-    public DxfTileGenerationJob(IConfigurationStore configurationStore, IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient, ILoggerFactory logger)
-      : base(configurationStore, pegasusClient, authn, notificationHubClient, logger)
+    public DxfTileGenerationJob(IConfigurationStore configurationStore, 
+      IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn, 
+      INotificationHubClient notificationHubClient, IProjectEventHubClient projectEventHubClient, 
+      ILoggerFactory logger)
+      : base(configurationStore, pegasusClient, authn, notificationHubClient, projectEventHubClient, logger)
     { }
 
     protected override Task<TileMetadata> GenerateTiles(TileGenerationRequest request)

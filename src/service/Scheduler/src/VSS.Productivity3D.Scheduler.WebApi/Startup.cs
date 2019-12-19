@@ -28,8 +28,10 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Push.Clients.AssetLocations;
 using VSS.Productivity3D.Push.Clients.Notifications;
+using VSS.Productivity3D.Push.Clients.UINotification;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob;
@@ -93,6 +95,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IDefaultJobRunner, DefaultJobsManager>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddPushServiceClient<IAssetStatusServerHubClient, AssetStatusServerHubClient>();
+      services.AddPushServiceClient<IProjectEventHubClient, ProjectEventHubClient>();
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();

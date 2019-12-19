@@ -8,8 +8,7 @@
 
     public const string NOTIFICATIONS = "/notifications";
 
-    public const string PROJECT_EVENT_CLIENT = "/public/v1/projectevent";
+    public const string PROJECT_EVENTS = "/projectevents";
 
-    public const string PROJECT_EVENT_SERVER = "/internal/v1/projectevent";
   }
 }

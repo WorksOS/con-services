@@ -10,6 +10,8 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
+using VSS.Productivity.Push.Models.Notifications.Models;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.ExportJob;
 using VSS.Productivity3D.Scheduler.Models;
@@ -25,16 +27,32 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     private readonly ITransferProxy transferProxy;
     private readonly ILogger log;
     private readonly IJobRunner jobRunner;
+    private IProjectEventHubClient _projectEventHubClient;
 
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public ExportController(ILoggerFactory loggerFactory, IExportJob exportJob, ITransferProxy transferProxy, IJobRunner jobRunner)
+    public ExportController(ILoggerFactory loggerFactory, IExportJob exportJob, ITransferProxy transferProxy, IJobRunner jobRunner,
+      IProjectEventHubClient projectEventHubClient)
     {
       log = loggerFactory.CreateLogger<ExportController>();
       this.exportJob = exportJob;
       this.transferProxy = transferProxy;
       this.jobRunner = jobRunner;
+      _projectEventHubClient = projectEventHubClient; // todoJeannie
+    }
+
+    [Route("jeannietestprojectevent")]
+    [HttpPost]
+    public ContractExecutionResult Startjeannietestprojectevent()
+    {
+      // todoJeannie temp for testing
+      log.LogInformation($"Startjeannietestprojectevent: ");
+
+      var importedFileStatus = new ImportedFileStatus( Guid.NewGuid(), Guid.NewGuid());
+      _projectEventHubClient.FileImportIsComplete(importedFileStatus);
+
+      return new ContractExecutionResult();
     }
 
     /// <summary>

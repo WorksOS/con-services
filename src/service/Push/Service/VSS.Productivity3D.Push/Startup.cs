@@ -23,7 +23,6 @@ using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.Hubs;
 using VSS.Productivity3D.Push.Hubs.AssetLocations;
-using VSS.Productivity3D.Push.Hubs.UINotifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.WebApi.Common;
 
@@ -87,10 +86,7 @@ namespace VSS.Productivity3D.Push
         route.MapHub<NotificationHub>(HubRoutes.NOTIFICATIONS);
         route.MapHub<AssetStatusClientHub>(HubRoutes.ASSET_STATUS_CLIENT);
         route.MapHub<AssetStatusServerHub>(HubRoutes.ASSET_STATUS_SERVER);
-
-        // todoJeannie client and server?
-        route.MapHub<ProjectEventClientHub>(HubRoutes.PROJECT_EVENT_CLIENT);
-        route.MapHub<ProjectEventServerHub>(HubRoutes.PROJECT_EVENT_SERVER);
+        route.MapHub<ProjectEventHub>(HubRoutes.PROJECT_EVENTS);
       });
       
       app.UseMvc();

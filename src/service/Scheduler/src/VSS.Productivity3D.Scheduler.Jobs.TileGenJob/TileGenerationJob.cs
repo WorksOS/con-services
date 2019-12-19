@@ -12,6 +12,7 @@ using VSS.Pegasus.Client.Models;
 using VSS.Productivity.Push.Models.Notifications;
 using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
@@ -26,17 +27,21 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
     protected readonly IPegasusClient pegasusClient;
     private readonly ITPaaSApplicationAuthentication authentication;
     private readonly INotificationHubClient notificationHubClient;
+    private readonly IProjectEventHubClient projectEventHubClient;
     protected readonly ILogger log;
     private readonly IConfigurationStore configStore;
 
     protected PerformContext jobContext;
 
-    public TileGenerationJob(IConfigurationStore configurationStore, IPegasusClient pegasusClient, ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient, ILoggerFactory logger)
+    public TileGenerationJob(IConfigurationStore configurationStore, IPegasusClient pegasusClient, 
+      ITPaaSApplicationAuthentication authn, INotificationHubClient notificationHubClient, IProjectEventHubClient projectEventHubClient, 
+      ILoggerFactory logger)
     {
       configStore = configurationStore;
       this.pegasusClient = pegasusClient;
       authentication = authn;
       this.notificationHubClient = notificationHubClient;
+      this.projectEventHubClient = projectEventHubClient;
       log = logger.CreateLogger<DxfTileGenerationJob>();
     }
 
@@ -70,7 +75,9 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
           MaxZoomLevel = result.MaxZoom
         };
 
+        // notify internal services and the UI
         await notificationHubClient.Notify(new ProjectFileRasterTilesGeneratedNotification(notifyParams));
+        await projectEventHubClient.FileImportIsComplete(new ImportedFileStatus(request.ProjectUid, request.ImportedFileUid));
       }
       else
       {

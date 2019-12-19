@@ -14,7 +14,9 @@ using VSS.Common.Exceptions;
 using VSS.Pegasus.Client;
 using VSS.Pegasus.Client.Models;
 using VSS.Productivity.Push.Models.Notifications;
+using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
@@ -82,12 +84,16 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       mockNotification.Setup(n => n.Notify(It.IsAny<ProjectFileRasterTilesGeneratedNotification>()))
                       .Returns(Task.FromResult(default(object)));
 
+      var mockProjectEventNotification = new Mock<IProjectEventHubClient>();
+      mockProjectEventNotification.Setup(n => n.FileImportIsComplete(It.IsAny<ImportedFileStatus>()))
+        .Returns(Task.FromResult(default(object)));
+
       var mockTPaaSAuth = new Mock<ITPaaSApplicationAuthentication>();
 
       mockTPaaSAuth.Setup(t => t.GetApplicationBearerToken())
                    .Returns("this is a dummy bearer token");
 
-      var job = new DxfTileGenerationJob(configStore.Object, mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, loggerFactory);
+      var job = new DxfTileGenerationJob(configStore.Object, mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, mockProjectEventNotification.Object, loggerFactory);
 
       await job.Run(obj, null);
 
@@ -121,8 +127,11 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       var mockConfig = new Mock<IConfigurationStore>();
       var mockPushProxy = new Mock<IServiceResolution>();
       var mockNotification = new Mock<NotificationHubClient>(mockProvider.Object, mockConfig.Object, mockPushProxy.Object, loggerFactory);
+      var mockProjectEventNotification = new Mock<IProjectEventHubClient>();
+      mockProjectEventNotification.Setup(n => n.FileImportIsComplete(It.IsAny<ImportedFileStatus>()))
+        .Returns(Task.FromResult(default(object)));
 
-      return new DxfTileGenerationJob(configStore.Object, mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, loggerFactory);
+      return new DxfTileGenerationJob(configStore.Object, mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, mockProjectEventNotification.Object, loggerFactory);
     }
   }
 }
