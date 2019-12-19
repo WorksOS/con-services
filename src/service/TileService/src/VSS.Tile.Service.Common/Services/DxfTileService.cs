@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -30,7 +32,7 @@ namespace VSS.Tile.Service.Common.Services
     private readonly ILogger log;
     private readonly ITPaaSApplicationAuthentication authn;
     private readonly string tccFilespaceId;
-    private readonly bool useDataOcean;
+    private readonly string dataOceanRootFolder;
 
     public DxfTileService(IConfigurationStore configuration, IDataOceanClient dataOceanClient, ILoggerFactory logger, ITPaaSApplicationAuthentication authn, IFileRepository tccRepository)
     {
@@ -39,7 +41,12 @@ namespace VSS.Tile.Service.Common.Services
       log = logger.CreateLogger<DxfTileService>();
       this.authn = authn;
       tccFilespaceId = config.GetValueString("TCCFILESPACEID");
-      useDataOcean = config.GetValueBool("USE_DATA_OCEAN", false);
+
+      const string DATA_OCEAN_ROOT_FOLDER_ID_KEY = "DATA_OCEAN_ROOT_FOLDER_ID";
+      dataOceanRootFolder = configuration.GetValueString(DATA_OCEAN_ROOT_FOLDER_ID_KEY);
+      if (string.IsNullOrEmpty(dataOceanRootFolder))
+        throw new ArgumentException($"Missing environment variable {DATA_OCEAN_ROOT_FOLDER_ID_KEY}");
+
       tccFileRepo = tccRepository;
     }
 
@@ -117,10 +124,10 @@ namespace VSS.Tile.Service.Common.Services
           clipHeight += yClipTopLeft;
           yClipTopLeft = 0;
         }
-        Rectangle clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
+        var clipRect = new Rectangle(xClipTopLeft, yClipTopLeft, clipWidth, clipHeight);
 
         //Join all the DXF tiles into one large tile
-        if (useDataOcean)
+        if (dxfFile.ImportedUtc >= config.GetValueDateTime("TCC_TILE_FALLBACK_DATE", DateTime.Parse("11/22/2019", CultureInfo.CreateSpecificCulture("en-US"))))
           await JoinDataOceanTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
         else
           await JoinTccTiles(dxfFile, tileTopLeft, tileBottomRight, tileBitmap, parameters.zoomLevel);
@@ -144,7 +151,13 @@ namespace VSS.Tile.Service.Common.Services
     }
     private async Task JoinDataOceanTiles(FileData dxfFile, MasterDataModels.Point tileTopLeft, MasterDataModels.Point tileBottomRight, Image<Rgba32> tileBitmap, int zoomLevel)
     {
-      var dataOceanFileUtil = new DataOceanFileUtil($"{dxfFile.Path}{DataOceanUtil.PathSeparator}{dxfFile.Name}");
+      var fileName = DataOceanFileUtil.DataOceanFileName(dxfFile.Name,
+        dxfFile.ImportedFileType == ImportedFileType.SurveyedSurface || dxfFile.ImportedFileType == ImportedFileType.GeoTiff,
+        Guid.Parse(dxfFile.ImportedFileUid), dxfFile.SurveyedUtc);
+      fileName = DataOceanFileUtil.GeneratedFileName(fileName, dxfFile.ImportedFileType);
+      var dataOceanFileUtil = new DataOceanFileUtil($"{DataOceanUtil.PathSeparator}{dataOceanRootFolder}{dxfFile.Path}{DataOceanUtil.PathSeparator}{fileName}");
+      log.LogDebug($"{nameof(JoinDataOceanTiles)}: fileName: {fileName} dataOceanFileUtil.FullFileName {dataOceanFileUtil.FullFileName}");
+
       for (int yTile = (int)tileTopLeft.y; yTile <= (int)tileBottomRight.y; yTile++)
       {
         for (int xTile = (int)tileTopLeft.x; xTile <= (int)tileBottomRight.x; xTile++)

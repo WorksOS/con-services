@@ -227,10 +227,10 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "Multiple layers found"));
 
       if (result?.Layers.Length == 0)
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No layers found"));
+        throw new ServiceException(HttpStatusCode.NoContent, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No layers found"));
 
       if (result?.Layers[0].PassData == null)
-        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No cell passes found"));
+        throw new ServiceException(HttpStatusCode.NoContent, new ContractExecutionResult(ContractExecutionStatesEnum.FailedToGetResults, "No cell passes found"));
 
       // With our lift settings set to None, we should have exactly 1 layer
       return result.Layers[0].PassData.ToList();
