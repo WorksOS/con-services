@@ -84,12 +84,13 @@ namespace VSS.Productivity3D.Push.Clients
 
       await Task.Factory.StartNew(TryConnect);
     }
-
+    
     /// <summary>
     /// Actually does the connection, and keeps retrying until it connects
     /// </summary>
     private async Task TryConnect()
     {
+      Logger.LogInformation($"{nameof(TryConnect)} HubRoute: {HubRoute}");
       if (Connected || IsConnecting)
         return;
 
@@ -153,6 +154,7 @@ namespace VSS.Productivity3D.Push.Clients
 
       endpoint = new Uri(new Uri(serviceResult.Endpoint), HubRoute);
 
+      Logger.LogInformation($"{nameof(SetupConnection)} HubRoute: {HubRoute} endpoint: {endpoint}");
       Connection = new HubConnectionBuilder()
         .WithUrl(endpoint, options =>
         {

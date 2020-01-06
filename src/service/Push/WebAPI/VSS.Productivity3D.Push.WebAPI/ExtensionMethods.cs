@@ -36,6 +36,8 @@ namespace VSS.Productivity3D.Push.WebAPI
     /// </summary>
     public static async Task StartPushClients(this IServiceProvider services)
     {
+      //todoJeannie has this ever worked as GetServices by base interface seems to always return emptyList?
+
       var clients = services.GetServices<IHubClient>().ToList();
       var tasks = new List<Task>(clients.Count);
       foreach (var hubClient in clients)

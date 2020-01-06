@@ -20,7 +20,9 @@ using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
+using VSS.Productivity3D.Push.Clients.UINotification;
 using VSS.Productivity3D.Push.Hubs;
 using VSS.Productivity3D.Push.Hubs.AssetLocations;
 using VSS.Productivity3D.Push.Hubs.Authentication;
@@ -57,6 +59,7 @@ namespace VSS.Productivity3D.Push
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, PushResult>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddPushServiceClient<IProjectEventHubClient, ProjectEventHubClient>();
 
       services.AddSingleton<IAssetStatusState, InMemoryAssetStatusState>();
       // Attempt to resolve the redis cache, and use it for SignalR
