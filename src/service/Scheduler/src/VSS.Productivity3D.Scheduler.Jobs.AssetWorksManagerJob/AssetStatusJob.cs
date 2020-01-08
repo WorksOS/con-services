@@ -50,6 +50,16 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
       if (_assetStatusServerHubClient.IsConnecting || _assetStatusServerHubClient.Connected)
         return Task.CompletedTask;
       _log.LogInformation("Asset Status Hub Client not connected, starting a connection.");
+
+      // todoJeannie Steve,
+      //    due to Connect() using Task.Factory,
+      //      it will return 'ok' before it's really connected.
+      //      subsequently, _assetStatusServerHubClient.GetSubscriptions()
+      //           will return an empty list of subs if 'Connected' is false.
+      //           this will make the job APPEAR to complete successfully.   
+      //    Also, since hubClients are now hosted services,
+      //          connection will automajically happen (if possible) in the background and shouldn't need to be done here,
+      //          I wonder if here we only need to throw an exception to cause JobRunner to fail.
       return _assetStatusServerHubClient.Connect();
     }
 

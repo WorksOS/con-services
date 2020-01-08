@@ -9,7 +9,6 @@ using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
-using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -49,18 +48,17 @@ namespace VSS.Productivity3D.Push
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-     services.AddMvc();
+      services.AddMvc();
 
       // Required for authentication
       services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddServiceDiscovery();
       services.AddTransient<IProjectProxy, ProjectV4Proxy>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, PushResult>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddPushServiceClient<IProjectEventHubClient, ProjectEventHubClient>();
-
+      
       services.AddSingleton<IAssetStatusState, InMemoryAssetStatusState>();
       // Attempt to resolve the redis cache, and use it for SignalR
       var serviceDiscovery = services.BuildServiceProvider().GetService<IServiceResolution>();

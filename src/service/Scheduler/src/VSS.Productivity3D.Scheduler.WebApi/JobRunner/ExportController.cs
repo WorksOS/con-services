@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
@@ -18,8 +19,9 @@ using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Jobs.ExportJob;
 using VSS.Productivity3D.Scheduler.Models;
+using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
 
-namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
+namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
 {
   /// <summary>
   /// Handles requests for scheduling a long running export and getting its progress.
@@ -30,6 +32,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     private readonly ITransferProxy transferProxy;
     private readonly ILogger log;
     private readonly IJobRunner jobRunner;
+
+    // todoJeannie for manual test endpoints
     private readonly INotificationHubClient _notificationHubClient;
     private IProjectEventHubClient _projectEventHubClient;
 
@@ -48,15 +52,60 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       _projectEventHubClient = projectEventHubClient; // todoJeannie
     }
 
-    [Route("jeannietestprojectevent")]
+    // todoJeannie temp for testing
+    //   For this test, ensure that in Startup.ConfigureAdditionalServices
+    //      ProjectEventHubClient is NOT setup as a hostedService, use: AddPushServiceClientNonHosted()
+    //      This is because PushSvc requires customerUid from headers.
+    //         If the projectEventHubClient connects via hostedServices,
+    //           there will be no headers, so we need to control connection manually.
+    //   also, env vars for projectSvc e.g. project_service_public_v4 http://localhost:5001/api/v4
+    //      possibly custSvc - depending on token type (application/client)
+    [Route("JeannieTestSubscribeToProjectEvents")]
     [HttpPost]
-    public async Task<ContractExecutionResult> Startjeannietestprojectevent()
+    public async Task<ContractExecutionResult> JeannieTestSubscribeToProjectEvents()
     {
-      // todoJeannie temp for testing
-      log.LogInformation($"Startjeannietestprojectevent: ");
+      log.LogInformation($"{nameof(JeannieTestSubscribeToProjectEvents)}: starting up");
 
-      var importedFileStatus = new ImportedFileStatus( Guid.NewGuid(), Guid.NewGuid());
+      var DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace"; // so MockService returns something
+      var importedFileStatus = new ImportedFileStatus(Guid.Parse(DIMENSIONS_PROJECT_UID), Guid.NewGuid());
+
+      IProjectEventHubClient projectEventHubClient = null;
+      try
+      {
+        projectEventHubClient = await ProjectEventHubConnect();
+        await projectEventHubClient.SubscribeToProjectEvents(importedFileStatus.ProjectUid);
+        await projectEventHubClient.FileImportIsComplete(importedFileStatus);
+      }
+      catch (Exception e)
+      {
+        log.LogError(e, $"{nameof(JeannieTestSubscribeToProjectEvents)}: exception: ");
+      }
+      await ProjectEventHubDisConnect(projectEventHubClient);
+
+      return new ContractExecutionResult();
+    }
+
+    // todoJeannie temp for testing
+    //   For this test, ensure that in Startup.ConfigureAdditionalServices
+    //      ProjectEventHubClient is setup as a hostedService i.e. AddPushServiceClient()
+    [Route("JeannieTestProjectEvent")]
+    [HttpPost]
+    public async Task<ContractExecutionResult> JeannieTestProjectEvent()
+    {
+      log.LogInformation($"{nameof(JeannieTestProjectEvent)}: starting up");
+
+      var importedFileStatus = new ImportedFileStatus(Guid.NewGuid(), Guid.NewGuid());
       await _projectEventHubClient.FileImportIsComplete(importedFileStatus);
+
+      return new ContractExecutionResult();
+    }
+
+    // todoJeannie temp for testing
+    [Route("JeannieTestNotificationEvent")]
+    [HttpPost]
+    public async Task<ContractExecutionResult> JeannieTestNotificationEvent()
+    {
+      log.LogInformation($"{nameof(JeannieTestNotificationEvent)}: starting up");
 
       var notifyParams = new RasterTileNotificationParameters
       {
@@ -66,6 +115,24 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
       };
       await _notificationHubClient.Notify(new ProjectFileRasterTilesGeneratedNotification(notifyParams));
       return new ContractExecutionResult();
+    }
+
+    private async Task<IProjectEventHubClient> ProjectEventHubConnect()
+    {
+      var projectEventHubClient = HttpContext.RequestServices.GetService<IProjectEventHubClient>();
+      
+      var headers = Request.Headers.GetCustomHeaders();
+      projectEventHubClient.SetupHeaders(headers); 
+
+      await projectEventHubClient.ConnectAndWait();
+      return projectEventHubClient;
+    }
+
+    private async Task ProjectEventHubDisConnect(IProjectEventHubClient projectEventHubClient)
+    {
+      if (projectEventHubClient != null && 
+          (projectEventHubClient.Connected || projectEventHubClient.IsConnecting))
+      await projectEventHubClient.Disconnect();
     }
 
     /// <summary>

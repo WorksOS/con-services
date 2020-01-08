@@ -31,23 +31,38 @@ namespace VSS.Productivity3D.Push.WebAPI
     }
 
     /// <summary>
-    /// Start the connection logic for each hub
-    /// Note: The connection logic runs in the background, this will return even if the hub isn't connected straight away
+    /// Add a Push Service Client so that connection can be controlled manually i.e. not a HostedService.
+    /// e.d. if you need to manage connect/disconnect or pass headers/customerUid etc
     /// </summary>
-    public static async Task StartPushClients(this IServiceProvider services)
+    /// <typeparam name="TInterface">The Hub Client interface type</typeparam>
+    /// <typeparam name="TImplementation">The Hub Client implementation type</typeparam>
+    public static IServiceCollection AddPushServiceClientNonHosted<TInterface, TImplementation>(this IServiceCollection services)
+      where TInterface : class, IHubClient
+      where TImplementation : class, IHubClient, TInterface
     {
-      //todoJeannie has this ever worked as GetServices by base interface seems to always return emptyList?
-
-      var clients = services.GetServices<IHubClient>().ToList();
-      var tasks = new List<Task>(clients.Count);
-      foreach (var hubClient in clients)
-      {
-        if(hubClient.IsConnecting || hubClient.Connected)
-          continue;
-        tasks.Add(hubClient.Connect());
-      }
-
-      await Task.WhenAll(tasks);
+      services.AddSingleton<IServiceResolution, InternalServiceResolver>();
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      services.AddTransient<TInterface, TImplementation>();
+      return services;
     }
+
+    // todoJeannie obsolete?
+    ///// <summary>
+    ///// Start the connection logic for each hub
+    ///// Note: The connection logic runs in the background, this will return even if the hub isn't connected straight away
+    ///// </summary>
+    //public static async Task StartPushClients(this IServiceProvider services)
+    //{
+    //  var clients = services.GetServices<IHubClient>().ToList();
+    //  var tasks = new List<Task>(clients.Count);
+    //  foreach (var hubClient in clients)
+    //  {
+    //    if(hubClient.IsConnecting || hubClient.Connected)
+    //      continue;
+    //    tasks.Add(hubClient.Connect());
+    //  }
+
+    //  await Task.WhenAll(tasks);
+    //}
   }
 }

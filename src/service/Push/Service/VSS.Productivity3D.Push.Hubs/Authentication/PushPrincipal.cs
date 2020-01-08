@@ -11,7 +11,7 @@ using VSS.WebApi.Common;
 namespace VSS.Productivity3D.Push.Hubs.Authentication
 {
   /// <summary>
-  /// Custom principal for Raptor with list of projects.
+  /// Custom principal for the push service.
   /// </summary>
   public class PushPrincipal : TIDCustomPrincipal
   {

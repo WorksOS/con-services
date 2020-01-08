@@ -24,6 +24,8 @@ namespace VSS.Productivity3D.Push.Clients.AssetLocations
 
     public override string HubRoute => HubRoutes.ASSET_STATUS_SERVER;
 
+    public override void SetupHeaders(IDictionary<string, string> headers) => Headers = headers;
+
     public override void SetupCallbacks()
     {
       // No need for callbacks here, as this is called and generates no actions for anyone other than the actual hub

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -25,9 +27,25 @@ namespace VSS.Productivity3D.Push.Clients.UINotification
     /// <inheritdoc />
     public override string HubRoute => HubRoutes.PROJECT_EVENTS;
 
+    public override void SetupHeaders(IDictionary<string, string> headers) => Headers = headers;
+
     public override void SetupCallbacks()
     {
       // No need for callbacks here, as this is called and generates no actions for anyone other than the actual hub
+    }
+
+    // todoJeannie added here for testing from scheduler exportController only
+    //       this client is really for our service to call FileImportIsComplete,
+    //          however we don't know yet how the UI client will trigger this subscription,
+    //               or provide the callback to UI client (OnFileImportCompleted) when they arrive        
+    public Task SubscribeToProjectEvents(Guid projectUid)
+    {
+      if (Connected)
+        return Connection.InvokeAsync(nameof(IProjectEventHub.StartProcessingProject), projectUid);
+
+      // We could queue this up if it becomes a problem
+      Logger.LogWarning("Attempt to subscribe to project while client disconnected. Subscription failed.");
+      return Task.CompletedTask;
     }
 
     public Task FileImportIsComplete(ImportedFileStatus importedFileStatus)
@@ -36,7 +54,7 @@ namespace VSS.Productivity3D.Push.Clients.UINotification
         return Connection.InvokeAsync(nameof(IProjectEventHub.SendImportedFileEventToClients), importedFileStatus);
 
       // We could queue this up if it becomes a problem
-      Logger.LogWarning("Attempt to send message while client disconnected. Notification not sent.");
+      Logger.LogWarning("Attempt to send completion message while client disconnected. Completion not sent.");
       return Task.CompletedTask;
     }
   }

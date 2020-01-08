@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.MySql;
 using Microsoft.AspNetCore.Builder;
@@ -98,7 +96,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IDefaultJobRunner, DefaultJobsManager>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddPushServiceClient<IAssetStatusServerHubClient, AssetStatusServerHubClient>();
+
       services.AddPushServiceClient<IProjectEventHubClient, ProjectEventHubClient>();
+      // to be used for testing of manual testing via ExportController endpoint
+      //services.AddPushServiceClientNonHosted<IProjectEventHubClient, ProjectEventHubClient>();
+
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
@@ -206,35 +208,14 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       // No async / await in .NET core 2.0, coming in 3.0...
       // But this will throw an exception halting start up correctly
-      
-      //todoJeannie has extension StartPushClients ever worked as GetServices by base interface seems to always return an empty List?
+
+      //todoJeannie steve,
+      //   serviceProvider.StartPushClients() doesn't work as
+      //      GetServices by a base interface e.g. IHubClient always returns an empty List
+      //  Also, since these hubClients are HostedClientService, StartAsync connects to each 
+      // todoJeannie obsolete serviceProvider.StartPushClients().Wait(); 
       var hubClients = serviceProvider.GetServices<IHubClient>().ToList();
       Log.LogInformation($"{nameof(StartServices)}: via baseInterface method hubClientCount: {hubClients.Count}");
-
-      if (hubClients.Any())
-        serviceProvider.StartPushClients().Wait();
-      else
-        StartPushClients(serviceProvider).Wait();
-    }
-
-    private async Task StartPushClients(IServiceProvider serviceProvider)
-    {
-      //todoJeannie has StartPushClients ever worked as GetServices by base interface seems to always return an empty List?
-      var hubClients = new List<IHubClient>();
-      hubClients.Add(serviceProvider.GetService<INotificationHubClient>());
-      hubClients.Add(serviceProvider.GetService<IProjectEventHubClient>());
-      hubClients.Add(serviceProvider.GetService<IAssetStatusServerHubClient>());
-      Log.LogInformation($"{nameof(StartPushClients)}: by specificInterface method hubClientCount: {hubClients.Count}");
-
-      var tasks = new List<Task>(hubClients.Count);
-      foreach (var hubClient in hubClients)
-      {
-        if (hubClient.IsConnecting || hubClient.Connected)
-          continue;
-        tasks.Add(hubClient.Connect());
-      }
-
-      await Task.WhenAll(tasks);
     }
 
     /// <summary>

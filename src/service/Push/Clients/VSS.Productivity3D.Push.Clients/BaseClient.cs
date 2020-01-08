@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -60,6 +62,10 @@ namespace VSS.Productivity3D.Push.Clients
     /// </summary>
     public abstract string HubRoute { get; }
 
+    public IDictionary<string, string> Headers { get; set; }
+
+    public abstract void SetupHeaders(IDictionary<string, string> headers);
+
     /// <summary>
     /// Method to setup any callbacks from the SignalR Hub
     /// </summary>
@@ -82,9 +88,21 @@ namespace VSS.Productivity3D.Push.Clients
         throw new ArgumentException("No URL Key provided to Push Client - not starting", nameof(HubRoute));
       }
 
-      await Task.Factory.StartNew(TryConnect);
+      await Task.Factory.StartNew(() => TryConnect());
     }
-    
+
+    /// <inheritdoc />
+    public /*async*/ Task ConnectAndWait()
+    {
+      if (string.IsNullOrWhiteSpace(HubRoute))
+      {
+        throw new ArgumentException("No URL Key provided to Push Client - not starting", nameof(HubRoute));
+      }
+
+      //await Task.Factory.StartNew(() => TryConnect());
+      return TryConnect();
+    }
+
     /// <summary>
     /// Actually does the connection, and keeps retrying until it connects
     /// </summary>
@@ -158,6 +176,14 @@ namespace VSS.Productivity3D.Push.Clients
       Connection = new HubConnectionBuilder()
         .WithUrl(endpoint, options =>
         {
+          if (Headers != null && Headers.Any())
+          {
+            foreach (var header in Headers)
+              options.Headers.Add(header);
+            Logger.LogInformation($"{nameof(SetupConnection)} Connecting with headers: {Headers}");
+          }
+          else
+
           if (Configuration.GetValueBool(PUSH_REQUEST_NO_AUTH, false))
           {
             Logger.LogInformation("Attempting to skip TPaaS Authentication");
@@ -165,7 +191,7 @@ namespace VSS.Productivity3D.Push.Clients
           }
           else
           {
-            Logger.LogWarning("No authentication headers added.");
+            Logger.LogWarning("No authentication headers added."); 
           }
         }).Build();
 
@@ -174,7 +200,10 @@ namespace VSS.Productivity3D.Push.Clients
         Logger.LogError(e, $"Lost Connection to `{endpoint.AbsolutePath}`");
         Connected = false;
 
-        await Task.Factory.StartNew(TryConnect).ConfigureAwait(false);
+        // todoJeannie steve,
+        // 1) if a retry occurs, then will the original tracking of task be lost as another thread is spawned?
+        // 2) Do threads need to be cleaned up? 
+        await Task.Factory.StartNew(() => TryConnect()).ConfigureAwait(false);
       };
 
       // We must call setup callbacks after we setup the connection
