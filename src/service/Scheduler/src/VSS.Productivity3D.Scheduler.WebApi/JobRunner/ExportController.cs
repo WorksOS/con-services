@@ -33,106 +33,15 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     private readonly ILogger log;
     private readonly IJobRunner jobRunner;
 
-    // todoJeannie for manual test endpoints
-    private readonly INotificationHubClient _notificationHubClient;
-    private IProjectEventHubClient _projectEventHubClient;
-
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    public ExportController(ILoggerFactory loggerFactory, IExportJob exportJob, ITransferProxy transferProxy, IJobRunner jobRunner,
-      INotificationHubClient notificationHubClient,
-      IProjectEventHubClient projectEventHubClient)
+    public ExportController(ILoggerFactory loggerFactory, IExportJob exportJob, ITransferProxy transferProxy, IJobRunner jobRunner)
     {
       log = loggerFactory.CreateLogger<ExportController>();
       this.exportJob = exportJob;
       this.transferProxy = transferProxy;
       this.jobRunner = jobRunner;
-      _notificationHubClient = notificationHubClient;
-      _projectEventHubClient = projectEventHubClient; // todoJeannie
-    }
-
-    // todoJeannie temp for testing
-    //   For this test, ensure that in Startup.ConfigureAdditionalServices
-    //      ProjectEventHubClient is NOT setup as a hostedService, use: AddPushServiceClientNonHosted()
-    //      This is because PushSvc requires customerUid from headers.
-    //         If the projectEventHubClient connects via hostedServices,
-    //           there will be no headers, so we need to control connection manually.
-    //   also, env vars for projectSvc e.g. project_service_public_v4 http://localhost:5001/api/v4
-    //      possibly custSvc - depending on token type (application/client)
-    [Route("JeannieTestSubscribeToProjectEvents")]
-    [HttpPost]
-    public async Task<ContractExecutionResult> JeannieTestSubscribeToProjectEvents()
-    {
-      log.LogInformation($"{nameof(JeannieTestSubscribeToProjectEvents)}: starting up");
-
-      var DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace"; // so MockService returns something
-      var importedFileStatus = new ImportedFileStatus(Guid.Parse(DIMENSIONS_PROJECT_UID), Guid.NewGuid());
-
-      IProjectEventHubClient projectEventHubClient = null;
-      try
-      {
-        projectEventHubClient = await ProjectEventHubConnect();
-        await projectEventHubClient.SubscribeToProjectEvents(importedFileStatus.ProjectUid);
-        await projectEventHubClient.FileImportIsComplete(importedFileStatus);
-      }
-      catch (Exception e)
-      {
-        log.LogError(e, $"{nameof(JeannieTestSubscribeToProjectEvents)}: exception: ");
-      }
-      await ProjectEventHubDisConnect(projectEventHubClient);
-
-      return new ContractExecutionResult();
-    }
-
-    // todoJeannie temp for testing
-    //   For this test, ensure that in Startup.ConfigureAdditionalServices
-    //      ProjectEventHubClient is setup as a hostedService i.e. AddPushServiceClient()
-    [Route("JeannieTestProjectEvent")]
-    [HttpPost]
-    public async Task<ContractExecutionResult> JeannieTestProjectEvent()
-    {
-      log.LogInformation($"{nameof(JeannieTestProjectEvent)}: starting up");
-
-      var importedFileStatus = new ImportedFileStatus(Guid.NewGuid(), Guid.NewGuid());
-      await _projectEventHubClient.FileImportIsComplete(importedFileStatus);
-
-      return new ContractExecutionResult();
-    }
-
-    // todoJeannie temp for testing
-    [Route("JeannieTestNotificationEvent")]
-    [HttpPost]
-    public async Task<ContractExecutionResult> JeannieTestNotificationEvent()
-    {
-      log.LogInformation($"{nameof(JeannieTestNotificationEvent)}: starting up");
-
-      var notifyParams = new RasterTileNotificationParameters
-      {
-        FileUid = Guid.NewGuid(),
-        MinZoomLevel = 14,
-        MaxZoomLevel = 16
-      };
-      await _notificationHubClient.Notify(new ProjectFileRasterTilesGeneratedNotification(notifyParams));
-      return new ContractExecutionResult();
-    }
-
-    private async Task<IProjectEventHubClient> ProjectEventHubConnect()
-    {
-      var projectEventHubClient = HttpContext.RequestServices.GetService<IProjectEventHubClient>();
-      
-      var headers = Request.Headers.GetCustomHeaders();
-      projectEventHubClient.SetupHeaders(headers); 
-
-      await projectEventHubClient.ConnectAndWait();
-      return projectEventHubClient;
-    }
-
-    private async Task ProjectEventHubDisConnect(IProjectEventHubClient projectEventHubClient)
-    {
-      if (projectEventHubClient != null && 
-          (projectEventHubClient.Connected || projectEventHubClient.IsConnecting))
-      await projectEventHubClient.Disconnect();
     }
 
     /// <summary>

@@ -17,6 +17,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -59,7 +60,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<ReturnLongV2Result> UpsertImportedFileV2(
       [FromRoute] long projectId,
       [FromBody] ImportedFileTbc importedFileTbc,
-      [FromServices] ISchedulerProxy schedulerProxy)
+      [FromServices] ISchedulerProxy schedulerProxy,
+      [FromServices] IProjectEventHubClient projectEventHubClient)
     {
       // MobileLinework .kml/.kmz files are sent along with linework files
       //     we need to suppress any error and return as if all ok.
@@ -140,7 +142,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               Producer, KafkaTopicName,
               productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, 
+              schedulerProxy: schedulerProxy, projectEventHubClient: projectEventHubClient)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -170,7 +173,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               Producer, KafkaTopicName,
               productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, 
+              schedulerProxy: schedulerProxy, projectEventHubClient: projectEventHubClient)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
       }

@@ -27,17 +27,12 @@ namespace VSS.Productivity3D.Push.Clients.UINotification
     /// <inheritdoc />
     public override string HubRoute => HubRoutes.PROJECT_EVENTS;
 
-    public override void SetupHeaders(IDictionary<string, string> headers) => Headers = headers;
-
     public override void SetupCallbacks()
     {
       // No need for callbacks here, as this is called and generates no actions for anyone other than the actual hub
     }
 
-    // todoJeannie added here for testing from scheduler exportController only
-    //       this client is really for our service to call FileImportIsComplete,
-    //          however we don't know yet how the UI client will trigger this subscription,
-    //               or provide the callback to UI client (OnFileImportCompleted) when they arrive        
+    // todoJeannie may not be needed in the hubClient?      
     public Task SubscribeToProjectEvents(Guid projectUid)
     {
       if (Connected)

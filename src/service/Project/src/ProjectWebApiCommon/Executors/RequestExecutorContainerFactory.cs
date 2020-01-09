@@ -12,6 +12,7 @@ using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -35,7 +36,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null,
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
-      ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null
+      ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
+      IProjectEventHubClient projectEventHubClient = null
       )
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -52,7 +54,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         producer, kafkaTopicName, productivity3dV1ProxyCoord, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
         subscriptionProxy, persistantTransferProxy,
         filterServiceProxy, tRexImportFileProxy, projectRepo, subscriptionRepo, fileRepo, customerRepo,
-        httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient
+        httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient, projectEventHubClient
         );
 
       return executor;

@@ -17,6 +17,7 @@ using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Pegasus.Client;
+using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Models.Models.Designs;
@@ -26,6 +27,7 @@ using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TCCFileAccess;
@@ -159,13 +161,17 @@ namespace VSS.MasterData.ProjectTests.Executors
       var dataOceanClient = new Mock<IDataOceanClient>();
       var authn = new Mock<ITPaaSApplicationAuthentication>();
 
+      var projectEventHubClient = new Mock<IProjectEventHubClient>();
+      projectEventHubClient.Setup(sr => sr.FileImportIsComplete(It.IsAny<ImportedFileStatus>())).Returns(Task.CompletedTask);
+
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
           customHeaders, producer.Object, KafkaTopicName,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
           productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
+          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+          projectEventHubClient: projectEventHubClient.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -229,12 +235,16 @@ namespace VSS.MasterData.ProjectTests.Executors
       var dataOceanClient = new Mock<IDataOceanClient>();
       var authn = new Mock<ITPaaSApplicationAuthentication>();
 
+      var projectEventHubClient = new Mock<IProjectEventHubClient>();
+      projectEventHubClient.Setup(sr => sr.FileImportIsComplete(It.IsAny<ImportedFileStatus>())).Returns(Task.CompletedTask);
+
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
           customHeaders, producer.Object, KafkaTopicName,
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
+          projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+          projectEventHubClient: projectEventHubClient.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
@@ -468,11 +478,14 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
+      var projectEventHubClient = new Mock<IProjectEventHubClient>();
+      projectEventHubClient.Setup(sr => sr.FileImportIsComplete(It.IsAny<ImportedFileStatus>())).Returns(Task.CompletedTask);
+
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, projectEventHubClient: projectEventHubClient.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -523,11 +536,15 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
+      var projectEventHubClient = new Mock<IProjectEventHubClient>();
+      projectEventHubClient.Setup(sr => sr.FileImportIsComplete(It.IsAny<ImportedFileStatus>())).Returns(Task.CompletedTask);
+
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object,
+          projectEventHubClient: projectEventHubClient.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
@@ -682,11 +699,14 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
+      var projectEventHubClient = new Mock<IProjectEventHubClient>();
+      projectEventHubClient.Setup(sr => sr.FileImportIsComplete(It.IsAny<ImportedFileStatus>())).Returns(Task.CompletedTask);
+
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, projectEventHubClient: projectEventHubClient.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
@@ -824,11 +844,15 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(existingImportedFile);
       projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
 
+      var projectEventHubClient = new Mock<IProjectEventHubClient>();
+      projectEventHubClient.Setup(sr => sr.FileImportIsComplete(It.IsAny<ImportedFileStatus>())).Returns(Task.CompletedTask);
+
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
           producer.Object, KafkaTopicName,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object,
+          projectEventHubClient: projectEventHubClient.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);

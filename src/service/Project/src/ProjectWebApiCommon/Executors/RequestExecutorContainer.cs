@@ -22,6 +22,7 @@ using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -120,7 +121,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected ITPaaSApplicationAuthentication authn;
     protected ISchedulerProxy schedulerProxy;
     protected IPegasusClient pegasusClient;
-    
+    protected IProjectEventHubClient projectEventHubClient;
+
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
@@ -199,7 +201,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null,
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
-      ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null)
+      ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
+      IProjectEventHubClient projectEventHubClient = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -226,6 +229,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.authn = authn;
       this.schedulerProxy = schedulerProxy;
       this.pegasusClient = pegasusClient;
+      this.projectEventHubClient = projectEventHubClient;
     }
 
     /// <summary>

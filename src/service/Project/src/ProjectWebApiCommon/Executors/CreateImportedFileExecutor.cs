@@ -9,6 +9,7 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -39,6 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var importedFile = CastRequestObjectTo<CreateImportedFile>(item, errorCode: 68);
+      var tilesAreBeingGenerated = false;
 
       await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(importedFile.ImportedFileType, importedFile.ParentUid, serviceExceptionHandler, projectRepo);
 
@@ -112,6 +114,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             DataOceanFileUtil.DataOceanFileName(project.CoordinateSystemFileName, false, Guid.Parse(project.ProjectUID), null),
             importedFile.DxfUnitsType,
             importedFile.SurveyedUtc);
+          tilesAreBeingGenerated = true;
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }
@@ -134,6 +137,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           null,
           importedFile.DxfUnitsType,
           importedFile.SurveyedUtc);
+        tilesAreBeingGenerated = true;
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
 
@@ -151,6 +155,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         .ToImmutableList()
         .First(f => f.ImportedFileUid == createImportedFileEvent.ImportedFileUID.ToString())
       );
+
+      // scheduler will generate projectEvent notification when complete. This covers e.g. SSurface
+      if (!tilesAreBeingGenerated)
+        await projectEventHubClient.FileImportIsComplete(new ImportedFileStatus(importedFile.ProjectUid, createImportedFileEvent.ImportedFileUID));
 
       log.LogInformation(
         $"CreateImportedFileV4. completed successfully. Response: {JsonConvert.SerializeObject(fileDescriptor)}");

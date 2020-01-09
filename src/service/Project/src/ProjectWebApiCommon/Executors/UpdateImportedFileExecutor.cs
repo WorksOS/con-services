@@ -11,6 +11,7 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity.Push.Models.Notifications.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -36,6 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var importedFile = CastRequestObjectTo<UpdateImportedFile>(item, errorCode: 68);
+      var tilesAreBeingGenerated = false;
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"), out var useRaptorGatewayDesignImport);
@@ -94,6 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, Guid.Parse(projectTask.ProjectUID), null),
             importedFile.DxfUnitsTypeId,
             importedFile.SurveyedUtc);
+          tilesAreBeingGenerated = true;
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
         }
       }
@@ -112,9 +115,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           null,
           importedFile.DxfUnitsTypeId,
           importedFile.SurveyedUtc);
+        tilesAreBeingGenerated = true;
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
-
 
       // if all succeeds, update Db and  put update to kafka que
       var updateImportedFileEvent = await ImportedFileRequestDatabaseHelper.UpdateImportedFileInDb(existingImportedFile,
@@ -135,6 +138,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         .ToImmutableList()
         .FirstOrDefault(f => f.ImportedFileUid == importedFile.ImportedFileUid.ToString())
       );
+
+      // scheduler will generate projectEvent notification when complete. This covers e.g. SSurface
+      if (!tilesAreBeingGenerated)
+        await projectEventHubClient.FileImportIsComplete(new ImportedFileStatus(importedFile.ProjectUid, Guid.Parse(existingImportedFile.ImportedFileUid)));
+
 
       log.LogInformation(
         $"UpdateImportedFileExecutor. entry {(fileDescriptor.ImportedFileDescriptor == null ? "not " : "")}retrieved from DB : {JsonConvert.SerializeObject(fileDescriptor)}");

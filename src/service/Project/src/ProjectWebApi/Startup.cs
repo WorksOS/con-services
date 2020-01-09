@@ -31,7 +31,9 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
+using VSS.Productivity3D.Push.Clients.UINotification;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Proxy;
@@ -101,6 +103,7 @@ namespace VSS.MasterData.Project.WebAPI
       });
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      services.AddPushServiceClient<IProjectEventHubClient, ProjectEventHubClient>();
       services.AddSingleton<CacheInvalidationService>();
       services.AddTransient<ImportedFileUpdateService>();
 

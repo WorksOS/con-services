@@ -64,8 +64,6 @@ namespace VSS.Productivity3D.Push.Clients
 
     public IDictionary<string, string> Headers { get; set; }
 
-    public abstract void SetupHeaders(IDictionary<string, string> headers);
-
     /// <summary>
     /// Method to setup any callbacks from the SignalR Hub
     /// </summary>
@@ -90,19 +88,7 @@ namespace VSS.Productivity3D.Push.Clients
 
       await Task.Factory.StartNew(() => TryConnect());
     }
-
-    /// <inheritdoc />
-    public /*async*/ Task ConnectAndWait()
-    {
-      if (string.IsNullOrWhiteSpace(HubRoute))
-      {
-        throw new ArgumentException("No URL Key provided to Push Client - not starting", nameof(HubRoute));
-      }
-
-      //await Task.Factory.StartNew(() => TryConnect());
-      return TryConnect();
-    }
-
+    
     /// <summary>
     /// Actually does the connection, and keeps retrying until it connects
     /// </summary>

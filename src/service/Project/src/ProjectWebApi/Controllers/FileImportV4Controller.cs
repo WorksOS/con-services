@@ -33,6 +33,8 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
+using VSS.Productivity3D.Push.Abstractions.UINotifications;
+using VSS.Productivity3D.Push.Clients.UINotification;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -94,6 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }, Size = 1000000000)]
     public async Task<ImportedFileDescriptorSingleResult> SyncUpload(
       [FromServices] ISchedulerProxy schedulerProxy,
+      [FromServices] IProjectEventHubClient projectEventHubClient,
       FlowFile file,
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType importedFileType,
@@ -123,7 +126,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       using (var fileStream = System.IO.File.Open(file.path, FileMode.Open, FileAccess.Read))
       {
         importedFileResult = await UpsertFileInternal(file.flowFilename, fileStream, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, projectEventHubClient);
       }
 
       Logger.LogInformation(
@@ -228,7 +231,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] DateTime fileUpdatedUtc,
       [FromQuery] DateTime? surveyedUtc,
       [FromServices] Func<TransferProxyType, ITransferProxy> transferProxyFunc,
-      [FromServices] ISchedulerProxy schedulerProxy)
+      [FromServices] ISchedulerProxy schedulerProxy,
+      [FromServices] IProjectEventHubClient projectEventHubClient)
     {
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
@@ -260,7 +264,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         fileResult.FileStream.CopyTo(ms);
 
         importedFileResult = await UpsertFileInternal(filename, ms, projectUid, importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, projectEventHubClient);
       }
 
       Logger.LogInformation(
@@ -287,6 +291,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     public Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV4(
       [FromServices] ISchedulerProxy schedulerProxy,
+      [FromServices] IProjectEventHubClient projectEventHubClient,
       FlowFile file,
       [FromQuery] Guid projectUid,
       [FromQuery] ImportedFileType importedFileType,
@@ -309,7 +314,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation(
         $"{nameof(UpsertImportedFileV4)}. file: {JsonConvert.SerializeObject(file)} projectUid {projectUid} ImportedFileType: {importedFileType} DxfUnitsType: {dxfUnitsType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())}");
 
-      return UpsertFile(file.path, file.flowFilename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc);
+      return UpsertFile(file.path, file.flowFilename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, projectEventHubClient, uploadToTcc);
     }
 
     /// <summary>
@@ -325,6 +330,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [RequestSizeLimit(1_000_000_000)]
     public async Task<ImportedFileDescriptorSingleResult> CreateImportedFileDirectV4(
       [FromServices] ISchedulerProxy schedulerProxy,
+      [FromServices] IProjectEventHubClient projectEventHubClient,
       Guid projectUid,
       string filename,
       ImportedFileType importedFileType,
@@ -354,7 +360,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var tempFilePath = await HttpContext.Request.StreamFile(Guid.NewGuid().ToString(), Logger);
 
-      var result = await UpsertFile(tempFilePath, filename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy);
+      var result = await UpsertFile(tempFilePath, filename, projectUid.ToString(), importedFileType, dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, projectEventHubClient);
 
       return result;
     }
@@ -423,6 +429,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime fileUpdatedUtc,
       DateTime? surveyedUtc,
       ISchedulerProxy schedulerProxy,
+      IProjectEventHubClient projectEventHubClient,
       bool uploadToTcc = true)
     {
       if (!System.IO.File.Exists(tmpFilePath))
@@ -433,7 +440,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       using (var fileStream = new FileStream(tmpFilePath, FileMode.Open))
       {
         return await UpsertFileInternal(filename, fileStream, Guid.Parse(projectUid), importedFileType, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, uploadToTcc: uploadToTcc);
+          fileCreatedUtc, fileUpdatedUtc, surveyedUtc, schedulerProxy, projectEventHubClient, uploadToTcc: uploadToTcc);
       }
     }
 
@@ -450,6 +457,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       DateTime fileUpdatedUtc,
       DateTime? surveyedUtc,
       ISchedulerProxy schedulerProxy,
+      IProjectEventHubClient projectEventHubClient,
       Guid? parentUid = null,
       double? offset = null,
       bool uploadToTcc = true)
@@ -552,7 +560,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               Producer, KafkaTopicName,
               productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, 
+              schedulerProxy: schedulerProxy, projectEventHubClient: projectEventHubClient)
             .ProcessAsync(createImportedFile)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -580,7 +589,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               Producer, KafkaTopicName,
               productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
               tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, 
+              schedulerProxy: schedulerProxy, projectEventHubClient: projectEventHubClient)
             .ProcessAsync(importedFileUpsertEvent)
         ) as ImportedFileDescriptorSingleResult;
 
@@ -644,7 +654,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] Guid parentUid,
       [FromQuery] double offset,
       [FromServices] ISchedulerProxy schedulerProxy,
-      [FromServices] IPreferenceProxy prefProxy)
+      [FromServices] IPreferenceProxy prefProxy,
+      [FromServices] IProjectEventHubClient projectEventHubClient)
     {
       Logger.LogInformation($"CreateReferenceSurface. projectUid {projectUid} filename: {filename} parentUid: {parentUid} offset: {offset}");
 
@@ -674,7 +685,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ValidateFileDoesNotExist(projectUid.ToString(), filename, ImportedFileType.ReferenceSurface, null, parentUid, offset);
 
       var importedFileResult = await UpsertFileInternal(filename, null, projectUid, ImportedFileType.ReferenceSurface, DxfUnitsType.Meters,
-        fileCreatedUtc, fileUpdatedUtc, null, schedulerProxy, parentUid, offset);
+        fileCreatedUtc, fileUpdatedUtc, null, schedulerProxy, projectEventHubClient, parentUid, offset);
 
       //If parent design is deactivated then deactivate reference surface
       if (!parent.IsActivated)

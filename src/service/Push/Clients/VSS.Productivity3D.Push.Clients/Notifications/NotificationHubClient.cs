@@ -38,9 +38,6 @@ namespace VSS.Productivity3D.Push.Clients.Notifications
     /// <inheritdoc />
     public override string HubRoute => HubRoutes.NOTIFICATIONS;
 
-    public override void SetupHeaders(IDictionary<string, string> headers) => Headers = null;
-
-
     /// <inheritdoc />
     /// <summary>
     /// NOTE: Connection.On Does not validate that the method name, return type or parameters match the interface

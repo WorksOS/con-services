@@ -96,11 +96,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IDefaultJobRunner, DefaultJobsManager>();
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddPushServiceClient<IAssetStatusServerHubClient, AssetStatusServerHubClient>();
-
       services.AddPushServiceClient<IProjectEventHubClient, ProjectEventHubClient>();
-      // to be used for testing of manual testing via ExportController endpoint
-      //services.AddPushServiceClientNonHosted<IProjectEventHubClient, ProjectEventHubClient>();
-
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
@@ -213,7 +209,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       //   serviceProvider.StartPushClients() doesn't work as
       //      GetServices by a base interface e.g. IHubClient always returns an empty List
       //  Also, since these hubClients are HostedClientService, StartAsync connects to each 
-      // todoJeannie obsolete serviceProvider.StartPushClients().Wait(); 
+      // todoJeannie obsolete serviceProvider.StartPushClients().Wait();
       var hubClients = serviceProvider.GetServices<IHubClient>().ToList();
       Log.LogInformation($"{nameof(StartServices)}: via baseInterface method hubClientCount: {hubClients.Count}");
     }
