@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -81,110 +82,124 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // this also validates that this customer has access to the projectUid
       var project = await GetProject(projectId);
 
-      var fileEntry = await TccHelper.GetFileInfoFromTccRepository(importedFileTbc,
-        FileSpaceId, Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
+      var fileEntryTask = TccHelper.GetFileInfoFromTccRepository(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
       var fileDescriptor = await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
         customerUid, project.ProjectUID, FileSpaceId,
         Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
 
-      // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
-      if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileTbc.ImportedFileTypeId))
+      Stream memStream = null;
+      try
       {
-        var memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
+        // TRex needs a copy of design file in S3. Will BusinessCenter survive until Trex switchover?
+        if (UseTrexGatewayDesignImport && IsDesignFileType(importedFileTbc.ImportedFileTypeId))
+        {
+          memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
-        fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
-          memStream, project.ProjectUID, importedFileTbc.Name,
-          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface,
-          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
-            ? importedFileTbc.SurfaceFile.SurveyedUtc
-            : (DateTime?)null,
-          Logger, ServiceExceptionHandler, persistantTransferProxy);
-        memStream?.Dispose();
-      }
+          fileDescriptor = ProjectRequestHelper.WriteFileToS3Repository(
+            memStream, project.ProjectUID, importedFileTbc.Name,
+            importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface,
+            importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
+              ? importedFileTbc.SurfaceFile.SurveyedUtc
+              : (DateTime?)null,
+            Logger, ServiceExceptionHandler, persistantTransferProxy);
+        }
 
-      var existing = await ImportedFileRequestDatabaseHelper
-        .GetImportedFileForProject
-        (project.ProjectUID, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
-        Logger, ProjectRepo, 0, null)
-        .ConfigureAwait(false);
-      bool creating = existing == null;
-      Logger.LogInformation(
-        creating
-          ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
-          : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
+        var existing = await ImportedFileRequestDatabaseHelper
+                             .GetImportedFileForProject
+                             (project.ProjectUID, importedFileTbc.Name, importedFileTbc.ImportedFileTypeId, null,
+                              Logger, ProjectRepo, 0, null)
+                             .ConfigureAwait(false);
+        bool creating = existing == null;
+        Logger.LogInformation(
+          creating
+            ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
+            : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
-      var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
-      var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(importedFileTbc.Name,
-        importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff,
-        importedFileUid, importedFileTbc.SurfaceFile?.SurveyedUtc);
+        var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
+        var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(importedFileTbc.Name,
+          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff,
+          importedFileUid, importedFileTbc.SurfaceFile?.SurveyedUtc);
 
+        if (memStream == null)
+        {
+          memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
+        }
+        await DataOceanHelper.WriteFileToDataOcean(
+          memStream, DataOceanRootFolderId, customerUid, project.ProjectUID, dataOceanFileName,
+          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
 
-      ImportedFileDescriptorSingleResult importedFile;
-      if (creating)
-      {
-        var createImportedFile = new CreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
-          fileDescriptor,
-          importedFileTbc.ImportedFileTypeId,
-          importedFileTbc.SurfaceFile?.SurveyedUtc,
-          importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
-            ? importedFileTbc.LineworkFile.DxfUnitsTypeId
-            : DxfUnitsType.Meters,
-          fileEntry.createTime, fileEntry.modifyTime,
-          DataOceanRootFolderId, null, 0, importedFileUid, dataOceanFileName);
+        var fileEntry = await fileEntryTask;
+        ImportedFileDescriptorSingleResult importedFile;
+        if (creating)
+        {
+          var createImportedFile = new CreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
+            fileDescriptor,
+            importedFileTbc.ImportedFileTypeId,
+            importedFileTbc.SurfaceFile?.SurveyedUtc,
+            importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
+              ? importedFileTbc.LineworkFile.DxfUnitsTypeId
+              : DxfUnitsType.Meters,
+            fileEntry.createTime, fileEntry.modifyTime,
+            DataOceanRootFolderId, null, 0, importedFileUid, dataOceanFileName);
 
-        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
-            .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-              customerUid, userId, userEmailAddress, customHeaders,
-              Producer, KafkaTopicName,
-              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-              persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
-            .ProcessAsync(createImportedFile)
-        ) as ImportedFileDescriptorSingleResult;
+          importedFile = await WithServiceExceptionTryExecuteAsync(() =>
+            RequestExecutorContainerFactory
+              .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+                customerUid, userId, userEmailAddress, customHeaders,
+                Producer, KafkaTopicName,
+                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+                persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+              .ProcessAsync(createImportedFile)
+          ) as ImportedFileDescriptorSingleResult;
+
+          Logger.LogInformation(
+            $"UpsertImportedFileV2. Create completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+        }
+        else
+        {
+          var importedFileUpsertEvent = new UpdateImportedFile
+          (
+            Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
+            importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
+              ? importedFileTbc.SurfaceFile.SurveyedUtc
+              : (DateTime?)null,
+            importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
+              ? importedFileTbc.LineworkFile.DxfUnitsTypeId
+              : DxfUnitsType.Meters,
+            fileEntry.createTime, fileEntry.modifyTime,
+            fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
+            DataOceanRootFolderId, 0, dataOceanFileName
+          );
+
+          importedFile = await WithServiceExceptionTryExecuteAsync(() =>
+            RequestExecutorContainerFactory
+              .Build<UpdateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+                customerUid, userId, userEmailAddress, customHeaders,
+                Producer, KafkaTopicName,
+                productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
+                tRexImportFileProxy: tRexImportFileProxy,
+                projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
+              .ProcessAsync(importedFileUpsertEvent)
+          ) as ImportedFileDescriptorSingleResult;
+        }
+
+        // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
+        var response = importedFile?.ImportedFileDescriptor != null
+          ? ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId)
+          : ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
 
         Logger.LogInformation(
-          $"UpsertImportedFileV2. Create completed succesfully. Response: {JsonConvert.SerializeObject(importedFile)}");
+          $"UpsertImportedFileV2. Completed successfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
+
+        return response;
       }
-      else
+      finally
       {
-        var importedFileUpsertEvent = new UpdateImportedFile
-        (
-          Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
-          importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
-            ? importedFileTbc.SurfaceFile.SurveyedUtc
-            : (DateTime?)null,
-          importedFileTbc.ImportedFileTypeId == ImportedFileType.Linework
-            ? importedFileTbc.LineworkFile.DxfUnitsTypeId
-            : DxfUnitsType.Meters,
-          fileEntry.createTime, fileEntry.modifyTime,
-          fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolderId, 0, dataOceanFileName
-        );
+        memStream?.Dispose();
 
-        importedFile = await WithServiceExceptionTryExecuteAsync(() =>
-          RequestExecutorContainerFactory
-            .Build<UpdateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-              customerUid, userId, userEmailAddress, customHeaders,
-              Producer, KafkaTopicName,
-              productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-              tRexImportFileProxy: tRexImportFileProxy,
-              projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
-            .ProcessAsync(importedFileUpsertEvent)
-        ) as ImportedFileDescriptorSingleResult;
       }
-
-
-      // Automapper maps src.ImportedFileId to LegacyFileId, so this IS the one sent to Raptor and used to ref via TCC
-      var response = importedFile?.ImportedFileDescriptor != null
-        ? ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.OK, importedFile.ImportedFileDescriptor.LegacyFileId)
-        : ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.InternalServerError, -1);
-
-      Logger.LogInformation(
-        $"UpsertImportedFileV2. Completed successfully. Response: {response} importedFile: {JsonConvert.SerializeObject(importedFile)}");
-
-      return response;
     }
 
 
