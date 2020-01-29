@@ -4,6 +4,7 @@
   {
     public const string FILTER_SERVICE = "filter-service";
     public const string PRODUCTIVITY3D_SERVICE = "productivity3d-service";
+    public const string PRODUCTIVITY3D_VSS_SERVICE = "productivity3dVSS-service";
     public const string PROJECT_SERVICE = "project-service";
     public const string SCHEDULER_SERVICE = "scheduler-service";
     public const string ASSETMGMT3D_SERVICE = "assetmgmt3d-service";

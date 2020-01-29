@@ -116,10 +116,10 @@ namespace VSS.MasterData.Proxies
     }
 
     protected Task<T> SendMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
+      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int? timeout = null)
       where T : class, IMasterDataModel
     {
-      return RequestAndReturnData<T>(customHeaders, method, route, queryParameters, payload);
+      return RequestAndReturnData<T>(customHeaders, method, route, queryParameters, payload, timeout: timeout);
     }
 
     /// <summary>
@@ -202,14 +202,14 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) where TResult : class, IMasterDataModel
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null, int? timeout = null) where TResult : class, IMasterDataModel
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
       // If we are calling to our own services, keep the JWT assertion
       customHeaders.StripHeaders(IsInsideAuthBoundary);
 
-      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method);
+      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method, timeout: timeout);
       log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
 
       return result;

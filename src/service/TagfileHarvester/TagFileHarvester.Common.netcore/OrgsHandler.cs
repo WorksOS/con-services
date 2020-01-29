@@ -12,7 +12,7 @@ namespace TagFileHarvester
 {
   public static class OrgsHandler
   {
-    //Static settings initilized here
+    //Static settings initialized here
     public static int MaxThreadsToProcessTagFiles = 256;
     public static string tccSynchFilespaceShortName;
     public static string tccSynchMachineFolder;

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CCSS.TagFileSplitter.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using TagFileHarvester.Common.netcore.TaskQueues;
 using TagFileHarvester.Implementation;
 using TagFileHarvester.Interfaces;
 using TagFileHarvester.Models;
@@ -74,7 +76,7 @@ namespace TagFileHarvester.TaskQueues
         Result.Reset();
         failuredFiles.Clear();
 
-        //We need to get list of folder recursevly here
+        //We need to get list of folder recursively here
         try
         {
           var folders = fileRepository.ListFolders(org, out _).ToList();
@@ -104,7 +106,7 @@ namespace TagFileHarvester.TaskQueues
             org.shortName, ex.Message);
         }
 
-        var filelistlock = new object();
+        var fileListLock = new object();
 
         //If we are good with the repository proceed with files
         if (!repositoryError && filenames.Count > 0)
@@ -120,7 +122,7 @@ namespace TagFileHarvester.TaskQueues
                 var localresult = new WebApiTagFileProcessTask(Container,
                     filetasksCancel.Token)
                   .ProcessTagfile(f.fullName, org);
-                lock (filelistlock)
+                lock (fileListLock)
                 {
                   Result.AggregateOrgResult(localresult);
                   if (localresult == null)
@@ -133,7 +135,7 @@ namespace TagFileHarvester.TaskQueues
                     processedFiles.Add(f);
                   }
 
-                  // raise flag that we have at least one failured file
+                  // raise flag that we have at least one failed file
                   log.LogDebug(
                     "TagFile {0} processed with result {1}",
                     f.fullName, JsonConvert.SerializeObject(localresult));
@@ -219,7 +221,7 @@ namespace TagFileHarvester.TaskQueues
     public int ProcessedFiles;
     public int RefusedFiles;
 
-    public void AggregateOrgResult(BaseDataResult result)
+    public void AggregateOrgResult(TagFileSplitterAutoResponse result)
     {
       lock (_resultLocker)
       {

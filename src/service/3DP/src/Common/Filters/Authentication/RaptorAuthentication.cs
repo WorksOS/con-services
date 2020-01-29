@@ -54,13 +54,14 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
+      // because this path includes 'api/v2' means it hasn't come via TPaas, i.e. it has come direct from TFH
       var isTagFile = context.Request.Path.Value.ToLower().Contains("api/v2/tagfiles");
       var isPatch = context.Request.Path.Value.ToLower().Contains("/device/patches");
 
       var containsCustomerUid = context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid");
       if (isTagFile && context.Request.Method == "POST" && !containsCustomerUid)
       {
-        log.LogDebug($"{nameof(RequireCustomerUid)} Tagfiles request doesn't require customerUid. path: {context.Request.Path}");
+        log.LogDebug($"{nameof(RequireCustomerUid)} Auto tagfile (tagFileHarvester) request doesn't require customerUid. path: {context.Request.Path}");
         return false;
       }
       if (isPatch && context.Request.Method == "GET" && !containsCustomerUid)

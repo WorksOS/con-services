@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="VSS.MasterData.Models">
+      <HintPath>..\..\..\..\Common\MasterDataModels\src\bin\Debug\netstandard2.0\VSS.MasterData.Models.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+
+</Project>

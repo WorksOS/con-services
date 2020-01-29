@@ -24,12 +24,12 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     /// <summary>
     /// Execute a generic request against v2 productivity3D endpoint
     /// </summary>
-    public async Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null)
+    public async Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null, int? timeout = null)
       where T : class, IMasterDataModel
     {
       log.LogDebug($"{nameof(ExecuteGenericV2Request)} route: {route}");
 
-      var response = await SendMasterDataItemServiceDiscoveryNoCache<T>(route, customHeaders, method: method, payload: body);
+      var response = await SendMasterDataItemServiceDiscoveryNoCache<T>(route, customHeaders, method: method, payload: body, timeout: timeout);
       log.LogDebug($"{nameof(ExecuteGenericV2Request)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;
     }

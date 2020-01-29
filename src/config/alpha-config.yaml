@@ -54,7 +54,8 @@ data:
   DOWNLOAD_FOLDER: C:/temp/
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   ALK_BASE_URL: http://pcmiler.alk.com/APIs/REST/v1.0/Service.svc
-  AWS_TAGFILE_BUCKET_NAME: vss-stg-directtagfile-archives
+  AWS_NONDIRECT_TAGFILE_BUCKET_NAME: ccss-stg-gcs900tagfile-archives
+  AWS_DIRECT_TAGFILE_BUCKET_NAME: ccss-stg-directtagfile-archives
   ENVIRONMENT: ALPHA
   CORECLR_ENABLE_PROFILING: "0"
 #AWS configuration  

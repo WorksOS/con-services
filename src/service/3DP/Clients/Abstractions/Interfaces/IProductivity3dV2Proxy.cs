@@ -8,7 +8,7 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
 {
   public interface IProductivity3dV2Proxy
   {
-    Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null)
+    Task<T> ExecuteGenericV2Request<T>(string route, HttpMethod method, Stream body = null, IDictionary<string, string> customHeaders = null, int? timeout = null)
       where T : class, IMasterDataModel;
   }
 }

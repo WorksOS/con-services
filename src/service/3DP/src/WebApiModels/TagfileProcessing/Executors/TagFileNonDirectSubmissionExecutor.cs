@@ -14,8 +14,8 @@ using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
@@ -45,8 +45,18 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
     {
       var request = CastRequestObjectTo<CompactionTagFileRequestExtended>(item);
       var result = new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError);
+      var useTrexGateway = UseTRexGateway("ENABLE_TREX_GATEWAY_TAGFILE");
+      var useRaptorGateway = UseRaptorGateway("ENABLE_RAPTOR_GATEWAY_TAGFILE");
+      var s3AutoTagFileBucketName = configStore.GetValueString("AWS_NONDIRECT_TAGFILE_BUCKET_NAME", string.Empty);
+      if (string.IsNullOrEmpty(s3AutoTagFileBucketName))
+      {
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Unable to identify S3 auto tagfile bucket name."));
+      }
+
 #if RAPTOR
-      if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_TAGFILE") ?? false)
+      if (useTrexGateway)
       {
 #endif
         request.Validate();
@@ -55,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 #if RAPTOR
       }
 
-      if (configStore.GetValueBool("ENABLE_RAPTOR_GATEWAY_TAGFILE") ?? false)
+      if (useRaptorGateway)
       {
         // legacyProjectId must have been retrieved by here else GetLegacyProjectId() would have thrown exception
         var tagFileRequest = TagFileRequestLegacy.CreateTagFile(request.FileName, request.Data,
@@ -79,10 +89,29 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
               "Failed to process tagfile with error: Automatic tag file submissions cannot include boundary fence."));
         }
 
-        return CallRaptorEndpoint(tagFileRequest);
-
+        result = CallRaptorEndpoint(tagFileRequest);
       }
 #endif
+
+      // For non-direct endpoint, tag files are archived to s3, mainly for support.
+      var data = new MemoryStream(request.Data);
+      var tagFileSubmissionType = (request.ProjectId != null && request.ProjectId != VelociraptorConstants.NO_PROJECT_ID) 
+                                  || request.ProjectUid != null
+        ? TagFileSubmissionType.Manual : TagFileSubmissionType.Auto;
+      if (useRaptorGateway)
+        await TagFileHelper.ArchiveTagFile(configStore, transferProxy, log,
+          (TAGProcServerProcessResultCode)result.Code, data, request.FileName, request.OrgId, 
+          tagFileSubmissionType, s3AutoTagFileBucketName);
+      else if (useTrexGateway)
+        await TagFileHelper.ArchiveTagFile(configStore, transferProxy, log, 
+          (TRexTagFileResultCode)result.Code, data, request.FileName, request.OrgId, 
+          tagFileSubmissionType, s3AutoTagFileBucketName);
+      else
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+            "No tag file processing server configured."));
+      }
       return result;
     }
 

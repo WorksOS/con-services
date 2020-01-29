@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>CCSS.TagFileSplitter.WebAPI.Common</AssemblyName>
+    <PackageId>TagFileSplitterWebApiCommon</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>CCSS.TagFileSplitter.WebAPI.Common</RootNamespace>
+    <PackageTags>ccss.tagfilesplitter-service</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
+    <PackageReference Include="DotNetCore.CAP" Version="2.3.0" />
+    <PackageReference Include="DotNetCore.CAP.Kafka" Version="2.3.0" />
+    <PackageReference Include="DotNetCore.CAP.MySql" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Clients\Models\CCSS.TagFileSplitter.Models.csproj" />   
+  </ItemGroup>
+
+</Project>
