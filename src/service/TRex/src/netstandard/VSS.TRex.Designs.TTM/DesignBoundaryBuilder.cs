@@ -38,7 +38,7 @@ namespace VSS.TRex.Designs.TTM
       Fence fence = null;
 
       // Set the size of the hash table. Make this so an average collision list will
-      // contain 4 items (the default size of a TList)
+      // contain 4 items (the default size of a List)
       var hashTableSize = ttmData.Vertices.Count / DEFAULT_SIZE + 1;
 
       var boundingExtent = new BoundingWorldExtent3D();
@@ -51,7 +51,7 @@ namespace VSS.TRex.Designs.TTM
       double maxHashOrdinate;
 
 
-      if ((boundingExtent.MaxX - boundingExtent.MaxX) > (boundingExtent.MaxY - boundingExtent.MinY))
+      if (boundingExtent.MaxX - boundingExtent.MaxX > boundingExtent.MaxY - boundingExtent.MinY)
       {
         hashIndexBy = HashIndexDimension.hX;
         minHashOrdinate = boundingExtent.MaxX;
