@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Interfaces;
@@ -28,15 +28,15 @@ namespace VSS.Tile.Service.Common.Services
     private readonly ILoadDumpTileService loadDumpTileService;
     private readonly IAlignmentTileService alignmentTileService;
     private readonly IDxfTileService dxfTileService;
+    private readonly IProductionDataTileService productionDataTileService;
     private readonly IBoundingBoxHelper boundingBoxHelper;
     private readonly IBoundingBoxService boundingBoxService;
-    private readonly IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
     private readonly ILoadDumpProxy loadDumpProxy;
 
-    public MapTileGenerator(ILoggerFactory logger, IBoundingBoxService bboxService, IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile,
+    public MapTileGenerator(ILoggerFactory logger, IBoundingBoxService bboxService,
       IMapTileService mapTileService, IProjectTileService projectTileService, IGeofenceTileService geofenceTileService,
-      IAlignmentTileService alignmentTileService, IDxfTileService dxfTileService, IBoundingBoxHelper boundingBoxHelper,
-      ILoadDumpTileService loadDumpTileService, ILoadDumpProxy loadDumpProxy)
+      IAlignmentTileService alignmentTileService, IDxfTileService dxfTileService, IProductionDataTileService productionDataTileService, 
+      IBoundingBoxHelper boundingBoxHelper, ILoadDumpTileService loadDumpTileService, ILoadDumpProxy loadDumpProxy)
     {
       log = logger.CreateLogger<MapTileGenerator>();
       this.mapTileService = mapTileService;
@@ -44,9 +44,9 @@ namespace VSS.Tile.Service.Common.Services
       this.geofenceTileService = geofenceTileService;
       this.alignmentTileService = alignmentTileService;
       this.dxfTileService = dxfTileService;
+      this.productionDataTileService = productionDataTileService;
       this.boundingBoxHelper = boundingBoxHelper;
       boundingBoxService = bboxService;
-      this.productivity3DProxyCompactionTile = productivity3DProxyCompactionTile;
       this.loadDumpTileService = loadDumpTileService;
       this.loadDumpProxy = loadDumpProxy;
     }
@@ -59,7 +59,7 @@ namespace VSS.Tile.Service.Common.Services
       log.LogDebug($"GetMapParameters: bbox={bbox}, width={width}, height={height}, addMargin={addMargin}, adjustBoundingBox={adjustBoundingBox}");
 
       var bboxRadians = boundingBoxHelper.GetBoundingBox(bbox);
-      MapBoundingBox mapBox = new MapBoundingBox
+      var mapBox = new MapBoundingBox
       {
         minLat = bboxRadians.BottomLeftLat,
         minLng = bboxRadians.BottomLeftLon,
@@ -70,7 +70,7 @@ namespace VSS.Tile.Service.Common.Services
       int zoomLevel = TileServiceUtils.CalculateZoomLevel(mapBox.maxLat - mapBox.minLat, mapBox.maxLng - mapBox.minLng);
       long numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
 
-      MapParameters parameters = new MapParameters
+      var parameters = new MapParameters
       {
         bbox = mapBox,
         zoomLevel = zoomLevel,
@@ -117,7 +117,7 @@ namespace VSS.Tile.Service.Common.Services
 
     private async Task<(TileOverlayType,byte[])> RequestTile(TileGenerationRequest request, TileOverlayType overlay)
     {
-      byte[] bitmap=null;
+      byte[] bitmap = null;
       log.LogDebug($"Processing tile of type {overlay}");
       switch (overlay)
       {
@@ -126,11 +126,9 @@ namespace VSS.Tile.Service.Common.Services
             request.language.Substring(0, 2));
           break;
         case TileOverlayType.ProductionData:
-          var bbox =
-            $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
-          bitmap = await productivity3DProxyCompactionTile.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
-            request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
-            bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders, request.ExplicitFilters);
+          bitmap = await productionDataTileService.GetMapBitmap(Guid.Parse(request.project.ProjectUid), request.filterUid,
+              request.cutFillDesignUid, request.mapParameters, request.mode ?? DisplayMode.Height, request.baseUid, request.topUid, request.volCalcType, request.customHeaders, 
+              request.ExplicitFilters, request.project.IsArchived, request.GeneratingForThumbnail);
           break;
         case TileOverlayType.ProjectBoundary:
           bitmap = projectTileService.GetProjectBitmap(request.mapParameters, request.project);

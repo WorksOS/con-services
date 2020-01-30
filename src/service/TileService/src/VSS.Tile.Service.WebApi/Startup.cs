@@ -57,6 +57,7 @@ namespace VSS.Tile.Service.WebApi
       services.AddScoped<IGeofenceTileService, GeofenceTileService>();
       services.AddScoped<IAlignmentTileService, AlignmentTileService>();
       services.AddScoped<IDxfTileService, DxfTileService>();
+      services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IProductivity3dV2ProxyCompactionTile, Productivity3dV2ProxyCompactionTile>();

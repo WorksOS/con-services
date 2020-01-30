@@ -78,14 +78,16 @@ namespace VSS.Tile.Service.WebApi.Controllers
           mode = DisplayMode.Height;
       }
 
+      // GeneratingForThumbnail is retained as we want to only cache productivityData for these, not report tiles
       var tileResult = await GetGeneratedTile(projectUid, null, null, null, null,
         null, overlays.ToArray(), DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT, bbox, MapType.MAP,
-        mode, null, true);
+        mode, null, true, true, true);
 
       // TODO (Aaron) refactor this repeated code
+      // todo does this actually work? 1 issue could be multi tileSvc's?
       //Short-circuit cache time for Archived projects
       if (project.IsArchived)
-        Response.Headers["Cache-Control"] = "public,max-age=31536000";
+        Response.Headers[HeaderConstants.CACHE_CONTROL] = "public,max-age=31536000";
       Response.Headers.Add("X-Warning", "false");
 
       return tileResult;
@@ -93,6 +95,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
     /// <summary>
     /// Gets a project thumbnail image as a Base64 encoded string.
+    ///    Known to be used by VLAdmin with no additionalOverlays.
+    ///    No overlays are provided by it, so only default base and project boundary.
     /// </summary>
     [ProjectUidVerifier]
     [Route("api/v1/projectthumbnail/base64")]
@@ -122,6 +126,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
     /// <summary>
     /// Gets a 3D project thumbnail image as a Base64 encoded string.
+    ///    Known to be used by 3D dashboard.
+    ///    ProductivityData overlay is added to default base and project boundary.
     /// </summary>
     [ProjectUidVerifier]
     [Route("api/v1/projectthumbnail3d/base64")]
@@ -167,6 +173,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <summary>
     /// Gets a geofence thumbnail image as a raw png.
     /// </summary>
+    /// Jeannie: possibly obsolete. Elspeth says done for productivity2d but not used
     [Route("api/v1/geofencethumbnail/png")]
     [HttpGet]
     public async Task<FileResult> GetGeofenceThumbnailPng(
@@ -196,6 +203,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
     /// <summary>
     /// Gets a list of geofence thumbnail images as Base64 encoded strings.
+    /// Jeannie: possibly obsolete. Elspeth says done for productivity2d but not used
     /// </summary>
     [Route("api/v1/geofencethumbnails/base64")]
     [HttpGet]
@@ -238,6 +246,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
     /// <summary>
     /// Gets a list of geofence thumbnail images as a Base64 encoded string using the provided geometry
+    /// Jeannie: possibly obsolete. Elspeth says done for productivity2d but not used
     /// </summary>
     [Route("api/v1/geofencethumbnailsraw/base64")]
     [HttpPost]
