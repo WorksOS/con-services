@@ -33,6 +33,20 @@ namespace VSS.TRex.Tests.Compression
         }
 
         [Fact]
+        public void Test_BitFieldArray_InitialiseMoreThanOnce()
+        {
+          using (var bfa = new BitFieldArray())
+          {
+            // Initialise with just a count of bits and records
+            bfa.Initialise(10, 100);
+
+            // Perform a second initialise with a different size which should cause the rented storage to be returned and re-requested
+            // without causing failure
+            bfa.Initialise(20, 200);
+          }
+        }
+
+        [Fact]
         public void Test_BitFieldArray_Initialise2()
         {
           using (var bfa = new BitFieldArray())
