@@ -20,6 +20,7 @@ using LiftDetectionType = VSS.Productivity3D.Models.Enums.LiftDetectionType;
 using LiftThicknessType = VSS.Productivity3D.Models.Enums.LiftThicknessType;
 using Point = VSS.MasterData.Models.Models.Point;
 using TargetPassCountRange = VSS.Productivity3D.Productivity3D.Models.Compaction;
+using VSS.MasterData.Models;
 
 namespace VSS.TRex.Gateway.Tests.Controllers
 {
