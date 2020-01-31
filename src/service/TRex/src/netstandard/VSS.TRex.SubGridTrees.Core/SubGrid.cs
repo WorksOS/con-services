@@ -60,7 +60,10 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Dirty property used to indicate the presence of changes that are not persisted.
         /// </summary>
-        public bool Dirty { get => dirty; private set => dirty = value; }
+        public bool Dirty
+        {
+          get => dirty;
+        }
 
         /// <summary>
         /// Sets the dirty flag state for the sub grid to true. See AllChangesMigrated for clearing this flag.

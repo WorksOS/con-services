@@ -83,7 +83,10 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// The first (top) sub grid in the tree. All other sub grids in the tree descend via this root node.
         /// </summary>
-        public INodeSubGrid Root { get => _root; private set => _root = value; }
+        public INodeSubGrid Root
+        {
+          get => _root;
+        }
 
         /// <summary>
         /// Internal numeric identifier for the sub grid tree. All internal operations will refer to the sub grid
