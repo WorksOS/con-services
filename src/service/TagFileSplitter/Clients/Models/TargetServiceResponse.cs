@@ -7,14 +7,15 @@ namespace CCSS.TagFileSplitter.Models
 {
   public class TargetServiceResponse : ContractExecutionResult, IMasterDataModel
   {
-    public string ApiService;
+    // note that the VSS one IS significant to tagFileHarvester, and MUST be == ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE
+    public string ServiceName;
     public HttpStatusCode StatusCode;
 
-    public TargetServiceResponse(string apiService, int code, string message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public TargetServiceResponse(string serviceName, int code, string message = null, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       Code = code;
       Message = message;
-      ApiService = apiService;
+      ServiceName = serviceName;
       StatusCode = statusCode;
     }
 

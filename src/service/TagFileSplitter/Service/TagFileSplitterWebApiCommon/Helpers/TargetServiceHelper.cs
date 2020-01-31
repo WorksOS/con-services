@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 using CCSS.TagFileSplitter.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.ServiceDiscovery;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
@@ -26,40 +28,42 @@ namespace CCSS.TagFileSplitter.WebAPI.Common.Helpers
     /// </summary>
     /// <returns></returns>
     public static async Task<TargetServiceResponse> SendTagFileTo3dPmService(CompactionTagFileRequest compactionTagFileRequest,
-      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyVSS productivity3dV2ProxyVSS,
-      ApiService apiService, string route,
+      IServiceResolution serviceResolution, IGenericHttpProxy genericHttpProxy,
+      string serviceName, ApiVersion apiVersion, string route,
       ILogger log, IDictionary<string, string> customHeaders, int? timeout = null)
     {
-      var targetServiceResponse = new TargetServiceResponse(apiService.ToString(), (int)TAGProcServerProcessResultCode.Unknown);
+      log.LogDebug($"{nameof(SendTagFileTo3dPmService)}  serviceName: {serviceName} apiVersion: {apiVersion} route: {route}");
+      var targetServiceResponse = new TargetServiceResponse(serviceName, (int)TAGProcServerProcessResultCode.Unknown);
+
       try
       {
         using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(compactionTagFileRequest))))
         {
-          switch (apiService)
-          {
-            case ApiService.Productivity3D:
-              targetServiceResponse = await productivity3dV2ProxyNotification.ExecuteGenericV2Request<TargetServiceResponse>(route, HttpMethod.Post, ms, customHeaders, timeout);
-              break;
-            case ApiService.Productivity3DVSS:
-              targetServiceResponse = await productivity3dV2ProxyVSS.ExecuteGenericV2Request<TargetServiceResponse>(route, HttpMethod.Post, ms, customHeaders, timeout);
-              break;
-            default:
-              throw new ServiceException(HttpStatusCode.BadRequest,
-                new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                  $"Target service type not yet supported: {apiService}"));
-          }
+          var service = await serviceResolution.ResolveService(serviceName); // find in configStore/kubernetes etc
+          if (string.IsNullOrEmpty(service.Endpoint))
+            throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              $"{nameof(SendTagFileTo3dPmService)}: Unable to resolve target service url. serviceName: {serviceName}"));
+
+          var url = await serviceResolution.ResolveRemoteServiceEndpoint(service.Endpoint, ApiType.Public, apiVersion, route);
+          if (string.IsNullOrEmpty(url))
+            throw new ServiceException(HttpStatusCode.InternalServerError,
+              new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+                $"{nameof(SendTagFileTo3dPmService)}: Unable to resolve target service endpoint: {service.Endpoint}"));
+
+          targetServiceResponse = await genericHttpProxy.ExecuteGenericHttpRequest<TargetServiceResponse>(url, HttpMethod.Post, ms, customHeaders, timeout);
           
           // this is how the statusCode is set in 3dpm controller
           targetServiceResponse.StatusCode = targetServiceResponse.Code == 0
             ? HttpStatusCode.OK : HttpStatusCode.BadRequest;
-          targetServiceResponse.ApiService = apiService.ToString();
+          targetServiceResponse.ServiceName = serviceName; 
         }
       }
       catch (ServiceException se)
       {
         // these could come from the above request BEFORE or AFTER sent to 3dp e.g. ?
         log.LogError(se, $"{nameof(SendTagFileTo3dPmService)}: returned service exception");
-        targetServiceResponse = new TargetServiceResponse(apiService.ToString(), se.GetResult.Code, se.GetResult.Message, se.Code); 
+        targetServiceResponse = new TargetServiceResponse(serviceName, se.GetResult.Code, se.GetResult.Message, se.Code); 
       }
       catch (HttpRequestException re)
       {
@@ -73,16 +77,16 @@ namespace CCSS.TagFileSplitter.WebAPI.Common.Helpers
             statusCode = HttpStatusCode.BadRequest;
           var contractException = JsonConvert.DeserializeObject<ContractExecutionResult>('{' + parts[1] + '}');
           log.LogWarning($"{nameof(SendTagFileTo3dPmService)} Exception: statusCode: {statusCode} code: {contractException.Code} message: {contractException.Message}");
-          targetServiceResponse = new TargetServiceResponse(apiService.ToString(), contractException.Code, contractException.Message, statusCode);
+          targetServiceResponse = new TargetServiceResponse(serviceName, contractException.Code, contractException.Message, statusCode);
         }
         else
-          targetServiceResponse = new TargetServiceResponse(apiService.ToString(), (int)TAGProcServerProcessResultCode.Unknown, re.Message, HttpStatusCode.BadRequest);
+          targetServiceResponse = new TargetServiceResponse(serviceName, (int)TAGProcServerProcessResultCode.Unknown, re.Message, HttpStatusCode.BadRequest);
       }
       catch (Exception e)
       {
         // could this come from the above request BEFORE or AFTER sent to 3dp e.g. ArgumentException from BaseServiceProxy
         log.LogError(e, $"{nameof(SendTagFileTo3dPmService)}: returned exception");
-        targetServiceResponse = new TargetServiceResponse(apiService.ToString(), (int)TAGProcServerProcessResultCode.Unknown, e.Message, HttpStatusCode.BadRequest);
+        targetServiceResponse = new TargetServiceResponse(serviceName, (int)TAGProcServerProcessResultCode.Unknown, e.Message, HttpStatusCode.BadRequest);
       }
 
       return targetServiceResponse;

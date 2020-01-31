@@ -122,6 +122,14 @@ namespace VSS.MasterData.Proxies
       return RequestAndReturnData<T>(customHeaders, method, route, queryParameters, payload, timeout: timeout);
     }
 
+    // contains already resolved full Url
+    protected Task<T> SendMasterDataItemServiceDiscoveryGenericHttpNoCache<T>(string url, IDictionary<string, string> customHeaders,
+      HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int? timeout = null)
+      where T : class, IMasterDataModel
+    {
+      return GenericHttpRequestAndReturnData<T>(customHeaders, method, url, queryParameters, payload, timeout: timeout);
+    }
+
     /// <summary>
     /// Execute a Post/Put/Delete to an endpoint, do not cache the result
     /// NOTE: Must have a uid or userid for cache key
@@ -211,6 +219,20 @@ namespace VSS.MasterData.Proxies
 
       var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method, timeout: timeout);
       log.LogDebug($"{nameof(RequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
+
+      return result;
+    }
+
+    private async Task<TResult> GenericHttpRequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
+      HttpMethod method, string url, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null, int? timeout = null) where TResult : class, IMasterDataModel
+    {
+      // If we are calling to our own services, keep the JWT assertion
+      // however this Generic one needs to be outside.
+      // todoJeannie, is this going to cause any issues with our actual internal?
+      customHeaders.StripHeaders(IsInsideAuthBoundary);
+
+      var result = await webRequest.ExecuteRequest<TResult>(url, payload: payload, customHeaders: customHeaders, method: method, timeout: timeout);
+      log.LogDebug($"{nameof(GenericHttpRequestAndReturnData)} Result: {JsonConvert.SerializeObject(result).Truncate(logMaxChar)}");
 
       return result;
     }

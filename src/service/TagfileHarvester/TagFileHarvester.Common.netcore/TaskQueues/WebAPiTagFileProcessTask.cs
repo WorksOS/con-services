@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using TagFileHarvester.Interfaces;
 using TagFileHarvester.Models;
-using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 
 namespace TagFileHarvester.Common.netcore.TaskQueues
 {
@@ -80,7 +80,7 @@ namespace TagFileHarvester.Common.netcore.TaskQueues
 
           // did one of tfss's target 3dpm services failed or none were configured?
           failedTargetServiceResponse = result.TargetServiceResponses.FirstOrDefault(r => r.StatusCode != HttpStatusCode.OK && r.StatusCode != HttpStatusCode.BadRequest);
-          vssTargetServiceResponse = result.TargetServiceResponses.First(r => r.ApiService == ApiService.Productivity3DVSS.ToString());
+          vssTargetServiceResponse = result.TargetServiceResponses.First(r => r.ServiceName == ServiceNameConstants.PRODUCTIVITY3DVSS_SERVICE);
         }
 
         if (token.IsCancellationRequested)

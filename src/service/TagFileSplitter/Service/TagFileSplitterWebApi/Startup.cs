@@ -10,13 +10,11 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.WebApi.Common;
 
 namespace CCSS.TagFileSplitter.WebAPI
@@ -46,17 +44,10 @@ namespace CCSS.TagFileSplitter.WebAPI
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<ICustomerRepository, CustomerRepository>();
-
-      // replace
-      services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
-
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
-
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
-
-      services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>(); // i.e. CCSS in local cluster via SD
-      services.AddTransient<IProductivity3dV2ProxyVSS, Productivity3dV2ProxyVSS>(); // i.e. VSS in other cluster
+      services.AddTransient<IGenericHttpProxy, GenericHttpProxy>();
 
       services.AddOpenTracing(builder =>
       {

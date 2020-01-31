@@ -10,6 +10,7 @@ using CCSS.TagFileSplitter.WebAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.ServiceDiscovery.Constants;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -53,7 +54,7 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
        TAGFILE_TARGET_SERVICES
        TAGFILE_AUTO_TIMEOUT_SECONDS
        TAGFILE_TMC_APPLICATION_NAME -- different for each platform?
-       see also appsettings for apiService names. CCSS can use serviceDiscovery, VSS cannot
+       see also appsettings for apiService names. 
        */
       _targetServices.SetServices(ConfigStore.GetValueString("TAGFILE_TARGET_SERVICES", string.Empty));
       _targetServices.Validate();
@@ -85,7 +86,9 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
 
       var tasks = new List<Task<TargetServiceResponse>>();
       foreach (var targetService in _targetServices.Services)
-        tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, Productivity3dV2ProxyNotificationCCSS, Productivity3dV2ProxyVSS, targetService.ApiService, targetService.AutoRoute, Logger, customHeaders, _timeoutSeconds));
+        tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, ServiceResolution, GenericHttpProxy, 
+          targetService.ServiceName, targetService.TargetApiVersion, targetService.AutoRoute, 
+          Logger, CustomHeaders, _timeoutSeconds));
       await Task.WhenAll(tasks);
 
       var vssResults = tasks.Select(t => t.Result).ToArray();
@@ -110,33 +113,27 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
     public async Task<ObjectResult> SplitTagFileDirectSubmission([FromBody] CompactionTagFileRequest request)
     {
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
-      Logger.LogDebug($"{nameof(SplitTagFileDirectSubmission)}: request {serializedRequest}, userEmailAdress: {userEmailAddress}, tmcApplicationName: {_TMCApplicationName}");
-      
+      Logger.LogDebug($"{nameof(SplitTagFileDirectSubmission)}: request {serializedRequest}, userEmailAdress: {UserEmailAddress}, tmcApplicationName: {_TMCApplicationName}");
       request.Validate();
-      if (request.ProjectUid.HasValue)
-      {
-        Logger.LogWarning($"{nameof(SplitTagFileDirectSubmission)}: This endpoint doesn't recognize presence of a projectUid: {request.ProjectUid}");
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            $"This endpoint doesn't recognize presence of a projectUid: {request.ProjectUid}"));
-      }
-
+      
       // setup tasks for appropriate services in _targetServices.
       //     TMC request should go ONLY to Productivity3D service (not VSS)
       // wait for all targets (within a reasonable response time)
       // return response from all targets, including their applicationIds 
       // TFH to be changed to call this, and process all target responses to enable it to archive to appropriate directories in TCC
-      var isTMCDevice = string.Compare(userEmailAddress, _TMCApplicationName, StringComparison.OrdinalIgnoreCase) == 0;
+      var isTmcDevice = string.Compare(UserEmailAddress, _TMCApplicationName, StringComparison.OrdinalIgnoreCase) == 0;
       var tasks = new List<Task<TargetServiceResponse>>();
       foreach (var targetService in _targetServices.Services)
       {
-        if (!isTMCDevice || (isTMCDevice && targetService.ApiService == ApiService.Productivity3D))
-          tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, Productivity3dV2ProxyNotificationCCSS, Productivity3dV2ProxyVSS, targetService.ApiService, targetService.DirectRoute, Logger, customHeaders, _timeoutSeconds));
+        if (!isTmcDevice || (isTmcDevice && targetService.ServiceName == ServiceNameConstants.PRODUCTIVITY3D_SERVICE))
+          tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, ServiceResolution, GenericHttpProxy,
+            targetService.ServiceName, targetService.TargetApiVersion, targetService.DirectRoute,
+            Logger, CustomHeaders, _timeoutSeconds));
       }
       await Task.WhenAll(tasks);
 
       var vssResults = tasks.Select(t => t.Result).ToArray();
-      if (vssResults == null || (isTMCDevice && vssResults.Length > 1) || (!isTMCDevice && vssResults.Length != _targetServices.Services.Count))
+      if (vssResults == null || (isTmcDevice && vssResults.Length > 1) || (!isTmcDevice && vssResults.Length != _targetServices.Services.Count))
         throw new ServiceException(HttpStatusCode.InternalServerError,
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
             $"Incorrect number of result sets gathered. Expected: {_targetServices.Services.Count} got: {vssResults.Count()}"));

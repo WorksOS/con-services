@@ -98,8 +98,6 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
           return Constants.ServiceNameConstants.FILTER_SERVICE;
         case ApiService.Productivity3D:
           return Constants.ServiceNameConstants.PRODUCTIVITY3D_SERVICE;
-        case ApiService.Productivity3DVSS:
-          return Constants.ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE;
         case ApiService.Scheduler:
           return Constants.ServiceNameConstants.SCHEDULER_SERVICE;
         case ApiService.AssetMgmt3D:

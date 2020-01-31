@@ -8,12 +8,11 @@
     None,
     Project,
     Filter,
-    Productivity3D, // CCSS
+    Productivity3D,
     Scheduler,
     AssetMgmt3D,
     Push,
     Tile,
-    TagFileAuth,
-    Productivity3DVSS,
+    TagFileAuth
   }
 }
