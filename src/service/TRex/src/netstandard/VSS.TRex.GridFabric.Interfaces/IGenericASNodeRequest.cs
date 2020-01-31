@@ -10,9 +10,7 @@ namespace VSS.TRex.GridFabric.Interfaces
         /// the compute projection on the grid as defined by the GridName and Role parameters in this request
         /// </summary>
         /// <param name="arg"></param>
-        /// <returns></returns>       
-        TResponse Execute(TArgument arg);
-
+        /// <returns>A task representing the operation</returns>       
         Task<TResponse> ExecuteAsync(TArgument arg);
   }
 }

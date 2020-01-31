@@ -11,18 +11,6 @@ namespace VSS.TRex.Analytics.Foundation
       where TResult : AnalyticsResult, new()
   {
     /// <summary>
-    /// Execute the analytics operation with the supplied argument synchronously.
-    /// </summary>
-    /// <param name="arg"></param>
-    /// <returns></returns>
-    public TResult Execute(TArgument arg)
-    {
-      var request = new TRequest_ApplicationService();
-
-      return request.Execute(arg).ConstructResult();
-    }
-
-    /// <summary>
     /// Execute the analytics operation with the supplied argument asynchronously.
     /// </summary>
     /// <param name="arg"></param>
