@@ -24,7 +24,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// </summary>
     protected void CastRequestObjectTo<T>(object item, Action action) where T : class
     {
-      if (!(item is T request))
+      if (!(item is T))
         action();
     }
 
