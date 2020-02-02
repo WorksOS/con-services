@@ -30,7 +30,7 @@ namespace VSS.TRex.Rendering
     public ushort NPixelsX;
     public ushort NPixelsY;
 
-    public PVMDisplayerBase Displayer;
+    public ProductionPVMDisplayerBaseBase Displayer;
 
     // DisplayPalettes : TICDisplayPalettes;
     // Palette : TICDisplayPaletteBase;       
@@ -140,19 +140,19 @@ namespace VSS.TRex.Rendering
       {
         if (mode == DisplayMode.CCA || mode == DisplayMode.CCASummary)
         {
-          Displayer.Palette = Utilities.ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode);
+          Displayer.SetPalette(Utilities.ComputeCCAPalette(processor.SiteModel, filters.Filters[0].AttributeFilter, mode));
 
-          if (Displayer.Palette == null)
+          if (Displayer.GetPalette() == null)
           {
             processor.Response.ResultStatus = RequestErrorStatus.FailedToGetCCAMinimumPassesValue;
             return processor.Response.ResultStatus;
           }
         }
         else
-          Displayer.Palette = PVMPaletteFactory.GetPalette(processor.SiteModel, mode, processor.SpatialExtents);
+          Displayer.SetPalette(PVMPaletteFactory.GetPalette(processor.SiteModel, mode, processor.SpatialExtents));
       }
       else
-        Displayer.Palette = colourPalette;
+        Displayer.SetPalette(colourPalette);
 
       // Create the world coordinate display surface the displayer will render onto
       Displayer.MapView = new MapSurface
@@ -239,7 +239,7 @@ namespace VSS.TRex.Rendering
         {
           if (Displayer != null)
           {
-            Displayer.Palette = null;
+            Displayer.SetPalette(null);
             Displayer.Dispose();
             Displayer = null;
           }
