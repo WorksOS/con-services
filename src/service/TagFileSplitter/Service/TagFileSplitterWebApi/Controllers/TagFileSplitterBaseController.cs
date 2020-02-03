@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
 
 namespace CCSS.TagFileSplitter.WebAPI.Controllers

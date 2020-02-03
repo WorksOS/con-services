@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Constants;
-using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
@@ -86,7 +85,7 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
 
       var tasks = new List<Task<TargetServiceResponse>>();
       foreach (var targetService in _targetServices.Services)
-        tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, ServiceResolution, GenericHttpProxy, 
+        tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, ServiceResolution, GenericHttpProxy,
           targetService.ServiceName, targetService.TargetApiVersion, targetService.AutoRoute, 
           Logger, CustomHeaders, _timeoutSeconds));
       await Task.WhenAll(tasks);

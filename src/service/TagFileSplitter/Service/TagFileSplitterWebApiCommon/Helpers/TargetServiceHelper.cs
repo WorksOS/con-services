@@ -8,14 +8,13 @@ using System.Threading.Tasks;
 using CCSS.TagFileSplitter.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.ServiceDiscovery;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 
 namespace CCSS.TagFileSplitter.WebAPI.Common.Helpers
 {
@@ -39,17 +38,17 @@ namespace CCSS.TagFileSplitter.WebAPI.Common.Helpers
       {
         using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(compactionTagFileRequest))))
         {
-          var service = await serviceResolution.ResolveService(serviceName); // find in configStore/kubernetes etc
-          if (string.IsNullOrEmpty(service.Endpoint))
-            throw new ServiceException(HttpStatusCode.InternalServerError,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-              $"{nameof(SendTagFileTo3dPmService)}: Unable to resolve target service url. serviceName: {serviceName}"));
+          //var service = await serviceResolution.ResolveService(serviceName); // find in configStore/kubernetes etc
+          //if (string.IsNullOrEmpty(service.Endpoint))
+          //  throw new ServiceException(HttpStatusCode.InternalServerError,
+          //  new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+          //    $"{nameof(SendTagFileTo3dPmService)}: Unable to resolve target service url. serviceName: {serviceName}"));
 
-          var url = await serviceResolution.ResolveRemoteServiceEndpoint(service.Endpoint, ApiType.Public, apiVersion, route);
+          var url = await serviceResolution.ResolveRemoteServiceEndpoint(serviceName, ApiType.Public, apiVersion, route);
           if (string.IsNullOrEmpty(url))
             throw new ServiceException(HttpStatusCode.InternalServerError,
               new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                $"{nameof(SendTagFileTo3dPmService)}: Unable to resolve target service endpoint: {service.Endpoint}"));
+                $"{nameof(SendTagFileTo3dPmService)}: Unable to resolve target service endpoint: {serviceName}"));
 
           targetServiceResponse = await genericHttpProxy.ExecuteGenericHttpRequest<TargetServiceResponse>(url, HttpMethod.Post, ms, customHeaders, timeout);
           
@@ -80,13 +79,13 @@ namespace CCSS.TagFileSplitter.WebAPI.Common.Helpers
           targetServiceResponse = new TargetServiceResponse(serviceName, contractException.Code, contractException.Message, statusCode);
         }
         else
-          targetServiceResponse = new TargetServiceResponse(serviceName, (int)TAGProcServerProcessResultCode.Unknown, re.Message, HttpStatusCode.BadRequest);
+          targetServiceResponse = new TargetServiceResponse(serviceName, (int)TAGProcServerProcessResultCode.Unknown, re.Message, HttpStatusCode.InternalServerError);
       }
       catch (Exception e)
       {
         // could this come from the above request BEFORE or AFTER sent to 3dp e.g. ArgumentException from BaseServiceProxy
         log.LogError(e, $"{nameof(SendTagFileTo3dPmService)}: returned exception");
-        targetServiceResponse = new TargetServiceResponse(serviceName, (int)TAGProcServerProcessResultCode.Unknown, e.Message, HttpStatusCode.BadRequest);
+        targetServiceResponse = new TargetServiceResponse(serviceName, (int)TAGProcServerProcessResultCode.Unknown, e.Message, HttpStatusCode.InternalServerError);
       }
 
       return targetServiceResponse;

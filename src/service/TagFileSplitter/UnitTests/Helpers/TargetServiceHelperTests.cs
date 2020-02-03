@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using Serilog;
 using VSS.Serilog.Extensions;
 using Moq;
@@ -24,6 +23,7 @@ using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Abstractions.ServiceDiscovery.Models;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 
 namespace CCSS.TagFileSplitter.UnitTests.Helpers
@@ -272,17 +272,15 @@ namespace CCSS.TagFileSplitter.UnitTests.Helpers
       var targetCcssService = new TargetService(ccssServiceName, ApiVersion.V2.ToString(), "tagfiles", "tagFiles/direct");
       var customHeaders = new Dictionary<string, string>();
 
-      var serviceResult = new ServiceResult() { Endpoint = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivityccss/2.0", Type = ServiceResultType.Configuration };
-      var targetServiceUrl = string.Empty;
+      var targetServiceUrl = "https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivityccss/2.0/tagfiles";
       var mockServiceResolution = new Mock<IServiceResolution>();
-      mockServiceResolution.Setup(r => r.ResolveService(It.IsAny<string>())).ReturnsAsync(serviceResult);
       mockServiceResolution.Setup(r => r.ResolveRemoteServiceEndpoint(It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), It.IsAny<string>(), It.IsAny<IList<KeyValuePair<string, string>>>()))
         .ReturnsAsync(targetServiceUrl);
 
       var mockGenericHttpProxy = new Mock<IGenericHttpProxy>();
       var exception = new ServiceException(HttpStatusCode.InternalServerError,
         new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-          $"SendTagFileTo3dPmService: Unable to resolve target service endpoint: {serviceResult.Endpoint}"));
+          $"SendTagFileTo3dPmService: Unable to resolve target service endpoint: {ccssServiceName}"));
       mockGenericHttpProxy.Setup(p => p.ExecuteGenericHttpRequest<TargetServiceResponse>
         (It.IsAny<string>(), It.IsAny<HttpMethod>(), It.IsAny<Stream>(),
           It.IsAny<IDictionary<string, string>>(), It.IsAny<int?>()))

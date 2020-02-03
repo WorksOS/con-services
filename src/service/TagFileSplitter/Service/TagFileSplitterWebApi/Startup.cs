@@ -13,8 +13,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.WebApi.Common;
 
 namespace CCSS.TagFileSplitter.WebAPI
