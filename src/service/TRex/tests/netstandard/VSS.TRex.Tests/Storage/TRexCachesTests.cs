@@ -14,6 +14,8 @@ namespace VSS.TRex.Tests.Storage
     {
       TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.SubGridDirectory).Should().Be(TRexCaches.MutableSpatialCacheName());
       TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SubGridDirectory).Should().Be(TRexCaches.ImmutableSpatialCacheName());
+      TRexCaches.SpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.ProductionDataXML).Should().Be(TRexCaches.SiteModelsCacheName(StorageMutability.Immutable));
+      TRexCaches.SpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.ProductionDataXML).Should().Be(TRexCaches.SiteModelsCacheName(StorageMutability.Mutable));
     }
 
     [Fact]
@@ -21,6 +23,7 @@ namespace VSS.TRex.Tests.Storage
     {
       TRexCaches.NonSpatialCacheName(StorageMutability.Mutable, FileSystemStreamType.Events).Should().Be(TRexCaches.MutableNonSpatialCacheName());
       TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.Events).Should().Be(TRexCaches.ImmutableNonSpatialCacheName());
+      TRexCaches.NonSpatialCacheName(StorageMutability.Immutable, FileSystemStreamType.SiteModelMachineElevationChangeMap).Should().Be(TRexCaches.SiteModelChangeMapsCacheName());
     }
 
     [Fact]
@@ -43,6 +46,7 @@ namespace VSS.TRex.Tests.Storage
       TRexCaches.SiteModelsCacheName(StorageMutability.Immutable).Should().NotBeNullOrWhiteSpace();
       TRexCaches.SiteModelsCacheName(StorageMutability.Mutable).Should().NotBeNullOrWhiteSpace();
       TRexCaches.TAGFileBufferQueueCacheName().Should().NotBeNullOrWhiteSpace();
+      TRexCaches.SiteModelChangeBufferQueueCacheName().Should().NotBeNullOrWhiteSpace();
     }
   }
 }
