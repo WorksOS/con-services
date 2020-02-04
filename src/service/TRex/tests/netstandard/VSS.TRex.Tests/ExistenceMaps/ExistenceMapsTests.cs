@@ -92,7 +92,7 @@ namespace VSS.TRex.Tests.ExistenceMaps
       TestBitMasksAreTheSame(setBitMask, getBitMask);
     }
 
-    public void Test_GetCombinedExistenceMap_ViaKeys(SubGridTreeSubGridExistenceBitMask setBitMask1,
+    private void Test_GetCombinedExistenceMap_ViaKeys(SubGridTreeSubGridExistenceBitMask setBitMask1,
       SubGridTreeSubGridExistenceBitMask setBitMask2)
     {
       var ProjectUid = Guid.NewGuid();

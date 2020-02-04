@@ -37,9 +37,8 @@ namespace VSS.TRex.Gateway.Tests.Controllers
       ex.GetResult.Message.Should().Be($"ValidateReportData_GriddedNoSiteModel_Fail: SiteModel: {projectUid} not found ");
     }
 
-    [Theory]
-    [InlineData("17e6bd66-54d8-4651-8907-88b15d81b2d7")]
-    public void GatewayHelper_InvalidSiteModelID_Fail(Guid projectUid)
+    [Fact]
+    public void GatewayHelper_InvalidSiteModelID_Fail()
     {
       var mockSiteModels = new Mock<ISiteModels>();
       mockSiteModels.Setup(x => x.GetSiteModel(It.IsAny<Guid>(), It.IsAny<bool>())).Returns((ISiteModel)null);

@@ -24,12 +24,12 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
   public class DesignExecutorTests : IDisposable
   {
     [Theory]
-    [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.DesignSurface, "validFileName.ttm", "408A150C-B606-E311-9E53-0050568824D7", null)]
+    [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.DesignSurface, "validFileName.ttm", "408A150C-B606-E311-9E53-0050568824D7", "")]
     [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.SurveyedSurface, "validFileName.ttm", "408A150C-B606-E311-9E53-0050568824D7", "2018-10-12")]
-    [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.Alignment, "validFileName.svl", "408A150C-B606-E311-9E53-0050568824D7", null)]
+    [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.Alignment, "validFileName.svl", "408A150C-B606-E311-9E53-0050568824D7", "")]
     public void DesignRequestValidation_HappyPath(string projectUid, ImportedFileType fileType, string fileName, string designUid, DateTime surveyedUtc)
     {
-      DesignRequest designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), surveyedUtc);
+      var designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), surveyedUtc);
       designSurfaceRequest.Validate();
     }
 
@@ -43,7 +43,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     [InlineData("203A150C-B606-E311-9E53-0050568824D7", ImportedFileType.MassHaulPlan, "validFileName.ttm", "408A150C-B606-E311-9E53-0050568824D7", -1, "File type must be DesignSurface, SurveyedSurface or Alignment")]
     public void DesignRequestValidation_Errors(string projectUid, ImportedFileType fileType, string fileName, string designUid, int expectedCode, string expectedMessage)
     {
-      DesignRequest designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), null);
+      var designSurfaceRequest = new DesignRequest(Guid.Parse(projectUid), fileType, fileName, Guid.Parse(designUid), null);
 
       var ex = Assert.Throws<ServiceException>(() => designSurfaceRequest.Validate());
       Assert.Equal(expectedCode, ex.GetResult.Code);

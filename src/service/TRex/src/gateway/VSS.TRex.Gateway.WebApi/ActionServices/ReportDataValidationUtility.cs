@@ -15,12 +15,6 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
   /// </summary>
   public class ReportDataValidationUtility : IReportDataValidationUtility
   {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="requestObj"></param>
-    /// <returns></returns>
-    /// <exception cref="ServiceException"></exception>
     public bool ValidateData(string method, Guid? projectUid, object requestObj)
     {
       if (projectUid == null || projectUid == Guid.Empty)

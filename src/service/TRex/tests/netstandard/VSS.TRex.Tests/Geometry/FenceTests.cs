@@ -120,21 +120,11 @@ namespace VSS.TRex.Tests.Geometry
         [InlineData(new double[] { 0, 0, 0, 0, 0, 0 }, 0, 0 + 1E-20, false)]
         [InlineData(new double[] { 0, 0, 100, 0, 0, 0 }, 0, 0 + 1E-20, false)]
         [InlineData(new double[] { 0, 0, 100, 0, 0, 0 }, 100, 0 + 1E-20, false)]
-      
-        [InlineData(new double[] { 0, 0, 0, 0, 0, 0 }, 0, 0 - 1E-20, false)]
-        [InlineData(new double[] { 0, 0, 100, 0, 0, 0 }, 0, 0 - 1E-20, false)]
-        [InlineData(new double[] { 0, 0, 100, 0, 0, 0 }, 100, 0 - 1E-20, false)]
-      
+
         [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 0, 0, 0, 0}, 0, 0 + 1E-20, false)]
         [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 100, 0, 0, 0 }, 0, 0 + 1E-20, false)]
         [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 100, 0, 0, 0 }, 100, 0 + 1E-20, false)]
         [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 100, 0, 0, 0, 100, 0 }, 0, 0 + 1E-20, false)]
-      
-        [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 0, 0, 0, 0 }, 0, 0 - 1E-20, false)]
-        [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 100, 0, 0, 0 }, 0, 0 - 1E-20, false)]
-        [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 100, 0, 0, 0 }, 100, 0 - 1E-20, false)]
-        [InlineData(new double[] { 0, 0, 0, -1, 0, 0, 100, 0, 0, 0, 100, 0 }, 0, 0 - 1E-20, false)]
-
         public void Test_FenceTests_IncludesPoint_PathologicalCases(double [] coords, double probeX, double probeY, bool result)
         {
           var vertices = new List<FencePoint>();
