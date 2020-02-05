@@ -11,6 +11,29 @@ namespace TAGFiles.Tests
   public class AccumulatedAttributesTests
   {
     [Fact]
+    public void Test_AccumulatedAttribute_Creation()
+    {
+      var d = DateTime.UtcNow;
+      var attr = new AccumulatedAttribute<bool>(d, true);
+
+      attr.dateTime.Should().Be(d);
+      attr.value.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Test_AccumulatedAttribute_Set()
+    {
+      var d = DateTime.UtcNow;
+      var d2 = DateTime.UtcNow.AddMinutes(1);
+
+      var attr = new AccumulatedAttribute<bool>(d, true);
+
+      attr.Set(d2, false);
+      attr.dateTime.Should().Be(d2);
+      attr.value.Should().BeFalse();
+    }
+
+    [Fact]
     public void Test_AccumulatedAttributes_Creation()
     {
       using (var attrs = new AccumulatedAttributes<byte>(1))
