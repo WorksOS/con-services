@@ -130,7 +130,7 @@ namespace VSS.TRex.Tests.Pipelines
     }
 
     [Fact]
-    public void Test_RequestAnalyser_SingleSubGridInExistenceMap_IntersectingFilterRestriction_YieldsOneSubGrid()
+    public void Test_RequestAnalyser_SingleSubGridInExistenceMap_IntersectingFilterRestriction_Spatial_YieldsOneSubGrid()
     {
       var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
       prodDataExistenceMap.CalculateIndexOfCellContainingPosition(50, 50, out int cellX, out int cellY);
@@ -139,6 +139,25 @@ namespace VSS.TRex.Tests.Pipelines
       var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
       {
         FilterSet = new FilterSet(new CombinedFilter {SpatialFilter = {IsSpatial = true, Fence = new Fence(0, 0, 100, 100)}}),
+        ProdDataExistenceMap = prodDataExistenceMap,
+        OverallExistenceMap = prodDataExistenceMap
+      };
+
+      var analyser = new RequestAnalyser(PipeLine, new BoundingWorldExtent3D(0, 0, 1000, 1000));
+
+      Assert.Equal(1, analyser.CountOfSubGridsThatWillBeSubmitted());
+    }
+
+    [Fact]
+    public void Test_RequestAnalyser_SingleSubGridInExistenceMap_IntersectingFilterRestriction_Positional_YieldsOneSubGrid()
+    {
+      var prodDataExistenceMap = new SubGridTreeSubGridExistenceBitMask();
+      prodDataExistenceMap.CalculateIndexOfCellContainingPosition(50, 50, out int cellX, out int cellY);
+      prodDataExistenceMap[cellX, cellY] = true;
+
+      var PipeLine = new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(null)
+      {
+        FilterSet = new FilterSet(new CombinedFilter { SpatialFilter = { IsPositional = true, PositionX = 50, PositionY = 50, PositionRadius = 50 } }),
         ProdDataExistenceMap = prodDataExistenceMap,
         OverallExistenceMap = prodDataExistenceMap
       };
