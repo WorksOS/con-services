@@ -51,5 +51,12 @@ namespace TAGFiles.Tests
         }
       }
     }
+
+    [Fact]
+    public void IntegerSizes_ForceInvalid()
+    {
+       Action act = () => IntegerNybbleSizes.GetNybbles((TAGDataType)100);
+       act.Should().Throw<ArgumentOutOfRangeException>().WithMessage("*Unknown integer TAG field type*");
+    }
   }
 }
