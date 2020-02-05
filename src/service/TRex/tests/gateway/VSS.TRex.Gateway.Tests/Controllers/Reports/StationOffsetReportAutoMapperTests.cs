@@ -144,7 +144,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       "There are no selected fields to be reported on")]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
       true, false, false, false, true, false,
-      null, null, "",
+      null, null, null,
       1.0, 100, 200, new double[3] {-1, 0, 1},
       "Alignment file must be specified for station and offset report.")]
     [InlineData("87e6bd66-54d8-4651-8907-88b15d81b2d7", null,
