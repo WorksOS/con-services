@@ -312,5 +312,28 @@ namespace TAGFiles.Tests
       }
     }
 
+
+    [Fact()]
+    public void Test_AccumulatedAttributes_FailWithNonUtcDate_Local()
+    {
+      using (var attrs = new AccumulatedAttributes<int>(1))
+      {
+
+        Action act = () => attrs.Add(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Local), 1);
+        act.Should().Throw<ArgumentException>().WithMessage("Attribute time must be a UTC cell pass time*");
+      }
+    }
+
+    [Fact()]
+    public void Test_AccumulatedAttributes_FailWithNonUtcDate_Unspecified()
+    {
+      using (var attrs = new AccumulatedAttributes<int>(1))
+      {
+
+        Action act = () => attrs.Add(DateTime.SpecifyKind(new DateTime(2000, 1, 1, 1, 1, 1), DateTimeKind.Unspecified), 1);
+        act.Should().Throw<ArgumentException>().WithMessage("Attribute time must be a UTC cell pass time*");
+      }
+    }
+
   }
 }
