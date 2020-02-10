@@ -10,29 +10,13 @@ namespace VSS.TRex.Rendering.Displayers
   /// <summary>
   /// Plan View Map displayer renderer for CCA information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_CCA : PVMDisplayerBase
+  public class PVMDisplayer_CCA : PVMDisplayerBase<CCAPalette, ClientCCALeafSubGrid>
   {
-    protected override void SetSubGrid(ISubGrid value)
-    {
-      base.SetSubGrid(value);
-
-      if (SubGrid != null)
-        CastRequestObjectTo<ClientCCALeafSubGrid>(SubGrid, ThrowTRexClientLeafSubGridTypeCastException<ClientCCALeafSubGrid>);
-    }
-
-    protected override void SetPalette(IPlanViewPalette value)
-    {
-      base.SetPalette(value);
-
-      if (Palette != null)
-        CastRequestObjectTo<CCAPalette>(Palette, ThrowTRexColorPaletteTypeCastException<CCAPalette>);
-    }
-
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
     /// </summary>
     /// <returns></returns>
-    protected override Color DoGetDisplayColour()
+   public override Color DoGetDisplayColour()
     {
       const byte HALF_PASS_FACTOR = 2;
 

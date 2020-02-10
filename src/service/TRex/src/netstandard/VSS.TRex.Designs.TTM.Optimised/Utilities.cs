@@ -13,7 +13,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     public static double ReadFloat(BinaryReader reader, short ValueSize) => ValueSize == sizeof(float) ? reader.ReadSingle() : reader.ReadDouble();
 
     /// <summary>
-    /// Reads a single integer float number from the stream taking into account the the size (single or double) of the number in the stream
+    /// Reads a single integer number from the stream taking into account the the size (16 or 32 bits) of the number in the stream.
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="ValueSize"></param>
