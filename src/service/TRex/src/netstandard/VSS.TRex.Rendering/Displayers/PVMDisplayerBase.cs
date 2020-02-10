@@ -4,9 +4,9 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-  public abstract class PVMDisplayerBase<TP, TS, TV> : ProductionPVMConsistentDisplayer<TP, TS, TV>
+  public abstract class PVMDisplayerBase<TP, TS, TC> : ProductionPVMConsistentDisplayer<TP, TS, TC>
     where TP : class, IPlanViewPalette
-    where TS : GenericClientLeafSubGrid<TV>, IClientLeafSubGrid //class, IClientLeafSubGrid
+    where TS : GenericClientLeafSubGrid<TC>, IClientLeafSubGrid //class, IClientLeafSubGrid
   {
   }
 }

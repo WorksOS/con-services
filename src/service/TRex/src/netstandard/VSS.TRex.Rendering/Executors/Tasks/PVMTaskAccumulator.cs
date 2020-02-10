@@ -5,9 +5,9 @@ using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Executors.Tasks
 {
-  public class PVMTaskAccumulator<T, TS> : IPVMTaskAccumulator where TS : GenericClientLeafSubGrid<T>
+  public class PVMTaskAccumulator<TC, TS> : IPVMTaskAccumulator where TS : GenericClientLeafSubGrid<TC>
   {
-    public T[,] ValueStore;
+    public TC[,] ValueStore;
 
     /// <summary>
     /// The cell size of the cells contained in the accumulated sub grids
@@ -33,9 +33,9 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     private double _stepXIncrement, _stepYIncrement;
     private double _stepXIncrementOverTwo, _stepYIncrementOverTwo;
 
-    private void InitialiseValueStore(T nullCellValue)
+    private void InitialiseValueStore(TC nullCellValue)
     {
-      ValueStore = new T[_cellsWidth, _cellsHeight];
+      ValueStore = new TC[_cellsWidth, _cellsHeight];
 
       // Initialise value store to the supplied null values to ensure colour choosing from the palette is
       // correct for values that are not populated from inbound subgrids

@@ -46,11 +46,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     private ILiftParameters LiftParams;
 
     /// <summary>
-    /// The pipeline processor used to coordinate construction, coordinate and orchestration of the pipelined request
-    /// </summary>
-   // private IPipelineProcessor processor;
-
-    /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
     public TINSurfaceExportExecutor(

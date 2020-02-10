@@ -6,9 +6,9 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-  public abstract class ProductionPVMConsistentDisplayer<TP, TS, T> : ProductionPVMDisplayerBaseBase, IProductionPVMConsistentDisplayer
+  public abstract class ProductionPVMConsistentDisplayer<TP, TS, TC> : ProductionPVMDisplayerBaseBase, IProductionPVMConsistentDisplayer
     where TP : class, IPlanViewPalette
-    where TS : GenericClientLeafSubGrid<T>, IClientLeafSubGrid
+    where TS : GenericClientLeafSubGrid<TC>, IClientLeafSubGrid
   {
     public TP Palette;
 
@@ -24,7 +24,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <summary>
     /// Copy of value store provided to render from 
     /// </summary>
-    public T[,] ValueStore;
+    public TC[,] ValueStore;
 
     /// <summary>
     /// A palette get accessor for use when only the IPlanViewPalette is knowable in the accessing context
@@ -51,11 +51,11 @@ namespace VSS.TRex.Rendering.Displayers
       double worldX, double worldY,
       double originX, double originY)
     {
-      _taskAccumulator = new PVMTaskAccumulator<T, TS>(cellsWidth, cellsHeight, worldX, worldY, originX, originY);
+      _taskAccumulator = new PVMTaskAccumulator<TC, TS>(cellsWidth, cellsHeight, worldX, worldY, originX, originY);
       return _taskAccumulator;
     }
 
-    private PVMTaskAccumulator<T, TS> _taskAccumulator;
+    private PVMTaskAccumulator<TC, TS> _taskAccumulator;
 
     /// <summary>
     /// Pre-calculates a set of parameters for the rendering context 

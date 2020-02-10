@@ -8,6 +8,6 @@ namespace VSS.TRex.Rendering.Displayers
       double worldX, double worldY,
       double originX, double originY);
 
-    bool PerformConsistentRender(); //double worldOriginX, double worldOriginY, double valueCellSizeX, double valueCellSizeY);
+    bool PerformConsistentRender();
   }
 }
