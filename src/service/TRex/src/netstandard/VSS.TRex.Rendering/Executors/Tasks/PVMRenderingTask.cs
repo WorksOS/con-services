@@ -10,7 +10,6 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 // - Apply any required smoothing, gap filling etc, activities to the resulting grid of values once all subgrids have arrived
 // - render the arrya of values into the tile as if it were a single large subgrid
 
-
 namespace VSS.TRex.Rendering.Executors.Tasks
 {
   /// <summary>

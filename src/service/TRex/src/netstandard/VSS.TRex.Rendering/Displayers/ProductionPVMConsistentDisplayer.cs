@@ -108,51 +108,6 @@ namespace VSS.TRex.Rendering.Displayers
       // Skip-Iterate through the cells drawing them in strips
       DoSkipIterate(_taskAccumulator.OriginX, _taskAccumulator.OriginY, ValueStore.GetLength(0), ValueStore.GetLength(1));
 
-/*
-      var temp = worldOriginY / stepYIncrement;
- 
-      currentNorth = (Math.Truncate(temp) * stepYIncrement) - stepYIncrementOverTwo;
-      north_row = (int)Math.Floor((currentNorth - worldOriginY) / valueCellSizeY);
-
-      while (north_row < 0)
-      {
-        north_row += stepY;
-        currentNorth += stepYIncrement;
-      }
-
-      while (north_row < yDimension)
-      {
-        temp = worldOriginX / stepXIncrement;
-        currentEast = (Math.Truncate(temp) * stepXIncrement) + stepXIncrementOverTwo;
-        east_col = (int)Math.Floor((currentEast - worldOriginX) / valueCellSizeX);
-
-        while (east_col < 0)
-        {
-          east_col += stepX;
-          currentEast += stepXIncrement;
-        }
-
-        if (drawCellStrips)
-          DoStartRowScan();
-
-        while (east_col < xDimension)
-        {
-          if (drawCellStrips)
-            DoAccumulateStrip();
-          else
-            DoRenderCell();
-
-          currentEast += stepXIncrement;
-          east_col += stepX;
-        }
-
-        if (drawCellStrips)
-          DoEndRowScan();
-
-        currentNorth += stepYIncrement;
-        north_row += stepY;
-      }
-      */
       return true;
     }
   }
