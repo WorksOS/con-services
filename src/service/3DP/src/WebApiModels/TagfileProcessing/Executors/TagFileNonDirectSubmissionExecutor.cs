@@ -16,6 +16,7 @@ using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Helpers;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling;
 
@@ -61,7 +62,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 #endif
         request.Validate();
         result = await CallTRexEndpoint(request);
-        
+
 #if RAPTOR
       }
 
@@ -95,23 +96,33 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors
 
       // For non-direct endpoint, tag files are archived to s3, mainly for support.
       var data = new MemoryStream(request.Data);
-      var tagFileSubmissionType = (request.ProjectId != null && request.ProjectId != VelociraptorConstants.NO_PROJECT_ID) 
+      var tagFileSubmissionType = (request.ProjectId != null && request.ProjectId != VelociraptorConstants.NO_PROJECT_ID)
                                   || request.ProjectUid != null
-        ? TagFileSubmissionType.Manual : TagFileSubmissionType.Auto;
+        ? TagFileSubmissionType.Manual
+        : TagFileSubmissionType.Auto;
+
       if (useRaptorGateway)
+      {
         await TagFileHelper.ArchiveTagFile(configStore, transferProxy, log,
-          (TAGProcServerProcessResultCode)result.Code, data, request.FileName, request.OrgId, 
+          (TAGProcServerProcessResultCode) result.Code, data, request.FileName, request.OrgId,
           tagFileSubmissionType, s3AutoTagFileBucketName);
-      else if (useTrexGateway)
-        await TagFileHelper.ArchiveTagFile(configStore, transferProxy, log, 
-          (TRexTagFileResultCode)result.Code, data, request.FileName, request.OrgId, 
-          tagFileSubmissionType, s3AutoTagFileBucketName);
+      }
       else
       {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            "No tag file processing server configured."));
+        if (useTrexGateway)
+        {
+          await TagFileHelper.ArchiveTagFile(configStore, transferProxy, log,
+            (TRexTagFileResultCode) result.Code, data, request.FileName, request.OrgId,
+            tagFileSubmissionType, s3AutoTagFileBucketName);
+        }
+        else
+        {
+          throw new ServiceException(HttpStatusCode.InternalServerError,
+            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
+              "No tag file processing server configured."));
+        }
       }
+
       return result;
     }
 

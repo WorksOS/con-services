@@ -11,11 +11,4 @@
     <ProjectReference Include="..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="VSS.MasterData.Models">
-      <HintPath>..\..\..\..\Common\MasterDataModels\src\bin\Debug\netstandard2.0\VSS.MasterData.Models.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-
 </Project>

@@ -80,7 +80,7 @@ namespace TagFileHarvester.Common.netcore.TaskQueues
 
           // did one of tfss's target 3dpm services failed or none were configured?
           failedTargetServiceResponse = result.TargetServiceResponses.FirstOrDefault(r => r.StatusCode != HttpStatusCode.OK && r.StatusCode != HttpStatusCode.BadRequest);
-          vssTargetServiceResponse = result.TargetServiceResponses.First(r => r.ServiceName == ServiceNameConstants.PRODUCTIVITY3DVSS_SERVICE);
+          vssTargetServiceResponse = result.TargetServiceResponses.First(r => r.ServiceName == ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE);
         }
 
         if (token.IsCancellationRequested)

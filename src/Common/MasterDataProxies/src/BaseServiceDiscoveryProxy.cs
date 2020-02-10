@@ -123,7 +123,7 @@ namespace VSS.MasterData.Proxies
     }
 
     // contains already resolved full Url
-    protected Task<T> SendMasterDataItemServiceDiscoveryGenericHttpNoCache<T>(string url, IDictionary<string, string> customHeaders,
+    protected Task<T> SendMasterDataItemGenericHttpNoCache<T>(string url, IDictionary<string, string> customHeaders,
       HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int? timeout = null)
       where T : class, IMasterDataModel
     {

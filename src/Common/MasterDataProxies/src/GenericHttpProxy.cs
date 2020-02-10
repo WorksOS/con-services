@@ -43,7 +43,7 @@ namespace VSS.MasterData.Proxies
     {
       log.LogDebug($"{nameof(ExecuteGenericHttpRequest)} url: {url}");
 
-      var response = await SendMasterDataItemServiceDiscoveryGenericHttpNoCache<T>(url, customHeaders, method: method, payload: body, timeout: timeout);
+      var response = await SendMasterDataItemGenericHttpNoCache<T>(url, customHeaders, method: method, payload: body, timeout: timeout);
       log.LogDebug($"{nameof(ExecuteGenericHttpRequest)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
       return response;
     }

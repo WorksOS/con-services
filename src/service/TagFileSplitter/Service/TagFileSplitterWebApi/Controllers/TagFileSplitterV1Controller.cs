@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CCSS.TagFileSplitter.Models;
-using CCSS.TagFileSplitter.WebAPI.Common.Helpers;
+using CCSS.TagFileSplitter.WebAPI.Common.Executors;
 using CCSS.TagFileSplitter.WebAPI.Common.Models;
 using CCSS.TagFileSplitter.WebAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
@@ -41,7 +40,6 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
   {
     private readonly TargetServices _targetServices = new TargetServices();
     private readonly int? _timeoutSeconds = null;
-    private readonly string _TMCApplicationName;
 
     /// <summary>
     /// Default constructor.
@@ -49,20 +47,12 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
     public TagFileSplitterV1Controller(IConfigurationStore configStore)
       : base(configStore)
     {
-      /* todojeannie for jenkins config:
-       TAGFILE_TARGET_SERVICES
-       TAGFILE_AUTO_TIMEOUT_SECONDS
-       TAGFILE_TMC_APPLICATION_NAME -- different for each platform?
-       see also appsettings for apiService names. 
-       */
       _targetServices.SetServices(ConfigStore.GetValueString("TAGFILE_TARGET_SERVICES", string.Empty));
       _targetServices.Validate();
 
       var configuredTimeoutSeconds = ConfigStore.GetValueInt("TAGFILE_AUTO_TIMEOUT_SECONDS");
       if (configuredTimeoutSeconds != Int32.MinValue)
         _timeoutSeconds = configuredTimeoutSeconds;
-
-      _TMCApplicationName = ConfigStore.GetValueString("TAGFILE_TMC_APPLICATION_NAME", string.Empty);
     }
 
 
@@ -70,36 +60,25 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
     /// For accepting and loading tag files from tagFileHarvester
     ///     These need to be applied to both VSS and CCSS services and response from both returned to TFH.
     /// </summary>
-    [Route("api/v2/tagfiles/auto")] 
+    [Route("api/v2/tagfiles/auto")]
     [HttpPost]
     public async Task<IActionResult> SplitAutoSubmission([FromBody] CompactionTagFileRequest request)
     {
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       Logger.LogDebug($"{nameof(SplitAutoSubmission)}: request {serializedRequest}");
       request.Validate();
-      
-      // setup tasks for each service in _targetServices
-      // wait for all targets (within a reasonable response time)
-      // return response from all targets, including their applicationIds 
-      // TFH will call this endpoint, and process all target responses, archiving to appropriate directories in TCC
+      if (!_targetServices.Services.Exists(r => r.ServiceName == ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE))
+        throw new ServiceException(HttpStatusCode.BadRequest,
+          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
+            "Auto submission requires a VSS target service as this determines archiving"));
 
-      var tasks = new List<Task<TargetServiceResponse>>();
-      foreach (var targetService in _targetServices.Services)
-        tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, ServiceResolution, GenericHttpProxy,
-          targetService.ServiceName, targetService.TargetApiVersion, targetService.AutoRoute, 
-          Logger, CustomHeaders, _timeoutSeconds));
-      await Task.WhenAll(tasks);
+      var response = await RequestExecutorContainerFactory
+        .Build<AutoSubmissionExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+          ServiceResolution, GenericHttpProxy, CustomHeaders, _targetServices, _timeoutSeconds)
+        .ProcessAsync(request) as TagFileSplitterAutoResponse;
 
-      var vssResults = tasks.Select(t => t.Result).ToArray();
-      if (vssResults == null || vssResults.Count() != _targetServices.Services.Count)
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Incorrect number of result sets gathered. Expected: {_targetServices.Services.Count} got: {vssResults.Count()}"));
-
-      var result = new TagFileSplitterAutoResponse(vssResults.ToList());
-      Logger.LogDebug($":{nameof(SplitAutoSubmission)} response: {result}");
-
-      return Ok(result);
+      Logger.LogDebug($":{nameof(SplitAutoSubmission)} response: {response}");
+      return Ok(response);
     }
 
 
@@ -112,42 +91,18 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
     public async Task<ObjectResult> SplitTagFileDirectSubmission([FromBody] CompactionTagFileRequest request)
     {
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
-      Logger.LogDebug($"{nameof(SplitTagFileDirectSubmission)}: request {serializedRequest}, userEmailAdress: {UserEmailAddress}, tmcApplicationName: {_TMCApplicationName}");
+      Logger.LogDebug($"{nameof(SplitTagFileDirectSubmission)}: request {serializedRequest}, userEmailAdress: {UserEmailAddress}");
       request.Validate();
-      
-      // setup tasks for appropriate services in _targetServices.
-      //     TMC request should go ONLY to Productivity3D service (not VSS)
-      // wait for all targets (within a reasonable response time)
-      // return response from all targets, including their applicationIds 
-      // TFH to be changed to call this, and process all target responses to enable it to archive to appropriate directories in TCC
-      var isTmcDevice = string.Compare(UserEmailAddress, _TMCApplicationName, StringComparison.OrdinalIgnoreCase) == 0;
-      var tasks = new List<Task<TargetServiceResponse>>();
-      foreach (var targetService in _targetServices.Services)
-      {
-        if (!isTmcDevice || (isTmcDevice && targetService.ServiceName == ServiceNameConstants.PRODUCTIVITY3D_SERVICE))
-          tasks.Add(TargetServiceHelper.SendTagFileTo3dPmService(request, ServiceResolution, GenericHttpProxy,
-            targetService.ServiceName, targetService.TargetApiVersion, targetService.DirectRoute,
-            Logger, CustomHeaders, _timeoutSeconds));
-      }
-      await Task.WhenAll(tasks);
 
-      var vssResults = tasks.Select(t => t.Result).ToArray();
-      if (vssResults == null || (isTmcDevice && vssResults.Length > 1) || (!isTmcDevice && vssResults.Length != _targetServices.Services.Count))
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-            $"Incorrect number of result sets gathered. Expected: {_targetServices.Services.Count} got: {vssResults.Count()}"));
+      var response = await RequestExecutorContainerFactory
+        .Build<DirectSubmissionExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+          ServiceResolution, GenericHttpProxy, CustomHeaders, _targetServices, _timeoutSeconds, UserEmailAddress)
+        .ProcessAsync(request) as TagFileSplitterAutoResponse;
+      Logger.LogDebug($":{nameof(SplitTagFileDirectSubmission)} response: {response}");
 
-      // return the first !success response if available
-      var result = new ContractExecutionResult();
-      var failedResult = vssResults.First(r => r.StatusCode != HttpStatusCode.OK);
-      result = failedResult != null 
-        ? new ContractExecutionResult(failedResult.Code, failedResult.Message) 
-        : new ContractExecutionResult(vssResults[0].Code, vssResults[0].Message);
-      Logger.LogDebug($":{nameof(SplitTagFileDirectSubmission)} response: {result} fullResults: {vssResults}");
-
-      return failedResult == null
-        ? StatusCode((int) HttpStatusCode.OK, result)
-        : StatusCode((int) HttpStatusCode.BadRequest, result);
+      return response.Code == 0
+        ? StatusCode((int) HttpStatusCode.OK, response)
+        : StatusCode((int) HttpStatusCode.BadRequest, response);
     }
   }
 }

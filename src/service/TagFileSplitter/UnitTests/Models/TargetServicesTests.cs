@@ -79,7 +79,12 @@ namespace CCSS.TagFileSplitter.UnitTests.Models
     }
 
     [Theory]
-    [InlineData("", 0, "No target services are configured")]
+    [InlineData("", 0, "Unable to identify Target services")]
+    [InlineData("productivity3d-service", 0, "Unable to identify Target services")]
+    [InlineData(",,,", 0, "Unable to identify Target services")]
+    [InlineData(",,,;,", 0, "Unable to identify Target services")]
+    [InlineData(";;", 0, "Unable to identify Target services")]
+    [InlineData("productivity3d-service,,", 0, "Unable to identify Target services")]
     [InlineData(",v2,tagfiles2,tagfiles2/direct", 1, "Service name missing")]
     [InlineData("productivity3d-service,,tagfiles,;AssetMgmt3D,v1,tagfiles2,tagfiles2/direct", 2, "Api version missing")]
     [InlineData("productivity3d-service,5,tagfiles,;AssetMgmt3D,v1,tagfiles2,tagfiles2/direct", 2, "Api version invalid")]
@@ -99,5 +104,6 @@ namespace CCSS.TagFileSplitter.UnitTests.Models
       ex.GetResult.Code.Should().Be(ContractExecutionStatesEnum.ValidationError);
       ex.GetResult.Message.Should().Be(errorMessage);
     }
+
   }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
@@ -18,6 +19,8 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
   public abstract class TagFileSplitterBaseController<T> : Controller where T : TagFileSplitterBaseController<T>
   {
     private ILogger<T> _logger;
+    private ILoggerFactory _loggerFactory;
+    private IServiceExceptionHandler _serviceExceptionHandler;
     private IServiceResolution _serviceResolution;
     private IGenericHttpProxy _genericHttpProxy;
     private ITPaaSApplicationAuthentication _authorization;
@@ -26,8 +29,13 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
     /// <summary> Gets the application logging interface. </summary>
     protected ILogger<T> Logger => _logger ?? (_logger = HttpContext.RequestServices.GetService<ILogger<T>>());
 
+    /// <summary> Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders. </summary>
+    protected ILoggerFactory LoggerFactory => _loggerFactory ?? (_loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
     /// <summary> Gets the config store. </summary>
     protected readonly IConfigurationStore ConfigStore;
+
+    /// <summary> Gets the service exception handler. </summary>
+    protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ?? (_serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
 
     /// <summary> Gets or sets the Productivity3d generic v2 proxy. </summary>
     protected IServiceResolution ServiceResolution => _serviceResolution ?? (_serviceResolution = HttpContext.RequestServices.GetService<IServiceResolution>());
