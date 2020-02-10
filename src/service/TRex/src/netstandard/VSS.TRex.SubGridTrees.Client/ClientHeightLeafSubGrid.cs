@@ -254,5 +254,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.DumpToLog(title);
     }
+
+    public override float[,] ToFloatArray() => Cells;
   }
 }

@@ -292,5 +292,11 @@ namespace VSS.TRex.SubGridTrees.Client
     public virtual void DumpToLog()
     {
     }
+
+    /// <summary>
+    /// Provides the contexrt of a subgrid cast into a matching 2D array of float values
+    /// </summary>
+    /// <returns></returns>
+    public virtual float[,] ToFloatArray() => null;
   }
 }
