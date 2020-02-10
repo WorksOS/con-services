@@ -1,13 +1,7 @@
-﻿using System.Linq;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System.Reflection;
 using VSS.TRex.Pipelines.Tasks;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Core;
-using VSS.TRex.SubGridTrees.Factories;
-using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Types;
 
 // Notes for consistent value accumulation and smoothing
 // - Construct a rectangular array of values to contain the overall bounds of cells in the default north orientation of the cell selection
@@ -26,8 +20,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-    public ISubGridTree SubGridTree { get; private set; }
-    public PVMTaskAccumulator Accumulator { get; set; }
+    public IPVMTaskAccumulator Accumulator { get; set; }
 
     /// <summary>
     /// The tile renderer responsible for processing sub grid information into tile based thematic rendering
@@ -38,25 +31,9 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     {
     }
 
-
-    private bool AddSubGridToTree(IClientLeafSubGrid leaf)
-    {
-      if (SubGridTree == null)
-        SubGridTree = new SubGridTree(leaf.Level, leaf.CellSize, new SubGridFactory<NodeSubGrid, LeafSubGrid>());
-
-      leaf.Owner = SubGridTree;
-
-      var node = SubGridTree.ConstructPathToCell(leaf.OriginX, leaf.OriginY, SubGridPathConstructionType.CreatePathToLeaf);
-      node.GetSubGridCellIndex(leaf.OriginX, leaf.OriginY, out var subGridX, out var subGridY);
-      node.SetSubGrid(subGridX, subGridY, leaf);
-
-      return true;
-    }
-
     public override bool TransferResponse(object response)
     {
       // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
-      var result = false;
 
       if (base.TransferResponse(response))
       {
@@ -66,11 +43,11 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         }
         else
         {
-          result = Accumulator?.Transcribe(subGridResponses) ?? subGridResponses.Where(x => x != null).All(TileRenderer.Displayer.RenderSubGrid);
+          return Accumulator?.Transcribe(subGridResponses) ?? false;
         }
       }
 
-      return result;
+      return false;
     }
 
     // This code added to correctly implement the disposable pattern.
@@ -78,7 +55,6 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     {
       base.Dispose();
 
-      SubGridTree = null;
       TileRenderer = null;
     }
   }
