@@ -11,12 +11,12 @@
     public const string ROLE_ATTRIBUTE_NAME = "Role";
 
     /// <summary>
-    /// The 'PSNode' role, meaning the server is a part of subgrid clustered processing engine
+    /// The 'PSNode' role, meaning the server is a part of sub grid clustered processing engine
     /// </summary>
     public const string PSNODE = "PSNode";
 
     /// <summary>
-    /// The 'ASNode', application service, role, meaning the server is a part of subgrid clustered processing engine
+    /// The 'ASNode', application service, role, meaning the server is a part of sub grid clustered processing engine
     /// </summary>
     public const string ASNODE = "ASNode";
 
@@ -46,7 +46,7 @@
     public const string TILE_RENDERING_NODE = "TileRendering";
 
     /// <summary>
-    /// A server responsible for producing patches of subgrids for Patch requests
+    /// A server responsible for producing patches of sub grids for Patch requests
     /// </summary>
     public const string PATCH_REQUEST_ROLE = "Patches";
 
@@ -56,7 +56,7 @@
     public const string ANALYTICS_NODE = "Analytics";
 
     /// <summary>
-    /// A server responsible for producing elevation subgrid information from design and surveyed surface topology models (TTMs)
+    /// A server responsible for producing elevation sub grid information from design and surveyed surface topology models (TTMs)
     /// </summary>
     public const string DESIGN_PROFILER = "DesignProfiler";
 

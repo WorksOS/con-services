@@ -25,10 +25,11 @@ using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Push
 {
+  /// <summary>
+  /// Application startup class.
+  /// </summary>
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
 
     /// <inheritdoc />
     public override string ServiceName => "Push Service API";

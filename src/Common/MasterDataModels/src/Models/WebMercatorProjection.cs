@@ -24,6 +24,23 @@ namespace VSS.MasterData.Models.Models
       return pt;
     }
 
+    public static BoundingBox2DLatLon FromXyzToBoundingBox2DLatLon(int x, int y, int z)
+    {
+      //n = 2 ^ zoom
+      //lon_deg = xtile / n * 360.0 - 180.0
+      //lat_rad = arctan(sinh(π * (1 - 2 * ytile / n)))
+      //lat_deg = lat_rad * 180.0 / π
+
+      var n = Math.Pow(2,z);
+      var lon_rad_ne = ((double) (x+1) / n * ONE_FULL_CIRCLE - ONE_HALF_CIRCLE).LonDegreesToRadians();
+      var lat_rad_ne = Math.Atan(Math.Sinh(Math.PI * (1 - 2 * (y) / n)));
+
+      var lon_rad_sw = ((double)(x) / n * ONE_FULL_CIRCLE - ONE_HALF_CIRCLE).LonDegreesToRadians();
+      var lat_rad_sw = Math.Atan(Math.Sinh(Math.PI * (1 - 2 * (y+1) / n)));
+
+      return new BoundingBox2DLatLon(lon_rad_sw, lat_rad_sw, lon_rad_ne, lat_rad_ne);
+    }
+
     public static Point FromPointToLatLng(Point point)
     {
       double lng = point.x / TILE_SIZE * ONE_FULL_CIRCLE - ONE_HALF_CIRCLE;

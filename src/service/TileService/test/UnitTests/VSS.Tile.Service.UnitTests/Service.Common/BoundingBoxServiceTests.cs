@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using VSS.MasterData.Models.Models;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
 using Xunit;
@@ -15,6 +16,19 @@ namespace VSS.Tile.Service.UnitTests.Service.Common
       loggerFactory = new LoggerFactory();
       loggerFactory.AddDebug();
     }
+
+    [Theory]
+    [InlineData(12561,24307,16, -110.994873046875, 42.08599350447723, -111.0003662109375, 42.081916678306314)]
+    public void ConvertXYZToBBox(int x, int y, int z, double lon_nw, double lat_nw, double lon_se, double lat_se)
+    {
+      var bbox = WebMercatorProjection.FromXyzToBoundingBox2DLatLon(x, y, z);
+
+      bbox.TopRightLon.LonRadiansToDegrees().Should().BeApproximately(lon_nw, 0.0001);
+      bbox.TopRightLat.LatRadiansToDegrees().Should().BeApproximately(lat_nw, 0.0001);
+      bbox.BottomLeftLon.LonRadiansToDegrees().Should().BeApproximately(lon_se, 0.0001);
+      bbox.BottomLeftLat.LatRadiansToDegrees().Should().BeApproximately(lat_se, 0.0001);
+    }
+
 
     /// <summary>
     /// Bounding boxes with zero area (i.e a point) 

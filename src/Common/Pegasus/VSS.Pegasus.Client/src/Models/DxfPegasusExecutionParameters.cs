@@ -10,7 +10,7 @@ namespace VSS.Pegasus.Client.Models
     [JsonProperty(PropertyName = "dxf_file_id", Required = Required.Always)]
     public Guid DxfFileId { get; set; }
     [JsonProperty(PropertyName = "max_zoom", Required = Required.Default)]
-    public int MaxZoom { get; set; }
+    public string MaxZoom { get; set; }
     [JsonProperty(PropertyName = "tile_type", Required = Required.Default)]
     public string TileType { get; set; }
     [JsonProperty(PropertyName = "angular_unit", Required = Required.Default)]

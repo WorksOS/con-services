@@ -35,7 +35,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
   public class BaseController<T> : Controller where T : BaseController<T>
   {
     private readonly IPreferenceProxy prefProxy;
-    private readonly IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
+    protected readonly IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
     protected readonly IFileImportProxy fileImportProxy;
     private readonly IMapTileGenerator tileGenerator;
     protected readonly IGeofenceProxy geofenceProxy;

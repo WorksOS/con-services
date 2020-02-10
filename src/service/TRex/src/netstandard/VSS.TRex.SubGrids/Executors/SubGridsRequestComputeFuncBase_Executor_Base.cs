@@ -492,9 +492,11 @@ namespace VSS.TRex.SubGrids.Executors
     /// <returns></returns>
     public TSubGridRequestsResponse Execute()
     {
-      long NumSubGridsToBeExamined = ProdDataMask?.CountBits() ?? 0 + SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
+      var numProdDataSubGrids = ProdDataMask?.CountBits() ?? 0;
+      var numSurveyedSurfaceSubGrids = SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
+      long NumSubGridsToBeExamined = numProdDataSubGrids + numSurveyedSurfaceSubGrids;
 
-      Log.LogInformation($"Num sub grids present in request = {NumSubGridsToBeExamined} [All divisions]");
+      Log.LogInformation($"Num sub grids present in request = {NumSubGridsToBeExamined} [All divisions], {numProdDataSubGrids} prod data (plus surveyed surface), {numSurveyedSurfaceSubGrids} surveyed surface only");
 
       if (!EstablishRequiredIgniteContext(out var contextEstablishmentResponse))
         return new TSubGridRequestsResponse {ResponseCode = contextEstablishmentResponse};

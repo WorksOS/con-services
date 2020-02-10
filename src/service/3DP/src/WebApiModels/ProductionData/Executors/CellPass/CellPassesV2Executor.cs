@@ -183,7 +183,9 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors.CellPass
         Mdp = pass.MDP,
         RadioLatency = pass.RadioLatency,
         Rmv = pass.RMV,
-        Time = pass.Time
+        Time = pass.Time,
+        HalfPass = pass.HalfPass,
+        PassType = RaptorConverters.convertPassType(pass.PassType)
       };
     }
 

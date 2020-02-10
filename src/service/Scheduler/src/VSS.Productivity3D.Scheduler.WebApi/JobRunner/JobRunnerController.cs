@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 
@@ -43,7 +42,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
       }
       catch (Exception e)
       {
-        Log.LogError($"Queue VSS job failed with exception {e.Message}",e);
+        Log.LogError(e,$"Queue VSS job failed with exception {e.Message}");
         throw;
       }
 
@@ -84,7 +83,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
     public ScheduleJobResult StopRecurringJob([FromRoute] string jobId)
     {
       Log.LogInformation($"{nameof(StopRecurringJob)}: {jobId}");
-      string hangfireJobId;
+
       try
       {
         RecurringJobRunner.StopHangfireRecurringJob(jobId);

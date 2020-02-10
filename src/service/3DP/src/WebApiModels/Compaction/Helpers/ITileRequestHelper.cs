@@ -1,4 +1,5 @@
-﻿using VSS.Productivity3D.Models.Enums;
+﻿using VSS.MasterData.Models;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;

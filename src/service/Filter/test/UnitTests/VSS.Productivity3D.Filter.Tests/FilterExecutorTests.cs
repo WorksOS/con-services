@@ -4,11 +4,14 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -24,6 +27,7 @@ using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
@@ -415,9 +419,150 @@ namespace VSS.Productivity3D.Filter.Tests
       Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
     }
 
+    [Fact]
+    public async Task UpsertFilterExecutor_Persistent_WithCombiningWidgetFilters_CreateOnly()
+    {
+      // this scenario, the FilterUid is supplied, and is provided in Request
+      // so this will result in an updated filter
+      string custUid = Guid.NewGuid().ToString();
+      string userUid = Guid.NewGuid().ToString();
+      string projectUid = Guid.NewGuid().ToString();
+      string name = "not entry";
+
+      string designUid = Guid.NewGuid().ToString();
+      string designName = $"Name-{designUid}";
+
+      string startVolumeDate = DateTime.UtcNow.AddHours(-1).ToIso8601DateTimeString();
+      string endVolumeDate = DateTime.UtcNow.ToIso8601DateTimeString();
+
+      string filterUid = Guid.NewGuid().ToString();
+      string filterJson = "{\"vibeStateOn\":\"false\", \"designName\":\"" + designName + "\", \"designUid\":\"" + designUid + "\", \"dateRangeType\":\"Custom\", \"startUTC\": \"" + startVolumeDate + "\", \"endUTC\":\"" + endVolumeDate + "\"}";
+
+      string filterUid_Master = Guid.NewGuid().ToString();
+      string filterJson_Master = "{\"vibeStateOn\":true}";
+
+      string filterUid_Widget = Guid.NewGuid().ToString();
+      string filterJson_Widget = "{\"vibeStateOn\":false}";
+
+      string filterUid_Volume = Guid.NewGuid().ToString();
+      string filterJson_Volume = "{\"designUid\":\"" + designUid + "\", \"dateRangeType\":\"Custom\", \"startUTC\": \"" + startVolumeDate+"\", \"endUTC\":\"" + endVolumeDate +"\"}";
+
+      var configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+
+      var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
+
+      var fileImportProxy = new Mock<IFileImportProxy>();
+      fileImportProxy.Setup(x => x.GetFiles(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync
+        (new List<FileData>
+      {
+        new FileData { CustomerUid = custUid, ProjectUid = projectUid, Name = designName, ImportedFileUid = designUid }
+      });
+
+      var producer = new Mock<IKafka>();
+      var kafkaTopicName = "whatever";
+
+      var filterRepo = new Mock<FilterRepository>(configStore, logger);
+      var filter = new MasterData.Repositories.DBModels.Filter
+      {
+        CustomerUid = custUid,
+        UserId = userUid,
+        ProjectUid = projectUid,
+        FilterUid = filterUid,
+        Name = name,
+        FilterJson = filterJson,
+        FilterType = FilterType.Widget,
+        LastActionedUtc = DateTime.UtcNow
+      };
+
+      var filters = new List<MasterData.Repositories.DBModels.Filter>
+      {
+        new MasterData.Repositories.DBModels.Filter
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid_Master,
+          Name = name,
+          FilterJson = filterJson_Master,
+          FilterType = FilterType.Widget,
+          LastActionedUtc = DateTime.UtcNow
+        },
+        new MasterData.Repositories.DBModels.Filter
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid_Widget,
+          Name = name,
+          FilterJson = filterJson_Widget,
+          FilterType = FilterType.Widget,
+          LastActionedUtc = DateTime.UtcNow
+        },
+        new MasterData.Repositories.DBModels.Filter
+        {
+          CustomerUid = custUid,
+          UserId = userUid,
+          ProjectUid = projectUid,
+          FilterUid = filterUid_Volume,
+          Name = name,
+          FilterJson = filterJson_Volume,
+          FilterType = FilterType.Widget,
+          LastActionedUtc = DateTime.UtcNow
+        }
+      };
+
+      filterRepo.As<IFilterRepository>().Setup(ps => ps.GetFiltersForProjectUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), true)).ReturnsAsync(filters);
+      filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<UpdateFilterEvent>())).ReturnsAsync(1);
+      filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<CreateFilterEvent>())).ReturnsAsync(1);
+
+      var geofenceRepo = new Mock<GeofenceRepository>(configStore, logger);
+
+      var filterToTest = new FilterDescriptorSingleResult(AutoMapperUtility.Automapper.Map<FilterDescriptor>(filter));
+
+      var request =
+        FilterRequestFull.Create(
+          null,
+          custUid,
+          false,
+          userUid,
+          new ProjectData { ProjectUid = projectUid },
+          new FilterRequest
+          {
+            Name = name, 
+            FilterJson = string.Empty, 
+            FilterType = FilterType.Widget,
+            HierarchicFilterUids = new List<HierarchicFilterElement>
+            {
+              new HierarchicFilterElement { FilterUid = filterUid_Master, Role = FilterCombinationRole.MasterFilter },
+              new HierarchicFilterElement { FilterUid = filterUid_Widget, Role = FilterCombinationRole.WidgetFilter },
+              new HierarchicFilterElement { FilterUid = filterUid_Volume, Role = FilterCombinationRole.VolumesFilter }
+            }
+          });
+
+      var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
+        filterRepo.Object, geofenceRepo.Object,
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, 
+        producer: producer.Object, kafkaTopicName: kafkaTopicName,
+        fileImportProxy:fileImportProxy.Object);
+      var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
+
+      Assert.NotNull(result);
+      result.FilterDescriptor.FilterUid.Should().NotBeNullOrEmpty();
+      Assert.Equal(filterToTest.FilterDescriptor.Name, result.FilterDescriptor.Name);
+      Assert.Equal(filterToTest.FilterDescriptor.FilterType, result.FilterDescriptor.FilterType);
+
+       var testFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterToTest.FilterDescriptor.FilterJson);
+       var combinedFilter = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(result.FilterDescriptor.FilterJson);
+
+       testFilter.Should().BeEquivalentTo(combinedFilter);
+    }
+
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
+    [InlineData(FilterType.Widget)]
     public async Task DeleteFilterExecutor(FilterType filterType)
     {
       string custUid = Guid.NewGuid().ToString();

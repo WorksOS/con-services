@@ -83,13 +83,6 @@ namespace VSS.TRex.Gateway.WebApi
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     {
-      if (env.IsDevelopment())
-      {
-        app.UseDeveloperExceptionPage();
-      }
     }
-
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
   }
 }

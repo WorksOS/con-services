@@ -43,19 +43,22 @@ using VSS.WebApi.Common;
 namespace VSS.MasterData.Project.WebAPI
 {
   /// <summary>
-  /// 
+  /// Application startup class.
   /// </summary>
   public class Startup : BaseStartup
   {
+    /// <inheritdoc />
     public override string ServiceName => "Project Service API";
+
+    /// <inheritdoc />
     public override string ServiceDescription => " Project masterdata service";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v4";
 
     private static IServiceProvider serviceProvider;
 
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
@@ -74,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<IFileRepository, FileRepository>();
-      services.AddTransient<IDataOceanClient, DataOceanClient>();
+      services.AddSingleton<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
       services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
       services.AddSingleton<IWebRequest, GracefulWebRequest>();

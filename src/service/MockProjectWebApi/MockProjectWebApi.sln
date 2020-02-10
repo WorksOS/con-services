@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.705
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi", "MockProjectWebApi.csproj", "{8FA2A126-9A88-4006-97EF-11266B4765E9}"
 EndProject
@@ -13,8 +13,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{10F3917C-6C6C-4607-851C-8AEBE91023CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories", "..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj", "{DCDA383C-6BAA-4BA0-918E-B5310B76BD59}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\Common\ITask\src\VSS.ITask.csproj", "{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetMgmt.Abstractions", "..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj", "{76E41D13-D459-4977-A109-4FE5764A11F8}"
 EndProject
@@ -52,6 +50,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Scheduler.Models", "..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj", "{6E070DF5-581A-4FD6-AD11-F99E89DA631C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Abstractions", "..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj", "{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TagFileAuth Service", "TagFileAuth Service", "{81938ED3-5E50-4DBD-B906-3A52A8EE478E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{03B133A9-7828-4C09-A2DD-976C12C366E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,14 +111,6 @@ Global
 		{DCDA383C-6BAA-4BA0-918E-B5310B76BD59}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DCDA383C-6BAA-4BA0-918E-B5310B76BD59}.Release|x64.ActiveCfg = Release|Any CPU
 		{DCDA383C-6BAA-4BA0-918E-B5310B76BD59}.Release|x64.Build.0 = Release|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Debug|x64.Build.0 = Debug|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Release|Any CPU.Build.0 = Release|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Release|x64.ActiveCfg = Release|Any CPU
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008}.Release|x64.Build.0 = Release|Any CPU
 		{76E41D13-D459-4977-A109-4FE5764A11F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{76E41D13-D459-4977-A109-4FE5764A11F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76E41D13-D459-4977-A109-4FE5764A11F8}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -189,6 +183,14 @@ Global
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}.Release|x64.ActiveCfg = Release|Any CPU
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3}.Release|x64.Build.0 = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Debug|x64.Build.0 = Debug|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|x64.ActiveCfg = Release|Any CPU
+		{03B133A9-7828-4C09-A2DD-976C12C366E9}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -199,7 +201,6 @@ Global
 		{3E2FA515-8E51-4AC4-A1CB-C6DD6886D044} = {DA964F8A-89E7-431A-AFDA-53B1C701C2C0}
 		{10F3917C-6C6C-4607-851C-8AEBE91023CF} = {DA964F8A-89E7-431A-AFDA-53B1C701C2C0}
 		{DCDA383C-6BAA-4BA0-918E-B5310B76BD59} = {DA964F8A-89E7-431A-AFDA-53B1C701C2C0}
-		{035A7C6C-7E4E-49D4-8DB4-6BAD59D00008} = {DA964F8A-89E7-431A-AFDA-53B1C701C2C0}
 		{76E41D13-D459-4977-A109-4FE5764A11F8} = {3CC6F25F-2121-4170-9656-74A61F2742C7}
 		{DA964F8A-89E7-431A-AFDA-53B1C701C2C0} = {87BFF03E-CA3F-4773-B4F9-E112A5516CED}
 		{2124B777-5DC4-498E-A970-FA7DBF38121B} = {DA964F8A-89E7-431A-AFDA-53B1C701C2C0}
@@ -215,6 +216,8 @@ Global
 		{F249F7B8-DC91-4AFD-B262-CB86818A0C50} = {3F3FBF0B-36DA-405A-AB23-0E29729AED6E}
 		{6E070DF5-581A-4FD6-AD11-F99E89DA631C} = {8E35DAC0-3A35-48DA-A0E3-0F01B48A877F}
 		{C540694E-DB0F-4BBA-A204-B5E4C591ADC3} = {B9517281-F8F3-475C-9FF2-A074223489CF}
+		{81938ED3-5E50-4DBD-B906-3A52A8EE478E} = {87BFF03E-CA3F-4773-B4F9-E112A5516CED}
+		{03B133A9-7828-4C09-A2DD-976C12C366E9} = {81938ED3-5E50-4DBD-B906-3A52A8EE478E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6524D83-9E29-4F62-8C9A-E01BA4C38D05}

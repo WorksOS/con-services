@@ -1,1 +1,2 @@
 JAEGER_SERVICE_NAME: 3D Now Service
+productivity3d-service: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0

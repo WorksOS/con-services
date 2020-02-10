@@ -9,6 +9,7 @@ using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApiModels.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
+using VSS.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {

@@ -29,7 +29,7 @@ namespace VSS.Tile.Service.UnitTests.Service.Common
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>()
-        .AddTransient<IMemoryCache,MemoryCache>()
+        .AddTransient<IMemoryCache, MemoryCache>()
         .AddTransient<IMapTileService, MapTileService>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();

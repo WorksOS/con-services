@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.705
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestUtility", "utilities\TestUtility\TestUtility.csproj", "{A40EA7A5-55CA-47BE-AFD0-18140375F8D9}"
 EndProject
@@ -25,8 +25,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj", "{F70521FA-24FD-4FE3-9B1B-CE3E4FF6399B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories", "..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj", "{00F53D21-F8DB-415D-9BF2-7AC4883C66D2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ITask", "..\..\..\Common\ITask\src\VSS.ITask.csproj", "{908A6EDD-4AC9-4B59-A857-1DE10EC464C6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.KafkaConsumer", "..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj", "{39AED270-E786-4992-B481-EEA8E902D159}"
 EndProject
@@ -79,6 +77,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Repository", "..\..\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj", "{11B141B3-B2AD-4C22-BDFC-0101EBA9B639}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,10 +125,6 @@ Global
 		{00F53D21-F8DB-415D-9BF2-7AC4883C66D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00F53D21-F8DB-415D-9BF2-7AC4883C66D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00F53D21-F8DB-415D-9BF2-7AC4883C66D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{908A6EDD-4AC9-4B59-A857-1DE10EC464C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{908A6EDD-4AC9-4B59-A857-1DE10EC464C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{908A6EDD-4AC9-4B59-A857-1DE10EC464C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{908A6EDD-4AC9-4B59-A857-1DE10EC464C6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39AED270-E786-4992-B481-EEA8E902D159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39AED270-E786-4992-B481-EEA8E902D159}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39AED270-E786-4992-B481-EEA8E902D159}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -197,6 +193,10 @@ Global
 		{11B141B3-B2AD-4C22-BDFC-0101EBA9B639}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11B141B3-B2AD-4C22-BDFC-0101EBA9B639}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11B141B3-B2AD-4C22-BDFC-0101EBA9B639}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -211,7 +211,6 @@ Global
 		{29770CC7-0994-4C68-B0AB-E931AC53E702} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{F70521FA-24FD-4FE3-9B1B-CE3E4FF6399B} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{00F53D21-F8DB-415D-9BF2-7AC4883C66D2} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
-		{908A6EDD-4AC9-4B59-A857-1DE10EC464C6} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{39AED270-E786-4992-B481-EEA8E902D159} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{48748F86-D8E1-4266-9039-ED6CD4332633} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}
 		{DC46976C-C128-44F9-B71B-296F443ADCD0} = {92D6B27E-0C87-495A-A6AB-E84A08667DF8}

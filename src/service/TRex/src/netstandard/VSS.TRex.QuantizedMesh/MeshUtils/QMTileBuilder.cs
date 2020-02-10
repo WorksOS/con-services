@@ -67,7 +67,6 @@ namespace VSS.TRex.QuantizedMesh.GridFabric
     {
       try
       {
-        Log.LogInformation($"BuildQuantizedMeshTile. GridSize:{TileData.GridSize} Min:{TileData.MinimumHeight}, Max:{TileData.MaximumHeight}");
 
         ComputeHeaderInfo(); 
 
@@ -92,7 +91,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric
 
         // This class constructs a tile from the computed mesh
         var tileBuilder = new TileBuilder();
-        var tile = tileBuilder.MakeTile(vertices, tileHeader, MapUtils.GridSizeToTriangleCount(TileData.GridSize), TileData.GridSize);
+        var tile = tileBuilder.MakeTile(vertices, ref TileData.VertexNormals, tileHeader, MapUtils.GridSizeToTriangleCount(TileData.GridSize), TileData.GridSize, TileData.HasLighting);
         QuantizedMeshTile = CompressTile ? MapUtils.Compress(tile) : tile;
 
         BuildTileFaultCode = RequestErrorStatus.OK;

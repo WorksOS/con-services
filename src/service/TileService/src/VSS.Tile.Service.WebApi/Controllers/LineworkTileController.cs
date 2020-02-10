@@ -137,11 +137,13 @@ namespace VSS.Tile.Service.WebApi.Controllers
     {
       Log.LogDebug($"{nameof(GetLineworkTile3dRaw)}: { Request.QueryString}");
 
+      // todo look at caching entities e.g. customer/project/importedFiles?
+      //    or somehow, perhaps in the dataOceanCache, the tileFolderId
       var requiredFiles = await ValidateFileType(projectUid, fileType);
       var dxfTile3dRequest = DxfTile3dRequest.Create(requiredFiles, z, y, x);
 
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
-        Log, configStore, CustomHeaders, dataOceanClient, authn);
+        Log, configStore, CustomHeaders, dataOceanClient, authn, productivity3DProxyCompactionTile, boundingBoxHelper);
       var result = await executor.ProcessAsync(dxfTile3dRequest) as TileResult;
 
       return new FileStreamResult(new MemoryStream(result.TileData), ContentTypeConstants.ImagePng);
@@ -153,7 +155,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       var dxfTileRequest = DxfTileRequest.CreateTileRequest(requiredFiles, boundingBoxHelper.GetBoundingBox(bbox));
 
       var executor = RequestExecutorContainerFactory.Build<DxfTileExecutor, LineworkTileController>(
-        Log, configStore, CustomHeaders, dataOceanClient, authn);
+        Log, configStore, CustomHeaders, dataOceanClient, authn, productivity3DProxyCompactionTile, boundingBoxHelper);
 
       return await executor.ProcessAsync(dxfTileRequest) as TileResult;
     }

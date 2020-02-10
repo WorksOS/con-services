@@ -6,7 +6,6 @@ using VSS.TRex.QuantizedMesh.Models;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.QuantizedMesh.Executors.Tasks
 {
@@ -35,8 +34,6 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
     public float MinElevation = float.PositiveInfinity;
     public float MaxElevation = float.NegativeInfinity;
     public float LowestElevation = 0;
-    public double TotalSampled = 0;
-    public double TotalUsed = 0;
     private int TileRangeMinX;
     private int TileRangeMinY;
     private int TileRangeMaxX;
@@ -48,69 +45,59 @@ namespace VSS.TRex.QuantizedMesh.Executors.Tasks
     /// <param name="subGrid"></param>
     private void ExtractRequiredValues(ClientHeightLeafSubGrid subGrid)
     {
-      var cnt = 0.0;
-      var cnt2 = 0.0;
-      // var eff = 0.0;
 
-      // Calculate cell range we are interested in
-      subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+      var worldExtents = subGrid.WorldExtents();
+      var subGridWorldOriginY = worldExtents.MinY;
+      var subGridWorldOriginX = worldExtents.MinX;
+      var topX = worldExtents.MaxX; 
+      var topY = worldExtents.MaxY;
+      float elev;
 
-      var topX = subGridWorldOriginX + subGrid.CellSize * SubGridTreeConsts.SubGridTreeDimension;
-      var topY = subGridWorldOriginY + subGrid.CellSize * SubGridTreeConsts.SubGridTreeDimension;
-
+      // Work out the x/y range across our grid we will lookup values
       double rangeMinX = (subGridWorldOriginX - TileMinX) / GridIntervalX;
-      if (Math.Truncate(rangeMinX) != rangeMinX)
-        TileRangeMinX = (int)(Math.Truncate(rangeMinX)) + 1;
+      var posX = (int)(Math.Truncate(rangeMinX));
+      TileRangeMinX = (posX == (int)rangeMinX) ? (int)rangeMinX : posX + 1;
       if (TileRangeMinX < 0)
         TileRangeMinX = 0;
 
       double rangeMinY = (subGridWorldOriginY - TileMinY) / GridIntervalY;
-      if (Math.Truncate(rangeMinY) != rangeMinY)
-        TileRangeMinY = (int)(Math.Truncate(rangeMinY)) + 1;
+      var posY = (int)(Math.Truncate(rangeMinY));
+      TileRangeMinY = (posY == (int)rangeMinY) ? (int)rangeMinY : posY + 1;
       if (TileRangeMinY < 0)
         TileRangeMinY = 0;
 
       double rangeMaxX = (topX - TileMinX) / GridIntervalX;
-      if (Math.Truncate(rangeMaxX) != rangeMaxX)
-        TileRangeMaxX = (int)(Math.Truncate(rangeMaxX));
+      TileRangeMaxX = (int)(Math.Truncate(rangeMaxX));
       if (TileRangeMaxX > GridSize - 1)
         TileRangeMaxX = GridSize - 1;
 
       double rangeMaxY = (topY - TileMinY) / GridIntervalY;
-      if (Math.Truncate(rangeMaxY) != rangeMaxY)
-        TileRangeMaxY = (int)(Math.Truncate(rangeMaxY));
+      TileRangeMaxY = (int)(Math.Truncate(rangeMaxY));
       if (TileRangeMaxY > GridSize - 1)
         TileRangeMaxY = GridSize - 1;
 
+      // Iterate over our grid and extract cell heights from subgrid
       for (int y = TileRangeMinY; y <= TileRangeMaxY; y++)
         for (int x = TileRangeMinX; x <= TileRangeMaxX; x++)
         {
-          cnt2++;
+          // based on grid position lookup cell value
+          // use grid's easting northing value to find subgrid cell we are interested in
           SubGridTree.CalculateIndexOfCellContainingPosition(GriddedElevDataArray[x, y].Easting, GriddedElevDataArray[x, y].Northing,
           subGrid.CellSize,
           subGrid.IndexOriginOffset,
           out int CellX, out int CellY);
           subGrid.GetOTGLeafSubGridCellIndex(CellX, CellY, out var subGridX, out var subGridY);
+          // if we have a valid height add it to our data grid
           if (subGrid.Cells[subGridX, subGridY] != CellPassConsts.NullHeight)
           {
-            cnt++;
-            GriddedElevDataArray[x, y].Elevation = subGrid.Cells[subGridX, subGridY];
-            if (GriddedElevDataArray[x, y].Elevation < MinElevation)
-              MinElevation = GriddedElevDataArray[x, y].Elevation;
-            if (GriddedElevDataArray[x, y].Elevation > MaxElevation)
-              MaxElevation = GriddedElevDataArray[x, y].Elevation;
+            elev = subGrid.Cells[subGridX, subGridY];
+            GriddedElevDataArray[x, y].Elevation = elev;
+            if (elev < MinElevation)
+              MinElevation = elev;
+            if (elev > MaxElevation)
+              MaxElevation = elev;
           }
         }
-
-      //  if (cnt2 > 0)
-      //  {
-      //    eff = (cnt / cnt2) * 100;
-      //    Log.LogDebug($"Processing Subgrid. TotalAvail:{subGrid.CountNonNullCells()}, Sampled:{cnt2}, Used:{cnt} Eff:{Math.Round(eff, 2)}");
-      //  }
-
-      // Statistics
-      TotalSampled = TotalSampled + cnt2;
-      TotalUsed = TotalUsed + cnt;
     }
 
 

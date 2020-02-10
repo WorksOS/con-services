@@ -2,26 +2,54 @@
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using System.Drawing;
+using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-  public abstract class ProductionPVMDisplayerBase : IDisposable
+  public abstract class ProductionPVMDisplayerBase<P, T> : ProductionPVMDisplayerBaseBase
+    where P : class, IPlanViewPalette 
+    where T : class, IClientLeafSubGrid
   {
     //private static readonly ILogger Log = Logging.Logger.CreateLogger<ProductionPVMDisplayerBase>();
 
     protected const int MAX_STEP_SIZE = 10000;
 
-    private ISubGrid _subGrid;
+    private T _subGrid;
 
     protected virtual void SetSubGrid(ISubGrid value)
     {
-      _subGrid = value;
+      _subGrid = value as T;
     }
 
     /// <summary>
     /// Production data holder.
     /// </summary>
-    protected ISubGrid SubGrid { get => _subGrid; set => SetSubGrid(value); }
+    protected T SubGrid { get => _subGrid; set => SetSubGrid(value); }
+
+    public P Palette;
+
+    /// <summary>
+    /// A palette set accessor for use when a palette is only known bbyb its IPlanViewPalette interface
+    /// </summary>
+    /// <param name="palette"></param>
+    public override void SetPalette(IPlanViewPalette palette)
+    {
+      Palette = palette as P;
+    }
+
+    /// <summary>
+    /// A palette get accessor for use when only the IPlanViewPalette is knowable in the accessing context
+    /// </summary>
+    /// <returns></returns>
+    public override IPlanViewPalette GetPalette() => Palette;
+
+    public MapSurface GetMapView() => MapView;
+
+    /// <summary>
+    /// Enables a displayer to advertise is it capable of rendering cell information in strips.
+    /// </summary>
+    /// <returns></returns>
+    protected virtual bool SupportsCellStripRendering() => true;
 
     // Various quantities useful when displaying a sub grid full of grid data
     protected int stepX;
@@ -82,7 +110,7 @@ namespace VSS.TRex.Rendering.Displayers
       stepYIncrementOverTwo = stepYIncrement / 2;
     }
 
-    protected virtual bool DoRenderSubGrid(ISubGrid subGrid)
+    protected virtual bool DoRenderSubGrid(T subGrid)
     {
       _subGrid = subGrid;
 
@@ -162,15 +190,11 @@ namespace VSS.TRex.Rendering.Displayers
       }
     }
 
-    // SupportsCellStripRendering enables a displayer to advertise is it capable
-    // of rendering cell information in strips
-    protected abstract bool SupportsCellStripRendering();
-
     // DoGetDisplayColour queries the data at the current cell location and
     // determines the colour that should be displayed there. If there is no value
     // that should be displayed there (ie: it is <Null>, then the function returns
     // clNone as the colour).
-    protected abstract Color DoGetDisplayColour();
+    public abstract Color DoGetDisplayColour();
 
     protected void DoStartRowScan() => accumulatingScanLine = false;
 
@@ -229,61 +253,29 @@ namespace VSS.TRex.Rendering.Displayers
       }
     }
 
-    public MapSurface MapView { get; set; }
-
     public bool HasRenderedSubGrid { get; set; }
 
-    public bool RenderSubGrid(IClientLeafSubGrid clientSubGrid)
+    public override bool RenderSubGrid(IClientLeafSubGrid clientSubGrid)
     {
       if (clientSubGrid != null)
       {
-        if (!displayParametersCalculated)
+        if (clientSubGrid is T _clientSubGrid)
         {
-          cellSize = clientSubGrid.CellSize;
-          CalculateDisplayParameters();
-          displayParametersCalculated = true;
+          if (!displayParametersCalculated)
+          {
+            cellSize = _clientSubGrid.CellSize;
+            CalculateDisplayParameters();
+            displayParametersCalculated = true;
+          }
+
+          HasRenderedSubGrid = true;
+
+          return DoRenderSubGrid(_clientSubGrid);
         }
-
-        HasRenderedSubGrid = true;
-
-        return DoRenderSubGrid(clientSubGrid);
+      return result;
       }
 
       return false;
     }
-
-    #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
-
-    protected virtual void Dispose(bool disposing)
-    {
-      if (!disposedValue)
-      {
-        if (disposing)
-        {
-          MapView?.Dispose();
-          MapView = null;
-        }
-
-        disposedValue = true;
-      }
-    }
-
-    // Override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~ProductionPVMDisplayerBase()
-    // {
-    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-    //   Dispose(false);
-    // }
-
-    // This code added to correctly implement the disposable pattern.
-    public void Dispose()
-    {
-      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-      Dispose(true);
-      // Uncomment the following line if the finalizer is overridden above.
-      // GC.SuppressFinalize(this);
-    }
-    #endregion
   }
 }

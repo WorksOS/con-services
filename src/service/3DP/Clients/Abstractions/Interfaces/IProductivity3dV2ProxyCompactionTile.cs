@@ -13,6 +13,10 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
       ushort height, string bbox, DisplayMode mode, Guid? baseUid, Guid? topUid, VolumeCalcType? volCalcType,
       IDictionary<string, string> customHeaders = null, bool explicitFilters = false);
 
+    Task<byte[]> GetLineworkTile(Guid projectUid, ushort width, ushort height,
+      string bbox, string filetype, IDictionary<string, string> customHeaders = null);
+
+
     Task<PointsListResult> GetAlignmentPointsList(Guid projectUid, IDictionary<string, string> customHeaders = null);
 
     Task<PointsListResult> GetDesignBoundaryPoints(Guid projectUid, Guid designUid,

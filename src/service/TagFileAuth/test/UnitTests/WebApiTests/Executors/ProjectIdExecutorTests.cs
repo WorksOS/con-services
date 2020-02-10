@@ -16,10 +16,10 @@ namespace WebApiTests.Executors
     public async Task CanCallProjectIDExecutorNoValidInput()
     {
       GetProjectIdRequest ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(-1, 91, 181, 0, DateTime.MinValue, "");
-      ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(loggerFactory.CreateLogger<ProjectIdExecutorTests>(), configStore,
-        assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionRepository);
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(loggerFactory.CreateLogger<ProjectIdExecutorTests>(), ConfigStore,
+        AssetRepository, DeviceRepository, CustomerRepository, ProjectRepository, SubscriptionRepository);
       var result = await executor.ProcessAsync(ProjectIdRequest) as GetProjectIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

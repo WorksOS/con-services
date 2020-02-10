@@ -15,11 +15,13 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
   /// </summary>
   public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
-    { }
-
+    /// <inheritdoc />
     public override string ServiceName => "FileAccess Service API";
+
+    /// <inheritdoc />
     public override string ServiceDescription => "FileAccess Service API";
+
+    /// <inheritdoc />
     public override string ServiceVersion => "v1";
     
     /// <summary>
@@ -47,6 +49,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
       });
     }
 
+    /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
     { }
   }

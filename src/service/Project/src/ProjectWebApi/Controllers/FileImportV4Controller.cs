@@ -177,10 +177,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var transferProxy = transferProxyFunc(TransferProxyType.Default);
       transferProxy.Upload(fileStream, s3Path);
 
-      var baseUrl = Request.Host.ToUriComponent(); 
-    
+      var baseUrl = Request.Host.ToUriComponent();
+
       // The QueryString will have values in it, so it's safe to add extra queries with the & as opposed to ?, then &
-      var callbackUrl = $"{baseUrl}/internal/v4/importedfile{Request.QueryString}";
+      var callbackUrl = $"http://{baseUrl}/internal/v4/importedfile{Request.QueryString}";
       callbackUrl += $"&filename={WebUtility.UrlEncode(file.flowFilename)}&awsFilePath={WebUtility.UrlEncode(s3Path)}";
 
       Logger.LogInformation($"nameof(BackgroundUpload): baseUrl {callbackUrl}");
@@ -391,7 +391,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var deleteImportedFile = new DeleteImportedFile(
         projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor),
         Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId,
-        DataOceanRootFolder, existing.SurveyedUtc);
+        DataOceanRootFolderId, existing.SurveyedUtc);
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -460,17 +460,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
            Logger, ProjectRepo, offset, parentUid)
         .ConfigureAwait(false);
 
-      bool creating = existing == null;
+      var creating = existing == null;
+
       Logger.LogInformation(
         creating
           ? $"{nameof(UpsertFileInternal)}. file doesn't exist already in DB: {filename} projectUid {projectUid} ImportedFileType: {importedFileType} surveyedUtc {(surveyedUtc == null ? "N/A" : surveyedUtc.ToString())} parentUid {parentUid} offset: {offset}"
           : $"{nameof(UpsertFileInternal)}. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
-      if (importedFileType == ImportedFileType.GeoTiff)
-        uploadToTcc = false;
+      if (importedFileType == ImportedFileType.GeoTiff) { uploadToTcc = false; }
 
       ImportedFileDescriptorSingleResult importedFile;
-
       FileDescriptor fileDescriptor = null;
 
       var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
@@ -487,8 +486,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         //save copy to DataOcean      
         await DataOceanHelper.WriteFileToDataOcean(
-            fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
-            true, surveyedUtc, Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid);
+            fileStream, DataOceanRootFolderId, customerUid, projectUid.ToString(), dataOceanFileName,
+            Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+
         fileDescriptor = FileDescriptor.CreateFileDescriptor(
           FileSpaceId,
           $"/{customerUid}/{projectUid}",
@@ -533,9 +533,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
           //save copy to DataOcean      
           await DataOceanHelper.WriteFileToDataOcean(
-              fileStream, DataOceanRootFolder, customerUid, projectUid.ToString(), dataOceanFileName,
-              importedFileType == ImportedFileType.SurveyedSurface,
-              surveyedUtc, Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid)
+              fileStream, DataOceanRootFolderId, customerUid, projectUid.ToString(), dataOceanFileName,
+              Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore)
             .ConfigureAwait(false);
         }
       }
@@ -544,7 +543,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         var createImportedFile = new CreateImportedFile(
           projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolder, parentUid, offset, importedFileUid, dataOceanFileName);
+          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolderId, parentUid, offset, importedFileUid, dataOceanFileName);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
@@ -572,8 +571,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             : null,
           dxfUnitsType, fileCreatedUtc, fileUpdatedUtc, fileDescriptor,
           Guid.Parse(existing?.ImportedFileUid), existing.ImportedFileId,
-          DataOceanRootFolder, offset, dataOceanFileName
-        );
+          DataOceanRootFolderId, offset, dataOceanFileName);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory

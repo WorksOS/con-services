@@ -421,9 +421,14 @@ namespace Common.netstandard.ApiClients
     private async Task<MachineLayerIdsExecutionResult> GetMachineLiftListAsync(string userUid,Project project, DateTime startUtc, DateTime endUtc)
     {
       var url = $"/projects/{project.id}/machinelifts";
-      var query = $"?startUtc={FormatUtcDate(startUtc)}&endUtc={FormatUtcDate(endUtc)}";
+      //var query = $"?startUtc={FormatUtcDate(startUtc)}&endUtc={FormatUtcDate(endUtc)}";
+      var queryParams = new List<KeyValuePair<string, string>>
+      {
+        new KeyValuePair<string, string>("startUtc",FormatUtcDate(startUtc)),
+        new KeyValuePair<string, string>("endUtc", FormatUtcDate(endUtc))
+      };
       //Console.WriteLine("GetMachineLiftList: Url = {0} {1}", url,query);
-      return await productivity3dV1ProxyCoord.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, query, customHeaders);
+      return await productivity3dV1ProxyCoord.ExecuteGenericV1Request<MachineLayerIdsExecutionResult>(url, queryParams, customHeaders);
 
     }
 

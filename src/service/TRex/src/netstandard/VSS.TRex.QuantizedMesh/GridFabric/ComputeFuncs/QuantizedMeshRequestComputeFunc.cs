@@ -43,7 +43,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.ComputeFuncs
 
         Log.LogDebug($"Assigned TRexNodeId from local node is {arg.TRexNodeID}");
 
-        var request = new QMTileExecutor(arg.ProjectID, arg.Filters, arg.X, arg.Y, arg.Z, arg.DisplayMode, arg.TRexNodeID);
+        var request = new QMTileExecutor(arg.ProjectID, arg.Filters, arg.X, arg.Y, arg.Z, arg.DisplayMode, arg.HasLighting, arg.TRexNodeID);
 
         Log.LogInformation("Executing request.Execute()");
 

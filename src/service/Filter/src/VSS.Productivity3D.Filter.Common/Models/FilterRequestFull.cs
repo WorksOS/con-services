@@ -32,6 +32,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       return new FilterRequestFull
       {
         FilterUid = request?.FilterUid ?? string.Empty,
+        HierarchicFilterUids = request?.HierarchicFilterUids,
         Name = request?.Name ?? string.Empty,
         FilterJson = request?.FilterJson ?? string.Empty,
         FilterType = request?.FilterType ?? FilterType.Transient,

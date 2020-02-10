@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
@@ -50,7 +49,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     public new IConfigurationRoot Configuration { get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env) : base(env, null, useSerilog: true)
+    public Startup(IHostingEnvironment env)
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
