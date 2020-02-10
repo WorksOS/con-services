@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<AssemblyName>VSS.MasterData.WebAPI.ClientModel</AssemblyName>
+		<RootNamespace>VSS.MasterData.WebAPI.ClientModel</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+		<PackageReference Include="System.ComponentModel" Version="4.3.0" />
+		<PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />		
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="DeviceConfig\Request\DeviceConfig\AcknowledgementProceessor\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Utilities\Utilities.csproj" />
+	  <ProjectReference Include="..\CommonModels\CommonModel.csproj" />
+	  <ProjectReference Include="..\DbModel\DbModel.csproj" />
+	  <ProjectReference Include="..\KafkaModel\KafkaModel.csproj" />
+	</ItemGroup>
+
+</Project>

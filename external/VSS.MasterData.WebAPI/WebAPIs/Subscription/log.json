@@ -1,0 +1,55 @@
+{
+	"Serilog": {
+		"Filter": [
+			{
+				"Name": "ByExcluding",
+				"Args": {
+					"expression": "@Level = 'Information' and EndsWith(RequestPath, '/healthz')"
+				}
+			},
+			{
+				"Name": "ByExcluding",
+				"Args": {
+					"expression": "@Level = 'Information' and EndsWith(RequestPath, '/swagger')"
+				}
+			}
+		],
+		"MinimumLevel": {
+			"Default": "Debug",
+			"Override": {
+				"Microsoft": "Information",
+				"System": "Warning"
+			}
+		},
+		"WriteTo": [
+			{
+				"Name": "Async",
+				"Args": {
+					"configure": [
+						{
+							"Name": "File",
+							"Args": {
+								"path": "C:/Logs/SubscriptionAPI/SubscriptionAPI.log",
+								"rollingInterval": "Day",
+								"retainedFileCountLimit": 15,
+								"outputTemplate":
+									"{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {MachineName} [{Application}] [{Level}] {ThreadId} - {Message}{NewLine}{Exception}"
+							}
+						},
+						{
+							"Name": "Console",
+							"Args": {
+								"outputTemplate":
+									"{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {MachineName} [{Application}] [{Level}] {ThreadId} - {Message}{NewLine}{Exception}"
+							}
+						}
+					]
+				}
+			}
+		],
+		"Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],
+		"Properties": {
+			"Application": "SubscriptionAPI"
+		}
+	}
+}

@@ -1,0 +1,37 @@
+# Common values for vlmd-assetsettings
+global:
+  componentName: "vlmd-devicesettings"
+  configmap:
+    s3path: s3://vss-ci-builds/VSS.MasterData.WebAPI/DeviceSettings/__Branch__/__BuildId__/db_scripts
+
+  # Automatically have flyway perform the migration!
+  flyway:
+    enabled: false
+  image:
+    repository: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vlmd-devicesettings
+    tag: __Branch__-__BuildId__
+    pullPolicy: Always
+  ingress:
+    enabled: true
+    # Used to create an Ingress record.
+    # Release automation will dynamically create hosts and target.
+    hosts:
+      - __ENVIRONMENT__-vlmd-devicesettings.__DOMAIN__
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      external-dns.alpha.kubernetes.io/target: __ENDPOINT__
+    paths:
+      - /v1/deviceconfigs/assetsecurity
+      - /v1/deviceconfigs/faultcodereporting
+      - /v1/deviceconfigs/maintenancemode
+      - /v1/deviceconfigs/meters
+      - /v1/deviceconfigs/movingthresholds
+      - /v1/deviceconfigs/reportingschedule
+      - /v1/deviceconfigs/speedingthreshold
+      - /v1/deviceconfigs/switches
+      - /v1/deviceconfigs/switches/DualStateSwitches
+      - /v1/ping
+      - /v1/deviceconfigparameters
+      - /v1/deviceconfigparametergroups
+      - /healthz
+      - /swagger
