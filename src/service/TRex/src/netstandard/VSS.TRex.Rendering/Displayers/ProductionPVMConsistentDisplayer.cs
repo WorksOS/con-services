@@ -1,8 +1,12 @@
 ﻿using System;
+using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-  public abstract class ProductionPVMConsistentDisplayer : ProductionPVMDisplayerBase
+  public abstract class ProductionPVMConsistentDisplayer<TP, TS> : ProductionPVMDisplayerBase<TP, TS>
+    where TP : class, IPlanViewPalette
+    where TS : class, IClientLeafSubGrid
   {
     /// <summary>
     /// Performs a 'consistent' render across a 2D array of collated values from queried subgrids.
@@ -17,7 +21,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <param name="valueCellSizeX"></param>
     /// <param name="valueCellSizeY"></param>
     /// <returns></returns>
-    public bool PerformConsistentRender<T>(T[,] valueStore,
+    public bool PerformConsistentRender(float[,] valueStore,
       double worldOriginX, double worldOriginY, double valueCellSizeX, double valueCellSizeY)
     {
       var xDimension = valueStore.GetLength(0);
@@ -38,8 +42,6 @@ namespace VSS.TRex.Rendering.Displayers
       // Draw the cells in the grid in stripes, starting from the southern most
       // row in the grid and progressing from the western end to the eastern end
       // (ie: bottom to top, left to right)
-
-      // See if this display supports cell strip rendering
 
       var drawCellStrips = SupportsCellStripRendering();
 

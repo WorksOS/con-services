@@ -6,27 +6,27 @@ using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-  public abstract class ProductionPVMDisplayerBase<P, T> : ProductionPVMDisplayerBaseBase
-    where P : class, IPlanViewPalette 
-    where T : class, IClientLeafSubGrid
+  public abstract class ProductionPVMDisplayerBase<TP, TS> : ProductionPVMDisplayerBaseBase
+    where TP : class, IPlanViewPalette 
+    where TS : class, IClientLeafSubGrid
   {
     //private static readonly ILogger Log = Logging.Logger.CreateLogger<ProductionPVMDisplayerBase>();
 
     protected const int MAX_STEP_SIZE = 10000;
 
-    private T _subGrid;
+    private TS _subGrid;
 
     protected virtual void SetSubGrid(ISubGrid value)
     {
-      _subGrid = value as T;
+      _subGrid = value as TS;
     }
 
     /// <summary>
     /// Production data holder.
     /// </summary>
-    protected T SubGrid { get => _subGrid; set => SetSubGrid(value); }
+    protected TS SubGrid { get => _subGrid; set => SetSubGrid(value); }
 
-    public P Palette;
+    public TP Palette;
 
     /// <summary>
     /// A palette set accessor for use when a palette is only known bbyb its IPlanViewPalette interface
@@ -34,7 +34,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <param name="palette"></param>
     public override void SetPalette(IPlanViewPalette palette)
     {
-      Palette = palette as P;
+      Palette = palette as TP;
     }
 
     /// <summary>
@@ -110,7 +110,7 @@ namespace VSS.TRex.Rendering.Displayers
       stepYIncrementOverTwo = stepYIncrement / 2;
     }
 
-    protected virtual bool DoRenderSubGrid(T subGrid)
+    protected virtual bool DoRenderSubGrid(TS subGrid)
     {
       _subGrid = subGrid;
 
@@ -257,22 +257,18 @@ namespace VSS.TRex.Rendering.Displayers
 
     public override bool RenderSubGrid(IClientLeafSubGrid clientSubGrid)
     {
-      if (clientSubGrid != null)
+      if (clientSubGrid != null && clientSubGrid is TS _clientSubGrid)
       {
-        if (clientSubGrid is T _clientSubGrid)
+        if (!displayParametersCalculated)
         {
-          if (!displayParametersCalculated)
-          {
-            cellSize = _clientSubGrid.CellSize;
-            CalculateDisplayParameters();
-            displayParametersCalculated = true;
-          }
-
-          HasRenderedSubGrid = true;
-
-          return DoRenderSubGrid(_clientSubGrid);
+          cellSize = _clientSubGrid.CellSize;
+          CalculateDisplayParameters();
+          displayParametersCalculated = true;
         }
-      return result;
+
+        HasRenderedSubGrid = true;
+
+        return DoRenderSubGrid(_clientSubGrid);
       }
 
       return false;
