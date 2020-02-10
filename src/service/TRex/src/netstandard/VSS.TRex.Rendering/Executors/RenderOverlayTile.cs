@@ -522,7 +522,7 @@ namespace VSS.TRex.Rendering.Executors
             processor.Task.RequestDescriptor = RequestDescriptor;
             processor.Task.TRexNodeID = RequestingTRexNodeID;
             processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
-            ((IPVMRenderingTask) processor.Task).TileRenderer = Renderer;
+            ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
             // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
             // a final restriction of the spatial extent used to govern data requests
@@ -532,7 +532,7 @@ namespace VSS.TRex.Rendering.Executors
             if (!await processor.BuildAsync())
             {
               Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
-          ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
+              ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
               return null;
             }
 
@@ -562,7 +562,7 @@ namespace VSS.TRex.Rendering.Executors
             Renderer.WorldTileWidth = WorldTileWidth;
             Renderer.WorldTileHeight = WorldTileHeight;
 
-        ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
+            ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
 
             if (processor.Response.ResultStatus == RequestErrorStatus.OK)
             {

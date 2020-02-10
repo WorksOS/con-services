@@ -1,5 +1,4 @@
 ﻿using VSS.TRex.Pipelines.Interfaces.Tasks;
-using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Rendering.Executors.Tasks
 {
@@ -11,8 +10,8 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     PlanViewTileRenderer TileRenderer { get; set; }
 
     /// <summary>
-    /// The collection of sub grids returned by the rendering query
+    /// The accumulator for the PVM rendering task to populate cell data from subgrids into
     /// </summary>
-    ISubGridTree SubGridTree { get; }
+    IPVMTaskAccumulator Accumulator { get; set; }
   }
 }
