@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -298,5 +299,5 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <returns></returns>
     public virtual float[,] ToFloatArray() => null;
-  }
+    }
 }

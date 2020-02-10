@@ -12,11 +12,9 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     private readonly int cellsWidth, cellsHeight;
     private readonly double worldX, worldY;
     private readonly double originX, originY;
-    private double rotation;
     private readonly int stepX, stepY;
     private readonly double stepXIncrement, stepYIncrement;
     private readonly double stepXIncrementOverTwo, stepYIncrementOverTwo;
-
 
     /// <summary>
     /// Constructor that instantiates intermediary value storage for the PVM rendering task
@@ -28,11 +26,10 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// <param name="worldY">The world coordinate width (X axis) of the value store</param>
     /// <param name="originX">The default north oriented world X coordinate or the _valueStore origin</param>
     /// <param name="originY">The default north oriented world Y coordinate or the _valueStore origin</param>
-    /// <param name="rotation">Rotation between the project calibration and default north orientation of _valueStore</param>
     public PVMTaskAccumulator(double sourceCellSize,
       int cellsWidth, int cellsHeight,
       double worldX, double worldY, 
-      double originX, double originY, double rotation)
+      double originX, double originY)
     {
       this.sourceCellSize = sourceCellSize;
       this.cellsWidth = cellsWidth;
@@ -41,7 +38,6 @@ namespace VSS.TRex.Rendering.Executors.Tasks
       this.originY = originY;
       this.worldX = worldX;
       this.worldY = worldY;
-      this.rotation = rotation;
 
       ValueStore = new float[this.cellsWidth, this.cellsHeight];
       valueStoreCellSizeX = this.worldX / this.cellsWidth;
@@ -90,10 +86,10 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
       while (northRow < SubGridTreeConsts.SubGridTreeDimension)
       {
-        var valueStoreY = (int) Math.Floor((currentNorth - originY)/ valueStoreCellSizeY);
+        var valueStoreY = (int) Math.Floor((currentNorth - originY) / valueStoreCellSizeY);
 
         temp = subGridWorldOriginX / stepXIncrement;
-        var currentEast = (Math.Truncate(temp) * stepXIncrement) + stepXIncrementOverTwo;
+        var currentEast = (Math.Truncate(temp) * stepXIncrement) - stepXIncrementOverTwo;
         var eastCol = (int) Math.Floor((currentEast - subGridWorldOriginX) / sourceCellSize);
 
         while (eastCol < 0)
