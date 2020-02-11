@@ -500,75 +500,76 @@ namespace VSS.TRex.Rendering.Executors
           var CellExtents = new BoundingIntegerExtent2D(CellExtents_MinX, CellExtents_MinY, CellExtents_MaxX, CellExtents_MaxY);
           CellExtents.Expand(1);
 
-        // Construct PipelineProcessor
-        var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
-          RequestDescriptor,
-          DataModelID,
-          GridDataFromModeConverter.Convert(Mode),
-          new SubGridsPipelinedResponseBase(),
-          Filters,
-          CutFillDesign,
-          DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
-          DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          DIContext.Obtain<IRequestAnalyser>(),
-          Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
-                                             Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
-          CellExtents,
-          LiftParams
-        );
-
-          // Set the PVM rendering rexTask parameters for progressive processing
-          processor.Task.RequestDescriptor = RequestDescriptor;
-          processor.Task.TRexNodeID = RequestingTRexNodeID;
-          processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
-          ((IPVMRenderingTask) processor.Task).TileRenderer = Renderer;
-
-          // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
-          // a final restriction of the spatial extent used to govern data requests
-          processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
-
-          // Prepare the processor
-          if (!await processor.BuildAsync())
+          // Construct PipelineProcessor
+          using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+            RequestDescriptor,
+            DataModelID,
+            GridDataFromModeConverter.Convert(Mode),
+            new SubGridsPipelinedResponseBase(),
+            Filters,
+            CutFillDesign,
+            DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.PVMRendering),
+            DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+            DIContext.Obtain<IRequestAnalyser>(),
+            Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode) &&
+            Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+            Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
+            CellExtents,
+            LiftParams
+          ))
           {
-            Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
-            ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
-            return null;
-          }
+            // Set the PVM rendering rexTask parameters for progressive processing
+            processor.Task.RequestDescriptor = RequestDescriptor;
+            processor.Task.TRexNodeID = RequestingTRexNodeID;
+            processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
+            ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
-          // Test to see if the tile can be satisfied with a representational render indicating where
-          // data is but not what it is (this is useful when the zoom level is far enough away that we
-          // cannot meaningfully render the data). If the size of s sub grid is smaller than
-          // the size of a pixel in the requested tile then do this. Just check the X dimension
-          // as the data display is isotropic.
-          if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
-            return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
+            // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as
+            // a final restriction of the spatial extent used to govern data requests
+            processor.OverrideSpatialExtents = RotatedTileBoundingExtents;
 
-          /* TODO - Create a scaled palette to use when rendering the data
-          // Create a scaled palette to use when rendering the data
-          if not CreateAndInitialiseWorkingColorPalette then
-            begin
-            SIGLogMessage.PublishNoODS(Self, Format('Failed to create and initialise working color palette for data: %s in datamodel %d', [TypInfo.GetEnumName(TypeInfo(TICDisplayMode), Ord(FMode)), FDataModelID]), ...Warning);
-            Exit;
-            end;
-          */
+            // Prepare the processor
+            if (!await processor.BuildAsync())
+            {
+              Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+              ResultStatus = RequestErrorStatus.FailedToConfigureInternalPipeline;
+              return null;
+            }
 
-          // Renderer.WorkingPalette = WorkingColorPalette;
-          // Renderer.ReferenceVolumeType = FReferenceVolumeType;
+            // Test to see if the tile can be satisfied with a representational render indicating where
+            // data is but not what it is (this is useful when the zoom level is far enough away that we
+            // cannot meaningfully render the data). If the size of s sub grid is smaller than
+            // the size of a pixel in the requested tile then do this. Just check the X dimension
+            // as the data display is isotropic.
+            if (Utilities.SubGridShouldBeRenderedAsRepresentationalDueToScale(WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY, processor.OverallExistenceMap.CellSize))
+              return RenderTileAsRepresentationalDueToScale(processor.OverallExistenceMap); // There is no need to do anything else
 
-          Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
-          Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);
-          Renderer.TileRotation = TileRotation;
-          Renderer.WorldTileWidth = WorldTileWidth;
-          Renderer.WorldTileHeight = WorldTileHeight;
+            /* TODO - Create a scaled palette to use when rendering the data
+            // Create a scaled palette to use when rendering the data
+            if not CreateAndInitialiseWorkingColorPalette then
+              begin
+              SIGLogMessage.PublishNoODS(Self, Format('Failed to create and initialise working color palette for data: %s in datamodel %d', [TypInfo.GetEnumName(TypeInfo(TICDisplayMode), Ord(FMode)), FDataModelID]), ...Warning);
+              Exit;
+              end;
+            */
 
-          ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
+            // Renderer.WorkingPalette = WorkingColorPalette;
+            // Renderer.ReferenceVolumeType = FReferenceVolumeType;
 
-          if (processor.Response.ResultStatus == RequestErrorStatus.OK)
-          {
-            var canvas = Renderer.Displayer.MapView.BitmapCanvas;
-            Renderer.Displayer.MapView.BitmapCanvas = null;
-            return canvas;
+            Renderer.IsWhollyInTermsOfGridProjection = true; // Ensure the renderer knows we are using grid projection coordinates
+            Renderer.SetBounds(NEECoords[0].X, NEECoords[0].Y, WorldTileWidth, WorldTileHeight, NPixelsX, NPixelsY);
+            Renderer.TileRotation = TileRotation;
+            Renderer.WorldTileWidth = WorldTileWidth;
+            Renderer.WorldTileHeight = WorldTileHeight;
+
+            ResultStatus = Renderer.PerformRender(Mode, processor, ColorPalettes, Filters, LiftParams);
+
+            if (processor.Response.ResultStatus == RequestErrorStatus.OK)
+            {
+              var canvas = Renderer.Displayer.MapView.BitmapCanvas;
+              Renderer.Displayer.MapView.BitmapCanvas = null;
+              return canvas;
+            }
           }
         }
         catch (Exception e)

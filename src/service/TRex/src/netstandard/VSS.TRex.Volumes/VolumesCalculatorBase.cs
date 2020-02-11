@@ -427,7 +427,7 @@ namespace VSS.TRex.Volumes
       /*
       public RequestErrorStatus ExecutePipelineEx()
       {
-        IPipelineProcessor processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
+        using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
         (requestDescriptor: RequestDescriptor,
           dataModelID: SiteModel.ID,
           siteModel: SiteModel,
@@ -441,7 +441,9 @@ namespace VSS.TRex.Volumes
           requestRequiresAccessToDesignFileExistenceMap: ReferenceDesignUID != Guid.Empty,
           requireSurveyedSurfaceInformation: true, // todo -> IncludeSurveyedSurfaces,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted()
-        );
+        ))
+        {
+        }
 
         return RequestErrorStatus.OK;
       }

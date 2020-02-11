@@ -65,7 +65,7 @@ namespace VSS.TRex.Server.Application
         case PipelineProcessorTaskStyle.AggregatedPipelined:
           return new AggregatedPipelinedSubGridTask();
         case PipelineProcessorTaskStyle.PVMRendering:
-          return null; // Not responsible for rendering, this is in TileRendering service /*new PVMRenderingTask();*/
+          return null; // Not responsible for rendering, this is in TileRendering service
         case PipelineProcessorTaskStyle.PatchExport:
           return new PatchTask();
         case PipelineProcessorTaskStyle.SurfaceExport:

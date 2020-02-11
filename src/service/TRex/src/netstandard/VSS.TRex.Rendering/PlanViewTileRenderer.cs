@@ -8,6 +8,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
+using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.Types;
@@ -30,7 +31,7 @@ namespace VSS.TRex.Rendering
     public ushort NPixelsX;
     public ushort NPixelsY;
 
-    public ProductionPVMDisplayerBaseBase Displayer;
+    public ProductionPVMDisplayer Displayer;
 
     // DisplayPalettes : TICDisplayPalettes;
     // Palette : TICDisplayPaletteBase;       
@@ -172,6 +173,20 @@ namespace VSS.TRex.Rendering
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
       Displayer.MapView.SetRotation(-TileRotation /* + (Math.PI / 2) */);
 
+      // Construct the PVM task accumulator for the PVM rendering task to contain the values to be rendered
+      // We manage this here because the accumulator context relates to the query spatial bounds, not the rendered tile bounds
+      // The acumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
+      // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
+      // of cells to the mapview grid of pixels
+      ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
+        (int)Math.Round(processor.OverrideSpatialExtents.SizeX / Displayer.MapView.XPixelSize),
+        (int)Math.Round(processor.OverrideSpatialExtents.SizeY / Displayer.MapView.YPixelSize),
+        processor.OverrideSpatialExtents.MinX,
+        processor.OverrideSpatialExtents.MaxX,
+        processor.OverrideSpatialExtents.SizeX,
+        processor.OverrideSpatialExtents.SizeY
+        );
+
       // Displayer.ICOptions  = ICOptions;
 
       // Se the skip-step area control cell selection parameters for this tile render
@@ -179,7 +194,7 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.YPixelSize, 0, 0, 0);
 
       // todo PipeLine.TimeToLiveSeconds = VLPDSvcLocations.VLPDPSNode_TilePipelineTTLSeconds;
-      processor.Pipeline.LiftParams  = liftParams;
+      processor.Pipeline.LiftParams = liftParams;
       // todo PipeLine.NoChangeVolumeTolerance  = FICOptions.NoChangeVolumeTolerance;
 
       // Perform the sub grid query and processing to render the tile
@@ -187,6 +202,11 @@ namespace VSS.TRex.Rendering
 
       if (processor.Response.ResultStatus == RequestErrorStatus.OK)
       {
+        // Render the collection of sub grids collected in the rendering task
+        // Todo: Implement call to renderer functionality
+        //throw new NotImplementedException();
+        (((IPVMRenderingTask) processor.Task).TileRenderer.Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
+  
         PerformAnyRequiredDebugLevelDisplay();
 
         if (_debugDrawDiagonalCrossOnRenderedTilesDefault)

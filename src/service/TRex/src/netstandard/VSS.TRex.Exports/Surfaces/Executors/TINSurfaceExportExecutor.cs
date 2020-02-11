@@ -46,11 +46,6 @@ namespace VSS.TRex.Exports.Surfaces.Executors
     private ILiftParameters LiftParams;
 
     /// <summary>
-    /// The pipeline processor used to coordinate construction, coordinate and orchestration of the pipelined request
-    /// </summary>
-    private IPipelineProcessor processor;
-
-    /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
     public TINSurfaceExportExecutor(
@@ -114,44 +109,9 @@ namespace VSS.TRex.Exports.Surfaces.Executors
       try
       {
         Guid RequestDescriptor = Guid.NewGuid();
+        GenericSubGridTree_Float datastore;
 
-        // Provide the processor with a customised request analyser configured to return a set of sub grids. These sub grids
-        // are the feed stock for the generated TIN surface
-        processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
-          RequestDescriptor,
-          DataModelID,
-          GridDataFromModeConverter.Convert(DisplayMode.Height),
-          SurfaceSubGridsResponse,
-          Filters,
-          new DesignOffset(), 
-          DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SurfaceExport),
-          DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
-          DIContext.Obtain<IRequestAnalyser>(),
-          Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
-          false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(DisplayMode.Height),
-          BoundingIntegerExtent2D.Inverted(),
-          LiftParams);
-
-        // Set the surface TRexTask parameters for progressive processing
-        processor.Task.RequestDescriptor = RequestDescriptor;
-        processor.Task.TRexNodeID = RequestingTRexNodeID;
-        processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);
-
-        if (!await processor.BuildAsync())
-        {
-          Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
-          return false;
-        }
-
-        processor.Process();
-
-        if (SurfaceSubGridsResponse.ResultStatus != RequestErrorStatus.OK)
-        {
-          Log.LogError($"Sub grids response status not OK: {SurfaceSubGridsResponse.ResultStatus}");
-          return false;
-        }
-
-        ISiteModel SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
+        var SiteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DataModelID);
 
         if (SiteModel == null)
         {
@@ -159,21 +119,58 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           return false;
         }
 
-        // Create the TIN decimator and populate it with the retrieve sub grids
-        GenericSubGridTree_Float datastore = new GenericSubGridTree_Float(SiteModel.Grid.NumLevels, SiteModel.CellSize);
-        foreach (var subGrid in ((SurfaceTask)processor.Task).SurfaceSubgrids)
+        // Provide the processor with a customised request analyser configured to return a set of sub grids. These sub grids
+        // are the feed stock for the generated TIN surface
+        using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+          RequestDescriptor,
+          DataModelID,
+          GridDataFromModeConverter.Convert(DisplayMode.Height),
+          SurfaceSubGridsResponse,
+          Filters,
+          new DesignOffset(),
+          DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.SurfaceExport),
+          DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
+          DIContext.Obtain<IRequestAnalyser>(),
+          Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(DisplayMode.Height) && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+          false, //Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(DisplayMode.Height),
+          BoundingIntegerExtent2D.Inverted(),
+          LiftParams))
         {
-          INodeSubGrid newGridNode = datastore.ConstructPathToCell(subGrid.OriginX, subGrid.OriginY, SubGridPathConstructionType.CreatePathToLeaf) as INodeSubGrid;
+          // Set the surface TRexTask parameters for progressive processing
+          processor.Task.RequestDescriptor = RequestDescriptor;
+          processor.Task.TRexNodeID = RequestingTRexNodeID;
+          processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);
 
-          if (newGridNode == null)
+          if (!await processor.BuildAsync())
           {
-            Log.LogError($"Result from data store ConstructPathToCell({subGrid.OriginX}, {subGrid.OriginY}) was null. Aborting...");
+            Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
             return false;
           }
 
-          subGrid.Owner = datastore;
-          newGridNode.GetSubGridCellIndex(subGrid.OriginX, subGrid.OriginY, out byte subGridIndexX, out byte subGridIndexY);
-          newGridNode.SetSubGrid(subGridIndexX, subGridIndexY, subGrid);
+          processor.Process();
+
+          if (SurfaceSubGridsResponse.ResultStatus != RequestErrorStatus.OK)
+          {
+            Log.LogError($"Sub grids response status not OK: {SurfaceSubGridsResponse.ResultStatus}");
+            return false;
+          }
+
+          // Create the TIN decimator and populate it with the retrieve sub grids
+          datastore = new GenericSubGridTree_Float(SiteModel.Grid.NumLevels, SiteModel.CellSize);
+          foreach (var subGrid in ((SurfaceTask) processor.Task).SurfaceSubgrids)
+          {
+            var newGridNode = datastore.ConstructPathToCell(subGrid.OriginX, subGrid.OriginY, SubGridPathConstructionType.CreatePathToLeaf) as INodeSubGrid;
+
+            if (newGridNode == null)
+            {
+              Log.LogError($"Result from data store ConstructPathToCell({subGrid.OriginX}, {subGrid.OriginY}) was null. Aborting...");
+              return false;
+            }
+
+            subGrid.Owner = datastore;
+            newGridNode.GetSubGridCellIndex(subGrid.OriginX, subGrid.OriginY, out byte subGridIndexX, out byte subGridIndexY);
+            newGridNode.SetSubGrid(subGridIndexX, subGridIndexY, subGrid);
+          }
         }
 
         var extents = DataStoreExtents(datastore);
@@ -198,7 +195,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           }
         }
         // Decimate the elevations into a grid
-        GridToTINDecimator decimator = new GridToTINDecimator(datastore)
+        var decimator = new GridToTINDecimator(datastore)
         {
           Tolerance = Tolerance
         };

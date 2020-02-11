@@ -54,7 +54,7 @@ namespace VSS.TRex.Server.TileRendering
       }
     }
 
-    private static Pipelines.Interfaces.Tasks.ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       switch (key)
       {

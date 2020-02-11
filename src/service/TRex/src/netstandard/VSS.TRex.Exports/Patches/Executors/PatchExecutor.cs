@@ -51,11 +51,6 @@ namespace VSS.TRex.Exports.Patches.Executors
     public DesignOffset CutFillDesign { get; set; }
 
     /// <summary>
-    /// The pipeline processor used to coordinate construction, coordinate and orchestration of the pipelined request
-    /// </summary>
-    private IPipelineProcessor processor;
-
-    /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
     public PatchExecutor(
@@ -95,7 +90,7 @@ namespace VSS.TRex.Exports.Patches.Executors
 
       Guid RequestDescriptor = Guid.NewGuid();
 
-      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
         RequestDescriptor,
         DataModelID,
         GridDataFromModeConverter.Convert(Mode),
@@ -106,33 +101,34 @@ namespace VSS.TRex.Exports.Patches.Executors
         DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
         DIContext.Obtain<IRequestAnalyser>(),
         Rendering.Utilities.DisplayModeRequireSurveyedSurfaceInformation(Mode)
-                                 && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
+        && Rendering.Utilities.FilterRequireSurveyedSurfaceInformation(Filters),
         Rendering.Utilities.RequestRequiresAccessToDesignFileExistenceMap(Mode /*ReferenceVolumeType*/),
         BoundingIntegerExtent2D.Inverted(),
-        LiftParams);
-
-      // Configure the request analyser to return a single page of results.
-      processor.RequestAnalyser.SinglePageRequestNumber = DataPatchPageNumber;
-      processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;
-      processor.RequestAnalyser.SubmitSinglePageOfRequests = true;
-
-      if (!await processor.BuildAsync())
+        LiftParams))
       {
-        Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
-        return false;
+        // Configure the request analyser to return a single page of results.
+        processor.RequestAnalyser.SinglePageRequestNumber = DataPatchPageNumber;
+        processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;
+        processor.RequestAnalyser.SubmitSinglePageOfRequests = true;
+
+        if (!await processor.BuildAsync())
+        {
+          Log.LogError($"Failed to build pipeline processor for request to model {DataModelID}");
+          return false;
+        }
+
+        // If this is the first page requested then count the total number of patches required for all sub grids to be returned
+        if (DataPatchPageNumber == 0)
+          PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
+            (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubGridsThatWillBeSubmitted() / (double) DataPatchPageSize));
+
+        processor.Process();
+
+        if (PatchSubGridsResponse.ResultStatus == RequestErrorStatus.OK)
+          PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubGrids;
+
+        return true;
       }
-
-      // If this is the first page requested then count the total number of patches required for all sub grids to be returned
-      if (DataPatchPageNumber == 0)
-        PatchSubGridsResponse.TotalNumberOfPagesToCoverFilteredData =
-          (int) Math.Truncate(Math.Ceiling(processor.RequestAnalyser.CountOfSubGridsThatWillBeSubmitted() / (double) DataPatchPageSize));
-
-      processor.Process();
-
-      if (PatchSubGridsResponse.ResultStatus == RequestErrorStatus.OK)
-        PatchSubGridsResponse.SubGrids = ((PatchTask) processor.Task).PatchSubGrids;
-
-      return true;
     }
   }
 }

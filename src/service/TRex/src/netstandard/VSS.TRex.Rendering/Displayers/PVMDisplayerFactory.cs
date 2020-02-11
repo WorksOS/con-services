@@ -5,7 +5,7 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public static class PVMDisplayerFactory
   {
-    public static ProductionPVMDisplayerBaseBase GetDisplayer(DisplayMode mode /*, FICOptions*/)
+    public static ProductionPVMDisplayer GetDisplayer(DisplayMode mode /*, FICOptions*/)
     {
       switch (mode)
       {

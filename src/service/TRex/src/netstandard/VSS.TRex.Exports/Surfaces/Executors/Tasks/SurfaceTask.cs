@@ -65,5 +65,11 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
 
       return result;
     }
+
+    public override void Dispose()
+    {
+      base.Dispose();
+      SurfaceSubgrids = null;
+    }
   }
 }
