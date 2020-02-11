@@ -4,7 +4,7 @@ using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers
 {
-  public abstract class ProductionPVMDisplayerBaseBase: IDisposable
+  public abstract class ProductionPVMDisplayer: IDisposable
   {
     protected const int MAX_STEP_SIZE = 10000;
 

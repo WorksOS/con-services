@@ -31,7 +31,7 @@ namespace VSS.TRex.Rendering
     public ushort NPixelsX;
     public ushort NPixelsY;
 
-    public ProductionPVMDisplayerBaseBase Displayer;
+    public ProductionPVMDisplayer Displayer;
 
     // DisplayPalettes : TICDisplayPalettes;
     // Palette : TICDisplayPaletteBase;       
