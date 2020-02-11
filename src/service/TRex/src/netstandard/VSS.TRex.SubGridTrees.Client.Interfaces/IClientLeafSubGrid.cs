@@ -60,7 +60,5 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     BoundingWorldExtent3D WorldExtents();
 
     void DumpToLog();
-
-    float[,] ToFloatArray();
   }
 }
