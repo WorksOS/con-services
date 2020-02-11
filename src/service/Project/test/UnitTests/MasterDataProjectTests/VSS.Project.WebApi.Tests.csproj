@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
+    <PackageReference Include="JetBrains.DotMemoryUnit" Version="3.1.20200127.214830" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
     <PackageReference Include="Moq" Version="4.10.1" />
