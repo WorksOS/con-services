@@ -1,5 +1,4 @@
-﻿using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Models;
+﻿using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean.DatabaseAgent
@@ -14,12 +13,15 @@ namespace TCCToDataOcean.DatabaseAgent
     public MigrationState MigrationState { get; set; }
     public long Length { get; set; }
     public DxfUnitsType DxfUnitsType { get; set; }
+    public string MigrationStateMessage { get; set; }
 
     public MigrationFile()
     { }
 
     public MigrationFile(ImportedFileDescriptor file)
     {
+      TableName = Table.Files;
+
       Id = (int)file.LegacyFileId;
       ProjectUid = file.ProjectUid;
       ImportedFileType = file.ImportedFileType;

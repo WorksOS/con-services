@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,8 +9,8 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
-using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
+using VSS.MasterData.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.ResultHandling;
@@ -35,10 +36,12 @@ namespace VSS.Tile.Service.Common.Executors
       int zoomLevel = 0;
       Point topLeftTile = null;
       int numTiles = 0;
+      BoundingBox2DLatLon bbox = null;
 
       if (item is DxfTileRequest request)
       {
         files = request.files?.ToList();
+        bbox = request.bbox;
 
         //Calculate zoom level
         zoomLevel = TileServiceUtils.CalculateZoomLevel(request.bbox.TopRightLat - request.bbox.BottomLeftLat,
@@ -54,6 +57,7 @@ namespace VSS.Tile.Service.Common.Executors
       else if (item is DxfTile3dRequest request3d)
       {
         files = request3d.files?.ToList();
+
         zoomLevel = request3d.zoomLevel;
         numTiles = TileServiceUtils.NumberOfTiles(zoomLevel);
         topLeftTile = new Point {x = request3d.xTile, y = request3d.yTile};
@@ -61,6 +65,17 @@ namespace VSS.Tile.Service.Common.Executors
       else
       {
         ThrowRequestTypeCastException<DxfTileRequest>();
+      }
+
+      //Fallback here
+      if (files.Any(f => f.ImportedUtc < configStore.GetValueDateTime("TCC_TILE_FALLBACK_DATE", DateTime.Parse("11/22/2019", CultureInfo.CreateSpecificCulture("en-US")))))
+      {
+        var projectUid = files.First().ProjectUid;
+        if (bbox == null && item is DxfTile3dRequest request3d)
+          bbox = WebMercatorProjection.FromXyzToBoundingBox2DLatLon(request3d.xTile, request3d.yTile, request3d.zoomLevel);
+
+        var tileData = await productivity3DProxyCompactionTile.GetLineworkTile(Guid.Parse(projectUid), 256, 256, bboxHelper.GetBoundingBox(bbox), files.First().ImportedFileType.ToString(), customHeaders);
+        return new TileResult(tileData);
       }
 
       log.LogDebug($"DxfTileExecutor: {files?.Count ?? 0} files");
@@ -80,7 +95,10 @@ namespace VSS.Tile.Service.Common.Executors
       log.LogDebug(string.Join(",", files.Select(f => f.Name).ToList()));
 
       var tileList = new List<byte[]>();
-      var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER");
+      const string DATA_OCEAN_ROOT_FOLDER_ID_KEY = "DATA_OCEAN_ROOT_FOLDER_ID";
+      var dataOceanRootFolder = configStore.GetValueString(DATA_OCEAN_ROOT_FOLDER_ID_KEY);
+      if (string.IsNullOrEmpty(dataOceanRootFolder))
+        throw new ArgumentException($"Missing environment variable {DATA_OCEAN_ROOT_FOLDER_ID_KEY}");
 
       //For GeoTIFF files, use the latest version of a file
       var geoTiffFiles = files.Where(x => x.ImportedFileType == ImportedFileType.GeoTiff).ToList();
@@ -105,7 +123,7 @@ namespace VSS.Tile.Service.Common.Executors
             file.ImportedFileType == ImportedFileType.Alignment ||
             file.ImportedFileType == ImportedFileType.GeoTiff)
         {
-          var fullPath = DataOceanFileUtil.DataOceanPath(rootFolder, file.CustomerUid, file.ProjectUid);
+          var fullPath = DataOceanFileUtil.DataOceanPath(dataOceanRootFolder, file.CustomerUid, file.ProjectUid);
           var fileName = DataOceanFileUtil.DataOceanFileName(file.Name,
             file.ImportedFileType == ImportedFileType.SurveyedSurface || file.ImportedFileType == ImportedFileType.GeoTiff,
             Guid.Parse(file.ImportedFileUid), file.SurveyedUtc);
@@ -295,7 +313,7 @@ namespace VSS.Tile.Service.Common.Executors
     /// </summary>
     private static string GetFullTileName(Point topLeftTile, int zoomLevel, string path, string fileName)
     {
-      return new DataOceanFileUtil(fileName, path).GetTileFileName(zoomLevel, (int)topLeftTile.y, (int)topLeftTile.x);
+      return new DataOceanFileUtil($"{path}{DataOceanUtil.PathSeparator}{fileName}").GetTileFileName(zoomLevel, (int)topLeftTile.y, (int)topLeftTile.x);
     }
   }
 }

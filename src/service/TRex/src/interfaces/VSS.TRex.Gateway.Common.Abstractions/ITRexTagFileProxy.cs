@@ -11,7 +11,5 @@ namespace VSS.TRex.Gateway.Common.Abstractions
       IDictionary<string, string> customHeaders = null);
     Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest,
       IDictionary<string, string> customHeaders = null);
-    Task<ContractExecutionResult> SendTagFileNonDirectToConnectedSite(CompactionTagFileRequest compactionTagFileRequest,
-      IDictionary<string, string> customHeaders = null);
   }
 }

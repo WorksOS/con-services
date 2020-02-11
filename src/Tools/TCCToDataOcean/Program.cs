@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using TCCToDataOcean.DatabaseAgent;
 using TCCToDataOcean.Interfaces;
+using TCCToDataOcean.Models;
 using TCCToDataOcean.Types;
 using TCCToDataOcean.Utils;
 using VSS.Common.Abstractions.Configuration;
@@ -27,7 +28,8 @@ namespace TCCToDataOcean
   {
     private static void Main()
     {
-      MainAsync().GetAwaiter().GetResult();
+      MainAsync().GetAwaiter()
+                 .GetResult();
     }
 
     private static async Task MainAsync()
@@ -41,22 +43,30 @@ namespace TCCToDataOcean
       await migrator.MigrateFilesForAllActiveProjects().ConfigureAwait(false);
 
       serviceProvider.GetRequiredService<ILiteDbAgent>()
-                     .SetMigationInfo_EndTime();
+                     .Update(1, delegate (MigrationInfo obj)
+                     {
+                       var endTimeUtc = DateTime.Now;
+                       obj.EndTime = endTimeUtc;
+                       obj.Duration = endTimeUtc.Subtract(obj.StartTime).ToString();
+                     });
     }
 
     private static void ConfigureServices(IServiceCollection services)
     {
       var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
                                              .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ENVIRONMENT_NAME")}.json", optional: true, reloadOnChange: false)
+                                             .AddJsonFile($"./DeploymentData/projects.{Environment.GetEnvironmentVariable("ENVIRONMENT_NAME")}.json", optional: false, reloadOnChange: false)
                                              .Build();
 
       var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("TCCToDataOcean.log"));
 
       services.AddLogging()
+              .AddMemoryCache()
               .AddSingleton(loggerFactory);
 
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>(_ => new GenericConfiguration(loggerFactory, config));
+      services.AddSingleton<IConfiguration>(config);
       services.AddScoped<IProjectRepository, ProjectRepository>();
       services.AddScoped<IErrorCodesProvider, MigrationErrorCodesProvider>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
@@ -69,6 +79,8 @@ namespace TCCToDataOcean
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ILiteDbAgent, LiteDbAgent>();
       services.AddSingleton<ICSIBAgent, CSIBAgent>();
+      services.AddSingleton<IDataOceanAgent, DataOceanAgent>();
+      services.AddSingleton<ICalibrationFileAgent, CalibrationFileAgent>();
     }
   }
 }

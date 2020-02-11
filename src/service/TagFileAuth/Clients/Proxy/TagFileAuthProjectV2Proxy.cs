@@ -9,11 +9,10 @@ using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.Proxy
 {
@@ -48,14 +47,14 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
       }
     }
 
-    public async Task<GetProjectAndAssetUidsResult> GetProjectUid(GetProjectUidRequest request,
+    public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsEarthWorksRequest request,
       IDictionary<string, string> customHeaders = null)
     {
       var jsonData = JsonConvert.SerializeObject(request);
-      log.LogDebug($"{nameof(GetProjectUid)}  GetProjectUidRequest: {jsonData}");
+      log.LogDebug($"{nameof(GetProjectAndAssetUidsEarthWorks)}  getProjectAndAssetUidsEarthWorksRequest: {jsonData}");
       using (var payload = new MemoryStream(Encoding.UTF8.GetBytes(jsonData)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsResult>($"project/getUid", customHeaders, HttpMethod.Post, payload: payload);
+        return await SendMasterDataItemServiceDiscoveryNoCache<GetProjectAndAssetUidsEarthWorksResult>($"project/getUidsEarthWorks", customHeaders, HttpMethod.Post, payload: payload);
       }
     }
   }

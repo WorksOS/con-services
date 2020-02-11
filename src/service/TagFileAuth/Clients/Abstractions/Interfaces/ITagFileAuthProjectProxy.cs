@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
 {
@@ -15,10 +14,10 @@ namespace VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces
       IDictionary<string, string> customHeaders = null);
 
     /*
-     * [Route("api/v2/project/getUid")]     [HttpPost]
-     * returns GetProjectUidResult
+     * [Route("api/v2/project/getUidsEarthWorks")]     [HttpPost]
+     * returns GetProjectAndAssetUidsEarthWorksResult
      */
-    Task<GetProjectAndAssetUidsResult> GetProjectUid(GetProjectUidRequest getProjectUidRequest,
+    Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndAssetUidsEarthWorks(GetProjectAndAssetUidsEarthWorksRequest getProjectAndAssetUidsEarthWorksRequest,
       IDictionary<string, string> customHeaders = null);
 
   }

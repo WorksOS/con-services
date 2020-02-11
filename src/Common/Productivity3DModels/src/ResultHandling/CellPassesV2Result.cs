@@ -84,6 +84,16 @@ public class CellPassesV2Result : ContractExecutionResult
       /// A bit field stored used to hold the GPSMode recorded by the machine at the time the cell was passed over. The LSB four bits in the byte are used for this purpose.
       /// </summary>
       public byte GpsModeStore { get; set; }
+
+      /// <summary>
+      /// Is this pass representing a half pass, defaults to false
+      /// </summary>
+      public bool HalfPass { get; set; }
+
+      /// <summary>
+      /// Cell Pass type, used in half passes - Defaults to Front
+      /// </summary>
+      public CellPassType PassType { get; set; }
     }
 
     /// <summary>

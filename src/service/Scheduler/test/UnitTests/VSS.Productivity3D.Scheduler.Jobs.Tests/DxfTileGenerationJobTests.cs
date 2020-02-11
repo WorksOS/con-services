@@ -41,10 +41,10 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     }
 
     [TestMethod]
-    public void CanSetupDxfJob() => CreateDxfJobWithMocks().Setup(null);
+    public void CanSetupDxfJob() => CreateDxfJobWithMocks().Setup(null,null);
 
     [TestMethod]
-    public void CanTearDownDxfJob() => CreateDxfJobWithMocks().TearDown(null);
+    public void CanTearDownDxfJob() => CreateDxfJobWithMocks().TearDown(null, null);
 
     [TestMethod]
     [DataRow(false)]
@@ -74,7 +74,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
                            It.IsAny<string>(),
                            It.IsAny<string>(),
                            DxfUnitsType.Meters,
-                           It.IsAny<Dictionary<string, string>>()))
+                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string,string>>>() ))
                  .ReturnsAsync(new TileMetadata());
 
       var mockNotification = new Mock<INotificationHubClient>();
@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
 
       var job = new DxfTileGenerationJob(configStore.Object, mockPegasus.Object, mockTPaaSAuth.Object, mockNotification.Object, loggerFactory);
 
-      await job.Run(obj);
+      await job.Run(obj, null);
 
       var runTimes = enableDxfTileGeneration ? Times.Once() : Times.Never();
 
@@ -98,18 +98,18 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
                            It.IsAny<string>(),
                            It.IsAny<string>(),
                            DxfUnitsType.Meters,
-                           It.IsAny<Dictionary<string, string>>()), runTimes);
+                           It.IsAny<Dictionary<string, string>>(), It.IsAny<Action<IDictionary<string, string>>>()), runTimes);
     }
 
     [TestMethod]
-    public async Task CanRunDxfJobFailureMissingRequest() => await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateDxfJobWithMocks().Run(null));
+    public async Task CanRunDxfJobFailureMissingRequest() => await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateDxfJobWithMocks().Run(null, null));
 
     [TestMethod]
     public async Task CanRunDxfJobFailureWrongRequest()
     {
       var obj = JObject.Parse(JsonConvert.SerializeObject(new JobRequest())); //any model which is not DxfTileGenerationRequest
 
-      await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateDxfJobWithMocks().Run(obj));
+      await Assert.ThrowsExceptionAsync<ServiceException>(() => CreateDxfJobWithMocks().Run(obj, null));
     }
 
     private DxfTileGenerationJob CreateDxfJobWithMocks()

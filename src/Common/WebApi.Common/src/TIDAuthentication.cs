@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -20,7 +21,7 @@ namespace VSS.WebApi.Common
   public class TIDAuthentication
   {
     private readonly RequestDelegate _next;
-    private readonly ILogger<TIDAuthentication> log;
+    protected readonly ILogger<TIDAuthentication> log;
     private readonly ICustomerProxy customerProxy;
     private readonly IConfigurationStore store;
 
@@ -61,14 +62,16 @@ namespace VSS.WebApi.Common
       if (!InternalConnection(context))
       {
         bool isApplicationContext;
-        string applicationName = string.Empty;
-        string userUid = string.Empty;
-        string userEmail = string.Empty;
-        string customerUid = string.Empty;
-        string customerName = string.Empty;
+        string applicationName;
+        string userUid;
+        string userEmail;
+        var customerUid = string.Empty;
+        string customerName;
 
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
 
+        // If no authorization header found, nothing to process further
+        // note keep these result messages vague (but distinct): https://www.gnucitizen.org/blog/username-enumeration-vulnerabilities/
         if (string.IsNullOrEmpty(authorization))
         {
           log.LogWarning("No account selected for the request");
@@ -83,26 +86,34 @@ namespace VSS.WebApi.Common
           applicationName = jwtToken.ApplicationName;
           userEmail = isApplicationContext ? applicationName : jwtToken.EmailAddress;
           userUid = isApplicationContext ? jwtToken.ApplicationId : jwtToken.UserUid.ToString();
+          if (isApplicationContext)
+          {
+            // Applications can override the User ID, so we can fetch 'per user' information
+            // E.g Scheduled reports needs to get the Preferences for the user they are running on behalf of, not the Report Server settings.
+            var overrideUserUid = context.Request.Headers[HeaderConstants.X_VISION_LINK_USER_UID];
+            if (!string.IsNullOrEmpty(overrideUserUid))
+            {
+              log.LogInformation($"Overriding User ID via {HeaderConstants.X_VISION_LINK_USER_UID} header with {overrideUserUid}, for application request from {applicationName}.");
+              userUid = overrideUserUid;
+            }
+          }
         }
         catch (Exception e)
         {
-          log.LogWarning(e, "Invalid JWT token with exception");
+          log.LogWarning(e, "Invalid authentication with exception");
           await SetResult("Invalid authentication", context);
           return;
         }
 
-        bool requireCustomerUid = RequireCustomerUid(context);
-
+        var requireCustomerUid = RequireCustomerUid(context);
         if (requireCustomerUid)
-        {
           customerUid = context.Request.Headers["X-VisionLink-CustomerUID"];
-        }
 
-        // If no authorization header found, nothing to process further
-        if (string.IsNullOrEmpty(authorization) || (string.IsNullOrEmpty(customerUid) && requireCustomerUid))
+        // If required customer not provided, nothing to process further
+        if (string.IsNullOrEmpty(customerUid) && requireCustomerUid)
         {
-          log.LogWarning("No account selected for the request");
-          await SetResult("No account selected", context);
+          log.LogWarning("No account found for the request");
+          await SetResult("No account found", context);
           return;
         }
 
@@ -144,8 +155,7 @@ namespace VSS.WebApi.Common
           customerName = "Unknown";
         }
 
-        log.LogInformation("Authorization: for Customer: {0} userUid: {1} userEmail: {2} allowed", customerUid, userUid,
-          userEmail);
+        log.LogInformation($"Authorization: for Customer: {customerUid} userUid: {userUid} userEmail: {userEmail} allowed");
         //Set calling context Principal
         context.User = CreatePrincipal(userUid, customerUid, customerName, userEmail, isApplicationContext, customHeaders, applicationName);
       }

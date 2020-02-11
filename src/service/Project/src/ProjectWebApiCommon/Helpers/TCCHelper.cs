@@ -10,9 +10,6 @@ using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -157,7 +154,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     /// <returns></returns>
     public static async Task<DirResult> GetFileInfoFromTccRepository(BusinessCenterFile sourceFile,
-      string fileSpaceId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
       DirResult fileEntry = null;
@@ -258,7 +254,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     /// <returns></returns>
     public static async Task<ImportedFileInternalResult> DeleteFileFromTCCRepository(FileDescriptor fileDescriptor, Guid projectUid, Guid importedFileUid,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo, IProjectRepository projectRepo)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
       log.LogInformation($"DeleteFileFromTCCRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");
 

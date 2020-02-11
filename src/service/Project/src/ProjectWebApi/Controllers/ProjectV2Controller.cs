@@ -60,8 +60,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <param name="projectRequest">CreateProjectV2Request model</param>
     /// <remarks>Updates existing project</remarks>
-    /// <response code="200">Ok</response>
-    /// <response code="400">Bad request</response>
     [Route("api/v2/projects")]
     [HttpPost]
     public async Task<ReturnLongV2Result> CreateProjectV2([FromBody] CreateProjectV2Request projectRequest)
@@ -95,8 +93,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<CreateProjectExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, null, customHeaders, Producer, KafkaTopicName,
-            productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
-            subscriptionProxy: subscriptionProxy, projectRepo: ProjectRepo,
+            Productivity3dV1ProxyCoord, subscriptionProxy: subscriptionProxy, projectRepo: ProjectRepo,
             subscriptionRepo: SubscriptionRepo, fileRepo: FileRepo, httpContextAccessor: httpContextAccessor, dataOceanClient: DataOceanClient, authn: Authorization)
           .ProcessAsync(createProjectEvent)
       );

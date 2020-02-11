@@ -324,6 +324,16 @@ namespace VSS.ConfigurationStore
       return GetValue(key, defaultValue);
     }
 
+    public DateTime? GetValueDateTime(string key)
+    {
+      return GetValue<DateTime?>(key, null);
+    }
+
+    public DateTime GetValueDateTime(string key, DateTime defaultValue)
+    {
+      return GetValue(key, defaultValue);
+    }
+
     public Guid GetValueGuid(string key)
     {
       return GetValue(key, Guid.Empty);

@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using VSS.MasterData.Models;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Productivity3D.Models;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Gateway.Common.Converters.Profiles

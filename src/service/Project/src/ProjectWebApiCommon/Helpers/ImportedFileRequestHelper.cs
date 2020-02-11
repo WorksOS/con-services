@@ -27,7 +27,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
   /// <summary>
   ///
   /// </summary>
-  public class ImportedFileRequestHelper
+  public static class ImportedFileRequestHelper
   {
     #region productivity3D
 
@@ -175,8 +175,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task<ContractExecutionResult> NotifyTRexUpdateFile(Guid projectUid,
       ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
-      ITRexImportFileProxy tRexImportFileProxy, IProjectRepository projectRepo
-    )
+      ITRexImportFileProxy tRexImportFileProxy)
     {
       var result = new ContractExecutionResult();
       string fullFileName = filename;
@@ -208,8 +207,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task<ContractExecutionResult> NotifyTRexDeleteFile(Guid projectUid,
       ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
-      ITRexImportFileProxy tRexImportFileProxy, IProjectRepository projectRepo
-    )
+      ITRexImportFileProxy tRexImportFileProxy)
     {
       var result = new ContractExecutionResult();
       string fullFileName = filename;
@@ -262,8 +260,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               stream.CopyTo(ms);
               ms.Seek(0, SeekOrigin.Begin);
               await DataOceanHelper.WriteFileToDataOcean(
-                ms, rootFolder, customerUid, projectUid.ToString(), generatedName, false,
-                null, log, serviceExceptionHandler, dataOceanClient, authn, alignmentUid);
+                ms, rootFolder, customerUid, projectUid.ToString(), generatedName, log, serviceExceptionHandler, dataOceanClient, authn, alignmentUid, configStore);
             }
           }
         }
@@ -274,5 +271,4 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     #endregion
   }
-
 }

@@ -8,7 +8,7 @@ using TCCToDataOcean.Utils;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 
-namespace TCCToDataOcean
+namespace TCCToDataOcean.Models
 {
   public class CSIBAgent : ICSIBAgent
   {

@@ -87,7 +87,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError(e, "Exception performing mutability conversion:");
+          Log.LogError(e, $"Exception performing mutability conversion in {nameof(WriteStreamToPersistentStore)}");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 
@@ -144,7 +144,7 @@ namespace VSS.TRex.Storage
         }
         catch (Exception e)
         {
-          Log.LogError(e, "Exception performing mutability conversion:");
+          Log.LogError(e, $"Exception performing mutability conversion in {nameof(WriteSpatialStreamToPersistentStore)}");
           return FileSystemErrorStatus.MutableToImmutableConversionError;
         }
 

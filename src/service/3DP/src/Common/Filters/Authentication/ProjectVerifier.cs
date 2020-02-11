@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using Microsoft.AspNetCore.Mvc.Filters;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -19,6 +20,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     public override void OnActionExecuting(ActionExecutingContext actionContext)
     {
       object projectIdentifier = null;
+
+      // EarthWorks cutfill interface: CompactionCellController (api/v2/device/patches) doesn't contain a projectId/Uid
+      if (actionContext.ActionDescriptor.DisplayName != null && actionContext.ActionDescriptor.DisplayName.ToLower().Contains("getsubgridpatches"))
+        return;
 
       // Identify any query parameter called 'request'.
       if (actionContext.ActionArguments.ContainsKey("request"))
@@ -52,6 +57,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
       {
         projectIdentifier = actionContext.ActionArguments[PROJECT_UID];
       }
+
       if (projectIdentifier == null)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,

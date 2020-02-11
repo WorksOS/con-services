@@ -17,6 +17,7 @@ using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
 using System.IO;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -48,7 +49,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
       catch (Exception e)
       {
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(string.Empty, string.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
+        return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
       }
       
       return tfaResult;
@@ -96,7 +97,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       // Type C. Do we have what we need already (Most likely test tool submission)
       if (tagDetail.assetId != null && tagDetail.projectId != null)
         if (tagDetail.assetId != Guid.Empty && tagDetail.projectId != Guid.Empty)
-          return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
+          return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 0, "success");
 
       // Business rule for device type conversion
       var radioType = preScanState.RadioType == "torch" ? DeviceTypeEnum.SNM940 : DeviceTypeEnum.MANUALDEVICE; // torch device set to type 6
@@ -106,10 +107,10 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         // this is a TFA code. This check is also done as a pre-check as the scenario is very frequent, to avoid the API call overhead.
         var message = "Must have either a valid TCCOrgID or RadioSerialNo or EC520SerialNo or ProjectUID";
         Log.LogWarning(message);
-        return GetProjectAndAssetUidsResult.CreateGetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
+        return new GetProjectAndAssetUidsResult(tagDetail.projectId.ToString(), tagDetail.assetId.ToString(), 3037, message);
       }
 
-      var tfaRequest = GetProjectAndAssetUidsRequest.CreateGetProjectAndAssetUidsRequest(
+      var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
         (int)radioType, preScanState.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
         MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0),

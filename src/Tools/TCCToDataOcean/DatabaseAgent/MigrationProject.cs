@@ -1,10 +1,11 @@
 ﻿using System;
+using TCCToDataOcean.Utils;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TCCToDataOcean.DatabaseAgent
 {
-  public class MigrationProject : MigrationObj
+  public sealed class MigrationProject : MigrationObj
   {
     public string ProjectUid { get; set; }
     public long ProjectId { get; set; }
@@ -16,18 +17,24 @@ namespace TCCToDataOcean.DatabaseAgent
     public string MigrationStateMessage { get; set; }
     public bool HasValidDcFile { get; set; }
     public string DcFilename { get; set; }
-    public DxfUnitsType? DxfUnitsType { get; set; }
     public int TotalFileCount { get; set; }
     public int EligibleFileCount { get; set; }
-    public bool CanResolveCSIB { get; set; }
+    public int UploadedFileCount { get; set; }
     public string ResolveCSIBMessage { get; set; }
     public string CSIB { get; set; }
+    public int MigrationAttempts { get; set; }
+    public double ProjectArea { get; }
+
+    public CalibrationFile CalibrationFile { get; set; }
+    public MigrationCoordinateSystemInfo CoordinateSystemInfo { get; set; }
 
     public MigrationProject()
     { }
 
     public MigrationProject(Project project)
     {
+      TableName = Table.Projects;
+
       Id = project.LegacyProjectID;
       ProjectId = project.LegacyProjectID;
       ProjectUid = project.ProjectUID;
@@ -36,6 +43,9 @@ namespace TCCToDataOcean.DatabaseAgent
       IsDeleted = project.IsDeleted;
       SubscriptionEndDate = project.SubscriptionEndDate;
       DcFilename = project.CoordinateSystemFileName;
+      ProjectArea = GeoJSON.Area(project.GeometryWKT);
+
+      CoordinateSystemInfo = new MigrationCoordinateSystemInfo();
     }
   }
 }

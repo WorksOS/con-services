@@ -106,6 +106,16 @@ namespace VSS.AWS.TransferProxy.UnitTests
       throw new NotImplementedException();
     }
 
+    public DateTime? GetValueDateTime(string key)
+    {
+      throw new NotImplementedException();
+    }
+
+    public DateTime GetValueDateTime(string key, DateTime defaultValue)
+    {
+      throw new NotImplementedException();
+    }
+
     public bool UseKubernetes => false;
     public string KubernetesConfigMapName => string.Empty;
     public string KubernetesNamespace => string.Empty;

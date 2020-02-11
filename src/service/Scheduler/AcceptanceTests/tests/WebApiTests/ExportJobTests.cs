@@ -83,9 +83,9 @@ namespace WebApiTests
       //Get the job status...
       var statusResult = WaitForExpectedStatus(jobId, "FAILED");
       Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
-      Assert.AreEqual(HttpStatusCode.BadRequest, statusResult.FailureDetails.Code, "Wrong http status code");
-      Assert.AreEqual(2002, statusResult.FailureDetails.Result.Code, "Wrong failure code");
-      Assert.AreEqual("Failed to get requested export data with error: No data for export", statusResult.FailureDetails.Result.Message, "Wrong failure message");
+      Assert.AreEqual(HttpStatusCode.InternalServerError, statusResult.FailureDetails.Code, "Wrong http status code");
+      Assert.AreEqual(-3, statusResult.FailureDetails.Result.Code, "Wrong failure code");
+      Assert.IsTrue(statusResult.FailureDetails.Result.Message.Contains("Failed to get requested export data with error: No data for export"), "Wrong failure message");
     }
 
     [TestMethod]
@@ -117,7 +117,7 @@ namespace WebApiTests
       Assert.IsNotNull(statusResult.FailureDetails, "Should get details on failure");
       Assert.AreEqual(HttpStatusCode.InternalServerError, statusResult.FailureDetails.Code, "Wrong http status code");
       Assert.AreEqual(-3, statusResult.FailureDetails.Result.Code, "Wrong failure code");
-      Assert.AreEqual("A task was canceled.", statusResult.FailureDetails.Result.Message, "Wrong failure message");
+      Assert.IsTrue(statusResult.FailureDetails.Result.Message.Contains("was canceled."), "Wrong failure message");
 
     }
 

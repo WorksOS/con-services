@@ -14,11 +14,12 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
     public int Y { get; set; }
     public int Z { get; set; }
     public int DisplayMode { get; set; }
+    public bool HasLighting { get; set; }
 
     public QuantizedMeshRequestArgument()
     { }
 
-    public QuantizedMeshRequestArgument(Guid projectUid, int x, int y, int z, IFilterSet filters, int displayMode)
+    public QuantizedMeshRequestArgument(Guid projectUid, int x, int y, int z, IFilterSet filters, int displayMode, bool hasLighting)
     {
       // todo whats needed
       ProjectID = projectUid;
@@ -27,6 +28,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
       Z = z;
       Filters = filters;
       DisplayMode = displayMode;
+      HasLighting = hasLighting;
     }
 
     /// <summary>
@@ -41,6 +43,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
       writer.WriteInt(Y);
       writer.WriteInt(Z);
       writer.WriteInt(DisplayMode);
+      writer.WriteBoolean(HasLighting);
     }
 
     /// <summary>
@@ -55,6 +58,7 @@ namespace VSS.TRex.QuantizedMesh.GridFabric.Arguments
       Y = reader.ReadInt();
       Z = reader.ReadInt();
       DisplayMode= reader.ReadInt();
+      HasLighting = reader.ReadBoolean();
     }
 
   }

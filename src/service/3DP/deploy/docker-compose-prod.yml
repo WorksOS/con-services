@@ -11,7 +11,8 @@ services:
      - scheduler_service=http://scheduler.prod.prod-eks.services.myvisionlink.com
      - project_service=http://project.prod.prod-eks.services.myvisionlink.com
      - filter_service=http://filter.prod.prod-eks.services.myvisionlink.com
-     - trex_service_connectedsite=http://connectedsite.prod.prod-eks.services.myvisionlink.com.
+     - tagfileauth_service=http://tagfileauth.prod.prod-eks.services.myvisionlink.com
+     - trex_service_connectedsite=http://connectedsite.prod.prod-eks.services.myvisionlink.com
      - trex_service_immutable=http://trex.immutable.dev.k8s.vspengg.com
      - trex_service_mutable=http://trex.mutable.dev.k8s.vspengg.com
      - ASSETMGMT_CACHE_LIFE=00:15:00
@@ -24,6 +25,7 @@ services:
      - ELEVATION_EXTENTS_CACHE_LIFE=00:15:00
      - ENABLE_CONNECTED_SITE_GATEWAY=true
      - ENABLE_RAPTOR_GATEWAY_TAGFILE=true
+     - ENABLE_TREX_GATEWAY_CCA=false
      - ENABLE_TREX_GATEWAY_CELL_DATUM=false
      - ENABLE_TREX_GATEWAY_DESIGNIMPORT=false
      - ENABLE_TREX_GATEWAY_ELEVATION=false
@@ -33,7 +35,9 @@ services:
      - ENABLE_TREX_GATEWAY_LINEWORKFILE=false
      - ENABLE_TREX_GATEWAY_MACHINEDESIGNS=false
      - ENABLE_TREX_GATEWAY_MACHINES=false
+     - ENABLE_TREX_GATEWAY_PASSCOUNT=false
      - ENABLE_TREX_GATEWAY_PROJECTSTATISTICS=false
+     - ENABLE_TREX_GATEWAY_SPEED=false     
      - ENABLE_TREX_GATEWAY_STATIONOFFSET=false
      - ENABLE_TREX_GATEWAY_SURFACE=false
      - ENABLE_TREX_GATEWAY_TAGFILE=false
@@ -83,10 +87,10 @@ services:
      - TCCSynchSubscriptionIssueFolder=Subscription (Issue)
      - TCCUSERNAME=vlproduction
      - TILE_BASE_URL=https://api-stg.trimble.com/t/trimble.com/vss-tile/1.0
-     - TILE_RENDER_JOB_TIMEOUT=00:00:10
+     - TILE_RENDER_JOB_TIMEOUT=00:02:00
      - TILE_RENDER_MAX_ZOOM_LEVEL=21
      - TILE_RENDER_MAX_ZOOM_RANGE=14
-     - TILE_RENDER_WAIT_INTERVAL=2000    
+     - TILE_RENDER_WAIT_INTERVAL=5000    
     ports:
       - "8080:80"
 networks:

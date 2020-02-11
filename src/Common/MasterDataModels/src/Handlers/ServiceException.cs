@@ -15,7 +15,7 @@ namespace VSS.Common.Exceptions
     /// </summary>
     /// <param name="code"></param>
     /// <param name="result"></param>
-    public ServiceException(HttpStatusCode code, ContractExecutionResult result)
+    public ServiceException(HttpStatusCode code, ContractExecutionResult result) : base (result.Message)
     {
       GetResult = result;
       Code = code;
@@ -26,7 +26,7 @@ namespace VSS.Common.Exceptions
     /// </summary>
     /// <param name="code"></param>
     /// <param name="result"></param>
-    public ServiceException(HttpStatusCode code, ContractExecutionResult result, Exception innerException)
+    public ServiceException(HttpStatusCode code, ContractExecutionResult result, Exception innerException) : base (result.Message)
     {
       GetResult = result;
       Code = code;

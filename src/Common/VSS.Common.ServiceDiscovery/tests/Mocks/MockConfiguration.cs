@@ -132,6 +132,18 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Mocks
       throw new NotImplementedException();
     }
 
+    public DateTime? GetValueDateTime(string v)
+    {
+      return (DateTime)Values[v];
+    }
+
+    public DateTime GetValueDateTime(string v, DateTime defaultValue)
+    {
+      if (Values.ContainsKey(v))
+        return (DateTime)Values[v];
+      return defaultValue;
+    }
+
     public bool UseKubernetes { get; }
     public string KubernetesConfigMapName { get; }
     public string KubernetesNamespace { get; }

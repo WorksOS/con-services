@@ -40,26 +40,25 @@ namespace VSS.TCCFileAccess
     private readonly ILoggerFactory logFactory;
     private readonly IConfigurationStore configStore;
 
-    private static string ticket = String.Empty;
-    private static object ticketLockObj = new object();
+    private static string ticket = string.Empty;
+    private static readonly object ticketLockObj = new object();
 
     /// <summary>
     /// The file cache - contains byte array for PNGs as a value and a full filename (path to the PNG) as a key. 
     /// It should persist across session so static. This class is thread-safe.
     /// Caching the tile files improves performance as downloading files from TCC is expensive.
     /// </summary>
-    private static readonly MemoryCache fileCache =
-      new MemoryCache(new MemoryCacheOptions()
-      {
-        CompactOnMemoryPressure = true,
-        ExpirationScanFrequency = TimeSpan.FromMinutes(10)
-      });
+    private static readonly MemoryCache fileCache = new MemoryCache(new MemoryCacheOptions
+    {
+      CompactOnMemoryPressure = true,
+      ExpirationScanFrequency = TimeSpan.FromMinutes(10)
+    });
 
     /// <summary>
     /// The cache lookup class to support fast keys lookup in cache by filename, not the full path to the PNG as there are a lot of tiles per a file.
     /// It folder structure in TCC is /customeruid/projectuid/filename_generatedsuffix$.DXF_Tiles$/zoom/ytile/xtile.png
     /// </summary>
-    private CacheLookup cacheLookup = new CacheLookup();
+    private readonly CacheLookup cacheLookup = new CacheLookup();
 
     private string Ticket
     {
@@ -81,7 +80,7 @@ namespace VSS.TCCFileAccess
       tccUserName = configuration.GetValueString("TCCUSERNAME");
       tccPassword = configuration.GetValueString("TCCPWD");
       tccOrganization = configuration.GetValueString("TCCORG");
-      if (string.IsNullOrEmpty(tccBaseUrl) || string.IsNullOrEmpty(tccUserName) || 
+      if (string.IsNullOrEmpty(tccBaseUrl) || string.IsNullOrEmpty(tccUserName) ||
           string.IsNullOrEmpty(tccPassword) || string.IsNullOrEmpty(tccOrganization))
       {
         throw new Exception("Missing environment variable TCCBASEURL, TCCUSERNAME, TCCPWD or TCCORG");
@@ -102,8 +101,9 @@ namespace VSS.TCCFileAccess
       List<Organization> orgs = null;
       try
       {
-        GetFileSpacesParams fileSpaceParams = new GetFileSpacesParams { };
+        var fileSpaceParams = new GetFileSpacesParams();
         var filespacesResult = await ExecuteRequest<GetFileSpacesResult>(Ticket, "GetFileSpaces", fileSpaceParams);
+
         if (filespacesResult != null)
         {
           if (filespacesResult.success)
@@ -149,11 +149,11 @@ namespace VSS.TCCFileAccess
       return orgs;
     }
 
-    public async Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents,
-      long sizeOfContents)
+    public Task<PutFileResponse> PutFile(Organization org, string path, string filename, Stream contents, long sizeOfContents)
     {
       Log.LogDebug("PutFile: org={0}", org.shortName);
-      return await PutFileEx(org.filespaceId, path, filename, contents, sizeOfContents);
+
+      return PutFileEx(org.filespaceId, path, filename, contents, sizeOfContents);
     }
 
     public async Task<bool> PutFile(string filespaceId, string path, string filename, Stream contents,
@@ -173,13 +173,13 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("PutFileEx: filespaceId={0}, fullName={1} {2}", filespaceId, path, filename);
 
       //NOTE: for this to work in TCC the path must exist otherwise TCC either gives an error or creates the file as the folder name
-      PutFileRequest sendFileParams = new PutFileRequest()
+      var sendFileParams = new PutFileRequest
       {
         filespaceid = filespaceId,
-        path = path,//WebUtility.UrlEncode(path),
+        path = path,
         replace = true,
         commitUpload = true,
-        filename = filename//WebUtility.UrlEncode(filename)
+        filename = filename
       };
       if (string.IsNullOrEmpty(tccBaseUrl))
         throw new Exception("Configuration Error - no TCC url specified");
@@ -205,62 +205,53 @@ namespace VSS.TCCFileAccess
             $"Can not execute request TCC request with error {webException.Status} and {webException.Message}. {GetStringFromResponseStream(response)}");
         }
       }
-      catch (Exception e)
+      catch (Exception exception)
       {
-        Log.LogWarning(e, "Can not execute request TCC response");
+        Log.LogWarning($"TCC request failed: {exception.Message}");
       }
+
       return result;
     }
 
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    /// <param name="org">The org.</param>
-    /// <param name="fullName">The full name.</param>
-    /// <returns></returns>
-    public async Task<Stream> GetFile(Organization org, string fullName)
-    {
-      Log.LogDebug("GetFile: org={0} {1}, fullName={2}", org.shortName, org.filespaceId, fullName);
-
-      return await GetFileEx(org.filespaceId, fullName);
-    }
+    public Task<Stream> GetFile(Organization org, string fullName, int retries = 3) => GetFileEx(org.filespaceId, fullName, retries);
 
     /// <summary>
     /// Gets the file. The resulting stream should be disposed after read completed
     /// </summary>
-    /// <param name="filespaceId">The file space ID.</param>
-    /// <param name="fullName">The full name.</param>
-    /// <returns></returns>
-    public async Task<Stream> GetFile(string filespaceId, string fullName)
-    {
-      Log.LogDebug("GetFile: filespaceId={0}, fullName={1}", filespaceId, fullName);
+    public async Task<Stream> GetFile(string filespaceId, string fullName, int retries = 3) => await GetFileEx(filespaceId, fullName, retries);
 
-      return await GetFileEx(filespaceId, fullName);
-    }
-
-    private async Task<Stream> GetFileEx(string filespaceId, string fullName)
+    private async Task<Stream> GetFileEx(string filespaceId, string fullName, int retries)
     {
-      byte[] file = null;
-      bool cacheable = TCCFile.FileCacheable(fullName);
+      Log.LogDebug($"{nameof(GetFileEx)}: filespaceId={filespaceId}, fullName={fullName}, retries={retries}");
+
+      byte[] file;
+      var cacheable = TCCFile.FileCacheable(fullName);
+
       if (cacheable)
       {
-        Log.LogDebug("Trying to extract from cache {0} with cache size {1}", fullName,fileCache.Count);
+        Log.LogDebug("Trying to extract from cache {0} with cache size {1}", fullName, fileCache.Count);
+
         if (fileCache.TryGetValue(fullName, out file))
         {
           Log.LogDebug("Serving TCC tile request from cache {0}", fullName);
+
           if (file.Length == 0)
           {
             Log.LogDebug("Serving TCC tile request from cache empty tile");
             return null;
           }
+
           return new MemoryStream(file);
         }
       }
 
-      GetFileParams getFileParams = new GetFileParams
+      var getFileParams = new GetFileParams
       {
         filespaceid = filespaceId,
-        path = fullName//WebUtility.UrlEncode(fullName)
+        path = fullName
       };
 
       if (string.IsNullOrEmpty(tccBaseUrl))
@@ -284,7 +275,7 @@ namespace VSS.TCCFileAccess
           }
         }
 
-        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers)).ReadAsStreamAsync())
+        using (var responseStream = await (await gracefulClient.ExecuteRequestAsStreamContent(requestString, HttpMethod.Get, headers, retries: retries)).ReadAsStreamAsync())
         {
           Log.LogDebug("Adding TCC tile request to cache {0}", fullName);
           responseStream.Position = 0;
@@ -321,7 +312,7 @@ namespace VSS.TCCFileAccess
         srcFullName, dstFullName);
       try
       {
-        var dstPath = dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/";
+        var dstPath = dstFullName.Substring(0, dstFullName.LastIndexOf("/", StringComparison.Ordinal)) + "/";
         if (!await FolderExists(org.filespaceId, dstPath))
         {
           var resultCreate = await MakeFolder(org.filespaceId, dstPath);
@@ -336,9 +327,9 @@ namespace VSS.TCCFileAccess
         var renParams = new RenParams
         {
           filespaceid = org.filespaceId,
-          path = srcFullName,//WebUtility.UrlEncode(srcFullName),
+          path = srcFullName,
           newfilespaceid = org.filespaceId,
-          newPath = dstFullName,//WebUtility.UrlEncode(dstFullName),
+          newPath = dstFullName,
           merge = false,
           replace = true
         };
@@ -375,7 +366,7 @@ namespace VSS.TCCFileAccess
         $"CopyFile: srcFilespaceId={srcFilespaceId}, srcFilespaceId={srcFilespaceId}, dstFilespaceId={dstFilespaceId} srcFullName={srcFullName}, dstFullName={dstFullName}");
       try
       {
-        var dstPath = dstFullName.Substring(0, dstFullName.LastIndexOf("/")) + "/";
+        var dstPath = dstFullName.Substring(0, dstFullName.LastIndexOf("/", StringComparison.Ordinal)) + "/";
         if (!await FolderExists(dstFilespaceId, dstPath))
         {
           var resultCreate = await MakeFolder(dstFilespaceId, dstPath);
@@ -389,9 +380,9 @@ namespace VSS.TCCFileAccess
         var copyParams = new CopyParams
         {
           filespaceid = srcFilespaceId,
-          path = srcFullName, //WebUtility.UrlEncode(srcFullName),
+          path = srcFullName,
           newfilespaceid = dstFilespaceId,
-          newPath = dstFullName,//WebUtility.UrlEncode(dstFullName),
+          newPath = dstFullName,
           merge = false,
           replace = true//Not sure if we want true or false here
         };
@@ -425,7 +416,7 @@ namespace VSS.TCCFileAccess
         var dirParams = new DirParams
         {
           filespaceid = org.filespaceId,
-          path = path,//WebUtility.UrlEncode(path),
+          path = path,
           recursive = false,
           filterfolders = true,
         };
@@ -448,7 +439,7 @@ namespace VSS.TCCFileAccess
       return null;
     }
 
-    public async Task<DirResult> GetFileList(string filespaceId, string path, string fileMasks=null)
+    public async Task<DirResult> GetFileList(string filespaceId, string path, string fileMasks = null)
     {
       Log.LogDebug("GetFileList: filespaceId={0}, path={1}, fileMask={2}", filespaceId, path, fileMasks);
       try
@@ -457,7 +448,7 @@ namespace VSS.TCCFileAccess
         var dirParams = new DirParams
         {
           filespaceid = filespaceId,
-          path = path,//WebUtility.UrlEncode(path),
+          path = path,
           recursive = false,
           filterfolders = false,
         };
@@ -488,10 +479,10 @@ namespace VSS.TCCFileAccess
 
       try
       {
-        LastDirChangeParams lastDirChangeParams = new LastDirChangeParams
+        var lastDirChangeParams = new LastDirChangeParams
         {
           filespaceid = filespaceId,
-          path = path,//WebUtility.UrlEncode(path),
+          path = path,
           recursive = true
         };
         var lastDirChangeResult =
@@ -517,17 +508,19 @@ namespace VSS.TCCFileAccess
       return DateTime.MinValue;
     }
 
-    public async Task<bool> FolderExists(string filespaceId, string folder)
-    {
-      return await PathExists(filespaceId, folder);
-    }
+    public Task<bool> FolderExists(string filespaceId, string folder) => PathExists(filespaceId, folder);
 
-    public async Task<bool> FileExists(string filespaceId, string filename)
+    public Task<bool> FileExists(string filespaceId, string filename)
     {
-      object obj = null;
       if (TCCFile.FileCacheable(filename))
-        if (fileCache.TryGetValue(filename, out obj)) return true;
-      return await PathExists(filespaceId, filename);
+      {
+        if (fileCache.TryGetValue(filename, out _))
+        {
+          return Task.FromResult(true);
+        }
+      }
+
+      return PathExists(filespaceId, filename);
     }
 
     private async Task<bool> PathExists(string filespaceId, string path)
@@ -535,11 +528,12 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("Searching for file or folder {0}", path);
       try
       {
-        GetFileAttributesParams getFileAttrParams = new GetFileAttributesParams
+        var getFileAttrParams = new GetFileAttributesParams
         {
           filespaceid = filespaceId,
-          path = path,//WebUtility.UrlEncode(path)
+          path = path
         };
+
         var getFileAttrResult =
           await ExecuteRequestWithAllowedError<GetFileAttributesResult>(Ticket, "GetFileAttributes", getFileAttrParams);
         if (getFileAttrResult != null)
@@ -560,15 +554,9 @@ namespace VSS.TCCFileAccess
     }
 
 
-    public async Task<bool> DeleteFolder(string filespaceId, string path)
-    {
-      return await DeleteFileEx(filespaceId, path, true);
-    }
+    public Task<bool> DeleteFolder(string filespaceId, string path) => DeleteFileEx(filespaceId, path, true);
 
-    public async Task<bool> DeleteFile(string filespaceId, string fullName)
-    {
-      return await DeleteFileEx(filespaceId, fullName, false);
-    }
+    public Task<bool> DeleteFile(string filespaceId, string fullName) => DeleteFileEx(filespaceId, fullName, false);
 
     public async Task<bool> DeleteFileEx(string filespaceId, string fullName, bool isFolder)
     {
@@ -578,7 +566,7 @@ namespace VSS.TCCFileAccess
         var deleteParams = new DeleteFileParams
         {
           filespaceid = filespaceId,
-          path = fullName,//WebUtility.UrlEncode(fullName),
+          path = fullName,
           recursive = isFolder
         };
         var deleteResult = await ExecuteRequest<DeleteFileResult>(Ticket, "Del", deleteParams);
@@ -604,12 +592,13 @@ namespace VSS.TCCFileAccess
       Log.LogDebug("MakeFolder: filespaceId={0}, path={1}", filespaceId, path);
       try
       {
-        MkDir mkDirParams = new MkDir
+        var mkDirParams = new MkDir
         {
           filespaceid = filespaceId,
           path = path,//WebUtility.UrlEncode(path),
           force = true
         };
+
         var mkDirResult = await ExecuteRequest<MkDirResult>(Ticket, "MkDir", mkDirParams);
         if (mkDirResult != null)
         {
@@ -679,26 +668,23 @@ namespace VSS.TCCFileAccess
       }
     }
 
-
     private (string, Dictionary<string, string>) FormRequest(object request, string endpoint, string token = null)
     {
-      var requestString = $"{tccBaseUrl}/tcc/{endpoint}?";
       var headers = new Dictionary<string, string>();
-      /*var properties = from p in request.GetType().GetRuntimeFields()
-                       where p.GetValue(request) != null
-                       select new { p.Name, Value = p.GetValue(request) };*/
-      var dProperties = request.GetType().GetRuntimeFields().Where(p => p.GetValue(request) != null).Select(p=> new { p.Name, Value = p.GetValue(request) })
-        .ToDictionary(d => d.Name, v => v.Value.ToString());
-      dProperties.Add("ticket", token ?? Ticket);
 
-//      foreach (var p in properties)
+      var properties = request.GetType()
+                               .GetRuntimeFields()
+                               .Where(p => p.GetValue(request) != null).Select(p => new { p.Name, Value = p.GetValue(request) })
+                               .ToDictionary(d => d.Name, v => v.Value.ToString());
+
+      properties.Add("ticket", token ?? Ticket);
+
+      using (var encodedContent = new FormUrlEncodedContent(properties))
       {
-        requestString += new System.Net.Http.FormUrlEncodedContent(dProperties)
-          .ReadAsStringAsync().Result;
+        var requestString = $"{tccBaseUrl}/tcc/{endpoint}?" + encodedContent.ReadAsStringAsync().Result;
 
-        //$"&{p.Name}={p.Value.ToString()}";
+        return (requestString, headers);
       }
-      return (requestString, headers);
     }
 
     private async Task<T> ExecuteRequest<T>(string token, string contractPath, object requestData)
@@ -746,13 +732,14 @@ namespace VSS.TCCFileAccess
       var result = default(T);
       try
       {
-        result = await gracefulClient.ExecuteRequest<T>(requestString, method: HttpMethod.Get, customHeaders:headers, retries: 0, suppressExceptionLogging: true);
+        result = await gracefulClient.ExecuteRequest<T>(requestString, method: HttpMethod.Get, customHeaders: headers, retries: 0, suppressExceptionLogging: true);
       }
       catch (WebException webException)
       {
         using (var response = webException.Response)
         {
-          string tccError = GetStringFromResponseStream(response);
+          var tccError = GetStringFromResponseStream(response);
+
           if (tccError == FILE_DOES_NOT_EXIST_ERROR)
           {
             var tccErrorResult = JsonConvert.DeserializeObject<ApiResult>(FILE_DOES_NOT_EXIST_ERROR);
@@ -775,21 +762,23 @@ namespace VSS.TCCFileAccess
       {
         Log.LogWarning(e, "Can not execute request TCC response");
       }
+
       return result;
     }
 
-    private string GetStringFromResponseStream(WebResponse response)
+    private static string GetStringFromResponseStream(WebResponse response)
     {
       using (var readStream = response.GetResponseStream())
       {
-
-        if (readStream != null)
+        if (readStream == null)
         {
-          var reader = new StreamReader(readStream, Encoding.UTF8);
-          var responseString = reader.ReadToEnd();
-          return responseString;
+          return string.Empty;
         }
-        return string.Empty;
+
+        using (var reader = new StreamReader(readStream, Encoding.UTF8))
+        {
+          return reader.ReadToEnd();
+        }
       }
     }
 

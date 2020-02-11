@@ -8,7 +8,7 @@ metadata:
     app: {{ $serviceName }}
     component: {{ template "component.webapi" . }}
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: {{ $serviceName }}
@@ -19,6 +19,16 @@ spec:
         app: {{ $serviceName }}
         component: {{ template "component.webapi" . }}
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ $serviceName }}
+            topologyKey: "kubernetes.io/hostname"    
       containers:
       - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:{{ .Values.image.tag }}
         name: {{ $serviceName }}     
