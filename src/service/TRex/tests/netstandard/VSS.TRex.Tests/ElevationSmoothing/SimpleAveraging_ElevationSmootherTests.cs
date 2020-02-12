@@ -60,8 +60,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
       result.Should().NotBeNull();
 
+      var convolver = new Convolver(contextSize);
       var smoother = new SimpleAveraging_ElevationSmoother();
-      smoother.SmoothLeaf(subGrid, result, contextSize);
+      smoother.SmoothLeaf(subGrid, result, convolver);
 
       // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
       // Check all acquired values in the single subgrid are zero
@@ -108,8 +109,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
         var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
         result.Should().NotBeNull();
 
+        var convolver = new Convolver(contextSize);
         var smoother = new SimpleAveraging_ElevationSmoother();
-        smoother.SmoothLeaf(subGrid, result, contextSize);
+        smoother.SmoothLeaf(subGrid, result, convolver);
 
         // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
         // Check all acquired values in the single subgrid are zero
@@ -136,8 +138,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
       result.Should().NotBeNull();
 
+      var convolver = new Convolver(contextSize);
       var smoother = new SimpleAveraging_ElevationSmoother();
-      smoother.SmoothLeaf(subGrid, result, contextSize);
+      smoother.SmoothLeaf(subGrid, result, convolver);
 
       result.Items[0, 0].Should().Be(elevationResult1);
 
@@ -169,8 +172,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
       result.Should().NotBeNull();
 
+      var convolver = new Convolver(contextSize);
       var smoother = new SimpleAveraging_ElevationSmoother();
-      smoother.SmoothLeaf(subGrid, result, contextSize);
+      smoother.SmoothLeaf(subGrid, result, convolver);
 
       result.Items[15, 15].Should().Be(elevationResult);
 

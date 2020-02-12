@@ -4,21 +4,21 @@ using VSS.TRex.SubGridTrees.Types;
 
 namespace VSS.TRex.ElevationSmoothing
 {
-  public struct SmootherContext<T, TV> where T : GenericLeafSubGrid<TV>
+  public struct ConvolutionContext<T, TV> where T : GenericLeafSubGrid<TV>
   {
     private const int CONTEXT_SIZE = 3; //; In sub grids
     private const int CENTER_INDEX = CONTEXT_SIZE / 2;
 
     public T[,] LeafContext;
-    private readonly TV _nullValue;
+    public readonly TV NullValue;
 
     /// <summary>
     /// Constructs a context containing the leaf being smoothed, and the immediately surrounding leaves
     /// </summary>
     /// <param name="leaf"></param>
-    public SmootherContext(T leaf, TV nullValue)
+    public ConvolutionContext(T leaf, TV nullValue)
     {
-      _nullValue = nullValue;
+      NullValue = nullValue;
 
       LeafContext = new T[CONTEXT_SIZE, CONTEXT_SIZE];
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.ElevationSmoothing
 
       if (donorLeaf == null)
       {
-        return _nullValue;
+        return NullValue;
       }
 
       if (x < 0)
