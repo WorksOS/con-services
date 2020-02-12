@@ -20,7 +20,7 @@ namespace VSS.TRex.ElevationSmoothing
       _sourceTree = sourceTree;
     }
 
-    public GenericSubGridTree_Float Smooth(IElevationSmootherAlgorithm algorithm)
+    public GenericSubGridTree_Float Smooth(IElevationSmootherAlgorithm algorithm, int contextSize)
     {
       if (algorithm == null)
         throw new ArgumentException("Smoother algorithm is null");
@@ -30,7 +30,7 @@ namespace VSS.TRex.ElevationSmoothing
       _sourceTree.ScanAllSubGrids(leaf =>
       {
         var smoothedLeaf = result.ConstructPathToCell(leaf.OriginX, leaf.OriginY, SubGridPathConstructionType.CreateLeaf);
-        algorithm.SmoothLeaf((GenericLeafSubGrid_Float)leaf, (GenericLeafSubGrid_Float)smoothedLeaf);
+        algorithm.SmoothLeaf((GenericLeafSubGrid_Float)leaf, (GenericLeafSubGrid_Float)smoothedLeaf, contextSize);
         return true;
       });
 

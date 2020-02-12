@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Core\VSS.TRex.SubGridTrees.Core.csproj" />
   </ItemGroup>
 

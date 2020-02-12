@@ -1,63 +1,72 @@
-﻿using VSS.TRex.Common;
-using VSS.TRex.SubGridTrees.Core;
+﻿using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 
 namespace VSS.TRex.ElevationSmoothing
 {
-  public struct SmootherContext
+  public struct SmootherContext<T, TV> where T : GenericLeafSubGrid<TV>
   {
-    private const int CONTEXT_SIZE = 3;
-    private const int CENTER_INDEX = 1;
+    private const int CONTEXT_SIZE = 3; //; In sub grids
+    private const int CENTER_INDEX = CONTEXT_SIZE / 2;
 
-    public GenericLeafSubGrid_Float[,] LeafContext;
+    public T[,] LeafContext;
+    private readonly TV _nullValue;
 
     /// <summary>
     /// Constructs a context containing the leaf being smoothed, and the immediately surrounding leaves
     /// </summary>
     /// <param name="leaf"></param>
-    public SmootherContext(GenericLeafSubGrid_Float leaf)
+    public SmootherContext(T leaf, TV nullValue)
     {
-      LeafContext = new GenericLeafSubGrid_Float[CONTEXT_SIZE, CONTEXT_SIZE];
+      _nullValue = nullValue;
+
+      LeafContext = new T[CONTEXT_SIZE, CONTEXT_SIZE];
 
       LeafContext[CENTER_INDEX, CENTER_INDEX] = leaf;
 
-      for (int i = CENTER_INDEX - 1; i < CENTER_INDEX + 1; i++)
+      for (int i = CENTER_INDEX - 1, limiti = CENTER_INDEX + 1; i <= limiti; i++)
       {
-        for (int j = CENTER_INDEX - 1; j < CENTER_INDEX + 1; j++)
+        for (int j = CENTER_INDEX - 1, limitj = CENTER_INDEX + 1; j <= limitj; j++)
         {
-          if (LeafContext[i + 1, j + 1] != null)
+          if (LeafContext[i, j] != null)
             continue;
 
-          LeafContext[i + 1, j + 1] = 
-            (GenericLeafSubGrid_Float)leaf.Owner.ConstructPathToCell(leaf.OriginX + i * SubGridTreeConsts.SubGridTreeDimension, leaf.OriginY + j * SubGridTreeConsts.SubGridTreeDimension, SubGridPathConstructionType.ReturnExistingLeafOnly);
+          LeafContext[i, j] = leaf.Owner.ConstructPathToCell
+          (leaf.OriginX + (i - 1) * SubGridTreeConsts.SubGridTreeDimension, 
+            leaf.OriginY + (j - 1) * SubGridTreeConsts.SubGridTreeDimension, 
+            SubGridPathConstructionType.ReturnExistingLeafOnly) as T;
         }
       }
     }
 
     /// <summary>
-    /// Returns the context value or the smoothing algorithm to use. This wll cross the boundaries of the sub grids in the context as required.
+    /// Returns the context value or the smoothing algorithm to use. This will cross the boundaries of the sub grids in the context as required.
     /// The x and y indices are relative to the leaf being smoothed (ie: x = 0, y = 0 is the origin cell in that leaf)
     /// </summary>
     /// <param name="x"></param>
     /// <param name="y"></param>
     /// <returns></returns>
-    public float Value(int x, int y)
+    public TV Value(int x, int y)
     {
-      var donorLeaf = LeafContext[x + SubGridTreeConsts.SubGridTreeDimension / SubGridTreeConsts.SubGridTreeDimension, 
-        y + SubGridTreeConsts.SubGridTreeDimension / SubGridTreeConsts.SubGridTreeDimension];
+      var donorLeaf = LeafContext[(x + SubGridTreeConsts.SubGridTreeDimension) / SubGridTreeConsts.SubGridTreeDimension,
+                                    (y + SubGridTreeConsts.SubGridTreeDimension) / SubGridTreeConsts.SubGridTreeDimension];
+
+      if (donorLeaf == null)
+      {
+        return _nullValue;
+      }
 
       if (x < 0)
-        x = SubGridTreeConsts.SubGridTreeDimensionMinus1 + x;
-      else if (x > SubGridTreeConsts.SubGridTreeDimensionMinus1)
+        x += SubGridTreeConsts.SubGridTreeDimension;
+      else if (x >= SubGridTreeConsts.SubGridTreeDimension)
         x -= SubGridTreeConsts.SubGridTreeDimension;
-      
+
       if (y < 0)
-        y = SubGridTreeConsts.SubGridTreeDimensionMinus1 + y;
-      else if (y > SubGridTreeConsts.SubGridTreeDimensionMinus1)
+        y += SubGridTreeConsts.SubGridTreeDimension;
+      else if (y >= SubGridTreeConsts.SubGridTreeDimension)
         y -= SubGridTreeConsts.SubGridTreeDimension;
 
-      return donorLeaf?.Items[x, y] ?? Consts.NullHeight;
+      return donorLeaf.Items[x, y];
     }
   }
 }
