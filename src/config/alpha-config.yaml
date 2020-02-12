@@ -116,6 +116,13 @@ data:
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_ROOT_FOLDER_ID: 3e415c56-2690-4e38-a36b-8ff1ee489f89
   ENABLE_DATA_OCEAN: "true"
+#TagFileSplitter
+  TAGFILE_TARGET_SERVICES: "productivity3d_service,v2,tagfiles,tagfiles/direct;productivity3dvss_service,v2,tagfiles,tagfiles/direct"
+  TAGFILE_AUTO_TIMEOUT_SECONDS: "60"
+  #maybeAlpha-3DProductivityManager
+  TAGFILE_TMC_APPLICATION_NAME: "NOTProd-Earthworks-EC520"
+  PRODUCTIVITY3D_VSS_SERVICE_NAME: "productivity3dvss_service"
+  productivity3dvss_service_public_v2: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity-vss/2.0
 #Pegasus
   PEGASUS_DXF_PROCEDURE_ID: 1d05aebc-37b7-4c90-8c6c-ba5d0d1c9290
   PEGASUS_GEOTIFF_PROCEDURE_ID: f61c965b-0828-40b6-8980-26c7ee164566

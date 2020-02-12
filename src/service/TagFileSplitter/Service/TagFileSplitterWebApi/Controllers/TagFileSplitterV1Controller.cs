@@ -40,6 +40,7 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
   {
     private readonly TargetServices _targetServices = new TargetServices();
     private readonly int? _timeoutSeconds = null;
+    private readonly string _productivity3dVssServiceName;
 
     /// <summary>
     /// Default constructor.
@@ -53,6 +54,8 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
       var configuredTimeoutSeconds = ConfigStore.GetValueInt("TAGFILE_AUTO_TIMEOUT_SECONDS");
       if (configuredTimeoutSeconds != Int32.MinValue)
         _timeoutSeconds = configuredTimeoutSeconds;
+
+      _productivity3dVssServiceName = ConfigStore.GetValueString("PRODUCTIVITY3D_VSS_SERVICE_NAME", "productivity3dvss-service");
     }
 
 
@@ -67,7 +70,7 @@ namespace CCSS.TagFileSplitter.WebAPI.Controllers
       var serializedRequest = JsonUtilities.SerializeObjectIgnoringProperties(request, "Data");
       Logger.LogDebug($"{nameof(SplitAutoSubmission)}: request {serializedRequest}");
       request.Validate();
-      if (!_targetServices.Services.Exists(r => r.ServiceName == ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE))
+      if (!_targetServices.Services.Exists(r => string.Compare(r.ServiceName, _productivity3dVssServiceName, StringComparison.InvariantCultureIgnoreCase) != 0))
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Auto submission requires a VSS target service as this determines archiving"));

@@ -20,6 +20,7 @@ namespace CCSS.TagFileSplitter.UnitTests.Models
     {
       var targetServices = new TargetServices();
       var count = targetServices.SetServices(configString);
+      var vssServiceName = "productivity3dvss-service";
 
       count.Should().Be(expectedTargetCount);
       if (count > 0)
@@ -32,7 +33,7 @@ namespace CCSS.TagFileSplitter.UnitTests.Models
         target1[0].DirectRoute.Should().Be("tagfiles/direct");
         if (count > 1)
         {
-          var target2 = targetServices.Services.FindAll(x => x.ServiceName == ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE);
+          var target2 = targetServices.Services.FindAll(x => x.ServiceName == vssServiceName);
           target2.Count().Should().Be(1);
           target2[0].TargetApiVersion.Should().Be(ApiVersion.V1);
           target2[0].AutoRoute.Should().Be("tagfiles2");
@@ -53,6 +54,7 @@ namespace CCSS.TagFileSplitter.UnitTests.Models
       count.Should().Be(expectedSecondTargetCount);
 
       targetServices.Validate();
+      var vssServiceName = "productivity3dvss-service";
 
       if (count > 1)
       {
@@ -61,7 +63,7 @@ namespace CCSS.TagFileSplitter.UnitTests.Models
         target1[0].TargetApiVersion.Should().Be(ApiVersion.V2);
         target1[0].AutoRoute.Should().Be("tagfiles");
         target1[0].DirectRoute.Should().Be("tagfiles/direct");
-        var target2 = targetServices.Services.FindAll(x => x.ServiceName == ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE);
+        var target2 = targetServices.Services.FindAll(x => x.ServiceName == vssServiceName);
         target2.Count().Should().Be(1);
         target2[0].TargetApiVersion.Should().Be(ApiVersion.V1);
         target2[0].AutoRoute.Should().Be("tagfiles2");

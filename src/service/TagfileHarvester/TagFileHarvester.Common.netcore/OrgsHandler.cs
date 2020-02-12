@@ -41,6 +41,8 @@ namespace TagFileHarvester
     public static bool FilenameDumpEnabled { get; set; }
     public static string TagFileEndpoint { get; set; }
 
+    public static string VssServiceName { get; set; }
+
 
     public static void ForEach<T>(
       this IEnumerable<T> source,

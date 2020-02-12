@@ -53,7 +53,9 @@ namespace TagFileHarvester.netcore
         OrgsHandler.ShortOrgName = config.GetValueString("ShortOrgName");
         OrgsHandler.TagFileEndpoint = config.GetValueString("TagFileEndpoint");
         OrgsHandler.newrelic = config.GetValueString("newrelic");
-        
+        OrgsHandler.VssServiceName = config.GetValueString("PRODUCTIVITY3D_VSS_SERVICE_NAME", "productivity3dvss-service");
+
+
         ServicePointManager.DefaultConnectionLimit = 8;
 
         Log.LogDebug("TagFileHarvester.Start: Entered Start()");

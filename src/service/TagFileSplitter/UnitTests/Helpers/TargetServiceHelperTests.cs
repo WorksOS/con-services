@@ -59,7 +59,7 @@ namespace CCSS.TagFileSplitter.UnitTests.Helpers
         OrgId = string.Empty
       };
 
-      var vssServiceName = ServiceNameConstants.PRODUCTIVITY3D_VSS_SERVICE;
+      var vssServiceName = "wotever_again";
       var targetVssService = new TargetService(vssServiceName, ApiVersion.V2.ToString(), "tagfiles", "tagFiles/direct");
       var customHeaders = new Dictionary<string, string>();
       var expected3dPmResponseCode = 0;
