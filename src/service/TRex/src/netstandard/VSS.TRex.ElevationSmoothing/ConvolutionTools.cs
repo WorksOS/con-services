@@ -6,7 +6,7 @@ namespace VSS.TRex.ElevationSmoothing
 {
   public class ConvolutionTools<T> : BaseConvolutionTools<T>
   {
-    public override void SmoothLeaf(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver, T nullValue)
+    public override void Smooth(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver, T nullValue)
     {
       var context = new ConvolutionSubGridContext<GenericLeafSubGrid<T>, T>(leaf, nullValue);
 
@@ -15,7 +15,7 @@ namespace VSS.TRex.ElevationSmoothing
     }
 
 
-    public void SmoothArray(float[,] source, float[,] dest, int contextSize)
+    public void Smooth(T[,] source, T[,] dest, int contextSize)
     {
       //      for (var i = 0, limiti = source.GetDimension(); i < SubGridTreeConsts.SubGridTreeDimension; i++)
 

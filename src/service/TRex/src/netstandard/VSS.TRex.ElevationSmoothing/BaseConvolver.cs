@@ -6,7 +6,7 @@ namespace VSS.TRex.ElevationSmoothing
   /// Defines the basic convolution activity of iterating over a square context applying an averaging function over the
   /// values. ConvolveElement may be overridden to implenent other behaviours.
   /// </summary>
-  public class BaseConvolver<T>
+  public class BaseConvolver<T> : IBaseConvolver
   {
     protected readonly int _contextSize;
 
