@@ -11,7 +11,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
 {
   public class ConcvolutionContextTests
   {
-    private ConvolutionContext<GenericLeafSubGrid_Float, float> NewSmootherContext() => new ConvolutionContext<GenericLeafSubGrid_Float, float>();
+    private ConvolutionSubGridContext<GenericLeafSubGrid_Float, float> NewSmootherContext() => new ConvolutionSubGridContext<GenericLeafSubGrid_Float, float>();
 
     private GenericLeafSubGrid<float> ConstructElevationSubGrid(float elevation)
     {
@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     [Fact]
     public void Creation()
     {
-      var context = new ConvolutionContext<GenericLeafSubGrid<float>, float>();
+      var context = new ConvolutionSubGridContext<GenericLeafSubGrid<float>, float>();
       context.Should().NotBeNull();
     }
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       subGrid.Should().NotBeNull();
 
       // Create the context with a single subgrid and no neighbours
-      var context = new ConvolutionContext<GenericLeafSubGrid<float>, float>(subGrid, CellPassConsts.NullHeight);
+      var context = new ConvolutionSubGridContext<GenericLeafSubGrid<float>, float>(subGrid, CellPassConsts.NullHeight);
       context.Should().NotBeNull();
 
       // Check all acquired values in the single subgrid are zero

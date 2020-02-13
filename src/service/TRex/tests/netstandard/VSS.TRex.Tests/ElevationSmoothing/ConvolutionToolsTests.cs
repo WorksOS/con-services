@@ -10,7 +10,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.ElevationSmoothing
 {
-  public class SimpleAveraging_ElevationSmootherTests
+  public class ConvolutionToolsTests
   {
     private GenericLeafSubGrid_Float ConstructElevationSubGrid(float elevation)
     {
@@ -42,7 +42,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     [Fact]
     public void Creation()
     {
-      var smoother = new SimpleAveraging_ElevationSmoother();
+      var smoother = new ConvolutionTools();
       smoother.Should().NotBeNull();
     }
 
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var convolver = new Convolver(contextSize);
-      var smoother = new SimpleAveraging_ElevationSmoother();
+      var smoother = new ConvolutionTools();
       smoother.SmoothLeaf(subGrid, result, convolver);
 
       // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
@@ -110,7 +110,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
         result.Should().NotBeNull();
 
         var convolver = new Convolver(contextSize);
-        var smoother = new SimpleAveraging_ElevationSmoother();
+        var smoother = new ConvolutionTools();
         smoother.SmoothLeaf(subGrid, result, convolver);
 
         // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
@@ -139,7 +139,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var convolver = new Convolver(contextSize);
-      var smoother = new SimpleAveraging_ElevationSmoother();
+      var smoother = new ConvolutionTools();
       smoother.SmoothLeaf(subGrid, result, convolver);
 
       result.Items[0, 0].Should().Be(elevationResult1);
@@ -173,7 +173,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var convolver = new Convolver(contextSize);
-      var smoother = new SimpleAveraging_ElevationSmoother();
+      var smoother = new ConvolutionTools();
       smoother.SmoothLeaf(subGrid, result, convolver);
 
       result.Items[15, 15].Should().Be(elevationResult);

@@ -4,7 +4,7 @@ using VSS.TRex.SubGridTrees.Types;
 
 namespace VSS.TRex.ElevationSmoothing
 {
-  public struct ConvolutionContext<T, TV> where T : GenericLeafSubGrid<TV>
+  public struct ConvolutionSubGridContext<T, TV> where T : GenericLeafSubGrid<TV>
   {
     private const int CONTEXT_SIZE = 3; //; In sub grids
     private const int CENTER_INDEX = CONTEXT_SIZE / 2;
@@ -16,7 +16,7 @@ namespace VSS.TRex.ElevationSmoothing
     /// Constructs a context containing the leaf being smoothed, and the immediately surrounding leaves
     /// </summary>
     /// <param name="leaf"></param>
-    public ConvolutionContext(T leaf, TV nullValue)
+    public ConvolutionSubGridContext(T leaf, TV nullValue)
     {
       NullValue = nullValue;
 
