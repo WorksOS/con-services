@@ -7,14 +7,14 @@ namespace VSS.TRex.ElevationSmoothing
   /// getValue and setValue lambdas to access values in a convolver context holding source data and set values into the
   /// recipient result data.
   /// </summary>
-  public class Convolver : BaseConvolver, IConvolver
+  public class Convolver<T> : BaseConvolver<T>, IConvolver<T>
   {
-    public Convolver(int contextSize) : base(contextSize)
+    public Convolver(IConvolutionAccumulator<T> accumulator, int contextSize) : base(accumulator, contextSize)
     {
     }
-
+     
     // Performs a convolution across a rectagular patch of values
-    public void Convolve(int sizeX, int sizeY, Func<int, int, float> getValue, Action<int, int, float> setValue, float nullValue)
+    public void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue, T nullValue)
     {
       GetValue = getValue;
       SetValue = setValue;

@@ -1,6 +1,8 @@
 ﻿using System;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Types;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.ElevationSmoothing
 {
@@ -10,14 +12,14 @@ namespace VSS.TRex.ElevationSmoothing
   public class ElevationSmoother : IElevationSmoother
   {
     private readonly GenericSubGridTree_Float _sourceTree;
-    private readonly IConvolutionTools _convolutionTools;
+    private readonly IConvolutionTools<float> _convolutionTools;
     private readonly int _contextSize;
 
     private ElevationSmoother()
     {
     }
 
-    public ElevationSmoother(GenericSubGridTree_Float sourceTree, IConvolutionTools convolutionTools, int contextSize) : this()
+    public ElevationSmoother(GenericSubGridTree_Float sourceTree, IConvolutionTools<float> convolutionTools, int contextSize) : this()
     {
       if (_convolutionTools == null)
       {
@@ -33,12 +35,13 @@ namespace VSS.TRex.ElevationSmoothing
     {
 
       var result = new GenericSubGridTree_Float(_sourceTree.NumLevels, _sourceTree.CellSize);
-      var convolver = new Convolver(_contextSize);
+      var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var convolver = new Convolver<float>(accumulator, _contextSize);
 
       _sourceTree.ScanAllSubGrids(leaf =>
       {
-        var smoothedLeaf = result.ConstructPathToCell(leaf.OriginX, leaf.OriginY, SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid_Float;
-        _convolutionTools.SmoothLeaf((GenericLeafSubGrid_Float)leaf, smoothedLeaf, convolver);
+        var smoothedLeaf = result.ConstructPathToCell(leaf.OriginX, leaf.OriginY, SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid<float>;
+        _convolutionTools.SmoothLeaf((GenericLeafSubGrid<float>)leaf, smoothedLeaf, convolver, CellPassConsts.NullHeight);
         return true;
       });
 
