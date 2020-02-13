@@ -1,17 +1,16 @@
 ﻿using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.ElevationSmoothing
 {
   public class ConvolutionTools<T> : BaseConvolutionTools<T>
   {
-    public override void Smooth(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver, T nullValue)
+    public override void Smooth(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver)
     {
-      var context = new ConvolutionSubGridContext<GenericLeafSubGrid<T>, T>(leaf, nullValue);
+      var context = new ConvolutionSubGridContext<GenericLeafSubGrid<T>, T>(leaf, convolver.Accumulator.NullValue);
 
       convolver.Convolve(SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension,
-        (x, y) => context.Value(x, y), (x, y, v) => smoothedLeaf.Items[x, y] = v, context.NullValue);
+        (x, y) => context.Value(x, y), (x, y, v) => smoothedLeaf.Items[x, y] = v);
     }
 
 

@@ -41,7 +41,7 @@ namespace VSS.TRex.ElevationSmoothing
       _sourceTree.ScanAllSubGrids(leaf =>
       {
         var smoothedLeaf = result.ConstructPathToCell(leaf.OriginX, leaf.OriginY, SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid<float>;
-        _convolutionTools.Smooth((GenericLeafSubGrid<float>)leaf, smoothedLeaf, convolver, CellPassConsts.NullHeight);
+        _convolutionTools.Smooth((GenericLeafSubGrid<float>)leaf, smoothedLeaf, convolver);
         return true;
       });
 

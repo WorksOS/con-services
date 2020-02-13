@@ -14,13 +14,10 @@ namespace VSS.TRex.ElevationSmoothing
     }
      
     // Performs a convolution across a rectagular patch of values
-    public void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue, T nullValue)
+    public void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue)
     {
       GetValue = getValue;
       SetValue = setValue;
-      NullValue = nullValue;
-
-      var contextOffset = _contextSize / 2;
 
       // Performs a convolution across a rectagular patch of values
       for (var i = 0; i < sizeX; i++)

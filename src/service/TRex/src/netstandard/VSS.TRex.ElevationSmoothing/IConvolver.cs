@@ -6,6 +6,8 @@ namespace VSS.TRex.ElevationSmoothing
   {
     int ContextSize { get; }
 
-    void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue, T nullValue);
+    IConvolutionAccumulator<T> Accumulator { get; }
+
+    void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue);
   }
 }
