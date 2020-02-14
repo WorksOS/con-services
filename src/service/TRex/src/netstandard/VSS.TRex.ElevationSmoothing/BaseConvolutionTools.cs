@@ -5,14 +5,14 @@ namespace VSS.TRex.ElevationSmoothing
 {
   public class BaseConvolutionTools<T> : IConvolutionTools<T>
   {
-    public virtual void Smooth(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver)
+    public virtual void Convolve(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver)
     {
-      throw new NotImplementedException("Smooth(GenericLeafSubGrid<T> leaf, ...) not implemented in this convolution tools class");
+      throw new NotImplementedException("Convolve(GenericLeafSubGrid<T> leaf, ...) not implemented in this convolution tools class");
     }
 
-    public virtual void Smooth(T[,] source, T[,] dest, IConvolver<T> convolver)
+    public virtual void Convolve(T[,] source, T[,] dest, IConvolver<T> convolver)
     {
-      throw new NotImplementedException("Smooth(T[,] source, ...) not implemented in this convolution tools class");
+      throw new NotImplementedException("Convolve(T[,] source, ...) not implemented in this convolution tools class");
     }
   }
 }

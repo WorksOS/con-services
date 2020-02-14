@@ -7,9 +7,9 @@ namespace VSS.TRex.ElevationSmoothing
   /// getValue and setValue lambdas to access values in a convolver context holding source data and set values into the
   /// recipient result data.
   /// </summary>
-  public class Convolver<T> : BaseConvolver<T>, IConvolver<T>
+  public class BasicSmoothingFilter<T> : BaseConvolver<T>, IConvolver<T>
   {
-    public Convolver(IConvolutionAccumulator<T> accumulator, int contextSize) : base(accumulator, contextSize)
+    public BasicSmoothingFilter(IConvolutionAccumulator<T> accumulator, int contextSize) : base(accumulator, contextSize)
     {
     }
      

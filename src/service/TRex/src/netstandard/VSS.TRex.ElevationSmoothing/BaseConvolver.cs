@@ -8,40 +8,50 @@ namespace VSS.TRex.ElevationSmoothing
   /// </summary>
   public class BaseConvolver<T> : IBaseConvolver<T>
   {
-    protected readonly int _contextSize;
+    protected int _contextSize;
+    protected readonly int _contextOffset;
 
     protected Func<int, int, T> GetValue;
     protected Action<int, int, T> SetValue;
 
     // Note: The explicit backing field is intentional to allow private code to reference it without the getter method
-    private readonly IConvolutionAccumulator<T> _accumulator;
+    protected readonly IConvolutionAccumulator<T> _accumulator;
     public IConvolutionAccumulator<T> Accumulator { get => _accumulator; }
 
     public int ContextSize
     {
       get => _contextSize;
+      set
+      {
+        _contextSize = value;
+
+        if (value <= 1 || value % 2 != 1)
+        {
+          throw new ArgumentException("Context size must be positive odd number greater than 1");
+        }
+
+        _contextSize = value;
+      }
     }
 
-    public BaseConvolver(IConvolutionAccumulator<T> accumulator, int contextSize)
+    public BaseConvolver(IConvolutionAccumulator<T> accumulator)
     {
-      if (contextSize <= 1 || contextSize % 2 != 1)
-      {
-        throw new ArgumentException("Context size must be positive odd number greater than 1", nameof(_contextSize));
-      }
-
-      _contextSize = contextSize;
       _accumulator = accumulator;
+    }
+
+    public BaseConvolver(IConvolutionAccumulator<T> accumulator, int contextSize) : this(accumulator)
+    {
+      ContextSize = contextSize;
+      _contextOffset = ContextSize / 2;
     }
 
     public virtual void ConvolveElement(int i, int j)
     {
-      var contextOffset = _contextSize / 2;
-
       _accumulator.Clear();
 
-      for (int x = i - contextOffset, limitx = i + contextOffset; x <= limitx; x++)
+      for (int x = i - _contextOffset, limitx = i + _contextOffset; x <= limitx; x++)
       {
-        for (int y = j - contextOffset, limity = j + contextOffset; y <= limity; y++)
+        for (int y = j - _contextOffset, limity = j + _contextOffset; y <= limity; y++)
         {
           _accumulator.Accumulate(GetValue(x, y));
         }

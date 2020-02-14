@@ -61,9 +61,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new Convolver<float>(accumulator, contextSize);
+      var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
       var smoother = new ConvolutionTools<float>();
-      smoother.Smooth(subGrid, result, convolver);
+      smoother.Convolve(subGrid, result, convolver);
 
       // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
       // Check all acquired values in the single subgrid are zero
@@ -111,9 +111,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
         result.Should().NotBeNull();
 
         var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-        var convolver = new Convolver<float>(accumulator, contextSize);
+        var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
         var smoother = new ConvolutionTools<float>();
-        smoother.Smooth(subGrid, result, convolver);
+        smoother.Convolve(subGrid, result, convolver);
 
         // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
         // Check all acquired values in the single subgrid are zero
@@ -141,9 +141,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new Convolver<float>(accumulator, contextSize);
+      var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
       var smoother = new ConvolutionTools<float>();
-      smoother.Smooth(subGrid, result, convolver);
+      smoother.Convolve(subGrid, result, convolver);
 
       result.Items[0, 0].Should().Be(elevationResult1);
 
@@ -176,9 +176,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new Convolver<float>(accumulator, contextSize);
+      var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
       var smoother = new ConvolutionTools<float>();
-      smoother.Smooth(subGrid, result, convolver);
+      smoother.Convolve(subGrid, result, convolver);
 
       result.Items[15, 15].Should().Be(elevationResult);
 

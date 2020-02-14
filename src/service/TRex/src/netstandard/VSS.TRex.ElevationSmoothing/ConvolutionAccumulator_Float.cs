@@ -2,7 +2,6 @@
 {
   public class ConvolutionAccumulator_Float : ConvolutionAccumulator<float>
   {
-    protected float NullValue;
     protected int numValues;
     protected float sum;
 
@@ -16,6 +15,15 @@
       if (value != NullValue)
       {
         sum += value;
+        numValues++;
+      }
+    }
+
+    public override void Accumulate(float value, double coefficient)
+    {
+      if (value != NullValue)
+      {
+        sum += (float)(value * coefficient);
         numValues++;
       }
     }

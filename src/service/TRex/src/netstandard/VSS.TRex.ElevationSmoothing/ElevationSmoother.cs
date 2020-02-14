@@ -36,12 +36,12 @@ namespace VSS.TRex.ElevationSmoothing
 
       var result = new GenericSubGridTree_Float(_sourceTree.NumLevels, _sourceTree.CellSize);
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new Convolver<float>(accumulator, _contextSize);
+      var convolver = new BasicSmoothingFilter<float>(accumulator, _contextSize);
 
       _sourceTree.ScanAllSubGrids(leaf =>
       {
         var smoothedLeaf = result.ConstructPathToCell(leaf.OriginX, leaf.OriginY, SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid<float>;
-        _convolutionTools.Smooth((GenericLeafSubGrid<float>)leaf, smoothedLeaf, convolver);
+        _convolutionTools.Convolve((GenericLeafSubGrid<float>)leaf, smoothedLeaf, convolver);
         return true;
       });
 

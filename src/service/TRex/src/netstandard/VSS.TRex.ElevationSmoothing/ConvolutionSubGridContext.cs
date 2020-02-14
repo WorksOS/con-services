@@ -6,8 +6,8 @@ namespace VSS.TRex.ElevationSmoothing
 {
   public struct ConvolutionSubGridContext<T, TV> where T : GenericLeafSubGrid<TV>
   {
-    private const int CONTEXT_SIZE = 3; //; In sub grids
-    private const int CENTER_INDEX = CONTEXT_SIZE / 2;
+    private const int ContextSize = 3; // Sub grids
+    private const int CenterIndex = ContextSize / 2;
 
     public T[,] LeafContext;
     public readonly TV NullValue;
@@ -15,18 +15,19 @@ namespace VSS.TRex.ElevationSmoothing
     /// <summary>
     /// Constructs a context containing the leaf being smoothed, and the immediately surrounding leaves
     /// </summary>
-    /// <param name="leaf"></param>
+    /// <param name="leaf">The subgrid leaf to be convolved</param>
+    /// <param name="nullValue">The null value to be used during convolution</param>
     public ConvolutionSubGridContext(T leaf, TV nullValue)
     {
       NullValue = nullValue;
 
-      LeafContext = new T[CONTEXT_SIZE, CONTEXT_SIZE];
+      LeafContext = new T[ContextSize, ContextSize];
 
-      LeafContext[CENTER_INDEX, CENTER_INDEX] = leaf;
+      LeafContext[CenterIndex, CenterIndex] = leaf;
 
-      for (int i = CENTER_INDEX - 1, limiti = CENTER_INDEX + 1; i <= limiti; i++)
+      for (int i = CenterIndex - 1, limiti = CenterIndex + 1; i <= limiti; i++)
       {
-        for (int j = CENTER_INDEX - 1, limitj = CENTER_INDEX + 1; j <= limitj; j++)
+        for (int j = CenterIndex - 1, limitj = CenterIndex + 1; j <= limitj; j++)
         {
           if (LeafContext[i, j] != null)
             continue;
