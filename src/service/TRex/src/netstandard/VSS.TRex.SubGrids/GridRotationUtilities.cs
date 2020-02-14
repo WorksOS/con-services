@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
@@ -108,8 +107,12 @@ namespace VSS.TRex.SubGrids
       return true;
     }
 
+    /// <summary>
+    /// Computes a bitmask used to sieve out only the cells that will be used in the query context.
+    /// The sieved cells are the only cells processed and returned. All other cells will be null values,
+    /// even if data is present for them that matches filtering and other conditions
+    /// </summary>
     /// <param name="subGridWorldOriginY"></param>
-    /// <param name="subGridMoniker"></param
     /// <param name="areaControlSet"></param>
     /// <param name="siteModelCellSize"></param>
     /// <param name="assignmentContext"></param>
@@ -235,7 +238,7 @@ namespace VSS.TRex.SubGrids
       double firstScanPointEast, double firstScanPointNorth)
     {
       // Skip-Iterate through the cells marking those cells that require values
-      // calculate for them in the bitmask. Also record the actual probe locations
+      // calculated for them in the bitmask. Also record the actual probe locations
       // that determined the cells to be processed.
 
       for (int I = 0; I < numRowsToScan; I++)

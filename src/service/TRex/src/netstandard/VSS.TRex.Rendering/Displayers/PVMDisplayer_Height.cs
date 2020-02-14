@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.Displayers
   /// <summary>
   /// Plan View Map displayer renderer for height/elevation information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_Height : PVMDisplayerBase<HeightPalette, ClientHeightLeafSubGrid>
+  public class PVMDisplayer_Height : PVMDisplayerBase<HeightPalette, ClientHeightLeafSubGrid, float>
   {
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
@@ -16,7 +16,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     public override Color DoGetDisplayColour()
     {
-      var height = SubGrid.Cells[east_col, north_row];
+      var height = ValueStore[east_col, north_row];
 
       return height == Consts.NullHeight ? Color.Empty : Palette.ChooseColour(height);
     }

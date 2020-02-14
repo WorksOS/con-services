@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.Displayers
   /// <summary>
   /// Plan View Map displayer renderer for machine speed information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_MachineSpeed : PVMDisplayerBase<SpeedPalette, ClientMachineSpeedLeafSubGrid>
+  public class PVMDisplayer_MachineSpeed : PVMDisplayerBase<SpeedPalette, ClientMachineSpeedLeafSubGrid, ushort>
   {
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.
@@ -16,7 +16,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     public override Color DoGetDisplayColour()
     {
-      var value = SubGrid.Cells[east_col, north_row];
+      var value = ValueStore[east_col, north_row];
 
       return value == CellPassConsts.NullMachineSpeed ? Color.Empty : Palette.ChooseColour(value);
     }

@@ -71,5 +71,9 @@ namespace VSS.TRex.Pipelines.Tasks
 
           return result && responses.All(TransferResponse);
         }
+
+        public override void Dispose()
+        {
+        }
     }
 }

@@ -319,7 +319,7 @@ namespace VSS.TRex.Tests.Rendering
       // And offset to make sure we span multiple sub grids (if the tile request is in the same sub grid, even if empty, the bug was not applicable)
       const int offset = (2 * SubGridTreeConsts.CellsPerSubGrid) + 1;
 
-      // Create some cell passes in 4 corners, but in seperate sub grids 
+      // Create some cell passes in 4 corners, but in separate sub grids 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + offset, SubGridTreeConsts.DefaultIndexOriginOffset + offset, cellPasses);
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset + offset, SubGridTreeConsts.DefaultIndexOriginOffset - offset, cellPasses);
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel, SubGridTreeConsts.DefaultIndexOriginOffset - offset, SubGridTreeConsts.DefaultIndexOriginOffset - offset, cellPasses);

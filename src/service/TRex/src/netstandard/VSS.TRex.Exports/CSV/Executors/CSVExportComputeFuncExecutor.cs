@@ -29,11 +29,6 @@ namespace VSS.TRex.Exports.CSV.Executors
     private readonly CSVExportRequestArgument _CSVExportRequestArgument;
 
     /// <summary>
-    /// The pipeline processor used to coordinate construction, coordinate and orchestration of the pipelined request
-    /// </summary>
-    private IPipelineProcessor _processor;
-
-    /// <summary>
     /// Constructor for the renderer accepting all parameters necessary for its operation
     /// </summary>
     public CSVExportComputeFuncExecutor(CSVExportRequestArgument arg) => _CSVExportRequestArgument = arg;
@@ -53,13 +48,13 @@ namespace VSS.TRex.Exports.CSV.Executors
           ? GridDataType.CellProfile
           : GridDataType.CellPasses;
 
-        _processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+        using (var _processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
           requestDescriptor,
           _CSVExportRequestArgument.ProjectID,
           gridDataType,
           new SubGridsPipelinedResponseBase(),
           _CSVExportRequestArgument.Filters,
-          new DesignOffset(), 
+          new DesignOffset(),
           DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.CSVExport),
           DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultProgressive),
           DIContext.Obtain<IRequestAnalyser>(),
@@ -67,54 +62,54 @@ namespace VSS.TRex.Exports.CSV.Executors
           false,
           BoundingIntegerExtent2D.Inverted(),
           _CSVExportRequestArgument.LiftParams
-        );
-
-        // Set the grid TRexTask parameters for progressive processing
-        _processor.Task.RequestDescriptor = requestDescriptor;
-        _processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
-        _processor.Task.GridDataType = gridDataType;
-
-        ((CSVExportTask) _processor.Task).SubGridExportProcessor = new CSVExportSubGridProcessor(_CSVExportRequestArgument);
-
-        if (!await _processor.BuildAsync())
+        ))
         {
-          Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
-          CSVExportRequestResponse.ResultStatus = _processor.Response.ResultStatus;
-          return false;
-        }
+          // Set the grid TRexTask parameters for progressive processing
+          _processor.Task.RequestDescriptor = requestDescriptor;
+          _processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
+          _processor.Task.GridDataType = gridDataType;
 
-        _processor.Process();
+          ((CSVExportTask) _processor.Task).SubGridExportProcessor = new CSVExportSubGridProcessor(_CSVExportRequestArgument);
 
-        if (_processor.Response.ResultStatus != RequestErrorStatus.OK)
-        {
-          Log.LogError($"Failed to obtain data for CSV Export, for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}. response: {_processor.Response.ResultStatus.ToString()}.");
-          CSVExportRequestResponse.ResultStatus = _processor.Response.ResultStatus;
-          return false;
-        }
-
-        if (((CSVExportTask) _processor.Task).DataRows.Count > 0)
-        {
-          var csvExportFileWriter = new CSVExportFileWriter(_CSVExportRequestArgument);
-          var s3FullPath = csvExportFileWriter.PersistResult(((CSVExportTask) _processor.Task).DataRows);
-
-          if (string.IsNullOrEmpty(s3FullPath))
+          if (!await _processor.BuildAsync())
           {
-            Log.LogError($"CSV export failed to write to S3. project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}.");
-            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportUnableToLoadFileToS3;
+            Log.LogError($"Failed to build CSV export pipeline processor for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}");
+            CSVExportRequestResponse.ResultStatus = _processor.Response.ResultStatus;
             return false;
           }
 
-          if (((CSVExportTask) _processor.Task).SubGridExportProcessor.RecordCountLimitReached())
-            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportExceededRowLimit;
-          else
-            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;
-          CSVExportRequestResponse.fileName = s3FullPath;
-        }
-        else
-        {
-          CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportNoDataFound;
-        }
+          _processor.Process();
 
+          if (_processor.Response.ResultStatus != RequestErrorStatus.OK)
+          {
+            Log.LogError($"Failed to obtain data for CSV Export, for project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}. response: {_processor.Response.ResultStatus.ToString()}.");
+            CSVExportRequestResponse.ResultStatus = _processor.Response.ResultStatus;
+            return false;
+          }
+
+          if (((CSVExportTask) _processor.Task).DataRows.Count > 0)
+          {
+            var csvExportFileWriter = new CSVExportFileWriter(_CSVExportRequestArgument);
+            var s3FullPath = csvExportFileWriter.PersistResult(((CSVExportTask) _processor.Task).DataRows);
+
+            if (string.IsNullOrEmpty(s3FullPath))
+            {
+              Log.LogError($"CSV export failed to write to S3. project: {_CSVExportRequestArgument.ProjectID} filename: {_CSVExportRequestArgument.FileName}.");
+              CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportUnableToLoadFileToS3;
+              return false;
+            }
+
+            if (((CSVExportTask) _processor.Task).SubGridExportProcessor.RecordCountLimitReached())
+              CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportExceededRowLimit;
+            else
+              CSVExportRequestResponse.ResultStatus = RequestErrorStatus.OK;
+            CSVExportRequestResponse.fileName = s3FullPath;
+          }
+          else
+          {
+            CSVExportRequestResponse.ResultStatus = RequestErrorStatus.ExportNoDataFound;
+          }
+        }
       }
       catch (Exception e)
       {

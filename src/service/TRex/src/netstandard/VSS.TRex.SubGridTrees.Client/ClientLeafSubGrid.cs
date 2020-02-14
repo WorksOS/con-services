@@ -18,8 +18,8 @@ namespace VSS.TRex.SubGridTrees.Client
   /// map records which cells in the sub grid contain information that has been
   /// retrieved from the server.
   /// </summary>
-    public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriter
-    {
+  public abstract class ClientLeafSubGrid : SubGrid, IClientLeafSubGrid, IBinaryReaderWriter
+  {
     /// <summary>
     /// Enumeration indicating type of grid data held in this client leaf sub grid
     /// </summary>
@@ -36,14 +36,23 @@ namespace VSS.TRex.SubGridTrees.Client
     /// CellSize is a copy of the cell size from the parent sub grid. It is replicated here
     /// to remove SubGridTree binding in other processing contexts
     /// </summary>
-    public double CellSize { get => cellSize; set => cellSize = value; }
+    public double CellSize
+    {
+      get => cellSize;
+      set => cellSize = value;
+    }
 
     private int indexOriginOffset;
+
     /// <summary>
     /// IndexOriginOffset is a copy of the IndexOriginOffset from the parent sub grid. It is replicated here
     ///to remove SubGridTree binding in other processing contexts
     /// </summary>
-    public int IndexOriginOffset { get => indexOriginOffset; set => indexOriginOffset = value; }
+    public int IndexOriginOffset
+    {
+      get => indexOriginOffset;
+      set => indexOriginOffset = value;
+    }
 
     /// <summary>
     /// Is data extraction limited to the top identified layer of materials in each cell
@@ -64,45 +73,45 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public static readonly bool[] SupportsAssignationFromCachedPreProcessedClientSubGrid = // GridDataType
     {
-          false, // All = $00000000;
-          true,  // CCV = $00000001;
-          true, // Height = $00000002;
-          false, // Latency = $00000003;
-          true,  // PassCount = $00000004;
-          false, // Frequency = $00000005;
-          false, // Amplitude = $00000006;
-          false, // Moisture = $00000007;
-          true,  // Temperature = $00000008;
-          false, // RMV = $00000009;
-          true,  // CCVPercent = $0000000B;
-          false, // GPSMode = $0000000A;
-          true, // SimpleVolumeOverlay = $0000000C;
-          true, // HeightAndTime = $0000000D;
+      false, // All = $00000000;
+      true, // CCV = $00000001;
+      true, // Height = $00000002;
+      false, // Latency = $00000003;
+      true, // PassCount = $00000004;
+      false, // Frequency = $00000005;
+      false, // Amplitude = $00000006;
+      false, // Moisture = $00000007;
+      true, // Temperature = $00000008;
+      false, // RMV = $00000009;
+      true, // CCVPercent = $0000000B;
+      false, // GPSMode = $0000000A;
+      true, // SimpleVolumeOverlay = $0000000C;
+      true, // HeightAndTime = $0000000D;
 
-          // Note: Composite heights are used for profiling only 
-          // These sub grids are very large and profiling heavily optimizes for specific cells so
-          // don't cache these sub grids
-          false, // CompositeHeights = $0000000E;
-          true,  // MDP = $0000000F;
-          true,  // MDPPercent = $00000010;
-          false, // CellProfile = $00000011;
-          false, // CellPasses = $00000012;
-          true, // MachineSpeed = $00000013;
-          true, // CCVPercentChange = $00000014;
-          true, // MachineSpeedTarget = $00000015;
-          true, // CCVPercentChangeIgnoredTopNullValue = $0000016
-          true, // CCA = $0000017
-          true, // CCAPercent = $0000018
-          true, // Temperature details = $0000019
-          true, // CutFill = 0x0000001A,
-          true, // DesignHeight = 0x0000001B,
+      // Note: Composite heights are used for profiling only 
+      // These sub grids are very large and profiling heavily optimizes for specific cells so
+      // don't cache these sub grids
+      false, // CompositeHeights = $0000000E;
+      true, // MDP = $0000000F;
+      true, // MDPPercent = $00000010;
+      false, // CellProfile = $00000011;
+      false, // CellPasses = $00000012;
+      true, // MachineSpeed = $00000013;
+      true, // CCVPercentChange = $00000014;
+      true, // MachineSpeedTarget = $00000015;
+      true, // CCVPercentChangeIgnoredTopNullValue = $0000016
+      true, // CCA = $0000017
+      true, // CCAPercent = $0000018
+      true, // Temperature details = $0000019
+      true, // CutFill = 0x0000001A,
+      true, // DesignHeight = 0x0000001B,
 
-          // SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
-          // used to construct this data. Differentiating the grid types allows coherent caching in a single spatial
-          // general sub grid result cache along with HeightAndTime results that are derived from production data
-          // and SurveyedSurfaceHeightAndTime results
-          true, // SurveyedSurfaceHeightAndTime = 0x0000001C
-        };
+      // SurveyedSurfaceHeightAndTime is distinguished from HeightAndTime in that only surveyed surfaces are
+      // used to construct this data. Differentiating the grid types allows coherent caching in a single spatial
+      // general sub grid result cache along with HeightAndTime results that are derived from production data
+      // and SurveyedSurfaceHeightAndTime results
+      true, // SurveyedSurfaceHeightAndTime = 0x0000001C
+    };
 
     /// <summary>
     /// Existence map of where we know Prod Data exists 
@@ -123,7 +132,7 @@ namespace VSS.TRex.SubGridTrees.Client
       var WOx = (originX - indexOriginOffset) * cellSize;
       var WOy = (originY - indexOriginOffset) * cellSize;
 
-      return  new BoundingWorldExtent3D(WOx, WOy, WOx + SubGridTreeConsts.SubGridTreeDimension * cellSize, WOy + SubGridTreeConsts.SubGridTreeDimension * cellSize);
+      return new BoundingWorldExtent3D(WOx, WOy, WOx + SubGridTreeConsts.SubGridTreeDimension * cellSize, WOy + SubGridTreeConsts.SubGridTreeDimension * cellSize);
     }
 
     /// <summary>
@@ -137,10 +146,10 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
     public ClientLeafSubGrid(ISubGridTree owner,
-        ISubGrid parent,
-        byte level,
-        double cellSize,
-        int indexOriginOffset) : base(owner, parent, level)
+      ISubGrid parent,
+      byte level,
+      double cellSize,
+      int indexOriginOffset) : base(owner, parent, level)
     {
       this.cellSize = cellSize;
       this.indexOriginOffset = indexOriginOffset;
@@ -157,7 +166,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <param name="context"></param>
-        public abstract void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context);
+    public abstract void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context);
 
     /// <summary>
     /// Determine if the value proposed for assignation to a cell in this client leaf sub grid is null with respect
@@ -182,7 +191,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="WorldOriginX"></param>
     /// <param name="WorldOriginY"></param>
     public override void CalculateWorldOrigin(out double WorldOriginX,
-                                              out double WorldOriginY)
+      out double WorldOriginY)
     {
       WorldOriginX = (originX - indexOriginOffset) * cellSize;
       WorldOriginY = (originY - indexOriginOffset) * cellSize;
@@ -240,7 +249,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer);
 
-      writer.Write((int)GridDataType);
+      writer.Write((int) GridDataType);
       writer.Write(cellSize);
       writer.Write(indexOriginOffset);
 
@@ -256,7 +265,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader);
 
-      if ((GridDataType)reader.ReadInt32() != GridDataType)
+      if ((GridDataType) reader.ReadInt32() != GridDataType)
         throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
 
       cellSize = reader.ReadDouble();
