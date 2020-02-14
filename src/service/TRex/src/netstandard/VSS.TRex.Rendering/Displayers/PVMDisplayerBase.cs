@@ -6,7 +6,7 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public abstract class PVMDisplayerBase<TP, TS, TC> : ProductionPVMConsistentDisplayer<TP, TS, TC>
     where TP : class, IPlanViewPalette
-    where TS : GenericClientLeafSubGrid<TC>, IClientLeafSubGrid //class, IClientLeafSubGrid
+    where TS : GenericClientLeafSubGrid<TC>, IClientLeafSubGrid
   {
   }
 }
