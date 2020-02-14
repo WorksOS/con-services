@@ -6,7 +6,7 @@ namespace VSS.TRex.ElevationSmoothing
   /// Defines the basic convolution activity of iterating over a square context applying an averaging function over the
   /// values. ConvolveElement may be overridden to implenent other behaviours.
   /// </summary>
-  public class BaseConvolver<T> : IBaseConvolver<T>
+  public abstract class ConvolverBase<T> : IConvolver<T>
   {
     protected int _contextSize;
     protected readonly int _contextOffset;
@@ -34,30 +34,19 @@ namespace VSS.TRex.ElevationSmoothing
       }
     }
 
-    public BaseConvolver(IConvolutionAccumulator<T> accumulator)
+    protected ConvolverBase(IConvolutionAccumulator<T> accumulator)
     {
       _accumulator = accumulator;
     }
 
-    public BaseConvolver(IConvolutionAccumulator<T> accumulator, int contextSize) : this(accumulator)
+    protected ConvolverBase(IConvolutionAccumulator<T> accumulator, int contextSize) : this(accumulator)
     {
       ContextSize = contextSize;
       _contextOffset = ContextSize / 2;
     }
 
-    public virtual void ConvolveElement(int i, int j)
-    {
-      _accumulator.Clear();
+    public abstract void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue);
 
-      for (int x = i - _contextOffset, limitx = i + _contextOffset; x <= limitx; x++)
-      {
-        for (int y = j - _contextOffset, limity = j + _contextOffset; y <= limity; y++)
-        {
-          _accumulator.Accumulate(GetValue(x, y));
-        }
-      }
-
-      SetValue(i, j, _accumulator.Result());
-    }
+    public abstract void ConvolveElement(int i, int j);
   }
 }

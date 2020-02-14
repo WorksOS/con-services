@@ -36,7 +36,7 @@ namespace VSS.TRex.ElevationSmoothing
 
       var result = new GenericSubGridTree_Float(_sourceTree.NumLevels, _sourceTree.CellSize);
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new BasicSmoothingFilter<float>(accumulator, _contextSize);
+      var convolver = new MeanFilter<float>(accumulator, _contextSize);
 
       _sourceTree.ScanAllSubGrids(leaf =>
       {

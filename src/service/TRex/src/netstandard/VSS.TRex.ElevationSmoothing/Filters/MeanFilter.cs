@@ -2,9 +2,9 @@
 
 namespace VSS.TRex.ElevationSmoothing
 {
-  public class MeanFilter<T> : FilterConvolver<T>
+  public class MeanFilter<T> : Filter<T>
   {
-    protected static double[,] CreateFilter(int contextSize, int centerWeight)
+    protected static double[,] CreateFilter(int contextSize, double centerWeight)
     {
       if (contextSize < 3 || contextSize > 11)
       {
@@ -22,7 +22,7 @@ namespace VSS.TRex.ElevationSmoothing
         }
       }
 
-      result[contextSize / 2, contextSize / 2] = centerWeight;
+      result[contextSize / 2, contextSize / 2] = centerWeight / totalWeight;
 
       return result;
     }

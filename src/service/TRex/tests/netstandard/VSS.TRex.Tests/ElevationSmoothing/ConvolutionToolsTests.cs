@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using VSS.TRex.ElevationSmoothing;
 using VSS.TRex.SubGridTrees;
@@ -46,6 +47,17 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       smoother.Should().NotBeNull();
     }
 
+    [Fact]
+    public void FilterConvolverAssertsDimensionsMatch()
+    {
+      var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var filter = new Filter<float>(accumulator, new double[3, 3]);
+      var smoother = new ConvolutionTools<float>();
+
+      Action act = () => smoother.Convolve(new float[3, 3], new float[4, 4], filter);
+      act.Should().Throw<ArgumentException>().WithMessage("Dimensions of source and destination data are not the same");
+    }
+
     [Theory]
     [InlineData(3)]
     [InlineData(5)]
@@ -61,9 +73,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
+      var filter = new MeanFilter<float>(accumulator, contextSize);
       var smoother = new ConvolutionTools<float>();
-      smoother.Convolve(subGrid, result, convolver);
+      smoother.Convolve(subGrid, result, filter);
 
       // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
       // Check all acquired values in the single subgrid are zero
@@ -111,9 +123,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
         result.Should().NotBeNull();
 
         var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-        var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
+        var filter = new MeanFilter<float>(accumulator, contextSize);
         var smoother = new ConvolutionTools<float>();
-        smoother.Convolve(subGrid, result, convolver);
+        smoother.Convolve(subGrid, result, filter);
 
         // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
         // Check all acquired values in the single subgrid are zero
@@ -141,9 +153,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
+      var filter = new MeanFilter<float>(accumulator, contextSize);
       var smoother = new ConvolutionTools<float>();
-      smoother.Convolve(subGrid, result, convolver);
+      smoother.Convolve(subGrid, result, filter);
 
       result.Items[0, 0].Should().Be(elevationResult1);
 
@@ -176,9 +188,9 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var convolver = new BasicSmoothingFilter<float>(accumulator, contextSize);
+      var filter = new MeanFilter<float>(accumulator, contextSize);
       var smoother = new ConvolutionTools<float>();
-      smoother.Convolve(subGrid, result, convolver);
+      smoother.Convolve(subGrid, result, filter);
 
       result.Items[15, 15].Should().Be(elevationResult);
 
