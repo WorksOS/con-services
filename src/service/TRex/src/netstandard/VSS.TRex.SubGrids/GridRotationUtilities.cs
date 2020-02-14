@@ -90,7 +90,7 @@ namespace VSS.TRex.SubGrids
       {
         temp = subGridWorldOriginX / stepXIncrement;
 
-        double currentEast = (Math.Truncate(temp) * stepXIncrement) + stepXIncrementOverTwo;
+        double currentEast = (Math.Truncate(temp) * stepXIncrement) - stepXIncrementOverTwo;
         int eastCol = (int)Math.Floor((currentEast - subGridWorldOriginX) / siteModelCellSize);
 
         while (eastCol < 0)

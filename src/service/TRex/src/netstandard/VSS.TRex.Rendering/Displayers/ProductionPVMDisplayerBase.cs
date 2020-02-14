@@ -154,7 +154,7 @@ namespace VSS.TRex.Rendering.Displayers
       while (north_row < SubGridTreeConsts.SubGridTreeDimension)
       {
         temp = subGridWorldOriginX / stepXIncrement;
-        currentEast = (Math.Truncate(temp) * stepXIncrement) + stepXIncrementOverTwo;
+        currentEast = (Math.Truncate(temp) * stepXIncrement) - stepXIncrementOverTwo;
         east_col = (int)Math.Floor((currentEast - subGridWorldOriginX) / cellSize);
 
         while (east_col < 0)
