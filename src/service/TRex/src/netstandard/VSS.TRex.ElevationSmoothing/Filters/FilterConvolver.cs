@@ -7,11 +7,11 @@ namespace VSS.TRex.ElevationSmoothing
   /// to be convoled.
   /// </summary>
   /// <typeparam name="T"></typeparam>
-  public class Filter<T> : ConvolverBase<T>
+  public class FilterConvolver<T> : ConvolverBase<T>
   {
     public readonly double[,] FilterMatrix;
 
-    public Filter(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix) : base(accumulator)
+    public FilterConvolver(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix) : base(accumulator)
     {
       FilterMatrix = filterMatrix;
 
@@ -24,27 +24,6 @@ namespace VSS.TRex.ElevationSmoothing
       }
 
       ContextSize = majorDim;
-    }
-
-    /// <summary>
-    /// Performs a convolution across a rectagular patch of values
-    /// </summary>
-    /// <param name="sizeX"></param>
-    /// <param name="sizeY"></param>
-    /// <param name="getValue"></param>
-    /// <param name="setValue"></param>
-    public override void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue)
-    {
-      GetValue = getValue;
-      SetValue = setValue;
-
-      for (var i = 0; i < sizeX; i++)
-      {
-        for (var j = 0; j < sizeY; j++)
-        {
-          ConvolveElement(i, j);
-        }
-      }
     }
 
     /// <summary>

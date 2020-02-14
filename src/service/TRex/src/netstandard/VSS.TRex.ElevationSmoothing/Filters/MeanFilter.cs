@@ -2,7 +2,7 @@
 
 namespace VSS.TRex.ElevationSmoothing
 {
-  public class MeanFilter<T> : Filter<T>
+  public class MeanFilter<T> : FilterConvolver<T>
   {
     protected static double[,] CreateFilter(int contextSize, double centerWeight)
     {

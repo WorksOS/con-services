@@ -45,8 +45,28 @@ namespace VSS.TRex.ElevationSmoothing
       _contextOffset = ContextSize / 2;
     }
 
-    public abstract void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue);
 
     public abstract void ConvolveElement(int i, int j);
+
+    /// <summary>
+    /// Performs a convolution across a rectagular patch of values
+    /// </summary>
+    /// <param name="sizeX"></param>
+    /// <param name="sizeY"></param>
+    /// <param name="getValue"></param>
+    /// <param name="setValue"></param>
+    public void Convolve(int sizeX, int sizeY, Func<int, int, T> getValue, Action<int, int, T> setValue)
+    {
+      GetValue = getValue;
+      SetValue = setValue;
+
+      for (var i = 0; i < sizeX; i++)
+      {
+        for (var j = 0; j < sizeY; j++)
+        {
+          ConvolveElement(i, j);
+        }
+      }
+    }
   }
 }

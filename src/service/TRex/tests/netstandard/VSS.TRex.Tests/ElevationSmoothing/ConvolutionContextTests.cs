@@ -9,7 +9,7 @@ using Xunit;
 
 namespace VSS.TRex.Tests.ElevationSmoothing
 {
-  public class ConcvolutionContextTests
+  public class ConvolutionContextTests
   {
     private ConvolutionSubGridContext<GenericLeafSubGrid_Float, float> NewSmootherContext() => new ConvolutionSubGridContext<GenericLeafSubGrid_Float, float>();
 

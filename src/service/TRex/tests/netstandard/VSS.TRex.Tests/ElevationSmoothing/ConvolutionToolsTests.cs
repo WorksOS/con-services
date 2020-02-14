@@ -51,7 +51,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void FilterConvolverAssertsDimensionsMatch()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new Filter<float>(accumulator, new double[3, 3]);
+      var filter = new FilterConvolver<float>(accumulator, new double[3, 3]);
       var smoother = new ConvolutionTools<float>();
 
       Action act = () => smoother.Convolve(new float[3, 3], new float[4, 4], filter);
