@@ -2,7 +2,7 @@
 {
   public class ConvolutionAccumulator_Float : ConvolutionAccumulator<float>
   {
-    protected int numValues;
+    public int NumNonNullValues;
     protected float sum;
 
     public ConvolutionAccumulator_Float(float nullValue)
@@ -15,7 +15,7 @@
       if (value != NullValue)
       {
         sum += value;
-        numValues++;
+        NumNonNullValues++;
       }
     }
 
@@ -24,19 +24,19 @@
       if (value != NullValue)
       {
         sum += (float)(value * coefficient);
-        numValues++;
+        NumNonNullValues++;
       }
     }
 
     public override void Clear()
     {
-      numValues = 0;
+      NumNonNullValues = 0;
       sum = 0.0f;
     }
 
     public override float Result()
     {
-      return numValues > 0 ? (sum / numValues) : NullValue;
+      return NumNonNullValues > 0 ? sum  : NullValue;
     }
   }
 }

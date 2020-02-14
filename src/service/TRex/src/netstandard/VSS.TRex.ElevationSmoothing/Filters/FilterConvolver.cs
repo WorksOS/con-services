@@ -20,7 +20,7 @@ namespace VSS.TRex.ElevationSmoothing
 
       if (majorDim != minorDim)
       {
-        throw new ArgumentException($"Major dimension ({majorDim}) and minor dimension ({minorDim}) or filterMatrix must be the same");
+        throw new ArgumentException($"Major dimension ({majorDim}) and minor dimension ({minorDim}) of filterMatrix must be the same");
       }
 
       ContextSize = majorDim;
