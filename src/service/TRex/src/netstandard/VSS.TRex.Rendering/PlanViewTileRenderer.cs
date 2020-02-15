@@ -5,6 +5,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
+using VSS.TRex.ElevationSmoothing;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
@@ -169,6 +170,9 @@ namespace VSS.TRex.Rendering
       else
         Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
 
+      // Provide data smoothing support to the displayer for the rendering operation being performed
+      (Displayer as IProductionPVMConsistentDisplayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode);
+
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
       Displayer.MapView.SetRotation(-TileRotation /* + (Math.PI / 2) */);
@@ -202,10 +206,8 @@ namespace VSS.TRex.Rendering
 
       if (processor.Response.ResultStatus == RequestErrorStatus.OK)
       {
-        // Render the collection of sub grids collected in the rendering task
-        // Todo: Implement call to renderer functionality
-        //throw new NotImplementedException();
-        (((IPVMRenderingTask) processor.Task).TileRenderer.Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
+        // Render the collection of data in the aggregator
+        (Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
   
         PerformAnyRequiredDebugLevelDisplay();
 

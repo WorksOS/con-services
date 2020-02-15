@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Rendering.Executors.Tasks;
+﻿using VSS.TRex.ElevationSmoothing;
+using VSS.TRex.Rendering.Executors.Tasks;
 
 namespace VSS.TRex.Rendering.Displayers
 {
@@ -9,5 +10,7 @@ namespace VSS.TRex.Rendering.Displayers
       double originX, double originY);
 
     bool PerformConsistentRender();
+
+    IDataSmoother DataSmoother { get; set; }
   }
 }

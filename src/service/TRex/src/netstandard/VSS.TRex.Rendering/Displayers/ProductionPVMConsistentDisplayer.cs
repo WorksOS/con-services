@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.TRex.ElevationSmoothing;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
@@ -55,6 +56,8 @@ namespace VSS.TRex.Rendering.Displayers
 
     private PVMTaskAccumulator<TC, TS> _taskAccumulator;
 
+    public IDataSmoother DataSmoother { get; set; }
+
     /// <summary>
     /// Pre-calculates a set of parameters for the rendering context 
     /// </summary>
@@ -98,6 +101,11 @@ namespace VSS.TRex.Rendering.Displayers
       }
 
       CalculateDisplayParameters(_taskAccumulator.valueStoreCellSizeX, _taskAccumulator.valueStoreCellSizeX);
+
+      // If there is a defined elevation smoother for ths rendering context then use it to modify the data assembled
+      // for the tile to be rendered and replace the value store with the result of the smooth operation;
+
+      ValueStore = (DataSmoother as IArrayDataSmoother<TC>)?.Smooth() ?? ValueStore;
 
       // Draw the cells in the grid in stripes, starting from the southern most
       // row in the grid and progressing from the western end to the eastern end

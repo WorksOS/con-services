@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using VSS.TRex.ElevationSmoothing;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
 namespace VSS.TRex.Rendering.Displayers

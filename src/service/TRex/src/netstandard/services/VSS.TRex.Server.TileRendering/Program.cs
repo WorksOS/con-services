@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.RequestHandlers;
 using VSS.TRex.Common;
@@ -15,6 +17,7 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.ElevationSmoothing;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -38,6 +41,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Server.TileRendering
 {
@@ -63,6 +67,17 @@ namespace VSS.TRex.Server.TileRendering
         default:
           return null;
       }
+    }
+
+    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
+    {
+      switch (key)
+      {
+        case DisplayMode.Height :
+          return new ElevationArraySmoother(null, new ConvolutionTools<float>(), 3); 
+        default: 
+          return null;
+      } 
     }
 
     private static void DependencyInjection() 
@@ -108,11 +123,15 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
         .Add(x => x.AddTransient<TRexTPaaSAuthenticatedRequestHandler>())
         .Add(x => x.AddTransient<TPaaSApplicationCredentialsRequestHandler>())
+
         .AddHttpClient<TPaaSClient>(client => client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token"))
           .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
         .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
           .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+
+        .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+
         .Complete();
     }
 
