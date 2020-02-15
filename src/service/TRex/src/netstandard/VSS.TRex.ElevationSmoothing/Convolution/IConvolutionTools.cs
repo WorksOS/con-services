@@ -2,7 +2,12 @@
 
 namespace VSS.TRex.ElevationSmoothing
 {
-  public interface IConvolutionTools<T>
+  public interface IConvolutionTools
+  {
+
+  }
+
+  public interface IConvolutionTools<T> : IConvolutionTools
   {
     void Convolve(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver);
 
