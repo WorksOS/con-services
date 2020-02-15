@@ -9,7 +9,7 @@ namespace VSS.TRex.ElevationSmoothing
   public abstract class ConvolverBase<T> : IConvolver<T>
   {
     protected int _contextSize;
-    protected readonly int _contextOffset;
+    protected int _contextOffset;
 
     protected Func<int, int, T> GetValue;
     protected Action<int, int, T> SetValue;
@@ -30,7 +30,7 @@ namespace VSS.TRex.ElevationSmoothing
           throw new ArgumentException("Context size must be positive odd number greater than 1");
         }
 
-        _contextSize = value;
+        _contextOffset = _contextSize / 2;
       }
     }
 
@@ -42,7 +42,6 @@ namespace VSS.TRex.ElevationSmoothing
     protected ConvolverBase(IConvolutionAccumulator<T> accumulator, int contextSize) : this(accumulator)
     {
       ContextSize = contextSize;
-      _contextOffset = ContextSize / 2;
     }
 
 

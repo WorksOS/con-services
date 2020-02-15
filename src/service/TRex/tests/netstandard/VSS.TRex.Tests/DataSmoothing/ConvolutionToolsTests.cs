@@ -4,6 +4,7 @@ using FluentAssertions;
 using VSS.TRex.ElevationSmoothing;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Types.CellPasses;
@@ -77,15 +78,16 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       var smoother = new ConvolutionTools<float>();
       smoother.Convolve(subGrid, result, filter);
 
-      // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
-      // Check all acquired values in the single subgrid are zero
-      for (var i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+      // All cell values should remain mostly unchanged due to non-null values around perimeter of subgrid in smoothing context
+      // Check all acquired values in the single subgrid are the same elevation, except for the perimeter values which 
+      // will be 2/3 * Elevation due to null values. Some corner vales will have 0.44444 * ElEVATION for same reason
+      SubGridUtilities.SubGridDimensionalIterator((x, y) =>
       {
-        for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
-        {
-          result.Items[i, j].Should().Be(ELEVATION);
-        }
-      }
+        var ok = Math.Abs(result.Items[x, y] = ELEVATION) < 0.0001 || 
+                 Math.Abs(result.Items[x, y] = (2 / 3) * ELEVATION) < 0.0001 ||
+                 Math.Abs(result.Items[x, y] = 0.44444f * ELEVATION) < 0.0001;
+        ok.Should().BeTrue();
+      });
     }
 
     [Theory]
@@ -127,20 +129,19 @@ namespace VSS.TRex.Tests.ElevationSmoothing
         var smoother = new ConvolutionTools<float>();
         smoother.Convolve(subGrid, result, filter);
 
-        // All cell values should remain unchanged due to null values around perimeter of subgrid in smoothing context
-        // Check all acquired values in the single subgrid are zero
-        for (var i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+        // All cell values should remain mostly unchanged due to non-null values around perimeter of subgrid in smoothing context
+        // Check all acquired values in the single subgrid are the same elevation, except for the perimeter values which 
+        // will be 2/3 * Elevation due to null values
+        SubGridUtilities.SubGridDimensionalIterator((x, y) =>
         {
-          for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
-          {
-            result.Items[i, j].Should().Be(ELEVATION);
-          }
-        }
+          var ok = Math.Abs(result.Items[x, y] = ELEVATION) < 0.0001 || Math.Abs(result.Items[x, y] = (2 / 3) * ELEVATION) < 0.0001;
+          ok.Should().BeTrue();
+        });
       }
     }
 
     [Theory]
-    [InlineData(3, 10.0f, 10.0f / 4.0f, 10.0f / 6.0f, 10.0f / 9.0f)]
+    [InlineData(3, 10.0f, (2/3f) * 10.0f, (1 /9f) * 10.0f, (1/9f) * 10.0f)]
     public void SingleSubGrid_SingleSpikeELevation_OriginOfSubGrid(int contextSize, float elevation, float elevationResult1, float elevationResult2, float elevationResult3)
     {
       var tree = ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);

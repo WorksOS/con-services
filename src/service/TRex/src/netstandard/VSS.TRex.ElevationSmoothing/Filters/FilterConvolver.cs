@@ -35,6 +35,8 @@ namespace VSS.TRex.ElevationSmoothing
     {
       _accumulator.Clear();
 
+      _accumulator.ConvolvedValue = GetValue(i, j);
+
       for (int x = i - _contextOffset, limitx = i + _contextOffset, majorIndex = 0; x <= limitx; x++, majorIndex++)
       {
         for (int y = j - _contextOffset, limity = j + _contextOffset, minorIndex = 0; y <= limity; y++, minorIndex++)
