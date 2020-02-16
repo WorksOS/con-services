@@ -11,8 +11,10 @@ namespace VSS.TRex.ElevationSmoothing
   {
     public readonly double[,] FilterMatrix;
 
-    public FilterConvolver(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix) : base(accumulator)
+    public FilterConvolver(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, bool updateNullValues) : base(accumulator)
     {
+      _updateNullValues = updateNullValues;
+
       FilterMatrix = filterMatrix;
 
       var majorDim = FilterMatrix.GetLength(0);
@@ -34,8 +36,12 @@ namespace VSS.TRex.ElevationSmoothing
     public override void ConvolveElement(int i, int j)
     {
       _accumulator.Clear();
+      _accumulator.ConvolutionSourceValue = GetValue(i, j);
 
-      _accumulator.ConvolvedValue = GetValue(i, j);
+      if (!_updateNullValues && _accumulator.ConvolutionSourceValueIsNull())
+      {
+        return;
+      }
 
       for (int x = i - _contextOffset, limitx = i + _contextOffset, majorIndex = 0; x <= limitx; x++, majorIndex++)
       {

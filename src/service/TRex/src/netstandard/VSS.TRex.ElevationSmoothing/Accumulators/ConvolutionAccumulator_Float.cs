@@ -11,8 +11,6 @@
     public int NumNonNullValues;
     protected float sum;
 
-    //public float ConvolvedValue { get; set; }
-
     public ConvolutionAccumulator_Float(float nullValue)
     {
       NullValue = nullValue;
@@ -27,12 +25,13 @@
       }
       else
       {
-        sum += ConvolvedValue;
+        sum += ConvolutionSourceValue;
       }
     }
 
     public override void Accumulate(float value, double coefficient)
     {
+      if (ConvolutionSourceValue == NullValue)
       if (value != NullValue)
       {
         sum += (float)(value * coefficient);
@@ -40,7 +39,7 @@
       }
       else
       {
-        sum += (float)(ConvolvedValue * coefficient);
+        sum += (float)(ConvolutionSourceValue * coefficient);
       }
     }
 
@@ -48,8 +47,10 @@
     {
       NumNonNullValues = 0;
       sum = 0.0f;
-      ConvolvedValue = 0.0f;
+      ConvolutionSourceValue = 0.0f;
     }
+
+    public override bool ConvolutionSourceValueIsNull() => ConvolutionSourceValue == NullValue;
 
     public override float Result()
     {
