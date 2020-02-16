@@ -31,7 +31,6 @@
 
     public override void Accumulate(float value, double coefficient)
     {
-      if (ConvolutionSourceValue == NullValue)
       if (value != NullValue)
       {
         sum += (float)(value * coefficient);
