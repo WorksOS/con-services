@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using VSS.TRex.ElevationSmoothing;
 using VSS.TRex.Types.CellPasses;
 using Xunit;
@@ -91,6 +92,50 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
       accum.Accumulate(123.0f, 1.0);
       accum.Result().Should().Be(123.0f);
+    }
+
+    [Theory]
+    [InlineData(3)]
+    [InlineData(5)]
+    public void NullInfillResult_BelowConcensus(int contextSize)
+    {
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      {
+        ConvolutionSourceValue = CellPassConsts.NullHeight
+      };
+
+      var concensusFraction = (int)Math.Truncate((2f / 3f) * (contextSize * contextSize));
+
+      for (var i = 0; i < concensusFraction; i++)
+      {
+        accum.Accumulate(100.0f, 1.0 / (contextSize * contextSize));
+      }
+
+      accum.NullInfillResult(contextSize).Should().Be(CellPassConsts.NullHeight);
+    }
+
+    [Theory]
+    [InlineData(3)]
+    [InlineData(5)]
+    public void NullInfillResult_AboveConcensus(int contextSize)
+    {
+      const float accumValue = 100.0f;
+
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      {
+        ConvolutionSourceValue = CellPassConsts.NullHeight
+      };
+
+      float contextSizeSquare = contextSize * contextSize;
+      var concensusFraction = (int)Math.Truncate(0.5f * contextSizeSquare);
+
+      for (var i = 0; i < concensusFraction + 1; i++)
+      {
+        accum.Accumulate(accumValue, 1.0);
+      }
+
+      var expectedInfillResult = ((float)contextSizeSquare / accum.NumNonNullValues) * ((concensusFraction + 1) * accumValue); 
+      accum.NullInfillResult(contextSize).Should().Be(expectedInfillResult);
     }
   }
 }

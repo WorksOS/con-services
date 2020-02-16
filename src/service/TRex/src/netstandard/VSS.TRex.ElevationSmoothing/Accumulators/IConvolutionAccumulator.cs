@@ -11,6 +11,7 @@
     void Accumulate(T value);
     void Accumulate(T value, double coefficient);
     T Result();
+    T NullInfillResult(int contextSize);
     void Clear();
   }
 }

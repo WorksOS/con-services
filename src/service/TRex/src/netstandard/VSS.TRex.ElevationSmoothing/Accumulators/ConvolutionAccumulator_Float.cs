@@ -50,5 +50,19 @@
     public override bool ConvolutionSourceValueIsNull() => _convolutionSourceValue == NullValue;
 
     public override float Result() => _sum;
+
+    public override float NullInfillResult(int contextSize)
+    {
+      const float minimumConsensusFraction = 0.5f;
+      var contextSquare = contextSize * contextSize;
+      var concensusFraction = (float)NumNonNullValues / contextSquare;
+
+      if (concensusFraction > minimumConsensusFraction)
+      {
+        return (1/ concensusFraction) * _sum;
+      }
+
+      return NullValue;
+    }
   }
 }

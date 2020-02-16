@@ -38,7 +38,9 @@ namespace VSS.TRex.ElevationSmoothing
       _accumulator.Clear();
       _accumulator.ConvolutionSourceValue = GetValue(i, j);
 
-      if (!_updateNullValues && _accumulator.ConvolutionSourceValueIsNull())
+      var convolutionSourceValueIsNull = _accumulator.ConvolutionSourceValueIsNull();
+
+      if (!_updateNullValues && convolutionSourceValueIsNull)
       {
         return;
       }
@@ -51,7 +53,14 @@ namespace VSS.TRex.ElevationSmoothing
         }
       }
 
-      SetValue(i, j, _accumulator.Result());
+      if (_updateNullValues && convolutionSourceValueIsNull)
+      {
+        SetValue(i, j, _accumulator.NullInfillResult(_contextSize));
+      }
+      else
+      {
+        SetValue(i, j, _accumulator.Result());
+      }
     }
   }
 }
