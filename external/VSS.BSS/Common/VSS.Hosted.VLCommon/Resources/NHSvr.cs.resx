@@ -1,0 +1,3160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PowerModeAlertMessageBodySMS" xml:space="preserve">
+    <value>Účet upozornění VisionLink: {0} {1} nastavit: {2} pro {3}/{4} v {5}</value>
+  </data>
+  <data name="2DProjectMonitoring" xml:space="preserve">
+    <value>2D Monitorace Projektu</value>
+  </data>
+  <data name="3DProjectMonitoring" xml:space="preserve">
+    <value>3D Monitorace Projektu</value>
+  </data>
+  <data name="deviceTypeTHREEPDATA" xml:space="preserve">
+    <value>3PDATA</value>
+  </data>
+  <data name="deviceTypeMTS523" xml:space="preserve">
+    <value>523</value>
+  </data>
+  <data name="zipDescription" xml:space="preserve">
+    <value>&lt;p&gt;These zip files contain example codes for the integration of VisionLink API. By default, the examples in these zip files invoke the production service. Please read the README.txt file to understand how to build the projects.&lt;/p&gt;&lt;p&gt;Note: These examples may contain VirtualSite Solutions' unpublished proprietary information which may constitute a trade secret and/or be confidential. These Sample codes are meant to be used purely for educational purposes assisting with usage and integration of VisionLink APIs and may not be copied or disclosed to others. Copyright notice is precautionary only, and does not imply publication.&lt;/p&gt;</value>
+  </data>
+  <data name="apiSiteIntroduction" xml:space="preserve">
+    <value>&lt;p&gt;Welcome to VisionLink API documentation. In this page you will find all the information you need to get started. You will also find a more detailed list of all the available services, sample codes and examples.&lt;/p&gt;&lt;p&gt;If you are not a programmer and just need an overview of the VisionLink API, please read the &lt;a href="/Docs/{0}/Overview.pdf" class="contentLink" target="_blank"&gt;Overview Document&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Read the &lt;a href="/Docs/{0}/ProgrammersReference.pdf" target="_blank" class="contentLink"&gt;Programmer’s Reference&lt;/a&gt; to learn more on how to use the API service. It is important that the VisionLink API users review this reference closely as it contains useful information that will expedite the integration process.&lt;/p&gt;&lt;p&gt; The first step in accessing the VisionLink API service is to acquire an API queue assignment as well as a non-expiring VisionLink API user account id/password. You can do that by contacting your account Administrator, requesting your choice of API topics, and following instructions in the Welcome email to set up your API password.&lt;/p&gt;</value>
+  </data>
+  <data name="diagnosticsDescription" xml:space="preserve">
+    <value>Diagnostikou se míní,v rámci elektronického kontrolního modulu (ECM), proces detekce, zobrazení a/nebo uložení chybových informací o stroji/motoru. Každá diagnostika je reprezentovaná pěti datovými prvky: úrovní diagnostiky, ID modulu (MID), který nahlašuje diagnostické informace, diagnostickým identifikátorem (nebo komponentním identifikátorem CID), indikátorem režimu poruchy (FMI) a diagnostickým časovým razítkem.</value>
+  </data>
+  <data name="NewAccountSupportEmailBody" xml:space="preserve">
+    <value>Nový účet VisionLink account {0} byl vytvořen. &lt;BR&gt;Detaily účtu: &lt;BR&gt;Primární kontakt: {1}&lt;BR&gt;  Email: {2}&lt;BR&gt; BSS ID: {3} &lt;BR&gt;Aktivační odkaz: {4}</value>
+  </data>
+  <data name="notEnoughPolygonPoints" xml:space="preserve">
+    <value>Hranice polygonu musí obsahovat nejméně 3 body.</value>
+  </data>
+  <data name="SavCreationEmailHeader" xml:space="preserve">
+    <value>Byl vytvořen sdílený náhled na stroje, aby bylo možné prohlížet ve vašem účtu VisionLink následující stroje. Pro další detaily kontaktujte {0} v  {1}</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>O aplikaci</value>
+  </data>
+  <data name="account" xml:space="preserve">
+    <value>Účet</value>
+  </data>
+  <data name="SpeedingAlertEmailBody" xml:space="preserve">
+    <value>Název účtu: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Výrobce stroje: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Výrobce modelu: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ upozornění: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Název upozornění: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Hranice rychlosti stroje: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Maximální rychlost: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Doba zastavení rychlosti: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Doba trvání: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokalita: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Pracoviště: {12}</value>
+  </data>
+  <data name="EngineIdleDailyAlertEmailBody" xml:space="preserve">
+    <value>Název účtu: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Druh stroje: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ upozornění: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Název upozornění: {6} &lt;BR&gt;&amp;#xD;&amp;#xA;Od: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Do: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Trvání: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Prahová hodnota: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokalita: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Stanoviště: {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {14}</value>
+  </data>
+  <data name="PowerModeAlertEmailBody" xml:space="preserve">
+    <value>Název účtu: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Výroba stroje: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ upozornění: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Název upozornění: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Nastavení režimu napájení: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Doba: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Poloha: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Místo: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Počítadlo provozních hodin: {11}</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;ECM Popis: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Osa/Číslo pneumatik: {8}/{9}&lt;BR&gt;&amp;#xD;&amp;#xA;Tlak pneumatik (psi): {13}&lt;BR&gt;&amp;#xD;&amp;#xA; Teplota pneumatik (&amp;#xb0;C): {14}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav čidla: {15}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokalita: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Stanoviště: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {16}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} platné v {9} hodin.&lt;BR&gt;&amp;#xD;&amp;#xA;Hodina metr: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokace: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Pracoviště: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} platné při {9} mílích.&lt;BR&gt;&amp;#xD;&amp;#xA;Počítadlo ujetých km: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokace: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Pracoviště: {6}</value>
+  </data>
+  <data name="ZoneAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokace:{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {9}</value>
+  </data>
+  <data name="RadioMachineSecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Název účtu: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;stroje ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Náze výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Režim spuštění: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {9}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {9}</value>
+  </data>
+  <data name="FluidAnalysisAlertBody" xml:space="preserve">
+    <value>Název účtu: {7}&lt;BR&gt;  Priorita výsledku: {0}&lt;BR&gt;  ID stroje: {1}&lt;BR&gt;  S/Č: {2}&lt;BR&gt;  Značka stroje: {8}&lt;BR&gt;  Model stroje: {9}&lt;BR&gt;  Typ výstrahy: {3}&lt;BR&gt;  Název výstrahy: {4}&lt;BR&gt;  Lab. č. a zdroj: {5}&lt;BR&gt;  Vzorek odebrán v datum: {6}</value>
+  </data>
+  <data name="AlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokace: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Pracoviště: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {10}</value>
+  </data>
+  <data name="SecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Název účtu: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Startovací režim: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Bezpečnostní spínač: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {10}</value>
+  </data>
+  <data name="FuelLossAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokace: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Pracoviště: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Změna úrovně paliva: -{7}%&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {11}</value>
+  </data>
+  <data name="LoadDistanceAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Date: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokace: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Pracoviště: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Vzdálenost nákladu: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {11}</value>
+  </data>
+  <data name="FaultAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/Č: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Značka stroje: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ výstrahy: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název výstrahy: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Chybný kód: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Chybný popis: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Závažnost: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokace: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Pracoviště: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav motohodin: {13}</value>
+  </data>
+  <data name="SwitchAlertMessageBody" xml:space="preserve">
+    <value>Název účtu: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;ID stroje: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ stroje: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Model stroje: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Typ upozornění: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Název upozornění: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Popis spínače: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Stav spínače: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Poloha: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Stránka: {8}</value>
+  </data>
+  <data name="accountType" xml:space="preserve">
+    <value>Typ účtu</value>
+  </data>
+  <data name="FluidAnalysisAlertSMS" xml:space="preserve">
+    <value>Účet: {3}  Priorita výsledků: {0} - Lab č.: {1} - Zdroj: {2}</value>
+  </data>
+  <data name="acreAbbreviation" xml:space="preserve">
+    <value>akry</value>
+  </data>
+  <data name="FluidActionRequiredPriority" xml:space="preserve">
+    <value>Vyžadována činnost</value>
+  </data>
+  <data name="actionTaken" xml:space="preserve">
+    <value>Provedená akce</value>
+  </data>
+  <data name="actualEndDateTime" xml:space="preserve">
+    <value>Platné koncové datum</value>
+  </data>
+  <data name="actualStartDateTime" xml:space="preserve">
+    <value>Platné počáteční datum</value>
+  </data>
+  <data name="aemp" xml:space="preserve">
+    <value>AEMP</value>
+  </data>
+  <data name="aempRequestAccess" xml:space="preserve">
+    <value>AEMP: Požadavek k přístupu</value>
+  </data>
+  <data name="AlertCounts" xml:space="preserve">
+    <value>Počty výstrah</value>
+  </data>
+  <data name="AlertDetails" xml:space="preserve">
+    <value>Detaily výstrah</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Typ výstrahy</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>Výstrahy</value>
+  </data>
+  <data name="alignment" xml:space="preserve">
+    <value>Osa</value>
+  </data>
+  <data name="AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="eventDataDescription" xml:space="preserve">
+    <value>Událostí se míní detekce předem definované nebo mimo náležitý rozsah nebo nenormální podmínky v rámci stroje, motoru nebo systému, které jsou monitorované. Každá událost je reprezentovaná čtyřmi prvky: úrovní události,  ID modulu (MID), který událost nahlašuje, identifikátorem události a časovým razítkem události.</value>
+  </data>
+  <data name="apiDocumentation" xml:space="preserve">
+    <value>Dokumentace API</value>
+  </data>
+  <data name="appliedFilter" xml:space="preserve">
+    <value>Aplikován filtr</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Plocha</value>
+  </data>
+  <data name="asset" xml:space="preserve">
+    <value>Stroj</value>
+  </data>
+  <data name="ExclusionZoneAlertDescription" xml:space="preserve">
+    <value>Vyjmutý stroj {0}</value>
+  </data>
+  <data name="SiteEntryAlertDescription" xml:space="preserve">
+    <value>Vyjmutý stroj {0}</value>
+  </data>
+  <data name="InclusionZoneAlertDescription" xml:space="preserve">
+    <value>Ukončený stroj {0}</value>
+  </data>
+  <data name="SiteExitAlertDescription" xml:space="preserve">
+    <value>Ukončený stroj {0}</value>
+  </data>
+  <data name="assetFuelBurn" xml:space="preserve">
+    <value>Spotřeba paliva stroje</value>
+  </data>
+  <data name="assetFuelReport" xml:space="preserve">
+    <value>Report o palivu stroje - porovnání</value>
+  </data>
+  <data name="AssetFuelSingleAsset" xml:space="preserve">
+    <value>Report o palivu jednoho stroje - detail</value>
+  </data>
+  <data name="NotReportingAlertDescription" xml:space="preserve">
+    <value>Stroj se nehlásí od  {0}</value>
+  </data>
+  <data name="AssetHealth" xml:space="preserve">
+    <value>Report Zdraví stroje</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Report Historie stroje</value>
+  </data>
+  <data name="assetHistoryReport" xml:space="preserve">
+    <value>Report o záznamech stroje</value>
+  </data>
+  <data name="assetID" xml:space="preserve">
+    <value>ID stroje</value>
+  </data>
+  <data name="assetIdSnVin" xml:space="preserve">
+    <value>ID stroje/Sériové č./VIN</value>
+  </data>
+  <data name="stateMileageReportTitle" xml:space="preserve">
+    <value>Stav tachometru stroje podle země / Zpráva o oblasti</value>
+  </data>
+  <data name="AssetOff" xml:space="preserve">
+    <value>Stroj Vyp</value>
+  </data>
+  <data name="AssetOn" xml:space="preserve">
+    <value>Stroj Zap</value>
+  </data>
+  <data name="assetOperation" xml:space="preserve">
+    <value>Provoz stroje</value>
+  </data>
+  <data name="AssetSecurityLastActivityReport" xml:space="preserve">
+    <value>Zabezpečení stroje - poslední zpráva o činnosti</value>
+  </data>
+  <data name="AssetSecurityUserActivityReport" xml:space="preserve">
+    <value>Zabezpečení stroje - zpráva o činnosti uživatele</value>
+  </data>
+  <data name="AssetSpeedingReport" xml:space="preserve">
+    <value>Zpráva o překročení rychlosti stroje</value>
+  </data>
+  <data name="assetType" xml:space="preserve">
+    <value>Typ stroje</value>
+  </data>
+  <data name="assetUsageReport" xml:space="preserve">
+    <value>Report o využití stroje -porovnání</value>
+  </data>
+  <data name="AssetUsageSingleAsset" xml:space="preserve">
+    <value>Report využití jednoho stroje - detail</value>
+  </data>
+  <data name="AssetUsageSummaryReport" xml:space="preserve">
+    <value>Souhrnný report využití stroje</value>
+  </data>
+  <data name="assetUtilization" xml:space="preserve">
+    <value>Využití stroje</value>
+  </data>
+  <data name="assetUtilizationReport" xml:space="preserve">
+    <value>Report o využití stroje</value>
+  </data>
+  <data name="assets" xml:space="preserve">
+    <value>Stroje</value>
+  </data>
+  <data name="attachmentUsage" xml:space="preserve">
+    <value>Použití příslušenství</value>
+  </data>
+  <data name="autoMapReset" xml:space="preserve">
+    <value>Autoresetování + resetování mapy</value>
+  </data>
+  <data name="autoIdle" xml:space="preserve">
+    <value>Vůz v nečinnosti</value>
+  </data>
+  <data name="automatic" xml:space="preserve">
+    <value>Automatické</value>
+  </data>
+  <data name="average" xml:space="preserve">
+    <value>Průměr</value>
+  </data>
+  <data name="averageFuelBurnRateForAssetsInReport" xml:space="preserve">
+    <value>Průměrná spotřeba (l/h) pro stroje v reportu</value>
+  </data>
+  <data name="averagedSitetoSwitch" xml:space="preserve">
+    <value>Průměr pracoviště na přepínač</value>
+  </data>
+  <data name="avg" xml:space="preserve">
+    <value>Prům</value>
+  </data>
+  <data name="AwaitingFirstReport" xml:space="preserve">
+    <value>Čeká se na první report</value>
+  </data>
+  <data name="axleTireNo" xml:space="preserve">
+    <value>Číslo nápravy / pneumatiky</value>
+  </data>
+  <data name="azimuth" xml:space="preserve">
+    <value>Azimut</value>
+  </data>
+  <data name="BackFilledLoadCount" xml:space="preserve">
+    <value>Počet fůr zásypového materiálu</value>
+  </data>
+  <data name="backhoe" xml:space="preserve">
+    <value>Rýpadlo-nakladač</value>
+  </data>
+  <data name="BackhoeLoaderOperation" xml:space="preserve">
+    <value>Report o provozu rýpadlo-nakladače</value>
+  </data>
+  <data name="backhoeOperation" xml:space="preserve">
+    <value>Provoz rýpadlo-nakladače</value>
+  </data>
+  <data name="bar" xml:space="preserve">
+    <value>BAR</value>
+  </data>
+  <data name="baseSurface" xml:space="preserve">
+    <value>Základní povrch</value>
+  </data>
+  <data name="bladeOnGround" xml:space="preserve">
+    <value>Čepel na zemi</value>
+  </data>
+  <data name="boostPressure" xml:space="preserve">
+    <value>Boost Pressure</value>
+  </data>
+  <data name="boostPressureHeader" xml:space="preserve">
+    <value>Boost Pressure Report</value>
+  </data>
+  <data name="boostTemperature" xml:space="preserve">
+    <value>Boost Temperature</value>
+  </data>
+  <data name="boostTemperatureHeader" xml:space="preserve">
+    <value>Boost Temperature Report</value>
+  </data>
+  <data name="bottomCyclesPerHour" xml:space="preserve">
+    <value>Nejnižší hodnota {0} - cykly / hodina (celkem)</value>
+  </data>
+  <data name="bottomPayloadPerCycle" xml:space="preserve">
+    <value>Nejnižší hodnota {0} - užitečné zatížení / cyklus (celkem)</value>
+  </data>
+  <data name="bottomPayloadPerHour" xml:space="preserve">
+    <value>Nejnižší hodnota {0} - užitečné zatížení / hodina (celkem)</value>
+  </data>
+  <data name="geolocationNotSupported" xml:space="preserve">
+    <value>Prohlížeč neposkytuje lokalitu.</value>
+  </data>
+  <data name="bulking" xml:space="preserve">
+    <value>Nabytí</value>
+  </data>
+  <data name="burnRate" xml:space="preserve">
+    <value>Kapacita spalování</value>
+  </data>
+  <data name="celsiusAbbrev" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Storno</value>
+  </data>
+  <data name="catDataFeeds" xml:space="preserve">
+    <value>Cat data</value>
+  </data>
+  <data name="catDataTopicsRequestAccess" xml:space="preserve">
+    <value>Téma CAT Data: Žádost o přístup</value>
+  </data>
+  <data name="centreLine" xml:space="preserve">
+    <value>Středová linie</value>
+  </data>
+  <data name="catDataFeedFormDescription" xml:space="preserve">
+    <value>Zaškrtněte jakýkoli počet témat API kolik potřebujete a klepněte na  “Žádost o email”. Do týdne obdržíte email, který vám poskytne veškeré informace potřebné k přístupu k požadovaným tématům.</value>
+  </data>
+  <data name="claim" xml:space="preserve">
+    <value>Požadavek</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Klepnout zde</value>
+  </data>
+  <data name="clientBuildNumber" xml:space="preserve">
+    <value>Klientské číslo sestavení</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Zavřít</value>
+  </data>
+  <data name="cmv" xml:space="preserve">
+    <value>CMV</value>
+  </data>
+  <data name="cmvChange" xml:space="preserve">
+    <value>Změnit CMV</value>
+  </data>
+  <data name="cmvChangeReport" xml:space="preserve">
+    <value>Změnit zprávu CMV</value>
+  </data>
+  <data name="cmvSummary" xml:space="preserve">
+    <value>Souhrn CMV</value>
+  </data>
+  <data name="cmvSummaryReport" xml:space="preserve">
+    <value>Hromadný report CMV</value>
+  </data>
+  <data name="coarse" xml:space="preserve">
+    <value>Hrubé</value>
+  </data>
+  <data name="code" xml:space="preserve">
+    <value>Kód</value>
+  </data>
+  <data name="codeSamples" xml:space="preserve">
+    <value>Vzorky kódů</value>
+  </data>
+  <data name="compacted" xml:space="preserve">
+    <value>Zhutněná</value>
+  </data>
+  <data name="compaction" xml:space="preserve">
+    <value>Kompakce</value>
+  </data>
+  <data name="company" xml:space="preserve">
+    <value>Společnost</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Dokončit</value>
+  </data>
+  <data name="completeLayer" xml:space="preserve">
+    <value>Dokončit vrstvu</value>
+  </data>
+  <data name="completeService" xml:space="preserve">
+    <value>Servis dokončen</value>
+  </data>
+  <data name="Configured" xml:space="preserve">
+    <value>Nakonfigurováno</value>
+  </data>
+  <data name="confirmed" xml:space="preserve">
+    <value>Potvrzeno</value>
+  </data>
+  <data name="couldNotConvertDataModelBoundaryToGrid" xml:space="preserve">
+    <value>Selhání souřadnicového systému při konverzi bodů hranic datového modelu.</value>
+  </data>
+  <data name="emptyCoordinateSystem" xml:space="preserve">
+    <value>Souřadnicový systém je prázdný</value>
+  </data>
+  <data name="dcToIRecIncompleteCS" xml:space="preserve">
+    <value>Souřadnicový systém je nekompletní (není zcela specifikován) (DCToIRecord converter)</value>
+  </data>
+  <data name="virtualSiteSolutionsAllRightsReserved" xml:space="preserve">
+    <value>Copyright 2014 VirtualSite Solutions LLC. Všechna práva vyhrazena.</value>
+  </data>
+  <data name="couldNotConvertCSDFile" xml:space="preserve">
+    <value>Nebylo možné převést souřadnicový systém definičního souboru</value>
+  </data>
+  <data name="coverage" xml:space="preserve">
+    <value>Rozsah</value>
+  </data>
+  <data name="createdUser" xml:space="preserve">
+    <value>Vytvořil</value>
+  </data>
+  <data name="cubicYard" xml:space="preserve">
+    <value>kub. yd</value>
+  </data>
+  <data name="currentFilterSettings" xml:space="preserve">
+    <value>Současné nastavení filtru</value>
+  </data>
+  <data name="dcToIRecScaleOnlyProj" xml:space="preserve">
+    <value>Aktuální projekce by měla být odstupněna (DCToIRecord converter)</value>
+  </data>
+  <data name="customerInfo" xml:space="preserve">
+    <value>Zákaznické informace</value>
+  </data>
+  <data name="customerName" xml:space="preserve">
+    <value>Jméno zákazníka</value>
+  </data>
+  <data name="customerNumber" xml:space="preserve">
+    <value>Číslo zákazníka</value>
+  </data>
+  <data name="cut" xml:space="preserve">
+    <value>Odtěžit</value>
+  </data>
+  <data name="cutFillReport" xml:space="preserve">
+    <value>Report  Odtěžit/Vyplnit</value>
+  </data>
+  <data name="cutfill" xml:space="preserve">
+    <value>Odtěžit/Vyplnit</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Report o době cyklu</value>
+  </data>
+  <data name="cycleTimeReport" xml:space="preserve">
+    <value>Report o Čase Cyklu</value>
+  </data>
+  <data name="cycles" xml:space="preserve">
+    <value>Cykly</value>
+  </data>
+  <data name="cyclesPerHour" xml:space="preserve">
+    <value>Cykly/Čas</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Denně</value>
+  </data>
+  <data name="dailyIdleMessage" xml:space="preserve">
+    <value>Denní doba provozu naprázdno delší než {0} {1}</value>
+  </data>
+  <data name="dataOccurredOutsideOfDateRange" xml:space="preserve">
+    <value>K datům došlo mimo určený časový rozsah</value>
+  </data>
+  <data name="dataOccurredOutsideOfDay" xml:space="preserve">
+    <value>K datům došlo mimo tento den</value>
+  </data>
+  <data name="dataType" xml:space="preserve">
+    <value>Typ dat</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Datum vytvoření</value>
+  </data>
+  <data name="dateLastReported" xml:space="preserve">
+    <value>Datum posledního reportu</value>
+  </data>
+  <data name="dateModuleAccessProvided" xml:space="preserve">
+    <value>Datum poskytnutí přístupu k modulu</value>
+  </data>
+  <data name="dateRange" xml:space="preserve">
+    <value>Časový rozsah</value>
+  </data>
+  <data name="dateTime" xml:space="preserve">
+    <value>Datum/Čas</value>
+  </data>
+  <data name="dcn" xml:space="preserve">
+    <value>DCN</value>
+  </data>
+  <data name="dealerCode" xml:space="preserve">
+    <value>Kód dealera</value>
+  </data>
+  <data name="dealerName" xml:space="preserve">
+    <value>Jméno prodejce</value>
+  </data>
+  <data name="UserAccountsReportEmailBody" xml:space="preserve">
+    <value>Vážený administrátore VisionLink, &lt;br/&gt;&lt;br/&gt;In pokusili jsme se vám pomoc ohledně lepší správy přístupu k vašemu účtu, poskytli jsme vám zprávu o všech vašich uživatelých VisionLink, abychom vám umožnili váš účet kdykoliv podle potřeby zkontrolovat a aktualizovat. Přihlaste se prosím do VisionLink, abyste mohli provést potřebné změny uživatelských účtů.&lt;br/&gt;&lt;br/&gt; Pro stažení zprávy&lt;br/&gt; {0} &lt;br/&gt;&lt;br/&gt; klikněte prosím na odkaz níže. &lt;br/&gt;&lt;br/&gt;  S pozdravem,&lt;br/&gt;&lt;br/&gt;Tým VisionLink</value>
+  </data>
+  <data name="ApiUserEmailBody" xml:space="preserve">
+    <value>Vážený pán/Vážená paní {0} {1},&lt;br&gt;&lt;br&gt; vítejte ve VisionLink® API. Pro obdržení hesla ke službám API, klikněte prosím na níže uvedený odkaz. Odkaz bude aktivní po dobu 30 dnů. V případě, že níže uvedený odkaz nefunguje, zkopírujte ho a vložte do nového okna prohlížeče.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;br&gt;Vaše uživatelské jméno pro služby VisionLink API je {3}.&lt;br&gt;Máte přístup k následujícím službám API:&lt;br&gt;  {4} &lt;br&gt;&lt;br&gt;Poznámka: Pokud jste nežádali o nový uživatelský účet API nebo aktualizaci stávajícího účtu, kontaktujte svého správce.</value>
+  </data>
+  <data name="VerifyUserEmailBody" xml:space="preserve">
+    <value>Vážený pán/Vážená paní {0} {1},&lt;br&gt;&lt;br&gt; vítejte ve VisionLink®. Pro ověření Vašeho nového účtu nebo aktualizaci stávajícího uživatelského účtu, klikněte prosím na níže uvedený odkaz. Tento odkaz bude aktivní po dobu 30 dnů. Pokud níže uvedený odkaz nefunguje, zkopírujte a přeneste prosím odkaz do nového okna prohlížeče.&lt;br&gt;&lt;br&gt; {2}&lt;br&gt;&lt;/br&gt;Vaše uživatelské jméno pro služby VisionLink je {3} a název účtu je {4}. Uživatelé, kteří použijí VisionLink poprvé, budou při ověření vyzváni k nastavení svého hesla.&lt;br&gt;&lt;br&gt; Poznámka: Pokud jste o vytvoření nového nebo aktualizaci stávajícího uživatelského účtu nežádali, kontaktujte prosím svého správce.</value>
+  </data>
+  <data name="engineStartStopDescription" xml:space="preserve">
+    <value>Dodává seznam časů startu a stopu stroje a klíč MSS, který identifikuje operátora, přenášený denně v době spuštění reportu nebo v jiných dobách pokud palubní vyrovnávací paměť dosáhne své kapacity.</value>
+  </data>
+  <data name="loadCountsDescription" xml:space="preserve">
+    <value>Poskytuje všechny důležité informaco o počtech zatížení na základě monitorování zatížení a cyklu. To zahrnuje zeměpisnou šířku/délku, hranice geofence, datum/čas, ID stroje a ujeté vzdálenosti pro zatížení a výpis událostí.</value>
+  </data>
+  <data name="digitalSwitchStatusDescription" xml:space="preserve">
+    <value>Dodává všechny relevantní stavové informace o režimu příkonu a digitálním spínači Zap/Vyp v modulu přístroje. Komunikuje specifické stavové informace ECM. Pokud jsou jakékoli byty, které zařízení definuje, nastavené na "Ano", zanmená to, že došlo k dané specifické podmínceod doby posledního reportu tohoto stavu bytů buď ve stavové zoprávě nebo v reportu SMU.</value>
+  </data>
+  <data name="fenceAlertDescription" xml:space="preserve">
+    <value>Dodává všechny relevantní stavové informace o činnosti sledování výrobku v závislosti na čase a výstrahách generovaných modulem zařízení. Komunikuje specifické stavové informace ECM. Pokud jsou jakékoli byty, které zařízení definuje nastavené na "Ano", znamená to, že došlo k dané specifické podmínce od doby posledního reportu tohoto stavu bytů buď ve stavové zprávě nebo v reportu SMU .</value>
+  </data>
+  <data name="fuelDescription" xml:space="preserve">
+    <value>Dodává informace o použití paliva pro daný modul přístroje a to spotřebu nebo úroveň. Informace o palivu jsou dodávány ve formě stavové zprávy, která obsahuje spotřebu paliva a/nebo procento paliva zbývajícího v přístroji.</value>
+  </data>
+  <data name="engineParametersDescription" xml:space="preserve">
+    <value>Dodává důležité informace o motoru, jako např. dobu provozu naprázdno a palivo použité při běhu naprázdno pro daný modul přístroje.</value>
+  </data>
+  <data name="smuLocationDescription" xml:space="preserve">
+    <value>Dodává informace o použití zařízení po hodinách od doby, kdy bylo zařízení zapnuté nebo bylo naposledy resetované a dále také zeměpisnou šířku a délku stroje, do kterého bylo zařízení namontované . Data generuje ECM za účelem sledování používání zařízení. ECM sleduje dobu po kterou je motor v provozu a dodává zeměpisnou šířku a délku stroje, do kterého je zařízení namontované .</value>
+  </data>
+  <data name="derate" xml:space="preserve">
+    <value>Snížení výkonu</value>
+  </data>
+  <data name="Derated" xml:space="preserve">
+    <value>Redukované zatížení</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Popis</value>
+  </data>
+  <data name="design" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="desiredApiTopic" xml:space="preserve">
+    <value>Poažadované téma API</value>
+  </data>
+  <data name="desiredDataFeed" xml:space="preserve">
+    <value>Požadovaná data</value>
+  </data>
+  <data name="destination" xml:space="preserve">
+    <value>Místo určení</value>
+  </data>
+  <data name="detailedAssetCycleTimeReport" xml:space="preserve">
+    <value>Report cklů stroje - detaily</value>
+  </data>
+  <data name="detailedAssetLoadCountReport" xml:space="preserve">
+    <value>Report o nakládkách - detaily</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Jednotka</value>
+  </data>
+  <data name="deviceID" xml:space="preserve">
+    <value>ID přístroje</value>
+  </data>
+  <data name="deviceType" xml:space="preserve">
+    <value>Typ přístroje</value>
+  </data>
+  <data name="diagnostic" xml:space="preserve">
+    <value>Diagnostika</value>
+  </data>
+  <data name="DiagnosticEvents" xml:space="preserve">
+    <value>Diagnostická chyba</value>
+  </data>
+  <data name="diagnosticsData" xml:space="preserve">
+    <value>Diagnostická data</value>
+  </data>
+  <data name="digitalSwitchStatus" xml:space="preserve">
+    <value>Stav digitálního spínače</value>
+  </data>
+  <data name="direction" xml:space="preserve">
+    <value>Směr</value>
+  </data>
+  <data name="directions" xml:space="preserve">
+    <value>Směry</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Vypnout</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Neaktivní</value>
+  </data>
+  <data name="distanceCategory" xml:space="preserve">
+    <value>Kategorie vzdálenosti</value>
+  </data>
+  <data name="distanceDriven" xml:space="preserve">
+    <value>Ujetá vzdálenost</value>
+  </data>
+  <data name="distanceTravelled" xml:space="preserve">
+    <value>Ujetá vzdálenost</value>
+  </data>
+  <data name="doNotShowAgain" xml:space="preserve">
+    <value>Nezobrazovat znovu</value>
+  </data>
+  <data name="firstEpochBladePositionDoesNotLieWithinProjectBoundary" xml:space="preserve">
+    <value>Nenachází se v prostorovém rozmezí projektu</value>
+  </data>
+  <data name="dozer" xml:space="preserve">
+    <value>Dozer</value>
+  </data>
+  <data name="DueAt" xml:space="preserve">
+    <value>Splnit v</value>
+  </data>
+  <data name="dueIn" xml:space="preserve">
+    <value>Splnit do</value>
+  </data>
+  <data name="DueOn" xml:space="preserve">
+    <value>Splnit dne</value>
+  </data>
+  <data name="dumpEvent" xml:space="preserve">
+    <value>Výpis události</value>
+  </data>
+  <data name="dumpLocation" xml:space="preserve">
+    <value>Lokalita vykládky</value>
+  </data>
+  <data name="dumpTime" xml:space="preserve">
+    <value>Čas vykládky</value>
+  </data>
+  <data name="dumpToDumpDistance" xml:space="preserve">
+    <value>Vzdálenost mezi jednotlivými vykládkami</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Trvání</value>
+  </data>
+  <data name="earliest" xml:space="preserve">
+    <value>Nejdříve</value>
+  </data>
+  <data name="easting" xml:space="preserve">
+    <value>Souřadnice X</value>
+  </data>
+  <data name="efficiency" xml:space="preserve">
+    <value>Efektivita</value>
+  </data>
+  <data name="elevation" xml:space="preserve">
+    <value>Elevace</value>
+  </data>
+  <data name="elevationReport" xml:space="preserve">
+    <value>Report elevace</value>
+  </data>
+  <data name="elevationType" xml:space="preserve">
+    <value>Typ elevace</value>
+  </data>
+  <data name="email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="emailRequest" xml:space="preserve">
+    <value>Emailová žádost</value>
+  </data>
+  <data name="endDate" xml:space="preserve">
+    <value>Konečné datum</value>
+  </data>
+  <data name="endDateSMU" xml:space="preserve">
+    <value>Stav hodin ke koncovému datu</value>
+  </data>
+  <data name="endDateLocation" xml:space="preserve">
+    <value>Poloha ke koncovému datu</value>
+  </data>
+  <data name="endDateMustBeHigher" xml:space="preserve">
+    <value>Datum ukončení musí být vyšší než datum zahájení</value>
+  </data>
+  <data name="endHourMeter" xml:space="preserve">
+    <value>Koncový stav motohodin</value>
+  </data>
+  <data name="endTime" xml:space="preserve">
+    <value>Čas Ukončení</value>
+  </data>
+  <data name="GensetCoolingDown" xml:space="preserve">
+    <value>Motor - chlazení</value>
+  </data>
+  <data name="engineCoolantTemperature" xml:space="preserve">
+    <value>Teplota chladicí kapaliny motoru</value>
+  </data>
+  <data name="coolantTemperatureHeader" xml:space="preserve">
+    <value>Hlášení o teplotě chladicí kapaliny motoru</value>
+  </data>
+  <data name="EngineIdle" xml:space="preserve">
+    <value>Report o motoru naprázdno</value>
+  </data>
+  <data name="engineLubeOilTemperature" xml:space="preserve">
+    <value>Teplota mazacího oleje v motoru</value>
+  </data>
+  <data name="lubeOilTemperatureHeader" xml:space="preserve">
+    <value>Hlášení o teplotě mazacího oleje v motoru</value>
+  </data>
+  <data name="EngineOff" xml:space="preserve">
+    <value>Motor vypnutý</value>
+  </data>
+  <data name="engineOilLevelIndication" xml:space="preserve">
+    <value>Engine Oil Level Indicator</value>
+  </data>
+  <data name="engineOilLevelPercent" xml:space="preserve">
+    <value>Engine Oil Level Indicator %</value>
+  </data>
+  <data name="engineOilLevelIndicatorHeader" xml:space="preserve">
+    <value>Engine Oil Level Indicator Report</value>
+  </data>
+  <data name="engineOilPressure" xml:space="preserve">
+    <value>Tlak motorového oleje</value>
+  </data>
+  <data name="oilPressureHeader" xml:space="preserve">
+    <value>Hlášení o tlaku motorového oleje</value>
+  </data>
+  <data name="EngineOn" xml:space="preserve">
+    <value>Motor zapnutý</value>
+  </data>
+  <data name="engineParameters" xml:space="preserve">
+    <value>Parametry motoru</value>
+  </data>
+  <data name="GensetRunning" xml:space="preserve">
+    <value>Motor v běhu</value>
+  </data>
+  <data name="eventTypeEngineStart" xml:space="preserve">
+    <value>Start motoru</value>
+  </data>
+  <data name="engineStartStopTime" xml:space="preserve">
+    <value>Časy start/stop motoru</value>
+  </data>
+  <data name="engineStatus" xml:space="preserve">
+    <value>Stav motoru</value>
+  </data>
+  <data name="eventTypeEngineStop" xml:space="preserve">
+    <value>Stop motoru</value>
+  </data>
+  <data name="GensetEngineStopped" xml:space="preserve">
+    <value>Motor zastavený</value>
+  </data>
+  <data name="GensetEngineStopping" xml:space="preserve">
+    <value>Zastavení motoru</value>
+  </data>
+  <data name="displayName" xml:space="preserve">
+    <value>Čeština</value>
+  </data>
+  <data name="equalsPassTarget" xml:space="preserve">
+    <value>Roven cílu přejezdů</value>
+  </data>
+  <data name="event" xml:space="preserve">
+    <value>Událost</value>
+  </data>
+  <data name="eventCount" xml:space="preserve">
+    <value>Počet událostí</value>
+  </data>
+  <data name="eventData" xml:space="preserve">
+    <value>Data události</value>
+  </data>
+  <data name="eventDescription" xml:space="preserve">
+    <value>Popis události</value>
+  </data>
+  <data name="FaultCodes" xml:space="preserve">
+    <value>Chybová událost</value>
+  </data>
+  <data name="eventType" xml:space="preserve">
+    <value>Typ události</value>
+  </data>
+  <data name="excavator" xml:space="preserve">
+    <value>Rýpadlo</value>
+  </data>
+  <data name="ExcavatorUsageReport" xml:space="preserve">
+    <value>Zpráva o používání rypadla</value>
+  </data>
+  <data name="exception" xml:space="preserve">
+    <value>Došlo k výjimce</value>
+  </data>
+  <data name="ExclusionZone" xml:space="preserve">
+    <value>Zóna exkluze</value>
+  </data>
+  <data name="expectedRuntime" xml:space="preserve">
+    <value>Očekávaná doba provozu</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Datum platnosti</value>
+  </data>
+  <data name="fahrenheitAbbrev" xml:space="preserve">
+    <value>F</value>
+  </data>
+  <data name="failedOnRequestProfile" xml:space="preserve">
+    <value>Chyba při žádosti na profil</value>
+  </data>
+  <data name="failedOnRequestColourGraduatedProfile" xml:space="preserve">
+    <value>Chyba při žádosti na barevnou graduaci profilu</value>
+  </data>
+  <data name="submissionBaseConnectionFailure" xml:space="preserve">
+    <value>Připojení k serveru produkčních dat selhalo.</value>
+  </data>
+  <data name="failedToConvertClientWGSCoords" xml:space="preserve">
+    <value>Chyba při konverzi souřadnic klienta WGS84</value>
+  </data>
+  <data name="dcToIRecFailedToCreateAZIParamsObject" xml:space="preserve">
+    <value>Chyba při vytváření IAZIParameters (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedCreateCSIB" xml:space="preserve">
+    <value>Chyba při vytváření CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToCreateDCToIRecordConverter" xml:space="preserve">
+    <value>Chyba při vytváření DCtoIRecord converter</value>
+  </data>
+  <data name="failedToGetCSSettings" xml:space="preserve">
+    <value>Chyba při nahrávání nastavení souřadnicových systémů</value>
+  </data>
+  <data name="dcToIRecFailedToGetGeoidInfo" xml:space="preserve">
+    <value>Chyba při nahrávání informací geoidu (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateConstGeoid" xml:space="preserve">
+    <value>Chyba při instanci CSIB stálého separačního geoidu (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateDatumGrid" xml:space="preserve">
+    <value>Chyba při instanci CSIB data síťového souboru (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateEllipsoid" xml:space="preserve">
+    <value>Chyba při instanci CSIB elipsoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateGridGeoid" xml:space="preserve">
+    <value>Chyba při instanci CSIB síťový geoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMolodenskyDatum" xml:space="preserve">
+    <value>Chyba při instanci data CSIB Molodensky (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMultiRegressionDatum" xml:space="preserve">
+    <value>Chyba při instanci data CSIB vícenásobné regrese parametrů (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateSevenParamsDatum" xml:space="preserve">
+    <value>Chyba při instanci data CSIB sedm parametrů (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateWGS84Datum" xml:space="preserve">
+    <value>Chyba při instanci data CSIB WGS84 (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneBasedSite" xml:space="preserve">
+    <value>Chyba při instanci CSIB pracoviště oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneGroup" xml:space="preserve">
+    <value>Chyba při instanci CSIB skupiny oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToLoadCSIB" xml:space="preserve">
+    <value>Chyba při nahrávání CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToNotifyCSChange" xml:space="preserve">
+    <value>Chyba při oznamování změny systému souřadnic</value>
+  </data>
+  <data name="failedToObtainCoordinateSystemInterlock" xml:space="preserve">
+    <value>Chyba při získávání propojení systému souřadnic</value>
+  </data>
+  <data name="dcToIRecFailedToOpenCalibrationReader" xml:space="preserve">
+    <value>Chyba při otevírání kalibračního načítání (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToPerformCoordinateConversion" xml:space="preserve">
+    <value>Došlo k chybě při vytváření konverze souřadnic.</value>
+  </data>
+  <data name="dcToIRecFailedToReadCSIB" xml:space="preserve">
+    <value>Chyba při načítání CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadInCSIB" xml:space="preserve">
+    <value>Chyba při načítání v CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToReadLineworkBoundaryFile" xml:space="preserve">
+    <value>Došlo k chybě při načítání souboru mezí kreseb vypracování.</value>
+  </data>
+  <data name="dcToIRecFailedToReadZone" xml:space="preserve">
+    <value>Chyba při načítání oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadZoneBasedSite" xml:space="preserve">
+    <value>Chyba při načítání pracoviště dané oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="submissionResultConnectionFailure" xml:space="preserve">
+    <value>Výsledek ze serveru produkčních dat nebyl obdržen.</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemHorizontalAdjustmentFile" xml:space="preserve">
+    <value>Chyba při žádosti o soubor horizontálního nastavení systému souřadnic</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemProjectionFile" xml:space="preserve">
+    <value>Chyba při žádosti o projekční soubor systému souřadnic</value>
+  </data>
+  <data name="failedToRequestDatamodelStatistics" xml:space="preserve">
+    <value>Chyba při žádosti o statistiky modelových údajů</value>
+  </data>
+  <data name="failedToRequestFileFromTCC" xml:space="preserve">
+    <value>Došlo k chybě při žádosti o soubor z TCC.</value>
+  </data>
+  <data name="failedToRequestSubgridExistenceMap" xml:space="preserve">
+    <value>Chyba při žádosti o existující mapu podsítě</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneInfo" xml:space="preserve">
+    <value>Chyba při nastavení info oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToWriteCSDStream" xml:space="preserve">
+    <value>Chyba při zapisování definice proudu systému souřadnic</value>
+  </data>
+  <data name="dcToIRecFailedToWriteCSIB" xml:space="preserve">
+    <value>Chyba při zapisování CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteDatum" xml:space="preserve">
+    <value>Chyba při zapisování data (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteGeoid" xml:space="preserve">
+    <value>Chyba při zapisování geoidu (DCToIRecord converter)</value>
+  </data>
+  <data name="faultCode" xml:space="preserve">
+    <value>Chybový kód</value>
+  </data>
+  <data name="faultCodeDiagnostic" xml:space="preserve">
+    <value>Chybový kód - Diagnostika</value>
+  </data>
+  <data name="faultCodeEvent" xml:space="preserve">
+    <value>Chybový kód  - Událost</value>
+  </data>
+  <data name="faultCodeDate" xml:space="preserve">
+    <value>Chybový kód - datum</value>
+  </data>
+  <data name="faultCodeHourMeter" xml:space="preserve">
+    <value>Chybový kód - hodinové počítadlo</value>
+  </data>
+  <data name="faultCodeLocation" xml:space="preserve">
+    <value>Chybový kód - lokace</value>
+  </data>
+  <data name="faultCodeOdometer" xml:space="preserve">
+    <value>Chybový kód - počítadlo ujetých kilometrů</value>
+  </data>
+  <data name="faultCodeReport" xml:space="preserve">
+    <value>Chybový kód - zpráva</value>
+  </data>
+  <data name="assetHealthSummary" xml:space="preserve">
+    <value>Souhrnná zpráva chybových kódů</value>
+  </data>
+  <data name="faultCodesLabel" xml:space="preserve">
+    <value>Chybové kódy</value>
+  </data>
+  <data name="faultCodeCounts" xml:space="preserve">
+    <value>Počet chyb</value>
+  </data>
+  <data name="faultCodeDetails" xml:space="preserve">
+    <value>Detaily chyb</value>
+  </data>
+  <data name="tagFileReaderCorruptedTAGFileData" xml:space="preserve">
+    <value>soubor obsahuje zkorumpovaná data.</value>
+  </data>
+  <data name="noGridEpochsFoundInTAGFile" xml:space="preserve">
+    <value>Soubor obsahuje neplatná produkční data.</value>
+  </data>
+  <data name="submissionVerbConnectionFailure" xml:space="preserve">
+    <value>Podání souboru selhalo.</value>
+  </data>
+  <data name="fill" xml:space="preserve">
+    <value>Výplň</value>
+  </data>
+  <data name="locationAppSummary" xml:space="preserve">
+    <value>Nalézt poslední známou polohu strojů</value>
+  </data>
+  <data name="fine" xml:space="preserve">
+    <value>Jemné</value>
+  </data>
+  <data name="firmwareVersion" xml:space="preserve">
+    <value>Verze firmwaru</value>
+  </data>
+  <data name="first" xml:space="preserve">
+    <value>První</value>
+  </data>
+  <data name="firstname" xml:space="preserve">
+    <value>Křestní jméno</value>
+  </data>
+  <data name="verifyEmailBodyFirstTimeUser" xml:space="preserve">
+    <value>Pro první uživatele: Přihlaste se do svého účtu VisionLink pomocí těchto oprávnění.&lt;/br&gt;Uživatelské jméno:{0},&lt;/br&gt; Heslo:{1}&lt;/br&gt;Po přihlášení budete vyzváni ke změně hesla.&lt;/br&gt;&lt;/br&gt;</value>
+  </data>
+  <data name="FleetEventCountReport" xml:space="preserve">
+    <value>Report počtu událostí vozového parku</value>
+  </data>
+  <data name="fleetFuelReport" xml:space="preserve">
+    <value>Zpráva o palivu vozového parku</value>
+  </data>
+  <data name="FleetStatus" xml:space="preserve">
+    <value>Report Stav vozového parku</value>
+  </data>
+  <data name="fleetStatusReport" xml:space="preserve">
+    <value>Report o využití flotily strojů</value>
+  </data>
+  <data name="fleetSummary" xml:space="preserve">
+    <value>Souhrn Vozidel</value>
+  </data>
+  <data name="fleetSummaryCustomReport" xml:space="preserve">
+    <value>Souhrnná zpráva zákazníkovi o vozovém parku</value>
+  </data>
+  <data name="FleetUsage" xml:space="preserve">
+    <value>Report o využití flotily strojů</value>
+  </data>
+  <data name="fleetUsageReport" xml:space="preserve">
+    <value>Zpráva o využití vozového parku</value>
+  </data>
+  <data name="FleetUtilization" xml:space="preserve">
+    <value>Report o využití vozového parku</value>
+  </data>
+  <data name="FluidAnalysis" xml:space="preserve">
+    <value>Analýza provozních kapalin</value>
+  </data>
+  <data name="fluidAnalysisReport" xml:space="preserve">
+    <value>Report o analýze provozních kapalin</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Vpřed</value>
+  </data>
+  <data name="feetAbbrev" xml:space="preserve">
+    <value>stopa</value>
+  </data>
+  <data name="fuel" xml:space="preserve">
+    <value>Palivo</value>
+  </data>
+  <data name="fuelPercentRemaining" xml:space="preserve">
+    <value>Zbývá % paliva</value>
+  </data>
+  <data name="fuelBurnPieChartTitle" xml:space="preserve">
+    <value>Spotřebované palivo</value>
+  </data>
+  <data name="fuelBurned" xml:space="preserve">
+    <value>Spotřebované palivo</value>
+  </data>
+  <data name="fuelBurnedByAsset" xml:space="preserve">
+    <value>Palivo spotřebované jednotlivým strojem</value>
+  </data>
+  <data name="fuelBurnedByAssetsTopTen" xml:space="preserve">
+    <value>Palivo spotřebované stroji: Top 10</value>
+  </data>
+  <data name="fuelConsumedIdle" xml:space="preserve">
+    <value>Spotřebované palivo (naprázdno)</value>
+  </data>
+  <data name="fuelConsumedTotal" xml:space="preserve">
+    <value>Spotřebované palivo (Celkem)</value>
+  </data>
+  <data name="fuelInformation" xml:space="preserve">
+    <value>Informace o palivu</value>
+  </data>
+  <data name="fuelLevel" xml:space="preserve">
+    <value>Stav paliva v nádrži</value>
+  </data>
+  <data name="fuelLevelIndicator" xml:space="preserve">
+    <value>Ukazatel úrovně paliva</value>
+  </data>
+  <data name="fuelLevelPercent" xml:space="preserve">
+    <value>Ukazatel úrovně paliva %</value>
+  </data>
+  <data name="levelIndicatorHeader" xml:space="preserve">
+    <value>Hlášení o ukazateli úrovně paliva</value>
+  </data>
+  <data name="FuelLoss" xml:space="preserve">
+    <value>Ztráta paliva</value>
+  </data>
+  <data name="FuelLossAlertDescription" xml:space="preserve">
+    <value>Ztráta paliva {0}%</value>
+  </data>
+  <data name="fuelPercentageRemaining" xml:space="preserve">
+    <value>Procento zbývajícího paliva</value>
+  </data>
+  <data name="fuelRemaining" xml:space="preserve">
+    <value>Zbývající palivo</value>
+  </data>
+  <data name="fuelUtilizationTopic" xml:space="preserve">
+    <value>Využití paliva</value>
+  </data>
+  <data name="FuelUtilization" xml:space="preserve">
+    <value>Report Využití paliva</value>
+  </data>
+  <data name="fuelUtilizationReport" xml:space="preserve">
+    <value>Report Využití paliva</value>
+  </data>
+  <data name="FullSiteURL" xml:space="preserve">
+    <value>Kompletní strana</value>
+  </data>
+  <data name="gal" xml:space="preserve">
+    <value>gal</value>
+  </data>
+  <data name="galhr" xml:space="preserve">
+    <value>gal/h</value>
+  </data>
+  <data name="gallonsBarChartXAxisLabel" xml:space="preserve">
+    <value>Galony</value>
+  </data>
+  <data name="gallonshr" xml:space="preserve">
+    <value>galonů/hodinu</value>
+  </data>
+  <data name="gallonsBurned" xml:space="preserve">
+    <value>Spálených galonů</value>
+  </data>
+  <data name="geoFenceAlert" xml:space="preserve">
+    <value>Výstraha obvod GEO</value>
+  </data>
+  <data name="gpsAccuracy" xml:space="preserve">
+    <value>Přesnost GPS</value>
+  </data>
+  <data name="GPSAntennaDisconnectedTimerExpired" xml:space="preserve">
+    <value>Anténa GPS odpojena</value>
+  </data>
+  <data name="GPSGSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Ztráta signáli GPS/GSM</value>
+  </data>
+  <data name="GridReport" xml:space="preserve">
+    <value>Mřížková zpráva</value>
+  </data>
+  <data name="gridSize" xml:space="preserve">
+    <value>Velikost mřížky</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>Skupina</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Skupiny</value>
+  </data>
+  <data name="GSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>GMS Ztráta signálu</value>
+  </data>
+  <data name="hectareAbbreviation" xml:space="preserve">
+    <value>Ha</value>
+  </data>
+  <data name="hardwareDataError" xml:space="preserve">
+    <value>Chyba v hardwarových datech</value>
+  </data>
+  <data name="ForgotPasswordEmailBody" xml:space="preserve">
+    <value>Vítejte {0},&lt;BR /&gt;&lt;BR /&gt;Vaše uživatelské jméno pro VisionLink je {1}.&lt;BR /&gt;&lt;BR /&gt;Kliknutím na níže uvedený odkaz zresetujete své heslo (nebo zkopírujte a vložte URL do nového okna prohlížeče):&lt;BR /&gt;&lt;BR /&gt;{2}&lt;BR /&gt;&lt;BR /&gt; Pro Vaši bezpečnost bude tento odkaz aktivní po dobu 24 hodin a pouze pro jedno úspěšné zresetování. &lt;BR /&gt;&lt;BR /&gt;Pokud jste nepožádali o reset svého hesla, je pravděpodobné, že jiný uživatel zadal Vaši e-mailovou adresu nebo uživatelské jméno omylem, zatímco se snažil resetovat heslo. V tomto případě tento e-mail ignorujte.&lt;BR /&gt;&lt;BR /&gt;S pozdravem,&lt;BR /&gt;Tým podpory VisionLink</value>
+  </data>
+  <data name="NewAccountRegEmailBody" xml:space="preserve">
+    <value>Vážený/á {0}&lt;BR&gt;&lt;BR&gt; Tento email jste obdrželi jako upozornění, že byl vytvořen účet VisionLink pod jménem {1}&lt;BR&gt;&lt;BR&gt;Dalším krokem bude navigovat na stránky pro registraci účtu VisionLink , kde budete mít možnost svůj účet aktivovat vytvořením uživatelského jména a hesla. Tyto ověřovací informace poté budete moct používat k přístupu do svého účtu pomocí webové aplikace VisionLink .&lt;BR&gt;&lt;BR&gt;Prosím klepněte na níže uvedený odkaz, který vás přesměruje na stránku VisionLink pro registraci účtu :&lt;BR&gt;{2}&lt;BR&gt;&lt;BR&gt;Platnost výše uvedeného odkazu vyprší po aktivaci účtu. Po provedení registrace budete mít možnost vytvořit další přihlašovací údaje již pomocí webové aplikace VisionLink .&lt;BR&gt;&lt;BR&gt;Po provedení aktivace svého účtu získáte přístup do webové aplikace VisionLink pomocí následujícího odkazu:&lt;BR&gt;{3} </value>
+  </data>
+  <data name="OnDemandEmailBody" xml:space="preserve">
+    <value>Dobrý den, &lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; klikněte prosím na níže uvedený odkaz pro stažení zprávy &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Poznámka: Tento e-mail je vám zasílán, jelikož jste byl/a zahrnut/a do seznamu příjemců této zprávy. Tento odkaz bude aktivní 30 dnů. V případě jakýchkoliv dotazů se prosím obraťte na správce systému VisionLink.</value>
+  </data>
+  <data name="ScheduleReportEmailBodyWithoutUnsubscribe" xml:space="preserve">
+    <value>Dobrý den,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; klikněte prosím na níže uvedený odkaz pro stažení hlášení &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Poznámka: Tento e-mail Vám byl odeslán na základě vašeho zařazení do seznamu odběratelů pravidelných hlášení. Tento odkaz bude aktivní po dobu 30 dnů. V případě dotazů kontaktujte svého správce VisionLink.&lt;BR /&gt;&lt;BR /&gt;*** Denní, týdenní a měsíční plánovaná hlášení ohledně stavu vozového parku, doby údržby a zobrazení sdíleného stroje obsahují aktuální informace ke dni otevření hlášení.</value>
+  </data>
+  <data name="ScheduleReportEmailBody" xml:space="preserve">
+    <value>Dobrý den, &lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; klikněte prosím na níže uvedený odkaz pro stažení zprávy &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Poznámka: Tento e-mail Vám byl zaslán, protože jste byl/a zahrnuta do seznamu příjemců této pravidelné zprávy. Tento odkaz bude aktivní 30 dnů. V případě jakýchkoliv dotazů se prosím obraťte na svého správce systému VisionLink.&lt;BR /&gt;&lt;BR /&gt; Chcete-li zrušit zasílání dalších zpráv, kliněte na {2}.</value>
+  </data>
+  <data name="HH" xml:space="preserve">
+    <value>HH</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Vysoká</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Nejvyšší</value>
+  </data>
+  <data name="home" xml:space="preserve">
+    <value>Domů</value>
+  </data>
+  <data name="hourMeter" xml:space="preserve">
+    <value>Počítadlo hodin</value>
+  </data>
+  <data name="hours" xml:space="preserve">
+    <value>Hodiny</value>
+  </data>
+  <data name="hoursOfUse" xml:space="preserve">
+    <value>Hodiny používání</value>
+  </data>
+  <data name="hoursLocation" xml:space="preserve">
+    <value>Hodiny / Poloha</value>
+  </data>
+  <data name="hr" xml:space="preserve">
+    <value>hod</value>
+  </data>
+  <data name="hrs" xml:space="preserve">
+    <value>hod</value>
+  </data>
+  <data name="hybrid" xml:space="preserve">
+    <value>Hybrid</value>
+  </data>
+  <data name="hydraulicOilTemperature" xml:space="preserve">
+    <value>Teplota hydraulického oleje</value>
+  </data>
+  <data name="hydraulicTemperatureHeader" xml:space="preserve">
+    <value>Hlášení o teplotě hydraulického oleje</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Na prázdno</value>
+  </data>
+  <data name="idleEventsMessage" xml:space="preserve">
+    <value>Události naprázdno delší než {0} {1}</value>
+  </data>
+  <data name="idleFuelBurned" xml:space="preserve">
+    <value>Palivo spotřebováno - naprázdno</value>
+  </data>
+  <data name="idleHourMeter" xml:space="preserve">
+    <value>Hodiny provozu naprázdno</value>
+  </data>
+  <data name="idleHours" xml:space="preserve">
+    <value>Hodiny naprázdno</value>
+  </data>
+  <data name="idleTime" xml:space="preserve">
+    <value>Čas naprázdno</value>
+  </data>
+  <data name="idleTimeOut" xml:space="preserve">
+    <value>Časový limit vypršel pro běh naprázdno</value>
+  </data>
+  <data name="idling" xml:space="preserve">
+    <value>Provoz naprázdno</value>
+  </data>
+  <data name="idlingFuelBurned" xml:space="preserve">
+    <value>Spotřeba paliva u stroje běžícího na prázdno</value>
+  </data>
+  <data name="IgnitionOff" xml:space="preserve">
+    <value>Zapalování vypnuto</value>
+  </data>
+  <data name="IgnitionOn" xml:space="preserve">
+    <value>Zapalování zapnuto</value>
+  </data>
+  <data name="ignitionStatus" xml:space="preserve">
+    <value>Stav zapalování</value>
+  </data>
+  <data name="inProgress" xml:space="preserve">
+    <value>Pracuje se</value>
+  </data>
+  <data name="inactiveNoRuntime" xml:space="preserve">
+    <value>Neaktivní - Žádná doba provozu</value>
+  </data>
+  <data name="includeSupercededLifts" xml:space="preserve">
+    <value>Obsahuje nahrazené vozíky</value>
+  </data>
+  <data name="InclusionZone" xml:space="preserve">
+    <value>Zóna inkluze</value>
+  </data>
+  <data name="incomplete" xml:space="preserve">
+    <value>Nedokončeno</value>
+  </data>
+  <data name="incorrectUsernameOrPassword" xml:space="preserve">
+    <value>Nesprávné uživatelské jméno nebo heslo.</value>
+  </data>
+  <data name="incorrectWorkingTime" xml:space="preserve">
+    <value>Nesprávné hodnoty pro výpočet Pracovní doby.</value>
+  </data>
+  <data name="dcToIRecInifiniteAdjustmentSlopeValue" xml:space="preserve">
+    <value>Nekonečné nastavení hodnoty sklonu (DCToIRecord converter)</value>
+  </data>
+  <data name="insufficientDataForCalculation" xml:space="preserve">
+    <value>Nedostatečná data pro výpočty</value>
+  </data>
+  <data name="singleDayCalloutNegativeValue" xml:space="preserve">
+    <value>Nedostatečná přesnost měřidla doby provozu k provedení platného výpočtu</value>
+  </data>
+  <data name="dateRangeCalloutNegativeValue" xml:space="preserve">
+    <value>Nedostatečná přesnost měřidla doby provozu pro platný výpočet v datumovém rozsahu</value>
+  </data>
+  <data name="introduction" xml:space="preserve">
+    <value>Úvod</value>
+  </data>
+  <data name="invalidCoordinateRange" xml:space="preserve">
+    <value>Neplatný rozsah souřadnic</value>
+  </data>
+  <data name="suppliedDataModelBoundaryContainsInsufficeintVertices" xml:space="preserve">
+    <value>Neplatné hranice datového modelu</value>
+  </data>
+  <data name="dcToIRecInvalidEllipsoid" xml:space="preserve">
+    <value>Neplatný elipsoid (DCToIRecord converter)</value>
+  </data>
+  <data name="InValidReportRequest" xml:space="preserve">
+    <value>Neplatný požadavek reportu excel</value>
+  </data>
+  <data name="InvalidSeedPosition" xml:space="preserve">
+    <value>Neplatná zdrojová pozice LLH/NE v tag souboru</value>
+  </data>
+  <data name="InvalidMSSKey" xml:space="preserve">
+    <value>Neplatny klíč MSS</value>
+  </data>
+  <data name="invalidResponseCode" xml:space="preserve">
+    <value>Neplatný kód odpovědi</value>
+  </data>
+  <data name="invalidSubscriptions" xml:space="preserve">
+    <value>Neplatné předplatné</value>
+  </data>
+  <data name="invalidTagFile" xml:space="preserve">
+    <value>Neplatný TAG soubor</value>
+  </data>
+  <data name="invalidValueDetected" xml:space="preserve">
+    <value>Detekována neplatná hodnota</value>
+  </data>
+  <data name="singleDayCalloutSpike" xml:space="preserve">
+    <value>Byla zjištěna neplatná hodnota</value>
+  </data>
+  <data name="dateRangeCalloutSpike" xml:space="preserve">
+    <value>V datumovém rozsahu byla zjištěna neplatná hodnota</value>
+  </data>
+  <data name="kilometers" xml:space="preserve">
+    <value>Kilometry</value>
+  </data>
+  <data name="km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kmL" xml:space="preserve">
+    <value>km/l</value>
+  </data>
+  <data name="kms" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kpa" xml:space="preserve">
+    <value>kPa</value>
+  </data>
+  <data name="kph" xml:space="preserve">
+    <value>km/h</value>
+  </data>
+  <data name="leftAbbrev" xml:space="preserve">
+    <value>L</value>
+  </data>
+  <data name="ltr" xml:space="preserve">
+    <value>l</value>
+  </data>
+  <data name="ltrhr" xml:space="preserve">
+    <value>l/h</value>
+  </data>
+  <data name="FluidAnalysisAlertDescription" xml:space="preserve">
+    <value>Laboratoř #: {0} Oddělení: {1} Závažnost:</value>
+  </data>
+  <data name="labNumber" xml:space="preserve">
+    <value>Lab č.</value>
+  </data>
+  <data name="language" xml:space="preserve">
+    <value>Jazyk</value>
+  </data>
+  <data name="last" xml:space="preserve">
+    <value>Poslední</value>
+  </data>
+  <data name="lastKnownLocation" xml:space="preserve">
+    <value>Poslední známá poloha</value>
+  </data>
+  <data name="lastKnownStatus" xml:space="preserve">
+    <value>Poslední známý stav</value>
+  </data>
+  <data name="lastReportedStatus" xml:space="preserve">
+    <value>Poslední známý stav</value>
+  </data>
+  <data name="lastLogin" xml:space="preserve">
+    <value>Poslední přihlášení</value>
+  </data>
+  <data name="lastLoginDate" xml:space="preserve">
+    <value>Datum posledního přihlášení</value>
+  </data>
+  <data name="lastloginUTC" xml:space="preserve">
+    <value>Poslední přihlášení UTC</value>
+  </data>
+  <data name="lastname" xml:space="preserve">
+    <value>Příjmení</value>
+  </data>
+  <data name="lastReported" xml:space="preserve">
+    <value>Poslední hlášení</value>
+  </data>
+  <data name="lastReportedLocation" xml:space="preserve">
+    <value>Poslední hlášená poloha</value>
+  </data>
+  <data name="lastReportedTime" xml:space="preserve">
+    <value>Poslední nahlášený čas</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Poslední aktualizace</value>
+  </data>
+  <data name="lastNDays" xml:space="preserve">
+    <value>Poslední {0} dny</value>
+  </data>
+  <data name="latitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Šíř</value>
+  </data>
+  <data name="latest" xml:space="preserve">
+    <value>Nejnovější</value>
+  </data>
+  <data name="latestUserActivity" xml:space="preserve">
+    <value>Poslední aktivita uživatele</value>
+  </data>
+  <data name="LaunchVLApp" xml:space="preserve">
+    <value>Spuštění aplikace VisionLink</value>
+  </data>
+  <data name="leaseOwnership" xml:space="preserve">
+    <value>Pronájem, vlastnictví</value>
+  </data>
+  <data name="passesLessthan" xml:space="preserve">
+    <value>Méně než {0} pasů</value>
+  </data>
+  <data name="lessThanNPercent" xml:space="preserve">
+    <value>Méně než {0}%</value>
+  </data>
+  <data name="level0" xml:space="preserve">
+    <value>Úroveň 0</value>
+  </data>
+  <data name="level1" xml:space="preserve">
+    <value>Úroveň 1</value>
+  </data>
+  <data name="level2" xml:space="preserve">
+    <value>Úroveň 2</value>
+  </data>
+  <data name="level3" xml:space="preserve">
+    <value>Úroveň 3</value>
+  </data>
+  <data name="lifetimeFuel" xml:space="preserve">
+    <value>Palivo na dobu používání</value>
+  </data>
+  <data name="lifetimeFuelMeter" xml:space="preserve">
+    <value>Měřidlo paliva na dobu používání</value>
+  </data>
+  <data name="lifetimeIdleFuelMeter" xml:space="preserve">
+    <value>Měřidlo paliva na prázdno za dobu používání</value>
+  </data>
+  <data name="layerNumber" xml:space="preserve">
+    <value>Vrstva</value>
+  </data>
+  <data name="lift" xml:space="preserve">
+    <value>Vrstva</value>
+  </data>
+  <data name="InValidLink" xml:space="preserve">
+    <value>Doba platnosti odkazu vypršela.</value>
+  </data>
+  <data name="litersBarChartXAxisLabel" xml:space="preserve">
+    <value>Litry</value>
+  </data>
+  <data name="litershr" xml:space="preserve">
+    <value>Litry/hodinu</value>
+  </data>
+  <data name="litersBurned" xml:space="preserve">
+    <value>Spálené litry</value>
+  </data>
+  <data name="loadAndCycleMonitoring" xml:space="preserve">
+    <value>Monitorování zatížení a cyklu</value>
+  </data>
+  <data name="LoadCount" xml:space="preserve">
+    <value>Report o počtu nákladů</value>
+  </data>
+  <data name="loadCountReport" xml:space="preserve">
+    <value>Report počtu nákladů</value>
+  </data>
+  <data name="loadCounts" xml:space="preserve">
+    <value>Počet nakládek</value>
+  </data>
+  <data name="loadCountsAndCycleTimes" xml:space="preserve">
+    <value>Počet nakládek a časy cyklů</value>
+  </data>
+  <data name="LoadDistance" xml:space="preserve">
+    <value>Vzdálenost nákladu</value>
+  </data>
+  <data name="LoadDistanceAlertDescription" xml:space="preserve">
+    <value>Vzdálenost nákladu {0}</value>
+  </data>
+  <data name="loadEvent" xml:space="preserve">
+    <value>Nahrání události</value>
+  </data>
+  <data name="loadLocation" xml:space="preserve">
+    <value>Poloha nakládky</value>
+  </data>
+  <data name="loadQuality" xml:space="preserve">
+    <value>Kvalita zatížení</value>
+  </data>
+  <data name="loadTime" xml:space="preserve">
+    <value>Čas nakládky</value>
+  </data>
+  <data name="loadToDumpDistance" xml:space="preserve">
+    <value>Vzdálenost mezi nakládkou a vykládkou</value>
+  </data>
+  <data name="loadToLoadDistance" xml:space="preserve">
+    <value>Vzdálenost mezi následnými nakládkami</value>
+  </data>
+  <data name="assetLoadedLoading" xml:space="preserve">
+    <value>Naložil</value>
+  </data>
+  <data name="loader" xml:space="preserve">
+    <value>Nakladač</value>
+  </data>
+  <data name="loaderOperation" xml:space="preserve">
+    <value>Provoz nakladače</value>
+  </data>
+  <data name="loads" xml:space="preserve">
+    <value>Náklady</value>
+  </data>
+  <data name="locate" xml:space="preserve">
+    <value>Nalézt</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Polohazec</value>
+  </data>
+  <data name="geolocationPositionUnavailable" xml:space="preserve">
+    <value>Lokaliota není k dispozici</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Přihlášení</value>
+  </data>
+  <data name="loginCreationDate" xml:space="preserve">
+    <value>Datum vytvoření přihlášení</value>
+  </data>
+  <data name="loginfailed" xml:space="preserve">
+    <value>Pøihlášení selhalo</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Odhlášení</value>
+  </data>
+  <data name="longitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Dél</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Nízká</value>
+  </data>
+  <data name="LowSensorBattery" xml:space="preserve">
+    <value>Slabá baterie</value>
+  </data>
+  <data name="LowFuel" xml:space="preserve">
+    <value>Nedostatek paliva</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Nejnižší</value>
+  </data>
+  <data name="metersAbbrev" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="m3" xml:space="preserve">
+    <value>m3</value>
+  </data>
+  <data name="meterUpdateSummary" xml:space="preserve">
+    <value>Strojové hodiny</value>
+  </data>
+  <data name="machineIdleEvent" xml:space="preserve">
+    <value>Machine Idle</value>
+  </data>
+  <data name="machineName" xml:space="preserve">
+    <value>Název stroje</value>
+  </data>
+  <data name="make" xml:space="preserve">
+    <value>Značka</value>
+  </data>
+  <data name="makeModel" xml:space="preserve">
+    <value>Značka/model</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Ručně</value>
+  </data>
+  <data name="map" xml:space="preserve">
+    <value>Mapa</value>
+  </data>
+  <data name="mapReset" xml:space="preserve">
+    <value>Resetování mapy</value>
+  </data>
+  <data name="mappingType" xml:space="preserve">
+    <value>Typ zobrazení</value>
+  </data>
+  <data name="markCompleted" xml:space="preserve">
+    <value>Značka dokončena</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>Materiál</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="maxSpeed" xml:space="preserve">
+    <value>Max. rychlost</value>
+  </data>
+  <data name="maxRecordsReached" xml:space="preserve">
+    <value>Dosažený maximální počet záznamů</value>
+  </data>
+  <data name="maximumTemperature" xml:space="preserve">
+    <value>Maximální teplota</value>
+  </data>
+  <data name="deviceTypeMCHYPHEN3" xml:space="preserve">
+    <value>MC-3</value>
+  </data>
+  <data name="mdp" xml:space="preserve">
+    <value>MDP</value>
+  </data>
+  <data name="mdpSummary" xml:space="preserve">
+    <value>Souhrn MDP</value>
+  </data>
+  <data name="mdpSummaryReport" xml:space="preserve">
+    <value>Hromadný report MDP</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Medium</value>
+  </data>
+  <data name="meter" xml:space="preserve">
+    <value>Počítadlo</value>
+  </data>
+  <data name="meterReading" xml:space="preserve">
+    <value>Stav počítadla</value>
+  </data>
+  <data name="meterUpdate" xml:space="preserve">
+    <value>Aktualizace počítadla</value>
+  </data>
+  <data name="meterUpdateSent" xml:space="preserve">
+    <value>Zaslaná aktualizace počítadla</value>
+  </data>
+  <data name="mi" xml:space="preserve">
+    <value>mi</value>
+  </data>
+  <data name="mileGal" xml:space="preserve">
+    <value>mil/gal</value>
+  </data>
+  <data name="mileage" xml:space="preserve">
+    <value>Najeté míle</value>
+  </data>
+  <data name="miles" xml:space="preserve">
+    <value>míle</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="minimumTemperature" xml:space="preserve">
+    <value>Minimální teplota</value>
+  </data>
+  <data name="Missed" xml:space="preserve">
+    <value>selhal</value>
+  </data>
+  <data name="missingMeterValueDetected" xml:space="preserve">
+    <value>Detekována chybějící hodnota měřidla</value>
+  </data>
+  <data name="singleDayCalloutMissingMeterValue" xml:space="preserve">
+    <value>Byla zjištěna chybějící hodnota měřidla</value>
+  </data>
+  <data name="dateRangeCalloutMissingMeterValue" xml:space="preserve">
+    <value>V datumovém rozsahu byla zjištěna chybějící hodnota měřidla</value>
+  </data>
+  <data name="MM" xml:space="preserve">
+    <value>MM</value>
+  </data>
+  <data name="model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="modelYear" xml:space="preserve">
+    <value>Rok modelu</value>
+  </data>
+  <data name="module" xml:space="preserve">
+    <value>Modul</value>
+  </data>
+  <data name="moduleAccessProvidedBy" xml:space="preserve">
+    <value>Přístup k modul poskytl</value>
+  </data>
+  <data name="FluidMonitorPriority" xml:space="preserve">
+    <value>Monitorovat</value>
+  </data>
+  <data name="monitoredCycleDetailsReport" xml:space="preserve">
+    <value>Zpráva o podrobnostech monitorovaného cyklu</value>
+  </data>
+  <data name="monitoredLoadCountDetailsReport" xml:space="preserve">
+    <value>Zpráva o podrobnostech monitorovaného počtu naložení</value>
+  </data>
+  <data name="monitoredSiteDetailsReport" xml:space="preserve">
+    <value>Zpráva o podrobnostech monitorovaného pracoviště</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Měsíčně</value>
+  </data>
+  <data name="more" xml:space="preserve">
+    <value>Více</value>
+  </data>
+  <data name="moreThan" xml:space="preserve">
+    <value>Více než</value>
+  </data>
+  <data name="passesMorethan" xml:space="preserve">
+    <value>Více než {0} pasů</value>
+  </data>
+  <data name="top10MostFrequentlyOccurringFaults" xml:space="preserve">
+    <value>Nejčastější chybové kódy (Top 10)</value>
+  </data>
+  <data name="MovementWithAssetOff" xml:space="preserve">
+    <value>Pohyb se strojem Vypnutým</value>
+  </data>
+  <data name="MovementWithAssetOn" xml:space="preserve">
+    <value>Pohyb se strojem Zapnutým</value>
+  </data>
+  <data name="movingStatus" xml:space="preserve">
+    <value>Stav pohybu</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="deviceTypeMTHYPHEN10" xml:space="preserve">
+    <value>MT-10</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENElectricEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Electric Engine</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENMotorEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Motor Engine</value>
+  </data>
+  <data name="MulitpleProjects" xml:space="preserve">
+    <value>Nalezeny mnohočetné projekty</value>
+  </data>
+  <data name="multipleSelections" xml:space="preserve">
+    <value>Mnohonásobná volba</value>
+  </data>
+  <data name="notApplicable" xml:space="preserve">
+    <value>Nedostupné</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>Nedostupné</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Jméno</value>
+  </data>
+  <data name="nearbyAssets" xml:space="preserve">
+    <value>Blízké stroje</value>
+  </data>
+  <data name="nearbyAssetsByProductFamily" xml:space="preserve">
+    <value>Blízké stroje dle skupiny produktů</value>
+  </data>
+  <data name="NewAccountSupportEmailSubject" xml:space="preserve">
+    <value>Informace k registraci nového účtu</value>
+  </data>
+  <data name="nextService" xml:space="preserve">
+    <value>Příští údržba</value>
+  </data>
+  <data name="FluidNoActionPriority" xml:space="preserve">
+    <value>Bez akce</value>
+  </data>
+  <data name="noBoundariesInLineworkFile" xml:space="preserve">
+    <value>Žádné hranice v souboru čárových kreseb.</value>
+  </data>
+  <data name="noChange" xml:space="preserve">
+    <value>Bez změny</value>
+  </data>
+  <data name="noComment" xml:space="preserve">
+    <value>Bez komentáře</value>
+  </data>
+  <data name="noConnectionToServer" xml:space="preserve">
+    <value>Bez připojení k serveru</value>
+  </data>
+  <data name="noData" xml:space="preserve">
+    <value>Žádná data</value>
+  </data>
+  <data name="noDumpFound" xml:space="preserve">
+    <value>Nenalezen žádný obsah</value>
+  </data>
+  <data name="noDumpSwitch" xml:space="preserve">
+    <value>Nedetekován žádný snímač události</value>
+  </data>
+  <data name="NoEndDate" xml:space="preserve">
+    <value>Bez intervalů</value>
+  </data>
+  <data name="noFilter" xml:space="preserve">
+    <value>bez filtru</value>
+  </data>
+  <data name="NoIntervals" xml:space="preserve">
+    <value>žádné intervaly</value>
+  </data>
+  <data name="noItemsFound" xml:space="preserve">
+    <value>Žádná položka nenalezena</value>
+  </data>
+  <data name="noLoadFound" xml:space="preserve">
+    <value>Nenalezeno žádné množství</value>
+  </data>
+  <data name="noLoadSwitch" xml:space="preserve">
+    <value>Nedetekován žádný snímač události</value>
+  </data>
+  <data name="NoMatchingProjectArea" xml:space="preserve">
+    <value>Nebyla nalezena shodná plocha projektu</value>
+  </data>
+  <data name="NoMatchingProjectDate" xml:space="preserve">
+    <value>Nebyl nalezen shodný datum/čas projektu</value>
+  </data>
+  <data name="NoPending" xml:space="preserve">
+    <value>žádné nevyřízené</value>
+  </data>
+  <data name="noResultReturned" xml:space="preserve">
+    <value>Nebyl vrácen žádný výsledek</value>
+  </data>
+  <data name="noResults" xml:space="preserve">
+    <value>Žádné výsledky</value>
+  </data>
+  <data name="noStopMovmentInValidSite" xml:space="preserve">
+    <value>V platném typu stránky nebylo detekováno žádné zastavení pohybu</value>
+  </data>
+  <data name="noStopMovement" xml:space="preserve">
+    <value>nebylo detekováno žádné zastavení pohybu</value>
+  </data>
+  <data name="noSuchDataModel" xml:space="preserve">
+    <value>Neexistuje podobný datový model</value>
+  </data>
+  <data name="NoValidCellPassesInTagfile" xml:space="preserve">
+    <value>V tag souboru(souborech) nebyly nalezeny platné přejezdy buněk</value>
+  </data>
+  <data name="InvalidPosition" xml:space="preserve">
+    <value>V tag souboru není platná poloha</value>
+  </data>
+  <data name="NotReporting" xml:space="preserve">
+    <value>Nehlásí se</value>
+  </data>
+  <data name="devicetypenodevice" xml:space="preserve">
+    <value>ŽÁDNÝ</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>Žádný</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>normální</value>
+  </data>
+  <data name="NormalOperation" xml:space="preserve">
+    <value>Normální provoz</value>
+  </data>
+  <data name="northing" xml:space="preserve">
+    <value>Souřadnice Y</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Není k dispozici</value>
+  </data>
+  <data name="NotPending" xml:space="preserve">
+    <value>Neprobíhá</value>
+  </data>
+  <data name="GensetNotReadyToRun" xml:space="preserve">
+    <value>Není připraveno pro spuštění</value>
+  </data>
+  <data name="notVerified" xml:space="preserve">
+    <value>Neověřeno</value>
+  </data>
+  <data name="dcToIRecNotWGS84Ellipsoid" xml:space="preserve">
+    <value>Žádný WGS84 elipsoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecNotWGS84EllipsoidSameAsProj" xml:space="preserve">
+    <value>Žádný WGS84 elipsoid v záznamu dat (DCToIRecord converter)</value>
+  </data>
+  <data name="NotReportingforExcelReport" xml:space="preserve">
+    <value>Nenahlašuje</value>
+  </data>
+  <data name="SavEmailFooter" xml:space="preserve">
+    <value>Poznámka: Tento email s oznámením byl zaslán ze zdvořilosti. Byl/a jste přidán/a do tohoto seznamu osob pro zasílání oznámení, protože jste uživatel-správce účtu VisionLink.</value>
+  </data>
+  <data name="notes" xml:space="preserve">
+    <value>Poznámky</value>
+  </data>
+  <data name="occurrenceCount" xml:space="preserve">
+    <value>Počet výskytů</value>
+  </data>
+  <data name="odometer" xml:space="preserve">
+    <value>Počítadlo ujetých kilometrů</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>Vyp</value>
+  </data>
+  <data name="offset" xml:space="preserve">
+    <value>Odsazení</value>
+  </data>
+  <data name="offsetFromBench" xml:space="preserve">
+    <value>Odsazení z pracovního stolu</value>
+  </data>
+  <data name="offsetFromDesign" xml:space="preserve">
+    <value>Odsazení z designu</value>
+  </data>
+  <data name="offsetFromProfile" xml:space="preserve">
+    <value>Odsazení z profilu</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>Zap</value>
+  </data>
+  <data name="onGrade" xml:space="preserve">
+    <value>Na svahu</value>
+  </data>
+  <data name="onMachineDesign" xml:space="preserve">
+    <value>Na designu stroje</value>
+  </data>
+  <data name="OnBoardServiceToolCommand" xml:space="preserve">
+    <value>Příkaz On-Board Service Tool</value>
+  </data>
+  <data name="InvalidOnGroundFlag" xml:space="preserve">
+    <value>znamení on_ground nenastaveno nebo je neplatné v tag souboru</value>
+  </data>
+  <data name="OpenAlerts" xml:space="preserve">
+    <value>Otevřené výstrahy</value>
+  </data>
+  <data name="operationModeBreakup" xml:space="preserve">
+    <value>Přerušení provozního režimu</value>
+  </data>
+  <data name="operatorID" xml:space="preserve">
+    <value>ID operátora</value>
+  </data>
+  <data name="operatorName" xml:space="preserve">
+    <value>Jméno operátora</value>
+  </data>
+  <data name="origin" xml:space="preserve">
+    <value>Zdroj</value>
+  </data>
+  <data name="OTACommand" xml:space="preserve">
+    <value>Příkaz OTA</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Další</value>
+  </data>
+  <data name="overCompacted" xml:space="preserve">
+    <value>Nad zhutněnou</value>
+  </data>
+  <data name="overcompactedLayer" xml:space="preserve">
+    <value>Nad zhutněnou vrstvou</value>
+  </data>
+  <data name="maxLevel" xml:space="preserve">
+    <value>VÃ­ce neÅ¾ max. ÃºroveÅˆ</value>
+  </data>
+  <data name="overPassTarget" xml:space="preserve">
+    <value>Nad cíl přejezdů</value>
+  </data>
+  <data name="OverPressure" xml:space="preserve">
+    <value>Nadměrný tlak</value>
+  </data>
+  <data name="OverTemperature" xml:space="preserve">
+    <value>Nadměrná teplota</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>zpožděný</value>
+  </data>
+  <data name="serviceDueSummary" xml:space="preserve">
+    <value>Zameškaný a aktuální servis</value>
+  </data>
+  <data name="OverdueBy" xml:space="preserve">
+    <value>Zpožděné po</value>
+  </data>
+  <data name="pMode" xml:space="preserve">
+    <value>Režim P</value>
+  </data>
+  <data name="pageXofY" xml:space="preserve">
+    <value>Strana &amp;[Page] z &amp;[Pages]</value>
+  </data>
+  <data name="MachineParametersReport" xml:space="preserve">
+    <value>Parametrická hlášení</value>
+  </data>
+  <data name="passCount" xml:space="preserve">
+    <value>Počet průjezdů</value>
+  </data>
+  <data name="passCountDetail" xml:space="preserve">
+    <value>Detaily počtu přejezdů</value>
+  </data>
+  <data name="passCountDetailReport" xml:space="preserve">
+    <value>Detailní protokol počtu průjezdů</value>
+  </data>
+  <data name="passCountSummary" xml:space="preserve">
+    <value>Souhrn počtu přejezdů</value>
+  </data>
+  <data name="passCountSummaryReport" xml:space="preserve">
+    <value>Hromadný protokol počtu průjezdů</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Heslo</value>
+  </data>
+  <data name="payload" xml:space="preserve">
+    <value>Užitečné zatížení</value>
+  </data>
+  <data name="PayloadReport" xml:space="preserve">
+    <value>Report užitečného zatížení</value>
+  </data>
+  <data name="payloadPerCycle" xml:space="preserve">
+    <value>Užitečné zatížení / cyklus</value>
+  </data>
+  <data name="payloadPerFuel" xml:space="preserve">
+    <value>Užitečné zatížení / palivo</value>
+  </data>
+  <data name="payloadPerHour" xml:space="preserve">
+    <value>Užitečné zatížení / hodina</value>
+  </data>
+  <data name="chartWorkSheetTitle" xml:space="preserve">
+    <value>Tabulka užitečného zatížení</value>
+  </data>
+  <data name="dataWorkSheetTitle" xml:space="preserve">
+    <value>Data užitečného zatížení</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Nevyřízené</value>
+  </data>
+  <data name="performance" xml:space="preserve">
+    <value>Výkon</value>
+  </data>
+  <data name="performedBy" xml:space="preserve">
+    <value>Provedl</value>
+  </data>
+  <data name="phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="deviceTypePL420" xml:space="preserve">
+    <value>PL420</value>
+  </data>
+  <data name="deviceTypePL431" xml:space="preserve">
+    <value>PL431</value>
+  </data>
+  <data name="deviceTypeMTS521" xml:space="preserve">
+    <value>PL521</value>
+  </data>
+  <data name="deviceTypeMTS522" xml:space="preserve">
+    <value>PL522</value>
+  </data>
+  <data name="deviceTypePLE641PLUSPL631" xml:space="preserve">
+    <value>PLE641+PL631</value>
+  </data>
+  <data name="changeDatesOrBoundary" xml:space="preserve">
+    <value>Prosím změňte buď období projektu nebo hranice projektu.</value>
+  </data>
+  <data name="cookiesRequired" xml:space="preserve">
+    <value>Umožněte prosím v tomto prohlížeči cookies.</value>
+  </data>
+  <data name="javascriptRequired" xml:space="preserve">
+    <value>Umožněte prosím v tomto prohlížeči javascript a cookies.</value>
+  </data>
+  <data name="enterYourPassword" xml:space="preserve">
+    <value>Vložte prosím heslo</value>
+  </data>
+  <data name="enterYourUsername" xml:space="preserve">
+    <value>Vložte prosím uživatelské jméno</value>
+  </data>
+  <data name="pleaseInstallBlackBerryMaps" xml:space="preserve">
+    <value>Nainstalujte si prosím mapy BlackBerry.</value>
+  </data>
+  <data name="excelRowLimitReached" xml:space="preserve">
+    <value>Všimněte si prosím, že vrácená data přesahují limit řádků Excelu a nejsou obsaženy ve zprávě.</value>
+  </data>
+  <data name="selectService" xml:space="preserve">
+    <value>Před odesláním žádosti prosím zvolte službu</value>
+  </data>
+  <data name="PM" xml:space="preserve">
+    <value>PM</value>
+  </data>
+  <data name="PowerLoss" xml:space="preserve">
+    <value>Ztráta výkonu</value>
+  </data>
+  <data name="PowerMode" xml:space="preserve">
+    <value>Režim napájení</value>
+  </data>
+  <data name="pressure" xml:space="preserve">
+    <value>Tlak</value>
+  </data>
+  <data name="probProcessing" xml:space="preserve">
+    <value>Během zpracování došlo k problému.</value>
+  </data>
+  <data name="productFamily" xml:space="preserve">
+    <value>Skupina produktů</value>
+  </data>
+  <data name="project" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
+  <data name="overlappingProject" xml:space="preserve">
+    <value>Projekty se nesmí překrývat ani časově (počáteční a konečné datum), ani prostorově (hranice projektů).</value>
+  </data>
+  <data name="proofingRun" xml:space="preserve">
+    <value>Spuštění kontroly</value>
+  </data>
+  <data name="proximityLoads" xml:space="preserve">
+    <value>Proximitná zatížení</value>
+  </data>
+  <data name="proximitytoSwitch" xml:space="preserve">
+    <value>Blízko k zapnutí</value>
+  </data>
+  <data name="psi" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="purchaseDate" xml:space="preserve">
+    <value>Datum zakoupení</value>
+  </data>
+  <data name="rightAbbrev" xml:space="preserve">
+    <value>P</value>
+  </data>
+  <data name="raw" xml:space="preserve">
+    <value>Hrubá data</value>
+  </data>
+  <data name="reconciled" xml:space="preserve">
+    <value>Srovnáno</value>
+  </data>
+  <data name="ReconciledLoadDumpEvent" xml:space="preserve">
+    <value>Vyrovnané zatížení/událost složení</value>
+  </data>
+  <data name="recordedBy" xml:space="preserve">
+    <value>Zaznamenal(a)</value>
+  </data>
+  <data name="registeredDealer" xml:space="preserve">
+    <value>Registrovaný dealer</value>
+  </data>
+  <data name="release" xml:space="preserve">
+    <value>Uvolnění</value>
+  </data>
+  <data name="rememberMe" xml:space="preserve">
+    <value>Pamatovat si mě</value>
+  </data>
+  <data name="reportDateRange" xml:space="preserve">
+    <value>Datový rozsah reportu</value>
+  </data>
+  <data name="reportGeneratedDate" xml:space="preserve">
+    <value>Datum vygenerování reportu</value>
+  </data>
+  <data name="reportType" xml:space="preserve">
+    <value>Typ reportu</value>
+  </data>
+  <data name="reportedTime" xml:space="preserve">
+    <value>Čas reportu</value>
+  </data>
+  <data name="requestAccess" xml:space="preserve">
+    <value>Vyžádat přístup</value>
+  </data>
+  <data name="requestCanceled" xml:space="preserve">
+    <value>Žádost byla zrušena</value>
+  </data>
+  <data name="requestSentSuccessfully" xml:space="preserve">
+    <value>Žádost o přístup byla úspěšně odeslána.</value>
+  </data>
+  <data name="abortedDueToPipelineTimeout" xml:space="preserve">
+    <value>Žádost byla přerušena z důvodu vypršení časového limitu</value>
+  </data>
+  <data name="requestHasBeenCancelled" xml:space="preserve">
+    <value>Žádost byla zrušena</value>
+  </data>
+  <data name="resolved" xml:space="preserve">
+    <value>Vyřešeno</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Zkusit znovu</value>
+  </data>
+  <data name="reverse" xml:space="preserve">
+    <value>Otočit</value>
+  </data>
+  <data name="roadDesign" xml:space="preserve">
+    <value>Design silnice</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>ot/min</value>
+  </data>
+  <data name="running" xml:space="preserve">
+    <value>V běhu</value>
+  </data>
+  <data name="runningTotal" xml:space="preserve">
+    <value>V běhu (Celkem)</value>
+  </data>
+  <data name="runningBurnRate" xml:space="preserve">
+    <value>Hodinová spotřeba v běhu</value>
+  </data>
+  <data name="runningFuelBurned" xml:space="preserve">
+    <value>Spotřebované palivo v běhu</value>
+  </data>
+  <data name="runningUtil" xml:space="preserve">
+    <value>Využití doby při plném provozu</value>
+  </data>
+  <data name="runtime" xml:space="preserve">
+    <value>Doba provozu</value>
+  </data>
+  <data name="runTimePercentage" xml:space="preserve">
+    <value>Runtime Percentage</value>
+  </data>
+  <data name="sn" xml:space="preserve">
+    <value>S.č.</value>
+  </data>
+  <data name="sampleDate" xml:space="preserve">
+    <value>Datum vzorku</value>
+  </data>
+  <data name="satellite" xml:space="preserve">
+    <value>Satelit</value>
+  </data>
+  <data name="requestScheduleFailure" xml:space="preserve">
+    <value>Chyba v plánování</value>
+  </data>
+  <data name="requestScheduleLoadTooHigh" xml:space="preserve">
+    <value>Plánovaná zátěž je příliš vysoká</value>
+  </data>
+  <data name="requestScheduleTimeout" xml:space="preserve">
+    <value>Plán vypršel</value>
+  </data>
+  <data name="schemaExamples" xml:space="preserve">
+    <value>Příklady schémat</value>
+  </data>
+  <data name="scraper" xml:space="preserve">
+    <value>Skrejpr</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Vyhledávání</value>
+  </data>
+  <data name="sec" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="secondPoint" xml:space="preserve">
+    <value>Další bod</value>
+  </data>
+  <data name="TamperSecurityStatus" xml:space="preserve">
+    <value>Stav zabezpečení</value>
+  </data>
+  <data name="selectAsset" xml:space="preserve">
+    <value>Zvolit stroj</value>
+  </data>
+  <data name="selectAssets" xml:space="preserve">
+    <value>Zvolit stroje</value>
+  </data>
+  <data name="selectDateRange" xml:space="preserve">
+    <value>Zvolit časový rozsah</value>
+  </data>
+  <data name="selectFuelPercentRemaining" xml:space="preserve">
+    <value>Zvolit zbývající palivo (%)</value>
+  </data>
+  <data name="selectGroup" xml:space="preserve">
+    <value>Zvolit skupinu</value>
+  </data>
+  <data name="selectProductFamily" xml:space="preserve">
+    <value>Zvolit skupinu produktů</value>
+  </data>
+  <data name="selectSite" xml:space="preserve">
+    <value>Zvolit pracoviště</value>
+  </data>
+  <data name="selectedDesign" xml:space="preserve">
+    <value>Zvolit design</value>
+  </data>
+  <data name="selectionLimitReached" xml:space="preserve">
+    <value>Dosaženo limitu voleb</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Poslat</value>
+  </data>
+  <data name="sensor" xml:space="preserve">
+    <value>Čidlo</value>
+  </data>
+  <data name="serialNumber" xml:space="preserve">
+    <value>Sériové číslo</value>
+  </data>
+  <data name="serverBuildNumber" xml:space="preserve">
+    <value>Číslo sestavení serveru</value>
+  </data>
+  <data name="service" xml:space="preserve">
+    <value>Služba</value>
+  </data>
+  <data name="serviceDate" xml:space="preserve">
+    <value>Datum servisu</value>
+  </data>
+  <data name="ServiceDue" xml:space="preserve">
+    <value>Běžná údžba</value>
+  </data>
+  <data name="ServiceDueMileageBased" xml:space="preserve">
+    <value>Běžná údžba ( dle mil/km)</value>
+  </data>
+  <data name="serviceDueReport" xml:space="preserve">
+    <value>Zpráva údržby</value>
+  </data>
+  <data name="MaintenanceHistoryReport" xml:space="preserve">
+    <value>Hlášení o servisní historii</value>
+  </data>
+  <data name="serviceInterval" xml:space="preserve">
+    <value>Servisní interval</value>
+  </data>
+  <data name="serviceIntervalCompleted" xml:space="preserve">
+    <value>Servisní interval kompletní</value>
+  </data>
+  <data name="serviceIntervals" xml:space="preserve">
+    <value>Servisní intervaly</value>
+  </data>
+  <data name="serviceNotes" xml:space="preserve">
+    <value>Servisní poznámky</value>
+  </data>
+  <data name="serviceStopped" xml:space="preserve">
+    <value>Servis zastaven</value>
+  </data>
+  <data name="servicesOffered" xml:space="preserve">
+    <value>Nabízené služby</value>
+  </data>
+  <data name="sessionExpired" xml:space="preserve">
+    <value>Relace vypršela z důvodů nečinnosti nebo duplikátního přihlášení.</value>
+  </data>
+  <data name="severity" xml:space="preserve">
+    <value>Náročnost</value>
+  </data>
+  <data name="SavTerminationHeaderForBss" xml:space="preserve">
+    <value>Sdílený náhled na stroje pro následující stroje byl ukončen z důvodů správcovských funkcí provedených v Trimble Store. Pro detailnější informace se obraťte na správce  {0} .</value>
+  </data>
+  <data name="SavTerminationHeaderForWizard" xml:space="preserve">
+    <value>Sdílený náhled na stroje pro následující stroje byl ukončen buď protože Tvůrce vymazal tento náhled nebo doba platnosti náhledu vypršela.</value>
+  </data>
+  <data name="SavNotificationHeader" xml:space="preserve">
+    <value>Sdílený náhled na stroje pro následující stroje má ukončenou dobu platnosti {0}. </value>
+  </data>
+  <data name="SharedAssetViewReport" xml:space="preserve">
+    <value>Protokol Sdílený náhled na stroje</value>
+  </data>
+  <data name="sharedToOrganization" xml:space="preserve">
+    <value>Sdílené s organizací</value>
+  </data>
+  <data name="shrinkage" xml:space="preserve">
+    <value>Sesednutí</value>
+  </data>
+  <data name="SimCardRemovedTimerExpired" xml:space="preserve">
+    <value>SIM karta odstraněna</value>
+  </data>
+  <data name="site" xml:space="preserve">
+    <value>Pracoviště</value>
+  </data>
+  <data name="siteBoundary" xml:space="preserve">
+    <value>Hranice pracoviště</value>
+  </data>
+  <data name="SiteEntry" xml:space="preserve">
+    <value>Vjezd na pracoviště</value>
+  </data>
+  <data name="siteAlertsWarning" xml:space="preserve">
+    <value>Události vjezdu na a výjezdu z pracoviště se odvozují od lokality obdržené ze stroje. Tyto události mohou být opožděné a mohou zcela chybět, záleží na tom, kdy stroj nahlašuje lokalitu.</value>
+  </data>
+  <data name="SiteEntryOrExit" xml:space="preserve">
+    <value>Vjezd na a výjezd z pracoviště</value>
+  </data>
+  <data name="siteEntryOutsideReportDateRange" xml:space="preserve">
+    <value>Vjezd na pracoviště mimo datumové rozpětí reportu</value>
+  </data>
+  <data name="SiteExit" xml:space="preserve">
+    <value>Výjezd z pracoviště</value>
+  </data>
+  <data name="siteExitOutsideReportDateRange" xml:space="preserve">
+    <value>Výjezd z pracoviště mimo datumové rozpětí reportu</value>
+  </data>
+  <data name="siteName" xml:space="preserve">
+    <value>Název pracoviště</value>
+  </data>
+  <data name="SiteRuntime" xml:space="preserve">
+    <value>Report o době provozu pracoviště</value>
+  </data>
+  <data name="siteRuntimeReport" xml:space="preserve">
+    <value>Report o době provozu pracoviště</value>
+  </data>
+  <data name="sitetoSite" xml:space="preserve">
+    <value>Z pracoviště na pracoviště</value>
+  </data>
+  <data name="sites" xml:space="preserve">
+    <value>Pracoviště</value>
+  </data>
+  <data name="toManyPoints" xml:space="preserve">
+    <value>Pracoviště mohou obsahovat maximálně 50 bodů.</value>
+  </data>
+  <data name="skipped" xml:space="preserve">
+    <value>Přeskočeno</value>
+  </data>
+  <data name="smuLocation" xml:space="preserve">
+    <value>Poloha - stav motohodin</value>
+  </data>
+  <data name="deviceTypeSNM451" xml:space="preserve">
+    <value>SNM451</value>
+  </data>
+  <data name="errorMessage" xml:space="preserve">
+    <value>Je nám líto, ale při zpracovávání Vaší žádosti nastal problém. Zkuste to prosím znovu.</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Zdroj</value>
+  </data>
+  <data name="Speeding" xml:space="preserve">
+    <value>Překročení rychlosti</value>
+  </data>
+  <data name="sqft" xml:space="preserve">
+    <value>st2</value>
+  </data>
+  <data name="sqm" xml:space="preserve">
+    <value>m2</value>
+  </data>
+  <data name="SS" xml:space="preserve">
+    <value>SS</value>
+  </data>
+  <data name="standardMode" xml:space="preserve">
+    <value>Standardní režim</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="startDate" xml:space="preserve">
+    <value>Datum začátku</value>
+  </data>
+  <data name="startHourMeter" xml:space="preserve">
+    <value>Počáteční stav motohodin</value>
+  </data>
+  <data name="startLocation" xml:space="preserve">
+    <value>Spuštění Lokace</value>
+  </data>
+  <data name="startMode" xml:space="preserve">
+    <value>Režim startu</value>
+  </data>
+  <data name="startSpeedDateTime" xml:space="preserve">
+    <value>Datum a čas spuštění rychlosti</value>
+  </data>
+  <data name="startSpeedLocation" xml:space="preserve">
+    <value>Místo spuštění rychlosti</value>
+  </data>
+  <data name="startTime" xml:space="preserve">
+    <value>Čas Spuštění</value>
+  </data>
+  <data name="StateMileageReport" xml:space="preserve">
+    <value>Stav tachemtru v zemi</value>
+  </data>
+  <data name="stateProvince" xml:space="preserve">
+    <value>Stát/oblast</value>
+  </data>
+  <data name="state" xml:space="preserve">
+    <value>Informace o státě</value>
+  </data>
+  <data name="station" xml:space="preserve">
+    <value>Staničení</value>
+  </data>
+  <data name="StationOffset" xml:space="preserve">
+    <value>Report odsazení staničení</value>
+  </data>
+  <data name="stationOffsetReport" xml:space="preserve">
+    <value>Report odsazení staničení</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Stav</value>
+  </data>
+  <data name="stn" xml:space="preserve">
+    <value>Stn</value>
+  </data>
+  <data name="stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="stopLocation" xml:space="preserve">
+    <value>Místo zastavení</value>
+  </data>
+  <data name="stopSpeedDateTime" xml:space="preserve">
+    <value>Datum a čas zastavení rychlosti</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Úspěšné</value>
+  </data>
+  <data name="suggestUsingTargetOverride" xml:space="preserve">
+    <value>Doporučujeme použít nastavení k přepsání cílových hodnot.</value>
+  </data>
+  <data name="SummaryData" xml:space="preserve">
+    <value>Shrnutí dat</value>
+  </data>
+  <data name="summaryOfLoadsByHaulDistance" xml:space="preserve">
+    <value>Souhrn nákladů podle ujeté vzdálenosti s nákladem</value>
+  </data>
+  <data name="summaryVolumes" xml:space="preserve">
+    <value>Souhrn objemů</value>
+  </data>
+  <data name="summaryVolumesReport" xml:space="preserve">
+    <value>Hromadný protokol obsahů</value>
+  </data>
+  <data name="surplusDeficitVolume" xml:space="preserve">
+    <value>Obsah nadbytečný / nedostačující</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>Spínač</value>
+  </data>
+  <data name="switchClosed" xml:space="preserve">
+    <value>Spínač zavřený</value>
+  </data>
+  <data name="switchName" xml:space="preserve">
+    <value>Jméno spínače</value>
+  </data>
+  <data name="switchOn" xml:space="preserve">
+    <value>Spínač ZAPNUTÝ</value>
+  </data>
+  <data name="switchOpen" xml:space="preserve">
+    <value>Spínač otevřený</value>
+  </data>
+  <data name="switchtoSiteorSitetoSwitch" xml:space="preserve">
+    <value>Spínač pracoviště nebo pracoviště spínač</value>
+  </data>
+  <data name="switchtoSwitch" xml:space="preserve">
+    <value>Spínač spínač</value>
+  </data>
+  <data name="tagfileLiftNumber" xml:space="preserve">
+    <value>Číslo označené vrstvy</value>
+  </data>
+  <data name="tamperResistance" xml:space="preserve">
+    <value>Odolnost proti neodbornému působení</value>
+  </data>
+  <data name="TamperResolvedConnectiontoOffBoard" xml:space="preserve">
+    <value>Zhutňovač vyřešen</value>
+  </data>
+  <data name="TamperUninstalled" xml:space="preserve">
+    <value>Zhutňovač odinstalovaný</value>
+  </data>
+  <data name="deviceTypeTAP66" xml:space="preserve">
+    <value>TAP66</value>
+  </data>
+  <data name="target" xml:space="preserve">
+    <value>Cíl</value>
+  </data>
+  <data name="targetCMV" xml:space="preserve">
+    <value>Cíl CMV</value>
+  </data>
+  <data name="targetCMVRange" xml:space="preserve">
+    <value>Cíl v rozsahu CMV</value>
+  </data>
+  <data name="targetMDP" xml:space="preserve">
+    <value>Cílové MDP</value>
+  </data>
+  <data name="targetMDPRange" xml:space="preserve">
+    <value>Rozsah cílového MDP</value>
+  </data>
+  <data name="targetPassCount" xml:space="preserve">
+    <value>Cílový počet přejezdů</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Teplota</value>
+  </data>
+  <data name="temperatureReport" xml:space="preserve">
+    <value>Protokol teploty</value>
+  </data>
+  <data name="terrain" xml:space="preserve">
+    <value>Terén</value>
+  </data>
+  <data name="aempInformation" xml:space="preserve">
+    <value>Informace AEMP umožňují uživateli přístup do snapshop dat jeho vozového parku, aby mohl provést vysokoúrovňovou analýzu a introspekci dat.</value>
+  </data>
+  <data name="assetUtilizationDescription" xml:space="preserve">
+    <value>API Využití stroje přenáší nazpět informace o využití stroje (jako např. doba provozu naprázdno, doba při práci, atd.) pro každý stroj vozového parku, který podporuje využití. Abyste tyto informace, tzv. feed, obdrželi, musí mít všechny stroje platný servisní plán Core and Health pro dané období.</value>
+  </data>
+  <data name="assetsDescription" xml:space="preserve">
+    <value>API strojů je jednoduše seznam všech strojů ve vašem vozovém parku. API poskytuje detailnější informace (t.j. produkční řadu, rok výroby, typ přístrojů a sériové číslo, atd.) o každém jednotlivém stroji ve vašem vozovém parku.</value>
+  </data>
+  <data name="dcToIRecDatumFailedToLoad" xml:space="preserve">
+    <value>Chyba při nahrávání data CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="fleetSummaryDescription" xml:space="preserve">
+    <value>Data souhrnu vozového parku poskytují náhled o vysoké úrovni na současný stav vašeho vozového parku. Obsahují informace jako např. SMULoc, Ujeté kilometry, Stav hlášení, Lokalita atd. pro každý stroj ve vašem vozovém parku.</value>
+  </data>
+  <data name="unsubscribedAssets" xml:space="preserve">
+    <value>Následující stroje nejsou pro tento report a toto zvolené časové období podporovány.  Informace o přehledu chybových kódů je k dispozici pouze pro přístroje PL321 a 522/523 s aktivním servisním plánem Cat® Health.</value>
+  </data>
+  <data name="noReportDataAssets" xml:space="preserve">
+    <value>Následující stroje nepřispěly do tohoto hlášení žádnými údaji</value>
+  </data>
+  <data name="reportDataAssets" xml:space="preserve">
+    <value>Následující stroje přispěly do tohoto hlášení údaji</value>
+  </data>
+  <data name="noDataAssets" xml:space="preserve">
+    <value>Následující stroje neobsahují žádná data</value>
+  </data>
+  <data name="noDataSites" xml:space="preserve">
+    <value>U následujících pracovišť nejsou zaznamenána žádná data</value>
+  </data>
+  <data name="fuelUtilizationDescription" xml:space="preserve">
+    <value>API Využití paliva přináší nazpět informace o využití paliva (jako např. palivo spotřebované při běhu naprázdno, spotřebované při práci, atd.) pro každý jednotlivý stroj ve vozovém parku, který podporuje využití. Abyste tyto informace, tzv. feed, obdrželi, musí mít všechny stroje platný servisní plán Core and Health pro dané období.</value>
+  </data>
+  <data name="invalidUser003" xml:space="preserve">
+    <value>Vložené heslo není správné. \nVáš účet byl uzamknutý, zkuste to znovu za 30 minut.</value>
+  </data>
+  <data name="invalidUser001" xml:space="preserve">
+    <value>Uživatelské jméno nebo heslo, které jste uvedli, není správné.</value>
+  </data>
+  <data name="erroneousFuel" xml:space="preserve">
+    <value>{0} nahlásil pro dané časové období neočekávanou spotřebu paliva.</value>
+  </data>
+  <data name="erroneousIdleTime" xml:space="preserve">
+    <value>{0} nahlásil pro dané časové období neočekávanou dobu běhu naprázdno.</value>
+  </data>
+  <data name="erroneousRuntime" xml:space="preserve">
+    <value>{0}nahlásil pro dané časové období neočekávanopu dobu provozu.</value>
+  </data>
+  <data name="erroneousWorkingTime" xml:space="preserve">
+    <value>{0} nahlásil pro dané časové období neočekávanou dobu práce..</value>
+  </data>
+  <data name="issueSendingEmail" xml:space="preserve">
+    <value>Při zasílání emailu došlo ke konfliktu, prosím obraťte se na správce.</value>
+  </data>
+  <data name="InvalidUserAccess" xml:space="preserve">
+    <value>Tento účet není pro přístup klienta VisionLink nakonfigurován. Použijte prosím jiné přihlášení do systému nebo kontaktujte podporu.</value>
+  </data>
+  <data name="assetOperationDescription" xml:space="preserve">
+    <value>Tento koncový bod nese odpovědnost za poskytování informací o provozu stroje, jako např. dobu při práci a naprázdno, když se používají pracovní definice k výpočtům informací o využití. Abyste tyto informace, tzv. feed, obdrželi, musí mít všechny stroje platný servisní plán Core and Health pro dané období.</value>
+  </data>
+  <data name="requiredField" xml:space="preserve">
+    <value>Toto je povinné pole.</value>
+  </data>
+  <data name="incompleteLoadError" xml:space="preserve">
+    <value>Nahrání není kompletní - chyba hardwarových dat</value>
+  </data>
+  <data name="incompleteLoadNoDump" xml:space="preserve">
+    <value>Toto je nekompletní náklad - nenalezen čas vykládky</value>
+  </data>
+  <data name="incompleteLoadNoLoad" xml:space="preserve">
+    <value>Toto je nekompletní náklad - nenalezen čas nakládky</value>
+  </data>
+  <data name="incompleteLoad" xml:space="preserve">
+    <value>Toto je neúplný počet materiálu</value>
+  </data>
+  <data name="TrimbleOperationsReportDescription" xml:space="preserve">
+    <value>This report provides the list of users and their details, who fall under the category of Corporate.</value>
+  </data>
+  <data name="InActiveSchedule" xml:space="preserve">
+    <value>Tento plánovaný report není platný. Kontaktujte svého správce VisionLink, abyste report upravili.</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Doba</value>
+  </data>
+  <data name="geolocationTimeout" xml:space="preserve">
+    <value>Časový limit vypršel během načítání lokality.</value>
+  </data>
+  <data name="timedOut" xml:space="preserve">
+    <value>Doba vypršela</value>
+  </data>
+  <data name="TireMonitoring" xml:space="preserve">
+    <value>Monitorace pneumatik</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Název</value>
+  </data>
+  <data name="deviceTypeTM3000" xml:space="preserve">
+    <value>TM300</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Dnes</value>
+  </data>
+  <data name="ton" xml:space="preserve">
+    <value>Tuna</value>
+  </data>
+  <data name="tonne" xml:space="preserve">
+    <value>Tuna</value>
+  </data>
+  <data name="tooThickLayer" xml:space="preserve">
+    <value>Příliš silná vrstva</value>
+  </data>
+  <data name="topSurface" xml:space="preserve">
+    <value>Vrchní povrch</value>
+  </data>
+  <data name="topCyclesPerHour" xml:space="preserve">
+    <value>Nejvyšší hodnota {0} - cykly / hodina (celkem)</value>
+  </data>
+  <data name="topPayloadPerCycle" xml:space="preserve">
+    <value>Nejvyšší hodnota {0} - užitečné zatížení / cyklus (celkem)</value>
+  </data>
+  <data name="topPayloadPerHour" xml:space="preserve">
+    <value>Nejvyšší hodnota  {0} - užitečné zatížení / hodina (celkem)</value>
+  </data>
+  <data name="total" xml:space="preserve">
+    <value>Celkem</value>
+  </data>
+  <data name="totalAreaCovered" xml:space="preserve">
+    <value>Celková pokrytá area</value>
+  </data>
+  <data name="totalCutVolume" xml:space="preserve">
+    <value>Celkový objem odtěženého materiálu</value>
+  </data>
+  <data name="totalDistance" xml:space="preserve">
+    <value>Celková Vzdálenost</value>
+  </data>
+  <data name="totalFillVolume" xml:space="preserve">
+    <value>Obsah zásypu celkem</value>
+  </data>
+  <data name="totalFuel" xml:space="preserve">
+    <value>Palivo celkem</value>
+  </data>
+  <data name="totalHoursByAsset" xml:space="preserve">
+    <value>Celkem hodin pro stroj</value>
+  </data>
+  <data name="totalIdleEvents" xml:space="preserve">
+    <value>Události naprázdno celkem</value>
+  </data>
+  <data name="totalIdleTime" xml:space="preserve">
+    <value>Celková doba naprázdno</value>
+  </data>
+  <data name="totalLoads" xml:space="preserve">
+    <value>Celkem nákladů</value>
+  </data>
+  <data name="totalMachineCovPlan" xml:space="preserve">
+    <value>Celkové plánovaná area dosahu stroje</value>
+  </data>
+  <data name="totalRuntime" xml:space="preserve">
+    <value>Celková doba provozu</value>
+  </data>
+  <data name="totalTime" xml:space="preserve">
+    <value>Celkový Čas</value>
+  </data>
+  <data name="totalVolume" xml:space="preserve">
+    <value>Celkový obsah</value>
+  </data>
+  <data name="totals" xml:space="preserve">
+    <value>Celkem</value>
+  </data>
+  <data name="trackMapping" xml:space="preserve">
+    <value>Mapování cesty</value>
+  </data>
+  <data name="transmissionOilTemperature" xml:space="preserve">
+    <value>Transmission Oil Temperature</value>
+  </data>
+  <data name="transmissionOilTemperatureHeader" xml:space="preserve">
+    <value>Transmission Oil Temperature Report</value>
+  </data>
+  <data name="travel" xml:space="preserve">
+    <value>Pojezd</value>
+  </data>
+  <data name="truck" xml:space="preserve">
+    <value>Nákladní vozidlo</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="ucid" xml:space="preserve">
+    <value>UCID</value>
+  </data>
+  <data name="invalidSessionID" xml:space="preserve">
+    <value>Nelze provést autentifikaci za použití poskytnutého SessionID. Prosím přihlašte se.</value>
+  </data>
+  <data name="dcToIRecFailedToCreateCSIBObject" xml:space="preserve">
+    <value>Nelze vytvořit objekt ICSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="unableToDetermineDataModel" xml:space="preserve">
+    <value>Nelte určit datový model.</value>
+  </data>
+  <data name="unableToDetermineMachine" xml:space="preserve">
+    <value>Nelze určit stroj.</value>
+  </data>
+  <data name="UnableToDetermineProjectID" xml:space="preserve">
+    <value>Nelze určit ID projektu</value>
+  </data>
+  <data name="dcToIRecFailedToGetZoneParams" xml:space="preserve">
+    <value>Nelze získat parametry oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneParams" xml:space="preserve">
+    <value>Nelze nastavit parametry oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="underCompacted" xml:space="preserve">
+    <value>Pod zhutněnou</value>
+  </data>
+  <data name="undercompactedLayer" xml:space="preserve">
+    <value>Pod zhutněnou vrstvou</value>
+  </data>
+  <data name="minLevel" xml:space="preserve">
+    <value>Méně než min. úroveň</value>
+  </data>
+  <data name="underPassTarget" xml:space="preserve">
+    <value>Pod cíl přejezdů</value>
+  </data>
+  <data name="UnderPressure" xml:space="preserve">
+    <value>Podtlak</value>
+  </data>
+  <data name="unexpectedError" xml:space="preserve">
+    <value>Neočekávaná chyba</value>
+  </data>
+  <data name="erroneousFuelExcluded" xml:space="preserve">
+    <value>Neočekávané spotřebované palivo nahlášené {0} bylo vyloučeno z této kalkulace.</value>
+  </data>
+  <data name="erroneousFuelOrIdleTimeExcluded" xml:space="preserve">
+    <value>Neočekávaná doba běhu naprázdno a/nebo spotřebované palivo nahlášené {0} vyloučeno z této kalkulace.</value>
+  </data>
+  <data name="erroneousIdleTimeExcluded" xml:space="preserve">
+    <value>Neočekávaná doba běhu naprázdno nahlášená {0} byla vyloučena z této kalkulace.</value>
+  </data>
+  <data name="erroneousFuelOrRuntimeExcluded" xml:space="preserve">
+    <value>Neočekávaná doba provozu a/nebo spotřebované palivo nahlášené {0} vyloučeno z této kalkulace.</value>
+  </data>
+  <data name="erroneousRuntimeExcluded" xml:space="preserve">
+    <value>Neočekávaná doba provozu nahlášená {0} byla vyloučena z této kalkulace.</value>
+  </data>
+  <data name="erroneousFuelOrWorkingTimeExcluded" xml:space="preserve">
+    <value>Neočekávaná doba práce a/nebo spotřebované palivo nahlášené {0} vyloučeno z této kalkulace.</value>
+  </data>
+  <data name="erroneousWorkingOrRuntimeExcluded" xml:space="preserve">
+    <value>Neočekávaná doba práce nebo provozu nahlášená {0} vyloučena z této kalkulace.</value>
+  </data>
+  <data name="erroneousWorkingTimeExcluded" xml:space="preserve">
+    <value>Neočekávaná doba práce nahlášená {0} byla vyloučena z této kalkulace.</value>
+  </data>
+  <data name="universalCustomer" xml:space="preserve">
+    <value>Univerzální zákazník</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Neznámý</value>
+  </data>
+  <data name="dcToIRecUnknownCSType" xml:space="preserve">
+    <value>Neznámý typ systému souřadnic (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnknownDatumModel" xml:space="preserve">
+    <value>Bylo nalezeno a ignorováno neznámé datum nastavení (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownError" xml:space="preserve">
+    <value>Došlo k neznámé chybě</value>
+  </data>
+  <data name="geolocationUnknownError" xml:space="preserve">
+    <value>Neznámá chyba během načítání lokality.</value>
+  </data>
+  <data name="dcToIRecUnknownGeoidModel" xml:space="preserve">
+    <value>Byl nalezen a ignorován neznámý model geoidu (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownMachine" xml:space="preserve">
+    <value>Neznámý stroj.</value>
+  </data>
+  <data name="dcToIRecUnknownProjType" xml:space="preserve">
+    <value>Neznámý typ projekce (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownTagfileError" xml:space="preserve">
+    <value>Neznámá chyba označeného souboru</value>
+  </data>
+  <data name="Unsubscribe" xml:space="preserve">
+    <value>Odhlásit</value>
+  </data>
+  <data name="UnsubscribeConfirmation" xml:space="preserve">
+    <value>Zrušit potvrzení</value>
+  </data>
+  <data name="unsupportedCSDFileType" xml:space="preserve">
+    <value>Nepodporovaný typ definičního souboru systému souřadnic</value>
+  </data>
+  <data name="dcToIRecUnsupportedDatum" xml:space="preserve">
+    <value>Nepodporované datum (DCToIRecord converter)</value>
+  </data>
+  <data name="unsupportedDisplayType" xml:space="preserve">
+    <value>Nepodporovaný typ displeje</value>
+  </data>
+  <data name="unsupportedFilterAttribute" xml:space="preserve">
+    <value>Nepodporovaná vlastnost filtru</value>
+  </data>
+  <data name="dcToIRecUnsupportedGeoid" xml:space="preserve">
+    <value>Nepodporovaný geoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnsupportedZoneOrientation" xml:space="preserve">
+    <value>Nepodporovaná orientace oblasti (DCToIRecord converter)</value>
+  </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>nastávající</value>
+  </data>
+  <data name="update" xml:space="preserve">
+    <value>Aktualizace</value>
+  </data>
+  <data name="updateMeter" xml:space="preserve">
+    <value>Aktualizace počítadla</value>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>Používání</value>
+  </data>
+  <data name="useCurrentSelection" xml:space="preserve">
+    <value>Použít současný výběr</value>
+  </data>
+  <data name="userAccountsReportHeader" xml:space="preserve">
+    <value>Zpráva o uživatelských účtech</value>
+  </data>
+  <data name="userActivity" xml:space="preserve">
+    <value>Aktivity uživatele</value>
+  </data>
+  <data name="userDefinedPolygon" xml:space="preserve">
+    <value>Polygon definovaný uživatelem</value>
+  </data>
+  <data name="geolocationPermissionDenied" xml:space="preserve">
+    <value>Uživateli se nepovoluje použití lokality.</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Uživatel neexistuje. Obraťte se prosím na administrátora.</value>
+  </data>
+  <data name="UserPrivilegesReport" xml:space="preserve">
+    <value>Hlášení o uživatelských výsadách</value>
+  </data>
+  <data name="userType" xml:space="preserve">
+    <value>Druh uživatele</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Uživatelské jméno</value>
+  </data>
+  <data name="invalidUsernameOrPassword" xml:space="preserve">
+    <value>Uživatelské jméno nebo heslo je neplatné, prosím zkuste to znovu.</value>
+  </data>
+  <data name="utilizationCalloutsExistInData" xml:space="preserve">
+    <value>V datech existují utilizační popisy obrázků</value>
+  </data>
+  <data name="utilizationHours" xml:space="preserve">
+    <value>Hodiny využití</value>
+  </data>
+  <data name="ValidMSSKey" xml:space="preserve">
+    <value>Platný MSS klíč</value>
+  </data>
+  <data name="dateRangeCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Hodnota obsahuje data, ke kterým došlo mimo zvoleného datumového rozsahu</value>
+  </data>
+  <data name="singleDayCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Hodnota obsahuje data, ke kterým došlo mimo specifikovaný den</value>
+  </data>
+  <data name="mustBeUnformattedInteger" xml:space="preserve">
+    <value>Hodnota musí představovat celé číslo, které neobsahuje čárky nebo desetinná místa.</value>
+  </data>
+  <data name="varies" xml:space="preserve">
+    <value>Různorodý</value>
+  </data>
+  <data name="emailVerified" xml:space="preserve">
+    <value>Ověření stavu</value>
+  </data>
+  <data name="verified" xml:space="preserve">
+    <value>Ověřeno</value>
+  </data>
+  <data name="vibeState" xml:space="preserve">
+    <value>Stav vibrací</value>
+  </data>
+  <data name="fuelLevelSummary" xml:space="preserve">
+    <value>Zobrazit stroje, které potřebují doplnit palivo</value>
+  </data>
+  <data name="faultCodesSummary" xml:space="preserve">
+    <value>Náhled na chybové kódy stroje</value>
+  </data>
+  <data name="utilizationHoursSummary" xml:space="preserve">
+    <value>Náhled na hodiny používání</value>
+  </data>
+  <data name="AlertsSummary" xml:space="preserve">
+    <value>Náhled na otevřené výstrahy stroje</value>
+  </data>
+  <data name="fuelBurnSummary" xml:space="preserve">
+    <value>Zobrazit aktuální spotřebu paliva pro stroje</value>
+  </data>
+  <data name="vin" xml:space="preserve">
+    <value>VIN</value>
+  </data>
+  <data name="VisionLinkOperationsReport" xml:space="preserve">
+    <value>VisionLink - Hlášení o provozu</value>
+  </data>
+  <data name="EngineIdleDailyAlertMessageBodySMS" xml:space="preserve">
+    <value>Účet upozornění VisionLink: {0} Denní počet hodin volnoběhu {1} za {2}/{3} v {4} hodinách provozu {5}</value>
+  </data>
+  <data name="SpeedingAlertMessageBodySMS" xml:space="preserve">
+    <value>Upozornění účtu VisionLink: {0} {1}, Max. rychlost: {2} mph pro {3}/{4}. Doba ukončení překročení rychlosti {5}</value>
+  </data>
+  <data name="SwitchAlertMessageBodySMS" xml:space="preserve">
+    <value>Upozornění účtu VisionLink: {4} detaily spínače pro {0}/{1} v {2} {3}</value>
+  </data>
+  <data name="AlertMessageBodySMS" xml:space="preserve">
+    <value>Výstraha VisionLink  Účet: {4}{0} pro {1}/{2} v {3} Stav motohodin: {5}</value>
+  </data>
+  <data name="SecurityStatusAlertMessageBodySMS" xml:space="preserve">
+    <value>Výstraha VisionLink  Účet: {4}{0} pro {1}/{2} v {3} Stav motohodin: {5}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Výstraha VisionLink účet: {5}{0} pro {1}/{2} na {3}{4} Stav motohodin: {6}</value>
+  </data>
+  <data name="FaultAlertMessageBodySMS" xml:space="preserve">
+    <value>Výstraha VisionLink  Účet: {5}{0} pro {1}/{2} v {3}{4} Závažnost : {7} Stav motohodin: {6}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Výstraha VisionLink  Účet: {5}{0} pro {1}/{2}. {3} k provedení za {4} hodiny. Stav motohodin: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Výstraha VisionLink Účet: {5}{0} pro {1}/{2}. {3} k provedení v {4} mílích.</value>
+  </data>
+  <data name="AlertSubject" xml:space="preserve">
+    <value>Výstaha VisionLink  {0} pro ID: {1} S/N: {2}</value>
+  </data>
+  <data name="ApiUserEmailSubject" xml:space="preserve">
+    <value>Pomoc s přístupem do VisionLink API</value>
+  </data>
+  <data name="visionLinkApiDocumentation" xml:space="preserve">
+    <value>VisionLink API dokumentace</value>
+  </data>
+  <data name="visionLinkApiTopics" xml:space="preserve">
+    <value>VisionLink témata API</value>
+  </data>
+  <data name="visionLinkApiTopicsRequestAccess" xml:space="preserve">
+    <value>Témata VisionLinkAPI: Požadavek přístupu</value>
+  </data>
+  <data name="visionLinkAPIDatafeedDocumentation" xml:space="preserve">
+    <value>VisionLink API: dokumenmtace Datafeed</value>
+  </data>
+  <data name="VLApp" xml:space="preserve">
+    <value>Aplikace VisionLink</value>
+  </data>
+  <data name="FluidAnalysisAlertSubject" xml:space="preserve">
+    <value>Výsledky analýzy teklutin VisionLink pro ID: {0} S/N: {1}</value>
+  </data>
+  <data name="locationUnknownFeatureDisabled" xml:space="preserve">
+    <value>VisionLink neurčil vaši polohu. Tato funkce byla deaktivována. Zkuste to prosím později znovu.</value>
+  </data>
+  <data name="SavTerminationSubject" xml:space="preserve">
+    <value>Oznámení visionLink - Sdílený níhled na stroje byl ukončený</value>
+  </data>
+  <data name="ForgotPasswordEmailSubject" xml:space="preserve">
+    <value>Asistence pro heslo VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopicsDescription" xml:space="preserve">
+    <value>VisionLink Ready API poskytují způsob, jak používat data spojená s VisionLink ve formátu  datového kanálu , který umožňuje snadný přístup za použití nástrojů třetích stran. VL-Ready API typicky používají prodejci, zákazníci a ti, kteří chtějí integrovat data spojená s  VisionLinkdo jejich ERP, účtovnictví nebo dalších systémů, používaných třetími stranami. Pro více informací o VL Ready API se prosím obraťte na &lt;a href="/Docs/{0}/VisionLink VL-Ready User Guide.pdf" class="contentLink" target="_blank"&gt;VL Ready User Guide&lt;/a&gt;.</value>
+  </data>
+  <data name="SavCreationSubject" xml:space="preserve">
+    <value>Sdílený náhled na stroje ve VisionLink byl vytvořen  {0}</value>
+  </data>
+  <data name="SavNotificationSubject" xml:space="preserve">
+    <value>Oznámení o ukončení době platnosti Sdíleného náhledu na stroje ve VisionLink</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Výstraha monitorování pneumatik VisionLink  Účet: {0} {1}/{2} v {3} Stav motohodin: {4}</value>
+  </data>
+  <data name="UserAccountReportTitle" xml:space="preserve">
+    <value>Zpráva uživatelského účtu VisionLink</value>
+  </data>
+  <data name="UserAccountsReport" xml:space="preserve">
+    <value>VisionLink User Account Report</value>
+  </data>
+  <data name="VerifyUserEmailSubject" xml:space="preserve">
+    <value>Ověření uživatelského účtu VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopics" xml:space="preserve">
+    <value>Témata VL Ready API</value>
+  </data>
+  <data name="vlmobileClient" xml:space="preserve">
+    <value>VLMobile klient</value>
+  </data>
+  <data name="volume" xml:space="preserve">
+    <value>Množství</value>
+  </data>
+  <data name="VolumesAndCompaction" xml:space="preserve">
+    <value>Objemy a zhutňování</value>
+  </data>
+  <data name="warningTargetDataSometimesAbsent" xml:space="preserve">
+    <value>Výstraha! V některých případech chybí cílové údaje.</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Týdně</value>
+  </data>
+  <data name="firstTimeLogin" xml:space="preserve">
+    <value>Vítejte na VisionLink. Přihlašte se prosím do www.myvisionlink.com, abyste mohli změnit své heslo.</value>
+  </data>
+  <data name="NewAccountEmailSubject" xml:space="preserve">
+    <value>Vítejte ve VisionLink. Zaregistrujte si prosím svůj účet.</value>
+  </data>
+  <data name="wheelTracking" xml:space="preserve">
+    <value>Vyznačování kola</value>
+  </data>
+  <data name="withinLevels" xml:space="preserve">
+    <value>V rámci úrovní</value>
+  </data>
+  <data name="workInProgress" xml:space="preserve">
+    <value>Pracuje se</value>
+  </data>
+  <data name="working" xml:space="preserve">
+    <value>Pracovat</value>
+  </data>
+  <data name="workingFuelBurned" xml:space="preserve">
+    <value>Palivo spálené při práci</value>
+  </data>
+  <data name="workingHours" xml:space="preserve">
+    <value>Pracovní hodiny</value>
+  </data>
+  <data name="workingStatus" xml:space="preserve">
+    <value>Pracovní stav</value>
+  </data>
+  <data name="workingTime" xml:space="preserve">
+    <value>Pracovní doba</value>
+  </data>
+  <data name="workingUtil" xml:space="preserve">
+    <value>Pracovní využití</value>
+  </data>
+  <data name="AlreadyUnsubscribe" xml:space="preserve">
+    <value>Již jste se odhlásili z oběru této zprávy.</value>
+  </data>
+  <data name="UnsubscribeConfirmationMessage" xml:space="preserve">
+    <value>Požádali jste o zrušení odběru plánovaného reportu '{0}'. Pro potvrzení klikněte na 'OK'. Neprovedete-li tento úkon, vaše e-mailová adresa nebude odhlášena z odběru.</value>
+  </data>
+  <data name="accountLocked" xml:space="preserve">
+    <value>Váš účet byl zablokován. Zkuste to prosím za 30 minut znovu.</value>
+  </data>
+  <data name="invalidUser002" xml:space="preserve">
+    <value>Váš účet byl uzamčený. Zkuste to znovu za 30 minut.</value>
+  </data>
+  <data name="UnsubscribeSuccessMessage" xml:space="preserve">
+    <value>Vaše e-mailová zpráva byla úspěšně odhlášena z '{0}'.</value>
+  </data>
+  <data name="passwordExpired" xml:space="preserve">
+    <value>Vaše heslo je neplatné. Přihlaste se prosím do  www.myvisionlink.com, abyste mohli změnit své heslo.</value>
+  </data>
+  <data name="selectionLimitReachedMessage" xml:space="preserve">
+    <value>Váš výběr přesáhl limit povolený systémem. Výběr je omezen na {0} strojů.</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zóna</value>
+  </data>
+  <data name="zoneExclusive" xml:space="preserve">
+    <value>Exkluzivní zóna</value>
+  </data>
+  <data name="zoneInclusive" xml:space="preserve">
+    <value>Inkluzivní zóna</value>
+  </data>
+  <data name="exceedsMaximumValue" xml:space="preserve">
+    <value>{0} přesahuje maximální hodnotu</value>
+  </data>
+  <data name="requiredFieldWithName" xml:space="preserve">
+    <value>{0} je požadované políčko.</value>
+  </data>
+  <data name="mustBeNumber" xml:space="preserve">
+    <value>{0} musí být číslice.</value>
+  </data>
+  <data name="mustBeValidDate" xml:space="preserve">
+    <value>{0} musí být platné datum.</value>
+  </data>
+  <data name="mustBeBetweenXandY" xml:space="preserve">
+    <value>{0} musí být mezi {1} a {2}.</value>
+  </data>
+  <data name="mustBeLessThanXCharacters" xml:space="preserve">
+    <value>{0} musí být méně než {1} znaků.</value>
+  </data>
+  <data name="mustNotBeInTheFuture" xml:space="preserve">
+    <value>{0} nesmí být v budoucnu.</value>
+  </data>
+  <data name="ServiceDueAlertDescription" xml:space="preserve">
+    <value>{0} Servis splatný</value>
+  </data>
+</root>

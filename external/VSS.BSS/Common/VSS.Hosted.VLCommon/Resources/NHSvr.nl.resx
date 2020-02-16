@@ -1,0 +1,3160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PowerModeAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm account: {0} {1} Ingesteld op: {2} voor {3}/{4} op {5}</value>
+  </data>
+  <data name="2DProjectMonitoring" xml:space="preserve">
+    <value>2D Project Monitoring</value>
+  </data>
+  <data name="3DProjectMonitoring" xml:space="preserve">
+    <value>3D Project Monitoring</value>
+  </data>
+  <data name="deviceTypeTHREEPDATA" xml:space="preserve">
+    <value>3PDATA</value>
+  </data>
+  <data name="deviceTypeMTS523" xml:space="preserve">
+    <value>523</value>
+  </data>
+  <data name="zipDescription" xml:space="preserve">
+    <value>&lt;p&gt;These zip files contain example codes for the integration of VisionLink API. By default, the examples in these zip files invoke the production service. Please read the README.txt file to understand how to build the projects.&lt;/p&gt;&lt;p&gt;Note: These examples may contain VirtualSite Solutions' unpublished proprietary information which may constitute a trade secret and/or be confidential. These Sample codes are meant to be used purely for educational purposes assisting with usage and integration of VisionLink APIs and may not be copied or disclosed to others. Copyright notice is precautionary only, and does not imply publication.&lt;/p&gt;</value>
+  </data>
+  <data name="apiSiteIntroduction" xml:space="preserve">
+    <value>&lt;p&gt;Welcome to VisionLink API documentation. In this page you will find all the information you need to get started. You will also find a more detailed list of all the available services, sample codes and examples.&lt;/p&gt;&lt;p&gt;If you are not a programmer and just need an overview of the VisionLink API, please read the &lt;a href="/Docs/{0}/Overview.pdf" class="contentLink" target="_blank"&gt;Overview Document&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Read the &lt;a href="/Docs/{0}/ProgrammersReference.pdf" target="_blank" class="contentLink"&gt;Programmer’s Reference&lt;/a&gt; to learn more on how to use the API service. It is important that the VisionLink API users review this reference closely as it contains useful information that will expedite the integration process.&lt;/p&gt;&lt;p&gt; The first step in accessing the VisionLink API service is to acquire an API queue assignment as well as a non-expiring VisionLink API user account id/password. You can do that by contacting your account Administrator, requesting your choice of API topics, and following instructions in the Welcome email to set up your API password.&lt;/p&gt;</value>
+  </data>
+  <data name="diagnosticsDescription" xml:space="preserve">
+    <value>Een diagnose is een proces in een elektronische regelmodule (ECM) voor het detecteren, weergeven en/of opslaan van abnormale machine/motor informatie. Elke diagnose wordt weergegeven door vijf data elementen: het diagnostische niveau, het module ID (MID) dat de diagnose rapporteert, de diagnostische identificatie (of component identificatie, CID), de foutmodus indicator (FMI) en het diagnose tijdstempel.</value>
+  </data>
+  <data name="NewAccountSupportEmailBody" xml:space="preserve">
+    <value>Er is een nieuw VisionLink account {0} aangemaakt. &lt;BR&gt;Account gegevens: &lt;BR&gt;Primair contact: {1}&lt;BR&gt;  E-mail: {2}&lt;BR&gt; BSS ID: {3} &lt;BR&gt;Koppeling voor activering: {4}</value>
+  </data>
+  <data name="notEnoughPolygonPoints" xml:space="preserve">
+    <value>Een polygoon grens moet ten minste 3 punten bevatten.</value>
+  </data>
+  <data name="SavCreationEmailHeader" xml:space="preserve">
+    <value>Er is een gedeelde asset weergave aangemaakt om de volgende assets in uw VisionLink account te bekijken. Neem voor meer informatie contact op met {0} van {1}</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>Info over</value>
+  </data>
+  <data name="account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="SpeedingAlertEmailBody" xml:space="preserve">
+    <value>Naam account: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Snelheidslimiet asset: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Maximum snelheid: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Stoptijd te snel rijden: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Duur: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {12}</value>
+  </data>
+  <data name="EngineIdleDailyAlertEmailBody" xml:space="preserve">
+    <value>Naam account: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Vanaf datum: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Tot datum: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Duur: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Limiet: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {14}</value>
+  </data>
+  <data name="PowerModeAlertEmailBody" xml:space="preserve">
+    <value>Account naam: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset merk: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset model: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm type: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Power modus ingesteld op: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Duur: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {11}</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Beschrijving ECM: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;As/band nr.: {8}/{9}&lt;BR&gt;&amp;#xD;&amp;#xA;Bandenspanning (psi): {13}&lt;BR&gt;&amp;#xD;&amp;#xA; Bandentemperatuur (&amp;#xb0;C): {14}&lt;BR&gt;&amp;#xD;&amp;#xA;Sensor status: {15}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {16}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} verwacht om {9} uur.&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsuren: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} verwacht op {9} kilometer.&lt;BR&gt;&amp;#xD;&amp;#xA;Odometer: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {6}</value>
+  </data>
+  <data name="ZoneAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie:{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {9}</value>
+  </data>
+  <data name="RadioMachineSecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Naam account: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Startmodus: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {9}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {9}</value>
+  </data>
+  <data name="FluidAnalysisAlertBody" xml:space="preserve">
+    <value>Account naam: {7}&lt;BR&gt; Resultaat prioriteit: {0}&lt;BR&gt; Asset ID: {1}&lt;BR&gt; Snr.: {2}&lt;BR&gt; Merk asset: {8}&lt;BR&gt; Model asset: {9}&lt;BR&gt; Type alarm: {3}&lt;BR&gt; Alarm titel: {4}&lt;BR&gt; Labnr. en Bron: {5}&lt;BR&gt; Staaltje Uitgevoerde Datum: {6}</value>
+  </data>
+  <data name="AlertMessageBody" xml:space="preserve">
+    <value>Naam account: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {10}</value>
+  </data>
+  <data name="SecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Naam account: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Startmodus: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Beveiliging activering: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {10}</value>
+  </data>
+  <data name="FuelLossAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Verandering brandstofpeil: -{7}%&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {11}</value>
+  </data>
+  <data name="LoadDistanceAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Lading afstand: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {11}</value>
+  </data>
+  <data name="FaultAlertMessageBody" xml:space="preserve">
+    <value>Naam account: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Merk asset: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Model asset: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Type alarm: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Foutcode: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Beschrijving fout: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Zwaarte: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Bedrijfsurenteller: {13}</value>
+  </data>
+  <data name="SwitchAlertMessageBody" xml:space="preserve">
+    <value>Account naam: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Snr.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset merk: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Asset model: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm type: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Alarm titel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Beschrijving schakelaar: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Schakelstand: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Locatie: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {8}</value>
+  </data>
+  <data name="accountType" xml:space="preserve">
+    <value>Account type</value>
+  </data>
+  <data name="FluidAnalysisAlertSMS" xml:space="preserve">
+    <value>Account: {3} Resultaat prioriteit: {0} - Labnr.: {1} - Bron: {2}</value>
+  </data>
+  <data name="acreAbbreviation" xml:space="preserve">
+    <value>Acre</value>
+  </data>
+  <data name="FluidActionRequiredPriority" xml:space="preserve">
+    <value>Benodigde actie</value>
+  </data>
+  <data name="actionTaken" xml:space="preserve">
+    <value>Uitgevoerde actie</value>
+  </data>
+  <data name="actualEndDateTime" xml:space="preserve">
+    <value>Werkelijke einddatum</value>
+  </data>
+  <data name="actualStartDateTime" xml:space="preserve">
+    <value>Werkelijke begindatum</value>
+  </data>
+  <data name="aemp" xml:space="preserve">
+    <value>AEMP</value>
+  </data>
+  <data name="aempRequestAccess" xml:space="preserve">
+    <value>AEMP: toegang aanvragen</value>
+  </data>
+  <data name="AlertCounts" xml:space="preserve">
+    <value>Alarm aantallen</value>
+  </data>
+  <data name="AlertDetails" xml:space="preserve">
+    <value>Alarm details</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Type alarm</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>Alarmen</value>
+  </data>
+  <data name="alignment" xml:space="preserve">
+    <value>Alignement</value>
+  </data>
+  <data name="AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="eventDataDescription" xml:space="preserve">
+    <value>Een gebeurtenis verwijst naar de detectie van een vooraf gedefinieerd of buiten-bereik of abnormale toestand in de machine, motor of het systeem dat wordt gecontroleerd. Elke gebeurtenis wordt weergegeven door vier data elementen: het gebeurtenis niveau, de module ID (MID) die de gebeurtenis rapporteert, de gebeurtenis identificatie en het gebeurtenis tijdstempel.</value>
+  </data>
+  <data name="apiDocumentation" xml:space="preserve">
+    <value>API documentatie</value>
+  </data>
+  <data name="appliedFilter" xml:space="preserve">
+    <value>Toegepast filter</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Oppervlakte</value>
+  </data>
+  <data name="asset" xml:space="preserve">
+    <value>Asset</value>
+  </data>
+  <data name="ExclusionZoneAlertDescription" xml:space="preserve">
+    <value>Asset ging {0} binnen</value>
+  </data>
+  <data name="SiteEntryAlertDescription" xml:space="preserve">
+    <value>Asset ging {0} binnen</value>
+  </data>
+  <data name="InclusionZoneAlertDescription" xml:space="preserve">
+    <value>Asset verliet {0}</value>
+  </data>
+  <data name="SiteExitAlertDescription" xml:space="preserve">
+    <value>Asset verliet {0}</value>
+  </data>
+  <data name="assetFuelBurn" xml:space="preserve">
+    <value>Asset brandstofverbruik</value>
+  </data>
+  <data name="assetFuelReport" xml:space="preserve">
+    <value>Asset brandstof rapport</value>
+  </data>
+  <data name="AssetFuelSingleAsset" xml:space="preserve">
+    <value>Asset brandstof één asset rapport</value>
+  </data>
+  <data name="NotReportingAlertDescription" xml:space="preserve">
+    <value>Asset heeft niet gerapporteerd sinds {0}</value>
+  </data>
+  <data name="AssetHealth" xml:space="preserve">
+    <value>Asset conditie rapport</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Asset historie rapport</value>
+  </data>
+  <data name="assetHistoryReport" xml:space="preserve">
+    <value>Asset historie rapport</value>
+  </data>
+  <data name="assetID" xml:space="preserve">
+    <value>Asset ID</value>
+  </data>
+  <data name="assetIdSnVin" xml:space="preserve">
+    <value>Asset ID/serienr./VIN</value>
+  </data>
+  <data name="stateMileageReportTitle" xml:space="preserve">
+    <value>Asset Mileage per staat / provincie rapport</value>
+  </data>
+  <data name="AssetOff" xml:space="preserve">
+    <value>Asset uit</value>
+  </data>
+  <data name="AssetOn" xml:space="preserve">
+    <value>Asset aan</value>
+  </data>
+  <data name="assetOperation" xml:space="preserve">
+    <value>Asset gebruik</value>
+  </data>
+  <data name="AssetSecurityLastActivityReport" xml:space="preserve">
+    <value>Asset beveiliging - Laatste activiteit rapport</value>
+  </data>
+  <data name="AssetSecurityUserActivityReport" xml:space="preserve">
+    <value>Asset beveiliging - Gebruikersactiviteit rapport</value>
+  </data>
+  <data name="AssetSpeedingReport" xml:space="preserve">
+    <value>Asset te snel rijden rapport</value>
+  </data>
+  <data name="assetType" xml:space="preserve">
+    <value>Asset type</value>
+  </data>
+  <data name="assetUsageReport" xml:space="preserve">
+    <value>Asset gebruik rapport</value>
+  </data>
+  <data name="AssetUsageSingleAsset" xml:space="preserve">
+    <value>Asset gebruik één asset rapport</value>
+  </data>
+  <data name="AssetUsageSummaryReport" xml:space="preserve">
+    <value>Asset gebruik samenvatting rapport</value>
+  </data>
+  <data name="assetUtilization" xml:space="preserve">
+    <value>Asset gebruik</value>
+  </data>
+  <data name="assetUtilizationReport" xml:space="preserve">
+    <value>Asset gebruik rapport</value>
+  </data>
+  <data name="assets" xml:space="preserve">
+    <value>Assets</value>
+  </data>
+  <data name="attachmentUsage" xml:space="preserve">
+    <value>Werktuig gebruik</value>
+  </data>
+  <data name="autoMapReset" xml:space="preserve">
+    <value>Auto + kaart reset</value>
+  </data>
+  <data name="autoIdle" xml:space="preserve">
+    <value>Auto stationair</value>
+  </data>
+  <data name="automatic" xml:space="preserve">
+    <value>Automatisch</value>
+  </data>
+  <data name="average" xml:space="preserve">
+    <value>Gemiddeld</value>
+  </data>
+  <data name="averageFuelBurnRateForAssetsInReport" xml:space="preserve">
+    <value>Gemiddeld brandstofverbruik voor assets in rapport</value>
+  </data>
+  <data name="averagedSitetoSwitch" xml:space="preserve">
+    <value>Gemiddeld Site tot Schakelaar</value>
+  </data>
+  <data name="avg" xml:space="preserve">
+    <value>Gem</value>
+  </data>
+  <data name="AwaitingFirstReport" xml:space="preserve">
+    <value>Wacht op eerste rapport</value>
+  </data>
+  <data name="axleTireNo" xml:space="preserve">
+    <value>As/band nr.</value>
+  </data>
+  <data name="azimuth" xml:space="preserve">
+    <value>Azimut</value>
+  </data>
+  <data name="BackFilledLoadCount" xml:space="preserve">
+    <value>Nagevulde ladingen</value>
+  </data>
+  <data name="backhoe" xml:space="preserve">
+    <value>Grijperkraan</value>
+  </data>
+  <data name="BackhoeLoaderOperation" xml:space="preserve">
+    <value>Graaf-/laadcombinatie gebruik rapport</value>
+  </data>
+  <data name="backhoeOperation" xml:space="preserve">
+    <value>Grijperkraan gebruik</value>
+  </data>
+  <data name="bar" xml:space="preserve">
+    <value>bar</value>
+  </data>
+  <data name="baseSurface" xml:space="preserve">
+    <value>Basis oppervlak</value>
+  </data>
+  <data name="bladeOnGround" xml:space="preserve">
+    <value>Blad op de grond</value>
+  </data>
+  <data name="boostPressure" xml:space="preserve">
+    <value>Boost Pressure</value>
+  </data>
+  <data name="boostPressureHeader" xml:space="preserve">
+    <value>Boost Pressure Report</value>
+  </data>
+  <data name="boostTemperature" xml:space="preserve">
+    <value>Boost Temperature</value>
+  </data>
+  <data name="boostTemperatureHeader" xml:space="preserve">
+    <value>Boost Temperature Report</value>
+  </data>
+  <data name="bottomCyclesPerHour" xml:space="preserve">
+    <value>Onderste {0} - cycli/uur (totaal)</value>
+  </data>
+  <data name="bottomPayloadPerCycle" xml:space="preserve">
+    <value>Onderste {0} - vracht/cyclus (totaal)</value>
+  </data>
+  <data name="bottomPayloadPerHour" xml:space="preserve">
+    <value>Onderste {0} - vracht/uur (totaal)</value>
+  </data>
+  <data name="geolocationNotSupported" xml:space="preserve">
+    <value>Browser levert geen locatie.</value>
+  </data>
+  <data name="bulking" xml:space="preserve">
+    <value>Bulking</value>
+  </data>
+  <data name="burnRate" xml:space="preserve">
+    <value>Verbruik</value>
+  </data>
+  <data name="celsiusAbbrev" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="catDataFeeds" xml:space="preserve">
+    <value>CAT Data feeds</value>
+  </data>
+  <data name="catDataTopicsRequestAccess" xml:space="preserve">
+    <value>CAT Data onderwerpen: verzoek om toegang</value>
+  </data>
+  <data name="centreLine" xml:space="preserve">
+    <value>Middellijn</value>
+  </data>
+  <data name="catDataFeedFormDescription" xml:space="preserve">
+    <value>Vink zo veel API onderwerpen aan als u nodig hebt en klik op "E-mail aanvraag". Binnen een week ontvangt u een e-mail waarin u alle informatie over de gewenste onderwerpen vindt.</value>
+  </data>
+  <data name="claim" xml:space="preserve">
+    <value>Claim</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Klik hier</value>
+  </data>
+  <data name="clientBuildNumber" xml:space="preserve">
+    <value>Client build-nummer</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="cmv" xml:space="preserve">
+    <value>CMV</value>
+  </data>
+  <data name="cmvChange" xml:space="preserve">
+    <value>CMV verandering</value>
+  </data>
+  <data name="cmvChangeReport" xml:space="preserve">
+    <value>CMV verandering rapport</value>
+  </data>
+  <data name="cmvSummary" xml:space="preserve">
+    <value>CMV samenvatting</value>
+  </data>
+  <data name="cmvSummaryReport" xml:space="preserve">
+    <value>CMV samenvatting rapport</value>
+  </data>
+  <data name="coarse" xml:space="preserve">
+    <value>Grof</value>
+  </data>
+  <data name="code" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="codeSamples" xml:space="preserve">
+    <value>Code voorbeelden</value>
+  </data>
+  <data name="compacted" xml:space="preserve">
+    <value>Verdicht</value>
+  </data>
+  <data name="compaction" xml:space="preserve">
+    <value>Verdichting</value>
+  </data>
+  <data name="company" xml:space="preserve">
+    <value>Bedrijf</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Voltooid</value>
+  </data>
+  <data name="completeLayer" xml:space="preserve">
+    <value>Layer voltooien</value>
+  </data>
+  <data name="completeService" xml:space="preserve">
+    <value>Voltooide service</value>
+  </data>
+  <data name="Configured" xml:space="preserve">
+    <value>Geconfigureerd</value>
+  </data>
+  <data name="confirmed" xml:space="preserve">
+    <value>Bevestigd</value>
+  </data>
+  <data name="couldNotConvertDataModelBoundaryToGrid" xml:space="preserve">
+    <value>Coördinatensysteem fout bij converteren van datamodel grenspunten.</value>
+  </data>
+  <data name="emptyCoordinateSystem" xml:space="preserve">
+    <value>Coördinatensysteem is leeg</value>
+  </data>
+  <data name="dcToIRecIncompleteCS" xml:space="preserve">
+    <value>Coördinatensysteem is onvolledig (niet volledig gespecificeerd) (DCToIRecord converter)</value>
+  </data>
+  <data name="virtualSiteSolutionsAllRightsReserved" xml:space="preserve">
+    <value>Copyright 2014 VirtualSite Solutions LLC. Alle rechten voorbehouden.</value>
+  </data>
+  <data name="couldNotConvertCSDFile" xml:space="preserve">
+    <value>Coördinatensysteem definitiebestand kon niet worden geconverteerd</value>
+  </data>
+  <data name="coverage" xml:space="preserve">
+    <value>Bewerking</value>
+  </data>
+  <data name="createdUser" xml:space="preserve">
+    <value>Aangemaakt door</value>
+  </data>
+  <data name="cubicYard" xml:space="preserve">
+    <value>Cu Yd</value>
+  </data>
+  <data name="currentFilterSettings" xml:space="preserve">
+    <value>Huidige filter instellingen</value>
+  </data>
+  <data name="dcToIRecScaleOnlyProj" xml:space="preserve">
+    <value>Huidige projectie moet geschaald zijn (DCToIRecord converter)</value>
+  </data>
+  <data name="customerInfo" xml:space="preserve">
+    <value>Klant info</value>
+  </data>
+  <data name="customerName" xml:space="preserve">
+    <value>Naam klant</value>
+  </data>
+  <data name="customerNumber" xml:space="preserve">
+    <value>Klantnummer</value>
+  </data>
+  <data name="cut" xml:space="preserve">
+    <value>Uitgraven</value>
+  </data>
+  <data name="cutFillReport" xml:space="preserve">
+    <value>Uitgraven ophogen rapport</value>
+  </data>
+  <data name="cutfill" xml:space="preserve">
+    <value>Uitgraven/ophogen</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Cyclustijd rapport</value>
+  </data>
+  <data name="cycleTimeReport" xml:space="preserve">
+    <value>Cyclustijd rapport</value>
+  </data>
+  <data name="cycles" xml:space="preserve">
+    <value>Cycli</value>
+  </data>
+  <data name="cyclesPerHour" xml:space="preserve">
+    <value>Cycli/uur</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Dagelijks</value>
+  </data>
+  <data name="dailyIdleMessage" xml:space="preserve">
+    <value>Dagelijkse stationair tijd langer dan {0} {1}</value>
+  </data>
+  <data name="dataOccurredOutsideOfDateRange" xml:space="preserve">
+    <value>Data vond plaats buiten datumbereik</value>
+  </data>
+  <data name="dataOccurredOutsideOfDay" xml:space="preserve">
+    <value>Data vond plaats buiten dag</value>
+  </data>
+  <data name="dataType" xml:space="preserve">
+    <value>Type data</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Datum aangemaakt</value>
+  </data>
+  <data name="dateLastReported" xml:space="preserve">
+    <value>Datum laatst gerapporteerd</value>
+  </data>
+  <data name="dateModuleAccessProvided" xml:space="preserve">
+    <value>Datum module toegang gegeven</value>
+  </data>
+  <data name="dateRange" xml:space="preserve">
+    <value>Datumbereik</value>
+  </data>
+  <data name="dateTime" xml:space="preserve">
+    <value>Datum/tijd</value>
+  </data>
+  <data name="dcn" xml:space="preserve">
+    <value>DCN</value>
+  </data>
+  <data name="dealerCode" xml:space="preserve">
+    <value>Dealer code</value>
+  </data>
+  <data name="dealerName" xml:space="preserve">
+    <value>Naam dealer</value>
+  </data>
+  <data name="UserAccountsReportEmailBody" xml:space="preserve">
+    <value>Beste VisionLink beheerder,&lt;br/&gt;&lt;br/&gt;Om u te helpen bij het beheren van uw account, hebben wij een rapport van al uw VisionLink gebruikers voor u vervaardigd, zodat u uw account kunt bekijken en zo nodig aanpassen. Log in bij VisionLink om evt. wijzigingen in gebruikersaccounts aan te brengen.&lt;br/&gt;&lt;br/&gt; Klik op de onderstaande koppeling om het rapport te downloaden.&lt;br/&gt;  {0} &lt;br/&gt;&lt;br/&gt;  Met vriendelijke groet,&lt;br/&gt;&lt;br/&gt;het VisionLink team</value>
+  </data>
+  <data name="ApiUserEmailBody" xml:space="preserve">
+    <value>Beste {0} {1},&lt;br&gt;&lt;br&gt; Welkom bij VisionLink® API services. Klik op onderstaande koppeling om uw wachtwoord voor de API services in te stellen. Deze koppeling blijft 30 dagen actief. Als de onderstaande koppeling niet werkt, kopieert en plakt u hem in een nieuw browser venster.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;br&gt;Uw VisionLink API gebruikersnaam is {3}.&lt;br&gt;U hebt toegang tot de volgende API services:&lt;br&gt;  {4} &lt;br&gt;&lt;br&gt;NB: als u geen nieuw API gebruikersaccount of updates voor uw bestaande account hebt aangevraagd, neemt u contact op met uw Beheerder.</value>
+  </data>
+  <data name="VerifyUserEmailBody" xml:space="preserve">
+    <value>Beste {0} {1},&lt;br&gt;&lt;br&gt; Welkom bij VisionLink®. Klik op onderstaande koppeling om uw nieuwe of ge-update gebruikersaccount te verifiëren. Deze koppeling blijft 30 dagen actief. Als onderstaande koppeling niet werkt, kopieert u de koppeling en plakt u hem in een nieuw browser venster.&lt;br&gt;&lt;br&gt; {2}&lt;br&gt;&lt;/br&gt;Uw VisionLink gebruikersnaam is {3} en uw accountnaam is {4}. Gebruikers die VisionLink de eerste keer gebruiken, worden bij verificatie gevraagd hun wachtwoord in te stellen.&lt;br&gt;&lt;br&gt; NB: als u geen nieuw gebruikersaccount of updates voor uw bestaande account hebt aangevraagd, neemt u contact op met uw Beheerder.</value>
+  </data>
+  <data name="engineStartStopDescription" xml:space="preserve">
+    <value>Levert een lijst van start- en stoptijden van de machine en de MSS code die de bestuurder identificeert, dagelijks verzonden op rapport starttijd of op andere tijden als de boordbuffer zijn capaciteit heeft bereikt.</value>
+  </data>
+  <data name="loadCountsDescription" xml:space="preserve">
+    <value>Levert alle relevante informatie over ladingen gebaseerd op Lading en cyclus monitoring. Bevat lengte-/breedtegraad, geofence grenzen, datum en tijd, asset ID en afgelegde afstand voor laden en lossen gebeurtenissen.</value>
+  </data>
+  <data name="digitalSwitchStatusDescription" xml:space="preserve">
+    <value>Levert alle relevante status informatie over de stroomtoevoer modus en digitale schakelaar in-/uitgeschakeld van de apparaat module. Communiceert de specifieke status informatie van de ECM. Als een van de bytes die het definieert op "Ja" is gezet, geeft dit aan dat een bepaalde toestand is opgetreden sinds de laatste melding van deze status byte in het statusbericht of SMU rapport.</value>
+  </data>
+  <data name="fenceAlertDescription" xml:space="preserve">
+    <value>Levert alle relevante status informatie over de tijdgebaseerde product bewakingsactiviteit en alarmen gegenereerd door de apparaat module. Communiceert de specifieke status informatie van de ECM. Als een van de bytes die het definieert op "Ja" is gezet, geeft dit aan dat een bepaalde toestand is opgetreden sinds de laatste melding van deze status byte in het statusbericht of SMU rapport.</value>
+  </data>
+  <data name="fuelDescription" xml:space="preserve">
+    <value>Levert brandstofverbruik van de apparaat module per verbruik of niveau. De brandstof informatie wordt geleverd als onderdeel van een statusbericht dat brandstofverbruik en/of percentage resterende brandstof van het voertuig bevat.</value>
+  </data>
+  <data name="engineParametersDescription" xml:space="preserve">
+    <value>Levert belangrijke motor informatie zoals stationair tijd en stationair brandstofverbruik voor een apparaat module.</value>
+  </data>
+  <data name="smuLocationDescription" xml:space="preserve">
+    <value>Levert het gebruik van de machine in uren sinds het apparaat ingeschakeld is of het laatst is gereset naast de lengte- en breedtegraad van de machine waarop het apparaat gemonteerd is. De data om het machine gebruik te bepalen, wordt door de ECM gegenereerd. De ECM registreert de tijd die de motor draait en levert de lengte- en breedtegraad van de machine waarop het apparaat gemonteerd is</value>
+  </data>
+  <data name="derate" xml:space="preserve">
+    <value>Opheffen</value>
+  </data>
+  <data name="Derated" xml:space="preserve">
+    <value>Opgeheven</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="design" xml:space="preserve">
+    <value>Ontwerp</value>
+  </data>
+  <data name="desiredApiTopic" xml:space="preserve">
+    <value>Gewenst API onderwerp</value>
+  </data>
+  <data name="desiredDataFeed" xml:space="preserve">
+    <value>Gewenste data feed</value>
+  </data>
+  <data name="destination" xml:space="preserve">
+    <value>Bestemming</value>
+  </data>
+  <data name="detailedAssetCycleTimeReport" xml:space="preserve">
+    <value>Gedetailleerd asset cyclustijd rapport</value>
+  </data>
+  <data name="detailedAssetLoadCountReport" xml:space="preserve">
+    <value>Gedetailleerd asset ladingen rapport</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Apparaat</value>
+  </data>
+  <data name="deviceID" xml:space="preserve">
+    <value>Apparaat ID</value>
+  </data>
+  <data name="deviceType" xml:space="preserve">
+    <value>Type apparaat</value>
+  </data>
+  <data name="diagnostic" xml:space="preserve">
+    <value>Diagnostisch</value>
+  </data>
+  <data name="DiagnosticEvents" xml:space="preserve">
+    <value>Diagnostische fout</value>
+  </data>
+  <data name="diagnosticsData" xml:space="preserve">
+    <value>Diagnostische data</value>
+  </data>
+  <data name="digitalSwitchStatus" xml:space="preserve">
+    <value>Status digitale schakelaar</value>
+  </data>
+  <data name="direction" xml:space="preserve">
+    <value>Richting</value>
+  </data>
+  <data name="directions" xml:space="preserve">
+    <value>Routebeschrijving</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Uitschakelen</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Uitgeschakeld</value>
+  </data>
+  <data name="distanceCategory" xml:space="preserve">
+    <value>Afstand categorie</value>
+  </data>
+  <data name="distanceDriven" xml:space="preserve">
+    <value>Afstand gereden</value>
+  </data>
+  <data name="distanceTravelled" xml:space="preserve">
+    <value>Afgelegde afstand</value>
+  </data>
+  <data name="doNotShowAgain" xml:space="preserve">
+    <value>Niet meer weergeven</value>
+  </data>
+  <data name="firstEpochBladePositionDoesNotLieWithinProjectBoundary" xml:space="preserve">
+    <value>Ligt niet binnen ruimtelijke grenzen van project</value>
+  </data>
+  <data name="dozer" xml:space="preserve">
+    <value>Dozer</value>
+  </data>
+  <data name="DueAt" xml:space="preserve">
+    <value>Verwacht op</value>
+  </data>
+  <data name="dueIn" xml:space="preserve">
+    <value>Verwacht over</value>
+  </data>
+  <data name="DueOn" xml:space="preserve">
+    <value>Verwacht op</value>
+  </data>
+  <data name="dumpEvent" xml:space="preserve">
+    <value>Lossen gebeurtenis</value>
+  </data>
+  <data name="dumpLocation" xml:space="preserve">
+    <value>Loslocatie</value>
+  </data>
+  <data name="dumpTime" xml:space="preserve">
+    <value>Lostijd</value>
+  </data>
+  <data name="dumpToDumpDistance" xml:space="preserve">
+    <value>Lossen tot lossen afstand</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Duur</value>
+  </data>
+  <data name="earliest" xml:space="preserve">
+    <value>Oudste</value>
+  </data>
+  <data name="easting" xml:space="preserve">
+    <value>Oost</value>
+  </data>
+  <data name="efficiency" xml:space="preserve">
+    <value>Efficiëntie</value>
+  </data>
+  <data name="elevation" xml:space="preserve">
+    <value>Hoogte</value>
+  </data>
+  <data name="elevationReport" xml:space="preserve">
+    <value>Hoogte rapport</value>
+  </data>
+  <data name="elevationType" xml:space="preserve">
+    <value>Type hoogte</value>
+  </data>
+  <data name="email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="emailRequest" xml:space="preserve">
+    <value>E-mail aanvraag</value>
+  </data>
+  <data name="endDate" xml:space="preserve">
+    <value>Einddatum</value>
+  </data>
+  <data name="endDateSMU" xml:space="preserve">
+    <value>Einddatum bedrijfsuren</value>
+  </data>
+  <data name="endDateLocation" xml:space="preserve">
+    <value>Einddatum locatie</value>
+  </data>
+  <data name="endDateMustBeHigher" xml:space="preserve">
+    <value>Einddatum moet later dan begindatum zijn</value>
+  </data>
+  <data name="endHourMeter" xml:space="preserve">
+    <value>Einde urenteller</value>
+  </data>
+  <data name="endTime" xml:space="preserve">
+    <value>Eindtijd</value>
+  </data>
+  <data name="GensetCoolingDown" xml:space="preserve">
+    <value>Motor afkoelen</value>
+  </data>
+  <data name="engineCoolantTemperature" xml:space="preserve">
+    <value>Motorkoelvloeistof temperatuur</value>
+  </data>
+  <data name="coolantTemperatureHeader" xml:space="preserve">
+    <value>Motorkoelvloeistof temperatuur rapport</value>
+  </data>
+  <data name="EngineIdle" xml:space="preserve">
+    <value>Motor stationair rapport</value>
+  </data>
+  <data name="engineLubeOilTemperature" xml:space="preserve">
+    <value>Motorolie temperatuur</value>
+  </data>
+  <data name="lubeOilTemperatureHeader" xml:space="preserve">
+    <value>Motorolie temperatuur rapport</value>
+  </data>
+  <data name="EngineOff" xml:space="preserve">
+    <value>Motor uit</value>
+  </data>
+  <data name="engineOilLevelIndication" xml:space="preserve">
+    <value>Engine Oil Level Indicator</value>
+  </data>
+  <data name="engineOilLevelPercent" xml:space="preserve">
+    <value>Engine Oil Level Indicator %</value>
+  </data>
+  <data name="engineOilLevelIndicatorHeader" xml:space="preserve">
+    <value>Engine Oil Level Indicator Report</value>
+  </data>
+  <data name="engineOilPressure" xml:space="preserve">
+    <value>Motorolie druk</value>
+  </data>
+  <data name="oilPressureHeader" xml:space="preserve">
+    <value>Motorolie druk rapport</value>
+  </data>
+  <data name="EngineOn" xml:space="preserve">
+    <value>Motor aan</value>
+  </data>
+  <data name="engineParameters" xml:space="preserve">
+    <value>Motor parameters</value>
+  </data>
+  <data name="GensetRunning" xml:space="preserve">
+    <value>Motor draait</value>
+  </data>
+  <data name="eventTypeEngineStart" xml:space="preserve">
+    <value>Motor start</value>
+  </data>
+  <data name="engineStartStopTime" xml:space="preserve">
+    <value>Motor start-/stoptijd</value>
+  </data>
+  <data name="engineStatus" xml:space="preserve">
+    <value>Motor status</value>
+  </data>
+  <data name="eventTypeEngineStop" xml:space="preserve">
+    <value>Motor stop</value>
+  </data>
+  <data name="GensetEngineStopped" xml:space="preserve">
+    <value>Motor gestopt</value>
+  </data>
+  <data name="GensetEngineStopping" xml:space="preserve">
+    <value>Motor aan het stoppen</value>
+  </data>
+  <data name="displayName" xml:space="preserve">
+    <value>Dutch</value>
+  </data>
+  <data name="equalsPassTarget" xml:space="preserve">
+    <value>Gelijk aan gewenste werkgangen</value>
+  </data>
+  <data name="event" xml:space="preserve">
+    <value>Gebeurtenis</value>
+  </data>
+  <data name="eventCount" xml:space="preserve">
+    <value>Gebeurtenis aantallen</value>
+  </data>
+  <data name="eventData" xml:space="preserve">
+    <value>Gebeurtenis data</value>
+  </data>
+  <data name="eventDescription" xml:space="preserve">
+    <value>Beschrijving gebeurtenis</value>
+  </data>
+  <data name="FaultCodes" xml:space="preserve">
+    <value>Gebeurtenis fout</value>
+  </data>
+  <data name="eventType" xml:space="preserve">
+    <value>Type gebeurtenis</value>
+  </data>
+  <data name="excavator" xml:space="preserve">
+    <value>Graafmachine</value>
+  </data>
+  <data name="ExcavatorUsageReport" xml:space="preserve">
+    <value>Graafmachine gebruik rapport</value>
+  </data>
+  <data name="exception" xml:space="preserve">
+    <value>Uitzondering opgetreden</value>
+  </data>
+  <data name="ExclusionZone" xml:space="preserve">
+    <value>Uitsluitingszone</value>
+  </data>
+  <data name="expectedRuntime" xml:space="preserve">
+    <value>Verwachte draaitijd</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Einddatum</value>
+  </data>
+  <data name="fahrenheitAbbrev" xml:space="preserve">
+    <value>F</value>
+  </data>
+  <data name="failedOnRequestProfile" xml:space="preserve">
+    <value>Mislukt bij aanvraag profiel</value>
+  </data>
+  <data name="failedOnRequestColourGraduatedProfile" xml:space="preserve">
+    <value>Mislukt bij aanvraag gegradueerd kleuren profiel</value>
+  </data>
+  <data name="submissionBaseConnectionFailure" xml:space="preserve">
+    <value>Verbinden met productiedata server mislukt.</value>
+  </data>
+  <data name="failedToConvertClientWGSCoords" xml:space="preserve">
+    <value>Converteren van WGS84 client coördinaten mislukt</value>
+  </data>
+  <data name="dcToIRecFailedToCreateAZIParamsObject" xml:space="preserve">
+    <value>Kon geen IAZIParameters object (DCToIRecord converter) aanmaken</value>
+  </data>
+  <data name="dcToIRecFailedCreateCSIB" xml:space="preserve">
+    <value>CSIB is niet aangemaakt (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToCreateDCToIRecordConverter" xml:space="preserve">
+    <value>Aanmaken van DCtoIRecord converter mislukt.</value>
+  </data>
+  <data name="failedToGetCSSettings" xml:space="preserve">
+    <value>Ophalen van coördinatensysteem instellingen mislukt.</value>
+  </data>
+  <data name="dcToIRecFailedToGetGeoidInfo" xml:space="preserve">
+    <value>Kon geen geoïde informatie ophalen (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateConstGeoid" xml:space="preserve">
+    <value>Kon geen CSIB constante afstand geoïde instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateDatumGrid" xml:space="preserve">
+    <value>Kon geen CSIB datum grid bestand instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateEllipsoid" xml:space="preserve">
+    <value>Kon geen CSIB ellipsoïde instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateGridGeoid" xml:space="preserve">
+    <value>Kon geen CSIB grid geoïde instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMolodenskyDatum" xml:space="preserve">
+    <value>Kon geen CSIB Molodensky datum instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMultiRegressionDatum" xml:space="preserve">
+    <value>Kon geen CSIB multipele regressie parameter datum instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateSevenParamsDatum" xml:space="preserve">
+    <value>Kon geen CSIB zeven parameters datum instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateWGS84Datum" xml:space="preserve">
+    <value>Kon geen CSIB WGS84 datum instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneBasedSite" xml:space="preserve">
+    <value>Kon geen CSIB WGS84 zone-gebaseerde site instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneGroup" xml:space="preserve">
+    <value>Kon geen CSIB zone groep instantiëren (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToLoadCSIB" xml:space="preserve">
+    <value>CSIB kon niet worden geladen (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToNotifyCSChange" xml:space="preserve">
+    <value>Niet gemeld dat coördinatensysteem gewijzigd is.</value>
+  </data>
+  <data name="failedToObtainCoordinateSystemInterlock" xml:space="preserve">
+    <value>Coördinatensysteem aansluiting niet verkregen.</value>
+  </data>
+  <data name="dcToIRecFailedToOpenCalibrationReader" xml:space="preserve">
+    <value>Kalibratie lezer kon niet worden geopend (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToPerformCoordinateConversion" xml:space="preserve">
+    <value>Coördinatensysteem conversie is niet uitgevoerd.</value>
+  </data>
+  <data name="dcToIRecFailedToReadCSIB" xml:space="preserve">
+    <value>CSIB kon niet worden gelezen (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadInCSIB" xml:space="preserve">
+    <value>Kon niet lezen in CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToReadLineworkBoundaryFile" xml:space="preserve">
+    <value>Lijnenwerk grens bestand is niet gelezen.</value>
+  </data>
+  <data name="dcToIRecFailedToReadZone" xml:space="preserve">
+    <value>Zone kon niet worden gelezen (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadZoneBasedSite" xml:space="preserve">
+    <value>De zone-gebaseerde site kon niet worden gelezen (DCToIRecord converter)</value>
+  </data>
+  <data name="submissionResultConnectionFailure" xml:space="preserve">
+    <value>Geen resultaat van productiedata server ontvangen.</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemHorizontalAdjustmentFile" xml:space="preserve">
+    <value>Aanvraag horizontale vereffening bestand coördinatensysteem mislukt</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemProjectionFile" xml:space="preserve">
+    <value>Aanvraag projectie bestand coördinatensysteem mislukt</value>
+  </data>
+  <data name="failedToRequestDatamodelStatistics" xml:space="preserve">
+    <value>Datamodel statistieken zijn niet opgevraagd.</value>
+  </data>
+  <data name="failedToRequestFileFromTCC" xml:space="preserve">
+    <value>Bestand is niet opgevraagd bij TCC.</value>
+  </data>
+  <data name="failedToRequestSubgridExistenceMap" xml:space="preserve">
+    <value>Subgrid bestaanskaart is niet opgevraagd.</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneInfo" xml:space="preserve">
+    <value>Zone info kon niet worden ingesteld (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToWriteCSDStream" xml:space="preserve">
+    <value>Definitiestream van coördinatensysteem is niet geschreven.</value>
+  </data>
+  <data name="dcToIRecFailedToWriteCSIB" xml:space="preserve">
+    <value>CSIB kon niet worden geschreven (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteDatum" xml:space="preserve">
+    <value>Datum kon niet worden geschreven (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteGeoid" xml:space="preserve">
+    <value>Geoïde kon niet worden geschreven (DCToIRecord converter)</value>
+  </data>
+  <data name="faultCode" xml:space="preserve">
+    <value>Foutcode</value>
+  </data>
+  <data name="faultCodeDiagnostic" xml:space="preserve">
+    <value>Foutcode - diagnostisch</value>
+  </data>
+  <data name="faultCodeEvent" xml:space="preserve">
+    <value>Foutcode - gebeurtenis</value>
+  </data>
+  <data name="faultCodeDate" xml:space="preserve">
+    <value>Foutcode datum</value>
+  </data>
+  <data name="faultCodeHourMeter" xml:space="preserve">
+    <value>Foutcode bedrijfsuren</value>
+  </data>
+  <data name="faultCodeLocation" xml:space="preserve">
+    <value>Foutcode locatie</value>
+  </data>
+  <data name="faultCodeOdometer" xml:space="preserve">
+    <value>Foutcode odometer5</value>
+  </data>
+  <data name="faultCodeReport" xml:space="preserve">
+    <value>Foutcode rapport</value>
+  </data>
+  <data name="assetHealthSummary" xml:space="preserve">
+    <value>Foutcode samenvatting rapport</value>
+  </data>
+  <data name="faultCodesLabel" xml:space="preserve">
+    <value>Foutcodes</value>
+  </data>
+  <data name="faultCodeCounts" xml:space="preserve">
+    <value>Fouten</value>
+  </data>
+  <data name="faultCodeDetails" xml:space="preserve">
+    <value>Fout details</value>
+  </data>
+  <data name="tagFileReaderCorruptedTAGFileData" xml:space="preserve">
+    <value>Bestand bevat beschadigde data.</value>
+  </data>
+  <data name="noGridEpochsFoundInTAGFile" xml:space="preserve">
+    <value>Bestand bevat ongeldige productiedata.</value>
+  </data>
+  <data name="submissionVerbConnectionFailure" xml:space="preserve">
+    <value>Bestand indienen mislukt.</value>
+  </data>
+  <data name="fill" xml:space="preserve">
+    <value>Ophogen</value>
+  </data>
+  <data name="locationAppSummary" xml:space="preserve">
+    <value>Laatst bekende locatie van assets zoeken</value>
+  </data>
+  <data name="fine" xml:space="preserve">
+    <value>Fijn</value>
+  </data>
+  <data name="firmwareVersion" xml:space="preserve">
+    <value>Firmware versie</value>
+  </data>
+  <data name="first" xml:space="preserve">
+    <value>Eerste</value>
+  </data>
+  <data name="firstname" xml:space="preserve">
+    <value>Voornaam</value>
+  </data>
+  <data name="verifyEmailBodyFirstTimeUser" xml:space="preserve">
+    <value>Eerste gebruik: log in bij uw VisionLink account m.b.v. de volgende gegevens.&lt;/br&gt;Gebruikersnaam:{0},&lt;/br&gt; Wachtwoord:{1}&lt;/br&gt;Na het inloggen wordt u gevraagd het wachtwoord te veranderen.&lt;/br&gt;&lt;/br&gt;</value>
+  </data>
+  <data name="FleetEventCountReport" xml:space="preserve">
+    <value>Vloot gebeurtenis aantallen rapport</value>
+  </data>
+  <data name="fleetFuelReport" xml:space="preserve">
+    <value>Vloot brandstof rapport</value>
+  </data>
+  <data name="FleetStatus" xml:space="preserve">
+    <value>Vloot status rapport</value>
+  </data>
+  <data name="fleetStatusReport" xml:space="preserve">
+    <value>Vloot status rapport</value>
+  </data>
+  <data name="fleetSummary" xml:space="preserve">
+    <value>Vloot samenvatting</value>
+  </data>
+  <data name="fleetSummaryCustomReport" xml:space="preserve">
+    <value>Vloot samenvatting aangepast rapport</value>
+  </data>
+  <data name="FleetUsage" xml:space="preserve">
+    <value>Vloot gebruik rapport</value>
+  </data>
+  <data name="fleetUsageReport" xml:space="preserve">
+    <value>Vloot gebruik rapport</value>
+  </data>
+  <data name="FleetUtilization" xml:space="preserve">
+    <value>Vloot gebruik rapport</value>
+  </data>
+  <data name="FluidAnalysis" xml:space="preserve">
+    <value>Vloeistof analyse</value>
+  </data>
+  <data name="fluidAnalysisReport" xml:space="preserve">
+    <value>Vloeistof analyse rapport</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Vooruit</value>
+  </data>
+  <data name="feetAbbrev" xml:space="preserve">
+    <value>ft</value>
+  </data>
+  <data name="fuel" xml:space="preserve">
+    <value>Brandstof</value>
+  </data>
+  <data name="fuelPercentRemaining" xml:space="preserve">
+    <value>Brandstof % resterend</value>
+  </data>
+  <data name="fuelBurnPieChartTitle" xml:space="preserve">
+    <value>Brandstofverbruik</value>
+  </data>
+  <data name="fuelBurned" xml:space="preserve">
+    <value>Brandstof verbruikt</value>
+  </data>
+  <data name="fuelBurnedByAsset" xml:space="preserve">
+    <value>Brandstof verbruikt per asset</value>
+  </data>
+  <data name="fuelBurnedByAssetsTopTen" xml:space="preserve">
+    <value>Brandstof verbruikt per asset: top 10</value>
+  </data>
+  <data name="fuelConsumedIdle" xml:space="preserve">
+    <value>Brandstof verbruikt (stationair)</value>
+  </data>
+  <data name="fuelConsumedTotal" xml:space="preserve">
+    <value>Brandstof verbruikt (totaal)</value>
+  </data>
+  <data name="fuelInformation" xml:space="preserve">
+    <value>Brandstof informatie</value>
+  </data>
+  <data name="fuelLevel" xml:space="preserve">
+    <value>Brandstofpeil</value>
+  </data>
+  <data name="fuelLevelIndicator" xml:space="preserve">
+    <value>Brandstofpeil indicator</value>
+  </data>
+  <data name="fuelLevelPercent" xml:space="preserve">
+    <value>Brandstofpeil indicator %</value>
+  </data>
+  <data name="levelIndicatorHeader" xml:space="preserve">
+    <value>Brandstofpeil indicator rapport</value>
+  </data>
+  <data name="FuelLoss" xml:space="preserve">
+    <value>Brandstof verlies</value>
+  </data>
+  <data name="FuelLossAlertDescription" xml:space="preserve">
+    <value>Brandstof verlies van {0}%</value>
+  </data>
+  <data name="fuelPercentageRemaining" xml:space="preserve">
+    <value>Brandstof percentage resterend</value>
+  </data>
+  <data name="fuelRemaining" xml:space="preserve">
+    <value>Brandstof resterend</value>
+  </data>
+  <data name="fuelUtilizationTopic" xml:space="preserve">
+    <value>Brandstof gebruik</value>
+  </data>
+  <data name="FuelUtilization" xml:space="preserve">
+    <value>Brandstof gebruik rapport</value>
+  </data>
+  <data name="fuelUtilizationReport" xml:space="preserve">
+    <value>Brandstof gebruik rapport</value>
+  </data>
+  <data name="FullSiteURL" xml:space="preserve">
+    <value>Volledige site</value>
+  </data>
+  <data name="gal" xml:space="preserve">
+    <value>gal</value>
+  </data>
+  <data name="galhr" xml:space="preserve">
+    <value>gal/h</value>
+  </data>
+  <data name="gallonsBarChartXAxisLabel" xml:space="preserve">
+    <value>Gallons</value>
+  </data>
+  <data name="gallonshr" xml:space="preserve">
+    <value>Gallons / uur</value>
+  </data>
+  <data name="gallonsBurned" xml:space="preserve">
+    <value>Gallons verbruikt</value>
+  </data>
+  <data name="geoFenceAlert" xml:space="preserve">
+    <value>GEO Fence alarm</value>
+  </data>
+  <data name="gpsAccuracy" xml:space="preserve">
+    <value>GPS nauwkeurigheid</value>
+  </data>
+  <data name="GPSAntennaDisconnectedTimerExpired" xml:space="preserve">
+    <value>GPS antenne afgekoppeld</value>
+  </data>
+  <data name="GPSGSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>GPS/GSM signaalverlies</value>
+  </data>
+  <data name="GridReport" xml:space="preserve">
+    <value>Raster rapport</value>
+  </data>
+  <data name="gridSize" xml:space="preserve">
+    <value>Raster grootte</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>Groep</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Groepen</value>
+  </data>
+  <data name="GSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>GSM signaalverlies</value>
+  </data>
+  <data name="hectareAbbreviation" xml:space="preserve">
+    <value>ha</value>
+  </data>
+  <data name="hardwareDataError" xml:space="preserve">
+    <value>Hardware data fout</value>
+  </data>
+  <data name="ForgotPasswordEmailBody" xml:space="preserve">
+    <value>Hallo {0},&lt;BR /&gt;&lt;BR /&gt;Uw VisionLink gebruikersnaam is {1}.&lt;BR /&gt;&lt;BR /&gt;Om uw wachtwoord te resetten, klikt u op onderstaande koppeling (of kopieer en plak de URL in een nieuw browser venster):&lt;BR /&gt;&lt;BR /&gt; {2}&lt;BR /&gt;&lt;BR /&gt; Voor uw veiligheid blijft deze koppeling 24 uur actief en maar voor één geslaagde wachtwoord reset.  &lt;BR /&gt;&lt;BR /&gt;Als u niet hebt gevraagd om uw wachtwoord te resetten, heeft een andere gebruiker waarschijnlijk per abuis uw e-mailadres of gebruikersnaam ingevoerd toen hij een wachtwoord ging resetten. In dat geval kunt u deze e-mail negeren. &lt;BR /&gt;&lt;BR /&gt;Met vriendelijke groet,&lt;BR /&gt;VisionLink Support Team</value>
+  </data>
+  <data name="NewAccountRegEmailBody" xml:space="preserve">
+    <value>Hallo {0}&lt;BR&gt;&lt;BR&gt; Deze e-mail is aan u verzonden om u erop te attenderen dat er een VisionLink account met de naam {1} is aangemaakt.&lt;BR&gt;&lt;BR&gt;De volgende stap is naar de VisionLink account registratie pagina te gaan, waar u uw account kunt activeren door een gebruikersnaam en wachtwoord aan te maken. Daarna kunt u die gegevens gebruiken om naar uw account te gaan m.b.v. de VisionLink web applicatie.&lt;BR&gt;&lt;BR&gt;Klik op onderstaande koppeling om naar de VisionLink account registratie pagina te gaan:&lt;BR&gt;{2}&lt;BR&gt;&lt;BR&gt;De bovenstaande koppeling wordt ongeldig nadat het account geactiveerd is. Er kunnen echter extra logins worden aangemaakt vanuit de VisionLink web applicatie nadat de registratie voltooid is.&lt;BR&gt;&lt;BR&gt;Nadat u uw account hebt geactiveerd, gaat u naar de VisionLink web applicatie via de volgende koppeling:&lt;BR&gt;{3} </value>
+  </data>
+  <data name="OnDemandEmailBody" xml:space="preserve">
+    <value>Hallo,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Klik a.u.b. op onderstaande koppeling om het rapport te downloaden &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; NB: u ontvangt deze e-mail omdat u op de lijst staat als ontvanger van dit rapport. Deze koppeling blijft 30 dagen actief. Bij vragen kunt u contact opnemen met uw VisionLink Administrator.</value>
+  </data>
+  <data name="ScheduleReportEmailBodyWithoutUnsubscribe" xml:space="preserve">
+    <value>Hallo,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Klik op onderstaande koppeling om het rapport te downloaden &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; NB: u ontvangt deze e-mail omdat u geregistreerd bent als ontvanger van dit Geplande rapport. Deze koppeling blijft 30 dagen actief. Als u vragen hebt, kunt u contact opnemen met uw VisionLink Beheerder.&lt;BR /&gt;&lt;BR /&gt;*** De Dagelijkse, Wekelijkse en Maandelijkse geplande rapporten voor Vloot status, Service verwacht en Gedeelde asset weergave bevatten actuele informatie op basis van wanneer het rapport wordt geopend.</value>
+  </data>
+  <data name="ScheduleReportEmailBody" xml:space="preserve">
+    <value>Hallo,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Klik a.u.b. op de onderstaande koppeling om het rapport &lt;BR /&gt;{1} te downloaden&lt;BR /&gt;&lt;BR /&gt; NB: u ontvangt deze e-mail omdat u op de lijst van ontvangers voor dit geplande rapport staat. Deze koppeling blijft 30 dagen actief. Bij vragen kunt u contact opnemen met uw VisionLink administrator.&lt;BR /&gt;&lt;BR /&gt;Als u dit rapport in de toekomst niet meer wilt ontvangen, klikt u op {2}.&lt;BR /&gt;&lt;BR /&gt;*** De Dagelijks, Wekelijks en Maandelijks geplande rapporten voor Vloot status, Service verwacht en Gedeelde asset weergave bevatten actuele informatie op basis van wanneer het rapport wordt geopend.</value>
+  </data>
+  <data name="HH" xml:space="preserve">
+    <value>HH</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Hoog</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Hoogste</value>
+  </data>
+  <data name="home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="hourMeter" xml:space="preserve">
+    <value>Bedrijfsuren</value>
+  </data>
+  <data name="hours" xml:space="preserve">
+    <value>Uren</value>
+  </data>
+  <data name="hoursOfUse" xml:space="preserve">
+    <value>Uren gebruik</value>
+  </data>
+  <data name="hoursLocation" xml:space="preserve">
+    <value>Uren/locatie</value>
+  </data>
+  <data name="hr" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="hrs" xml:space="preserve">
+    <value>uur</value>
+  </data>
+  <data name="hybrid" xml:space="preserve">
+    <value>Hybride</value>
+  </data>
+  <data name="hydraulicOilTemperature" xml:space="preserve">
+    <value>Hydrauliekolie temperatuur</value>
+  </data>
+  <data name="hydraulicTemperatureHeader" xml:space="preserve">
+    <value>Hydrauliekolie temperatuur rapport</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Stationair</value>
+  </data>
+  <data name="idleEventsMessage" xml:space="preserve">
+    <value>Stationair gebeurtenissen langer dan {0} {1}</value>
+  </data>
+  <data name="idleFuelBurned" xml:space="preserve">
+    <value>Stat. brandst. verbr.</value>
+  </data>
+  <data name="idleHourMeter" xml:space="preserve">
+    <value>Stationair bedrijfsuren</value>
+  </data>
+  <data name="idleHours" xml:space="preserve">
+    <value>Stationair uren</value>
+  </data>
+  <data name="idleTime" xml:space="preserve">
+    <value>Stationair tijd</value>
+  </data>
+  <data name="idleTimeOut" xml:space="preserve">
+    <value>Stationair time-out</value>
+  </data>
+  <data name="idling" xml:space="preserve">
+    <value>Stationair</value>
+  </data>
+  <data name="idlingFuelBurned" xml:space="preserve">
+    <value>Verbruikt stationair</value>
+  </data>
+  <data name="IgnitionOff" xml:space="preserve">
+    <value>Contact uit</value>
+  </data>
+  <data name="IgnitionOn" xml:space="preserve">
+    <value>Contact aan</value>
+  </data>
+  <data name="ignitionStatus" xml:space="preserve">
+    <value>Contact status</value>
+  </data>
+  <data name="inProgress" xml:space="preserve">
+    <value>Bezig</value>
+  </data>
+  <data name="inactiveNoRuntime" xml:space="preserve">
+    <value>Inactief - geen draaitijd</value>
+  </data>
+  <data name="includeSupercededLifts" xml:space="preserve">
+    <value>Vervangen lagen opnemen</value>
+  </data>
+  <data name="InclusionZone" xml:space="preserve">
+    <value>Insluitingszone</value>
+  </data>
+  <data name="incomplete" xml:space="preserve">
+    <value>Onvolledig</value>
+  </data>
+  <data name="incorrectUsernameOrPassword" xml:space="preserve">
+    <value>Gebruikersnaam of wachtwoord onjuist.</value>
+  </data>
+  <data name="incorrectWorkingTime" xml:space="preserve">
+    <value>Onjuiste waarden voor berekening van werktijd.</value>
+  </data>
+  <data name="dcToIRecInifiniteAdjustmentSlopeValue" xml:space="preserve">
+    <value>Oneindige vereffening hellingwaarde (DCToIRecord converter)</value>
+  </data>
+  <data name="insufficientDataForCalculation" xml:space="preserve">
+    <value>Onvoldoende data voor berekening</value>
+  </data>
+  <data name="singleDayCalloutNegativeValue" xml:space="preserve">
+    <value>Onvoldoende draaitijd meter precisie voor geldige berekening</value>
+  </data>
+  <data name="dateRangeCalloutNegativeValue" xml:space="preserve">
+    <value>Onvoldoende draaitijdmeter precisie voor geldige berekening in datumbereik</value>
+  </data>
+  <data name="introduction" xml:space="preserve">
+    <value>Inleiding</value>
+  </data>
+  <data name="invalidCoordinateRange" xml:space="preserve">
+    <value>Ongeldig coördinatenbereik</value>
+  </data>
+  <data name="suppliedDataModelBoundaryContainsInsufficeintVertices" xml:space="preserve">
+    <value>Ongeldige datamodel grens.</value>
+  </data>
+  <data name="dcToIRecInvalidEllipsoid" xml:space="preserve">
+    <value>Ongeldige ellipsoïde (DCToIRecord converter)</value>
+  </data>
+  <data name="InValidReportRequest" xml:space="preserve">
+    <value>Ongeldige Excel rapport aanvraag.</value>
+  </data>
+  <data name="InvalidSeedPosition" xml:space="preserve">
+    <value>Ongeldige LBH/NO zaaipositie in tagbestand</value>
+  </data>
+  <data name="InvalidMSSKey" xml:space="preserve">
+    <value>Ongeldige MSS code</value>
+  </data>
+  <data name="invalidResponseCode" xml:space="preserve">
+    <value>Ongeldige reactiecode</value>
+  </data>
+  <data name="invalidSubscriptions" xml:space="preserve">
+    <value>Ongeldige abonnementen.</value>
+  </data>
+  <data name="invalidTagFile" xml:space="preserve">
+    <value>Ongeldig TAG bestand.</value>
+  </data>
+  <data name="invalidValueDetected" xml:space="preserve">
+    <value>Ongeldige waarde gedetecteerd</value>
+  </data>
+  <data name="singleDayCalloutSpike" xml:space="preserve">
+    <value>Ongeldige waarde gedetecteerd</value>
+  </data>
+  <data name="dateRangeCalloutSpike" xml:space="preserve">
+    <value>Ongeldige waarde in datumbereik gedetecteerd</value>
+  </data>
+  <data name="kilometers" xml:space="preserve">
+    <value>Kilometers</value>
+  </data>
+  <data name="km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kmL" xml:space="preserve">
+    <value>km/l</value>
+  </data>
+  <data name="kms" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kpa" xml:space="preserve">
+    <value>kPa</value>
+  </data>
+  <data name="kph" xml:space="preserve">
+    <value>km/h</value>
+  </data>
+  <data name="leftAbbrev" xml:space="preserve">
+    <value>L</value>
+  </data>
+  <data name="ltr" xml:space="preserve">
+    <value>l</value>
+  </data>
+  <data name="ltrhr" xml:space="preserve">
+    <value>l/h</value>
+  </data>
+  <data name="FluidAnalysisAlertDescription" xml:space="preserve">
+    <value>Labnr.:  {0} Compartiment: {1} Zwaarte:</value>
+  </data>
+  <data name="labNumber" xml:space="preserve">
+    <value>Labnr.</value>
+  </data>
+  <data name="language" xml:space="preserve">
+    <value>Taal</value>
+  </data>
+  <data name="last" xml:space="preserve">
+    <value>Laatste</value>
+  </data>
+  <data name="lastKnownLocation" xml:space="preserve">
+    <value>Laatst bekende locatie</value>
+  </data>
+  <data name="lastKnownStatus" xml:space="preserve">
+    <value>Laatst bekende status</value>
+  </data>
+  <data name="lastReportedStatus" xml:space="preserve">
+    <value>Laatst bekende status</value>
+  </data>
+  <data name="lastLogin" xml:space="preserve">
+    <value>Laatst ingelogd</value>
+  </data>
+  <data name="lastLoginDate" xml:space="preserve">
+    <value>Laatste inlogdatum</value>
+  </data>
+  <data name="lastloginUTC" xml:space="preserve">
+    <value>Laatst ingelogd UTC</value>
+  </data>
+  <data name="lastname" xml:space="preserve">
+    <value>Achternaam</value>
+  </data>
+  <data name="lastReported" xml:space="preserve">
+    <value>Laatst gemeld</value>
+  </data>
+  <data name="lastReportedLocation" xml:space="preserve">
+    <value>Laatst gemelde locatie</value>
+  </data>
+  <data name="lastReportedTime" xml:space="preserve">
+    <value>Tijd laatst gemeld</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Laatst bijgewerkt</value>
+  </data>
+  <data name="lastNDays" xml:space="preserve">
+    <value>Afgelopen {0} dagen</value>
+  </data>
+  <data name="latitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Brdt</value>
+  </data>
+  <data name="latest" xml:space="preserve">
+    <value>Nieuwste</value>
+  </data>
+  <data name="latestUserActivity" xml:space="preserve">
+    <value>Laatste gebruikersactiviteit</value>
+  </data>
+  <data name="LaunchVLApp" xml:space="preserve">
+    <value>VisionLink applicaties starten</value>
+  </data>
+  <data name="leaseOwnership" xml:space="preserve">
+    <value>Lease eigendom</value>
+  </data>
+  <data name="passesLessthan" xml:space="preserve">
+    <value>Minder dan {0} werkgangen</value>
+  </data>
+  <data name="lessThanNPercent" xml:space="preserve">
+    <value>Minder dan {0}%</value>
+  </data>
+  <data name="level0" xml:space="preserve">
+    <value>Niveau 0</value>
+  </data>
+  <data name="level1" xml:space="preserve">
+    <value>Niveau 1</value>
+  </data>
+  <data name="level2" xml:space="preserve">
+    <value>Niveau 2</value>
+  </data>
+  <data name="level3" xml:space="preserve">
+    <value>Niveau 3</value>
+  </data>
+  <data name="lifetimeFuel" xml:space="preserve">
+    <value>Levensduur brandstof</value>
+  </data>
+  <data name="lifetimeFuelMeter" xml:space="preserve">
+    <value>Levensduur brandstofmeter</value>
+  </data>
+  <data name="lifetimeIdleFuelMeter" xml:space="preserve">
+    <value>Levensduur brandstofmeter stationair</value>
+  </data>
+  <data name="layerNumber" xml:space="preserve">
+    <value>Laag</value>
+  </data>
+  <data name="lift" xml:space="preserve">
+    <value>Laag</value>
+  </data>
+  <data name="InValidLink" xml:space="preserve">
+    <value>Koppeling is verlopen.</value>
+  </data>
+  <data name="litersBarChartXAxisLabel" xml:space="preserve">
+    <value>Liters</value>
+  </data>
+  <data name="litershr" xml:space="preserve">
+    <value>Liters / uur</value>
+  </data>
+  <data name="litersBurned" xml:space="preserve">
+    <value>Liters verbruikt</value>
+  </data>
+  <data name="loadAndCycleMonitoring" xml:space="preserve">
+    <value>Lading en cyclus monitoring</value>
+  </data>
+  <data name="LoadCount" xml:space="preserve">
+    <value>Ladingen rapport</value>
+  </data>
+  <data name="loadCountReport" xml:space="preserve">
+    <value>Ladingen rapport</value>
+  </data>
+  <data name="loadCounts" xml:space="preserve">
+    <value>Ladingen</value>
+  </data>
+  <data name="loadCountsAndCycleTimes" xml:space="preserve">
+    <value>Ladingen en Cyclus tijden</value>
+  </data>
+  <data name="LoadDistance" xml:space="preserve">
+    <value>Lading afstand</value>
+  </data>
+  <data name="LoadDistanceAlertDescription" xml:space="preserve">
+    <value>Lading afstand {0}</value>
+  </data>
+  <data name="loadEvent" xml:space="preserve">
+    <value>Laden gebeurtenis</value>
+  </data>
+  <data name="loadLocation" xml:space="preserve">
+    <value>Lading locatie</value>
+  </data>
+  <data name="loadQuality" xml:space="preserve">
+    <value>Lading kwaliteit</value>
+  </data>
+  <data name="loadTime" xml:space="preserve">
+    <value>Laadtijd</value>
+  </data>
+  <data name="loadToDumpDistance" xml:space="preserve">
+    <value>Laden tot lossen afstand</value>
+  </data>
+  <data name="loadToLoadDistance" xml:space="preserve">
+    <value>Lading tot lading afstand</value>
+  </data>
+  <data name="assetLoadedLoading" xml:space="preserve">
+    <value>Geladen door</value>
+  </data>
+  <data name="loader" xml:space="preserve">
+    <value>Lader</value>
+  </data>
+  <data name="loaderOperation" xml:space="preserve">
+    <value>Lader gebruik</value>
+  </data>
+  <data name="loads" xml:space="preserve">
+    <value>Ladingen</value>
+  </data>
+  <data name="locate" xml:space="preserve">
+    <value>Lokaliseren</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="geolocationPositionUnavailable" xml:space="preserve">
+    <value>Locatie niet beschikbaar.</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Inloggen</value>
+  </data>
+  <data name="loginCreationDate" xml:space="preserve">
+    <value>Login aanmaakdatum</value>
+  </data>
+  <data name="loginfailed" xml:space="preserve">
+    <value>Inloggen mislukt</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Uitloggen</value>
+  </data>
+  <data name="longitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Lngt</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Laag</value>
+  </data>
+  <data name="LowSensorBattery" xml:space="preserve">
+    <value>Accu bijna leeg</value>
+  </data>
+  <data name="LowFuel" xml:space="preserve">
+    <value>Brandstofpeil laag</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Laagste</value>
+  </data>
+  <data name="metersAbbrev" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="m3" xml:space="preserve">
+    <value>m3</value>
+  </data>
+  <data name="meterUpdateSummary" xml:space="preserve">
+    <value>Machine uren</value>
+  </data>
+  <data name="machineIdleEvent" xml:space="preserve">
+    <value>Machine stationair</value>
+  </data>
+  <data name="machineName" xml:space="preserve">
+    <value>Machine naam</value>
+  </data>
+  <data name="make" xml:space="preserve">
+    <value>Merk</value>
+  </data>
+  <data name="makeModel" xml:space="preserve">
+    <value>Merk/model</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Handmatig</value>
+  </data>
+  <data name="map" xml:space="preserve">
+    <value>Kaart</value>
+  </data>
+  <data name="mapReset" xml:space="preserve">
+    <value>Kaart reset</value>
+  </data>
+  <data name="mappingType" xml:space="preserve">
+    <value>Type kartering</value>
+  </data>
+  <data name="markCompleted" xml:space="preserve">
+    <value>Als voltooid markeren</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>Materiaal</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Max.</value>
+  </data>
+  <data name="maxSpeed" xml:space="preserve">
+    <value>Max. snelheid</value>
+  </data>
+  <data name="maxRecordsReached" xml:space="preserve">
+    <value>Maximum records bereikt</value>
+  </data>
+  <data name="maximumTemperature" xml:space="preserve">
+    <value>Maximum temperatuur</value>
+  </data>
+  <data name="deviceTypeMCHYPHEN3" xml:space="preserve">
+    <value>MC-3</value>
+  </data>
+  <data name="mdp" xml:space="preserve">
+    <value>MDP</value>
+  </data>
+  <data name="mdpSummary" xml:space="preserve">
+    <value>MDP samenvatting</value>
+  </data>
+  <data name="mdpSummaryReport" xml:space="preserve">
+    <value>MDP samenvatting rapport</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Middel</value>
+  </data>
+  <data name="meter" xml:space="preserve">
+    <value>Meter</value>
+  </data>
+  <data name="meterReading" xml:space="preserve">
+    <value>Meterstand</value>
+  </data>
+  <data name="meterUpdate" xml:space="preserve">
+    <value>Meter update</value>
+  </data>
+  <data name="meterUpdateSent" xml:space="preserve">
+    <value>Meter update verzonden</value>
+  </data>
+  <data name="mi" xml:space="preserve">
+    <value>mi</value>
+  </data>
+  <data name="mileGal" xml:space="preserve">
+    <value>mijl/gal</value>
+  </data>
+  <data name="mileage" xml:space="preserve">
+    <value>Mijlen</value>
+  </data>
+  <data name="miles" xml:space="preserve">
+    <value>mijlen</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Min.</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="minimumTemperature" xml:space="preserve">
+    <value>Minimum temperatuur</value>
+  </data>
+  <data name="Missed" xml:space="preserve">
+    <value>Gemist</value>
+  </data>
+  <data name="missingMeterValueDetected" xml:space="preserve">
+    <value>Ontbrekende meterwaarde gedetecteerd</value>
+  </data>
+  <data name="singleDayCalloutMissingMeterValue" xml:space="preserve">
+    <value>Ontbrekende meterwaarde gedetecteerd</value>
+  </data>
+  <data name="dateRangeCalloutMissingMeterValue" xml:space="preserve">
+    <value>Ontbrekende meterwaarde in datumbereik gedetecteerd</value>
+  </data>
+  <data name="MM" xml:space="preserve">
+    <value>MM</value>
+  </data>
+  <data name="model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="modelYear" xml:space="preserve">
+    <value>Bouwjaar</value>
+  </data>
+  <data name="module" xml:space="preserve">
+    <value>Module</value>
+  </data>
+  <data name="moduleAccessProvidedBy" xml:space="preserve">
+    <value>Module toegang gegeven door</value>
+  </data>
+  <data name="FluidMonitorPriority" xml:space="preserve">
+    <value>Monitoren</value>
+  </data>
+  <data name="monitoredCycleDetailsReport" xml:space="preserve">
+    <value>Gemonitorde cyclus details rapport</value>
+  </data>
+  <data name="monitoredLoadCountDetailsReport" xml:space="preserve">
+    <value>Gemonitorde ladingen details rapport</value>
+  </data>
+  <data name="monitoredSiteDetailsReport" xml:space="preserve">
+    <value>Gemonitorde site details rapport</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Maandelijks</value>
+  </data>
+  <data name="more" xml:space="preserve">
+    <value>Meer</value>
+  </data>
+  <data name="moreThan" xml:space="preserve">
+    <value>Meer dan</value>
+  </data>
+  <data name="passesMorethan" xml:space="preserve">
+    <value>Meer dan {0} werkgangen</value>
+  </data>
+  <data name="top10MostFrequentlyOccurringFaults" xml:space="preserve">
+    <value>Meest voorkomende foutcodes (top 10)</value>
+  </data>
+  <data name="MovementWithAssetOff" xml:space="preserve">
+    <value>Verplaatsing bij Asset uit</value>
+  </data>
+  <data name="MovementWithAssetOn" xml:space="preserve">
+    <value>Verplaatsing bij Asset aan</value>
+  </data>
+  <data name="movingStatus" xml:space="preserve">
+    <value>Beweging status</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="deviceTypeMTHYPHEN10" xml:space="preserve">
+    <value>MT-10</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENElectricEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Electric Engine</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENMotorEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Motor Engine</value>
+  </data>
+  <data name="MulitpleProjects" xml:space="preserve">
+    <value>Meerdere projecten gevonden</value>
+  </data>
+  <data name="multipleSelections" xml:space="preserve">
+    <value>Meerdere selecties</value>
+  </data>
+  <data name="notApplicable" xml:space="preserve">
+    <value>n.v.t.</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>n.v.t.</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="nearbyAssets" xml:space="preserve">
+    <value>Dichtbijzijnde assets</value>
+  </data>
+  <data name="nearbyAssetsByProductFamily" xml:space="preserve">
+    <value>Dichtbijzijnde assets op productfamilie</value>
+  </data>
+  <data name="NewAccountSupportEmailSubject" xml:space="preserve">
+    <value>Registratie gegevens nieuw account</value>
+  </data>
+  <data name="nextService" xml:space="preserve">
+    <value>Volgende service</value>
+  </data>
+  <data name="FluidNoActionPriority" xml:space="preserve">
+    <value>Geen actie</value>
+  </data>
+  <data name="noBoundariesInLineworkFile" xml:space="preserve">
+    <value>Geen grenzen in lijnenwerk bestand.</value>
+  </data>
+  <data name="noChange" xml:space="preserve">
+    <value>Geen wijziging</value>
+  </data>
+  <data name="noComment" xml:space="preserve">
+    <value>Geen commentaar</value>
+  </data>
+  <data name="noConnectionToServer" xml:space="preserve">
+    <value>Geen verbinding met server</value>
+  </data>
+  <data name="noData" xml:space="preserve">
+    <value>Geen data</value>
+  </data>
+  <data name="noDumpFound" xml:space="preserve">
+    <value>geen Lossen gevonden</value>
+  </data>
+  <data name="noDumpSwitch" xml:space="preserve">
+    <value>geen Losschakelaar gebeurtenis gedetecteerd</value>
+  </data>
+  <data name="NoEndDate" xml:space="preserve">
+    <value>Geen einddatum</value>
+  </data>
+  <data name="noFilter" xml:space="preserve">
+    <value>Geen filter</value>
+  </data>
+  <data name="NoIntervals" xml:space="preserve">
+    <value>Geen intervallen</value>
+  </data>
+  <data name="noItemsFound" xml:space="preserve">
+    <value>Geen items gevonden</value>
+  </data>
+  <data name="noLoadFound" xml:space="preserve">
+    <value>geen Laden gevonden</value>
+  </data>
+  <data name="noLoadSwitch" xml:space="preserve">
+    <value>geen Laadschakelaar gebeurtenis gedetecteerd</value>
+  </data>
+  <data name="NoMatchingProjectArea" xml:space="preserve">
+    <value>Geen bijpassend project gebied gevonden</value>
+  </data>
+  <data name="NoMatchingProjectDate" xml:space="preserve">
+    <value>Geen bijpassende project datum/tijd gevonden</value>
+  </data>
+  <data name="NoPending" xml:space="preserve">
+    <value>Geen in behandeling</value>
+  </data>
+  <data name="noResultReturned" xml:space="preserve">
+    <value>Geen resultaten teruggekregen</value>
+  </data>
+  <data name="noResults" xml:space="preserve">
+    <value>Geen resultaten</value>
+  </data>
+  <data name="noStopMovmentInValidSite" xml:space="preserve">
+    <value>geen Stop beweging gedetecteerd in geldig site type</value>
+  </data>
+  <data name="noStopMovement" xml:space="preserve">
+    <value>geen Stop beweging gebeurtenis gedetecteerd</value>
+  </data>
+  <data name="noSuchDataModel" xml:space="preserve">
+    <value>Geen dergelijk datamodel</value>
+  </data>
+  <data name="NoValidCellPassesInTagfile" xml:space="preserve">
+    <value>Geen geldige cel werkgangen in tagbestand(en) gevonden</value>
+  </data>
+  <data name="InvalidPosition" xml:space="preserve">
+    <value>Geen geldige positie in tagbestand</value>
+  </data>
+  <data name="NotReporting" xml:space="preserve">
+    <value>Niet-rapporterend</value>
+  </data>
+  <data name="devicetypenodevice" xml:space="preserve">
+    <value>GEEN</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>Geen</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normaal</value>
+  </data>
+  <data name="NormalOperation" xml:space="preserve">
+    <value>Normaal bedrijf</value>
+  </data>
+  <data name="northing" xml:space="preserve">
+    <value>Noord</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Niet beschikbaar</value>
+  </data>
+  <data name="NotPending" xml:space="preserve">
+    <value>Niet in behandeling</value>
+  </data>
+  <data name="GensetNotReadyToRun" xml:space="preserve">
+    <value>Niet klaar om te draaien</value>
+  </data>
+  <data name="notVerified" xml:space="preserve">
+    <value>Niet geverifieerd</value>
+  </data>
+  <data name="dcToIRecNotWGS84Ellipsoid" xml:space="preserve">
+    <value>Geen WGS84 ellipsoïde (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecNotWGS84EllipsoidSameAsProj" xml:space="preserve">
+    <value>Geen WGS84 ellipsoïde in datum record (DCToIRecord converter)</value>
+  </data>
+  <data name="NotReportingforExcelReport" xml:space="preserve">
+    <value>Niet-rapporterend</value>
+  </data>
+  <data name="SavEmailFooter" xml:space="preserve">
+    <value>NB: dit is een mededeling e-mail. U bent aan deze mededeling lijst toegevoegd omdat u een administrator gebruiker van uw  VisionLink account bent.</value>
+  </data>
+  <data name="notes" xml:space="preserve">
+    <value>Notities</value>
+  </data>
+  <data name="occurrenceCount" xml:space="preserve">
+    <value>Aantal keren</value>
+  </data>
+  <data name="odometer" xml:space="preserve">
+    <value>Odometer</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>Uit</value>
+  </data>
+  <data name="offset" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="offsetFromBench" xml:space="preserve">
+    <value>Offset t.o.v. referentie</value>
+  </data>
+  <data name="offsetFromDesign" xml:space="preserve">
+    <value>Offset t.o.v. ontwerp</value>
+  </data>
+  <data name="offsetFromProfile" xml:space="preserve">
+    <value>Offset t.o.v. profiel</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>Aan</value>
+  </data>
+  <data name="onGrade" xml:space="preserve">
+    <value>Op niveau</value>
+  </data>
+  <data name="onMachineDesign" xml:space="preserve">
+    <value>Op-machine ontwerp</value>
+  </data>
+  <data name="OnBoardServiceToolCommand" xml:space="preserve">
+    <value>Aan-boord service tool commando</value>
+  </data>
+  <data name="InvalidOnGroundFlag" xml:space="preserve">
+    <value>op_grond vlag niet ingesteld of ongeldig in tagbestand</value>
+  </data>
+  <data name="OpenAlerts" xml:space="preserve">
+    <value>Open alarmen</value>
+  </data>
+  <data name="operationModeBreakup" xml:space="preserve">
+    <value>Bedrijfsmodus onderverdeeld</value>
+  </data>
+  <data name="operatorID" xml:space="preserve">
+    <value>Bestuurder ID</value>
+  </data>
+  <data name="operatorName" xml:space="preserve">
+    <value>Naam bestuurder</value>
+  </data>
+  <data name="origin" xml:space="preserve">
+    <value>Oorsprong</value>
+  </data>
+  <data name="OTACommand" xml:space="preserve">
+    <value>OTA commando</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Overige</value>
+  </data>
+  <data name="overCompacted" xml:space="preserve">
+    <value>Oververdicht</value>
+  </data>
+  <data name="overcompactedLayer" xml:space="preserve">
+    <value>Oververdichte laag</value>
+  </data>
+  <data name="maxLevel" xml:space="preserve">
+    <value>Boven max. niveau</value>
+  </data>
+  <data name="overPassTarget" xml:space="preserve">
+    <value>Boven gewenste werkgangen</value>
+  </data>
+  <data name="OverPressure" xml:space="preserve">
+    <value>Overdruk</value>
+  </data>
+  <data name="OverTemperature" xml:space="preserve">
+    <value>Overtemperatuur</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>Te laat</value>
+  </data>
+  <data name="serviceDueSummary" xml:space="preserve">
+    <value>Te late en aanstaande service</value>
+  </data>
+  <data name="OverdueBy" xml:space="preserve">
+    <value>Te laat met</value>
+  </data>
+  <data name="pMode" xml:space="preserve">
+    <value>P modus</value>
+  </data>
+  <data name="pageXofY" xml:space="preserve">
+    <value>Pag. &amp;[Page] van &amp;[Pages]</value>
+  </data>
+  <data name="MachineParametersReport" xml:space="preserve">
+    <value>ParametrischeRapporten</value>
+  </data>
+  <data name="passCount" xml:space="preserve">
+    <value>Werkgangen</value>
+  </data>
+  <data name="passCountDetail" xml:space="preserve">
+    <value>Werkgang telling details</value>
+  </data>
+  <data name="passCountDetailReport" xml:space="preserve">
+    <value>Werkgangen detail rapport</value>
+  </data>
+  <data name="passCountSummary" xml:space="preserve">
+    <value>Werkgang telling samenvatting</value>
+  </data>
+  <data name="passCountSummaryReport" xml:space="preserve">
+    <value>Werkgangen samenvatting rapport</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Wachtwoord</value>
+  </data>
+  <data name="payload" xml:space="preserve">
+    <value>Vracht</value>
+  </data>
+  <data name="PayloadReport" xml:space="preserve">
+    <value>Vracht rapport</value>
+  </data>
+  <data name="payloadPerCycle" xml:space="preserve">
+    <value>Vracht/cyclus</value>
+  </data>
+  <data name="payloadPerFuel" xml:space="preserve">
+    <value>Vracht/brandstof</value>
+  </data>
+  <data name="payloadPerHour" xml:space="preserve">
+    <value>Vracht/uur</value>
+  </data>
+  <data name="chartWorkSheetTitle" xml:space="preserve">
+    <value>Vrachtblad</value>
+  </data>
+  <data name="dataWorkSheetTitle" xml:space="preserve">
+    <value>Vrachtdata</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>In behandeling</value>
+  </data>
+  <data name="performance" xml:space="preserve">
+    <value>Uitvoering</value>
+  </data>
+  <data name="performedBy" xml:space="preserve">
+    <value>Uitgevoerd door</value>
+  </data>
+  <data name="phone" xml:space="preserve">
+    <value>Telefoon</value>
+  </data>
+  <data name="deviceTypePL420" xml:space="preserve">
+    <value>PL420</value>
+  </data>
+  <data name="deviceTypePL431" xml:space="preserve">
+    <value>PL431</value>
+  </data>
+  <data name="deviceTypeMTS521" xml:space="preserve">
+    <value>PL521</value>
+  </data>
+  <data name="deviceTypeMTS522" xml:space="preserve">
+    <value>PL522</value>
+  </data>
+  <data name="deviceTypePLE641PLUSPL631" xml:space="preserve">
+    <value>PLE641+PL631</value>
+  </data>
+  <data name="changeDatesOrBoundary" xml:space="preserve">
+    <value>Wijzig ofwel de project datums of de project grens.</value>
+  </data>
+  <data name="cookiesRequired" xml:space="preserve">
+    <value>A.u.b. cookies toestaan in deze browser.</value>
+  </data>
+  <data name="javascriptRequired" xml:space="preserve">
+    <value>Activeer Javascript en cookies in deze browser.</value>
+  </data>
+  <data name="enterYourPassword" xml:space="preserve">
+    <value>Voer uw wachtwoord in.</value>
+  </data>
+  <data name="enterYourUsername" xml:space="preserve">
+    <value>Voer uw gebruikersnaam in.</value>
+  </data>
+  <data name="pleaseInstallBlackBerryMaps" xml:space="preserve">
+    <value>A.u.b. BlackBerry Maps installeren</value>
+  </data>
+  <data name="excelRowLimitReached" xml:space="preserve">
+    <value>NB: de teruggegeven data overschrijdt de rijenlimiet van Excel en wordt niet opgenomen in het rapport.</value>
+  </data>
+  <data name="selectService" xml:space="preserve">
+    <value>Selecteer een service alvorens de aanvraag te verzenden.</value>
+  </data>
+  <data name="PM" xml:space="preserve">
+    <value>PM</value>
+  </data>
+  <data name="PowerLoss" xml:space="preserve">
+    <value>Stroomuitval</value>
+  </data>
+  <data name="PowerMode" xml:space="preserve">
+    <value>Power modus</value>
+  </data>
+  <data name="pressure" xml:space="preserve">
+    <value>Druk</value>
+  </data>
+  <data name="probProcessing" xml:space="preserve">
+    <value>Probleem opgetreden tijdens verwerking.</value>
+  </data>
+  <data name="productFamily" xml:space="preserve">
+    <value>Productfamilie</value>
+  </data>
+  <data name="project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="overlappingProject" xml:space="preserve">
+    <value>Projecten mogen elkaar niet zowel in tijd (begin- en einddatum) als in ruimte (projectgrens) overlappen.</value>
+  </data>
+  <data name="proofingRun" xml:space="preserve">
+    <value>Proefbaan</value>
+  </data>
+  <data name="proximityLoads" xml:space="preserve">
+    <value>Nabijheid ladingen</value>
+  </data>
+  <data name="proximitytoSwitch" xml:space="preserve">
+    <value>Nabijheid tot Schakelaar</value>
+  </data>
+  <data name="psi" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="purchaseDate" xml:space="preserve">
+    <value>Aankoopdatum</value>
+  </data>
+  <data name="rightAbbrev" xml:space="preserve">
+    <value>R</value>
+  </data>
+  <data name="raw" xml:space="preserve">
+    <value>RawData</value>
+  </data>
+  <data name="reconciled" xml:space="preserve">
+    <value>Overeengebracht</value>
+  </data>
+  <data name="ReconciledLoadDumpEvent" xml:space="preserve">
+    <value>Overeengebrachte laden/lossen gebeurtenis</value>
+  </data>
+  <data name="recordedBy" xml:space="preserve">
+    <value>Vastgelegd door</value>
+  </data>
+  <data name="registeredDealer" xml:space="preserve">
+    <value>Geregistreerde dealer</value>
+  </data>
+  <data name="release" xml:space="preserve">
+    <value>Vrijgeven</value>
+  </data>
+  <data name="rememberMe" xml:space="preserve">
+    <value>Onthoud mij</value>
+  </data>
+  <data name="reportDateRange" xml:space="preserve">
+    <value>Datumbereik rapport</value>
+  </data>
+  <data name="reportGeneratedDate" xml:space="preserve">
+    <value>Datum rapport gegenereerd</value>
+  </data>
+  <data name="reportType" xml:space="preserve">
+    <value>Type rapport</value>
+  </data>
+  <data name="reportedTime" xml:space="preserve">
+    <value>Tijd gerapporteerd</value>
+  </data>
+  <data name="requestAccess" xml:space="preserve">
+    <value>Verzoek om toegang</value>
+  </data>
+  <data name="requestCanceled" xml:space="preserve">
+    <value>Aanvraag geannuleerd</value>
+  </data>
+  <data name="requestSentSuccessfully" xml:space="preserve">
+    <value>Verzoek om toegang met succes verzonden.</value>
+  </data>
+  <data name="abortedDueToPipelineTimeout" xml:space="preserve">
+    <value>Aanvraag is afgebroken vanwege pipeline time-out</value>
+  </data>
+  <data name="requestHasBeenCancelled" xml:space="preserve">
+    <value>Aanvraag is geannuleerd</value>
+  </data>
+  <data name="resolved" xml:space="preserve">
+    <value>Opgelost</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Opnieuw proberen</value>
+  </data>
+  <data name="reverse" xml:space="preserve">
+    <value>Achteruit</value>
+  </data>
+  <data name="roadDesign" xml:space="preserve">
+    <value>Weg ontwerp</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>tpm</value>
+  </data>
+  <data name="running" xml:space="preserve">
+    <value>Draaiend</value>
+  </data>
+  <data name="runningTotal" xml:space="preserve">
+    <value>Draaiend (totaal)</value>
+  </data>
+  <data name="runningBurnRate" xml:space="preserve">
+    <value>Verbruik draaiend</value>
+  </data>
+  <data name="runningFuelBurned" xml:space="preserve">
+    <value>Verbruikt draaiend</value>
+  </data>
+  <data name="runningUtil" xml:space="preserve">
+    <value>Draaiend gebruik</value>
+  </data>
+  <data name="runtime" xml:space="preserve">
+    <value>Draaitijd</value>
+  </data>
+  <data name="runTimePercentage" xml:space="preserve">
+    <value>Runtime Percentage</value>
+  </data>
+  <data name="sn" xml:space="preserve">
+    <value>Snr.</value>
+  </data>
+  <data name="sampleDate" xml:space="preserve">
+    <value>Monster datum</value>
+  </data>
+  <data name="satellite" xml:space="preserve">
+    <value>Satelliet</value>
+  </data>
+  <data name="requestScheduleFailure" xml:space="preserve">
+    <value>Schema fout</value>
+  </data>
+  <data name="requestScheduleLoadTooHigh" xml:space="preserve">
+    <value>Schema belasting is te hoog</value>
+  </data>
+  <data name="requestScheduleTimeout" xml:space="preserve">
+    <value>Schema time-out</value>
+  </data>
+  <data name="schemaExamples" xml:space="preserve">
+    <value>Schema voorbeelden</value>
+  </data>
+  <data name="scraper" xml:space="preserve">
+    <value>Scraper</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Zoeken</value>
+  </data>
+  <data name="sec" xml:space="preserve">
+    <value>sec</value>
+  </data>
+  <data name="secondPoint" xml:space="preserve">
+    <value>Tweede punt</value>
+  </data>
+  <data name="TamperSecurityStatus" xml:space="preserve">
+    <value>Beveiliging status</value>
+  </data>
+  <data name="selectAsset" xml:space="preserve">
+    <value>Selecteer asset</value>
+  </data>
+  <data name="selectAssets" xml:space="preserve">
+    <value>Selecteer assets</value>
+  </data>
+  <data name="selectDateRange" xml:space="preserve">
+    <value>Datumbereik selecteren</value>
+  </data>
+  <data name="selectFuelPercentRemaining" xml:space="preserve">
+    <value>Selecteer brandstof % resterend</value>
+  </data>
+  <data name="selectGroup" xml:space="preserve">
+    <value>Groep selecteren</value>
+  </data>
+  <data name="selectProductFamily" xml:space="preserve">
+    <value>Productfamilie selecteren</value>
+  </data>
+  <data name="selectSite" xml:space="preserve">
+    <value>Site selecteren</value>
+  </data>
+  <data name="selectedDesign" xml:space="preserve">
+    <value>Geselecteerd ontwerp</value>
+  </data>
+  <data name="selectionLimitReached" xml:space="preserve">
+    <value>Selectielimiet bereikt</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Verzenden</value>
+  </data>
+  <data name="sensor" xml:space="preserve">
+    <value>Sensor</value>
+  </data>
+  <data name="serialNumber" xml:space="preserve">
+    <value>Serienummer</value>
+  </data>
+  <data name="serverBuildNumber" xml:space="preserve">
+    <value>Server build nummer</value>
+  </data>
+  <data name="service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="serviceDate" xml:space="preserve">
+    <value>Datum service</value>
+  </data>
+  <data name="ServiceDue" xml:space="preserve">
+    <value>Service verwacht</value>
+  </data>
+  <data name="ServiceDueMileageBased" xml:space="preserve">
+    <value>Service verwacht (gebaseerd op kilometers)</value>
+  </data>
+  <data name="serviceDueReport" xml:space="preserve">
+    <value>Service verwacht rapport</value>
+  </data>
+  <data name="MaintenanceHistoryReport" xml:space="preserve">
+    <value>Service historie rapport</value>
+  </data>
+  <data name="serviceInterval" xml:space="preserve">
+    <value>Service interval</value>
+  </data>
+  <data name="serviceIntervalCompleted" xml:space="preserve">
+    <value>Service interval voltooid</value>
+  </data>
+  <data name="serviceIntervals" xml:space="preserve">
+    <value>Service intervallen</value>
+  </data>
+  <data name="serviceNotes" xml:space="preserve">
+    <value>Service notities</value>
+  </data>
+  <data name="serviceStopped" xml:space="preserve">
+    <value>Service gestopt</value>
+  </data>
+  <data name="servicesOffered" xml:space="preserve">
+    <value>Aangeboden services</value>
+  </data>
+  <data name="sessionExpired" xml:space="preserve">
+    <value>Sessie verlopen door inactiviteit of dubbel inloggen.</value>
+  </data>
+  <data name="severity" xml:space="preserve">
+    <value>Zwaarte</value>
+  </data>
+  <data name="SavTerminationHeaderForBss" xml:space="preserve">
+    <value>Gedeelde asset weergave voor de volgende assets is beëindigd door admin functies uitgevoerd in Trimble Store. Neem contact op met de administrator van {0} voor meer informatie.</value>
+  </data>
+  <data name="SavTerminationHeaderForWizard" xml:space="preserve">
+    <value>Gedeelde asset weergave voor de volgende assets is beëindigd, ofwel doordat de aanmaker deze weergave heeft verwijderd, of doordat de weergave verlopen is.</value>
+  </data>
+  <data name="SavNotificationHeader" xml:space="preserve">
+    <value>Gedeelde asset weergave voor de volgende assets verloopt op {0}.</value>
+  </data>
+  <data name="SharedAssetViewReport" xml:space="preserve">
+    <value>Gedeelde asset weergave rapport</value>
+  </data>
+  <data name="sharedToOrganization" xml:space="preserve">
+    <value>Gedeeld met organisatie</value>
+  </data>
+  <data name="shrinkage" xml:space="preserve">
+    <value>Krimping</value>
+  </data>
+  <data name="SimCardRemovedTimerExpired" xml:space="preserve">
+    <value>SIM-kaart verwijderd</value>
+  </data>
+  <data name="site" xml:space="preserve">
+    <value>Site</value>
+  </data>
+  <data name="siteBoundary" xml:space="preserve">
+    <value>Site grens</value>
+  </data>
+  <data name="SiteEntry" xml:space="preserve">
+    <value>Site ingaan</value>
+  </data>
+  <data name="siteAlertsWarning" xml:space="preserve">
+    <value>Site ingaan en verlaten gebeurtenissen worden afgeleid van locaties ontvangen van de machine. Deze gebeurtenissen kunnen vertraagd zijn en mogelijk gemist worden, afhankelijk van wanneer de machine zijn locatie meldt.</value>
+  </data>
+  <data name="SiteEntryOrExit" xml:space="preserve">
+    <value>Site ingaan of verlaten</value>
+  </data>
+  <data name="siteEntryOutsideReportDateRange" xml:space="preserve">
+    <value>Site ingaan buiten rapport datumbereik</value>
+  </data>
+  <data name="SiteExit" xml:space="preserve">
+    <value>Site verlaten</value>
+  </data>
+  <data name="siteExitOutsideReportDateRange" xml:space="preserve">
+    <value>Site verlaten buiten rapport datumbereik</value>
+  </data>
+  <data name="siteName" xml:space="preserve">
+    <value>Naam site</value>
+  </data>
+  <data name="SiteRuntime" xml:space="preserve">
+    <value>Site draaitijd rapport</value>
+  </data>
+  <data name="siteRuntimeReport" xml:space="preserve">
+    <value>Site draaitijd rapport</value>
+  </data>
+  <data name="sitetoSite" xml:space="preserve">
+    <value>Site tot site</value>
+  </data>
+  <data name="sites" xml:space="preserve">
+    <value>Sites</value>
+  </data>
+  <data name="toManyPoints" xml:space="preserve">
+    <value>Sites mogen maximaal 50 punten bevatten.</value>
+  </data>
+  <data name="skipped" xml:space="preserve">
+    <value>Overgeslagen</value>
+  </data>
+  <data name="smuLocation" xml:space="preserve">
+    <value>SMU locatie</value>
+  </data>
+  <data name="deviceTypeSNM451" xml:space="preserve">
+    <value>SNM451</value>
+  </data>
+  <data name="errorMessage" xml:space="preserve">
+    <value>Sorry, er was een probleem bij de verwerking van uw aanvraag. Probeer het opnieuw.</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Bron</value>
+  </data>
+  <data name="Speeding" xml:space="preserve">
+    <value>Te snel rijden</value>
+  </data>
+  <data name="sqft" xml:space="preserve">
+    <value>sq ft</value>
+  </data>
+  <data name="sqm" xml:space="preserve">
+    <value>vk m</value>
+  </data>
+  <data name="SS" xml:space="preserve">
+    <value>SS</value>
+  </data>
+  <data name="standardMode" xml:space="preserve">
+    <value>Standaard modus</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="startDate" xml:space="preserve">
+    <value>Start datum</value>
+  </data>
+  <data name="startHourMeter" xml:space="preserve">
+    <value>Start urenteller</value>
+  </data>
+  <data name="startLocation" xml:space="preserve">
+    <value>Start locatie</value>
+  </data>
+  <data name="startMode" xml:space="preserve">
+    <value>Startmodus</value>
+  </data>
+  <data name="startSpeedDateTime" xml:space="preserve">
+    <value>Begin te snel datum en tijd</value>
+  </data>
+  <data name="startSpeedLocation" xml:space="preserve">
+    <value>Begin te snel locatie</value>
+  </data>
+  <data name="startTime" xml:space="preserve">
+    <value>Start tijd</value>
+  </data>
+  <data name="StateMileageReport" xml:space="preserve">
+    <value>State Mileage</value>
+  </data>
+  <data name="stateProvince" xml:space="preserve">
+    <value>Staat/Provincie</value>
+  </data>
+  <data name="state" xml:space="preserve">
+    <value>StateWise</value>
+  </data>
+  <data name="station" xml:space="preserve">
+    <value>Station</value>
+  </data>
+  <data name="StationOffset" xml:space="preserve">
+    <value>Station offset rapport</value>
+  </data>
+  <data name="stationOffsetReport" xml:space="preserve">
+    <value>Station offset rapport</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="stn" xml:space="preserve">
+    <value>Stn</value>
+  </data>
+  <data name="stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="stopLocation" xml:space="preserve">
+    <value>Stop locatie</value>
+  </data>
+  <data name="stopSpeedDateTime" xml:space="preserve">
+    <value>Stop te snel datum en tijd</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Geslaagd</value>
+  </data>
+  <data name="suggestUsingTargetOverride" xml:space="preserve">
+    <value>Stel gebruik van gewenste ophef instelling voor.</value>
+  </data>
+  <data name="SummaryData" xml:space="preserve">
+    <value>Data samenvatting</value>
+  </data>
+  <data name="summaryOfLoadsByHaulDistance" xml:space="preserve">
+    <value>Samenvatting van ladingen per transport afstand</value>
+  </data>
+  <data name="summaryVolumes" xml:space="preserve">
+    <value>Samenvatting volumes</value>
+  </data>
+  <data name="summaryVolumesReport" xml:space="preserve">
+    <value>Totale volumes rapport</value>
+  </data>
+  <data name="surplusDeficitVolume" xml:space="preserve">
+    <value>Overschot/tekort volume</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>Schakelaar</value>
+  </data>
+  <data name="switchClosed" xml:space="preserve">
+    <value>Schakelaar gesloten</value>
+  </data>
+  <data name="switchName" xml:space="preserve">
+    <value>Naam schakelaar</value>
+  </data>
+  <data name="switchOn" xml:space="preserve">
+    <value>Schakelaar AAN</value>
+  </data>
+  <data name="switchOpen" xml:space="preserve">
+    <value>Schakelaar open</value>
+  </data>
+  <data name="switchtoSiteorSitetoSwitch" xml:space="preserve">
+    <value>Schakelaar tot site of Site tot schakelaar</value>
+  </data>
+  <data name="switchtoSwitch" xml:space="preserve">
+    <value>Schakelaar tot schakelaar</value>
+  </data>
+  <data name="tagfileLiftNumber" xml:space="preserve">
+    <value>Tag-bestand laag nummer</value>
+  </data>
+  <data name="tamperResistance" xml:space="preserve">
+    <value>Manipulatie beveiliging</value>
+  </data>
+  <data name="TamperResolvedConnectiontoOffBoard" xml:space="preserve">
+    <value>Manipulatie opgelost</value>
+  </data>
+  <data name="TamperUninstalled" xml:space="preserve">
+    <value>Manipulatie gede-installeerd</value>
+  </data>
+  <data name="deviceTypeTAP66" xml:space="preserve">
+    <value>TAP66</value>
+  </data>
+  <data name="target" xml:space="preserve">
+    <value>Doel</value>
+  </data>
+  <data name="targetCMV" xml:space="preserve">
+    <value>Gewenste CMV</value>
+  </data>
+  <data name="targetCMVRange" xml:space="preserve">
+    <value>Gewenst CMV bereik</value>
+  </data>
+  <data name="targetMDP" xml:space="preserve">
+    <value>Gewenste MDP</value>
+  </data>
+  <data name="targetMDPRange" xml:space="preserve">
+    <value>Gewenst MDP bereik</value>
+  </data>
+  <data name="targetPassCount" xml:space="preserve">
+    <value>Gewenste werkgangen</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Temperatuur</value>
+  </data>
+  <data name="temperatureReport" xml:space="preserve">
+    <value>Temperatuur rapport</value>
+  </data>
+  <data name="terrain" xml:space="preserve">
+    <value>Terrein</value>
+  </data>
+  <data name="aempInformation" xml:space="preserve">
+    <value>De AEMP informatie geeft de gebruiker toegang tot overzichtsgegevens van zijn vloot, waarmee trendanalyses en data inspectie op hoog niveau mogelijk zijn.</value>
+  </data>
+  <data name="assetUtilizationDescription" xml:space="preserve">
+    <value>De Asset gebruik API geeft de asset gebruiksinformatie terug (zoals stationair tijd, werktijd, enz.) voor elk individueel asset in de vloot dat gebruik ondersteunt. Om de feed te krijgen, moeten alle assets een geldig Core en Health serviceplan voor de gegeven periode hebben.</value>
+  </data>
+  <data name="assetsDescription" xml:space="preserve">
+    <value>De Assets API is simpelweg de lijst van alle assets in uw vloot. Deze API geeft meer gedetailleerde informatie (d.w.z. productfamilie, bouwjaar, type en serienummer van apparaat, enz.) over elk individueel asset in uw vloot.</value>
+  </data>
+  <data name="dcToIRecDatumFailedToLoad" xml:space="preserve">
+    <value>Datum CSIB is niet geladen (DCToIRecord converter)</value>
+  </data>
+  <data name="fleetSummaryDescription" xml:space="preserve">
+    <value>De Vloot samenvatting data feed biedt een overzicht op hoog niveau van de huidige status van uw vloot. Deze bevat informatie zoals SMU locatie, kilometers, rapportage status, locatie, enz. voor elk asset in uw vloot.</value>
+  </data>
+  <data name="unsubscribedAssets" xml:space="preserve">
+    <value>De volgende assets worden niet ondersteund voor dit rapport voor de geselecteerde periode. Foutcode samenvatting informatie is alleen beschikbaar voor PL321 en 522/523 apparaten met een actief Cat® Health serviceplan.</value>
+  </data>
+  <data name="noReportDataAssets" xml:space="preserve">
+    <value>De volgende assets hebben geen data aan dit rapport bijgedragen</value>
+  </data>
+  <data name="reportDataAssets" xml:space="preserve">
+    <value>De volgende assets hebben data aan dit rapport bijgedragen</value>
+  </data>
+  <data name="noDataAssets" xml:space="preserve">
+    <value>De volgende assets hebben geen data</value>
+  </data>
+  <data name="noDataSites" xml:space="preserve">
+    <value>De volgende sites hebben geen data</value>
+  </data>
+  <data name="fuelUtilizationDescription" xml:space="preserve">
+    <value>De Brandstof gebruik API levert de brandstof gebruik informatie (zoals verbruik stationair, aan het werk, enz.) voor elk individueel asset in de vloot dat gebruik ondersteunt. Om de feed te ontvangen, moeten alle assets een geldig Core en Health serviceplan voor de gegeven periode hebben.</value>
+  </data>
+  <data name="invalidUser003" xml:space="preserve">
+    <value>Het ingevoerde wachtwoord is onjuist.\nUw account is geblokkeerd, probeer het na 30 minuten.</value>
+  </data>
+  <data name="invalidUser001" xml:space="preserve">
+    <value>Door u ingevoerde gebruikersnaam of wachtwoord is onjuist.</value>
+  </data>
+  <data name="erroneousFuel" xml:space="preserve">
+    <value>De {0} meldde onverwacht brandstofverbruik voor de periode.</value>
+  </data>
+  <data name="erroneousIdleTime" xml:space="preserve">
+    <value>De {0} meldde onverwachte stationairtijd voor de periode.</value>
+  </data>
+  <data name="erroneousRuntime" xml:space="preserve">
+    <value>De {0} meldde onverwachte draaitijd voor de periode.</value>
+  </data>
+  <data name="erroneousWorkingTime" xml:space="preserve">
+    <value>De {0} meldde onverwachte werktijd voor de periode.</value>
+  </data>
+  <data name="issueSendingEmail" xml:space="preserve">
+    <value>Er was een probleem bij het verzenden van de e-mail. Neem contact op met de administrator.</value>
+  </data>
+  <data name="InvalidUserAccess" xml:space="preserve">
+    <value>Dit account is niet geconfigureerd voor VisionLink client toegang. Gebruik andere inloggegevens of neem contact op met Support.</value>
+  </data>
+  <data name="assetOperationDescription" xml:space="preserve">
+    <value>Dit eindpunt is verantwoordelijk voor het leveren van asset informatie zoals werktijd en stationair tijd als er werk definities worden gebruikt voor de berekening van gebruiksinformatie. Om de feed te krijgen, moeten alle assets een geldig Core en Health serviceplan voor de gegeven periode hebben.</value>
+  </data>
+  <data name="requiredField" xml:space="preserve">
+    <value>Dit veld is vereist.</value>
+  </data>
+  <data name="incompleteLoadError" xml:space="preserve">
+    <value>Dit is een onvolledige lading - hardware data fout</value>
+  </data>
+  <data name="incompleteLoadNoDump" xml:space="preserve">
+    <value>Dit is een onvolledige lading - geen lostijd gevonden</value>
+  </data>
+  <data name="incompleteLoadNoLoad" xml:space="preserve">
+    <value>Dit is een onvolledige lading - geen laadtijd gevonden</value>
+  </data>
+  <data name="incompleteLoad" xml:space="preserve">
+    <value>Dit is een onvolledige ladingen telling</value>
+  </data>
+  <data name="TrimbleOperationsReportDescription" xml:space="preserve">
+    <value>This report provides the list of users and their details, who fall under the category of Corporate.</value>
+  </data>
+  <data name="InActiveSchedule" xml:space="preserve">
+    <value>Dit geplande rapport is ongeldig. Neem contact op met uw VisionLink administrator om dit rapport te wijzigen.</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Tijd</value>
+  </data>
+  <data name="geolocationTimeout" xml:space="preserve">
+    <value>Time-out bij ophalen van locatie.</value>
+  </data>
+  <data name="timedOut" xml:space="preserve">
+    <value>Time-out</value>
+  </data>
+  <data name="TireMonitoring" xml:space="preserve">
+    <value>Banden monitoring</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="deviceTypeTM3000" xml:space="preserve">
+    <value>TM3000</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Vandaag</value>
+  </data>
+  <data name="ton" xml:space="preserve">
+    <value>Ton</value>
+  </data>
+  <data name="tonne" xml:space="preserve">
+    <value>ton</value>
+  </data>
+  <data name="tooThickLayer" xml:space="preserve">
+    <value>Te dikke laag</value>
+  </data>
+  <data name="topSurface" xml:space="preserve">
+    <value>Bovenste oppervlak</value>
+  </data>
+  <data name="topCyclesPerHour" xml:space="preserve">
+    <value>Bovenste {0} - cycli/uur (totaal)</value>
+  </data>
+  <data name="topPayloadPerCycle" xml:space="preserve">
+    <value>Bovenste {0} - vracht/cyclus (totaal)</value>
+  </data>
+  <data name="topPayloadPerHour" xml:space="preserve">
+    <value>Bovenste {0} - vracht/uur (totaal)</value>
+  </data>
+  <data name="total" xml:space="preserve">
+    <value>Totaal</value>
+  </data>
+  <data name="totalAreaCovered" xml:space="preserve">
+    <value>Totale bewerkte oppervlakte</value>
+  </data>
+  <data name="totalCutVolume" xml:space="preserve">
+    <value>Totaal volume uitgegraven</value>
+  </data>
+  <data name="totalDistance" xml:space="preserve">
+    <value>Totale afstand</value>
+  </data>
+  <data name="totalFillVolume" xml:space="preserve">
+    <value>Totaal volume opgehoogd</value>
+  </data>
+  <data name="totalFuel" xml:space="preserve">
+    <value>Totale brandstof</value>
+  </data>
+  <data name="totalHoursByAsset" xml:space="preserve">
+    <value>Totale uren per asset</value>
+  </data>
+  <data name="totalIdleEvents" xml:space="preserve">
+    <value>Totale stationair gebeurtenissen</value>
+  </data>
+  <data name="totalIdleTime" xml:space="preserve">
+    <value>Totale stationair tijd</value>
+  </data>
+  <data name="totalLoads" xml:space="preserve">
+    <value>Totale ladingen</value>
+  </data>
+  <data name="totalMachineCovPlan" xml:space="preserve">
+    <value>Totale machinebewerking planoppervlakte</value>
+  </data>
+  <data name="totalRuntime" xml:space="preserve">
+    <value>Totale draaitijd</value>
+  </data>
+  <data name="totalTime" xml:space="preserve">
+    <value>Totale tijd</value>
+  </data>
+  <data name="totalVolume" xml:space="preserve">
+    <value>Totaal volume</value>
+  </data>
+  <data name="totals" xml:space="preserve">
+    <value>Totalen</value>
+  </data>
+  <data name="trackMapping" xml:space="preserve">
+    <value>Spoor vastleggen</value>
+  </data>
+  <data name="transmissionOilTemperature" xml:space="preserve">
+    <value>Transmission Oil Temperature</value>
+  </data>
+  <data name="transmissionOilTemperatureHeader" xml:space="preserve">
+    <value>Transmission Oil Temperature Report</value>
+  </data>
+  <data name="travel" xml:space="preserve">
+    <value>Onderweg</value>
+  </data>
+  <data name="truck" xml:space="preserve">
+    <value>Truck</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="ucid" xml:space="preserve">
+    <value>UCID</value>
+  </data>
+  <data name="invalidSessionID" xml:space="preserve">
+    <value>Verificatie met aangeleverd sessie ID niet mogelijk. A.u.b. inloggen.</value>
+  </data>
+  <data name="dcToIRecFailedToCreateCSIBObject" xml:space="preserve">
+    <value>Kon geen ICSIB object aanmaken (DCToIRecord converter)</value>
+  </data>
+  <data name="unableToDetermineDataModel" xml:space="preserve">
+    <value>Datamodel kan niet worden bepaald.</value>
+  </data>
+  <data name="unableToDetermineMachine" xml:space="preserve">
+    <value>Machine kan niet worden bepaald.</value>
+  </data>
+  <data name="UnableToDetermineProjectID" xml:space="preserve">
+    <value>Project ID kan niet worden bepaald</value>
+  </data>
+  <data name="dcToIRecFailedToGetZoneParams" xml:space="preserve">
+    <value>Kon geen zone parameters ophalen (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneParams" xml:space="preserve">
+    <value>Zone parameters konden niet worden ingesteld (DCToIRecord converter)</value>
+  </data>
+  <data name="underCompacted" xml:space="preserve">
+    <value>Onderverdicht</value>
+  </data>
+  <data name="undercompactedLayer" xml:space="preserve">
+    <value>Onderverdichte laag</value>
+  </data>
+  <data name="minLevel" xml:space="preserve">
+    <value>Onder min. niveau</value>
+  </data>
+  <data name="underPassTarget" xml:space="preserve">
+    <value>Onder gewenste werkgangen</value>
+  </data>
+  <data name="UnderPressure" xml:space="preserve">
+    <value>Onder druk</value>
+  </data>
+  <data name="unexpectedError" xml:space="preserve">
+    <value>Onverwachte fout</value>
+  </data>
+  <data name="erroneousFuelExcluded" xml:space="preserve">
+    <value>Onverwacht brandstofverbruik gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="erroneousFuelOrIdleTimeExcluded" xml:space="preserve">
+    <value>Onverwachte stationairtijd en/of brandstofverbruik gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="erroneousIdleTimeExcluded" xml:space="preserve">
+    <value>Onverwachte stationairtijd gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="erroneousFuelOrRuntimeExcluded" xml:space="preserve">
+    <value>Onverwachte draaitijd en/of brandstofverbruik gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="erroneousRuntimeExcluded" xml:space="preserve">
+    <value>Onverwachte draaitijd gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="erroneousFuelOrWorkingTimeExcluded" xml:space="preserve">
+    <value>Onverwachte werktijd en/of brandstofverbruik gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="erroneousWorkingOrRuntimeExcluded" xml:space="preserve">
+    <value>Onverwachte werk- of draaitijd gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="erroneousWorkingTimeExcluded" xml:space="preserve">
+    <value>Onverwachte werktijd gemeld door de {0} is uitgesloten van deze berekening.</value>
+  </data>
+  <data name="universalCustomer" xml:space="preserve">
+    <value>Universele klant</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Onbekend</value>
+  </data>
+  <data name="dcToIRecUnknownCSType" xml:space="preserve">
+    <value>Onbekend coördinatensysteem type (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnknownDatumModel" xml:space="preserve">
+    <value>Onbekende datum vereffening is aangetroffen en genegeerd (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownError" xml:space="preserve">
+    <value>Onbekende fout opgetreden</value>
+  </data>
+  <data name="geolocationUnknownError" xml:space="preserve">
+    <value>Onbekende fout bij ophalen van locatie.</value>
+  </data>
+  <data name="dcToIRecUnknownGeoidModel" xml:space="preserve">
+    <value>Onbekend geoïde model is aangetroffen en genegeerd (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownMachine" xml:space="preserve">
+    <value>Onbekende machine.</value>
+  </data>
+  <data name="dcToIRecUnknownProjType" xml:space="preserve">
+    <value>Onbekend projectie type (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownTagfileError" xml:space="preserve">
+    <value>Onbekende tagbestand fout</value>
+  </data>
+  <data name="Unsubscribe" xml:space="preserve">
+    <value>Uitschrijven</value>
+  </data>
+  <data name="UnsubscribeConfirmation" xml:space="preserve">
+    <value>Uitschrijven bevestigen</value>
+  </data>
+  <data name="unsupportedCSDFileType" xml:space="preserve">
+    <value>Niet-ondersteund coördinatensysteem definitie bestandstype</value>
+  </data>
+  <data name="dcToIRecUnsupportedDatum" xml:space="preserve">
+    <value>Niet-ondersteunde datum (DCToIRecord converter)</value>
+  </data>
+  <data name="unsupportedDisplayType" xml:space="preserve">
+    <value>Niet-ondersteund display type</value>
+  </data>
+  <data name="unsupportedFilterAttribute" xml:space="preserve">
+    <value>Niet-ondersteund filter attribuut</value>
+  </data>
+  <data name="dcToIRecUnsupportedGeoid" xml:space="preserve">
+    <value>Niet-ondersteunde geoïde (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnsupportedZoneOrientation" xml:space="preserve">
+    <value>Niet-ondersteunde zone oriëntatie (DCToIRecord converter)</value>
+  </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>Aanstaand</value>
+  </data>
+  <data name="update" xml:space="preserve">
+    <value>Updaten</value>
+  </data>
+  <data name="updateMeter" xml:space="preserve">
+    <value>Meter updaten</value>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>Gebruik</value>
+  </data>
+  <data name="useCurrentSelection" xml:space="preserve">
+    <value>Huidige selectie gebruiken</value>
+  </data>
+  <data name="userAccountsReportHeader" xml:space="preserve">
+    <value>Gebruikersaccounts rapport</value>
+  </data>
+  <data name="userActivity" xml:space="preserve">
+    <value>Gebruikersactiviteit</value>
+  </data>
+  <data name="userDefinedPolygon" xml:space="preserve">
+    <value>Door gebruiker gedefinieerde veelhoek</value>
+  </data>
+  <data name="geolocationPermissionDenied" xml:space="preserve">
+    <value>Gebruiker heeft gebruik van locatie geweigerd.</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Gebruiker bestaat niet. Neem contact op met uw beheerder.</value>
+  </data>
+  <data name="UserPrivilegesReport" xml:space="preserve">
+    <value>Gebruikersrechten rapport</value>
+  </data>
+  <data name="userType" xml:space="preserve">
+    <value>Type gebruiker</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Gebruikersnaam</value>
+  </data>
+  <data name="invalidUsernameOrPassword" xml:space="preserve">
+    <value>Gebruikersnaam of wachtwoord ongeldig. Probeer het opnieuw.</value>
+  </data>
+  <data name="utilizationCalloutsExistInData" xml:space="preserve">
+    <value>Gebruik opmerkingen aanwezig in data</value>
+  </data>
+  <data name="utilizationHours" xml:space="preserve">
+    <value>Gebruiksuren</value>
+  </data>
+  <data name="ValidMSSKey" xml:space="preserve">
+    <value>Geldige MSS code</value>
+  </data>
+  <data name="dateRangeCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Waarde bevat data die buiten geselecteerd datumbereik plaatsvond</value>
+  </data>
+  <data name="singleDayCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Waarde bevat data die buiten de opgegeven dag plaatsvindt</value>
+  </data>
+  <data name="mustBeUnformattedInteger" xml:space="preserve">
+    <value>Waarde moet worden weergegeven als geheel getal zonder komma's of decimale punten.</value>
+  </data>
+  <data name="varies" xml:space="preserve">
+    <value>Varieert</value>
+  </data>
+  <data name="emailVerified" xml:space="preserve">
+    <value>Verificatie status</value>
+  </data>
+  <data name="verified" xml:space="preserve">
+    <value>Geverifieerd</value>
+  </data>
+  <data name="vibeState" xml:space="preserve">
+    <value>Tril status</value>
+  </data>
+  <data name="fuelLevelSummary" xml:space="preserve">
+    <value>Bekijk assets die moeten bijtanken</value>
+  </data>
+  <data name="faultCodesSummary" xml:space="preserve">
+    <value>Foutcodes voor assets bekijken</value>
+  </data>
+  <data name="utilizationHoursSummary" xml:space="preserve">
+    <value>Gebruiksuren bekijken</value>
+  </data>
+  <data name="AlertsSummary" xml:space="preserve">
+    <value>Open alarmen voor een asset bekijken</value>
+  </data>
+  <data name="fuelBurnSummary" xml:space="preserve">
+    <value>Bekijk recent verbruik van assets</value>
+  </data>
+  <data name="vin" xml:space="preserve">
+    <value>VIN</value>
+  </data>
+  <data name="VisionLinkOperationsReport" xml:space="preserve">
+    <value>VisionLink - Activiteiten rapport</value>
+  </data>
+  <data name="EngineIdleDailyAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm account: {0} dagelijkse stationair uren {1} voor {2}/{3} op {4} bedrijfsurenteller {5}</value>
+  </data>
+  <data name="SpeedingAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm account: {0} {1}, max. snelheid: {2} km/h gedurende {3}/{4}. Stoptijd te snel rijden {5}</value>
+  </data>
+  <data name="SwitchAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm Account: {4} Schakelaar details voor {0}/{1} op {2} {3} </value>
+  </data>
+  <data name="AlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm Account: {4} {0} voor {1}/{2} om {3} Bedrijfsurenteller: {5}</value>
+  </data>
+  <data name="SecurityStatusAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm Account: {4} {0} voor {1}/{2} om {3} Bedrijfsurenteller: {5}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm Account: {5} {0} voor {1}/{2} om {3} {4} Bedrijfsurenteller: {6}</value>
+  </data>
+  <data name="FaultAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm Account: {5} {0} voor {1}/{2} om {3} {4} Zwaarte: {7} Bedrijfsurenteller: {6}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm Account: {5} {0} voor {1}/{2}. {3} verwacht om {4} uur. Bedrijfsurenteller: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink alarm Account: {5} {0} voor {1}/{2}. {3} verwacht op {4} kilometer.</value>
+  </data>
+  <data name="AlertSubject" xml:space="preserve">
+    <value>VisionLink alarm {0} voor ID: {1} Snr.: {2}</value>
+  </data>
+  <data name="ApiUserEmailSubject" xml:space="preserve">
+    <value>Hulp bij toegang tot VisionLink API</value>
+  </data>
+  <data name="visionLinkApiDocumentation" xml:space="preserve">
+    <value>VisionLink API documentatie</value>
+  </data>
+  <data name="visionLinkApiTopics" xml:space="preserve">
+    <value>VisionLink API onderwerpen</value>
+  </data>
+  <data name="visionLinkApiTopicsRequestAccess" xml:space="preserve">
+    <value>VisionLink API onderwerpen: verzoek om toegang</value>
+  </data>
+  <data name="visionLinkAPIDatafeedDocumentation" xml:space="preserve">
+    <value>VisionLink API: datafeed documentatie</value>
+  </data>
+  <data name="VLApp" xml:space="preserve">
+    <value>VisionLink applicaties</value>
+  </data>
+  <data name="FluidAnalysisAlertSubject" xml:space="preserve">
+    <value>VisionLink vloeistof analyse resultaten voor ID: {0} Snr.: {1}</value>
+  </data>
+  <data name="locationUnknownFeatureDisabled" xml:space="preserve">
+    <value>Locatie onbekende functie uitgeschakeld</value>
+  </data>
+  <data name="SavTerminationSubject" xml:space="preserve">
+    <value>VisionLink mededeling - Gedeelde asset weergave beëindigd</value>
+  </data>
+  <data name="ForgotPasswordEmailSubject" xml:space="preserve">
+    <value>VisionLink - hulp bij wachtwoord</value>
+  </data>
+  <data name="vlReadyAPITopicsDescription" xml:space="preserve">
+    <value>VisionLink Ready API's bieden een methode om uw VisionLink-gerelateerde data in een datafeed formaat te gebruiken dat ontworpen is voor eenvoudige toegang met programma's van derden. VisionLink Ready API's worden typisch gebruikt door dealers, klanten en integrators die VisionLink-gerelateerde data in hun ERP, administratie of ander systeem van derden willen integreren. Voor meer informatie over VisionLink Ready API raadpleegt u de &lt;a href="/Docs/{0}/VisionLink VL-Ready User Guide.pdf" class="contentLink" target="_blank"&gt;VL Ready User Guide&lt;/a&gt;.</value>
+  </data>
+  <data name="SavCreationSubject" xml:space="preserve">
+    <value>VisionLink gedeelde asset weergave aangemaakt door {0}</value>
+  </data>
+  <data name="SavNotificationSubject" xml:space="preserve">
+    <value>VisionLink gedeelde asset weergave einddatum melding</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink Banden monitoring alarm Account: {0}  {1}/{2} om {3} Bedrijfsurenteller: {4}</value>
+  </data>
+  <data name="UserAccountReportTitle" xml:space="preserve">
+    <value>VisionLink gebruikersaccounts rapport</value>
+  </data>
+  <data name="UserAccountsReport" xml:space="preserve">
+    <value>VisionLink User Account Report</value>
+  </data>
+  <data name="VerifyUserEmailSubject" xml:space="preserve">
+    <value>VisionLink gebruikersaccount verificatie</value>
+  </data>
+  <data name="vlReadyAPITopics" xml:space="preserve">
+    <value>VL Ready API onderwerpen</value>
+  </data>
+  <data name="vlmobileClient" xml:space="preserve">
+    <value>VLMobile Client</value>
+  </data>
+  <data name="volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="VolumesAndCompaction" xml:space="preserve">
+    <value>Volumes en verdichting</value>
+  </data>
+  <data name="warningTargetDataSometimesAbsent" xml:space="preserve">
+    <value>Waarschuwing! Doeldata soms afwezig.</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Wekelijks</value>
+  </data>
+  <data name="firstTimeLogin" xml:space="preserve">
+    <value>Welkom bij VisionLink. Log in op www.myvisionlink.com om uw wachtwoord te wijzigen.</value>
+  </data>
+  <data name="NewAccountEmailSubject" xml:space="preserve">
+    <value>Welkom bij VisionLink. Registreer a.u.b. uw account.</value>
+  </data>
+  <data name="wheelTracking" xml:space="preserve">
+    <value>Wiel volgen</value>
+  </data>
+  <data name="withinLevels" xml:space="preserve">
+    <value>Binnen niveaus</value>
+  </data>
+  <data name="workInProgress" xml:space="preserve">
+    <value>Werk in uitvoering</value>
+  </data>
+  <data name="working" xml:space="preserve">
+    <value>Aan het werk</value>
+  </data>
+  <data name="workingFuelBurned" xml:space="preserve">
+    <value>Verbruik werkend</value>
+  </data>
+  <data name="workingHours" xml:space="preserve">
+    <value>Uren werkend</value>
+  </data>
+  <data name="workingStatus" xml:space="preserve">
+    <value>Werkstatus</value>
+  </data>
+  <data name="workingTime" xml:space="preserve">
+    <value>Werktijd</value>
+  </data>
+  <data name="workingUtil" xml:space="preserve">
+    <value>Gebruik aan het werk</value>
+  </data>
+  <data name="AlreadyUnsubscribe" xml:space="preserve">
+    <value>U hebt zich al uitgeschreven voor dit rapport</value>
+  </data>
+  <data name="UnsubscribeConfirmationMessage" xml:space="preserve">
+    <value>U hebt gevraagd om u uit te schrijven voor gepland rapport '{0}'. Om te bevestigen, klikt u op 'OK'. Als u niets doet, wordt uw e-mailadres niet uitgeschreven.</value>
+  </data>
+  <data name="accountLocked" xml:space="preserve">
+    <value>Uw account is geblokkeerd. Probeer het opnieuw over 30 minuten.</value>
+  </data>
+  <data name="invalidUser002" xml:space="preserve">
+    <value>Uw account is vergrendeld. Probeer het na 30 minuten.</value>
+  </data>
+  <data name="UnsubscribeSuccessMessage" xml:space="preserve">
+    <value>Uw e-mailadres is met succes uitgeschreven uit '{0}'.</value>
+  </data>
+  <data name="passwordExpired" xml:space="preserve">
+    <value>Uw wachtwoord is verlopen. Log in op www.myvisionlink.com om uw wachtwoord te wijzigen.</value>
+  </data>
+  <data name="selectionLimitReachedMessage" xml:space="preserve">
+    <value>Uw selectie overschrijdt de systeemlimiet. Deze selectie wordt beperkt tot {0} assets.</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zone</value>
+  </data>
+  <data name="zoneExclusive" xml:space="preserve">
+    <value>Zone-exclusief</value>
+  </data>
+  <data name="zoneInclusive" xml:space="preserve">
+    <value>Zone-inclusief</value>
+  </data>
+  <data name="exceedsMaximumValue" xml:space="preserve">
+    <value>{0} overschrijdt de maximum waarde</value>
+  </data>
+  <data name="requiredFieldWithName" xml:space="preserve">
+    <value>{0} is een vereist veld.</value>
+  </data>
+  <data name="mustBeNumber" xml:space="preserve">
+    <value>{0} moet een getal zijn.</value>
+  </data>
+  <data name="mustBeValidDate" xml:space="preserve">
+    <value>{0} moet een geldige datum zijn.</value>
+  </data>
+  <data name="mustBeBetweenXandY" xml:space="preserve">
+    <value>{0} moet tussen {1} en {2} zijn.</value>
+  </data>
+  <data name="mustBeLessThanXCharacters" xml:space="preserve">
+    <value>{0} moet minder dan {1} tekens zijn.</value>
+  </data>
+  <data name="mustNotBeInTheFuture" xml:space="preserve">
+    <value>{0} moet niet in de toekomst zijn.</value>
+  </data>
+  <data name="ServiceDueAlertDescription" xml:space="preserve">
+    <value>{0} service verwacht op</value>
+  </data>
+</root>

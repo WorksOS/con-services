@@ -1,0 +1,922 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="VSS.Hosted.VLCommon.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="VSSHostedVLCommonStoreContainer">
+          <EntitySet Name="ECMAddressClaim" EntityType="VSS.Hosted.VLCommon.Store.ECMAddressClaim" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="GatewayServiceProvider" EntityType="VSS.Hosted.VLCommon.Store.GatewayServiceProvider" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="J1939ParameterParser" EntityType="VSS.Hosted.VLCommon.Store.J1939ParameterParser" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="MTSBIT" EntityType="VSS.Hosted.VLCommon.Store.MTSBIT" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="MTSDevice" EntityType="VSS.Hosted.VLCommon.Store.MTSDevice" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="MTSMessage" EntityType="VSS.Hosted.VLCommon.Store.MTSMessage" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="MTSOut" EntityType="VSS.Hosted.VLCommon.Store.MTSOut" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="MTSPortBasedMessages" EntityType="VSS.Hosted.VLCommon.Store.MTSPortBasedMessages" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="PLDevice" EntityType="VSS.Hosted.VLCommon.Store.PLDevice" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="PLMessage" EntityType="VSS.Hosted.VLCommon.Store.PLMessage" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="PLOut" EntityType="VSS.Hosted.VLCommon.Store.PLOut" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="RuntimeCalibration" EntityType="VSS.Hosted.VLCommon.Store.RuntimeCalibration" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="Sequence" EntityType="VSS.Hosted.VLCommon.Store.Sequence" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="SFD_MTSMessage" EntityType="VSS.Hosted.VLCommon.Store.SFD_MTSMessage" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="TTDevice" EntityType="VSS.Hosted.VLCommon.Store.TTDevice" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="TTMessage" EntityType="VSS.Hosted.VLCommon.Store.TTMessage" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="TTOut" EntityType="VSS.Hosted.VLCommon.Store.TTOut" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="UnitType" EntityType="VSS.Hosted.VLCommon.Store.UnitType" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <AssociationSet Name="FK_J1939ParameterParser_UnitType" Association="VSS.Hosted.VLCommon.Store.FK_J1939ParameterParser_UnitType">
+            <End Role="UnitType" EntitySet="UnitType" />
+            <End Role="J1939ParameterParser" EntitySet="J1939ParameterParser" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TTMessage_TTDevice" Association="VSS.Hosted.VLCommon.Store.FK_TTMessage_TTDevice">
+            <End Role="TTDevice" EntitySet="TTDevice" />
+            <End Role="TTMessage" EntitySet="TTMessage" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="ECMAddressClaim">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="J1939Name" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="SourceAddress" Type="tinyint" Nullable="false" />
+          <Property Name="ArbitraryAddressCapable" Type="bit" />
+          <Property Name="IndustryGroup" Type="tinyint" />
+          <Property Name="VehicleSystemInstance" Type="tinyint" />
+          <Property Name="VehicleSystem" Type="tinyint" />
+          <Property Name="J1939Function" Type="tinyint" />
+          <Property Name="FunctionInstance" Type="tinyint" />
+          <Property Name="ECUInstance" Type="tinyint" />
+          <Property Name="ManufacturerCode" Type="int" />
+          <Property Name="IdentityNumber" Type="int" />
+        </EntityType>
+        <EntityType Name="GatewayServiceProvider">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ProviderName" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="ServerIPAddress" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdateUTC" Type="datetime" Nullable="false" />
+          <Property Name="RetrieveFromUTC" Type="datetime" />
+          <Property Name="InProgress" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="J1939ParameterParser">
+          <Key>
+            <PropertyRef Name="PGN" />
+            <PropertyRef Name="SPN" />
+            <PropertyRef Name="SourceAddress" />
+          </Key>
+          <Property Name="PGN" Type="int" Nullable="false" />
+          <Property Name="SPN" Type="int" Nullable="false" />
+          <Property Name="SourceAddress" Type="int" Nullable="false" />
+          <Property Name="SignalName" Type="varchar" Nullable="false" MaxLength="100" />
+          <Property Name="Length" Type="int" />
+          <Property Name="fk_UnitTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSBIT">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ReceivedUTC" Type="datetime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="datetime" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="bigint" />
+          <Property Name="BlockID" Type="int" />
+          <Property Name="BlockPayload" Type="varbinary" Nullable="false" MaxLength="4000" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="DeviceType" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSDevice">
+          <Key>
+            <PropertyRef Name="SerialNumber" />
+          </Key>
+          <Property Name="BitPacketRate" Type="int" Nullable="false" />
+          <Property Name="LowPowerRate" Type="int" Nullable="false" />
+          <Property Name="SampleRate" Type="int" Nullable="false" />
+          <Property Name="UpdateRate" Type="int" Nullable="false" />
+          <Property Name="IsTCP" Type="bit" Nullable="false" />
+          <Property Name="UpdateUTC" Type="datetime" Nullable="false" />
+          <Property Name="LastServerName" Type="varchar" MaxLength="50" />
+          <Property Name="IpAddress" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="DeviceType" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ReceivedUTC" Type="datetime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="datetime" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="bigint" />
+          <Property Name="Payload" Type="varbinary" Nullable="false" MaxLength="4000" />
+          <Property Name="PacketID" Type="int" />
+          <Property Name="TypeID" Type="bigint" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="DeviceType" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSOut">
+          <Key>
+            <PropertyRef Name="ID" />
+            <PropertyRef Name="SentUTC" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="SentUTC" Type="datetime" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="Payload" Type="varbinary" Nullable="false" MaxLength="4000" />
+          <Property Name="SequenceID" Type="bigint" />
+          <Property Name="IsAck" Type="bit" Nullable="false" />
+          <Property Name="SentCount" Type="tinyint" />
+          <Property Name="PacketID" Type="int" />
+          <Property Name="TypeID" Type="int" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="DueUTC" Type="datetime2" />
+          <Property Name="SubTypeID" Type="int" />
+          <Property Name="DeviceType" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSPortBasedMessages">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="TypeID" Type="int" />
+          <Property Name="PacketID" Type="int" />
+          <Property Name="SequenceNumber" Type="bigint" />
+          <Property Name="Payload" Type="varbinary" Nullable="false" MaxLength="4000" />
+          <Property Name="ReceivedUTC" Type="datetime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="datetime" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="DeviceType" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PLDevice">
+          <Key>
+            <PropertyRef Name="ModuleCode" />
+          </Key>
+          <Property Name="ModuleCode" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="UpdateUTC" Type="datetime" Nullable="false" />
+          <Property Name="IsReadOnly" Type="bit" Nullable="false" />
+          <Property Name="InAmericas" Type="bit" Nullable="false" />
+          <Property Name="GlobalgramEnabled" Type="bit" />
+          <Property Name="SatelliteNumber" Type="int" />
+          <Property Name="OTADeregistrationSentUTC" Type="datetime2" />
+        </EntityType>
+        <EntityType Name="PLMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ModuleCode" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="ReceivedUTC" Type="datetime" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="128" />
+          <Property Name="Body" Type="nvarchar" Nullable="false" MaxLength="2000" />
+          <Property Name="MessageID" Type="bigint" />
+        </EntityType>
+        <EntityType Name="PLOut">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ModuleCode" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="InsertUTC" Type="datetime" />
+          <Property Name="SentUTC" Type="datetime" />
+          <Property Name="Status" Type="int" />
+          <Property Name="Subject" Type="nvarchar" MaxLength="128" />
+          <Property Name="Body" Type="nvarchar" MaxLength="2000" />
+          <Property Name="ConfirmationNumber" Type="bigint" />
+          <Property Name="OrbCommSendUTC" Type="datetime" />
+          <Property Name="SequenceID" Type="tinyint" />
+        </EntityType>
+        <EntityType Name="RuntimeCalibration">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="DeviceType" Type="int" Nullable="false" />
+          <Property Name="NewCalibrationHours" Type="float" Nullable="false" />
+          <Property Name="CurrentDeviceSMH" Type="float" />
+          <Property Name="DeltaHours" Type="float" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="UpdateUTC" Type="datetime2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sequence">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="PR3OutSequenceID" Type="bigint" Nullable="false" />
+          <Property Name="CCOutSequenceID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SFD_MTSMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" />
+          <Property Name="ReceivedUTC" Type="datetime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="datetime" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="bigint" />
+          <Property Name="Payload" Type="varbinary" Nullable="false" MaxLength="4000" />
+          <Property Name="PacketID" Type="int" />
+          <Property Name="TypeID" Type="int" />
+          <Property Name="SerialNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="DeviceType" Type="int" Nullable="false" />
+          <Property Name="PurgeUTC" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TTDevice">
+          <Key>
+            <PropertyRef Name="UnitID" />
+          </Key>
+          <Property Name="UnitID" Type="varchar" Nullable="false" MaxLength="15" />
+          <Property Name="LastSequenceNumber" Type="bigint" />
+          <Property Name="UpdateUTC" Type="datetime" Nullable="false" />
+          <Property Name="IMEI" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="TTMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="fk_TTDeviceUnitID" Type="varchar" Nullable="false" MaxLength="15" />
+          <Property Name="ReceivedUTC" Type="datetime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="datetime" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="bigint" />
+          <Property Name="Payload" Type="varchar" Nullable="false" MaxLength="250" />
+        </EntityType>
+        <EntityType Name="TTOut">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime" Nullable="false" />
+          <Property Name="SentUTC" Type="datetime" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="Payload" Type="varchar" Nullable="false" MaxLength="250" />
+          <Property Name="UnitID" Type="varchar" Nullable="false" MaxLength="15" />
+        </EntityType>
+        <EntityType Name="UnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="50" />
+        </EntityType>
+        <Association Name="FK_J1939ParameterParser_UnitType">
+          <End Role="UnitType" Type="VSS.Hosted.VLCommon.Store.UnitType" Multiplicity="1" />
+          <End Role="J1939ParameterParser" Type="VSS.Hosted.VLCommon.Store.J1939ParameterParser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="J1939ParameterParser">
+              <PropertyRef Name="fk_UnitTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TTMessage_TTDevice">
+          <End Role="TTDevice" Type="VSS.Hosted.VLCommon.Store.TTDevice" Multiplicity="1" />
+          <End Role="TTMessage" Type="VSS.Hosted.VLCommon.Store.TTMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TTDevice">
+              <PropertyRef Name="UnitID" />
+            </Principal>
+            <Dependent Role="TTMessage">
+              <PropertyRef Name="fk_TTDeviceUnitID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="usp_MTSBIT_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="sn" Type="varchar" Mode="In" />
+          <Parameter Name="receivedUTC" Type="datetime" Mode="In" />
+          <Parameter Name="generatedUTC" Type="datetime" Mode="In" />
+          <Parameter Name="insertUTC" Type="datetime" Mode="In" />
+          <Parameter Name="payload" Type="varbinary" Mode="In" />
+          <Parameter Name="seqNum" Type="bigint" Mode="In" />
+          <Parameter Name="BlockID" Type="int" Mode="In" />
+          <Parameter Name="BlockPayload" Type="varbinary" Mode="In" />
+          <Parameter Name="DeviceTypeID" Type="int" Mode="In" />
+          <Parameter Name="PR3Message" Type="bigint" Mode="InOut" />
+        </Function>
+        <Function Name="usp_MTSMessage_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="sn" Type="varchar" Mode="In" />
+          <Parameter Name="receivedUTC" Type="datetime" Mode="In" />
+          <Parameter Name="generatedUTC" Type="datetime" Mode="In" />
+          <Parameter Name="insertUTC" Type="datetime" Mode="In" />
+          <Parameter Name="sequenceNum" Type="bigint" Mode="In" />
+          <Parameter Name="payload" Type="varbinary" Mode="In" />
+          <Parameter Name="packetID" Type="int" Mode="In" />
+          <Parameter Name="typeID" Type="bigint" Mode="In" />
+          <Parameter Name="deviceTypeID" Type="int" Mode="In" />
+          <Parameter Name="PR3Message" Type="bigint" Mode="InOut" />
+        </Function>
+        <Function Name="usp_MTSOut_DueNotifier" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="svrName" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="usp_MTSOut_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="sn" Type="varchar" Mode="In" />
+          <Parameter Name="insertUTC" Type="datetime" Mode="In" />
+          <Parameter Name="sentUTC" Type="datetime" Mode="In" />
+          <Parameter Name="status" Type="int" Mode="In" />
+          <Parameter Name="payload" Type="varbinary" Mode="In" />
+          <Parameter Name="seqNum" Type="bigint" Mode="In" />
+          <Parameter Name="isAck" Type="bit" Mode="In" />
+          <Parameter Name="sentCount" Type="tinyint" Mode="In" />
+          <Parameter Name="packetID" Type="int" Mode="In" />
+          <Parameter Name="typeID" Type="int" Mode="In" />
+          <Parameter Name="deviceTypeID" Type="int" Mode="In" />
+          <Parameter Name="PR3Out" Type="bigint" Mode="InOut" />
+        </Function>
+        <Function Name="usp_MTSOut_UpdatePosnPollStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SN" Type="varchar" Mode="In" />
+          <Parameter Name="Status" Type="int" Mode="In" />
+          <Parameter Name="PacketID" Type="int" Mode="In" />
+          <Parameter Name="deviceTypeID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_MTSOut_UpdateSentStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="messageId" Type="bigint" Mode="In" />
+          <Parameter Name="sentCount" Type="tinyint" Mode="In" />
+          <Parameter Name="sentUTC" Type="datetime" Mode="In" />
+          <Parameter Name="status" Type="int" Mode="In" />
+        </Function>
+        <Function Name="usp_MTSOut_UpdateStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="SN" Type="varchar" Mode="In" />
+          <Parameter Name="Status" Type="int" Mode="In" />
+          <Parameter Name="SequenceID" Type="bigint" Mode="In" />
+        </Function>
+        <Function Name="usp_MTSPortBasedMessages_Insert" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="sn" Type="varchar" Mode="In" />
+          <Parameter Name="receivedUTC" Type="datetime" Mode="In" />
+          <Parameter Name="generatedUTC" Type="datetime" Mode="In" />
+          <Parameter Name="insertUTC" Type="datetime" Mode="In" />
+          <Parameter Name="seqNum" Type="bigint" Mode="In" />
+          <Parameter Name="PacketID" Type="int" Mode="In" />
+          <Parameter Name="TypeID" Type="int" Mode="In" />
+          <Parameter Name="payload" Type="varbinary" Mode="In" />
+          <Parameter Name="deviceTypeID" Type="int" Mode="In" />
+          <Parameter Name="PR3Message" Type="bigint" Mode="InOut" />
+        </Function>
+        <Function Name="usp_PLMessageSave" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Data" Type="xml" Mode="In" />
+        </Function>
+        <Function Name="usp_PLOut_DueNotifier" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="usp_PLOutUpdateConfirmationNumber" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Data" Type="xml" Mode="In" />
+        </Function>
+        <Function Name="usp_PLOutUpdateStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Data" Type="xml" Mode="In" />
+        </Function>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="VSS.Hosted.VLCommon" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="NH_RAW" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+          <EntitySet Name="ECMAddressClaim" EntityType="VSS.Hosted.VLCommon.ECMAddressClaim" />
+          <EntitySet Name="GatewayServiceProvider" EntityType="VSS.Hosted.VLCommon.GatewayServiceProvider" />
+          <EntitySet Name="MTSBIT" EntityType="VSS.Hosted.VLCommon.MTSBIT" />
+          <EntitySet Name="MTSDevice" EntityType="VSS.Hosted.VLCommon.MTSDevice" />
+          <EntitySet Name="MTSMessage" EntityType="VSS.Hosted.VLCommon.MTSMessage" />
+          <EntitySet Name="MTSOut" EntityType="VSS.Hosted.VLCommon.MTSOut" />
+          <EntitySet Name="MTSPortBasedMessages" EntityType="VSS.Hosted.VLCommon.MTSPortBasedMessages" />
+          <EntitySet Name="PLDevice" EntityType="VSS.Hosted.VLCommon.PLDevice" />
+          <EntitySet Name="PLMessage" EntityType="VSS.Hosted.VLCommon.PLMessage" />
+          <EntitySet Name="PLOut" EntityType="VSS.Hosted.VLCommon.PLOut" />
+          <EntitySet Name="RuntimeCalibration" EntityType="VSS.Hosted.VLCommon.RuntimeCalibration" />
+          <EntitySet Name="Sequence" EntityType="VSS.Hosted.VLCommon.Sequence" />
+          <EntitySet Name="SFD_MTSMessage" EntityType="VSS.Hosted.VLCommon.SFD_MTSMessage" />
+          <EntitySet Name="TTDevice" EntityType="VSS.Hosted.VLCommon.TTDevice" />
+          <EntitySet Name="TTMessage" EntityType="VSS.Hosted.VLCommon.TTMessage" />
+          <EntitySet Name="TTOut" EntityType="VSS.Hosted.VLCommon.TTOut" />
+          <AssociationSet Name="FK_TTMessage_TTDevice" Association="VSS.Hosted.VLCommon.FK_TTMessage_TTDevice">
+            <End Role="TTDevice" EntitySet="TTDevice" />
+            <End Role="TTMessage" EntitySet="TTMessage" />
+          </AssociationSet>
+          <EntitySet Name="UnitType" EntityType="VSS.Hosted.VLCommon.UnitType" />
+          <EntitySet Name="J1939ParameterParser" EntityType="VSS.Hosted.VLCommon.J1939ParameterParser" />
+          <AssociationSet Name="FK_J1939ParameterParser_UnitType" Association="VSS.Hosted.VLCommon.FK_J1939ParameterParser_UnitType">
+            <End Role="UnitType" EntitySet="UnitType" />
+            <End Role="J1939ParameterParser" EntitySet="J1939ParameterParser" />
+          </AssociationSet>
+          
+        </EntityContainer>
+        <EntityType Name="ECMAddressClaim">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="SourceAddress" Type="Byte" Nullable="false" />
+          <Property Type="String" Name="J1939Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Boolean" Name="ArbitraryAddressCapable" />
+          <Property Type="Byte" Name="IndustryGroup" />
+          <Property Type="Byte" Name="VehicleSystemInstance" />
+          <Property Type="Byte" Name="VehicleSystem" />
+          <Property Type="Byte" Name="J1939Function" />
+          <Property Type="Byte" Name="FunctionInstance" />
+          <Property Type="Byte" Name="ECUInstance" />
+          <Property Type="Int32" Name="ManufacturerCode" />
+          <Property Type="Int32" Name="IdentityNumber" />
+        </EntityType>
+        <EntityType Name="GatewayServiceProvider">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="ProviderName" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="ServerIPAddress" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="UserName" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Password" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" />
+          <Property Name="RetrieveFromUTC" Type="DateTime" />
+          <Property Name="InProgress" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSBIT">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="ReceivedUTC" Type="DateTime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="DateTime" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="Int64" />
+          <Property Name="BlockID" Type="Int32" />
+          <Property Name="BlockPayload" Type="Binary" Nullable="false" MaxLength="4000" FixedLength="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="DeviceType" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSDevice">
+          <Key>
+            <PropertyRef Name="SerialNumber" />
+          </Key>
+          <Property Name="BitPacketRate" Type="Int32" Nullable="false" />
+          <Property Name="LowPowerRate" Type="Int32" Nullable="false" />
+          <Property Name="SampleRate" Type="Int32" Nullable="false" />
+          <Property Name="UpdateRate" Type="Int32" Nullable="false" />
+          <Property Name="IsTCP" Type="Boolean" Nullable="false" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" />
+          <Property Name="LastServerName" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="IpAddress" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="DeviceType" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="ReceivedUTC" Type="DateTime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="DateTime" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="Int64" />
+          <Property Name="Payload" Type="Binary" Nullable="false" MaxLength="4000" FixedLength="false" />
+          <Property Name="PacketID" Type="Int32" />
+          <Property Name="TypeID" Type="Int64" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="DeviceType" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSOut">
+          <Key>
+            <PropertyRef Name="SentUTC" />
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SentUTC" Type="DateTime" Nullable="false" DefaultValue="1900-01-01 00:00:00.000Z" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="Payload" Type="Binary" Nullable="false" MaxLength="4000" FixedLength="false" />
+          <Property Name="SequenceID" Type="Int64" />
+          <Property Name="IsAck" Type="Boolean" Nullable="false" />
+          <Property Name="SentCount" Type="Byte" />
+          <Property Name="PacketID" Type="Int32" />
+          <Property Name="TypeID" Type="Int32" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="DueUTC" Type="DateTime" />
+          <Property Name="SubTypeID" Type="Int32" />
+          <Property Name="DeviceType" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MTSPortBasedMessages">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="TypeID" Type="Int32" />
+          <Property Name="PacketID" Type="Int32" />
+          <Property Name="SequenceNumber" Type="Int64" />
+          <Property Name="Payload" Type="Binary" Nullable="false" MaxLength="4000" FixedLength="false" />
+          <Property Name="ReceivedUTC" Type="DateTime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="DateTime" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="DeviceType" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PLDevice">
+          <Key>
+            <PropertyRef Name="ModuleCode" />
+          </Key>
+          <Property Name="ModuleCode" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" />
+          <Property Name="IsReadOnly" Type="Boolean" Nullable="false" />
+          <Property Name="InAmericas" Type="Boolean" Nullable="false" />
+          <Property Name="GlobalgramEnabled" Type="Boolean" />
+          <Property Name="SatelliteNumber" Type="Int32" />
+          <Property Type="DateTime" Name="OTADeregistrationSentUTC" />
+        </EntityType>
+        <EntityType Name="PLMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="ModuleCode" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="ReceivedUTC" Type="DateTime" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="Subject" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Body" Type="String" Nullable="false" MaxLength="2000" Unicode="true" FixedLength="false" />
+          <Property Name="MessageID" Type="Int64" />
+        </EntityType>
+        <EntityType Name="PLOut">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="ModuleCode" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="InsertUTC" Type="DateTime" />
+          <Property Name="SentUTC" Type="DateTime" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="Subject" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+          <Property Name="Body" Type="String" MaxLength="2000" Unicode="true" FixedLength="false" />
+          <Property Name="ConfirmationNumber" Type="Int64" />
+          <Property Name="OrbCommSendUTC" Type="DateTime" />
+          <Property Name="SequenceID" Type="Byte" />
+        </EntityType>
+        <EntityType Name="RuntimeCalibration">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="DeviceType" Type="Int32" Nullable="false" />
+          <Property Name="NewCalibrationHours" Type="Double" Nullable="false" />
+          <Property Name="CurrentDeviceSMH" Type="Double" />
+          <Property Name="DeltaHours" Type="Double" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Sequence">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="PR3OutSequenceID" Type="Int64" Nullable="false" />
+          <Property Name="CCOutSequenceID" Type="Int64" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SFD_MTSMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="ReceivedUTC" Type="DateTime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="DateTime" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="Int64" />
+          <Property Name="Payload" Type="Binary" Nullable="false" MaxLength="4000" FixedLength="false" />
+          <Property Name="PacketID" Type="Int32" />
+          <Property Name="TypeID" Type="Int32" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="DeviceType" Type="Int32" Nullable="false" />
+          <Property Name="PurgeUTC" Type="DateTime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TTDevice">
+          <Key>
+            <PropertyRef Name="UnitID" />
+          </Key>
+          <Property Name="UnitID" Type="String" Nullable="false" MaxLength="15" Unicode="false" FixedLength="false" />
+          <Property Name="LastSequenceNumber" Type="Int64" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" />
+          <Property Name="IMEI" Type="String" Nullable="true" MaxLength="50" Unicode="false" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="TTMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="fk_TTDeviceUnitID" Type="String" Nullable="false" MaxLength="15" Unicode="false" FixedLength="false" />
+          <Property Name="ReceivedUTC" Type="DateTime" Nullable="false" />
+          <Property Name="GeneratedUTC" Type="DateTime" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SequenceNumber" Type="Int64" />
+          <Property Name="Payload" Type="String" Nullable="false" MaxLength="250" Unicode="false" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="TTOut">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+			<Property Type="String" Name="UnitID" Nullable="false" MaxLength="15" FixedLength="false" Unicode="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SentUTC" Type="DateTime" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="Payload" Type="String" Nullable="false" MaxLength="250" Unicode="false" FixedLength="false" />
+          
+        </EntityType>
+        <Association Name="FK_TTMessage_TTDevice">
+          <End Role="TTDevice" Type="VSS.Hosted.VLCommon.TTDevice" Multiplicity="1" />
+          <End Role="TTMessage" Type="VSS.Hosted.VLCommon.TTMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TTDevice">
+              <PropertyRef Name="UnitID" />
+            </Principal>
+            <Dependent Role="TTMessage">
+              <PropertyRef Name="fk_TTDeviceUnitID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="UnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="J1939ParameterParser">
+          <Key>
+            <PropertyRef Name="PGN" />
+            <PropertyRef Name="SPN" />
+            <PropertyRef Name="SourceAddress" />
+          </Key>
+          <Property Type="Int32" Name="PGN" Nullable="false" />
+          <Property Type="Int32" Name="SPN" Nullable="false" />
+          <Property Type="Int32" Name="SourceAddress" Nullable="false" />
+          <Property Type="String" Name="SignalName" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="Length" Nullable="true" />
+          <Property Type="Int32" Name="fk_UnitTypeID" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_J1939ParameterParser_UnitType">
+          <End Type="VSS.Hosted.VLCommon.UnitType" Role="UnitType" Multiplicity="1" />
+          <End Type="VSS.Hosted.VLCommon.J1939ParameterParser" Role="J1939ParameterParser" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitType">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="J1939ParameterParser">
+              <PropertyRef Name="fk_UnitTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="VSSHostedVLCommonStoreContainer" CdmEntityContainer="NH_RAW">
+          <EntitySetMapping Name="ECMAddressClaim"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.ECMAddressClaim"><MappingFragment StoreEntitySet="ECMAddressClaim">
+            <ScalarProperty Name="IdentityNumber" ColumnName="IdentityNumber" />
+                <ScalarProperty Name="ManufacturerCode" ColumnName="ManufacturerCode" />
+                <ScalarProperty Name="ECUInstance" ColumnName="ECUInstance" />
+                <ScalarProperty Name="FunctionInstance" ColumnName="FunctionInstance" />
+                <ScalarProperty Name="J1939Function" ColumnName="J1939Function" />
+                <ScalarProperty Name="VehicleSystem" ColumnName="VehicleSystem" />
+                <ScalarProperty Name="VehicleSystemInstance" ColumnName="VehicleSystemInstance" />
+                <ScalarProperty Name="IndustryGroup" ColumnName="IndustryGroup" />
+                <ScalarProperty Name="ArbitraryAddressCapable" ColumnName="ArbitraryAddressCapable" />
+                <ScalarProperty Name="J1939Name" ColumnName="J1939Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="SourceAddress" ColumnName="SourceAddress" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="GatewayServiceProvider"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.GatewayServiceProvider"><MappingFragment StoreEntitySet="GatewayServiceProvider">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ProviderName" ColumnName="ProviderName" />
+            <ScalarProperty Name="ServerIPAddress" ColumnName="ServerIPAddress" />
+            <ScalarProperty Name="UserName" ColumnName="UserName" />
+            <ScalarProperty Name="Password" ColumnName="Password" />
+            <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+            <ScalarProperty Name="RetrieveFromUTC" ColumnName="RetrieveFromUTC" />
+            <ScalarProperty Name="InProgress" ColumnName="InProgress" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="MTSBIT"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.MTSBIT"><MappingFragment StoreEntitySet="MTSBIT">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ReceivedUTC" ColumnName="ReceivedUTC" />
+            <ScalarProperty Name="GeneratedUTC" ColumnName="GeneratedUTC" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SequenceNumber" ColumnName="SequenceNumber" />
+            <ScalarProperty Name="BlockID" ColumnName="BlockID" />
+            <ScalarProperty Name="BlockPayload" ColumnName="BlockPayload" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="MTSDevice"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.MTSDevice"><MappingFragment StoreEntitySet="MTSDevice">
+                <ScalarProperty Name="BitPacketRate" ColumnName="BitPacketRate" />
+            <ScalarProperty Name="LowPowerRate" ColumnName="LowPowerRate" />
+            <ScalarProperty Name="SampleRate" ColumnName="SampleRate" />
+            <ScalarProperty Name="UpdateRate" ColumnName="UpdateRate" />
+            <ScalarProperty Name="IsTCP" ColumnName="IsTCP" />
+            <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+            <ScalarProperty Name="LastServerName" ColumnName="LastServerName" />
+            <ScalarProperty Name="IpAddress" ColumnName="IpAddress" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="MTSMessage"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.MTSMessage"><MappingFragment StoreEntitySet="MTSMessage">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ReceivedUTC" ColumnName="ReceivedUTC" />
+            <ScalarProperty Name="GeneratedUTC" ColumnName="GeneratedUTC" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SequenceNumber" ColumnName="SequenceNumber" />
+            <ScalarProperty Name="Payload" ColumnName="Payload" />
+            <ScalarProperty Name="PacketID" ColumnName="PacketID" />
+            <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="MTSOut"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.MTSOut"><MappingFragment StoreEntitySet="MTSOut">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SentUTC" ColumnName="SentUTC" />
+            <ScalarProperty Name="Status" ColumnName="Status" />
+            <ScalarProperty Name="Payload" ColumnName="Payload" />
+            <ScalarProperty Name="SequenceID" ColumnName="SequenceID" />
+            <ScalarProperty Name="IsAck" ColumnName="IsAck" />
+            <ScalarProperty Name="SentCount" ColumnName="SentCount" />
+            <ScalarProperty Name="PacketID" ColumnName="PacketID" />
+            <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="DueUTC" ColumnName="DueUTC" />
+            <ScalarProperty Name="SubTypeID" ColumnName="SubTypeID" />
+            <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="MTSPortBasedMessages"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.MTSPortBasedMessages"><MappingFragment StoreEntitySet="MTSPortBasedMessages">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+            <ScalarProperty Name="PacketID" ColumnName="PacketID" />
+            <ScalarProperty Name="SequenceNumber" ColumnName="SequenceNumber" />
+            <ScalarProperty Name="Payload" ColumnName="Payload" />
+            <ScalarProperty Name="ReceivedUTC" ColumnName="ReceivedUTC" />
+            <ScalarProperty Name="GeneratedUTC" ColumnName="GeneratedUTC" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="PLDevice"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.PLDevice"><MappingFragment StoreEntitySet="PLDevice">
+            <ScalarProperty Name="OTADeregistrationSentUTC" ColumnName="OTADeregistrationSentUTC" />
+                <ScalarProperty Name="ModuleCode" ColumnName="ModuleCode" />
+            <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+            <ScalarProperty Name="IsReadOnly" ColumnName="IsReadOnly" />
+            <ScalarProperty Name="InAmericas" ColumnName="InAmericas" />
+            <ScalarProperty Name="GlobalgramEnabled" ColumnName="GlobalgramEnabled" />
+            <ScalarProperty Name="SatelliteNumber" ColumnName="SatelliteNumber" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="PLMessage"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.PLMessage"><MappingFragment StoreEntitySet="PLMessage">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ModuleCode" ColumnName="ModuleCode" />
+            <ScalarProperty Name="ReceivedUTC" ColumnName="ReceivedUTC" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="Subject" ColumnName="Subject" />
+            <ScalarProperty Name="Body" ColumnName="Body" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="PLOut"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.PLOut"><MappingFragment StoreEntitySet="PLOut">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ModuleCode" ColumnName="ModuleCode" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SentUTC" ColumnName="SentUTC" />
+            <ScalarProperty Name="Status" ColumnName="Status" />
+            <ScalarProperty Name="Subject" ColumnName="Subject" />
+            <ScalarProperty Name="Body" ColumnName="Body" />
+            <ScalarProperty Name="ConfirmationNumber" ColumnName="ConfirmationNumber" />
+            <ScalarProperty Name="OrbCommSendUTC" ColumnName="OrbCommSendUTC" />
+            <ScalarProperty Name="SequenceID" ColumnName="SequenceID" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="RuntimeCalibration"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.RuntimeCalibration"><MappingFragment StoreEntitySet="RuntimeCalibration">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+            <ScalarProperty Name="NewCalibrationHours" ColumnName="NewCalibrationHours" />
+            <ScalarProperty Name="CurrentDeviceSMH" ColumnName="CurrentDeviceSMH" />
+            <ScalarProperty Name="DeltaHours" ColumnName="DeltaHours" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="Sequence"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.Sequence"><MappingFragment StoreEntitySet="Sequence">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="PR3OutSequenceID" ColumnName="PR3OutSequenceID" />
+            <ScalarProperty Name="CCOutSequenceID" ColumnName="CCOutSequenceID" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="SFD_MTSMessage"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.SFD_MTSMessage"><MappingFragment StoreEntitySet="SFD_MTSMessage">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="ReceivedUTC" ColumnName="ReceivedUTC" />
+            <ScalarProperty Name="GeneratedUTC" ColumnName="GeneratedUTC" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SequenceNumber" ColumnName="SequenceNumber" />
+            <ScalarProperty Name="Payload" ColumnName="Payload" />
+            <ScalarProperty Name="PacketID" ColumnName="PacketID" />
+            <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="DeviceType" ColumnName="DeviceType" />
+            <ScalarProperty Name="PurgeUTC" ColumnName="PurgeUTC" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="TTDevice"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.TTDevice"><MappingFragment StoreEntitySet="TTDevice">
+            <ScalarProperty Name="UnitID" ColumnName="UnitID" />
+            <ScalarProperty Name="LastSequenceNumber" ColumnName="LastSequenceNumber" />
+            <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+            <ScalarProperty Name="IMEI" ColumnName="IMEI" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="TTMessage"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.TTMessage"><MappingFragment StoreEntitySet="TTMessage">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="fk_TTDeviceUnitID" ColumnName="fk_TTDeviceUnitID" />
+            <ScalarProperty Name="ReceivedUTC" ColumnName="ReceivedUTC" />
+            <ScalarProperty Name="GeneratedUTC" ColumnName="GeneratedUTC" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SequenceNumber" ColumnName="SequenceNumber" />
+            <ScalarProperty Name="Payload" ColumnName="Payload" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="TTOut"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.TTOut"><MappingFragment StoreEntitySet="TTOut">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+			<ScalarProperty Name="UnitID" ColumnName="UnitID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="SentUTC" ColumnName="SentUTC" />
+            <ScalarProperty Name="Status" ColumnName="Status" />
+            <ScalarProperty Name="Payload" ColumnName="Payload" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="UnitType">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.UnitType">
+              <MappingFragment StoreEntitySet="UnitType">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="J1939ParameterParser">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.J1939ParameterParser">
+              <MappingFragment StoreEntitySet="J1939ParameterParser">
+                <ScalarProperty Name="fk_UnitTypeID" ColumnName="fk_UnitTypeID" />
+                <ScalarProperty Name="Length" ColumnName="Length" />
+                <ScalarProperty Name="SignalName" ColumnName="SignalName" />
+                <ScalarProperty Name="SourceAddress" ColumnName="SourceAddress" />
+                <ScalarProperty Name="SPN" ColumnName="SPN" />
+                <ScalarProperty Name="PGN" ColumnName="PGN" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="NHRawModel" ZoomLevel="97">
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.ECMAddressClaim" Width="1.5" PointX="5.75" PointY="0.75" Height="3.5186979166666656" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.GatewayServiceProvider" Width="1.5" PointX="5.625" PointY="5.5" Height="2.5571907552083335" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.MTSBIT" Width="1.5" PointX="7.75" PointY="0.75" Height="2.7494921874999996" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.MTSDevice" Width="1.5" PointX="3" PointY="1.5" Height="2.9417936197916656" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.MTSMessage" Width="1.5" PointX="7.75" PointY="4.75" Height="2.9417936197916674" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.MTSOut" Width="1.5" PointX="7.75" PointY="8.75" Height="3.7109993489583317" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.MTSPortBasedMessages" Width="1.5" PointX="9.75" PointY="0.75" Height="2.9417936197916674" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.PLDevice" Width="1.5" PointX="3" PointY="5.5" Height="1.9210009765624996" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.PLMessage" Width="1.5" PointX="9.75" PointY="4.75" Height="2.3648893229166674" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.PLOut" Width="1.5" PointX="9.75" PointY="8.75" Height="2.9417936197916674" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.RuntimeCalibration" Width="1.5" PointX="11.75" PointY="0.75" Height="2.5571907552083317" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.Sequence" Width="1.5" PointX="11.75" PointY="4.75" Height="1.5956835937500031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.SFD_MTSMessage" Width="1.5" PointX="11.75" PointY="7.75" Height="3.1340950520833388" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.TTDevice" Width="1.5" PointX="3" PointY="10.375" Height="1.7566536458333317" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.TTMessage" Width="1.5" PointX="5.25" PointY="8.875" Height="2.5571907552083388" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.TTOut" Width="1.5" PointX="5.25" PointY="12.125" Height="2.3648893229166674" IsExpanded="true" />
+        <AssociationConnector Association="VSS.Hosted.VLCommon.FK_TTMessage_TTDevice" ManuallyRouted="false">
+          <ConnectorPoint PointX="4.5" PointY="10.749847819010416" />
+          <ConnectorPoint PointX="5.25" PointY="10.749847819010416" />
+        </AssociationConnector>
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.UnitType" Width="1.5" PointX="12.375" PointY="11.75" Height="1.4033821614583388" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.J1939ParameterParser" Width="1.5" PointX="14.625" PointY="11.125" Height="2.0853483072916656" />
+        <AssociationConnector Association="VSS.Hosted.VLCommon.FK_J1939ParameterParser_UnitType">
+          <ConnectorPoint PointX="13.875" PointY="12.4639794921875" />
+          <ConnectorPoint PointX="14.625" PointY="12.4639794921875" />
+        </AssociationConnector>
+     
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>

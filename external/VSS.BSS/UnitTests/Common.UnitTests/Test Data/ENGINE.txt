@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine:topic xmlns:engine="http://www.cat.com/em/feed/v4/EngineParameters" xmlns:feed="http://www.cat.com/em/feed/v4/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v4/EngineParameters https://emfeed.rd.cat.com/EMFeedFiles/schema/v4/EngineParameters.xsd">
+   
+<nextBuffer>
+   <url>https://emfeed.rd.cat.com/EMFeedService/v4/feed/nighthawk/ENGINE/12252790</url>
+   <moreData>false</moreData>
+</nextBuffer>
+<message>
+      <header>
+         <messageId>12250362</messageId>
+
+         <masterMsgId>5518741</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DATA_FEED_TEST08783</moduleCode>
+         <moduleTime>2009-02-18 15:51:54</moduleTime>
+         <receivedTime>2009-02-18 15:51:54</receivedTime>
+      </header>
+      <maxFuel>
+         <value>76191</value>
+
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>3678</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+
+         <value>218103969</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>1076</value>
+         <uom>Count</uom>
+      </starts>
+
+      <revolutions>
+         <value>16249914</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+<message>
+      <header>
+         <messageId>12250388</messageId>
+
+         <masterMsgId>5518763</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DATA_FEED_TEST08783</moduleCode>
+         <moduleTime>2009-02-18 15:51:58</moduleTime>
+         <receivedTime>2009-02-18 15:51:58</receivedTime>
+      </header>
+      <maxFuel>
+         <value>0</value>
+
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>312</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+
+         <value>27572</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>1345</value>
+         <uom>Count</uom>
+      </starts>
+
+      <revolutions>
+         <value>34826758</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+   <message>
+      <header>
+         <messageId>12250388</messageId>
+
+         <masterMsgId>5518763</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DQ0200020816Q1</moduleCode>
+         <moduleTime>2009-02-18 15:51:58</moduleTime>
+         <receivedTime>2009-02-18 15:51:58</receivedTime>
+      </header>
+      <maxFuel>
+         <value>0</value>
+
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>312</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+
+         <value>27572</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>1345</value>
+         <uom>Count</uom>
+      </starts>
+
+      <revolutions>
+         <value>34826758</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+   <message>
+      <header>
+         <messageId>12250388</messageId>
+
+         <masterMsgId>5518763</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-02-18 15:51:58</moduleTime>
+         <receivedTime>2009-02-18 15:51:58</receivedTime>
+      </header>
+      <maxFuel>
+         <value>0</value>
+
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>312</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+
+         <value>27572</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>1345</value>
+         <uom>Count</uom>
+      </starts>
+
+      <revolutions>
+         <value>34826758</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+   <message>
+      <header>
+         <messageId>12250388</messageId>
+
+         <masterMsgId>5518763</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-02-18 15:51:58</moduleTime>
+         <receivedTime>2009-02-18 15:51:58</receivedTime>
+      </header>
+      <maxFuel>
+         <value>0</value>
+
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>312</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+
+         <value>27572</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>1345</value>
+         <uom>Count</uom>
+      </starts>
+
+      <revolutions>
+         <value>34826758</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+   <message>
+      <header>
+         <messageId>12250388</messageId>
+
+         <masterMsgId>5518763</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2019-02-18 15:51:58</moduleTime>
+         <receivedTime>2009-02-18 15:51:58</receivedTime>
+      </header>
+      <maxFuel>
+         <value>0</value>
+
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>312</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+
+         <value>27572</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>1345</value>
+         <uom>Count</uom>
+      </starts>
+
+      <revolutions>
+         <value>34826758</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+</engine:topic>
+

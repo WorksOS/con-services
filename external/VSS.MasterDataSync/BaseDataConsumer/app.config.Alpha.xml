@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<topicsToConsume>VSS.Interfaces.Events.MasterData.ISalesModelEvent.V2,VSS.Interfaces.Events.MasterData.IMakeEvent.V2,VSS.Interfaces.Events.MasterData.IProductFamilyEvent.V2</topicsToConsume>
+	<topicPrefix xdt:Transform="Remove"></topicPrefix>
+	<topicSuffix xdt:Transform="Replace">-Alpha</topicSuffix>
+	<kafkaDriver>IKVM</kafkaDriver>
+	<addKafkaMessageHeaders>false</addKafkaMessageHeaders>
+	<pollMs>5000</pollMs>
+	<databaseUser xdt:Transform="Replace">_NHOPSvc</databaseUser>
+	<databasePassword xdt:Transform="Replace">!beP7u-#u</databasePassword>
+	<databaseName xdt:Transform="Replace">VSS-Store</databaseName>
+	<databaseSuffix xdt:Transform="Replace">-Alpha</databaseSuffix>
+	<readDatabaseServer xdt:Transform="Replace">alpha-nh-raw.c31ahitxrkg7.us-west-2.rds.amazonaws.com</readDatabaseServer>
+	<writeDatabaseServer xdt:Transform="Replace">alpha-nh-raw.c31ahitxrkg7.us-west-2.rds.amazonaws.com</writeDatabaseServer>
+	<connectionString xdt:Transform="Replace">Data Source=XXXServerXXX;Initial Catalog=VSS-Store-Alpha;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True</connectionString>
+	<kafka>
+		<consumer>
+			<bootstrap.servers xdt:Transform="Replace">kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+			<group.id xdt:Transform="Replace">Alpha-MasterData-msg_md_basedata_svc</group.id>
+		</consumer>
+		<producer>
+			<bootstrap.servers xdt:Transform="Replace">kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+		</producer>
+	</kafka>
+</configuration>

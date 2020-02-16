@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<startStopTime:topic xmlns:startStopTime="http://www.cat.com/em/feed/v2/StartStopTime" xmlns:feed="http://www.cat.com/em/feed/v2/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v2/StartStopTime https://emfeed.rd.cat.com/EMFeedFiles/schema/v2/StartStopTime.xsd">
+   
+<nextBuffer>
+   <url>https://emfeed.rd.cat.com/EMFeedService/v2/feed/nighthawk/STARTSTOP/11973856</url>
+   <moreData>true</moreData>
+</nextBuffer>
+<message>
+      <header>
+         <messageId>11969228</messageId>
+
+         <masterMsgId>5491539</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DATA_FEED_TEST08783</moduleCode>
+         <moduleTime>2009-02-05 15:37:48</moduleTime>
+         <receivedTime>2009-02-05 15:37:48</receivedTime>
+      </header>
+      <totalStartStops>5</totalStartStops>
+      <startStopBlock>
+          <!-- invalid records will be removed -->
+          <startStop>
+            <start>1962-08-14 12:21:06</start>
+            <stop>2007-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-14 12:21:06</start>
+            <stop>2067-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>1962-08-14 12:21:06</start>
+            <stop>2067-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>         
+         <!-- end invalid -->
+         <startStop>
+            <start>2007-08-14 12:21:06</start>
+            <stop>2007-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-14 12:25:11</start>
+
+            <stop>2007-08-14 12:25:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:50:38</start>
+            <stop>2007-08-15 14:50:48</stop>
+            <operatorId>-1</operatorId>
+
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:51:07</start>
+            <stop>2007-08-15 14:51:20</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+
+            <start>2007-08-21 19:59:39</start>
+            <stop>2007-08-21 19:59:47</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+      </startStopBlock>
+   </message>
+<message>
+      <header>
+
+         <messageId>11969266</messageId>
+         <masterMsgId>5491584</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08764</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_351</model>
+
+            <nickname>NICK_351</nickname>
+         </equipment>
+         <moduleCode>-DATA_FEED_TEST08764</moduleCode>
+         <moduleTime>2009-02-05 15:37:53</moduleTime>
+         <receivedTime>2009-02-05 15:37:53</receivedTime>
+      </header>
+      <totalStartStops>5</totalStartStops>
+
+      <startStopBlock>
+         <startStop>
+            <start>2007-08-14 12:21:06</start>
+            <stop>2007-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+
+            <start>2007-08-14 12:25:11</start>
+            <stop>2007-08-14 12:25:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:50:38</start>
+            <stop>2007-08-15 14:50:48</stop>
+
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:51:07</start>
+            <stop>2007-08-15 14:51:20</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+
+         <startStop>
+            <start>2007-08-21 19:59:39</start>
+            <stop>2007-08-21 19:59:47</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+      </startStopBlock>
+   </message>
+   <message>
+      <header>
+
+         <messageId>11969266</messageId>
+         <masterMsgId>5491584</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08764</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_351</model>
+
+            <nickname>NICK_351</nickname>
+         </equipment>
+         <moduleCode>-DQ0200020816Q1</moduleCode>
+         <moduleTime>2009-02-05 15:37:53</moduleTime>
+         <receivedTime>2009-02-05 15:37:53</receivedTime>
+      </header>
+      <totalStartStops>5</totalStartStops>
+
+      <startStopBlock>
+         <startStop>
+            <start>2007-08-14 12:21:06</start>
+            <stop>2007-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+
+            <start>2007-08-14 12:25:11</start>
+            <stop>2007-08-14 12:25:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:50:38</start>
+            <stop>2007-08-15 14:50:48</stop>
+
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:51:07</start>
+            <stop>2007-08-15 14:51:20</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+
+         <startStop>
+            <start>2007-08-21 19:59:39</start>
+            <stop>2007-08-21 19:59:47</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+      </startStopBlock>
+   </message>
+   <message>
+      <header>
+
+         <messageId>11969266</messageId>
+         <masterMsgId>5491584</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08764</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_351</model>
+
+            <nickname>NICK_351</nickname>
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-02-05 15:37:53</moduleTime>
+         <receivedTime>2009-02-05 15:37:53</receivedTime>
+      </header>
+      <totalStartStops>5</totalStartStops>
+
+      <startStopBlock>
+         <startStop>
+            <start>2007-08-14 12:21:06</start>
+            <stop>2007-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+
+            <start>2007-08-14 12:25:11</start>
+            <stop>2007-08-14 12:25:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:50:38</start>
+            <stop>2007-08-15 14:50:48</stop>
+
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:51:07</start>
+            <stop>2007-08-15 14:51:20</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+
+         <startStop>
+            <start>2007-08-21 19:59:39</start>
+            <stop>2007-08-21 19:59:47</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+      </startStopBlock>
+   </message>
+   <message>
+      <header>
+
+         <messageId>11969266</messageId>
+         <masterMsgId>5491584</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08764</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_351</model>
+
+            <nickname>NICK_351</nickname>
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2019-02-05 15:37:53</moduleTime>
+         <receivedTime>2009-02-05 15:37:53</receivedTime>
+      </header>
+      <totalStartStops>5</totalStartStops>
+
+      <startStopBlock>
+         <startStop>
+            <start>2007-08-14 12:21:06</start>
+            <stop>2007-08-14 12:24:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+
+            <start>2007-08-14 12:25:11</start>
+            <stop>2007-08-14 12:25:51</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:50:38</start>
+            <stop>2007-08-15 14:50:48</stop>
+
+            <operatorId>-1</operatorId>
+         </startStop>
+         <startStop>
+            <start>2007-08-15 14:51:07</start>
+            <stop>2007-08-15 14:51:20</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+
+         <startStop>
+            <start>2007-08-21 19:59:39</start>
+            <stop>2007-08-21 19:59:47</stop>
+            <operatorId>-1</operatorId>
+         </startStop>
+      </startStopBlock>
+   </message>
+</startStopTime:topic>
+

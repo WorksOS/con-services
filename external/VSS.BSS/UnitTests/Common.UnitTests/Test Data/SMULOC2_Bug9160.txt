@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<smuLoc:topic xmlns:smuLoc="http://www.cat.com/em/feed/v2/ServiceMeterLocation"
+xmlns:feed="http://www.cat.com/em/feed/v2/Common"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.cat.com/em/feed/v2/ServiceMeterLocation https://emfeed.cat.com/EMFeedFiles/schema/v2/ServiceMeterLocation.xsd">
+
+  <nextBuffer>
+    <url>
+    https://emfeed.cat.com/EMFeedService/v2/feed/nighthawk/SMULOC/23595024</url>
+    <moreData>true</moreData>
+  </nextBuffer>
+  <message>
+
+<header>
+  <messageId>148079811</messageId> 
+  <masterMsgId>62737650</masterMsgId> 
+<equipment>
+  <serialNumber>DFP00497</serialNumber> 
+  <make>CAT</make> 
+  <model>324DL ARO</model> 
+  <nickname>248</nickname> 
+  </equipment>
+  <moduleCode>DQCAT0007917Q1</moduleCode> 
+  <moduleTime>2010-09-13 00:07:02</moduleTime> 
+  <receivedTime>2010-09-13 00:17:00</receivedTime> 
+  </header>
+<serviceMeter>
+  <value>1448</value> 
+  <uom>Hours</uom> 
+  </serviceMeter>
+<location>
+  <latitude>-32.303642</latitude> 
+  <longitude>151.9365</longitude> 
+  <validity>V</validity> 
+  </location>
+  </message>
+</smuLoc:topic>

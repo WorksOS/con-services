@@ -1,0 +1,3160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PowerModeAlertMessageBodySMS" xml:space="preserve">
+    <value>Учетная запись оповещений VisionLink: {0}. Установлен {1}: {2}, {3}/{4} в {5}</value>
+  </data>
+  <data name="2DProjectMonitoring" xml:space="preserve">
+    <value>2D-мониторинг проектов</value>
+  </data>
+  <data name="3DProjectMonitoring" xml:space="preserve">
+    <value>3D-мониторинг проектов</value>
+  </data>
+  <data name="deviceTypeTHREEPDATA" xml:space="preserve">
+    <value>3PDATA</value>
+  </data>
+  <data name="deviceTypeMTS523" xml:space="preserve">
+    <value>523</value>
+  </data>
+  <data name="zipDescription" xml:space="preserve">
+    <value>&lt;p&gt;These zip files contain example codes for the integration of VisionLink API. By default, the examples in these zip files invoke the production service. Please read the README.txt file to understand how to build the projects.&lt;/p&gt;&lt;p&gt;Note: These examples may contain VirtualSite Solutions' unpublished proprietary information which may constitute a trade secret and/or be confidential. These Sample codes are meant to be used purely for educational purposes assisting with usage and integration of VisionLink APIs and may not be copied or disclosed to others. Copyright notice is precautionary only, and does not imply publication.&lt;/p&gt;</value>
+  </data>
+  <data name="apiSiteIntroduction" xml:space="preserve">
+    <value>&lt;p&gt;Welcome to VisionLink API documentation. In this page you will find all the information you need to get started. You will also find a more detailed list of all the available services, sample codes and examples.&lt;/p&gt;&lt;p&gt;If you are not a programmer and just need an overview of the VisionLink API, please read the &lt;a href="/Docs/{0}/Overview.pdf" class="contentLink" target="_blank"&gt;Overview Document&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Read the &lt;a href="/Docs/{0}/ProgrammersReference.pdf" target="_blank" class="contentLink"&gt;Programmer’s Reference&lt;/a&gt; to learn more on how to use the API service. It is important that the VisionLink API users review this reference closely as it contains useful information that will expedite the integration process.&lt;/p&gt;&lt;p&gt; The first step in accessing the VisionLink API service is to acquire an API queue assignment as well as a non-expiring VisionLink API user account id/password. You can do that by contacting your account Administrator, requesting your choice of API topics, and following instructions in the Welcome email to set up your API password.&lt;/p&gt;</value>
+  </data>
+  <data name="diagnosticsDescription" xml:space="preserve">
+    <value>Диагностикой называется осуществляемый электронным блоком управления (ЭБУ) процесс обнаружения, отображения и (или) сохранения отклоняющейся от нормы информации о машинах или двигателях. Каждая диагностика представлена пятью элементами данных: уровень диагностики; идентификатор модуля (MID), сообщившего о диагностике, идентификатор диагностики (или идентификатор компонента, CID); индикатор режима сбоя (FMI) и временная метка диагностики.</value>
+  </data>
+  <data name="NewAccountSupportEmailBody" xml:space="preserve">
+    <value>Создана новая учетная запись VisionLink {0}. &lt;BR&gt;Сведения об учетной записи: &lt;BR&gt;Основной контакт: {1}&lt;BR&gt;  Адрес эл. почты: {2}&lt;BR&gt; Идентификатор BSS: {3} &lt;BR&gt;Ссылка для активации: {4}</value>
+  </data>
+  <data name="notEnoughPolygonPoints" xml:space="preserve">
+    <value>Граница полигона должна содержать как минимум 3 точки.</value>
+  </data>
+  <data name="SavCreationEmailHeader" xml:space="preserve">
+    <value>Создано представление общих единиц техники для просмотра указанных ниже единиц техники в учетной записи VisionLink. Для получения более подробной информации обратитесь к {0} в {1}</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="account" xml:space="preserve">
+    <value>Учетная запись</value>
+  </data>
+  <data name="SpeedingAlertEmailBody" xml:space="preserve">
+    <value>Учетное имя: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Предел скорости ед. техники: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Максимальная скорость: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Время окончания превышения скорости: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Продолжительность: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {12}</value>
+  </data>
+  <data name="EngineIdleDailyAlertEmailBody" xml:space="preserve">
+    <value>Учетное имя: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Начальная дата: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Конечная дата: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Продолжительность: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Порог: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {14}</value>
+  </data>
+  <data name="PowerModeAlertEmailBody" xml:space="preserve">
+    <value>Учетное имя: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Установлен режим двигателя: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Продолжительность: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Site: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {11}</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Описание ЭБУ: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Номер оси (шины): {8}/{9}&lt;BR&gt;&amp;#xD;&amp;#xA;Давление в шине (PSI): {13}&lt;BR&gt;&amp;#xD;&amp;#xA; Температура шины (&amp;#xb0;C): {14}&lt;BR&gt;&amp;#xD;&amp;#xA;Статус датчика: {15}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {16}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} требуется при наработке: {9} ч.&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} требуется при пробеге: {9} миль (мили).&lt;BR&gt;&amp;#xD;&amp;#xA;Одометр: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {6}</value>
+  </data>
+  <data name="ZoneAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение:{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {9}</value>
+  </data>
+  <data name="RadioMachineSecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Учетное имя: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Режим запуска: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {9}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения:: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {9}</value>
+  </data>
+  <data name="FluidAnalysisAlertBody" xml:space="preserve">
+    <value>Учетное имя: {7}&lt;BR&gt; Приоритет результатов: {0}&lt;BR&gt; Идентификатор единицы техники: {1}&lt;BR&gt; Серийный №: {2}&lt;BR&gt; Марка единицы техники: {8}&lt;BR&gt; Модель единицы техники: {9}&lt;BR&gt; Тип оповещения: {3}&lt;BR&gt; Название оповещения: {4}&lt;BR&gt; № лаборатории и источник: {5}&lt;BR&gt; Дата забора пробы: {6}</value>
+  </data>
+  <data name="AlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {10}</value>
+  </data>
+  <data name="SecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Учетное имя: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Режим запуска: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Защитный триггер: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {10}</value>
+  </data>
+  <data name="FuelLossAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Изменение уровня топлива: -{7}%&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {11}</value>
+  </data>
+  <data name="LoadDistanceAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Расстояние между погрузками: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {11}</value>
+  </data>
+  <data name="FaultAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Код сбоя: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Описание сбоя: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Значимость: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Счетчик часов: {13}</value>
+  </data>
+  <data name="SwitchAlertMessageBody" xml:space="preserve">
+    <value>Учетное имя: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Идентификатор единицы техники: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Серийный №: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Марка единицы техники: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Модель единицы техники: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Тип оповещения: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Название оповещения: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Описание переключателя: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Состояние переключателя: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Дата: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Местоположение: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Участок: {8}</value>
+  </data>
+  <data name="accountType" xml:space="preserve">
+    <value>Тип учетной записи</value>
+  </data>
+  <data name="FluidAnalysisAlertSMS" xml:space="preserve">
+    <value>Учетная запись: {3} Приоритет результатов: {0} – № лаборатории: {1} – источник: {2}</value>
+  </data>
+  <data name="acreAbbreviation" xml:space="preserve">
+    <value>Акры</value>
+  </data>
+  <data name="FluidActionRequiredPriority" xml:space="preserve">
+    <value>Требуется действие</value>
+  </data>
+  <data name="actionTaken" xml:space="preserve">
+    <value>Действие выполнено</value>
+  </data>
+  <data name="actualEndDateTime" xml:space="preserve">
+    <value>Фактическая дата окончания</value>
+  </data>
+  <data name="actualStartDateTime" xml:space="preserve">
+    <value>Фактическая дата начала</value>
+  </data>
+  <data name="aemp" xml:space="preserve">
+    <value>AEMP</value>
+  </data>
+  <data name="aempRequestAccess" xml:space="preserve">
+    <value>AEMP: запрос доступа</value>
+  </data>
+  <data name="AlertCounts" xml:space="preserve">
+    <value>Количество оповещений</value>
+  </data>
+  <data name="AlertDetails" xml:space="preserve">
+    <value>Сведения об оповещении</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Тип оповещения</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>Оповещения</value>
+  </data>
+  <data name="alignment" xml:space="preserve">
+    <value>Трасса</value>
+  </data>
+  <data name="AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="eventDataDescription" xml:space="preserve">
+    <value>Событием называется обнаружение заданного, недопустимого или аномального состояния машины, двигателя или системы, мониторинг которых осуществляется. Каждое событие представлено четырьмя элементами данных: уровень события; идентификатор модуля (MID), сообщившего о событии; идентификатор события и временная метка события.</value>
+  </data>
+  <data name="apiDocumentation" xml:space="preserve">
+    <value>Документация API-интерфейса</value>
+  </data>
+  <data name="appliedFilter" xml:space="preserve">
+    <value>Примененный фильтр</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Площадь</value>
+  </data>
+  <data name="asset" xml:space="preserve">
+    <value>Единица техники</value>
+  </data>
+  <data name="ExclusionZoneAlertDescription" xml:space="preserve">
+    <value>Единица техники вошла в зону: {0}</value>
+  </data>
+  <data name="SiteEntryAlertDescription" xml:space="preserve">
+    <value>Вход машины {0}</value>
+  </data>
+  <data name="InclusionZoneAlertDescription" xml:space="preserve">
+    <value>Выход машины {0}</value>
+  </data>
+  <data name="SiteExitAlertDescription" xml:space="preserve">
+    <value>Выход машины {0}</value>
+  </data>
+  <data name="assetFuelBurn" xml:space="preserve">
+    <value>Расход топ. ед. тех.</value>
+  </data>
+  <data name="assetFuelReport" xml:space="preserve">
+    <value>Отчет «Топливо на единицу техники»</value>
+  </data>
+  <data name="AssetFuelSingleAsset" xml:space="preserve">
+    <value>Отчет по расходу топлива одной единицей техники</value>
+  </data>
+  <data name="NotReportingAlertDescription" xml:space="preserve">
+    <value>От машины не поступали отчеты с {0}</value>
+  </data>
+  <data name="AssetHealth" xml:space="preserve">
+    <value>Отчет о состоянии ед. техники</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Отчет об истории ед. техники</value>
+  </data>
+  <data name="assetHistoryReport" xml:space="preserve">
+    <value>Отчет об истории единицы техники</value>
+  </data>
+  <data name="assetID" xml:space="preserve">
+    <value>Идентификатор единицы техники</value>
+  </data>
+  <data name="assetIdSnVin" xml:space="preserve">
+    <value>Идентификатор единицы техники / Серийный № / VIN</value>
+  </data>
+  <data name="stateMileageReportTitle" xml:space="preserve">
+    <value>Отчет «Пробег ед. техники по штатам / провинциям»</value>
+  </data>
+  <data name="AssetOff" xml:space="preserve">
+    <value>Единица техники выкл.</value>
+  </data>
+  <data name="AssetOn" xml:space="preserve">
+    <value>Единица техники вкл.</value>
+  </data>
+  <data name="assetOperation" xml:space="preserve">
+    <value>Эксплуатация ед. техники</value>
+  </data>
+  <data name="AssetSecurityLastActivityReport" xml:space="preserve">
+    <value>Безопасность ед. техники – отчет о последних действиях</value>
+  </data>
+  <data name="AssetSecurityUserActivityReport" xml:space="preserve">
+    <value>Безопасность ед. техники – отчет о действиях пользователей</value>
+  </data>
+  <data name="AssetSpeedingReport" xml:space="preserve">
+    <value>Отчет о превышении скорости ед. техники</value>
+  </data>
+  <data name="assetType" xml:space="preserve">
+    <value>Тип единицы техники</value>
+  </data>
+  <data name="assetUsageReport" xml:space="preserve">
+    <value>Отчет «Использование единицы техники»</value>
+  </data>
+  <data name="AssetUsageSingleAsset" xml:space="preserve">
+    <value>Отчет об использовании одной единицы техники</value>
+  </data>
+  <data name="AssetUsageSummaryReport" xml:space="preserve">
+    <value>Сводный отчет по использованию ед. техники</value>
+  </data>
+  <data name="assetUtilization" xml:space="preserve">
+    <value>Использование ед. техники</value>
+  </data>
+  <data name="assetUtilizationReport" xml:space="preserve">
+    <value>Отчет об использовании единиц техники</value>
+  </data>
+  <data name="assets" xml:space="preserve">
+    <value>Единицы тех.</value>
+  </data>
+  <data name="attachmentUsage" xml:space="preserve">
+    <value>Использование навесного оборудования</value>
+  </data>
+  <data name="autoMapReset" xml:space="preserve">
+    <value>Авто + сброс карты</value>
+  </data>
+  <data name="autoIdle" xml:space="preserve">
+    <value>Автоматический простой</value>
+  </data>
+  <data name="automatic" xml:space="preserve">
+    <value>Автоматически</value>
+  </data>
+  <data name="average" xml:space="preserve">
+    <value>Средн.</value>
+  </data>
+  <data name="averageFuelBurnRateForAssetsInReport" xml:space="preserve">
+    <value>Средний расход топлива для единиц техники в отчете</value>
+  </data>
+  <data name="averagedSitetoSwitch" xml:space="preserve">
+    <value>Усредн., участок — переключатель</value>
+  </data>
+  <data name="avg" xml:space="preserve">
+    <value>Ср.</value>
+  </data>
+  <data name="AwaitingFirstReport" xml:space="preserve">
+    <value>Ожидание первого отчета</value>
+  </data>
+  <data name="axleTireNo" xml:space="preserve">
+    <value>Номер оси (шины)</value>
+  </data>
+  <data name="azimuth" xml:space="preserve">
+    <value>Азимут</value>
+  </data>
+  <data name="BackFilledLoadCount" xml:space="preserve">
+    <value>Ретроспективно заполненный учет погрузок</value>
+  </data>
+  <data name="backhoe" xml:space="preserve">
+    <value>Обратная лопата</value>
+  </data>
+  <data name="BackhoeLoaderOperation" xml:space="preserve">
+    <value>Отчет «Эксплуатация погрузчика с обратной лопатой»</value>
+  </data>
+  <data name="backhoeOperation" xml:space="preserve">
+    <value>Эксплуатация обратной лопаты</value>
+  </data>
+  <data name="bar" xml:space="preserve">
+    <value>бар</value>
+  </data>
+  <data name="baseSurface" xml:space="preserve">
+    <value>Базовая поверхность</value>
+  </data>
+  <data name="bladeOnGround" xml:space="preserve">
+    <value>Ковш на земле</value>
+  </data>
+  <data name="boostPressure" xml:space="preserve">
+    <value>Boost Pressure</value>
+  </data>
+  <data name="boostPressureHeader" xml:space="preserve">
+    <value>Boost Pressure Report</value>
+  </data>
+  <data name="boostTemperature" xml:space="preserve">
+    <value>Boost Temperature</value>
+  </data>
+  <data name="boostTemperatureHeader" xml:space="preserve">
+    <value>Boost Temperature Report</value>
+  </data>
+  <data name="bottomCyclesPerHour" xml:space="preserve">
+    <value>Нижн. {0} - циклов/ч (всего)</value>
+  </data>
+  <data name="bottomPayloadPerCycle" xml:space="preserve">
+    <value>Нижн. {0} - пол. нагр./цикл (всего)</value>
+  </data>
+  <data name="bottomPayloadPerHour" xml:space="preserve">
+    <value>Нижн. {0} - пол. нагр./ч (всего)</value>
+  </data>
+  <data name="geolocationNotSupported" xml:space="preserve">
+    <value>Браузер не предоставляет данные о местоположении.</value>
+  </data>
+  <data name="bulking" xml:space="preserve">
+    <value>Увеличение объема</value>
+  </data>
+  <data name="burnRate" xml:space="preserve">
+    <value>Расход</value>
+  </data>
+  <data name="celsiusAbbrev" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="catDataFeeds" xml:space="preserve">
+    <value>CAT, потоки данных</value>
+  </data>
+  <data name="catDataTopicsRequestAccess" xml:space="preserve">
+    <value>CAT, разделы данных: запрос доступа</value>
+  </data>
+  <data name="centreLine" xml:space="preserve">
+    <value>Ось</value>
+  </data>
+  <data name="catDataFeedFormDescription" xml:space="preserve">
+    <value>Отметьте все требуемые разделы API-интерфейса и нажмите «Запрос по эл. почте». В течение недели вы получите электронное письмо со всей необходимой информацией для доступа к требуемым разделам.</value>
+  </data>
+  <data name="claim" xml:space="preserve">
+    <value>Затребовать</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Перейдите по этой ссылке</value>
+  </data>
+  <data name="clientBuildNumber" xml:space="preserve">
+    <value>Номер сборки клиента</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="cmv" xml:space="preserve">
+    <value>CMV</value>
+  </data>
+  <data name="cmvChange" xml:space="preserve">
+    <value>Изменение CMV</value>
+  </data>
+  <data name="cmvChangeReport" xml:space="preserve">
+    <value>Отчет «Изменение CMV»</value>
+  </data>
+  <data name="cmvSummary" xml:space="preserve">
+    <value>Сводка CMV</value>
+  </data>
+  <data name="cmvSummaryReport" xml:space="preserve">
+    <value>Сводный отчет по CMV</value>
+  </data>
+  <data name="coarse" xml:space="preserve">
+    <value>Низкая</value>
+  </data>
+  <data name="code" xml:space="preserve">
+    <value>Код</value>
+  </data>
+  <data name="codeSamples" xml:space="preserve">
+    <value>Примеры кодов</value>
+  </data>
+  <data name="compacted" xml:space="preserve">
+    <value>Уплотнен</value>
+  </data>
+  <data name="compaction" xml:space="preserve">
+    <value>Уплотнение</value>
+  </data>
+  <data name="company" xml:space="preserve">
+    <value>Компания</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Выполнено</value>
+  </data>
+  <data name="completeLayer" xml:space="preserve">
+    <value>Завершите слой</value>
+  </data>
+  <data name="completeService" xml:space="preserve">
+    <value>Завершить обслуживание</value>
+  </data>
+  <data name="Configured" xml:space="preserve">
+    <value>Настроено</value>
+  </data>
+  <data name="confirmed" xml:space="preserve">
+    <value>Подтверждено</value>
+  </data>
+  <data name="couldNotConvertDataModelBoundaryToGrid" xml:space="preserve">
+    <value>Сбой системы координат при преобразовании точек границы модели данных.</value>
+  </data>
+  <data name="emptyCoordinateSystem" xml:space="preserve">
+    <value>Система координат не задана</value>
+  </data>
+  <data name="dcToIRecIncompleteCS" xml:space="preserve">
+    <value>Введены не все параметры описания системы координат (DCToIRecord converter)</value>
+  </data>
+  <data name="virtualSiteSolutionsAllRightsReserved" xml:space="preserve">
+    <value>Авторские права 2014 г., VirtualSite Solutions LLC. Все права защищены.</value>
+  </data>
+  <data name="couldNotConvertCSDFile" xml:space="preserve">
+    <value>Невозможно преобразовать файл описания системы координат</value>
+  </data>
+  <data name="coverage" xml:space="preserve">
+    <value>Покрытие</value>
+  </data>
+  <data name="createdUser" xml:space="preserve">
+    <value>Создатель:</value>
+  </data>
+  <data name="cubicYard" xml:space="preserve">
+    <value>куб. ярд</value>
+  </data>
+  <data name="currentFilterSettings" xml:space="preserve">
+    <value>Текущие настройки фильтра</value>
+  </data>
+  <data name="dcToIRecScaleOnlyProj" xml:space="preserve">
+    <value>Текущий проект необходимо масштабировать  (DCToIRecord converter)</value>
+  </data>
+  <data name="customerInfo" xml:space="preserve">
+    <value>Информация о клиенте</value>
+  </data>
+  <data name="customerName" xml:space="preserve">
+    <value>Имя клиента</value>
+  </data>
+  <data name="customerNumber" xml:space="preserve">
+    <value>Номер клиента</value>
+  </data>
+  <data name="cut" xml:space="preserve">
+    <value>Выемка</value>
+  </data>
+  <data name="cutFillReport" xml:space="preserve">
+    <value>Отчет по выемке и отсыпке</value>
+  </data>
+  <data name="cutfill" xml:space="preserve">
+    <value>Выемка / отсыпка</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Отчет о времени цикла</value>
+  </data>
+  <data name="cycleTimeReport" xml:space="preserve">
+    <value>Отчет о времени цикла</value>
+  </data>
+  <data name="cycles" xml:space="preserve">
+    <value>Циклы</value>
+  </data>
+  <data name="cyclesPerHour" xml:space="preserve">
+    <value>циклов/ч</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Ежеднев.</value>
+  </data>
+  <data name="dailyIdleMessage" xml:space="preserve">
+    <value>Время на холостом ходу за день больше {0} {1}</value>
+  </data>
+  <data name="dataOccurredOutsideOfDateRange" xml:space="preserve">
+    <value>Обнаружены даны вне диапазона дат</value>
+  </data>
+  <data name="dataOccurredOutsideOfDay" xml:space="preserve">
+    <value>Обнаружены данные за пределами дня</value>
+  </data>
+  <data name="dataType" xml:space="preserve">
+    <value>Тип данных</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Дата</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Дата создания</value>
+  </data>
+  <data name="dateLastReported" xml:space="preserve">
+    <value>Дата последнего отчета</value>
+  </data>
+  <data name="dateModuleAccessProvided" xml:space="preserve">
+    <value>Дата предоставления доступа к модулю</value>
+  </data>
+  <data name="dateRange" xml:space="preserve">
+    <value>Диапазон дат</value>
+  </data>
+  <data name="dateTime" xml:space="preserve">
+    <value>Дата/время</value>
+  </data>
+  <data name="dcn" xml:space="preserve">
+    <value>DCN</value>
+  </data>
+  <data name="dealerCode" xml:space="preserve">
+    <value>Код дилера</value>
+  </data>
+  <data name="dealerName" xml:space="preserve">
+    <value>Название дилера</value>
+  </data>
+  <data name="UserAccountsReportEmailBody" xml:space="preserve">
+    <value>Уважаемый администратор VisionLink!&lt;br/&gt;&lt;br/&gt;Чтобы помочь Вам в управлении доступом к своей учетной записи, мы предоставили отчет по всем Вашим пользователям VisionLink. Этот отчет позволит Вам проверить и обновить свою учетную запись, как требуется. Выполните вход в VisionLink, чтобы внести необходимые изменения в учетные записи пользователей.&lt;br/&gt;&lt;br/&gt; Чтобы загрузить отчет, перейдите по следующей ссылке:&lt;br/&gt;  {0} &lt;br/&gt;&lt;br/&gt;  С уважением,&lt;br/&gt;&lt;br/&gt;команда VisionLink</value>
+  </data>
+  <data name="ApiUserEmailBody" xml:space="preserve">
+    <value>Здравствуйте, {0} {1}!&lt;br&gt;&lt;br&gt; Вам предоставлен доступ к службам API VisionLink®. Перейдите по приведенной ниже ссылке, чтобы установить пароль для служб API. Эта ссылка действует 30 дней. Если приведенная ниже ссылка не действует, скопируйте и вставьте ее в адресную строку браузера.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;br&gt;Ваше имя пользователя API VisionLink: {3}.&lt;br&gt;Вам предоставлен доступ к следующим службам API:&lt;br&gt;  {4} &lt;br&gt;&lt;br&gt;Примечание: если Вы не запрашивали новую учетную запись пользователя API или обновления имеющейся у Вас учетной записи, обратитесь к своему администратору.</value>
+  </data>
+  <data name="VerifyUserEmailBody" xml:space="preserve">
+    <value>Здравствуйте, {0} {1}!&lt;br&gt;&lt;br&gt; Вам предоставлен доступ к VisionLink®. Перейдите по приведенной ниже ссылке, чтобы подтвердить свою новую или обновленную учетную запись. Эта ссылка действует 30 дней. Если приведенная ниже ссылка не работает, скопируйте и вставьте ее в новое окно браузера.&lt;br&gt;&lt;br&gt; {2}&lt;br&gt;&lt;/br&gt;Ваше имя пользователя VisionLink: {3}, имя учетной записи: {4}. После подтверждения новым пользователям VisionLink будет предложено задать пароль.&lt;br&gt;&lt;br&gt; Примечание: если Вы не запрашивали новую учетную запись пользователя или обновления имеющейся у Вас учетной записи, обратитесь к своему администратору.</value>
+  </data>
+  <data name="engineStartStopDescription" xml:space="preserve">
+    <value>Предоставляет список времени запусков и остановок машины, а также ключ MSS, идентифицирующий оператора, и передается ежедневно во время начала отчета или в другое время в случае заполнения бортового буфера.</value>
+  </data>
+  <data name="loadCountsDescription" xml:space="preserve">
+    <value>Содержит все подходящие сведения по учету погрузок на основе мониторинга погрузок и циклов. Содержит широту, долготу, границы геозон, дату, время, идентификатор единицы техники, а также пройденное расстояние для событий погрузки и разгрузки.</value>
+  </data>
+  <data name="digitalSwitchStatusDescription" xml:space="preserve">
+    <value>Предоставляет всю релевантную информацию о статусе режима питания, а также включении и выключении цифровых переключателей на модуле устройства. Передает определенную информацию о статусе от ЭБУ. Если для любого из байтов, которые определяет этот поток, установлено значение «Да», это означает, что возникло определенное состояние со времени последнего отчета о данном байте статуса в сообщении о статусе или отчете о SMU.</value>
+  </data>
+  <data name="fenceAlertDescription" xml:space="preserve">
+    <value>Предоставляет всю релевантную информацию о статусе операций мониторинга продуктов по времени и оповещениях, сгенерированных модулем устройства. Передает определенную информацию о статусе от ЭБУ. Если для любого из байтов, которые определяет этот поток, установлено значение «Да», это означает, что возникло определенное состояние со времени последнего отчета о данном байте статуса в сообщении о статусе или отчете о SMU.</value>
+  </data>
+  <data name="fuelDescription" xml:space="preserve">
+    <value>Предоставляет информацию об использовании топлива с модуля устройства по потреблению или уровню топлива. Информация о топливе предоставляется как часть сообщения о статусе, содержащего информацию о потреблении топлива и (или) о количестве оставшегося топлива в оборудовании в процентном выражении.</value>
+  </data>
+  <data name="engineParametersDescription" xml:space="preserve">
+    <value>Предоставляет важную информацию о двигателе, например, время холостого хода и расход топлива на холостом ходу с модуля устройства.</value>
+  </data>
+  <data name="smuLocationDescription" xml:space="preserve">
+    <value>Предоставляет информацию об использовании оборудования по часам со времени включения или последнего сброса устройства, а также информацию о широте и долготе местоположения машины, на которой установлено устройство. Данные генерируются ЭБУ для отслеживания использования оборудования. ЭБУ отслеживает время работы двигателя, а также предоставляет информацию о широте и долготе местоположения машины, на которой установлено устройство.</value>
+  </data>
+  <data name="derate" xml:space="preserve">
+    <value>Снизить нагрузку</value>
+  </data>
+  <data name="Derated" xml:space="preserve">
+    <value>Нагрузка снижена</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="design" xml:space="preserve">
+    <value>Проект</value>
+  </data>
+  <data name="desiredApiTopic" xml:space="preserve">
+    <value>Требуемый раздел API</value>
+  </data>
+  <data name="desiredDataFeed" xml:space="preserve">
+    <value>Требуемый поток данных</value>
+  </data>
+  <data name="destination" xml:space="preserve">
+    <value>Пункт назначения</value>
+  </data>
+  <data name="detailedAssetCycleTimeReport" xml:space="preserve">
+    <value>Подробный отчет о времени цикла единицы техники</value>
+  </data>
+  <data name="detailedAssetLoadCountReport" xml:space="preserve">
+    <value>Подробный отчет об учете погрузок по единице техники</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Устройство</value>
+  </data>
+  <data name="deviceID" xml:space="preserve">
+    <value>Идентификатор устройства</value>
+  </data>
+  <data name="deviceType" xml:space="preserve">
+    <value>Тип устройства</value>
+  </data>
+  <data name="diagnostic" xml:space="preserve">
+    <value>Диагностика</value>
+  </data>
+  <data name="DiagnosticEvents" xml:space="preserve">
+    <value>Сбой – диагностика</value>
+  </data>
+  <data name="diagnosticsData" xml:space="preserve">
+    <value>Данные диагностики</value>
+  </data>
+  <data name="digitalSwitchStatus" xml:space="preserve">
+    <value>Статус цифрового переключателя</value>
+  </data>
+  <data name="direction" xml:space="preserve">
+    <value>Направление</value>
+  </data>
+  <data name="directions" xml:space="preserve">
+    <value>Маршрут</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Отключить</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Отключено</value>
+  </data>
+  <data name="distanceCategory" xml:space="preserve">
+    <value>Категория расстояния</value>
+  </data>
+  <data name="distanceDriven" xml:space="preserve">
+    <value>Пройденное расстояние</value>
+  </data>
+  <data name="distanceTravelled" xml:space="preserve">
+    <value>Пройденное расстояние</value>
+  </data>
+  <data name="doNotShowAgain" xml:space="preserve">
+    <value>Больше не показывать</value>
+  </data>
+  <data name="firstEpochBladePositionDoesNotLieWithinProjectBoundary" xml:space="preserve">
+    <value>Выходит за пространственные границы проекта</value>
+  </data>
+  <data name="dozer" xml:space="preserve">
+    <value>Бульдозер</value>
+  </data>
+  <data name="DueAt" xml:space="preserve">
+    <value>Наработка (пробег):</value>
+  </data>
+  <data name="dueIn" xml:space="preserve">
+    <value>Предстоит через:</value>
+  </data>
+  <data name="DueOn" xml:space="preserve">
+    <value>Срок:</value>
+  </data>
+  <data name="dumpEvent" xml:space="preserve">
+    <value>Событие разгрузки</value>
+  </data>
+  <data name="dumpLocation" xml:space="preserve">
+    <value>Место разгрузки</value>
+  </data>
+  <data name="dumpTime" xml:space="preserve">
+    <value>Время разгрузки</value>
+  </data>
+  <data name="dumpToDumpDistance" xml:space="preserve">
+    <value>Расстояние от разгрузки до разгрузки</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Продолжительность</value>
+  </data>
+  <data name="earliest" xml:space="preserve">
+    <value>Самый ранний</value>
+  </data>
+  <data name="easting" xml:space="preserve">
+    <value>Координата на восток</value>
+  </data>
+  <data name="efficiency" xml:space="preserve">
+    <value>Эффективность</value>
+  </data>
+  <data name="elevation" xml:space="preserve">
+    <value>Отметка</value>
+  </data>
+  <data name="elevationReport" xml:space="preserve">
+    <value>Отчет по отметкам</value>
+  </data>
+  <data name="elevationType" xml:space="preserve">
+    <value>Тип отметки</value>
+  </data>
+  <data name="email" xml:space="preserve">
+    <value>Адрес эл. почты</value>
+  </data>
+  <data name="emailRequest" xml:space="preserve">
+    <value>Запрос по эл. почте</value>
+  </data>
+  <data name="endDate" xml:space="preserve">
+    <value>Дата окончания</value>
+  </data>
+  <data name="endDateSMU" xml:space="preserve">
+    <value>Счетчик часов в дату окончания</value>
+  </data>
+  <data name="endDateLocation" xml:space="preserve">
+    <value>Местоположение в дату окончания</value>
+  </data>
+  <data name="endDateMustBeHigher" xml:space="preserve">
+    <value>Конечная дата должна быть больше начальной даты</value>
+  </data>
+  <data name="endHourMeter" xml:space="preserve">
+    <value>Конечный счетчик часов</value>
+  </data>
+  <data name="endTime" xml:space="preserve">
+    <value>Время окончания</value>
+  </data>
+  <data name="GensetCoolingDown" xml:space="preserve">
+    <value>Охлаждение двигателя</value>
+  </data>
+  <data name="engineCoolantTemperature" xml:space="preserve">
+    <value>Температура охлаждающей жидкости двигателя</value>
+  </data>
+  <data name="coolantTemperatureHeader" xml:space="preserve">
+    <value>Отчет о температуре охлаждающей жидкости двигателя</value>
+  </data>
+  <data name="EngineIdle" xml:space="preserve">
+    <value>Отчет «Холостой ход двигателя»</value>
+  </data>
+  <data name="engineLubeOilTemperature" xml:space="preserve">
+    <value>Температура смазочного масла двигателя</value>
+  </data>
+  <data name="lubeOilTemperatureHeader" xml:space="preserve">
+    <value>Отчет о температуре смазочного масла двигателя</value>
+  </data>
+  <data name="EngineOff" xml:space="preserve">
+    <value>Двигатель выключен</value>
+  </data>
+  <data name="engineOilLevelIndication" xml:space="preserve">
+    <value>Engine Oil Level Indicator</value>
+  </data>
+  <data name="engineOilLevelPercent" xml:space="preserve">
+    <value>Engine Oil Level Indicator %</value>
+  </data>
+  <data name="engineOilLevelIndicatorHeader" xml:space="preserve">
+    <value>Engine Oil Level Indicator Report</value>
+  </data>
+  <data name="engineOilPressure" xml:space="preserve">
+    <value>Давление масла двигателя</value>
+  </data>
+  <data name="oilPressureHeader" xml:space="preserve">
+    <value>Отчет о давлении масла двигателя</value>
+  </data>
+  <data name="EngineOn" xml:space="preserve">
+    <value>Двигатель включен</value>
+  </data>
+  <data name="engineParameters" xml:space="preserve">
+    <value>Параметры двигателя</value>
+  </data>
+  <data name="GensetRunning" xml:space="preserve">
+    <value>Двигатель работает</value>
+  </data>
+  <data name="eventTypeEngineStart" xml:space="preserve">
+    <value>Запуск двигателя</value>
+  </data>
+  <data name="engineStartStopTime" xml:space="preserve">
+    <value>Время запуска/остановки двигателя</value>
+  </data>
+  <data name="engineStatus" xml:space="preserve">
+    <value>Статус двигателя</value>
+  </data>
+  <data name="eventTypeEngineStop" xml:space="preserve">
+    <value>Остановка двигателя</value>
+  </data>
+  <data name="GensetEngineStopped" xml:space="preserve">
+    <value>Двигатель остановлен</value>
+  </data>
+  <data name="GensetEngineStopping" xml:space="preserve">
+    <value>Двигатель останавливается</value>
+  </data>
+  <data name="displayName" xml:space="preserve">
+    <value>Русский</value>
+  </data>
+  <data name="equalsPassTarget" xml:space="preserve">
+    <value>Равно целевому кол-ву проходов</value>
+  </data>
+  <data name="event" xml:space="preserve">
+    <value>Событие</value>
+  </data>
+  <data name="eventCount" xml:space="preserve">
+    <value>Учет событий</value>
+  </data>
+  <data name="eventData" xml:space="preserve">
+    <value>Данные события</value>
+  </data>
+  <data name="eventDescription" xml:space="preserve">
+    <value>Описание события</value>
+  </data>
+  <data name="FaultCodes" xml:space="preserve">
+    <value>Сбой – событие</value>
+  </data>
+  <data name="eventType" xml:space="preserve">
+    <value>Тип события</value>
+  </data>
+  <data name="excavator" xml:space="preserve">
+    <value>Экскаватор</value>
+  </data>
+  <data name="ExcavatorUsageReport" xml:space="preserve">
+    <value>Отчет «Использование экскаваторов</value>
+  </data>
+  <data name="exception" xml:space="preserve">
+    <value>Произошел сбой</value>
+  </data>
+  <data name="ExclusionZone" xml:space="preserve">
+    <value>Исключаемая зона</value>
+  </data>
+  <data name="expectedRuntime" xml:space="preserve">
+    <value>Ожидаемое время работы двигателя</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Дата истечения срока</value>
+  </data>
+  <data name="fahrenheitAbbrev" xml:space="preserve">
+    <value>F</value>
+  </data>
+  <data name="failedOnRequestProfile" xml:space="preserve">
+    <value>Сбой при запросе профиля</value>
+  </data>
+  <data name="failedOnRequestColourGraduatedProfile" xml:space="preserve">
+    <value>Сбой при запросе профиля градуированного цветом</value>
+  </data>
+  <data name="submissionBaseConnectionFailure" xml:space="preserve">
+    <value>Сбой подключения к серверу производственных данных.</value>
+  </data>
+  <data name="failedToConvertClientWGSCoords" xml:space="preserve">
+    <value>Сбой при конвертации WGS84 координат</value>
+  </data>
+  <data name="dcToIRecFailedToCreateAZIParamsObject" xml:space="preserve">
+    <value>Сбой при создании объекта IAZIParameters  (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedCreateCSIB" xml:space="preserve">
+    <value>Сбой при создании CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToCreateDCToIRecordConverter" xml:space="preserve">
+    <value>Сбой при создании DCtoIRecord конвертера</value>
+  </data>
+  <data name="failedToGetCSSettings" xml:space="preserve">
+    <value>Сбой при получении параметров системы координат</value>
+  </data>
+  <data name="dcToIRecFailedToGetGeoidInfo" xml:space="preserve">
+    <value>Сбой при получении информации геоида (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateConstGeoid" xml:space="preserve">
+    <value>Сбой при обработке CSIB постоянной сдвига геоида (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateDatumGrid" xml:space="preserve">
+    <value>Сбой при обработке CSIB файла сетки ИГД (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateEllipsoid" xml:space="preserve">
+    <value>Сбой при обработке CSIB эллипсоида (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateGridGeoid" xml:space="preserve">
+    <value>Сбой при обработке CSIB сетки геоида (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMolodenskyDatum" xml:space="preserve">
+    <value>Сбой при обработке CSIB ИГД Молоденского (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMultiRegressionDatum" xml:space="preserve">
+    <value>Сбой при обработке CSIB ИГД с параметрами множественной регрессии (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateSevenParamsDatum" xml:space="preserve">
+    <value>Сбой при обработке CSIB ИГД по семи параметрам (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateWGS84Datum" xml:space="preserve">
+    <value>Сбой при обработке CSIB ИГД WGS84 (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneBasedSite" xml:space="preserve">
+    <value>Сбой при обработке CSIB зонального участка (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneGroup" xml:space="preserve">
+    <value>Сбой при обработке CSIB зональной группы (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToLoadCSIB" xml:space="preserve">
+    <value>Сбой при загрузке CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToNotifyCSChange" xml:space="preserve">
+    <value>Сбой при уведомлении об изменении системы координат</value>
+  </data>
+  <data name="failedToObtainCoordinateSystemInterlock" xml:space="preserve">
+    <value>Сбой при попытке блокировки системы координат</value>
+  </data>
+  <data name="dcToIRecFailedToOpenCalibrationReader" xml:space="preserve">
+    <value>Сбой при открытии окна калибровки (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToPerformCoordinateConversion" xml:space="preserve">
+    <value>Не удалось выполнить преобразование координат.</value>
+  </data>
+  <data name="dcToIRecFailedToReadCSIB" xml:space="preserve">
+    <value>Сбой при чтении CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadInCSIB" xml:space="preserve">
+    <value>Сбой при чтении в CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToReadLineworkBoundaryFile" xml:space="preserve">
+    <value>Не удалось считать файл границы линейных объектов.</value>
+  </data>
+  <data name="dcToIRecFailedToReadZone" xml:space="preserve">
+    <value>Сбой при чтении зоны (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadZoneBasedSite" xml:space="preserve">
+    <value>Сбой при чтении зонального участка (DCToIRecord converter)</value>
+  </data>
+  <data name="submissionResultConnectionFailure" xml:space="preserve">
+    <value>Сбой получения результата с сервера производственных данных.</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemHorizontalAdjustmentFile" xml:space="preserve">
+    <value>Сбой при запросе файла корректировки по горизонтали системы координат</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemProjectionFile" xml:space="preserve">
+    <value>Сбой при запросе файла проекции системы координат</value>
+  </data>
+  <data name="failedToRequestDatamodelStatistics" xml:space="preserve">
+    <value>Сбой при запросе статистики модели данных</value>
+  </data>
+  <data name="failedToRequestFileFromTCC" xml:space="preserve">
+    <value>Не удалось запросить файл из TCC.</value>
+  </data>
+  <data name="failedToRequestSubgridExistenceMap" xml:space="preserve">
+    <value>Невозможно получить подсетку существующей карты</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneInfo" xml:space="preserve">
+    <value>Сбой при установке зоны (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToWriteCSDStream" xml:space="preserve">
+    <value>Сбой при записи потока описания системы координат</value>
+  </data>
+  <data name="dcToIRecFailedToWriteCSIB" xml:space="preserve">
+    <value>Сбой при записи CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteDatum" xml:space="preserve">
+    <value>Сбой при записи ИГД (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteGeoid" xml:space="preserve">
+    <value>Сбой при записи геоида (DCToIRecord converter)</value>
+  </data>
+  <data name="faultCode" xml:space="preserve">
+    <value>Код ошибки</value>
+  </data>
+  <data name="faultCodeDiagnostic" xml:space="preserve">
+    <value>Код сбоя – диагностика</value>
+  </data>
+  <data name="faultCodeEvent" xml:space="preserve">
+    <value>Код сбоя – событие</value>
+  </data>
+  <data name="faultCodeDate" xml:space="preserve">
+    <value>Дата появления кода ошибки</value>
+  </data>
+  <data name="faultCodeHourMeter" xml:space="preserve">
+    <value>Счетчик часов при появлении кода ошибки</value>
+  </data>
+  <data name="faultCodeLocation" xml:space="preserve">
+    <value>Координаты появления кода ошибки</value>
+  </data>
+  <data name="faultCodeOdometer" xml:space="preserve">
+    <value>Одометр при появлении кода ошибки</value>
+  </data>
+  <data name="faultCodeReport" xml:space="preserve">
+    <value>Отчет Код ошибки</value>
+  </data>
+  <data name="assetHealthSummary" xml:space="preserve">
+    <value>Сводный отчет о кодах сбоев</value>
+  </data>
+  <data name="faultCodesLabel" xml:space="preserve">
+    <value>Коды сбоев</value>
+  </data>
+  <data name="faultCodeCounts" xml:space="preserve">
+    <value>Количество сбоев</value>
+  </data>
+  <data name="faultCodeDetails" xml:space="preserve">
+    <value>Сведения о сб.</value>
+  </data>
+  <data name="tagFileReaderCorruptedTAGFileData" xml:space="preserve">
+    <value>Файл содержит поврежденные данные.</value>
+  </data>
+  <data name="noGridEpochsFoundInTAGFile" xml:space="preserve">
+    <value>Файл содержит недопустимые производственные данные.</value>
+  </data>
+  <data name="submissionVerbConnectionFailure" xml:space="preserve">
+    <value>Сбой отправки файла.</value>
+  </data>
+  <data name="fill" xml:space="preserve">
+    <value>Заливка</value>
+  </data>
+  <data name="locationAppSummary" xml:space="preserve">
+    <value>Найти последнее известное местоположение единиц техники</value>
+  </data>
+  <data name="fine" xml:space="preserve">
+    <value>Высокая</value>
+  </data>
+  <data name="firmwareVersion" xml:space="preserve">
+    <value>Версия прошивки</value>
+  </data>
+  <data name="first" xml:space="preserve">
+    <value>Первый</value>
+  </data>
+  <data name="firstname" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="verifyEmailBodyFirstTimeUser" xml:space="preserve">
+    <value>Для первого входа в учетную запись VisionLink пользователям следует использовать указанные ниже учетные данные.&lt;/br&gt;Имя пользователя:{0}.&lt;/br&gt; Пароль:{1}.&lt;/br&gt;После входа вам будет предложено сменить пароль.&lt;/br&gt;&lt;/br&gt;</value>
+  </data>
+  <data name="FleetEventCountReport" xml:space="preserve">
+    <value>Отчет «Учет событий по парку техники»</value>
+  </data>
+  <data name="fleetFuelReport" xml:space="preserve">
+    <value>Отчет Топливо транспортного парка</value>
+  </data>
+  <data name="FleetStatus" xml:space="preserve">
+    <value>Отчет по статусу парка техники</value>
+  </data>
+  <data name="fleetStatusReport" xml:space="preserve">
+    <value>Отчет «Статус парка»</value>
+  </data>
+  <data name="fleetSummary" xml:space="preserve">
+    <value>Сводка по парку</value>
+  </data>
+  <data name="fleetSummaryCustomReport" xml:space="preserve">
+    <value>Пользовательский отчет «Сводка по парку»</value>
+  </data>
+  <data name="FleetUsage" xml:space="preserve">
+    <value>Отчет по использованию парка техники</value>
+  </data>
+  <data name="fleetUsageReport" xml:space="preserve">
+    <value>Отчет Использование парка транспорта</value>
+  </data>
+  <data name="FleetUtilization" xml:space="preserve">
+    <value>Отчет «Использование парка техники»</value>
+  </data>
+  <data name="FluidAnalysis" xml:space="preserve">
+    <value>Анализ жидкостей</value>
+  </data>
+  <data name="fluidAnalysisReport" xml:space="preserve">
+    <value>Отчет «Анализ жидкостей»</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Вперед</value>
+  </data>
+  <data name="feetAbbrev" xml:space="preserve">
+    <value>фт</value>
+  </data>
+  <data name="fuel" xml:space="preserve">
+    <value>Топливо</value>
+  </data>
+  <data name="fuelPercentRemaining" xml:space="preserve">
+    <value>Оставшееся топливо, %</value>
+  </data>
+  <data name="fuelBurnPieChartTitle" xml:space="preserve">
+    <value>Расход топлива</value>
+  </data>
+  <data name="fuelBurned" xml:space="preserve">
+    <value>Потребление топлива</value>
+  </data>
+  <data name="fuelBurnedByAsset" xml:space="preserve">
+    <value>Потребление топлива по единицам техники</value>
+  </data>
+  <data name="fuelBurnedByAssetsTopTen" xml:space="preserve">
+    <value>Потребление топлива по единицам техники: основные 10</value>
+  </data>
+  <data name="fuelConsumedIdle" xml:space="preserve">
+    <value>Потребление топлива (на холостом ходу)</value>
+  </data>
+  <data name="fuelConsumedTotal" xml:space="preserve">
+    <value>Потребление топлива (общее)</value>
+  </data>
+  <data name="fuelInformation" xml:space="preserve">
+    <value>Информация о топливе</value>
+  </data>
+  <data name="fuelLevel" xml:space="preserve">
+    <value>Уровень топлива</value>
+  </data>
+  <data name="fuelLevelIndicator" xml:space="preserve">
+    <value>Индикатор уровня топлива</value>
+  </data>
+  <data name="fuelLevelPercent" xml:space="preserve">
+    <value>Индикатор уровня топлива %</value>
+  </data>
+  <data name="levelIndicatorHeader" xml:space="preserve">
+    <value>Отчет по индикатору уровня топлива</value>
+  </data>
+  <data name="FuelLoss" xml:space="preserve">
+    <value>Потери топлива</value>
+  </data>
+  <data name="FuelLossAlertDescription" xml:space="preserve">
+    <value>Потеря топлива {0}%</value>
+  </data>
+  <data name="fuelPercentageRemaining" xml:space="preserve">
+    <value>Осталось топлива (%)</value>
+  </data>
+  <data name="fuelRemaining" xml:space="preserve">
+    <value>Осталось топлива</value>
+  </data>
+  <data name="fuelUtilizationTopic" xml:space="preserve">
+    <value>Потребление топлива</value>
+  </data>
+  <data name="FuelUtilization" xml:space="preserve">
+    <value>Отчет по потреблению топлива</value>
+  </data>
+  <data name="fuelUtilizationReport" xml:space="preserve">
+    <value>Отчет об использовании топлива</value>
+  </data>
+  <data name="FullSiteURL" xml:space="preserve">
+    <value>Полный сайт</value>
+  </data>
+  <data name="gal" xml:space="preserve">
+    <value>галл.</value>
+  </data>
+  <data name="galhr" xml:space="preserve">
+    <value>галл./ч</value>
+  </data>
+  <data name="gallonsBarChartXAxisLabel" xml:space="preserve">
+    <value>Галлоны</value>
+  </data>
+  <data name="gallonshr" xml:space="preserve">
+    <value>галл./ч</value>
+  </data>
+  <data name="gallonsBurned" xml:space="preserve">
+    <value>Потребление в галлонах</value>
+  </data>
+  <data name="geoFenceAlert" xml:space="preserve">
+    <value>Оповещение о гео-зоне</value>
+  </data>
+  <data name="gpsAccuracy" xml:space="preserve">
+    <value>Точность GPS</value>
+  </data>
+  <data name="GPSAntennaDisconnectedTimerExpired" xml:space="preserve">
+    <value>GPS-антенна отключена</value>
+  </data>
+  <data name="GPSGSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Потеря сигнала GPS/GSM</value>
+  </data>
+  <data name="GridReport" xml:space="preserve">
+    <value>Отчет «Сетка»</value>
+  </data>
+  <data name="gridSize" xml:space="preserve">
+    <value>Размер сетки</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>Группа</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Группы</value>
+  </data>
+  <data name="GSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Потеря сигнала GSM</value>
+  </data>
+  <data name="hectareAbbreviation" xml:space="preserve">
+    <value>га</value>
+  </data>
+  <data name="hardwareDataError" xml:space="preserve">
+    <value>Ошибка данных оборудования</value>
+  </data>
+  <data name="ForgotPasswordEmailBody" xml:space="preserve">
+    <value>Здравствуйте, {0}!&lt;BR /&gt;&lt;BR /&gt;Ваше имя пользователя VisionLink: {1}.&lt;BR /&gt;&lt;BR /&gt;Чтобы сбросить свой пароль, перейдите по следующей ссылке (либо скопируйте и вставьте этот URL-адрес в адресную строку браузера):&lt;BR /&gt;&lt;BR /&gt; {2}&lt;BR /&gt;&lt;BR /&gt; В целях безопасности эта ссылка будет действовать только 24 часа и позволит сбросить пароль только один раз.  &lt;BR /&gt;&lt;BR /&gt;Если вы не запрашивали сброс своего пароля, то, скорее всего, Ваш адрес электронной почты или Ваше имя пользователя по ошибке указал другой пользователь при попытке сброса пароля. В таком случае проигнорируйте это электронное письмо. &lt;BR /&gt;&lt;BR /&gt;С уважением,&lt;BR /&gt;служба поддержки VisionLink  </value>
+  </data>
+  <data name="NewAccountRegEmailBody" xml:space="preserve">
+    <value>Здравствуйте {0}!&lt;BR&gt;&lt;BR&gt; Это электронное письмо отправлено Вам в качестве уведомления о том, что была создана учетная запись VisionLink с именем {1}.&lt;BR&gt;&lt;BR&gt;Теперь Вам следует перейти на страницу регистрации учетной записи VisionLink, где Вы сможете активировать свою учетную запись, создав имя пользователя и пароль. Вы сможете использовать эти учетные данные для получения доступа к своей учетной записи при помощи веб-приложения VisionLink.&lt;BR&gt;&lt;BR&gt;Чтобы перейти на страницу регистрации учетной записи VisionLink, перейдите по следующей ссылке:&lt;BR&gt;{2}&lt;BR&gt;&lt;BR&gt;Эта ссылка прекратит действовать после того, как учетная запись будет активирована. Однако по завершении регистрации в веб-приложении VisionLink можно создать дополнительные учетные записи.&lt;BR&gt;&lt;BR&gt;После активации своей учетной записи Вы сможете получить доступ к веб-приложению VisionLink, перейдя по следующей ссылке:&lt;BR&gt;{3} </value>
+  </data>
+  <data name="OnDemandEmailBody" xml:space="preserve">
+    <value>Здравствуйте,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Перейдите по следующей ссылке, чтобы загрузить отчет: &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Примечание: Вы получили это электронное письмо, так как указаны в качестве адресата данного отчета. Эта ссылка будет действовать 30 дней. С любыми вопросами обращайтесь к своему администратору VisionLink.</value>
+  </data>
+  <data name="ScheduleReportEmailBodyWithoutUnsubscribe" xml:space="preserve">
+    <value>Здравствуйте!&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Перейдите по приведенной ниже ссылке, чтобы загрузить отчет.&lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Примечание: Вы получили это письмо, так как указаны в качестве получателя данного отчета по расписанию. Эта ссылка действует 30 дней. С любыми вопросами обращайтесь к своему администратору VisionLink.&lt;BR /&gt;&lt;BR /&gt;*** Ежедневные, еженедельные и ежемесячные отчеты по расписанию о статусе парка техники, предстоящем обслуживании и общих представлениях единиц техники содержат сведения, актуальные на момент открытия отчета.</value>
+  </data>
+  <data name="ScheduleReportEmailBody" xml:space="preserve">
+    <value>Здравствуйте!&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Перейдите по следующей ссылке, чтобы загрузить отчет: &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Примечание: Вы получили это электронное письмо, так как указаны в качестве адресата данного отчета по расписанию. Эта ссылка будет действовать 30 дней. С любыми вопросами обращайтесь к своему администратору VisionLink.&lt;BR /&gt;&lt;BR /&gt;Чтобы отказаться от получения этого отчета в будущем, перейдите по ссылке: {2}.&lt;BR /&gt;&lt;BR /&gt;*** Ежедневные, еженедельные и ежемесячные отчеты по расписанию «Статус парка», «Требуемое обслуживание» и «Представление общих единиц техники» содержат актуальную информацию на момент открытия отчета.</value>
+  </data>
+  <data name="HH" xml:space="preserve">
+    <value>ЧЧ</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Высокая</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Самый высокий</value>
+  </data>
+  <data name="home" xml:space="preserve">
+    <value>Главная</value>
+  </data>
+  <data name="hourMeter" xml:space="preserve">
+    <value>Счетчик часов</value>
+  </data>
+  <data name="hours" xml:space="preserve">
+    <value>Часы</value>
+  </data>
+  <data name="hoursOfUse" xml:space="preserve">
+    <value>Время использования</value>
+  </data>
+  <data name="hoursLocation" xml:space="preserve">
+    <value>Часы (местоположение)</value>
+  </data>
+  <data name="hr" xml:space="preserve">
+    <value>ч</value>
+  </data>
+  <data name="hrs" xml:space="preserve">
+    <value>ч</value>
+  </data>
+  <data name="hybrid" xml:space="preserve">
+    <value>Гибрид</value>
+  </data>
+  <data name="hydraulicOilTemperature" xml:space="preserve">
+    <value>Температура гидравлического масла</value>
+  </data>
+  <data name="hydraulicTemperatureHeader" xml:space="preserve">
+    <value>Отчет о температуре гидравлического масла</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Холостой ход</value>
+  </data>
+  <data name="idleEventsMessage" xml:space="preserve">
+    <value>Длительность событий холостого хода больше {0} {1}</value>
+  </data>
+  <data name="idleFuelBurned" xml:space="preserve">
+    <value>Потребление на хол. ходу</value>
+  </data>
+  <data name="idleHourMeter" xml:space="preserve">
+    <value>Счетчик часов холостого хода</value>
+  </data>
+  <data name="idleHours" xml:space="preserve">
+    <value>Часы холостого хода</value>
+  </data>
+  <data name="idleTime" xml:space="preserve">
+    <value>Время холостого хода</value>
+  </data>
+  <data name="idleTimeOut" xml:space="preserve">
+    <value>Таймаут простоя</value>
+  </data>
+  <data name="idling" xml:space="preserve">
+    <value>Холостой ход</value>
+  </data>
+  <data name="idlingFuelBurned" xml:space="preserve">
+    <value>Потреб. топ. на хол. ходу</value>
+  </data>
+  <data name="IgnitionOff" xml:space="preserve">
+    <value>Зажигание выключено</value>
+  </data>
+  <data name="IgnitionOn" xml:space="preserve">
+    <value>Зажигание включено</value>
+  </data>
+  <data name="ignitionStatus" xml:space="preserve">
+    <value>Статус зажигания</value>
+  </data>
+  <data name="inProgress" xml:space="preserve">
+    <value>Выполняется</value>
+  </data>
+  <data name="inactiveNoRuntime" xml:space="preserve">
+    <value>Неактив. – нет данных о времени работы двигателя</value>
+  </data>
+  <data name="includeSupercededLifts" xml:space="preserve">
+    <value>Включить замененные слои</value>
+  </data>
+  <data name="InclusionZone" xml:space="preserve">
+    <value>Включаемая зона</value>
+  </data>
+  <data name="incomplete" xml:space="preserve">
+    <value>Неполное</value>
+  </data>
+  <data name="incorrectUsernameOrPassword" xml:space="preserve">
+    <value>Неверная комбинация имени пользователя и пароля</value>
+  </data>
+  <data name="incorrectWorkingTime" xml:space="preserve">
+    <value>Недопустимые значения для вычисления рабочего времени</value>
+  </data>
+  <data name="dcToIRecInifiniteAdjustmentSlopeValue" xml:space="preserve">
+    <value>Слишком большое значение корректировки уклона (DCToIRecord converter)</value>
+  </data>
+  <data name="insufficientDataForCalculation" xml:space="preserve">
+    <value>Недостаточно данных для вычисления</value>
+  </data>
+  <data name="singleDayCalloutNegativeValue" xml:space="preserve">
+    <value>Точность счетчика времени работы двигателя недостаточна для достоверного расчета</value>
+  </data>
+  <data name="dateRangeCalloutNegativeValue" xml:space="preserve">
+    <value>Точность счетчика времени работы двигателя недостаточна для достоверного расчета в диапазоне дат</value>
+  </data>
+  <data name="introduction" xml:space="preserve">
+    <value>Введение</value>
+  </data>
+  <data name="invalidCoordinateRange" xml:space="preserve">
+    <value>Координаты вне диапазона</value>
+  </data>
+  <data name="suppliedDataModelBoundaryContainsInsufficeintVertices" xml:space="preserve">
+    <value>Недопустимая граница модели данных.</value>
+  </data>
+  <data name="dcToIRecInvalidEllipsoid" xml:space="preserve">
+    <value>Неверный эллипсоид (DCToIRecord converter)</value>
+  </data>
+  <data name="InValidReportRequest" xml:space="preserve">
+    <value>Недопустимый запрос на отчет в Excel</value>
+  </data>
+  <data name="InvalidSeedPosition" xml:space="preserve">
+    <value>Недопустимые начальные координаты ШДВ/СВО в TAG-файле</value>
+  </data>
+  <data name="InvalidMSSKey" xml:space="preserve">
+    <value>Недопустимый ключ MSS</value>
+  </data>
+  <data name="invalidResponseCode" xml:space="preserve">
+    <value>Неверный код ответа</value>
+  </data>
+  <data name="invalidSubscriptions" xml:space="preserve">
+    <value>Недопустимые подписки.</value>
+  </data>
+  <data name="invalidTagFile" xml:space="preserve">
+    <value>Недопустимый TAG-файл.</value>
+  </data>
+  <data name="invalidValueDetected" xml:space="preserve">
+    <value>Обнаружено недопустимое значение</value>
+  </data>
+  <data name="singleDayCalloutSpike" xml:space="preserve">
+    <value>Обнаружено недопустимое значение</value>
+  </data>
+  <data name="dateRangeCalloutSpike" xml:space="preserve">
+    <value>Обнаружено недопустимое значение в диапазоне дат</value>
+  </data>
+  <data name="kilometers" xml:space="preserve">
+    <value>километры</value>
+  </data>
+  <data name="km" xml:space="preserve">
+    <value>км</value>
+  </data>
+  <data name="kmL" xml:space="preserve">
+    <value>км/л</value>
+  </data>
+  <data name="kms" xml:space="preserve">
+    <value>км</value>
+  </data>
+  <data name="kpa" xml:space="preserve">
+    <value>кПа</value>
+  </data>
+  <data name="kph" xml:space="preserve">
+    <value>км/ч</value>
+  </data>
+  <data name="leftAbbrev" xml:space="preserve">
+    <value>Л</value>
+  </data>
+  <data name="ltr" xml:space="preserve">
+    <value>л</value>
+  </data>
+  <data name="ltrhr" xml:space="preserve">
+    <value>л/ч</value>
+  </data>
+  <data name="FluidAnalysisAlertDescription" xml:space="preserve">
+    <value>№ лаборатории:  {0} Отсек: {1} Степень:</value>
+  </data>
+  <data name="labNumber" xml:space="preserve">
+    <value>№ лаборатории</value>
+  </data>
+  <data name="language" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="last" xml:space="preserve">
+    <value>Последний</value>
+  </data>
+  <data name="lastKnownLocation" xml:space="preserve">
+    <value>Последнее известное местоположение</value>
+  </data>
+  <data name="lastKnownStatus" xml:space="preserve">
+    <value>Последний известный статус</value>
+  </data>
+  <data name="lastReportedStatus" xml:space="preserve">
+    <value>Последний известный статус</value>
+  </data>
+  <data name="lastLogin" xml:space="preserve">
+    <value>Последний вход</value>
+  </data>
+  <data name="lastLoginDate" xml:space="preserve">
+    <value>Дата последнего входа</value>
+  </data>
+  <data name="lastloginUTC" xml:space="preserve">
+    <value>Последний вход (UTC)</value>
+  </data>
+  <data name="lastname" xml:space="preserve">
+    <value>Фамилия</value>
+  </data>
+  <data name="lastReported" xml:space="preserve">
+    <value>Последнее показание</value>
+  </data>
+  <data name="lastReportedLocation" xml:space="preserve">
+    <value>Последнее переданное местоположение</value>
+  </data>
+  <data name="lastReportedTime" xml:space="preserve">
+    <value>Время последнего отчета</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Последнее обновление</value>
+  </data>
+  <data name="lastNDays" xml:space="preserve">
+    <value>Посл. {0} дн.</value>
+  </data>
+  <data name="latitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Шир.</value>
+  </data>
+  <data name="latest" xml:space="preserve">
+    <value>Самый последний</value>
+  </data>
+  <data name="latestUserActivity" xml:space="preserve">
+    <value>Последние действия пользователей</value>
+  </data>
+  <data name="LaunchVLApp" xml:space="preserve">
+    <value>Запустить приложения VisionLink</value>
+  </data>
+  <data name="leaseOwnership" xml:space="preserve">
+    <value>Кредитор</value>
+  </data>
+  <data name="passesLessthan" xml:space="preserve">
+    <value>Меньше чем {0} проходов</value>
+  </data>
+  <data name="lessThanNPercent" xml:space="preserve">
+    <value>Менее {0}%</value>
+  </data>
+  <data name="level0" xml:space="preserve">
+    <value>Уровень 0</value>
+  </data>
+  <data name="level1" xml:space="preserve">
+    <value>Уровень 1</value>
+  </data>
+  <data name="level2" xml:space="preserve">
+    <value>Уровень 2</value>
+  </data>
+  <data name="level3" xml:space="preserve">
+    <value>Уровень 3</value>
+  </data>
+  <data name="lifetimeFuel" xml:space="preserve">
+    <value>Расход топлива за срок службы</value>
+  </data>
+  <data name="lifetimeFuelMeter" xml:space="preserve">
+    <value>Счетчик расхода топлива за срок службы</value>
+  </data>
+  <data name="lifetimeIdleFuelMeter" xml:space="preserve">
+    <value>Счетчик расхода топлива на холостом ходу за срок службы</value>
+  </data>
+  <data name="layerNumber" xml:space="preserve">
+    <value>Слой</value>
+  </data>
+  <data name="lift" xml:space="preserve">
+    <value>Слой</value>
+  </data>
+  <data name="InValidLink" xml:space="preserve">
+    <value>Ссылка больше не действует</value>
+  </data>
+  <data name="litersBarChartXAxisLabel" xml:space="preserve">
+    <value>Литры</value>
+  </data>
+  <data name="litershr" xml:space="preserve">
+    <value>л/ч</value>
+  </data>
+  <data name="litersBurned" xml:space="preserve">
+    <value>Потребление в литрах</value>
+  </data>
+  <data name="loadAndCycleMonitoring" xml:space="preserve">
+    <value>Мониторинг погрузок и циклов</value>
+  </data>
+  <data name="LoadCount" xml:space="preserve">
+    <value>Отчет об учете погрузок</value>
+  </data>
+  <data name="loadCountReport" xml:space="preserve">
+    <value>Отчет «Учет погрузок»</value>
+  </data>
+  <data name="loadCounts" xml:space="preserve">
+    <value>Число погрузок</value>
+  </data>
+  <data name="loadCountsAndCycleTimes" xml:space="preserve">
+    <value>Число погрузок и время циклов</value>
+  </data>
+  <data name="LoadDistance" xml:space="preserve">
+    <value>Расстояние между погрузками</value>
+  </data>
+  <data name="LoadDistanceAlertDescription" xml:space="preserve">
+    <value>Расстояние между погрузками {0}</value>
+  </data>
+  <data name="loadEvent" xml:space="preserve">
+    <value>Событие погрузки</value>
+  </data>
+  <data name="loadLocation" xml:space="preserve">
+    <value>Местоположение погрузки</value>
+  </data>
+  <data name="loadQuality" xml:space="preserve">
+    <value>Качество погрузок</value>
+  </data>
+  <data name="loadTime" xml:space="preserve">
+    <value>Время погрузки</value>
+  </data>
+  <data name="loadToDumpDistance" xml:space="preserve">
+    <value>Расстояние от погрузки до разгрузки</value>
+  </data>
+  <data name="loadToLoadDistance" xml:space="preserve">
+    <value>Расстояние между погрузками</value>
+  </data>
+  <data name="assetLoadedLoading" xml:space="preserve">
+    <value>Погрузчик:</value>
+  </data>
+  <data name="loader" xml:space="preserve">
+    <value>Погрузчик</value>
+  </data>
+  <data name="loaderOperation" xml:space="preserve">
+    <value>Эксплуатация погрузчика</value>
+  </data>
+  <data name="loads" xml:space="preserve">
+    <value>Загрузки</value>
+  </data>
+  <data name="locate" xml:space="preserve">
+    <value>Определение местоположения</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Местоположение</value>
+  </data>
+  <data name="geolocationPositionUnavailable" xml:space="preserve">
+    <value>Данные о местоположении отсутствуют.</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Вход</value>
+  </data>
+  <data name="loginCreationDate" xml:space="preserve">
+    <value>Дата создания учетной записи</value>
+  </data>
+  <data name="loginfailed" xml:space="preserve">
+    <value>Вход не выполнен</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Выход</value>
+  </data>
+  <data name="longitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Дол.</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Низкая</value>
+  </data>
+  <data name="LowSensorBattery" xml:space="preserve">
+    <value>Низкий заряд батареи</value>
+  </data>
+  <data name="LowFuel" xml:space="preserve">
+    <value>Низкий уровень топлива</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Самый низкий</value>
+  </data>
+  <data name="metersAbbrev" xml:space="preserve">
+    <value>м</value>
+  </data>
+  <data name="m3" xml:space="preserve">
+    <value>м3</value>
+  </data>
+  <data name="meterUpdateSummary" xml:space="preserve">
+    <value>Часы машины</value>
+  </data>
+  <data name="machineIdleEvent" xml:space="preserve">
+    <value>Холостой ход машины</value>
+  </data>
+  <data name="machineName" xml:space="preserve">
+    <value>Название машины</value>
+  </data>
+  <data name="make" xml:space="preserve">
+    <value>Марка</value>
+  </data>
+  <data name="makeModel" xml:space="preserve">
+    <value>Марка/модель</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Вручную</value>
+  </data>
+  <data name="map" xml:space="preserve">
+    <value>Карта</value>
+  </data>
+  <data name="mapReset" xml:space="preserve">
+    <value>Сброс карты</value>
+  </data>
+  <data name="mappingType" xml:space="preserve">
+    <value>Тип сопоставления</value>
+  </data>
+  <data name="markCompleted" xml:space="preserve">
+    <value>Отметить как выполненн.</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>Материал</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Макс.</value>
+  </data>
+  <data name="maxSpeed" xml:space="preserve">
+    <value>Макс. скорость</value>
+  </data>
+  <data name="maxRecordsReached" xml:space="preserve">
+    <value>Достигнуто максимальное количество записей</value>
+  </data>
+  <data name="maximumTemperature" xml:space="preserve">
+    <value>Максимальная температура</value>
+  </data>
+  <data name="deviceTypeMCHYPHEN3" xml:space="preserve">
+    <value>MC-3</value>
+  </data>
+  <data name="mdp" xml:space="preserve">
+    <value>MDP</value>
+  </data>
+  <data name="mdpSummary" xml:space="preserve">
+    <value>Сводка MDP</value>
+  </data>
+  <data name="mdpSummaryReport" xml:space="preserve">
+    <value>Сводный отчет по MDP</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Средняя</value>
+  </data>
+  <data name="meter" xml:space="preserve">
+    <value>Счетчик</value>
+  </data>
+  <data name="meterReading" xml:space="preserve">
+    <value>Показания счетчика</value>
+  </data>
+  <data name="meterUpdate" xml:space="preserve">
+    <value>Обновление счетчика</value>
+  </data>
+  <data name="meterUpdateSent" xml:space="preserve">
+    <value>Новое значение счетчика отправлено</value>
+  </data>
+  <data name="mi" xml:space="preserve">
+    <value>миль</value>
+  </data>
+  <data name="mileGal" xml:space="preserve">
+    <value>миль/галлон</value>
+  </data>
+  <data name="mileage" xml:space="preserve">
+    <value>Пробег</value>
+  </data>
+  <data name="miles" xml:space="preserve">
+    <value>мили</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Мин.</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>мин</value>
+  </data>
+  <data name="minimumTemperature" xml:space="preserve">
+    <value>Минимальная температура</value>
+  </data>
+  <data name="Missed" xml:space="preserve">
+    <value>пропущено</value>
+  </data>
+  <data name="missingMeterValueDetected" xml:space="preserve">
+    <value>Обнаружено пустое значение счетчика</value>
+  </data>
+  <data name="singleDayCalloutMissingMeterValue" xml:space="preserve">
+    <value>Обнаружено отсутствующее значение счетчика</value>
+  </data>
+  <data name="dateRangeCalloutMissingMeterValue" xml:space="preserve">
+    <value>Обнаружено отсутствующее значение счетчика в диапазоне дат</value>
+  </data>
+  <data name="MM" xml:space="preserve">
+    <value>ММ</value>
+  </data>
+  <data name="model" xml:space="preserve">
+    <value>Модель</value>
+  </data>
+  <data name="modelYear" xml:space="preserve">
+    <value>Год модели</value>
+  </data>
+  <data name="module" xml:space="preserve">
+    <value>Модуль</value>
+  </data>
+  <data name="moduleAccessProvidedBy" xml:space="preserve">
+    <value>Доступ к модулю предоставляет</value>
+  </data>
+  <data name="FluidMonitorPriority" xml:space="preserve">
+    <value>Мониторинг</value>
+  </data>
+  <data name="monitoredCycleDetailsReport" xml:space="preserve">
+    <value>Подробный отчет по мониторингу циклов</value>
+  </data>
+  <data name="monitoredLoadCountDetailsReport" xml:space="preserve">
+    <value>Подробный отчет по мониторингу учета погрузок</value>
+  </data>
+  <data name="monitoredSiteDetailsReport" xml:space="preserve">
+    <value>Подробный отчет по мониторингу участка</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Ежемес.</value>
+  </data>
+  <data name="more" xml:space="preserve">
+    <value>Еще</value>
+  </data>
+  <data name="moreThan" xml:space="preserve">
+    <value>Больше</value>
+  </data>
+  <data name="passesMorethan" xml:space="preserve">
+    <value>Более чем {0} прохода(ов)</value>
+  </data>
+  <data name="top10MostFrequentlyOccurringFaults" xml:space="preserve">
+    <value>Коды наиболее часто встречающихся сбоев (основные 10)</value>
+  </data>
+  <data name="MovementWithAssetOff" xml:space="preserve">
+    <value>Движение с выключенной единицей техники</value>
+  </data>
+  <data name="MovementWithAssetOn" xml:space="preserve">
+    <value>Движение с включенной единицей техники</value>
+  </data>
+  <data name="movingStatus" xml:space="preserve">
+    <value>Статус движения</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>миль/ч</value>
+  </data>
+  <data name="deviceTypeMTHYPHEN10" xml:space="preserve">
+    <value>MT-10</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENElectricEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Electric Engine</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENMotorEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Motor Engine</value>
+  </data>
+  <data name="MulitpleProjects" xml:space="preserve">
+    <value>Обнаружено несколько проектов</value>
+  </data>
+  <data name="multipleSelections" xml:space="preserve">
+    <value>Несколько выбранных объектов</value>
+  </data>
+  <data name="notApplicable" xml:space="preserve">
+    <value>Н.П.</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>Н.П.</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="nearbyAssets" xml:space="preserve">
+    <value>Единицы техники поблизости</value>
+  </data>
+  <data name="nearbyAssetsByProductFamily" xml:space="preserve">
+    <value>Категория ед. техники поблизости</value>
+  </data>
+  <data name="NewAccountSupportEmailSubject" xml:space="preserve">
+    <value>Информация о регистрации новой учетной записи</value>
+  </data>
+  <data name="nextService" xml:space="preserve">
+    <value>Следующее обслуживание</value>
+  </data>
+  <data name="FluidNoActionPriority" xml:space="preserve">
+    <value>Действие не требуется</value>
+  </data>
+  <data name="noBoundariesInLineworkFile" xml:space="preserve">
+    <value>Нет границ в файле линейных объектов.</value>
+  </data>
+  <data name="noChange" xml:space="preserve">
+    <value>Без изменений</value>
+  </data>
+  <data name="noComment" xml:space="preserve">
+    <value>Без комментария</value>
+  </data>
+  <data name="noConnectionToServer" xml:space="preserve">
+    <value>Нет соединения с сервером</value>
+  </data>
+  <data name="noData" xml:space="preserve">
+    <value>Нет данных</value>
+  </data>
+  <data name="noDumpFound" xml:space="preserve">
+    <value>Не обнаружена разгрузка</value>
+  </data>
+  <data name="noDumpSwitch" xml:space="preserve">
+    <value>Не обнаружено событие переключателя разгрузки</value>
+  </data>
+  <data name="NoEndDate" xml:space="preserve">
+    <value>Отсутствует дата окончания</value>
+  </data>
+  <data name="noFilter" xml:space="preserve">
+    <value>Без фильтра</value>
+  </data>
+  <data name="NoIntervals" xml:space="preserve">
+    <value>Нет интервалов</value>
+  </data>
+  <data name="noItemsFound" xml:space="preserve">
+    <value>Объекты не обнаружены</value>
+  </data>
+  <data name="noLoadFound" xml:space="preserve">
+    <value>Не обнаружена погрузка</value>
+  </data>
+  <data name="noLoadSwitch" xml:space="preserve">
+    <value>Не обнаружено событие переключателя погрузки</value>
+  </data>
+  <data name="NoMatchingProjectArea" xml:space="preserve">
+    <value>Не обнаружена соответствующая область проекта</value>
+  </data>
+  <data name="NoMatchingProjectDate" xml:space="preserve">
+    <value>Не обнаружены соответствующие дата и время проекта</value>
+  </data>
+  <data name="NoPending" xml:space="preserve">
+    <value>Нет ожидания</value>
+  </data>
+  <data name="noResultReturned" xml:space="preserve">
+    <value>Возвращено без результата</value>
+  </data>
+  <data name="noResults" xml:space="preserve">
+    <value>Без результатов</value>
+  </data>
+  <data name="noStopMovmentInValidSite" xml:space="preserve">
+    <value>Не обнаружено прекращение движения в допустимом типе участка</value>
+  </data>
+  <data name="noStopMovement" xml:space="preserve">
+    <value>Не обнаружено событие прекращения движения</value>
+  </data>
+  <data name="noSuchDataModel" xml:space="preserve">
+    <value>Модель данных не существует</value>
+  </data>
+  <data name="NoValidCellPassesInTagfile" xml:space="preserve">
+    <value>В TAG-файле (файлах) не обнаружены допустимые данные о проходах ячеек</value>
+  </data>
+  <data name="InvalidPosition" xml:space="preserve">
+    <value>В TAG-файле отсутствуют допустимые координаты</value>
+  </data>
+  <data name="NotReporting" xml:space="preserve">
+    <value>Не отвечает</value>
+  </data>
+  <data name="devicetypenodevice" xml:space="preserve">
+    <value>НЕТ</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>Нет</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>В норме</value>
+  </data>
+  <data name="NormalOperation" xml:space="preserve">
+    <value>Нормальная работа</value>
+  </data>
+  <data name="northing" xml:space="preserve">
+    <value>Координата на север</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Недоступ.</value>
+  </data>
+  <data name="NotPending" xml:space="preserve">
+    <value>Не требуется</value>
+  </data>
+  <data name="GensetNotReadyToRun" xml:space="preserve">
+    <value>Не готов к запуску</value>
+  </data>
+  <data name="notVerified" xml:space="preserve">
+    <value>Не подтвержден</value>
+  </data>
+  <data name="dcToIRecNotWGS84Ellipsoid" xml:space="preserve">
+    <value>Не WGS84 эллипсоид (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecNotWGS84EllipsoidSameAsProj" xml:space="preserve">
+    <value>В записи ИГД не WGS84 эллипсоид (DCToIRecord converter)</value>
+  </data>
+  <data name="NotReportingforExcelReport" xml:space="preserve">
+    <value>Не отвечает</value>
+  </data>
+  <data name="SavEmailFooter" xml:space="preserve">
+    <value>Примечание: это уведомительное электронное письмо. Вы были добавлены в этот список уведомлений, поскольку являетесь администратором учетной записи VisionLink.</value>
+  </data>
+  <data name="notes" xml:space="preserve">
+    <value>Примечания</value>
+  </data>
+  <data name="occurrenceCount" xml:space="preserve">
+    <value>Количество повторений</value>
+  </data>
+  <data name="odometer" xml:space="preserve">
+    <value>Одометр</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>Выкл.</value>
+  </data>
+  <data name="offset" xml:space="preserve">
+    <value>Сдвиг</value>
+  </data>
+  <data name="offsetFromBench" xml:space="preserve">
+    <value>Сдвиг от репера</value>
+  </data>
+  <data name="offsetFromDesign" xml:space="preserve">
+    <value>Сдвиг от проекта</value>
+  </data>
+  <data name="offsetFromProfile" xml:space="preserve">
+    <value>Сдвиг от профиля</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>Вкл.</value>
+  </data>
+  <data name="onGrade" xml:space="preserve">
+    <value>На уровне</value>
+  </data>
+  <data name="onMachineDesign" xml:space="preserve">
+    <value>Проект на машине</value>
+  </data>
+  <data name="OnBoardServiceToolCommand" xml:space="preserve">
+    <value>Команда «Бортовое сервисное средство»</value>
+  </data>
+  <data name="InvalidOnGroundFlag" xml:space="preserve">
+    <value>Флаг «На грунте» в TAG-файле не установлен или недопустим</value>
+  </data>
+  <data name="OpenAlerts" xml:space="preserve">
+    <value>Открытые оповещения</value>
+  </data>
+  <data name="operationModeBreakup" xml:space="preserve">
+    <value>Раздельно по рабочим режимам</value>
+  </data>
+  <data name="operatorID" xml:space="preserve">
+    <value>Идентификатор оператора</value>
+  </data>
+  <data name="operatorName" xml:space="preserve">
+    <value>Имя оператора</value>
+  </data>
+  <data name="origin" xml:space="preserve">
+    <value>Начало отсчета</value>
+  </data>
+  <data name="OTACommand" xml:space="preserve">
+    <value>Команда «OTA»</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Другое</value>
+  </data>
+  <data name="overCompacted" xml:space="preserve">
+    <value>Чрезмерно уплотнен</value>
+  </data>
+  <data name="overcompactedLayer" xml:space="preserve">
+    <value>Чрезмерно уплотненный слой</value>
+  </data>
+  <data name="maxLevel" xml:space="preserve">
+    <value>Ð’Ñ‹ÑˆÐµ Ð¼Ð°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ð³Ð¾ ÑƒÑ€Ð¾Ð²Ð½Ñ</value>
+  </data>
+  <data name="overPassTarget" xml:space="preserve">
+    <value>Выше целевого кол-ва проходов</value>
+  </data>
+  <data name="OverPressure" xml:space="preserve">
+    <value>Недопустимое давление</value>
+  </data>
+  <data name="OverTemperature" xml:space="preserve">
+    <value>Перегрев</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>просрочено</value>
+  </data>
+  <data name="serviceDueSummary" xml:space="preserve">
+    <value>Просроченное и предстоящее обслуживание</value>
+  </data>
+  <data name="OverdueBy" xml:space="preserve">
+    <value>Просрочено на:</value>
+  </data>
+  <data name="pMode" xml:space="preserve">
+    <value>Режим P</value>
+  </data>
+  <data name="pageXofY" xml:space="preserve">
+    <value>Страница &amp;[Page] из &amp;[Pages]</value>
+  </data>
+  <data name="MachineParametersReport" xml:space="preserve">
+    <value>Параметрические отчеты</value>
+  </data>
+  <data name="passCount" xml:space="preserve">
+    <value>Количество проходов</value>
+  </data>
+  <data name="passCountDetail" xml:space="preserve">
+    <value>Сведения о кол-ве проходов</value>
+  </data>
+  <data name="passCountDetailReport" xml:space="preserve">
+    <value>Подробный отчет о количестве проходов</value>
+  </data>
+  <data name="passCountSummary" xml:space="preserve">
+    <value>Сводка по кол-ву проходов</value>
+  </data>
+  <data name="passCountSummaryReport" xml:space="preserve">
+    <value>Сводный отчет по количеству проходов</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Пароль</value>
+  </data>
+  <data name="payload" xml:space="preserve">
+    <value>Полезная нагрузка</value>
+  </data>
+  <data name="PayloadReport" xml:space="preserve">
+    <value>Отчет «Полезная нагрузка»</value>
+  </data>
+  <data name="payloadPerCycle" xml:space="preserve">
+    <value>Пол. нагр./цикл</value>
+  </data>
+  <data name="payloadPerFuel" xml:space="preserve">
+    <value>Пол. нагр./топливо</value>
+  </data>
+  <data name="payloadPerHour" xml:space="preserve">
+    <value>Пол. нагр./ч</value>
+  </data>
+  <data name="chartWorkSheetTitle" xml:space="preserve">
+    <value>Таблица полезной нагрузки</value>
+  </data>
+  <data name="dataWorkSheetTitle" xml:space="preserve">
+    <value>Данные полезной нагрузки</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Ожидание</value>
+  </data>
+  <data name="performance" xml:space="preserve">
+    <value>Производительность</value>
+  </data>
+  <data name="performedBy" xml:space="preserve">
+    <value>Исполнитель</value>
+  </data>
+  <data name="phone" xml:space="preserve">
+    <value>Телефон</value>
+  </data>
+  <data name="deviceTypePL420" xml:space="preserve">
+    <value>PL420</value>
+  </data>
+  <data name="deviceTypePL431" xml:space="preserve">
+    <value>PL431</value>
+  </data>
+  <data name="deviceTypeMTS521" xml:space="preserve">
+    <value>PL521</value>
+  </data>
+  <data name="deviceTypeMTS522" xml:space="preserve">
+    <value>PL522</value>
+  </data>
+  <data name="deviceTypePLE641PLUSPL631" xml:space="preserve">
+    <value>PLE641+PL631</value>
+  </data>
+  <data name="changeDatesOrBoundary" xml:space="preserve">
+    <value>Измените даты проекта или границу проекта.</value>
+  </data>
+  <data name="cookiesRequired" xml:space="preserve">
+    <value>Включите функцию cookie в браузере.</value>
+  </data>
+  <data name="javascriptRequired" xml:space="preserve">
+    <value>Включите функции javascript и cookie в браузере.</value>
+  </data>
+  <data name="enterYourPassword" xml:space="preserve">
+    <value>Введите пароль.</value>
+  </data>
+  <data name="enterYourUsername" xml:space="preserve">
+    <value>Введите имя пользователя.</value>
+  </data>
+  <data name="pleaseInstallBlackBerryMaps" xml:space="preserve">
+    <value>Установите BlackBerry Maps.</value>
+  </data>
+  <data name="excelRowLimitReached" xml:space="preserve">
+    <value>Примечание: возвращенные данные не помещаются в пределы Excel для строк и не включены в отчет.</value>
+  </data>
+  <data name="selectService" xml:space="preserve">
+    <value>Выберите сервис перед отправкой запроса.</value>
+  </data>
+  <data name="PM" xml:space="preserve">
+    <value>PM</value>
+  </data>
+  <data name="PowerLoss" xml:space="preserve">
+    <value>Отсутствие питания</value>
+  </data>
+  <data name="PowerMode" xml:space="preserve">
+    <value>Режим двигателя</value>
+  </data>
+  <data name="pressure" xml:space="preserve">
+    <value>Давление</value>
+  </data>
+  <data name="probProcessing" xml:space="preserve">
+    <value>Возникла проблема во время обработки</value>
+  </data>
+  <data name="productFamily" xml:space="preserve">
+    <value>Категория</value>
+  </data>
+  <data name="project" xml:space="preserve">
+    <value>Проект</value>
+  </data>
+  <data name="overlappingProject" xml:space="preserve">
+    <value>Проекты не могут пересекаться ни во времени (дата начала и окончания), ни в пространстве (границы проектов). </value>
+  </data>
+  <data name="proofingRun" xml:space="preserve">
+    <value>Контрольный прогон</value>
+  </data>
+  <data name="proximityLoads" xml:space="preserve">
+    <value>Погрузки поблизости</value>
+  </data>
+  <data name="proximitytoSwitch" xml:space="preserve">
+    <value>Близость — переключатель</value>
+  </data>
+  <data name="psi" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="purchaseDate" xml:space="preserve">
+    <value>Дата покупки</value>
+  </data>
+  <data name="rightAbbrev" xml:space="preserve">
+    <value>П</value>
+  </data>
+  <data name="raw" xml:space="preserve">
+    <value>Сырые данные</value>
+  </data>
+  <data name="reconciled" xml:space="preserve">
+    <value>Согласовано</value>
+  </data>
+  <data name="ReconciledLoadDumpEvent" xml:space="preserve">
+    <value>Согласованное событие погрузки/разгрузки</value>
+  </data>
+  <data name="recordedBy" xml:space="preserve">
+    <value>Записано:</value>
+  </data>
+  <data name="registeredDealer" xml:space="preserve">
+    <value>Зарегистрированный дилер</value>
+  </data>
+  <data name="release" xml:space="preserve">
+    <value>Освободить</value>
+  </data>
+  <data name="rememberMe" xml:space="preserve">
+    <value>Запомнить меня</value>
+  </data>
+  <data name="reportDateRange" xml:space="preserve">
+    <value>Диапазон дат отчета</value>
+  </data>
+  <data name="reportGeneratedDate" xml:space="preserve">
+    <value>Дата создания отчета</value>
+  </data>
+  <data name="reportType" xml:space="preserve">
+    <value>Тип отчета</value>
+  </data>
+  <data name="reportedTime" xml:space="preserve">
+    <value>Время отправки отчета</value>
+  </data>
+  <data name="requestAccess" xml:space="preserve">
+    <value>Запрос доступа</value>
+  </data>
+  <data name="requestCanceled" xml:space="preserve">
+    <value>Запрос отменен</value>
+  </data>
+  <data name="requestSentSuccessfully" xml:space="preserve">
+    <value>Запрос на получение доступа отправлен.</value>
+  </data>
+  <data name="abortedDueToPipelineTimeout" xml:space="preserve">
+    <value>Запрос прерван из-за превышения времени ожидания информационного канала</value>
+  </data>
+  <data name="requestHasBeenCancelled" xml:space="preserve">
+    <value>Запрос отменен</value>
+  </data>
+  <data name="resolved" xml:space="preserve">
+    <value>Разрешено</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Повтор</value>
+  </data>
+  <data name="reverse" xml:space="preserve">
+    <value>Задний ход</value>
+  </data>
+  <data name="roadDesign" xml:space="preserve">
+    <value>Проект дороги</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>об/мин</value>
+  </data>
+  <data name="running" xml:space="preserve">
+    <value>Работа</value>
+  </data>
+  <data name="runningTotal" xml:space="preserve">
+    <value>Время работы двигателя (общее)</value>
+  </data>
+  <data name="runningBurnRate" xml:space="preserve">
+    <value>Расход при работающем двигателе</value>
+  </data>
+  <data name="runningFuelBurned" xml:space="preserve">
+    <value>Потр. топл. при раб. двиг.</value>
+  </data>
+  <data name="runningUtil" xml:space="preserve">
+    <value>Использование при работе двигателя</value>
+  </data>
+  <data name="runtime" xml:space="preserve">
+    <value>Время работы двигателя</value>
+  </data>
+  <data name="runTimePercentage" xml:space="preserve">
+    <value>Runtime Percentage</value>
+  </data>
+  <data name="sn" xml:space="preserve">
+    <value>Серийный №</value>
+  </data>
+  <data name="sampleDate" xml:space="preserve">
+    <value>Дата пробы</value>
+  </data>
+  <data name="satellite" xml:space="preserve">
+    <value>Спутник</value>
+  </data>
+  <data name="requestScheduleFailure" xml:space="preserve">
+    <value>Сбой расписания</value>
+  </data>
+  <data name="requestScheduleLoadTooHigh" xml:space="preserve">
+    <value>Загрузка расписания слишком высока</value>
+  </data>
+  <data name="requestScheduleTimeout" xml:space="preserve">
+    <value>Превышен период ожидания расписания</value>
+  </data>
+  <data name="schemaExamples" xml:space="preserve">
+    <value>Примеры схем</value>
+  </data>
+  <data name="scraper" xml:space="preserve">
+    <value>Скрепер</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="sec" xml:space="preserve">
+    <value>с</value>
+  </data>
+  <data name="secondPoint" xml:space="preserve">
+    <value>Вторая точка</value>
+  </data>
+  <data name="TamperSecurityStatus" xml:space="preserve">
+    <value>Статус безопасности</value>
+  </data>
+  <data name="selectAsset" xml:space="preserve">
+    <value>Выб. ед. тех.</value>
+  </data>
+  <data name="selectAssets" xml:space="preserve">
+    <value>Выберите единицы техники</value>
+  </data>
+  <data name="selectDateRange" xml:space="preserve">
+    <value>Выберите диапазон дат</value>
+  </data>
+  <data name="selectFuelPercentRemaining" xml:space="preserve">
+    <value>Выберите оставшийся уровень (%)</value>
+  </data>
+  <data name="selectGroup" xml:space="preserve">
+    <value>Выберите группу</value>
+  </data>
+  <data name="selectProductFamily" xml:space="preserve">
+    <value>Выберите категорию</value>
+  </data>
+  <data name="selectSite" xml:space="preserve">
+    <value>Выберите сайт</value>
+  </data>
+  <data name="selectedDesign" xml:space="preserve">
+    <value>Выбранный проект</value>
+  </data>
+  <data name="selectionLimitReached" xml:space="preserve">
+    <value>Выбрано предельно допустимое количество единиц</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Отправить</value>
+  </data>
+  <data name="sensor" xml:space="preserve">
+    <value>Датчик</value>
+  </data>
+  <data name="serialNumber" xml:space="preserve">
+    <value>Серийный номер</value>
+  </data>
+  <data name="serverBuildNumber" xml:space="preserve">
+    <value>Номер сборки сервера</value>
+  </data>
+  <data name="service" xml:space="preserve">
+    <value>Обслуживание</value>
+  </data>
+  <data name="serviceDate" xml:space="preserve">
+    <value>Дата обслуживания</value>
+  </data>
+  <data name="ServiceDue" xml:space="preserve">
+    <value>Требуется обслуживание</value>
+  </data>
+  <data name="ServiceDueMileageBased" xml:space="preserve">
+    <value>Требуется обслуживание (на основе пробега)</value>
+  </data>
+  <data name="serviceDueReport" xml:space="preserve">
+    <value>Отчет «Требуемое обслуживание»</value>
+  </data>
+  <data name="MaintenanceHistoryReport" xml:space="preserve">
+    <value>Отчет по истории обслуживания</value>
+  </data>
+  <data name="serviceInterval" xml:space="preserve">
+    <value>Интервал обслуживания</value>
+  </data>
+  <data name="serviceIntervalCompleted" xml:space="preserve">
+    <value>Интервал обслуживания завершен</value>
+  </data>
+  <data name="serviceIntervals" xml:space="preserve">
+    <value>Интервалы обслуживания</value>
+  </data>
+  <data name="serviceNotes" xml:space="preserve">
+    <value>Примечания по обслуживанию</value>
+  </data>
+  <data name="serviceStopped" xml:space="preserve">
+    <value>Сервис остановлен</value>
+  </data>
+  <data name="servicesOffered" xml:space="preserve">
+    <value>Предлагаемые сервисы</value>
+  </data>
+  <data name="sessionExpired" xml:space="preserve">
+    <value>Сессия прекращена вследствие неактивности или входа с тем же именем пользователя.</value>
+  </data>
+  <data name="severity" xml:space="preserve">
+    <value>Значимость</value>
+  </data>
+  <data name="SavTerminationHeaderForBss" xml:space="preserve">
+    <value>Представление общих единиц техники для указанных ниже единиц техники прекратило действовать в связи с функциями администрирования, выполненными в магазине Trimble Store. Для получения более подробных сведений обратитесь к администратору {0}.</value>
+  </data>
+  <data name="SavTerminationHeaderForWizard" xml:space="preserve">
+    <value>Представление общих единиц техники для указанных ниже единиц техники прекратило действовать в связи с тем, что это представление было удалено создателем или срок действия этого представления истек.</value>
+  </data>
+  <data name="SavNotificationHeader" xml:space="preserve">
+    <value>Срок действия представления общих единиц техники для указанных ниже единиц техники истек {0}.</value>
+  </data>
+  <data name="SharedAssetViewReport" xml:space="preserve">
+    <value>Отчет по представлению общих единиц техники</value>
+  </data>
+  <data name="sharedToOrganization" xml:space="preserve">
+    <value>Используется совместно с организацией</value>
+  </data>
+  <data name="shrinkage" xml:space="preserve">
+    <value>Усадка</value>
+  </data>
+  <data name="SimCardRemovedTimerExpired" xml:space="preserve">
+    <value>SIM-карта извлечена</value>
+  </data>
+  <data name="site" xml:space="preserve">
+    <value>Участок</value>
+  </data>
+  <data name="siteBoundary" xml:space="preserve">
+    <value>Граница участка</value>
+  </data>
+  <data name="SiteEntry" xml:space="preserve">
+    <value>Вход на участок</value>
+  </data>
+  <data name="siteAlertsWarning" xml:space="preserve">
+    <value>События входа на участок и выхода с участка определяются на основе координат, получаемых с машины. Эти события могут определяться с задержкой или быть пропущены в зависимости от того, когда машина отправляет координаты.</value>
+  </data>
+  <data name="SiteEntryOrExit" xml:space="preserve">
+    <value>Вход на участок или выход с участка</value>
+  </data>
+  <data name="siteEntryOutsideReportDateRange" xml:space="preserve">
+    <value>Вход на участок вне диапазона дат отчета</value>
+  </data>
+  <data name="SiteExit" xml:space="preserve">
+    <value>Выход с участка</value>
+  </data>
+  <data name="siteExitOutsideReportDateRange" xml:space="preserve">
+    <value>Выход с участка вне диапазона дат отчета</value>
+  </data>
+  <data name="siteName" xml:space="preserve">
+    <value>Название участка</value>
+  </data>
+  <data name="SiteRuntime" xml:space="preserve">
+    <value>Отчет «Время работы двигателя на участке»</value>
+  </data>
+  <data name="siteRuntimeReport" xml:space="preserve">
+    <value>Отчет «Время работы двигателя на участке»</value>
+  </data>
+  <data name="sitetoSite" xml:space="preserve">
+    <value>Участок — участок</value>
+  </data>
+  <data name="sites" xml:space="preserve">
+    <value>Участки</value>
+  </data>
+  <data name="toManyPoints" xml:space="preserve">
+    <value>Участки могут содержать не более 50 точек.</value>
+  </data>
+  <data name="skipped" xml:space="preserve">
+    <value>Пропущено</value>
+  </data>
+  <data name="smuLocation" xml:space="preserve">
+    <value>Местоположение SMU</value>
+  </data>
+  <data name="deviceTypeSNM451" xml:space="preserve">
+    <value>SNM451</value>
+  </data>
+  <data name="errorMessage" xml:space="preserve">
+    <value>Извините, возникла ошибка при обработке вашего запроса. Повторите попытку.</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Источник</value>
+  </data>
+  <data name="Speeding" xml:space="preserve">
+    <value>Превышение скорости</value>
+  </data>
+  <data name="sqft" xml:space="preserve">
+    <value>кв. фут</value>
+  </data>
+  <data name="sqm" xml:space="preserve">
+    <value>кв. м</value>
+  </data>
+  <data name="SS" xml:space="preserve">
+    <value>СС</value>
+  </data>
+  <data name="standardMode" xml:space="preserve">
+    <value>Стандартный режим</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Пуск</value>
+  </data>
+  <data name="startDate" xml:space="preserve">
+    <value>Дата начала</value>
+  </data>
+  <data name="startHourMeter" xml:space="preserve">
+    <value>Начальный счетчик часов</value>
+  </data>
+  <data name="startLocation" xml:space="preserve">
+    <value>Место начала</value>
+  </data>
+  <data name="startMode" xml:space="preserve">
+    <value>Режим запуска</value>
+  </data>
+  <data name="startSpeedDateTime" xml:space="preserve">
+    <value>Дата и время начала превышения скорости</value>
+  </data>
+  <data name="startSpeedLocation" xml:space="preserve">
+    <value>Место начала превышения скорости</value>
+  </data>
+  <data name="startTime" xml:space="preserve">
+    <value>Время начала</value>
+  </data>
+  <data name="StateMileageReport" xml:space="preserve">
+    <value>Пробег по штатам</value>
+  </data>
+  <data name="stateProvince" xml:space="preserve">
+    <value>Штат / провинция</value>
+  </data>
+  <data name="state" xml:space="preserve">
+    <value>По штатам</value>
+  </data>
+  <data name="station" xml:space="preserve">
+    <value>Станция</value>
+  </data>
+  <data name="StationOffset" xml:space="preserve">
+    <value>Отчет о смещениях станций</value>
+  </data>
+  <data name="stationOffsetReport" xml:space="preserve">
+    <value>Отчет о смещениях станций</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="stn" xml:space="preserve">
+    <value>Стан.</value>
+  </data>
+  <data name="stop" xml:space="preserve">
+    <value>Стоп</value>
+  </data>
+  <data name="stopLocation" xml:space="preserve">
+    <value>Место прекращения</value>
+  </data>
+  <data name="stopSpeedDateTime" xml:space="preserve">
+    <value>Дата и время прекращения превышения скорости</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Выполнено</value>
+  </data>
+  <data name="suggestUsingTargetOverride" xml:space="preserve">
+    <value>Рекомендуется использовать стандартное целевое значение.</value>
+  </data>
+  <data name="SummaryData" xml:space="preserve">
+    <value>Сводные данные</value>
+  </data>
+  <data name="summaryOfLoadsByHaulDistance" xml:space="preserve">
+    <value>Сводка загрузок по расстоянию перевозки</value>
+  </data>
+  <data name="summaryVolumes" xml:space="preserve">
+    <value>Сводка по объемам</value>
+  </data>
+  <data name="summaryVolumesReport" xml:space="preserve">
+    <value>Сводный отчет по объемам</value>
+  </data>
+  <data name="surplusDeficitVolume" xml:space="preserve">
+    <value>Избыточный (недостаточный) объем</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>Переключатель</value>
+  </data>
+  <data name="switchClosed" xml:space="preserve">
+    <value>Переключатель замкнут</value>
+  </data>
+  <data name="switchName" xml:space="preserve">
+    <value>Имя переключателя</value>
+  </data>
+  <data name="switchOn" xml:space="preserve">
+    <value>Переключатель включен</value>
+  </data>
+  <data name="switchOpen" xml:space="preserve">
+    <value>Переключатель разомкнут</value>
+  </data>
+  <data name="switchtoSiteorSitetoSwitch" xml:space="preserve">
+    <value>Переключатель — участок или участок — переключатель</value>
+  </data>
+  <data name="switchtoSwitch" xml:space="preserve">
+    <value>Переключатель — переключатель</value>
+  </data>
+  <data name="tagfileLiftNumber" xml:space="preserve">
+    <value>Номер слоя из TAG-файла</value>
+  </data>
+  <data name="tamperResistance" xml:space="preserve">
+    <value>Защищенность от взлома</value>
+  </data>
+  <data name="TamperResolvedConnectiontoOffBoard" xml:space="preserve">
+    <value>Защита от взлома восстановлена</value>
+  </data>
+  <data name="TamperUninstalled" xml:space="preserve">
+    <value>Защита от взлома удалена </value>
+  </data>
+  <data name="deviceTypeTAP66" xml:space="preserve">
+    <value>TAP66</value>
+  </data>
+  <data name="target" xml:space="preserve">
+    <value>Цель</value>
+  </data>
+  <data name="targetCMV" xml:space="preserve">
+    <value>Целевое значение CMV</value>
+  </data>
+  <data name="targetCMVRange" xml:space="preserve">
+    <value>Диапазон целевых значений CMV</value>
+  </data>
+  <data name="targetMDP" xml:space="preserve">
+    <value>Цель MDP</value>
+  </data>
+  <data name="targetMDPRange" xml:space="preserve">
+    <value>Диапазон цели MDP</value>
+  </data>
+  <data name="targetPassCount" xml:space="preserve">
+    <value>Целевое количество проходов</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Температура</value>
+  </data>
+  <data name="temperatureReport" xml:space="preserve">
+    <value>Отчет по температуре</value>
+  </data>
+  <data name="terrain" xml:space="preserve">
+    <value>Местность</value>
+  </data>
+  <data name="aempInformation" xml:space="preserve">
+    <value>Благодаря сведениями AEMP пользователь может получить доступ к срезу данных о своем парке техники для выполнения высокоуровневого анализа тенденций и интроспекции данных.</value>
+  </data>
+  <data name="assetUtilizationDescription" xml:space="preserve">
+    <value>API-интерфейс  Asset Utilization позволяет получить данные по использованию каждой отдельной единицы техники в парке (такие как время простоя, рабочее время и т.п.), которая поддерживает передачу данных об использовании. Для получения данных все единицы техники должны иметь действующий план обслуживания Core and Health на данный период.</value>
+  </data>
+  <data name="assetsDescription" xml:space="preserve">
+    <value>API-интерфейс Assets просто предоставляет список всех единиц техники в парке. Этот API-интерфейс предоставляет более подробные сведения (такие как категория, год производства, тип и серийный устройства и т.п.) о каждой отдельной единице техники в парке.</value>
+  </data>
+  <data name="dcToIRecDatumFailedToLoad" xml:space="preserve">
+    <value>Ошибка при загрузке ИГД CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="fleetSummaryDescription" xml:space="preserve">
+    <value>Сводные сведения по парку техники предоставляют высокоуровневые данные о текущем состоянии парка техники. К ним относятся такие данные о каждой единице техники в парке, как SMULoc, пробег, статус отправки данных, местоположение и т.п..</value>
+  </data>
+  <data name="unsubscribedAssets" xml:space="preserve">
+    <value>Перечисленные ниже единицы техники не поддерживаются для данного отчета и для выбранного диапазона времени.  Сводная информация по кодам сбоев доступна только для устройств PL321 и 522/523 с активным планом обслуживания Cat® Health.</value>
+  </data>
+  <data name="noReportDataAssets" xml:space="preserve">
+    <value>Этот отчет не содержит данных для следующих единиц техники</value>
+  </data>
+  <data name="reportDataAssets" xml:space="preserve">
+    <value>Этот отчет содержит данные для следующих единиц техники</value>
+  </data>
+  <data name="noDataAssets" xml:space="preserve">
+    <value>Для перечисленных ниже единиц техники нет данных</value>
+  </data>
+  <data name="noDataSites" xml:space="preserve">
+    <value>Для следующих участков нет данных</value>
+  </data>
+  <data name="fuelUtilizationDescription" xml:space="preserve">
+    <value>API-интерфейс Fuel Utilization позволяет получить  данные по использованию каждой отдельной единицы техники в парке (такие как расход на холостом ходу, рабочий расход и т.п.), которая поддерживает передачу данных об использовании. Для получения данных все единицы техники должны иметь действующий план обслуживания Core and Health на данный период.</value>
+  </data>
+  <data name="invalidUser003" xml:space="preserve">
+    <value>Введен неверный пароль.\nВаша учетная запись заблокирована, повторите попытку через 30 минут.</value>
+  </data>
+  <data name="invalidUser001" xml:space="preserve">
+    <value>Указана недопустимая комбинация имени пользователя и пароля.</value>
+  </data>
+  <data name="erroneousFuel" xml:space="preserve">
+    <value>{0} сообщает о непредусмотренном расходе топлива за заданный период времени.</value>
+  </data>
+  <data name="erroneousIdleTime" xml:space="preserve">
+    <value>{0} сообщает о непредусмотренном времени холостого хода за заданный период времени.</value>
+  </data>
+  <data name="erroneousRuntime" xml:space="preserve">
+    <value>{0} сообщает о непредусмотренном времени работы двигателя за заданный период времени.</value>
+  </data>
+  <data name="erroneousWorkingTime" xml:space="preserve">
+    <value>{0} сообщает о непредусмотренном рабочем времени за заданный период времени.</value>
+  </data>
+  <data name="issueSendingEmail" xml:space="preserve">
+    <value>Возникла проблема при отправке электронной почты, обратитесь к администратору.</value>
+  </data>
+  <data name="InvalidUserAccess" xml:space="preserve">
+    <value>Эта учетная запись не настроена для клиентского доступа VisionLink. Используйте другое имя пользователя или обратитесь в службу поддержки.</value>
+  </data>
+  <data name="assetOperationDescription" xml:space="preserve">
+    <value>Эта конечная точка предоставляет данные об эксплуатации единиц техники, такие как рабочее время и время на холостом ходу, когда для значения использования вычисляются по определениям работы. Для получения данных все единицы техники должны иметь действующий план обслуживания Core and Health на данный период.</value>
+  </data>
+  <data name="requiredField" xml:space="preserve">
+    <value>Это поле необходимо заполнить.</value>
+  </data>
+  <data name="incompleteLoadError" xml:space="preserve">
+    <value>Неполная загрузка - ошибка аппаратного обеспечения</value>
+  </data>
+  <data name="incompleteLoadNoDump" xml:space="preserve">
+    <value>Это незавершенная погрузка - время разгрузки не обнаружено</value>
+  </data>
+  <data name="incompleteLoadNoLoad" xml:space="preserve">
+    <value>Это незавершенная погрузка - время погрузки не обнаружено</value>
+  </data>
+  <data name="incompleteLoad" xml:space="preserve">
+    <value>Это неполный отчет об учете погрузок</value>
+  </data>
+  <data name="TrimbleOperationsReportDescription" xml:space="preserve">
+    <value>This report provides the list of users and their details, who fall under the category of Corporate.</value>
+  </data>
+  <data name="InActiveSchedule" xml:space="preserve">
+    <value>Это недопустимый отчет по расписанию. Для изменения этого отчета обратитесь к своему администратору VisionLink.</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="geolocationTimeout" xml:space="preserve">
+    <value>Истекло время ожидания при получении данных о местоположении</value>
+  </data>
+  <data name="timedOut" xml:space="preserve">
+    <value>Истекло время ожидания</value>
+  </data>
+  <data name="TireMonitoring" xml:space="preserve">
+    <value>Мониторинг шин</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="deviceTypeTM3000" xml:space="preserve">
+    <value>TM3000</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Сегодня</value>
+  </data>
+  <data name="ton" xml:space="preserve">
+    <value>тонна (США)</value>
+  </data>
+  <data name="tonne" xml:space="preserve">
+    <value>тонна (метрическая)</value>
+  </data>
+  <data name="tooThickLayer" xml:space="preserve">
+    <value>Слишком толстый слой</value>
+  </data>
+  <data name="topSurface" xml:space="preserve">
+    <value>Верхняя поверхность</value>
+  </data>
+  <data name="topCyclesPerHour" xml:space="preserve">
+    <value>Верхн. {0} - циклов/ч (всего)</value>
+  </data>
+  <data name="topPayloadPerCycle" xml:space="preserve">
+    <value>Нижн. {0} - пол. нагр./цикл (всего)</value>
+  </data>
+  <data name="topPayloadPerHour" xml:space="preserve">
+    <value>Нижн. {0} - пол. нагр./ч (всего)</value>
+  </data>
+  <data name="total" xml:space="preserve">
+    <value>Итого</value>
+  </data>
+  <data name="totalAreaCovered" xml:space="preserve">
+    <value>Общая площадь покрытия</value>
+  </data>
+  <data name="totalCutVolume" xml:space="preserve">
+    <value>Общий объем выемки</value>
+  </data>
+  <data name="totalDistance" xml:space="preserve">
+    <value>Общий пробег</value>
+  </data>
+  <data name="totalFillVolume" xml:space="preserve">
+    <value>Общий объем отсыпки</value>
+  </data>
+  <data name="totalFuel" xml:space="preserve">
+    <value>Итог: топливо</value>
+  </data>
+  <data name="totalHoursByAsset" xml:space="preserve">
+    <value>Сумма часов по единицам техники</value>
+  </data>
+  <data name="totalIdleEvents" xml:space="preserve">
+    <value>Всего событий холостого хода</value>
+  </data>
+  <data name="totalIdleTime" xml:space="preserve">
+    <value>Итог: время на холостом ходу</value>
+  </data>
+  <data name="totalLoads" xml:space="preserve">
+    <value>Всего загрузок</value>
+  </data>
+  <data name="totalMachineCovPlan" xml:space="preserve">
+    <value>Общая площадь плана покрытия машины</value>
+  </data>
+  <data name="totalRuntime" xml:space="preserve">
+    <value>Итог: время работы двигателя</value>
+  </data>
+  <data name="totalTime" xml:space="preserve">
+    <value>Общее время</value>
+  </data>
+  <data name="totalVolume" xml:space="preserve">
+    <value>Общий объем</value>
+  </data>
+  <data name="totals" xml:space="preserve">
+    <value>Итоги</value>
+  </data>
+  <data name="trackMapping" xml:space="preserve">
+    <value>Сопоставление гусениц</value>
+  </data>
+  <data name="transmissionOilTemperature" xml:space="preserve">
+    <value>Transmission Oil Temperature</value>
+  </data>
+  <data name="transmissionOilTemperatureHeader" xml:space="preserve">
+    <value>Transmission Oil Temperature Report</value>
+  </data>
+  <data name="travel" xml:space="preserve">
+    <value>Движение</value>
+  </data>
+  <data name="truck" xml:space="preserve">
+    <value>Грузовик</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Тип</value>
+  </data>
+  <data name="ucid" xml:space="preserve">
+    <value>UCID</value>
+  </data>
+  <data name="invalidSessionID" xml:space="preserve">
+    <value>Аутентификация с использованием предоставленного идентификатора сессии невозможна. Войдите в систему.</value>
+  </data>
+  <data name="dcToIRecFailedToCreateCSIBObject" xml:space="preserve">
+    <value>Невозможно создать объект ICSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="unableToDetermineDataModel" xml:space="preserve">
+    <value>Не удается определить модель данных.</value>
+  </data>
+  <data name="unableToDetermineMachine" xml:space="preserve">
+    <value>Не удается определить машину.</value>
+  </data>
+  <data name="UnableToDetermineProjectID" xml:space="preserve">
+    <value>Не удается определить идентификатор проекта</value>
+  </data>
+  <data name="dcToIRecFailedToGetZoneParams" xml:space="preserve">
+    <value>Невозможно получить параметры зоны (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneParams" xml:space="preserve">
+    <value>Невозможно установить параметры зоны (DCToIRecord converter)</value>
+  </data>
+  <data name="underCompacted" xml:space="preserve">
+    <value>Недостаточно уплотнен</value>
+  </data>
+  <data name="undercompactedLayer" xml:space="preserve">
+    <value>Недостаточно уплотненный слой</value>
+  </data>
+  <data name="minLevel" xml:space="preserve">
+    <value>Ниже минимального уровня</value>
+  </data>
+  <data name="underPassTarget" xml:space="preserve">
+    <value>Ниже целевого кол-ва проходов</value>
+  </data>
+  <data name="UnderPressure" xml:space="preserve">
+    <value>Под давлением</value>
+  </data>
+  <data name="unexpectedError" xml:space="preserve">
+    <value>Непредвиденная ошибка</value>
+  </data>
+  <data name="erroneousFuelExcluded" xml:space="preserve">
+    <value>Непредусмотренный расход топлива, указанный «{0}», исключен из этого расчета.</value>
+  </data>
+  <data name="erroneousFuelOrIdleTimeExcluded" xml:space="preserve">
+    <value>Непредусмотренные время холостого хода и (или) расход топлива, указанные «{0}», исключены из этого расчета.</value>
+  </data>
+  <data name="erroneousIdleTimeExcluded" xml:space="preserve">
+    <value>Непредусмотренное время холостого хода, указанное «{0}», исключено из этого расчета.</value>
+  </data>
+  <data name="erroneousFuelOrRuntimeExcluded" xml:space="preserve">
+    <value>Непредусмотренные время работы двигателя и (или) расход топлива, указанные «{0}», исключены из этого расчета.</value>
+  </data>
+  <data name="erroneousRuntimeExcluded" xml:space="preserve">
+    <value>Непредусмотренное время работы двигателя, указанное «{0}», исключено из этого расчета.</value>
+  </data>
+  <data name="erroneousFuelOrWorkingTimeExcluded" xml:space="preserve">
+    <value>Непредусмотренные рабочее время и (или) расход топлива, указанные в отчете «{0}», исключены из этого расчета.</value>
+  </data>
+  <data name="erroneousWorkingOrRuntimeExcluded" xml:space="preserve">
+    <value>Непредусмотренные рабочее время и (или) время работы двигателя, указанные «{0}», исключены из этого расчета.</value>
+  </data>
+  <data name="erroneousWorkingTimeExcluded" xml:space="preserve">
+    <value>Непредусмотренное рабочее время, указанное «{0}», исключено из этого расчета.</value>
+  </data>
+  <data name="universalCustomer" xml:space="preserve">
+    <value>Универсальный клиент</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Неизвест.</value>
+  </data>
+  <data name="dcToIRecUnknownCSType" xml:space="preserve">
+    <value>Неизвестный тип системы координат (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnknownDatumModel" xml:space="preserve">
+    <value>Обнаружена и отклонена неизвестная корректировка ИГД  (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownError" xml:space="preserve">
+    <value>Произошла неизвестная ошибка</value>
+  </data>
+  <data name="geolocationUnknownError" xml:space="preserve">
+    <value>Возникла неизвестная ошибка при получении данных о местоположении</value>
+  </data>
+  <data name="dcToIRecUnknownGeoidModel" xml:space="preserve">
+    <value>Неизвестная модель геоида обнаружена и отклонена (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownMachine" xml:space="preserve">
+    <value>Неизвестная машина.</value>
+  </data>
+  <data name="dcToIRecUnknownProjType" xml:space="preserve">
+    <value>Неизвестный тип проекции (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownTagfileError" xml:space="preserve">
+    <value>Неизвестная ошибка TAG-файла</value>
+  </data>
+  <data name="Unsubscribe" xml:space="preserve">
+    <value>Отменить получение</value>
+  </data>
+  <data name="UnsubscribeConfirmation" xml:space="preserve">
+    <value>Подтверждение отмены получения</value>
+  </data>
+  <data name="unsupportedCSDFileType" xml:space="preserve">
+    <value>Тип файла описания системы координат не поддерживается</value>
+  </data>
+  <data name="dcToIRecUnsupportedDatum" xml:space="preserve">
+    <value>ИГД не поддерживаются (DCToIRecord converter)</value>
+  </data>
+  <data name="unsupportedDisplayType" xml:space="preserve">
+    <value>Дисплей этого типа не поддерживается</value>
+  </data>
+  <data name="unsupportedFilterAttribute" xml:space="preserve">
+    <value>Фильтр атрибутов не поддерживается</value>
+  </data>
+  <data name="dcToIRecUnsupportedGeoid" xml:space="preserve">
+    <value>Геоид не поддерживается (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnsupportedZoneOrientation" xml:space="preserve">
+    <value>Ориентация зоны не поддерживается (DCToIRecord converter)</value>
+  </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>Предстоящее</value>
+  </data>
+  <data name="update" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="updateMeter" xml:space="preserve">
+    <value>Обновить счетчик</value>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>Использование</value>
+  </data>
+  <data name="useCurrentSelection" xml:space="preserve">
+    <value>Использовать текущий выбор</value>
+  </data>
+  <data name="userAccountsReportHeader" xml:space="preserve">
+    <value>Отчет по учетным записям пользователей</value>
+  </data>
+  <data name="userActivity" xml:space="preserve">
+    <value>Действия пользователей</value>
+  </data>
+  <data name="userDefinedPolygon" xml:space="preserve">
+    <value>Пользовательский полигон</value>
+  </data>
+  <data name="geolocationPermissionDenied" xml:space="preserve">
+    <value>Пользователю отказано в получении данных о местоположении</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Пользователе не существует Обратитесь к своему администратору.</value>
+  </data>
+  <data name="UserPrivilegesReport" xml:space="preserve">
+    <value>Отчет «Права пользователей»</value>
+  </data>
+  <data name="userType" xml:space="preserve">
+    <value>Тип пользователя</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Имя пользователя</value>
+  </data>
+  <data name="invalidUsernameOrPassword" xml:space="preserve">
+    <value>Недействительная комбинация имени пользователя и пароля, повторите попытку.</value>
+  </data>
+  <data name="utilizationCalloutsExistInData" xml:space="preserve">
+    <value>В данных имеются комментарии об использовании</value>
+  </data>
+  <data name="utilizationHours" xml:space="preserve">
+    <value>Время использования</value>
+  </data>
+  <data name="ValidMSSKey" xml:space="preserve">
+    <value>Допустимый ключ MSS </value>
+  </data>
+  <data name="dateRangeCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Значение содержит данные, встречающиеся за пределами выбранного диапазона дат</value>
+  </data>
+  <data name="singleDayCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Значение содержит данные, встречающиеся за пределами указанного дня</value>
+  </data>
+  <data name="mustBeUnformattedInteger" xml:space="preserve">
+    <value>Значение должно быть целым числом, не содержащих точек и десятичных запятых.</value>
+  </data>
+  <data name="varies" xml:space="preserve">
+    <value>Изменяется</value>
+  </data>
+  <data name="emailVerified" xml:space="preserve">
+    <value>Статус подтверждения</value>
+  </data>
+  <data name="verified" xml:space="preserve">
+    <value>Подтвержден</value>
+  </data>
+  <data name="vibeState" xml:space="preserve">
+    <value>Статус вибрации</value>
+  </data>
+  <data name="fuelLevelSummary" xml:space="preserve">
+    <value>Просмотр единиц техники которым требуется заправка</value>
+  </data>
+  <data name="faultCodesSummary" xml:space="preserve">
+    <value>Просмотр кодов сбоев единиц техники</value>
+  </data>
+  <data name="utilizationHoursSummary" xml:space="preserve">
+    <value>Просмотр времени использования</value>
+  </data>
+  <data name="AlertsSummary" xml:space="preserve">
+    <value>Просмотр открытых оповещений для единицы техники</value>
+  </data>
+  <data name="fuelBurnSummary" xml:space="preserve">
+    <value>Просмотр недавнего потребления топлива единицами техники</value>
+  </data>
+  <data name="vin" xml:space="preserve">
+    <value>VIN</value>
+  </data>
+  <data name="VisionLinkOperationsReport" xml:space="preserve">
+    <value>VisionLink – отчет «Операции»</value>
+  </data>
+  <data name="EngineIdleDailyAlertMessageBodySMS" xml:space="preserve">
+    <value>Учетная запись оповещений VisionLink: {0} Часов простоя за день {1}, для {2}/{3} в {4}, счетчик часов {5}</value>
+  </data>
+  <data name="SpeedingAlertMessageBodySMS" xml:space="preserve">
+    <value>Учетная запись оповещений VisionLink: {0} {1}, макс. скорость: {2} миль/ч, {3}/{4}. Время прекращения превышения скорости: {5}</value>
+  </data>
+  <data name="SwitchAlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink Учетная запись: {4} Сведения о переключателе: {0}/{1} в {2} {3} </value>
+  </data>
+  <data name="AlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink Учетная запись: {4} {0} для: {1}/{2} в: {3} Счетчик часов: {5}</value>
+  </data>
+  <data name="SecurityStatusAlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink Учетная запись: {4} {0} для: {1}/{2} в: {3} Счетчик часов: {5}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink Учетная запись:  {5} {0} для: {1}/{2} в: {3} {4} Счетчик часов: {6}</value>
+  </data>
+  <data name="FaultAlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink Учетная запись: {5} {0} для: {1}/{2} в: {3} {4} Значимость: {7} Счетчик часов: {6}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink Учетная запись: {5} {0} для {1}/{2}. {3} требуется при наработке: {4} ч. Счетчик часов: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink  Учетная запись: {5} {0} для {1}/{2}. {3} требуется при пробеге: {4} миль (мили).</value>
+  </data>
+  <data name="AlertSubject" xml:space="preserve">
+    <value>Оповещение VisionLink {0} для идентификатора: {1}, серийный №: {2}</value>
+  </data>
+  <data name="ApiUserEmailSubject" xml:space="preserve">
+    <value>Помощь в доступе к API VisionLink</value>
+  </data>
+  <data name="visionLinkApiDocumentation" xml:space="preserve">
+    <value>Документация API-интерфейса VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopics" xml:space="preserve">
+    <value>Разделы API-интерфейса VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopicsRequestAccess" xml:space="preserve">
+    <value>Разделы API-интерфейса VisionLink: запрос доступа</value>
+  </data>
+  <data name="visionLinkAPIDatafeedDocumentation" xml:space="preserve">
+    <value>API-интерфейс VisionLink: документация потоков данных</value>
+  </data>
+  <data name="VLApp" xml:space="preserve">
+    <value>Приложения VisionLink</value>
+  </data>
+  <data name="FluidAnalysisAlertSubject" xml:space="preserve">
+    <value>Результаты анализа жидкостей VisionLink для идентификатора: {0} Серийный №: {1}</value>
+  </data>
+  <data name="locationUnknownFeatureDisabled" xml:space="preserve">
+    <value>VisionLink не удалось определить ваше местоположение. Этот объект отключен. Повторите попытку позже.</value>
+  </data>
+  <data name="SavTerminationSubject" xml:space="preserve">
+    <value>Уведомление VisionLink: представление общих единиц техники прекратило действовать</value>
+  </data>
+  <data name="ForgotPasswordEmailSubject" xml:space="preserve">
+    <value>Помощь с паролем VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopicsDescription" xml:space="preserve">
+    <value>Совместимые с VisionLink API-интерфейсы предоставляют средства для использования данных VisionLink в формате ленты данных, созданном для легкого доступа из сторонних инструментов. Совместимые с VisionLink API-интерфейсы обычно используют дилер, клиенты и интеграторы, которым требуется интегрировать данные VisionLink в свои ERP-системы, бухгалтерские системы и другие сторонние системы. Дополнительные сведения о совместимых с VisionLink API-интерфейсах см. в &lt;a href="/Docs/{0}/VisionLink VL-Ready User Guide.pdf" class="contentLink" target="_blank"&gt;Руководстве по совместимым с VisionLink API-интерфейсам&lt;/a&gt;.</value>
+  </data>
+  <data name="SavCreationSubject" xml:space="preserve">
+    <value>Представление общих единиц техники VisionLink создано {0}</value>
+  </data>
+  <data name="SavNotificationSubject" xml:space="preserve">
+    <value>Уведомление об истечении срока действия представления общих единиц техники VisionLink</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Оповещение VisionLink – мониторинг шин Учетная запись:{0} {1}/{2} в: {3} Счетчик часов: {4}</value>
+  </data>
+  <data name="UserAccountReportTitle" xml:space="preserve">
+    <value>Отчет по учетным записям пользователей VisionLink</value>
+  </data>
+  <data name="UserAccountsReport" xml:space="preserve">
+    <value>VisionLink User Account Report</value>
+  </data>
+  <data name="VerifyUserEmailSubject" xml:space="preserve">
+    <value>Подтверждение учетной записи пользователя VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopics" xml:space="preserve">
+    <value>Разделы документации по совместимым с VisionLink API-интерфейсам</value>
+  </data>
+  <data name="vlmobileClient" xml:space="preserve">
+    <value>Клиент VLMobile</value>
+  </data>
+  <data name="volume" xml:space="preserve">
+    <value>Объем</value>
+  </data>
+  <data name="VolumesAndCompaction" xml:space="preserve">
+    <value>Объемы и уплотнение</value>
+  </data>
+  <data name="warningTargetDataSometimesAbsent" xml:space="preserve">
+    <value>Предупреждение! Отсутствуют некоторые целевые данные.</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Еженед.</value>
+  </data>
+  <data name="firstTimeLogin" xml:space="preserve">
+    <value>Добро пожаловать в VisionLink! Выполните вход на веб-сайт www.myvisionlink.com и смените свой пароль.</value>
+  </data>
+  <data name="NewAccountEmailSubject" xml:space="preserve">
+    <value>VisionLink. Приветствие. Зарегистрируйте свою учетную запись</value>
+  </data>
+  <data name="wheelTracking" xml:space="preserve">
+    <value>Отслеживание колес</value>
+  </data>
+  <data name="withinLevels" xml:space="preserve">
+    <value>В пределах</value>
+  </data>
+  <data name="workInProgress" xml:space="preserve">
+    <value>Работа выполняется</value>
+  </data>
+  <data name="working" xml:space="preserve">
+    <value>Рабочее</value>
+  </data>
+  <data name="workingFuelBurned" xml:space="preserve">
+    <value>Рабочее потребление топлива</value>
+  </data>
+  <data name="workingHours" xml:space="preserve">
+    <value>Рабочие часы</value>
+  </data>
+  <data name="workingStatus" xml:space="preserve">
+    <value>Статус работы</value>
+  </data>
+  <data name="workingTime" xml:space="preserve">
+    <value>Рабочее время</value>
+  </data>
+  <data name="workingUtil" xml:space="preserve">
+    <value>Рабочее использование</value>
+  </data>
+  <data name="AlreadyUnsubscribe" xml:space="preserve">
+    <value>Вы уже отказались от получения этого отчета.</value>
+  </data>
+  <data name="UnsubscribeConfirmationMessage" xml:space="preserve">
+    <value>Вы запросили отмену получения отчета по расписанию «{0}». Для подтверждения нажмите кнопку «OK». Если вы не предпримете никаких действий, данный отчет продолжит поступать на ваш адрес электронной почты.</value>
+  </data>
+  <data name="accountLocked" xml:space="preserve">
+    <value>Ваша учетная запись заблокирована. Повторите попытку через 30 минут.</value>
+  </data>
+  <data name="invalidUser002" xml:space="preserve">
+    <value>Ваша учетная запись заблокирована. Повторите попытку через 30 минут.</value>
+  </data>
+  <data name="UnsubscribeSuccessMessage" xml:space="preserve">
+    <value>На ваш адрес электронной почты больше не будет поступать отчет «{0}».</value>
+  </data>
+  <data name="passwordExpired" xml:space="preserve">
+    <value>Ваш пароль больше не действует. Выполните вход на веб-сайт www.myvisionlink.com и смените свой пароль.</value>
+  </data>
+  <data name="selectionLimitReachedMessage" xml:space="preserve">
+    <value>Вы выбрали более допустимого количества единиц. Выбор будет ограничен до {0} ед. техники.</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Зона</value>
+  </data>
+  <data name="zoneExclusive" xml:space="preserve">
+    <value>Исключаемая зона</value>
+  </data>
+  <data name="zoneInclusive" xml:space="preserve">
+    <value>Включаемая зона</value>
+  </data>
+  <data name="exceedsMaximumValue" xml:space="preserve">
+    <value>{0} больше максимального значения</value>
+  </data>
+  <data name="requiredFieldWithName" xml:space="preserve">
+    <value>Поле «{0}» необходимо заполнить.</value>
+  </data>
+  <data name="mustBeNumber" xml:space="preserve">
+    <value>«{0}» должно быть числовым значением.</value>
+  </data>
+  <data name="mustBeValidDate" xml:space="preserve">
+    <value>Значение «{0}» должно быть допустимой датой.</value>
+  </data>
+  <data name="mustBeBetweenXandY" xml:space="preserve">
+    <value>«{0}» должно быть значением от {1} до {2}.</value>
+  </data>
+  <data name="mustBeLessThanXCharacters" xml:space="preserve">
+    <value>Макс. допустимая длина «{0}»: {1} симв.</value>
+  </data>
+  <data name="mustNotBeInTheFuture" xml:space="preserve">
+    <value>Значение «{0}» не должно быть в будущем.</value>
+  </data>
+  <data name="ServiceDueAlertDescription" xml:space="preserve">
+    <value>Срок обслуживания {0}:</value>
+  </data>
+</root>

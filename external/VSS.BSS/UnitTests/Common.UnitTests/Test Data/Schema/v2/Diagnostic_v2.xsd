@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.cat.com/em/feed/v2/Diagnostic"
+	xmlns:diagnostic="http://www.cat.com/em/feed/v2/Diagnostic"
+	xmlns:feed="http://www.cat.com/em/feed/v2/CommonFeed"
+	elementFormDefault="unqualified"
+	xmlns:pref="http://www.cat.com/em/feed/v2/CommonFeed">
+
+	<import namespace="http://www.cat.com/em/feed/v2/CommonFeed" schemaLocation="CommonSchema_v2.xsd"></import>
+	
+	<complexType name="Message">
+		<annotation>
+			<documentation>
+				Delivers ECM (Electronic Control Module) diagnostic data.  Each diagnostic is represented by five data elements: the diagnostic level, the module ID (MID) reporting the diagnostic, the diagnostic identifier (or component identifier, CID), the failure mode indicator (FMI) and the diagnostic timestamp.
+				One of the three faults generated onboard the ECM. A diagnostic refers to a process within an electronic control module (ECM) of detection, display, and/or storage of abnormal machine/engine information. 
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="header" type="feed:TopicHeader" minOccurs="1" maxOccurs="1"/>
+			<element name="numberOfDiagnostics" minOccurs="1" maxOccurs="1">
+				<simpleType>
+					<restriction base="int">	
+						<minInclusive value="1"></minInclusive>
+						<maxInclusive value="17"></maxInclusive>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="diagnosticBlock" type="diagnostic:DiagnosticBlock" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+
+	<element name="topic" type="diagnostic:TopicBlock">
+		<annotation>
+			<documentation>
+				Is one of the three faults generated on-board the ECM. 
+				A Diagnostic refers to a process within an electronic control module (ECM) 
+				of detection, display, and/or storage of abnormal machine/engine information. 
+			</documentation>
+		</annotation>
+	</element>
+
+	<complexType name="TopicBlock">
+		<sequence>
+
+            <element name="nextBuffer" type="feed:NextBuffer" minOccurs="1" maxOccurs="1"></element>
+            <element name="message" type="diagnostic:Message"
+				minOccurs="1" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="DiagnosticBlock">
+       	<sequence>
+			<element name="diagnostic" type="diagnostic:Diagnostic" minOccurs="1" maxOccurs="17"/>
+       	</sequence>
+	</complexType>
+
+	<complexType name="Diagnostic">
+		<sequence>
+			<element name="level" minOccurs="1" maxOccurs="1">
+                <annotation>
+                	<documentation>
+                		Fault severity codes: (0 - 1: Normal/ Green, 2:Monitor/ Yellow, 3:Action/ Red)
+                	</documentation>
+                </annotation>
+                <simpleType>
+					<restriction base="int">
+						<enumeration value="0"></enumeration>
+						<enumeration value="1"></enumeration>
+						<enumeration value="2"></enumeration>
+						<enumeration value="3"></enumeration>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="mid" minOccurs="1" maxOccurs="1" type="int">
+                <annotation>
+                	<documentation>
+                		The Electronic Control Module (ECM) Identifier
+                		from which the Diagnostic was generated
+                	</documentation>
+                </annotation>
+			</element>
+			<element name="cid" minOccurs="1" maxOccurs="1" type="int">
+				<annotation>
+					<documentation>
+						The Diagnostic Component Identifier
+					</documentation>
+				</annotation>
+			</element>
+			<element name="fmi" minOccurs="1" maxOccurs="1" type="int">
+                <annotation>
+                	<documentation>
+                		The Diagnostic Failure Mode Identifier
+                	</documentation>
+                </annotation>
+			</element>
+			<element name="occurances" minOccurs="1" maxOccurs="1" type="int">
+                <annotation>
+                	<documentation>
+                		The number of times the Diagnostic has occurred
+                		since last ECM reset
+                	</documentation>
+                </annotation>
+			</element>
+			<element name="timestamp" type="string" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						The Diagnostic timestamp expressed as the
+						Service Meter Hour or Date/Time of the
+						Diagnostic
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	
+</schema>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://www.trimble.com/BusinessSupport/v1/FirstReport" elementFormDefault="qualified" targetNamespace="http://www.trimble.com/BusinessSupport/v1/FirstReport" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="FirstReport" type="FirstReportType" />
+  <xs:complexType name="FirstReportType">
+    <xs:sequence>
+      <xs:element name="FirstReportList" type="FirstReportListType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FirstReportListType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ReportRecord" type="FirstReportRecordType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FirstReportRecordType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="IBKey" type="xs:decimal" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ServicePlanlineID" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="FirstReportUTC" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="bpelNightHawkFirstReportDateProcessProcessResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="result" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

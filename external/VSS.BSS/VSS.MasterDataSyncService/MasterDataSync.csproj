@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CE3E0B05-B459-48FC-B544-93E4A5CFFF5A}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.Nighthawk.MasterDataSync</RootNamespace>
+    <AssemblyName>VSS.Nighthawk.MasterDataSync</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Common\AppSvrThirdPartyDLLs\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Configuration, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Common\AppSvrThirdPartyDLLs\Autofac.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>Common\AppSvrThirdPartyDLLs\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>Common\AppSvrThirdPartyDLLs\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Common\AppSvrThirdPartyDLLs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Common\AppSvrThirdPartyDLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Extensions">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.Web.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5.1\System.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Topshelf, Version=3.2.150.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Common\AppSvrThirdPartyDLLs\Topshelf.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Implementation\CustomerHierarchySyncProcessor.cs" />
+    <Compile Include="Implementation\DeviceAssetSyncProcessor.cs" />
+    <Compile Include="Implementation\DeviceTransferReplacementSyncProcessor.cs" />
+    <Compile Include="Implementation\PreferenceSyncProcessor.cs" />
+    <Compile Include="Interfaces\ICustomerRelationshipEvent.cs" />
+    <Compile Include="Models\BatchProcessorState.cs" />
+    <Compile Include="Models\CreateCustomerRelationshipEvent.cs" />
+    <Compile Include="Models\CreateCustomerSubscriptionEvent.cs" />
+    <Compile Include="Models\TaskState.cs" />
+    <Compile Include="Models\CreateUserPreferenceEvent.cs" />
+    <Compile Include="Implementation\UserSiteFavoritesSyncProcessor.cs" />
+    <Compile Include="Interfaces\IWorkDefinitionEvent.cs" />
+    <Compile Include="Models\CreateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\CreateWorkDefinitionEvent.cs" />
+    <Compile Include="Implementation\CustomerSyncProcessor.cs" />
+    <Compile Include="Implementation\CustomerAssetSyncProcessor.cs" />
+    <Compile Include="Implementation\CustomerUserSyncProcessor.cs" />
+    <Compile Include="Implementation\DeviceSyncProcessor.cs" />
+    <Compile Include="Implementation\GeofenceSyncProcessor.cs" />
+    <Compile Include="Implementation\GroupSyncProcessor.cs" />
+    <Compile Include="Implementation\SubscriptionSyncProcessor.cs" />
+    <Compile Include="Implementation\WorkDefinitionSyncProcessor.cs" />
+    <Compile Include="Interfaces\ICustomerAssetEvent.cs" />
+    <Compile Include="Interfaces\ICustomerUserEvent.cs" />
+    <Compile Include="Implementation\TaskScheduler.cs" />
+    <Compile Include="Implementation\AssetSyncProcessor.cs" />
+    <Compile Include="Implementation\SyncProcessorBase.cs" />
+    <Compile Include="Interfaces\IGeofenceEvent.cs" />
+    <Compile Include="Models\AssociateCustomerAssetEvent.cs" />
+    <Compile Include="Models\AssociateCustomerUserEvent.cs" />
+    <Compile Include="Models\AssociateDeviceAssetEvent.cs" />
+    <Compile Include="Models\CreateDeviceEvent.cs" />
+    <Compile Include="Models\CreateGeofenceEvent.cs" />
+    <Compile Include="Models\CreateAssetSubscriptionEvent.cs" />
+    <Compile Include="Models\CustomerType.cs" />
+    <Compile Include="Models\DeleteGeofenceEvent.cs" />
+    <Compile Include="Models\DeviceReplacementEvent.cs" />
+    <Compile Include="Models\DeviceTransferEvent.cs" />
+    <Compile Include="Models\DissociateCustomerAssetEvent.cs" />
+    <Compile Include="Models\DissociateCustomerUserEvent.cs" />
+    <Compile Include="Interfaces\IDeviceEvent.cs" />
+    <Compile Include="Models\DissociateDeviceAssetEvent.cs" />
+    <Compile Include="Interfaces\ISubscriptionEvent.cs" />
+    <Compile Include="Models\RelationType.cs" />
+    <Compile Include="Models\UpdateAssetSubscriptionEvent.cs" />
+    <Compile Include="Models\UpdateCustomerEvent.cs" />
+    <Compile Include="Interfaces\IAssetEvent.cs" />
+    <Compile Include="Interfaces\ICustomerEvent.cs" />
+    <Compile Include="Interfaces\IGroupEvent.cs" />
+    <Compile Include="MasterDataSyncService.cs" />
+    <Compile Include="Models\CreateAssetEvent.cs" />
+    <Compile Include="Models\CreateCustomerEvent.cs" />
+    <Compile Include="Models\CreateGroupEvent.cs" />
+    <Compile Include="Models\DeleteAssetEvent.cs" />
+    <Compile Include="Models\DeleteGroupEvent.cs" />
+    <Compile Include="Models\UpdateAssetEvent.cs" />
+    <Compile Include="Models\UpdateCustomerSubscriptionEvent.cs" />
+    <Compile Include="Models\UpdateDeviceEvent.cs" />
+    <Compile Include="Models\UpdateGeofenceEvent.cs" />
+    <Compile Include="Models\UpdateGroupEvent.cs" />
+    <Compile Include="Models\UpdateProjectSubscriptionEvent.cs" />
+    <Compile Include="Models\UpdateWorkDefinitionEvent.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Common\VSS.Hosted.VLCommon\VSS.Hosted.VLCommon.csproj">
+      <Project>{78a163da-1f9c-4e23-b735-40b87408c25b}</Project>
+      <Name>VSS.Hosted.VLCommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.myvisionlink.com/feed/v5/Event"
+	xmlns:event="http://www.myvisionlink.com/feed/v5/Event"
+	xmlns:feed="http://www.myvisionlink.com/feed/v5/CommonFeed"
+	elementFormDefault="unqualified"
+	xmlns:pref="http://www.myvisionlink.com/feed/v5/CommonFeed">
+
+	<import namespace="http://www.myvisionlink.com/feed/v5/CommonFeed" schemaLocation="CommonSchema_v5.xsd"></import>
+	
+	<complexType name="Message">
+		<annotation>
+			<documentation>
+				Delivers ECM (Electronic Control Module) event data. Each event is represented by four data elements: the event level, the module ID (MID) reporting the event, the event identifier, and the event timestamp.
+				One of the three faults generated onboard the ECM. An event refers to detection of a predefined or out-of-range or abnormal condition within the machine, engine, or system it monitors. 
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="header" type="feed:TopicHeader" minOccurs="1" maxOccurs="1"/>
+			<element name="numberOfEvents" minOccurs="1" maxOccurs="1">
+				<simpleType>
+					<restriction base="long">	
+						<minInclusive value="1"></minInclusive>
+						<maxInclusive value="17"></maxInclusive>
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="eventBlock" type="event:EventBlock" minOccurs="1" maxOccurs="1"/>
+		</sequence>
+	</complexType>
+
+	<element name="topic" type="event:TopicBlock">
+		<annotation>
+			<documentation>
+				Is one of the three faults generated on-board the ECM. 
+				An Event refers to detection of a predefined or out-of-range or 
+				abnormal condition within the machine, engine, or system it monitors. 
+			</documentation>
+		</annotation>
+	</element>
+
+	<complexType name="TopicBlock">
+		<sequence>
+            <element name="nextBuffer" type="feed:NextBuffer" minOccurs="1" maxOccurs="1"/>
+            <element name="message" type="event:Message" minOccurs="1" maxOccurs="unbounded"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="EventBlock">
+       	<sequence>
+			<element name="event" type="event:Event" minOccurs="1" maxOccurs="17"/>
+       	</sequence>
+	</complexType>
+
+	<complexType name="Event">
+		<sequence>
+			<element name="level" minOccurs="1" maxOccurs="1" type="int">
+				<annotation>
+					<documentation>
+						Fault severity codes: (0 - 1: Normal/ Green,
+						2:Monitor/ Yellow, 3:Action/ Red)
+					</documentation>
+				</annotation>
+			</element>
+			<element name="mid" minOccurs="1" maxOccurs="1"
+				type="feed:MIDLINK">
+				<annotation>
+					<documentation>
+						The Electronic Control Module (ECM) Identifier
+						from which the event was generated
+					</documentation>
+				</annotation>
+			</element>
+			<element name="eid" minOccurs="1" maxOccurs="1"
+				type="event:EIDLINK">
+				<annotation>
+					<documentation>The Event Identifier</documentation>
+				</annotation>
+			</element>
+			<element name="occurances" minOccurs="1" maxOccurs="1"
+				type="int">
+				<annotation>
+					<documentation>
+						The number of times the event has occurred for
+						the ECM before reset
+					</documentation>
+				</annotation>
+			</element>
+			<element name="timestamp" type="string" minOccurs="1"
+				maxOccurs="1">
+				<annotation>
+					<documentation>
+						The Event time stamp expressed as the Service
+						Meter Hour or Date/Time of the Event
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+
+	</complexType>
+
+
+
+    <element name="eid" type="event:EID"></element>
+
+    <complexType name="EID">
+        <annotation>
+        	<documentation>The Event Identifier</documentation>
+        </annotation>
+        <sequence>
+            <element name="id" type="long" minOccurs="1" maxOccurs="1"></element>
+            <element name="indicator" type="string" minOccurs="1"
+        		maxOccurs="1">
+        	</element>
+
+        	<element name="description" type="string" minOccurs="1"
+        		maxOccurs="1">
+        	</element>
+
+        </sequence>
+    </complexType>
+
+
+
+
+
+    <complexType name="EIDBlock">
+    	<sequence>
+    		<element name="nextBuffer" type="feed:NextBuffer" minOccurs="1" maxOccurs="1"></element>
+    		<element name="eid" type="event:EID" minOccurs="1" maxOccurs="unbounded"></element>
+    	</sequence>
+    </complexType>
+
+    <element name="eidQuery" type="event:EIDBlock"></element>
+
+    <complexType name="EIDLINK">
+    	<sequence>
+    		<element name="identifier" type="long"></element>
+
+    	</sequence>
+    	<attribute name="info" type="anyURI"></attribute>
+    </complexType>
+</schema>

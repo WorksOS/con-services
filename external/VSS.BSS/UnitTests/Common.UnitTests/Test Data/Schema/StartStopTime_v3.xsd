@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:pref="http://www.myvisionlink.com/feed/v3/CommonFeed" elementFormDefault="unqualified" xmlns:feed="http://www.myvisionlink.com/feed/v3/CommonFeed" xmlns:startStopTime="http://www.myvisionlink.com/feed/v3/StartStopTime" targetNamespace="http://www.myvisionlink.com/feed/v3/StartStopTime" xmlns="http://www.w3.org/2001/XMLSchema">
+  <import schemaLocation="CommonSchema.xsd" namespace="http://www.myvisionlink.com/feed/v3/CommonFeed"/> <complexType name="Message">
+    <annotation>
+      <documentation> Delivers a list of start and stop times for the machine and the MSS key identifying the operator, transmitted daily at report start time or at other times if the on-board buffer reaches its capacity. </documentation>
+    </annotation> <sequence>
+      <element name="header" maxOccurs="1" minOccurs="1" type="feed:TopicHeader"/> <element name="totalStartStops" maxOccurs="1" minOccurs="1">
+        <simpleType>
+          <restriction base="long">
+            <minInclusive value="1"/>
+            <maxInclusive value="50"/>
+          </restriction>
+        </simpleType>
+      </element> <element name="startStopBlock" maxOccurs="1" minOccurs="1" type="startStopTime:StartStopBlock"/>
+    </sequence>
+  </complexType> <element name="topic" type="startStopTime:TopicBlock">
+    <annotation>
+      <documentation> The root node for the StartStopTime topic. </documentation>
+    </annotation>
+  </element> <complexType name="TopicBlock">
+    <sequence>
+      <element name="nextBuffer" maxOccurs="1" minOccurs="1" type="feed:NextBuffer"/>
+      <element name="message" maxOccurs="unbounded" minOccurs="1" type="startStopTime:Message"/>
+    </sequence>
+  </complexType> <complexType name="StartStopBlock">
+    <sequence>
+      <element name="startStop" maxOccurs="50" minOccurs="1" type="startStopTime:StartStop"/>
+    </sequence>
+  </complexType> <complexType name="StartStop">
+    <sequence>
+      <element name="start" maxOccurs="1" minOccurs="1" type="string">
+        <annotation>
+          <documentation> Machine start stop starting time </documentation>
+        </annotation>
+      </element> <element name="stop" maxOccurs="1" minOccurs="1" type="string">
+        <annotation>
+          <documentation> Machine start stop stop time </documentation>
+        </annotation>
+      </element> <element name="operatorId" maxOccurs="1" minOccurs="1" type="double">
+        <annotation>
+          <documentation> Machine Security System is installed on equipment to act as a theft deterrent or to prevent the unauthorized use of a machine. This is achieved through special electronic keys and an on-board system for interpreting these keys </documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+</schema>

@@ -1,0 +1,56 @@
+﻿<#@ template language="C#" debug="false" hostspecific="true"#>
+<#@ include file="EnumCommon.tt"#>
+<#@ output extension=".cs"#>
+<#
+string inputFile = @"..\NHDataModel.edmx";
+string dbName = "NH_DATA";
+var enumTypes = new[] { 
+  // There are multiple copies of Datalink; use the NH_OP version as the safe-source
+  // new {ValueField="ID", NameField="Name", TypeName="DimDatalink"},
+  new {ValueField="ID", NameField="StateDescription", TypeName="DimEngineState"},
+  //  Use DimSeverityLevel from NH_RPT 
+  // new {ValueField="ID", NameField="Description", TypeName="DimSeverityLevel"},
+  new {ValueField="ID", NameField="Name", TypeName="DimSource"},
+  new {ValueField="ID", NameField="Name", TypeName="DimUnitType"}, 
+  new {ValueField="ID", NameField="Name", TypeName="DimPowerMode"},  
+  new {ValueField="ID", NameField="KeyType", TypeName="ExternalCustomerKeyType"},
+  new {ValueField="ID", NameField="Description", TypeName="SensorType"},
+  new {ValueField="ID", NameField="Description", TypeName="SensorAspects"},
+  new {ValueField="ID", NameField="Description", TypeName="DimCustomUtilizationEventType"},
+  new {ValueField="ID", NameField="Type", TypeName="OEMDataSourceType"},
+  new {ValueField="ID", NameField="Description", TypeName="DimCNHSeverityLevel"},
+ 
+  }; 
+#>
+<#
+EntityFrameworkTemplateFileManager fileManager = EntityFrameworkTemplateFileManager.Create(this);
+EdmItemCollection itemCollection =  new MetadataLoader(this).CreateEdmItemCollection(inputFile);
+EntityContainer container = (from containers in itemCollection.GetItems<EntityContainer>() where containers.Name == dbName select containers).FirstOrDefault();
+if (container == null)
+{
+  return "// No EntityContainer exists in the model, so no code was generated";
+}
+WriteHeader(fileManager);
+WriteNamespace();
+BeginScope();
+CodeGenerationTools code = new CodeGenerationTools(this);
+foreach (EntityType entity in itemCollection.GetItems<EntityType>().OrderBy(e => e.Name))
+{
+  var enumInfo = (from types in enumTypes where types.TypeName == entity.Name select types).SingleOrDefault();
+	if ( enumInfo == null )
+	  continue;
+
+   // fileManager.StartNewFile(entity.Name + "Enum.cs");
+	#>
+<#=Accessibility.ForType(entity)#> enum <#=code.Escape(entity)#>Enum
+<#
+  BeginScope();
+  string enumTokenLine=WriteEnum(container.Name, entity, enumInfo.ValueField, enumInfo.NameField);
+#>
+<#=enumTokenLine #>
+<#
+  EndScope();
+}
+EndScope();
+fileManager.Process();
+#>

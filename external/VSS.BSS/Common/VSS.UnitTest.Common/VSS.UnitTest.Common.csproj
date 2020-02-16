@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5EB08124-319A-4EF0-ABA7-6858A56B432B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.UnitTest.Common</RootNamespace>
+    <AssemblyName>VSS.UnitTest.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Local|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Local\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|AnyCPU'">
+    <OutputPath>bin\Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|AnyCPU'">
+    <OutputPath>bin\IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\HashLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accessor\ExposedClass.cs" />
+    <Compile Include="Accessor\ExposedObject.cs" />
+    <Compile Include="Accessor\ExposedObjectHelper.cs" />
+    <Compile Include="Accessor\MockHttpWebRequest.cs" />
+    <Compile Include="Contexts\ContextContainer.cs" />
+    <Compile Include="Contexts\ContextContainerImpl.cs" />
+    <Compile Include="Contexts\IContextContainer.cs" />
+    <Compile Include="CustomAttributes\DatabaseTestAspect.cs" />
+    <Compile Include="CustomAttributes\DatabaseTestAttribute.cs" />
+    <Compile Include="CustomAttributes\Implementation\AopUnitTestBase.cs" />
+    <Compile Include="CustomAttributes\Implementation\ITestAspect.cs" />
+    <Compile Include="CustomAttributes\Implementation\TestAspect.cs" />
+    <Compile Include="CustomAttributes\Implementation\TestProperty.cs" />
+    <Compile Include="CustomAttributes\Implementation\UnitTestBaseClassAttribute.cs" />
+    <Compile Include="EntityBuilder\ActiveUserBuilder.cs" />
+    <Compile Include="EntityBuilder\AppFeatureSetAppFeatureBuilder.cs" />
+    <Compile Include="EntityBuilder\AssetBuilder.cs" />
+    <Compile Include="EntityBuilder\AssetBurnRatesBuilder.cs" />
+    <Compile Include="EntityBuilder\AssetExpectedRuntimeHoursProjectedBuilder.cs" />
+    <Compile Include="EntityBuilder\AssetWorkingDefinitionBuilder.cs" />
+    <Compile Include="EntityBuilder\ContactBuilder.cs" />
+    <Compile Include="EntityBuilder\ECMDataLinkInfoBuilder.cs" />
+    <Compile Include="EntityBuilder\ECMInfoBuilder.cs" />
+    <Compile Include="EntityBuilder\EntityBuilder.cs" />
+    <Compile Include="EntityBuilder\IconBuilder.cs" />
+    <Compile Include="EntityBuilder\MIDBuilder.cs" />
+    <Compile Include="EntityBuilder\ServiceProviderBuilder.cs" />
+    <Compile Include="EntityBuilder\CustomerBuilder.cs" />
+    <Compile Include="EntityBuilder\DeviceBuilder.cs" />
+    <Compile Include="EntityBuilder\DevicePersonalityBuilder.cs" />
+    <Compile Include="EntityBuilder\IdGen.cs" />
+    <Compile Include="EntityBuilder\LanguageBuilder.cs" />
+    <Compile Include="EntityBuilder\MakeBuilder.cs" />
+    <Compile Include="EntityBuilder\PMIntervalAssetBuilder.cs" />
+    <Compile Include="EntityBuilder\PMIntervalBuilder.cs" />
+    <Compile Include="EntityBuilder\PMSalesModelBuilder.cs" />
+    <Compile Include="EntityBuilder\ProductFamilyBuilder.cs" />
+    <Compile Include="EntityBuilder\RelationshipBuilder.cs" />
+    <Compile Include="EntityBuilder\SalesModelBuilder.cs" />
+    <Compile Include="EntityBuilder\ServiceBuilder.cs" />
+    <Compile Include="EntityBuilder\ServiceViewBuilder.cs" />
+    <Compile Include="EntityBuilder\SiteBuilder.cs" />
+    <Compile Include="EntityBuilder\UserBuilder.cs" />
+    <Compile Include="Helpers\AssetHelper.cs" />
+    <Compile Include="Helpers\Helpers.cs" />
+    <Compile Include="Helpers\ListHelper.cs" />
+    <Compile Include="Helpers\NHOpHelper.cs" />
+    <Compile Include="Helpers\NHRawHelper.cs" />
+    <Compile Include="Helpers\ObjectGenerator.cs" />
+    <Compile Include="Helpers\SessionHelper.cs" />
+    <Compile Include="Helpers\SiteHelper.cs" />
+    <Compile Include="Helpers\TestData.cs" />
+    <Compile Include="Helpers\TestDataHelper.cs" />
+    <Compile Include="Helpers\WorkingSetHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduledReportTestBase.cs" />
+    <Compile Include="UnitTestBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.Hosted.VLCommon\VSS.Hosted.VLCommon.csproj">
+      <Project>{78a163da-1f9c-4e23-b735-40b87408c25b}</Project>
+      <Name>VSS.Hosted.VLCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.BaseEvents\VSS.BaseEvents.csproj">
+      <Project>{c2fd2357-c0e3-4b01-958d-feed8ca382a4}</Project>
+      <Name>VSS.BaseEvents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Nighthawk.ExternalDataTypes\VSS.Nighthawk.ExternalDataTypes.csproj">
+      <Project>{c1a38874-c53b-4b2e-9fae-805475f80df1}</Project>
+      <Name>VSS.Nighthawk.ExternalDataTypes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ThirdPartyDLLs\EntityFramework.dll" />
+    <Content Include="ThirdPartyDLLs\EntityFramework.SqlServer.dll" />
+    <Content Include="ThirdPartyDLLs\HashLib.dll" />
+    <Content Include="ThirdPartyDLLs\Newtonsoft.Json.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

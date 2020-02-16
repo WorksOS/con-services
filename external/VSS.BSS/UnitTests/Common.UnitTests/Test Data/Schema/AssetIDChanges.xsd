@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="AssetIDChanges" 
+           targetNamespace="http://www.trimble.com/BusinessSupport/v2/AssetIDChanges" 
+           xmlns:mstns="http://www.trimble.com/BusinessSupport/v2/AssetIDChanges" 
+           xmlns="http://www.trimble.com/BusinessSupport/v2/AssetIDChanges" 
+           xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+           xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" 
+           attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:element name="AssetIDChanges" msdata:IsDataSet="true" msdata:Locale="en-US">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Assets" type="mstns:Assets" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>                  
+    <xs:complexType name="Assets">
+      <xs:annotation>
+        <xs:documentation />
+      </xs:annotation>
+      <xs:sequence>
+        <xs:element name="AssetInfo" type="mstns:AssetInfo" minOccurs="0" maxOccurs="unbounded" />
+      </xs:sequence>
+    </xs:complexType>          
+      <xs:complexType name="AssetInfo">
+        <xs:annotation>
+          <xs:documentation />
+        </xs:annotation>
+        <xs:sequence>
+          <xs:element name="SerialNumber" minOccurs="1" >
+            <xs:annotation>
+              <xs:documentation>
+                Serial Number
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="1" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="MakeCode" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>
+                Make code
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="1" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+          <xs:element name="AssetName" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>
+                Asset New Name
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="1" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+
+          <xs:element name="AssetNameUpdatedUTC" minOccurs="1" maxOccurs="1" type="xs:dateTime">
+            <xs:annotation>
+              <xs:documentation>
+                Timestamp When the Asset Name Updated
+              </xs:documentation>
+            </xs:annotation>
+          </xs:element>
+
+          <xs:element name="OwnerBssID" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>
+                BSS ID
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="0" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+
+          <xs:element name="IBKey" minOccurs="1" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>
+                Install Base Key
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="0" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+
+          <xs:element name="DealerCode" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>
+                Dealer Code
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="0" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+
+          <xs:element name="CustomerCode" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>
+                Customer Code
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="0" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+
+          <xs:element name="DealerAccountCode" minOccurs="0" maxOccurs="1">
+            <xs:annotation>
+              <xs:documentation>
+                Account Code
+              </xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:maxLength value="50" />
+                <xs:minLength value="0" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:element>
+        </xs:sequence>
+      </xs:complexType>                      
+</xs:schema>

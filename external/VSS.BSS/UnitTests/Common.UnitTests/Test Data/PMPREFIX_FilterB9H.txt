@@ -1,0 +1,11 @@
+<PMSerialNumberPrefix>
+<smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://smi.cat.com/smiweb/schema/v2/pmModelorPrefixSerialNoList.xsd">
+  <products code="B9H">
+      <modelInfo checkListUSURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/US/3135" checkListMetricURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/Metric/3135" code="7230">
+        <salesModel>16M</salesModel>
+        <modifiedDate>2000-08-18 00:00:00.0</modifiedDate>
+        <SerialNumberOrPrefix low="1" high="99999">B9H</SerialNumberOrPrefix>
+      </modelInfo>
+    </products>
+  </smiweb:product>
+</PMSerialNumberPrefix>

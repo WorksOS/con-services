@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfInboundDeviceEvent xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.nighthawk.com/nighthawk/data/rptevent/2009/03">
+  <InboundDeviceEvent i:type="InboundDeviceEventFuel">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>0</EventID>
+    <EventUTC>2009-06-11T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>300</EventTypeID>
+    <ExternalCorrelationID>1111</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position i:nil="true" />
+    <ReceivedUTC>2009-06-11T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IdleConsumptionGallons i:nil="true" />
+    <MaxRPMFuelGallons i:nil="true" />
+    <PercentRemaining>45</PercentRemaining>
+    <TotalConsumptionGallons>1000</TotalConsumptionGallons>
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventFuel">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>1</EventID>
+    <EventUTC>2009-06-11T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>300</EventTypeID>
+    <ExternalCorrelationID>1111</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position i:nil="true" />
+    <ReceivedUTC>2009-06-11T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IdleConsumptionGallons>20</IdleConsumptionGallons>
+    <MaxRPMFuelGallons>20000</MaxRPMFuelGallons>
+    <PercentRemaining i:nil="true" />
+    <TotalConsumptionGallons i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventUtilization">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>2</EventID>
+    <EventUTC>2009-06-11T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>73</EventTypeID>
+    <ExternalCorrelationID>1111</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>NaN</Latitude>
+      <Longitude>NaN</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-06-11T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IsOn>false</IsOn>
+    <MaxSpeed i:nil="true" />
+    <RuntimeSeconds>72000</RuntimeSeconds>
+    <RuntimeType>WorkingIdleCum</RuntimeType>
+    <Sensor>
+      <Description i:nil="true" />
+      <SensorName i:nil="true" />
+      <SensorNumber i:nil="true" />
+    </Sensor>
+    <StartStopUTC i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventUtilization">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>3</EventID>
+    <EventUTC>2009-06-11T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>73</EventTypeID>
+    <ExternalCorrelationID>1111</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>39.895992</Latitude>
+      <Longitude>-105.121051</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-06-11T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IsOn>true</IsOn>
+    <MaxSpeed i:nil="true" />
+    <RuntimeSeconds>360000</RuntimeSeconds>
+    <RuntimeType>WorkingIdleCum</RuntimeType>
+    <Sensor>
+      <Description i:nil="true" />
+      <SensorName i:nil="true" />
+      <SensorNumber i:nil="true" />
+    </Sensor>
+    <StartStopUTC i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventFuel">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>4</EventID>
+    <EventUTC>2009-06-12T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>300</EventTypeID>
+    <ExternalCorrelationID>1112</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position i:nil="true" />
+    <ReceivedUTC>2009-06-12T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IdleConsumptionGallons i:nil="true" />
+    <MaxRPMFuelGallons i:nil="true" />
+    <PercentRemaining>70</PercentRemaining>
+    <TotalConsumptionGallons>1100</TotalConsumptionGallons>
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventFuel">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>5</EventID>
+    <EventUTC>2009-06-12T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>300</EventTypeID>
+    <ExternalCorrelationID>1112</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position i:nil="true" />
+    <ReceivedUTC>2009-06-12T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IdleConsumptionGallons>22</IdleConsumptionGallons>
+    <MaxRPMFuelGallons>20000</MaxRPMFuelGallons>
+    <PercentRemaining i:nil="true" />
+    <TotalConsumptionGallons i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventUtilization">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>6</EventID>
+    <EventUTC>2009-06-12T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>73</EventTypeID>
+    <ExternalCorrelationID>1112</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>NaN</Latitude>
+      <Longitude>NaN</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-06-12T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IsOn>false</IsOn>
+    <MaxSpeed i:nil="true" />
+    <RuntimeSeconds>79200</RuntimeSeconds>
+    <RuntimeType>WorkingIdleCum</RuntimeType>
+    <Sensor>
+      <Description i:nil="true" />
+      <SensorName i:nil="true" />
+      <SensorNumber i:nil="true" />
+    </Sensor>
+    <StartStopUTC i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventUtilization">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>7</EventID>
+    <EventUTC>2009-06-12T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>73</EventTypeID>
+    <ExternalCorrelationID>1112</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>39.895992</Latitude>
+      <Longitude>-105.121051</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-06-12T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IsOn>true</IsOn>
+    <MaxSpeed i:nil="true" />
+    <RuntimeSeconds>396000</RuntimeSeconds>
+    <RuntimeType>WorkingIdleCum</RuntimeType>
+    <Sensor>
+      <Description i:nil="true" />
+      <SensorName i:nil="true" />
+      <SensorNumber i:nil="true" />
+    </Sensor>
+    <StartStopUTC i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventFuel">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>8</EventID>
+    <EventUTC>2009-06-13T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>300</EventTypeID>
+    <ExternalCorrelationID>1113</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position i:nil="true" />
+    <ReceivedUTC>2009-06-13T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IdleConsumptionGallons i:nil="true" />
+    <MaxRPMFuelGallons i:nil="true" />
+    <PercentRemaining>70</PercentRemaining>
+    <TotalConsumptionGallons>1200</TotalConsumptionGallons>
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventFuel">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>9</EventID>
+    <EventUTC>2009-06-13T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>300</EventTypeID>
+    <ExternalCorrelationID>1113</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position i:nil="true" />
+    <ReceivedUTC>2009-06-13T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IdleConsumptionGallons>24</IdleConsumptionGallons>
+    <MaxRPMFuelGallons>20000</MaxRPMFuelGallons>
+    <PercentRemaining i:nil="true" />
+    <TotalConsumptionGallons i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventUtilization">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>10</EventID>
+    <EventUTC>2009-06-13T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>73</EventTypeID>
+    <ExternalCorrelationID>1113</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>NaN</Latitude>
+      <Longitude>NaN</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-06-13T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IsOn>false</IsOn>
+    <MaxSpeed i:nil="true" />
+    <RuntimeSeconds>86400</RuntimeSeconds>
+    <RuntimeType>WorkingIdleCum</RuntimeType>
+    <Sensor>
+      <Description i:nil="true" />
+      <SensorName i:nil="true" />
+      <SensorNumber i:nil="true" />
+    </Sensor>
+    <StartStopUTC i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventUtilization">
+    <AdditionalData i:nil="true" />
+    <Address i:nil="true" />
+    <Asset i:nil="true" />
+    <Description i:nil="true" />
+    <Destination>NighthawkReport</Destination>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>10</ExtDeviceID>
+    </Device>
+    <EventID>11</EventID>
+    <EventUTC>2009-06-13T17:33:31.6578579Z</EventUTC>
+    <EventTypeID>73</EventTypeID>
+    <ExternalCorrelationID>1113</ExternalCorrelationID>
+    <ExtDriverID i:nil="true" />
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>39.895992</Latitude>
+      <Longitude>-105.121051</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-06-13T17:33:32.6578579Z</ReceivedUTC>
+    <Site i:nil="true" />
+    <Source>NotSet</Source>
+    <IsOn>true</IsOn>
+    <MaxSpeed i:nil="true" />
+    <RuntimeSeconds>432000</RuntimeSeconds>
+    <RuntimeType>WorkingIdleCum</RuntimeType>
+    <Sensor>
+      <Description i:nil="true" />
+      <SensorName i:nil="true" />
+      <SensorNumber i:nil="true" />
+    </Sensor>
+    <StartStopUTC i:nil="true" />
+  </InboundDeviceEvent>
+</ArrayOfInboundDeviceEvent>

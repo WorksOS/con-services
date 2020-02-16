@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:pref="http://www.myvisionlink.com/feed/v3/CommonFeed" elementFormDefault="unqualified" xmlns:feed="http://www.myvisionlink.com/feed/v3/CommonFeed" xmlns:fuel="http://www.myvisionlink.com/feed/v4/Fuel" targetNamespace="http://www.myvisionlink.com/feed/v4/Fuel" xmlns="http://www.w3.org/2001/XMLSchema">
+  <import schemaLocation="CommonSchema.xsd" namespace="http://www.myvisionlink.com/feed/v3/CommonFeed"/> <complexType name="Message">
+    <annotation>
+      <documentation> Delivers fuel usage of the PLM module by consumption or level. Delivered as part of status message that contains fuel consumption and/ or percentage of equipment’s fuel remaining. </documentation>
+    </annotation> <sequence>
+      <element name="header" maxOccurs="1" minOccurs="1" type="feed:TopicHeader"/>
+      <element name="consumption" maxOccurs="1" minOccurs="0" type="fuel:Consumption"/>
+      <element name="level" maxOccurs="1" minOccurs="0" type="fuel:Level"/>
+    </sequence>
+  </complexType> <element name="topic" type="fuel:TopicBlock">
+    <annotation>
+      <documentation> The root node for the Fuel topic. </documentation>
+    </annotation>
+  </element> <complexType name="TopicBlock">
+    <sequence>
+      <element name="nextBuffer" maxOccurs="1" minOccurs="1" type="feed:NextBuffer"/>
+      <element name="message" maxOccurs="unbounded" minOccurs="0" type="fuel:Message"/>
+    </sequence>
+  </complexType> <complexType name="Consumption">
+    <sequence>
+      <element name="value" type="long">
+        <annotation>
+          <documentation> Total fuel consumption (in 1/8 gallons) </documentation>
+        </annotation>
+      </element> <element name="uom" type="feed:UnitOfMeasure"/>
+    </sequence>
+  </complexType> <complexType name="Level">
+    <sequence>
+      <element name="value" type="long">
+        <annotation>
+          <documentation> Percentage of equipment’s fuel remaining </documentation>
+        </annotation>
+      </element> <element name="uom" type="feed:UnitOfMeasure"/>
+    </sequence>
+  </complexType>
+</schema>

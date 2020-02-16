@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.cat.com/em/feed/v2/CommonFeedWrapper"
+  xmlns:test="http://www.cat.com/em/feed/v2/CommonFeedWrapper"
+	xmlns:feed="http://www.cat.com/em/feed/v2/CommonFeed"
+	elementFormDefault="unqualified"
+  xmlns:pref="http://www.cat.com/em/feed/v2/CommonFeed">
+
+  <import namespace="http://www.cat.com/em/feed/v2/CommonFeed" schemaLocation="CommonSchema_v2.xsd"></import>
+
+  <complexType name="TopicHeaderWrapper">
+    <sequence>
+      <element name="header" type="feed:TopicHeader" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  
+  <complexType name="NextBufferWrapper">
+    <sequence>
+      <element name="nextBuffer" type="feed:NextBuffer" minOccurs="1" maxOccurs="1"/>
+    </sequence>
+  </complexType>
+  
+  <element name="topicHeaderWrapper" type="test:TopicHeaderWrapper">
+    <annotation>
+      <documentation>
+        Written specifically to test the Topic Header Stand alone.</documentation>
+    </annotation>
+  </element>
+
+  <element name="nextBufferWrapper" type="test:NextBufferWrapper">
+    <annotation>
+      <documentation>
+        Written specifically to test the Next Buffer Stand alone.
+      </documentation>
+    </annotation>
+  </element>
+
+</schema>

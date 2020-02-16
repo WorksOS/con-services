@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:pref="http://www.myvisionlink.com/feed/v4/CommonFeed" elementFormDefault="unqualified" xmlns:feed="http://www.myvisionlink.com/feed/v4/CommonFeed" xmlns:diagnostic="http://www.myvisionlink.com/feed/v4/Diagnostic" targetNamespace="http://www.myvisionlink.com/feed/v4/Diagnostic" xmlns="http://www.w3.org/2001/XMLSchema">
+  <import schemaLocation="CommonSchema_v4.xsd" namespace="http://www.myvisionlink.com/feed/v4/CommonFeed"/>
+  <complexType name="Message">
+    <annotation>
+      <documentation> Delivers ECM (Electronic Control Module) diagnostic data. Each diagnostic is represented by five data elements: the diagnostic level, the module ID (MID) reporting the diagnostic, the diagnostic identifier (or component identifier, CID), the failure mode indicator (FMI) and the diagnostic timestamp. One of the three faults generated onboard the ECM. A diagnostic refers to a process within an electronic control module (ECM) of detection, display, and/or storage of abnormal machine/engine information. </documentation>
+    </annotation>
+    <sequence>
+      <element name="header" maxOccurs="1" minOccurs="1" type="feed:TopicHeader"/>
+      <element name="numberOfDiagnostics" maxOccurs="1" minOccurs="1">
+        <simpleType>
+          <restriction base="int">
+            <minInclusive value="1"/>
+            <maxInclusive value="17"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="diagnosticBlock" maxOccurs="1" minOccurs="1" type="diagnostic:DiagnosticBlock"/>
+    </sequence>
+  </complexType>
+  <element name="topic" type="diagnostic:TopicBlock">
+    <annotation>
+      <documentation> Is one of the three faults generated on-board the ECM. A Diagnostic refers to a process within an electronic control module (ECM) of detection, display, and/or storage of abnormal machine/engine information. </documentation>
+    </annotation>
+  </element>
+  <complexType name="TopicBlock">
+    <sequence>
+      <element name="nextBuffer" maxOccurs="1" minOccurs="1" type="feed:NextBuffer"/>
+      <element name="message" maxOccurs="unbounded" minOccurs="1" type="diagnostic:Message"/>
+    </sequence>
+  </complexType>
+  <complexType name="DiagnosticBlock">
+    <sequence>
+      <element name="diagnostic" maxOccurs="17" minOccurs="1" type="diagnostic:Diagnostic"/>
+    </sequence>
+  </complexType>
+  <complexType name="Diagnostic">
+    <sequence>
+      <element name="level" maxOccurs="1" minOccurs="1" type="int">
+        <annotation>
+          <documentation> Fault severity codes: (0 - 1: Normal/ Green, 2:Monitor/ Yellow, 3:Action/ Red) </documentation>
+        </annotation>
+      </element>
+      <element name="mid" maxOccurs="1" minOccurs="1" type="int">
+        <annotation>
+          <documentation> The Electronic Control Module (ECM) Identifier from which the Diagnostic was generated </documentation>
+        </annotation>
+      </element>
+      <element name="spn" maxOccurs="1" minOccurs="1" type="int">
+        <annotation>
+          <documentation> The Diagnostic Component Identifier </documentation>
+        </annotation>
+      </element>
+      <element name="fmi" maxOccurs="1" minOccurs="1" type="int">
+        <annotation>
+          <documentation> The Diagnostic Failure Mode Identifier </documentation>
+        </annotation>
+      </element>
+      <element name="occurances" maxOccurs="1" minOccurs="1" type="int">
+        <annotation>
+          <documentation> The number of times the Diagnostic has occurred since last ECM reset </documentation>
+        </annotation>
+      </element>
+      <element name="timestamp" maxOccurs="1" minOccurs="1" type="string">
+        <annotation>
+          <documentation> The Diagnostic timestamp expressed as the Service Meter Hour or Date/Time of the Diagnostic </documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+</schema>

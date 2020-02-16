@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<diagnostic:topic xmlns:diagnostic="http://www.cat.com/em/feed/v4/Diagnostic" xmlns:feed="http://www.cat.com/em/feed/v4/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v4/Diagnostic https://emfeed.cat.com/EMFeedFiles/schema/v4/Diagnostic.xsd">
+<nextBuffer>
+<url></url>
+<moreData>false</moreData>
+</nextBuffer>
+
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119316202</masterMsgId>
+         <equipment>
+            <serialNumber>-TFW00730</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0000070752Q1</moduleCode>
+         <moduleTime>2009-09-16 23:39:06</moduleTime>
+         <receivedTime>2009-09-17 05:03:37</receivedTime>
+      </header>
+      <numberOfDiagnostics>1</numberOfDiagnostics>
+      <diagnosticBlock>
+         <diagnostic>
+            <level>2</level>
+            <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/81">81</mid>
+            <fmi info="https://emfeed.cat.com/EMFeedService/v4/fmi/CDL/168/4">
+               <cid>168</cid>
+               <indicator>4</indicator>
+            </fmi>
+            <occurances>56</occurances>
+            <timestamp>2009-09-15 04:39:57</timestamp>
+         </diagnostic>
+      </diagnosticBlock>
+   </message>
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119316953</masterMsgId>
+         <equipment>
+            <serialNumber>-BXY02309</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200052993Q1</moduleCode>
+         <moduleTime>2009-09-16 23:54:36</moduleTime>
+         <receivedTime>2009-09-17 05:09:40</receivedTime>
+      </header>
+      <numberOfDiagnostics>2</numberOfDiagnostics>
+      <diagnosticBlock>
+         <diagnostic>
+            <level>2</level>
+            <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/30">30</mid>
+            <fmi info="https://emfeed.cat.com/EMFeedService/v4/fmi/CDL/96/3">
+               <cid>96</cid>
+               <indicator>3</indicator>
+            </fmi>
+            <occurances>102</occurances>
+            <timestamp>2009-09-16 13:52:38</timestamp>
+         </diagnostic>
+         <diagnostic>
+            <level>2</level>
+            <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/30">30</mid>
+            <fmi info="https://emfeed.cat.com/EMFeedService/v4/fmi/CDL/96/3">
+               <cid>96</cid>
+               <indicator>3</indicator>
+            </fmi>
+            <occurances>125</occurances>
+            <timestamp>2009-09-16 17:54:38</timestamp>
+         </diagnostic>
+      </diagnosticBlock>
+   </message>
+</diagnostic:topic>

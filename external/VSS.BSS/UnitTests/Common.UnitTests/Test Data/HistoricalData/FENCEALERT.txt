@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<fence:topic xmlns:fence="http://www.cat.com/em/feed/v5/Fence" xmlns:feed="http://www.cat.com/em/feed/v5/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v5/Fence https://emfeed.cat.com/EMFeedFiles/schema/v5/Fence.xsd">
+   
+<nextBuffer>
+   <url>https://emfeed.cat.com/EMFeedService/v5/feed/nighthawk/FENCEALERT/25657433</url>
+   <moreData>true</moreData>
+</nextBuffer>
+<message>
+      <header>
+         <messageId>25636396</messageId>
+
+         <masterMsgId>31484216</masterMsgId>
+         <equipment>
+            <serialNumber>-B9D01487</serialNumber>
+            <make>CAT</make>
+            <model>140M</model>
+         </equipment>
+         <moduleCode>-DQCAT0009325Q1</moduleCode>
+
+         <moduleTime>2009-10-04 04:57:47</moduleTime>
+         <receivedTime>2009-10-04 05:00:04</receivedTime>
+      </header>
+      <timeWatchActive>Y</timeWatchActive>
+      <exclusiveWatchActive>Y</exclusiveWatchActive>
+      <inclusiveWatchActive>Y</inclusiveWatchActive>
+
+      <timeWatchAlarm>Y</timeWatchAlarm>
+      <exclusiveWatchAlarm>Y</exclusiveWatchAlarm>
+      <inclusiveWatchAlarm>Y</inclusiveWatchAlarm>
+      <satelliteBlockage>N</satelliteBlockage>
+      <disconnectSwitchUsed>N</disconnectSwitchUsed>
+   </message>
+
+<message>
+      <header>
+         <messageId>25636937</messageId>
+         <masterMsgId>31484445</masterMsgId>
+         <equipment>
+            <serialNumber>-SED00195</serialNumber>
+            <make>CAT</make>
+
+         </equipment>
+         <moduleCode>-DQ0000030189Q1</moduleCode>
+         <moduleTime>2009-10-04 05:03:02</moduleTime>
+         <receivedTime>2009-10-04 05:04:48</receivedTime>
+      </header>
+      <timeWatchActive>N</timeWatchActive>
+      <exclusiveWatchActive>N</exclusiveWatchActive>
+
+      <inclusiveWatchActive>N</inclusiveWatchActive>
+      <timeWatchAlarm>N</timeWatchAlarm>
+      <exclusiveWatchAlarm>N</exclusiveWatchAlarm>
+      <inclusiveWatchAlarm>N</inclusiveWatchAlarm>
+      <satelliteBlockage>N</satelliteBlockage>
+      <disconnectSwitchUsed>N</disconnectSwitchUsed>
+
+   </message>
+</fence:topic>

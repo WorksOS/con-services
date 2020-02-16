@@ -1,0 +1,97 @@
+﻿ <vli:eventReactionQueryResponse xmlns:vli="http://www.cat.com/vli/v1/Services">
+<equipment>
+  <make>CAT</make> 
+  <serialNumber>5EK12345</serialNumber> 
+  </equipment>
+<module>
+  <moduleCode>MODULE_CODE</moduleCode> 
+  </module>
+<levelReaction level="SEVERE">
+<contactList owner="cat">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </contactList>
+<contactList owner="unknown">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </contactList>
+<dealerContactList dealerCode="B090">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </dealerContactList>
+<dealerContactList dealerCode="TD00">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </dealerContactList>
+<customerContactList ucid="12345">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </customerContactList>
+<customerContactList ucid="67890">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </customerContactList>
+  </levelReaction>
+<levelReaction level="DERATE">
+<contactList owner="cat">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </contactList>
+<contactList owner="unknown">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </contactList>
+<dealerContactList dealerCode="B090">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </dealerContactList>
+<dealerContactList dealerCode="TD00">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </dealerContactList>
+<customerContactList ucid="12345">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </customerContactList>
+<customerContactList ucid="67890">
+<contact>
+  <id>10</id> 
+  <emailAddress>test@visionlink.com</emailAddress> 
+  <description>Test Name</description> 
+  </contact>
+  </customerContactList>
+  </levelReaction>
+  </vli:eventReactionQueryResponse>

@@ -1,0 +1,41 @@
+﻿<vli:productFamily xmlns:vli="http://www.cat.com/vli/v1/Services">
+<productFamilies>
+<productFamily detail="https://visionlink-integration.cat.com/vliservices/rest/v1/product/TTT">
+<code>TTT</code>
+<descriptions>
+<description lang="pt">TRATORES DE ESTEIRAS</description>
+<description lang="es">TRACTORES DE CADENAS</description>
+<description lang="en">TRACK TYPE TRACTORS</description>
+<description lang="it">TRATTORI CINGOLATI</description>
+<description lang="de">KETTENDOZER</description>
+<description lang="zh">??????</description>
+</descriptions>
+</productFamily>
+<productFamily detail="https://visionlink-integration.cat.com/vliservices/rest/v1/product/MG">
+<code>MG</code>
+<descriptions>
+<description lang="pt">MOTONIVELADORAS</description>
+<description lang="es">MOTONIVELADORAS</description>
+<description lang="en">MOTOR GRADERS</description>
+<description lang="it">MOTORGRADER</description>
+<description lang="de">MOTORGRADER</description>
+<description lang="zh">???</description>
+</descriptions>
+</productFamily>
+<productFamily detail="https://visionlink-integration.cat.com/vliservices/rest/v1/product/PL">
+<code>PL</code>
+<descriptions>
+<description lang="es">TIENDETUBOS</description>
+<description lang="it">POSATUBI</description>
+<description lang="pt">ASSENTADORES DE TUBOS</description>
+<description lang="de">ROHRVERLEGER</description>
+<description lang="en">PIPELAYERS</description>
+<description lang="zh">???</description>
+</descriptions>
+</productFamily>
+<productFamily detail="https://visionlink-integration.cat.com/vliservices/rest/v1/product/ONHT">
+<code>ONHT</code>
+<descriptions/>
+</productFamily>
+</productFamilies>
+</vli:productFamily>

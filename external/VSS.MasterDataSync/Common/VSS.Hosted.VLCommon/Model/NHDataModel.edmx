@@ -1,0 +1,2832 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="VSS.Hosted.VLCommon.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'NH_DATA.dbo.AntiData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="AntiData">
+          <Key>
+            <PropertyRef Name="InsertUTC" />
+            <PropertyRef Name="Data" />
+          </Key>
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Data" Type="xml" Nullable="false" />
+          <Property Name="ExceptionText" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <EntityType Name="CustomDataEngineParameters">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="MID" Type="varchar" MaxLength="50" />
+          <Property Name="MaxFuelGallons" Type="float" />
+          <Property Name="IdleFuelGallons" Type="float" />
+          <Property Name="MachineIdleFuelGallons" Type="float" />
+          <Property Name="EngineIdleHours" Type="float" />
+          <Property Name="Starts" Type="int" />
+          <Property Name="Revolutions" Type="bigint" />
+          <Property Name="ConsumptionGallons" Type="float" />
+          <Property Name="LevelPercent" Type="float" />
+          <Property Name="MachineIdleHours" Type="float" />
+          <Property Name="UpdateUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ValidFuelPercent" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataBatteryChargingVoltage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DataBoostPressure">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DataBoostTemperature">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DataCatInspection">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="InspectionID" Type="nvarchar" MaxLength="32" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="MakeCode" Type="varchar" MaxLength="16" Nullable="false" />
+          <Property Name="SerialNumberVIN" Type="varchar" MaxLength="128" Nullable="false" />
+          <Property Name="InspectionName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="InspectionUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="InspectorName" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Type" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="System" Type="varchar" MaxLength="128" Nullable="false" />
+          <Property Name="Number" Type="nvarchar" MaxLength="32" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="StatusLabel" Type="nvarchar" MaxLength="32" Nullable="false" />
+          <Property Name="fk_DimSeverityLevelID" Type="int" Nullable="false" />
+          <Property Name="MeterValue" Type="nvarchar" MaxLength="32" />
+          <Property Name="MeterUnit" Type="nvarchar" MaxLength="16" />
+          <Property Name="InspectorComments" Type="nvarchar" MaxLength="2000" />
+          <Property Name="AssignmentName" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataCNHCANAlarmCode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="AlarmCode" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="ifk_DimCNHSeverityLevelID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataCustomUtilizationEvent">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+          <Property Name="ifk_DimCustomUtilizationEventTypeID" Type="int" Nullable="false" />
+          <Property Name="ifk_DimUnitTypeID" Type="int" Nullable="false" />
+          <Property Name="ifk_OEMDataSourceTypeID" Type="int" Nullable="false" />
+          <Property Name="OEMDataSourceValue" Type="int" />
+        </EntityType>
+        <EntityType Name="DataDeviceBatteryRemaining">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="GPSDeviceID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="PercentBatteryRemaining" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataDieselExhaustFluid">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="ConsumptionGallons" Type="float" />
+          <Property Name="LevelPercent" Type="float" />
+          <Property Name="UpdateUTC" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataEngineLubeOilTemperatureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DataEngineOilLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DataEngineOilPressureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DataEngineParameters">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="MID" Type="varchar" MaxLength="50" />
+          <Property Name="MaxFuelGallons" Type="float" />
+          <Property Name="IdleFuelGallons" Type="float" />
+          <Property Name="MachineIdleFuelGallons" Type="float" />
+          <Property Name="EngineIdleHours" Type="float" />
+          <Property Name="Starts" Type="int" />
+          <Property Name="Revolutions" Type="bigint" />
+          <Property Name="ConsumptionGallons" Type="float" />
+          <Property Name="LevelPercent" Type="float" />
+          <Property Name="MachineIdleHours" Type="float" />
+          <Property Name="UpdateUTC" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataEngineRPMSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="int" />
+        </EntityType>
+        <EntityType Name="DataEngineStartStop">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="ifk_EngineStateID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataEngineTempSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+          <Property Name="SalesModelID" Type="bigint" />
+        </EntityType>
+        <EntityType Name="DataFaultDiagnostic">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="fk_DimDatalinkID" Type="int" Nullable="false" />
+          <Property Name="MID" Type="varchar" MaxLength="50" />
+          <Property Name="CID" Type="int" Nullable="false" />
+          <Property Name="FMI" Type="int" Nullable="false" />
+          <Property Name="Occurrences" Type="tinyint" Nullable="false" />
+          <Property Name="fk_DimSeverityLevelID" Type="int" Nullable="false" />
+          <Property Name="SourceAddress" Type="int" />
+        </EntityType>
+        <EntityType Name="DataFaultEvent">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="fk_DimDatalinkID" Type="int" Nullable="false" />
+          <Property Name="MID" Type="varchar" MaxLength="50" />
+          <Property Name="EID" Type="int" Nullable="false" />
+          <Property Name="Occurrences" Type="tinyint" Nullable="false" />
+          <Property Name="fk_DimSeverityLevelID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataFeedDigitalSwitchStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Switch" Type="tinyint" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="PowerMode" Type="tinyint" Nullable="false" />
+          <Property Name="Pending" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataFenceAlarm">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="TimeWatchActive" Type="bit" Nullable="false" />
+          <Property Name="ExclusiveWatchActive" Type="bit" Nullable="false" />
+          <Property Name="InclusiveWatchActive" Type="bit" Nullable="false" />
+          <Property Name="TimeWatchAlarm" Type="bit" Nullable="false" />
+          <Property Name="ExclusiveWatchAlarm" Type="bit" Nullable="false" />
+          <Property Name="InclusiveWatchAlarm" Type="bit" Nullable="false" />
+          <Property Name="SatelliteBlockage" Type="bit" Nullable="false" />
+          <Property Name="DisconnectSwitchUsed" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataFluidAnalysis">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="SampleNumber" Type="bigint" Nullable="false" />
+          <Property Name="TextID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="SampleTakenDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="SampleConfirmedUTC" Type="datetime2" Precision="7" />
+          <Property Name="CompartmentName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="CompartmentID" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="MeterValue" Type="float" />
+          <Property Name="MeterValueUnit" Type="char" MaxLength="1" />
+          <Property Name="OverallEvaluation" Type="varchar" MaxLength="3" />
+          <Property Name="Status" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="ActionNumber" Type="bigint" />
+          <Property Name="ActionUTC" Type="datetime2" Precision="7" />
+          <Property Name="ActionDescription" Type="nvarchar" MaxLength="500" />
+          <Property Name="ActionedByID" Type="varchar" MaxLength="50" />
+          <Property Name="ActionedByFirstName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ActionedByLastName" Type="nvarchar" MaxLength="100" />
+          <Property Name="UpdateUTC" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataGensetOperationalState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="ifk_EngineStateID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataHoursLocation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="RuntimeHours" Type="float" />
+          <Property Name="Latitude" Type="float" />
+          <Property Name="Longitude" Type="float" />
+          <Property Name="LocationAge" Type="float" />
+          <Property Name="LocationUncertaintyMeters" Type="float" />
+          <Property Name="OdometerMiles" Type="float" />
+          <Property Name="SpeedMPH" Type="float" />
+          <Property Name="Track" Type="float" />
+          <Property Name="Altitude" Type="float" />
+          <Property Name="LocIsValid" Type="bit" Nullable="false" />
+          <Property Name="UpdateUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="EventDeviceTime" Type="datetime2" Precision="7" />
+          <Property Name="ifk_DimTimeZoneID" Type="int" />
+          <Property Name="NHReceivedUTC" Type="datetime2" Precision="7" />
+        </EntityType>
+        <EntityType Name="DataHydraulicOilTemperatureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DataIdleTimeOut">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataIgnOnOff">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="IsOn" Type="bit" Nullable="false" />
+          <Property Name="RuntimeHours" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataMoving">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="IsStart" Type="bit" Nullable="false" />
+          <Property Name="SuspiciousMove" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataMSSKeyID">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="MSSKeyID" Type="bigint" Nullable="false" />
+          <Property Name="OperatorName" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="DataOperator">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ExternalKeyValue" Type="nvarchar" MaxLength="200" />
+          <Property Name="ExternalCustomerKeyTypeId" Type="int" Nullable="false" />
+          <Property Name="FirstName" Type="nvarchar" MaxLength="200" />
+          <Property Name="LastName" Type="nvarchar" MaxLength="200" />
+          <Property Name="Description" Type="nvarchar" MaxLength="300" />
+          <Property Name="ExternalOperatorID" Type="nvarchar" MaxLength="200" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataParametersReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="ECMSourceAddress" Type="int" Nullable="false" />
+          <Property Name="PGN" Type="int" Nullable="false" />
+          <Property Name="SPN" Type="int" Nullable="false" />
+          <Property Name="ifk_DimSeverityLevelID" Type="int" Nullable="false" />
+          <Property Name="ValueFloat" Type="float" />
+          <Property Name="ValueString" Type="varchar" MaxLength="200" />
+          <Property Name="ifk_DimUnitTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataPassThroughPortData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="PortNumber" Type="bigint" Nullable="false" />
+          <Property Name="Payload" Type="varbinary" MaxLength="4000" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataPowerMode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="fk_DimPowerModeId" Type="int" />
+        </EntityType>
+        <EntityType Name="DataPowerState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="IsOn" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataProjectTagFileError">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ifk_DimAlertSubTypeID" Type="int" Nullable="false" />
+          <Property Name="FileName" Type="varchar" MaxLength="256" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataRawCANMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Message" Type="varbinary" MaxLength="2000" Nullable="false" />
+          <Property Name="MessageHash" Type="bigint" />
+        </EntityType>
+        <EntityType Name="DataRemoteSecurityState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="IsEnabled" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataSecurityPendingStartMode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Status" Type="int" Nullable="false" />
+          <Property Name="Source" Type="varchar" MaxLength="3" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataServiceMeterAdjustment">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="RuntimeBeforeHours" Type="float" Nullable="false" />
+          <Property Name="RuntimeAfterHours" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataSiteState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="SiteID" Type="bigint" Nullable="false" />
+          <Property Name="IsEntry" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataSpeeding">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="IsStart" Type="bit" Nullable="false" />
+          <Property Name="MaxSpeedMPH" Type="float" />
+          <Property Name="DistanceTravelled" Type="float" />
+          <Property Name="Duration" Type="float" />
+        </EntityType>
+        <EntityType Name="DataStatisticsReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="ECMSourceAddress" Type="int" Nullable="false" />
+          <Property Name="PGN" Type="int" Nullable="false" />
+          <Property Name="SPN" Type="int" Nullable="false" />
+          <Property Name="RuntimeHours" Type="float" />
+          <Property Name="Minimum" Type="float" Nullable="false" />
+          <Property Name="Maximum" Type="float" Nullable="false" />
+          <Property Name="Average" Type="float" Nullable="false" />
+          <Property Name="StandardDeviation" Type="float" Nullable="false" />
+          <Property Name="ifk_DimUnitTypeID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataSwitchState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="IOState" Type="bit" Nullable="false" />
+          <Property Name="InputNumber" Type="tinyint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataTamperLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Level" Type="int" Nullable="false" />
+          <Property Name="Source" Type="varchar" MaxLength="3" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataTamperSecurityStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="MachineStartStatus" Type="int" Nullable="false" />
+          <Property Name="MachineStartStatusTrigger" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataTamperState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="IsEnabled" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataTirePressureMonitorInfo">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="InstallationStatus" Type="bit" />
+          <Property Name="MID" Type="varchar" MaxLength="50" />
+          <Property Name="AxlePosition" Type="int" Nullable="false" />
+          <Property Name="TirePosition" Type="int" Nullable="false" />
+          <Property Name="SensorID" Type="nvarchar" MaxLength="100" />
+          <Property Name="TireCount" Type="int" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="SourceAddress" Type="varchar" MaxLength="256" />
+          <Property Name="Description" Type="varchar" MaxLength="256" />
+        </EntityType>
+        <EntityType Name="DataTirePressureMonitorSystem">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DebugRefID" Type="bigint" />
+          <Property Name="SourceMsgID" Type="bigint" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ECMCount" Type="int" />
+          <Property Name="ECMSourceAddress" Type="varchar" MaxLength="256" />
+          <Property Name="ECMDescription" Type="varchar" MaxLength="256" />
+          <Property Name="ECMTireCount" Type="int" />
+          <Property Name="AxlePosition" Type="int" Nullable="false" />
+          <Property Name="TirePosition" Type="int" Nullable="false" />
+          <Property Name="fk_SensorTypeID" Type="int" />
+          <Property Name="fk_TPMSSensorAspectsID" Type="int" Nullable="false" />
+          <Property Name="SensorValue" Type="float" />
+        </EntityType>
+        <EntityType Name="DataTransmissionOilTemperatureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InsertUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="int" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="AssetID" Type="bigint" Nullable="false" />
+          <Property Name="Value" Type="float" />
+        </EntityType>
+        <EntityType Name="DimCNHSeverityLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="8" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimCustomUtilizationEventType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimDatalink">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="DimEngineState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="StateDescription" Type="char" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimFuelTankCapacity">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="fk_MakeCode" Type="varchar" MaxLength="16" Nullable="false" />
+          <Property Name="fk_Model" Type="nvarchar" MaxLength="200" Nullable="false" />
+          <Property Name="FullTankCapacity" Type="float" Nullable="false" />
+          <Property Name="ReserveCapacity" Type="float" Nullable="false" />
+          <Property Name="TankCapacity" Type="float" StoreGeneratedPattern="Computed" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimPowerMode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimSeverityLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="8" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimSource">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimUnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ExternalCustomerKeyType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="KeyType" Type="nvarchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="OEMDataSourceType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Type" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SensorAspects">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SensorType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Function Name="usp_AntiDataSave" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Data" Type="xml" Mode="In" />
+          <Parameter Name="ExceptionText" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="usp_VisionLinkAPI_APITestLoad" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <EntityContainer Name="VSSHostedVLCommonStoreContainer">
+          <EntitySet Name="CustomDataEngineParameters" EntityType="Self.CustomDataEngineParameters" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataBatteryChargingVoltage" EntityType="Self.DataBatteryChargingVoltage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataBoostPressure" EntityType="Self.DataBoostPressure" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataBoostTemperature" EntityType="Self.DataBoostTemperature" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataCatInspection" EntityType="Self.DataCatInspection" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataCNHCANAlarmCode" EntityType="Self.DataCNHCANAlarmCode" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataCustomUtilizationEvent" EntityType="Self.DataCustomUtilizationEvent" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataDeviceBatteryRemaining" EntityType="Self.DataDeviceBatteryRemaining" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataDieselExhaustFluid" EntityType="Self.DataDieselExhaustFluid" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataEngineLubeOilTemperatureSensorSample" EntityType="Self.DataEngineLubeOilTemperatureSensorSample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataEngineOilLevel" EntityType="Self.DataEngineOilLevel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataEngineOilPressureSensorSample" EntityType="Self.DataEngineOilPressureSensorSample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataEngineParameters" EntityType="Self.DataEngineParameters" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataEngineRPMSensorSample" EntityType="Self.DataEngineRPMSensorSample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataEngineStartStop" EntityType="Self.DataEngineStartStop" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataEngineTempSensorSample" EntityType="Self.DataEngineTempSensorSample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataFaultDiagnostic" EntityType="Self.DataFaultDiagnostic" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataFaultEvent" EntityType="Self.DataFaultEvent" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataFeedDigitalSwitchStatus" EntityType="Self.DataFeedDigitalSwitchStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataFenceAlarm" EntityType="Self.DataFenceAlarm" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataFluidAnalysis" EntityType="Self.DataFluidAnalysis" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataGensetOperationalState" EntityType="Self.DataGensetOperationalState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataHoursLocation" EntityType="Self.DataHoursLocation" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataHydraulicOilTemperatureSensorSample" EntityType="Self.DataHydraulicOilTemperatureSensorSample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataIdleTimeOut" EntityType="Self.DataIdleTimeOut" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataIgnOnOff" EntityType="Self.DataIgnOnOff" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataMoving" EntityType="Self.DataMoving" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataMSSKeyID" EntityType="Self.DataMSSKeyID" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataOperator" EntityType="Self.DataOperator" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataParametersReport" EntityType="Self.DataParametersReport" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataPassThroughPortData" EntityType="Self.DataPassThroughPortData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataPowerMode" EntityType="Self.DataPowerMode" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataPowerState" EntityType="Self.DataPowerState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataProjectTagFileError" EntityType="Self.DataProjectTagFileError" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataRawCANMessage" EntityType="Self.DataRawCANMessage" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataRemoteSecurityState" EntityType="Self.DataRemoteSecurityState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataSecurityPendingStartMode" EntityType="Self.DataSecurityPendingStartMode" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataServiceMeterAdjustment" EntityType="Self.DataServiceMeterAdjustment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataSiteState" EntityType="Self.DataSiteState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataSpeeding" EntityType="Self.DataSpeeding" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataStatisticsReport" EntityType="Self.DataStatisticsReport" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataSwitchState" EntityType="Self.DataSwitchState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataTamperLevel" EntityType="Self.DataTamperLevel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataTamperSecurityStatus" EntityType="Self.DataTamperSecurityStatus" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataTamperState" EntityType="Self.DataTamperState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataTirePressureMonitorInfo" EntityType="Self.DataTirePressureMonitorInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataTirePressureMonitorSystem" EntityType="Self.DataTirePressureMonitorSystem" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataTransmissionOilTemperatureSensorSample" EntityType="Self.DataTransmissionOilTemperatureSensorSample" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimCNHSeverityLevel" EntityType="Self.DimCNHSeverityLevel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimCustomUtilizationEventType" EntityType="Self.DimCustomUtilizationEventType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimDatalink" EntityType="Self.DimDatalink" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimEngineState" EntityType="Self.DimEngineState" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimFuelTankCapacity" EntityType="Self.DimFuelTankCapacity" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimPowerMode" EntityType="Self.DimPowerMode" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimSeverityLevel" EntityType="Self.DimSeverityLevel" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimSource" EntityType="Self.DimSource" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DimUnitType" EntityType="Self.DimUnitType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ExternalCustomerKeyType" EntityType="Self.ExternalCustomerKeyType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OEMDataSourceType" EntityType="Self.OEMDataSourceType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SensorAspects" EntityType="Self.SensorAspects" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="SensorType" EntityType="Self.SensorType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AntiData" EntityType="Self.AntiData" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[AntiData].[InsertUTC] AS [InsertUTC], 
+[AntiData].[Data] AS [Data], 
+[AntiData].[ExceptionText] AS [ExceptionText]
+FROM [dbo].[AntiData] AS [AntiData]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="VSS.Hosted.VLCommon" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="NH_DATA">
+          <EntitySet Name="AntiData" EntityType="VSS.Hosted.VLCommon.AntiData" />
+          <EntitySet Name="DataEngineParameters" EntityType="VSS.Hosted.VLCommon.DataEngineParameters" />
+          <EntitySet Name="DataEngineStartStop" EntityType="VSS.Hosted.VLCommon.DataEngineStartStop" />
+          <EntitySet Name="DataFaultDiagnostic" EntityType="VSS.Hosted.VLCommon.DataFaultDiagnostic" />
+          <EntitySet Name="DataFaultEvent" EntityType="VSS.Hosted.VLCommon.DataFaultEvent" />
+          <EntitySet Name="DataFenceAlarm" EntityType="VSS.Hosted.VLCommon.DataFenceAlarm" />
+          <EntitySet Name="DataHoursLocation" EntityType="VSS.Hosted.VLCommon.DataHoursLocation" />
+          <EntitySet Name="DataIgnOnOff" EntityType="VSS.Hosted.VLCommon.DataIgnOnOff" />
+          <EntitySet Name="DataMoving" EntityType="VSS.Hosted.VLCommon.DataMoving" />
+          <EntitySet Name="DataMSSKeyID" EntityType="VSS.Hosted.VLCommon.DataMSSKeyID" />
+          <EntitySet Name="DataServiceMeterAdjustment" EntityType="VSS.Hosted.VLCommon.DataServiceMeterAdjustment" />
+          <EntitySet Name="DataSiteState" EntityType="VSS.Hosted.VLCommon.DataSiteState" />
+          <EntitySet Name="DataSpeeding" EntityType="VSS.Hosted.VLCommon.DataSpeeding" />
+          <EntitySet Name="DimSeverityLevel" EntityType="VSS.Hosted.VLCommon.DimSeverityLevel" />
+          <EntitySet Name="DimSource" EntityType="VSS.Hosted.VLCommon.DimSource" />
+          <EntitySet Name="DimDatalink" EntityType="VSS.Hosted.VLCommon.DimDatalink" />
+          <EntitySet Name="DataFluidAnalysis" EntityType="VSS.Hosted.VLCommon.DataFluidAnalysis" />
+          <EntitySet Name="DataPassThroughPortDatas" EntityType="VSS.Hosted.VLCommon.DataPassThroughPortData" />
+          <EntitySet Name="DataTamperSecurityStatus" EntityType="VSS.Hosted.VLCommon.DataTamperSecurityStatus" />
+          <EntitySet Name="DataRawCANMessage" EntityType="VSS.Hosted.VLCommon.DataRawCANMessage" />
+          <EntitySet Name="DimUnitType" EntityType="VSS.Hosted.VLCommon.DimUnitType" />
+          <EntitySet Name="DataParametersReport" EntityType="VSS.Hosted.VLCommon.DataParametersReport" />
+          <EntitySet Name="DataStatisticsReport" EntityType="VSS.Hosted.VLCommon.DataStatisticsReport" />
+          <EntitySet Name="DimEngineState" EntityType="VSS.Hosted.VLCommon.DimEngineState" />
+          <EntitySet Name="DataGensetOperationalState" EntityType="VSS.Hosted.VLCommon.DataGensetOperationalState" />
+          <EntitySet Name="DataProjectTagFileError" EntityType="VSS.Hosted.VLCommon.DataProjectTagFileError" />
+          <EntitySet Name="DataPowerState" EntityType="VSS.Hosted.VLCommon.DataPowerState" />
+          <EntitySet Name="DataIdleTimeOut" EntityType="VSS.Hosted.VLCommon.DataIdleTimeOut" />
+          <EntitySet Name="SensorAspects" EntityType="VSS.Hosted.VLCommon.SensorAspects" />
+          <EntitySet Name="SensorType" EntityType="VSS.Hosted.VLCommon.SensorType" />
+          <EntitySet Name="DataTirePressureMonitorSystem" EntityType="VSS.Hosted.VLCommon.DataTirePressureMonitorSystem" />
+          <EntitySet Name="DataCustomUtilizationEvent" EntityType="VSS.Hosted.VLCommon.DataCustomUtilizationEvent" />
+          <EntitySet Name="DimCustomUtilizationEventType" EntityType="VSS.Hosted.VLCommon.DimCustomUtilizationEventType" />
+          <EntitySet Name="DataEngineTempSensorSample" EntityType="VSS.Hosted.VLCommon.DataEngineTempSensorSample" />
+          <EntitySet Name="OEMDataSourceType" EntityType="VSS.Hosted.VLCommon.OEMDataSourceType" />
+          <EntitySet Name="DataCNHCANAlarmCode" EntityType="VSS.Hosted.VLCommon.DataCNHCANAlarmCode" />
+          <EntitySet Name="DimCNHSeverityLevel" EntityType="VSS.Hosted.VLCommon.DimCNHSeverityLevel" />
+          <EntitySet Name="DataCatInspection" EntityType="VSS.Hosted.VLCommon.DataCatInspection" />
+          <EntitySet Name="DataTirePressureMonitorInfo" EntityType="VSS.Hosted.VLCommon.DataTirePressureMonitorInfo" />
+          <EntitySet Name="DataTamperLevel" EntityType="VSS.Hosted.VLCommon.DataTamperLevel" />
+          <EntitySet Name="DataDeviceBatteryRemaining" EntityType="VSS.Hosted.VLCommon.DataDeviceBatteryRemaining" />
+          <EntitySet Name="DataSecurityPendingStartMode" EntityType="VSS.Hosted.VLCommon.DataSecurityPendingStartMode" />
+          <EntitySet Name="DataSwitchState" EntityType="VSS.Hosted.VLCommon.DataSwitchState" />
+          <EntitySet Name="DataFeedDigitalSwitchStatus" EntityType="VSS.Hosted.VLCommon.DataFeedDigitalSwitchStatus" />
+          <EntitySet Name="DataEngineLubeOilTemperatureSensorSample" EntityType="VSS.Hosted.VLCommon.DataEngineLubeOilTemperatureSensorSample" />
+          <EntitySet Name="DataEngineRPMSensorSample" EntityType="VSS.Hosted.VLCommon.DataEngineRPMSensorSample" />
+          <EntitySet Name="DataHydraulicOilTemperatureSensorSample" EntityType="VSS.Hosted.VLCommon.DataHydraulicOilTemperatureSensorSample" />
+          <EntitySet Name="DataEngineOilPressureSensorSample" EntityType="VSS.Hosted.VLCommon.DataEngineOilPressureSensorSample" />
+          <EntitySet Name="CustomDataEngineParameters" EntityType="VSS.Hosted.VLCommon.CustomDataEngineParameters" />
+          <EntitySet Name="DimFuelTankCapacity" EntityType="VSS.Hosted.VLCommon.DimFuelTankCapacity" />
+          <EntitySet Name="DataBatteryChargingVoltage" EntityType="VSS.Hosted.VLCommon.DataBatteryChargingVoltage" />
+          <EntitySet Name="DataTamperState" EntityType="VSS.Hosted.VLCommon.DataTamperState" />
+          <EntitySet Name="DataRemoteSecurityState" EntityType="VSS.Hosted.VLCommon.DataRemoteSecurityState" />
+          <EntitySet Name="DataBoostPressure" EntityType="VSS.Hosted.VLCommon.DataBoostPressure" />
+          <EntitySet Name="DataBoostTemperature" EntityType="VSS.Hosted.VLCommon.DataBoostTemperature" />
+          <EntitySet Name="DataEngineOilLevel" EntityType="VSS.Hosted.VLCommon.DataEngineOilLevel" />
+          <EntitySet Name="DataTransmissionOilTemperatureSensorSample" EntityType="VSS.Hosted.VLCommon.DataTransmissionOilTemperatureSensorSample" />
+          <EntitySet Name="DataPowerMode" EntityType="VSS.Hosted.VLCommon.DataPowerMode" />
+          <EntitySet Name="DimPowerMode" EntityType="VSS.Hosted.VLCommon.DimPowerMode" />
+          <EntitySet Name="ExternalCustomerKeyType" EntityType="VSS.Hosted.VLCommon.ExternalCustomerKeyType" />
+          <EntitySet Name="DataOperator" EntityType="VSS.Hosted.VLCommon.DataOperator" />
+          <EntitySet Name="DataDieselExhaustFluid" EntityType="VSS.Hosted.VLCommon.DataDieselExhaustFluid" />
+          </EntityContainer>
+        <EntityType Name="AntiData">
+          <Key>
+            <PropertyRef Name="InsertUTC" />
+            <PropertyRef Name="Data" />
+          </Key>
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Data" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="ExceptionText" Type="String" MaxLength="4000" Unicode="false" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="DataEngineParameters">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="MID" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="MaxFuelGallons" Type="Double" />
+          <Property Name="IdleFuelGallons" Type="Double" />
+          <Property Name="MachineIdleFuelGallons" Type="Double" />
+          <Property Name="EngineIdleHours" Type="Double" />
+          <Property Name="Starts" Type="Int32" />
+          <Property Name="Revolutions" Type="Int64" />
+          <Property Name="ConsumptionGallons" Type="Double" />
+          <Property Name="LevelPercent" Type="Double" />
+          <Property Name="MachineIdleHours" Type="Double" Nullable="true" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataEngineStartStop">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Type="Int32" Name="ifk_EngineStateID" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataFaultDiagnostic">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="MID" Type="String" Unicode="false" FixedLength="false" MaxLength="50" />
+          <Property Name="CID" Type="Int32" Nullable="false" />
+          <Property Name="FMI" Type="Int32" Nullable="false" />
+          <Property Name="Occurrences" Type="Byte" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="fk_DimDatalinkID" Type="Int32" Nullable="false" />
+          <Property Name="fk_DimSeverityLevelID" Type="Int32" Nullable="false" />
+          <Property Name="SourceAddress" Type="Int32" />
+          </EntityType>
+        <EntityType Name="DataFaultEvent">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="MID" Type="String" Unicode="false" FixedLength="false" MaxLength="50" />
+          <Property Name="EID" Type="Int32" Nullable="false" />
+          <Property Name="Occurrences" Type="Byte" Nullable="false" />
+          <Property Name="fk_DimSeverityLevelID" Type="Int32" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="fk_DimDatalinkID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataFenceAlarm">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="TimeWatchActive" Type="Boolean" Nullable="false" />
+          <Property Name="ExclusiveWatchActive" Type="Boolean" Nullable="false" />
+          <Property Name="InclusiveWatchActive" Type="Boolean" Nullable="false" />
+          <Property Name="TimeWatchAlarm" Type="Boolean" Nullable="false" />
+          <Property Name="ExclusiveWatchAlarm" Type="Boolean" Nullable="false" />
+          <Property Name="InclusiveWatchAlarm" Type="Boolean" Nullable="false" />
+          <Property Name="SatelliteBlockage" Type="Boolean" Nullable="false" />
+          <Property Name="DisconnectSwitchUsed" Type="Boolean" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataHoursLocation">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="RuntimeHours" Type="Double" />
+          <Property Name="Latitude" Type="Double" />
+          <Property Name="Longitude" Type="Double" />
+          <Property Name="LocationAge" Type="Double" />
+          <Property Name="LocationUncertaintyMeters" Type="Double" />
+          <Property Name="OdometerMiles" Type="Double" />
+          <Property Name="SpeedMPH" Type="Double" />
+          <Property Name="Track" Type="Double" />
+          <Property Name="Altitude" Type="Double" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Type="Boolean" Name="LocIsValid" Nullable="false" />
+          <Property Type="DateTime" Name="UpdateUTC" Nullable="false" Precision="7" />
+          <Property Type="DateTime" Name="EventDeviceTime" Precision="7" />
+          <Property Type="Int32" Name="ifk_DimTimeZoneID" />
+          <Property Name="NHReceivedUTC" Type="DateTime" Precision="7" Nullable="true" />
+          </EntityType>
+        <EntityType Name="DataIgnOnOff">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="IsOn" Type="Boolean" Nullable="false" />
+          <Property Name="RuntimeHours" Type="Double" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataMoving">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="IsStart" Type="Boolean" Nullable="false" />
+          <Property Name="SuspiciousMove" Type="Boolean" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataMSSKeyID">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="MSSKeyID" Type="Int64" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="OperatorName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          </EntityType>
+        <EntityType Name="DataServiceMeterAdjustment">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="RuntimeBeforeHours" Type="Double" Nullable="false" />
+          <Property Name="RuntimeAfterHours" Type="Double" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataSiteState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="SiteID" Type="Int64" Nullable="false" />
+          <Property Name="IsEntry" Type="Boolean" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DataSpeeding">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="IsStart" Type="Boolean" Nullable="false" />
+          <Property Name="MaxSpeedMPH" Type="Double" />
+          <Property Name="DistanceTravelled" Type="Double" Nullable="true" />
+          <Property Name="Duration" Type="Double" Nullable="true" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          </EntityType>
+        <EntityType Name="DimSeverityLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="8" Unicode="false" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="DimSource">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="30" Unicode="false" FixedLength="false" />
+          </EntityType>
+        <EntityType Name="DimDatalink">
+          <Key>
+            <PropertyRef Name="ID" /></Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="10" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="true" MaxLength="50" Unicode="true" FixedLength="false" />
+          </EntityType>
+        <EntityType Name="DataFluidAnalysis">
+          <Key>
+            <PropertyRef Name="ID" /></Key>
+          <Property Name="ID" Type="Int64" Nullable="false" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="SampleNumber" Type="Int64" Nullable="false" />
+          <Property Name="TextID" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="true" MaxLength="500" Unicode="true" FixedLength="false" />
+          <Property Name="SampleConfirmedUTC" Type="DateTime" Nullable="true" Precision="7" />
+          <Property Name="CompartmentName" Type="String" Nullable="false" MaxLength="256" Unicode="true" FixedLength="false" />
+          <Property Name="CompartmentID" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="MeterValue" Type="Double" Nullable="true" />
+          <Property Name="OverallEvaluation" Type="String" Nullable="true" MaxLength="3" Unicode="false" FixedLength="false" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="1" Unicode="false" FixedLength="true" />
+          <Property Name="ActionNumber" Type="Int64" Nullable="true" />
+          <Property Name="ActionUTC" Type="DateTime" Nullable="true" Precision="7" />
+          <Property Name="ActionDescription" Type="String" Nullable="true" MaxLength="500" Unicode="true" FixedLength="false" />
+          <Property Name="ActionedByID" Type="String" Nullable="true" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="ActionedByFirstName" Type="String" Nullable="true" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="ActionedByLastName" Type="String" Nullable="true" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="DebugRefID" Type="Int64" Nullable="true" />
+          <Property Name="SourceMsgID" Type="Int64" Nullable="true" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="MeterValueUnit" Type="String" Nullable="true" MaxLength="1" Unicode="false" FixedLength="true" />
+          <Property Type="DateTime" Name="SampleTakenDate" Nullable="false" Precision="7" />
+          <Property Type="DateTime" Name="UpdateUTC" Nullable="false" Precision="7" />
+          </EntityType>
+        <EntityType Name="DataPassThroughPortData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Int64" Name="PortNumber" Nullable="false" />
+          <Property Type="Binary" Name="Payload" Nullable="false" MaxLength="4000" FixedLength="false" />
+          
+        </EntityType>
+        <EntityType Name="DataTamperSecurityStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Int32" Name="MachineStartStatus" Nullable="false" />
+          <Property Type="Int32" Name="MachineStartStatusTrigger" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataRawCANMessage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Binary" Name="Message" Nullable="false" MaxLength="2000" FixedLength="false" />
+          <Property Type="Int64" Name="MessageHash" />
+        </EntityType>
+        <EntityType Name="DimUnitType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataParametersReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Int32" Name="ECMSourceAddress" Nullable="false" />
+          <Property Type="Int32" Name="PGN" Nullable="false" />
+          <Property Type="Int32" Name="SPN" Nullable="false" />
+          <Property Type="Int32" Name="ifk_DimSeverityLevelID" Nullable="false" />
+          <Property Type="Double" Name="ValueFloat" />
+          <Property Type="String" Name="ValueString" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="ifk_DimUnitTypeID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataStatisticsReport">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Int32" Name="ECMSourceAddress" Nullable="false" />
+          <Property Type="Int32" Name="PGN" Nullable="false" />
+          <Property Type="Int32" Name="SPN" Nullable="false" />
+          <Property Type="Double" Name="RuntimeHours" />
+          <Property Type="Double" Name="Minimum" Nullable="false" />
+          <Property Type="Double" Name="Maximum" Nullable="false" />
+          <Property Type="Double" Name="Average" Nullable="false" />
+          <Property Type="Double" Name="StandardDeviation" Nullable="false" />
+          <Property Type="Int32" Name="ifk_DimUnitTypeID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimEngineState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="StateDescription" Nullable="false" MaxLength="20" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataGensetOperationalState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Int32" Name="ifk_EngineStateID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataProjectTagFileError">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int32" Name="ifk_DimAlertSubTypeID" Nullable="false" />
+          <Property Type="String" Name="FileName" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+        </EntityType>
+        <EntityType Name="DataPowerState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Boolean" Name="IsOn" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataIdleTimeOut">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="SensorAspects">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="SensorType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="DataTirePressureMonitorSystem">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int32" Name="ECMCount" />
+          <Property Type="String" Name="ECMSourceAddress" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ECMDescription" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="ECMTireCount" />
+          <Property Type="Int32" Name="AxlePosition" Nullable="false" />
+          <Property Type="Int32" Name="TirePosition" Nullable="false" />
+          <Property Type="Int32" Name="fk_SensorTypeID" />
+          <Property Type="Int32" Name="fk_TPMSSensorAspectsID" Nullable="false" />
+          <Property Type="Double" Name="SensorValue" />
+        </EntityType>
+        <EntityType Name="DataCustomUtilizationEvent">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Double" Name="Value" />
+          <Property Type="Int32" Name="ifk_DimCustomUtilizationEventTypeID" Nullable="false" />
+          <Property Type="Int32" Name="ifk_DimUnitTypeID" Nullable="false" />
+          <Property Type="Int32" Name="ifk_OEMDataSourceTypeID" Nullable="false" />
+          <Property Type="Int32" Name="OEMDataSourceValue" />
+        </EntityType>
+        <EntityType Name="DimCustomUtilizationEventType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataEngineTempSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Double" Name="Value" />
+          <Property Type="Int64" Name="SalesModelID" />
+        </EntityType>
+        <EntityType Name="OEMDataSourceType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Type" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataCNHCANAlarmCode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="String" Name="AlarmCode" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="ifk_DimCNHSeverityLevelID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimCNHSeverityLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="8" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataCatInspection">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Type="String" Name="InspectionID" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="String" Name="MakeCode" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="SerialNumberVIN" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="InspectionName" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="InspectionUTC" Nullable="false" Precision="7" />
+          <Property Type="String" Name="InspectorName" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Type" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="System" MaxLength="128" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Type="String" Name="Number" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Type="String" Name="Description" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="StatusLabel" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="fk_DimSeverityLevelID" Nullable="false" />
+          <Property Type="String" Name="MeterValue" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="MeterUnit" MaxLength="16" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="InspectorComments" MaxLength="2000" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="AssignmentName" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="DataTirePressureMonitorInfo">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="DebugRefID" />
+          <Property Type="Int64" Name="SourceMsgID" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="AssetID" Nullable="false" />
+          <Property Type="Boolean" Name="InstallationStatus" />
+          <Property Type="String" Name="MID" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="AxlePosition" Nullable="false" />
+          <Property Type="Int32" Name="TirePosition" Nullable="false" />
+          <Property Type="String" Name="SensorID" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="TireCount" />
+          <Property Type="Int32" Name="fk_DimSourceID" Nullable="false" />
+          <Property Name="SourceAddress" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataTamperLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Level" Type="Int32" Nullable="false" />
+          <Property Name="Source" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataDeviceBatteryRemaining">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="GPSDeviceID" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="PercentBatteryRemaining" Type="Double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataSecurityPendingStartMode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Status" Type="Int32" Nullable="false" />
+          <Property Name="Source" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="DataSwitchState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="IOState" Type="Boolean" Nullable="false" />
+          <Property Name="InputNumber" Type="Byte" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataFeedDigitalSwitchStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Switch" Type="Byte" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="PowerMode" Type="Byte" Nullable="false" />
+          <Property Name="Pending" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataEngineLubeOilTemperatureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="DataEngineRPMSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Int32" />
+        </EntityType>
+        <EntityType Name="DataHydraulicOilTemperatureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="DataEngineOilPressureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="CustomDataEngineParameters">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="MID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MaxFuelGallons" Type="Double" />
+          <Property Name="IdleFuelGallons" Type="Double" />
+          <Property Name="MachineIdleFuelGallons" Type="Double" />
+          <Property Name="EngineIdleHours" Type="Double" />
+          <Property Name="Starts" Type="Int32" />
+          <Property Name="Revolutions" Type="Int64" />
+          <Property Name="ConsumptionGallons" Type="Double" />
+          <Property Name="LevelPercent" Type="Double" />
+          <Property Name="MachineIdleHours" Type="Double" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ValidFuelPercent" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DimFuelTankCapacity">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="fk_MakeCode" Type="String" Nullable="false" MaxLength="16" FixedLength="false" Unicode="false" />
+          <Property Name="fk_Model" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="FullTankCapacity" Type="Double" Nullable="false" />
+          <Property Name="ReserveCapacity" Type="Double" Nullable="false" />
+          <Property Name="TankCapacity" Type="Double" Nullable="false" a:StoreGeneratedPattern="Computed" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+        </EntityType>
+        <EntityType Name="DataBatteryChargingVoltage">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="DataTamperState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataRemoteSecurityState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="IsEnabled" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="DataBoostPressure">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="DataBoostTemperature">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="DataEngineOilLevel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="DataTransmissionOilTemperatureSensorSample">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="DataPowerMode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="fk_DimPowerModeId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="DimPowerMode">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="ExternalCustomerKeyType">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="KeyType" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="DataOperator">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DebugRefID" Type="Int64" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ExternalKeyValue" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="ExternalCustomerKeyTypeId" Type="Int32" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="LastName" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+          <Property Name="ExternalOperatorID" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="DataDieselExhaustFluid">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="SourceMsgID" Type="Int64" />
+          <Property Name="fk_DimSourceID" Type="Int32" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="AssetID" Type="Int64" Nullable="false" />
+          <Property Name="ConsumptionGallons" Type="Double" />
+          <Property Name="LevelPercent" Type="Double" />
+          <Property Name="UpdateUTC" Type="DateTime" Nullable="false" Precision="7" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="VSSHostedVLCommonStoreContainer" CdmEntityContainer="NH_DATA">
+          <EntitySetMapping Name="AntiData">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.AntiData)">
+              <MappingFragment StoreEntitySet="AntiData">
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="ExceptionText" ColumnName="ExceptionText" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataEngineParameters">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataEngineParameters)">
+              <MappingFragment StoreEntitySet="DataEngineParameters">
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+                <ScalarProperty Name="MachineIdleHours" ColumnName="MachineIdleHours" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="MID" ColumnName="MID" />
+                <ScalarProperty Name="MaxFuelGallons" ColumnName="MaxFuelGallons" />
+                <ScalarProperty Name="IdleFuelGallons" ColumnName="IdleFuelGallons" />
+                <ScalarProperty Name="MachineIdleFuelGallons" ColumnName="MachineIdleFuelGallons" />
+                <ScalarProperty Name="EngineIdleHours" ColumnName="EngineIdleHours" />
+                <ScalarProperty Name="Starts" ColumnName="Starts" />
+                <ScalarProperty Name="Revolutions" ColumnName="Revolutions" />
+                <ScalarProperty Name="ConsumptionGallons" ColumnName="ConsumptionGallons" />
+                <ScalarProperty Name="LevelPercent" ColumnName="LevelPercent" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataEngineStartStop">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataEngineStartStop)">
+              <MappingFragment StoreEntitySet="DataEngineStartStop">
+                <ScalarProperty Name="ifk_EngineStateID" ColumnName="ifk_EngineStateID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataFaultDiagnostic">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataFaultDiagnostic)">
+              <MappingFragment StoreEntitySet="DataFaultDiagnostic">
+                <ScalarProperty Name="SourceAddress" ColumnName="SourceAddress" />
+                <ScalarProperty Name="fk_DimSeverityLevelID" ColumnName="fk_DimSeverityLevelID" />
+                <ScalarProperty Name="fk_DimDatalinkID" ColumnName="fk_DimDatalinkID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="MID" ColumnName="MID" />
+                <ScalarProperty Name="CID" ColumnName="CID" />
+                <ScalarProperty Name="FMI" ColumnName="FMI" />
+                <ScalarProperty Name="Occurrences" ColumnName="Occurrences" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataFaultEvent">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataFaultEvent)">
+              <MappingFragment StoreEntitySet="DataFaultEvent">
+                <ScalarProperty Name="fk_DimSeverityLevelID" ColumnName="fk_DimSeverityLevelID" />
+                <ScalarProperty Name="fk_DimDatalinkID" ColumnName="fk_DimDatalinkID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="MID" ColumnName="MID" />
+                <ScalarProperty Name="EID" ColumnName="EID" />
+                <ScalarProperty Name="Occurrences" ColumnName="Occurrences" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataFenceAlarm">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataFenceAlarm)">
+              <MappingFragment StoreEntitySet="DataFenceAlarm">
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="TimeWatchActive" ColumnName="TimeWatchActive" />
+                <ScalarProperty Name="ExclusiveWatchActive" ColumnName="ExclusiveWatchActive" />
+                <ScalarProperty Name="InclusiveWatchActive" ColumnName="InclusiveWatchActive" />
+                <ScalarProperty Name="TimeWatchAlarm" ColumnName="TimeWatchAlarm" />
+                <ScalarProperty Name="ExclusiveWatchAlarm" ColumnName="ExclusiveWatchAlarm" />
+                <ScalarProperty Name="InclusiveWatchAlarm" ColumnName="InclusiveWatchAlarm" />
+                <ScalarProperty Name="SatelliteBlockage" ColumnName="SatelliteBlockage" />
+                <ScalarProperty Name="DisconnectSwitchUsed" ColumnName="DisconnectSwitchUsed" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataHoursLocation">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataHoursLocation)">
+              <MappingFragment StoreEntitySet="DataHoursLocation">
+                <ScalarProperty Name="NHReceivedUTC" ColumnName="NHReceivedUTC" />
+                <ScalarProperty Name="ifk_DimTimeZoneID" ColumnName="ifk_DimTimeZoneID" />
+                <ScalarProperty Name="EventDeviceTime" ColumnName="EventDeviceTime" />
+                <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+                <ScalarProperty Name="LocIsValid" ColumnName="LocIsValid" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="RuntimeHours" ColumnName="RuntimeHours" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+                <ScalarProperty Name="LocationAge" ColumnName="LocationAge" />
+                <ScalarProperty Name="LocationUncertaintyMeters" ColumnName="LocationUncertaintyMeters" />
+                <ScalarProperty Name="OdometerMiles" ColumnName="OdometerMiles" />
+                <ScalarProperty Name="SpeedMPH" ColumnName="SpeedMPH" />
+                <ScalarProperty Name="Track" ColumnName="Track" />
+                <ScalarProperty Name="Altitude" ColumnName="Altitude" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataIgnOnOff">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataIgnOnOff)">
+              <MappingFragment StoreEntitySet="DataIgnOnOff">
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="RuntimeHours" ColumnName="RuntimeHours" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="IsOn" ColumnName="IsOn" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataMoving">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataMoving)">
+              <MappingFragment StoreEntitySet="DataMoving">
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SuspiciousMove" ColumnName="SuspiciousMove" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="IsStart" ColumnName="IsStart" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataMSSKeyID">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataMSSKeyID)">
+              <MappingFragment StoreEntitySet="DataMSSKeyID">
+                <ScalarProperty Name="OperatorName" ColumnName="OperatorName" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="MSSKeyID" ColumnName="MSSKeyID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataServiceMeterAdjustment">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataServiceMeterAdjustment)">
+              <MappingFragment StoreEntitySet="DataServiceMeterAdjustment">
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="RuntimeBeforeHours" ColumnName="RuntimeBeforeHours" />
+                <ScalarProperty Name="RuntimeAfterHours" ColumnName="RuntimeAfterHours" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataSiteState">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataSiteState)">
+              <MappingFragment StoreEntitySet="DataSiteState">
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="SiteID" ColumnName="SiteID" />
+                <ScalarProperty Name="IsEntry" ColumnName="IsEntry" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataSpeeding">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataSpeeding)">
+              <MappingFragment StoreEntitySet="DataSpeeding">
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="DistanceTravelled" ColumnName="DistanceTravelled" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="IsStart" ColumnName="IsStart" />
+                <ScalarProperty Name="MaxSpeedMPH" ColumnName="MaxSpeedMPH" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimSeverityLevel">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DimSeverityLevel)">
+              <MappingFragment StoreEntitySet="DimSeverityLevel">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimSource">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DimSource)">
+              <MappingFragment StoreEntitySet="DimSource">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimDatalink">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DimDatalink)">
+              <MappingFragment StoreEntitySet="DimDatalink">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="DataFluidAnalysis">
+            <EntityTypeMapping TypeName="IsTypeOf(VSS.Hosted.VLCommon.DataFluidAnalysis)">
+              <MappingFragment StoreEntitySet="DataFluidAnalysis">
+                <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+                <ScalarProperty Name="SampleTakenDate" ColumnName="SampleTakenDate" />
+                <ScalarProperty Name="MeterValueUnit" ColumnName="MeterValueUnit" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="ActionedByLastName" ColumnName="ActionedByLastName" />
+                <ScalarProperty Name="ActionedByFirstName" ColumnName="ActionedByFirstName" />
+                <ScalarProperty Name="ActionedByID" ColumnName="ActionedByID" />
+                <ScalarProperty Name="ActionDescription" ColumnName="ActionDescription" />
+                <ScalarProperty Name="ActionUTC" ColumnName="ActionUTC" />
+                <ScalarProperty Name="ActionNumber" ColumnName="ActionNumber" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="OverallEvaluation" ColumnName="OverallEvaluation" />
+                <ScalarProperty Name="MeterValue" ColumnName="MeterValue" />
+                <ScalarProperty Name="CompartmentID" ColumnName="CompartmentID" />
+                <ScalarProperty Name="CompartmentName" ColumnName="CompartmentName" />
+                <ScalarProperty Name="SampleConfirmedUTC" ColumnName="SampleConfirmedUTC" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="TextID" ColumnName="TextID" />
+                <ScalarProperty Name="SampleNumber" ColumnName="SampleNumber" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" /></MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="DataPassThroughPortDatas">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataPassThroughPortData">
+              <MappingFragment StoreEntitySet="DataPassThroughPortData">
+                <ScalarProperty Name="Payload" ColumnName="Payload" />
+                <ScalarProperty Name="PortNumber" ColumnName="PortNumber" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataTamperSecurityStatus">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataTamperSecurityStatus">
+              <MappingFragment StoreEntitySet="DataTamperSecurityStatus">
+                <ScalarProperty Name="MachineStartStatusTrigger" ColumnName="MachineStartStatusTrigger" />
+                <ScalarProperty Name="MachineStartStatus" ColumnName="MachineStartStatus" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataRawCANMessage">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataRawCANMessage">
+              <MappingFragment StoreEntitySet="DataRawCANMessage">
+                <ScalarProperty Name="MessageHash" ColumnName="MessageHash" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimUnitType">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DimUnitType">
+              <MappingFragment StoreEntitySet="DimUnitType">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataParametersReport">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataParametersReport">
+              <MappingFragment StoreEntitySet="DataParametersReport">
+                <ScalarProperty Name="ifk_DimUnitTypeID" ColumnName="ifk_DimUnitTypeID" />
+                <ScalarProperty Name="ValueString" ColumnName="ValueString" />
+                <ScalarProperty Name="ValueFloat" ColumnName="ValueFloat" />
+                <ScalarProperty Name="ifk_DimSeverityLevelID" ColumnName="ifk_DimSeverityLevelID" />
+                <ScalarProperty Name="SPN" ColumnName="SPN" />
+                <ScalarProperty Name="PGN" ColumnName="PGN" />
+                <ScalarProperty Name="ECMSourceAddress" ColumnName="ECMSourceAddress" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataStatisticsReport">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataStatisticsReport">
+              <MappingFragment StoreEntitySet="DataStatisticsReport">
+                <ScalarProperty Name="ifk_DimUnitTypeID" ColumnName="ifk_DimUnitTypeID" />
+                <ScalarProperty Name="StandardDeviation" ColumnName="StandardDeviation" />
+                <ScalarProperty Name="Average" ColumnName="Average" />
+                <ScalarProperty Name="Maximum" ColumnName="Maximum" />
+                <ScalarProperty Name="Minimum" ColumnName="Minimum" />
+                <ScalarProperty Name="RuntimeHours" ColumnName="RuntimeHours" />
+                <ScalarProperty Name="SPN" ColumnName="SPN" />
+                <ScalarProperty Name="PGN" ColumnName="PGN" />
+                <ScalarProperty Name="ECMSourceAddress" ColumnName="ECMSourceAddress" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimEngineState">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DimEngineState">
+              <MappingFragment StoreEntitySet="DimEngineState">
+                <ScalarProperty Name="StateDescription" ColumnName="StateDescription" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataGensetOperationalState">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataGensetOperationalState">
+              <MappingFragment StoreEntitySet="DataGensetOperationalState">
+                <ScalarProperty Name="ifk_EngineStateID" ColumnName="ifk_EngineStateID" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataProjectTagFileError">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataProjectTagFileError">
+              <MappingFragment StoreEntitySet="DataProjectTagFileError">
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="ifk_DimAlertSubTypeID" ColumnName="ifk_DimAlertSubTypeID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataPowerState">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataPowerState">
+              <MappingFragment StoreEntitySet="DataPowerState">
+                <ScalarProperty Name="IsOn" ColumnName="IsOn" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataIdleTimeOut">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataIdleTimeOut">
+              <MappingFragment StoreEntitySet="DataIdleTimeOut">
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SensorAspects">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.SensorAspects">
+              <MappingFragment StoreEntitySet="SensorAspects">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SensorType">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.SensorType">
+              <MappingFragment StoreEntitySet="SensorType">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataTirePressureMonitorSystem">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataTirePressureMonitorSystem">
+              <MappingFragment StoreEntitySet="DataTirePressureMonitorSystem">
+                <ScalarProperty Name="SensorValue" ColumnName="SensorValue" />
+                <ScalarProperty Name="fk_TPMSSensorAspectsID" ColumnName="fk_TPMSSensorAspectsID" />
+                <ScalarProperty Name="fk_SensorTypeID" ColumnName="fk_SensorTypeID" />
+                <ScalarProperty Name="TirePosition" ColumnName="TirePosition" />
+                <ScalarProperty Name="AxlePosition" ColumnName="AxlePosition" />
+                <ScalarProperty Name="ECMTireCount" ColumnName="ECMTireCount" />
+                <ScalarProperty Name="ECMDescription" ColumnName="ECMDescription" />
+                <ScalarProperty Name="ECMSourceAddress" ColumnName="ECMSourceAddress" />
+                <ScalarProperty Name="ECMCount" ColumnName="ECMCount" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataCustomUtilizationEvent">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataCustomUtilizationEvent">
+              <MappingFragment StoreEntitySet="DataCustomUtilizationEvent">
+                <ScalarProperty Name="OEMDataSourceValue" ColumnName="OEMDataSourceValue" />
+                <ScalarProperty Name="ifk_OEMDataSourceTypeID" ColumnName="ifk_OEMDataSourceTypeID" />
+                <ScalarProperty Name="ifk_DimUnitTypeID" ColumnName="ifk_DimUnitTypeID" />
+                <ScalarProperty Name="ifk_DimCustomUtilizationEventTypeID" ColumnName="ifk_DimCustomUtilizationEventTypeID" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimCustomUtilizationEventType">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DimCustomUtilizationEventType">
+              <MappingFragment StoreEntitySet="DimCustomUtilizationEventType">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataEngineTempSensorSample">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataEngineTempSensorSample">
+              <MappingFragment StoreEntitySet="DataEngineTempSensorSample">
+                <ScalarProperty Name="SalesModelID" ColumnName="SalesModelID" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OEMDataSourceType">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.OEMDataSourceType">
+              <MappingFragment StoreEntitySet="OEMDataSourceType">
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataCNHCANAlarmCode">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataCNHCANAlarmCode">
+              <MappingFragment StoreEntitySet="DataCNHCANAlarmCode">
+                <ScalarProperty Name="ifk_DimCNHSeverityLevelID" ColumnName="ifk_DimCNHSeverityLevelID" />
+                <ScalarProperty Name="AlarmCode" ColumnName="AlarmCode" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimCNHSeverityLevel">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DimCNHSeverityLevel">
+              <MappingFragment StoreEntitySet="DimCNHSeverityLevel">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataCatInspection">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataCatInspection">
+              <MappingFragment StoreEntitySet="DataCatInspection">
+                <ScalarProperty Name="AssignmentName" ColumnName="AssignmentName" />
+                <ScalarProperty Name="InspectorComments" ColumnName="InspectorComments" />
+                <ScalarProperty Name="MeterUnit" ColumnName="MeterUnit" />
+                <ScalarProperty Name="MeterValue" ColumnName="MeterValue" />
+                <ScalarProperty Name="fk_DimSeverityLevelID" ColumnName="fk_DimSeverityLevelID" />
+                <ScalarProperty Name="StatusLabel" ColumnName="StatusLabel" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Number" ColumnName="Number" />
+                <ScalarProperty Name="System" ColumnName="System" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="InspectorName" ColumnName="InspectorName" />
+                <ScalarProperty Name="InspectionUTC" ColumnName="InspectionUTC" />
+                <ScalarProperty Name="InspectionName" ColumnName="InspectionName" />
+                <ScalarProperty Name="SerialNumberVIN" ColumnName="SerialNumberVIN" />
+                <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="InspectionID" ColumnName="InspectionID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataTirePressureMonitorInfo">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataTirePressureMonitorInfo">
+              <MappingFragment StoreEntitySet="DataTirePressureMonitorInfo">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="SourceAddress" ColumnName="SourceAddress" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="TireCount" ColumnName="TireCount" />
+                <ScalarProperty Name="SensorID" ColumnName="SensorID" />
+                <ScalarProperty Name="TirePosition" ColumnName="TirePosition" />
+                <ScalarProperty Name="AxlePosition" ColumnName="AxlePosition" />
+                <ScalarProperty Name="MID" ColumnName="MID" />
+                <ScalarProperty Name="InstallationStatus" ColumnName="InstallationStatus" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataTamperLevel">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataTamperLevel">
+              <MappingFragment StoreEntitySet="DataTamperLevel">
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="Level" ColumnName="Level" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataDeviceBatteryRemaining">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataDeviceBatteryRemaining">
+              <MappingFragment StoreEntitySet="DataDeviceBatteryRemaining">
+                <ScalarProperty Name="PercentBatteryRemaining" ColumnName="PercentBatteryRemaining" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+                <ScalarProperty Name="GPSDeviceID" ColumnName="GPSDeviceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataSecurityPendingStartMode">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataSecurityPendingStartMode">
+              <MappingFragment StoreEntitySet="DataSecurityPendingStartMode">
+                <ScalarProperty Name="Source" ColumnName="Source" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataSwitchState">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataSwitchState">
+              <MappingFragment StoreEntitySet="DataSwitchState">
+                <ScalarProperty Name="InputNumber" ColumnName="InputNumber" />
+                <ScalarProperty Name="IOState" ColumnName="IOState" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataFeedDigitalSwitchStatus">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataFeedDigitalSwitchStatus">
+              <MappingFragment StoreEntitySet="DataFeedDigitalSwitchStatus">
+                <ScalarProperty Name="Pending" ColumnName="Pending" />
+                <ScalarProperty Name="PowerMode" ColumnName="PowerMode" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Switch" ColumnName="Switch" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataEngineLubeOilTemperatureSensorSample">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataEngineLubeOilTemperatureSensorSample">
+              <MappingFragment StoreEntitySet="DataEngineLubeOilTemperatureSensorSample">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataEngineRPMSensorSample">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataEngineRPMSensorSample">
+              <MappingFragment StoreEntitySet="DataEngineRPMSensorSample">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataHydraulicOilTemperatureSensorSample">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataHydraulicOilTemperatureSensorSample">
+              <MappingFragment StoreEntitySet="DataHydraulicOilTemperatureSensorSample">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataEngineOilPressureSensorSample">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataEngineOilPressureSensorSample">
+              <MappingFragment StoreEntitySet="DataEngineOilPressureSensorSample">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomDataEngineParameters">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CustomDataEngineParameters">
+              <MappingFragment StoreEntitySet="CustomDataEngineParameters">
+                <ScalarProperty Name="ValidFuelPercent" ColumnName="ValidFuelPercent" />
+                <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+                <ScalarProperty Name="MachineIdleHours" ColumnName="MachineIdleHours" />
+                <ScalarProperty Name="LevelPercent" ColumnName="LevelPercent" />
+                <ScalarProperty Name="ConsumptionGallons" ColumnName="ConsumptionGallons" />
+                <ScalarProperty Name="Revolutions" ColumnName="Revolutions" />
+                <ScalarProperty Name="Starts" ColumnName="Starts" />
+                <ScalarProperty Name="EngineIdleHours" ColumnName="EngineIdleHours" />
+                <ScalarProperty Name="MachineIdleFuelGallons" ColumnName="MachineIdleFuelGallons" />
+                <ScalarProperty Name="IdleFuelGallons" ColumnName="IdleFuelGallons" />
+                <ScalarProperty Name="MaxFuelGallons" ColumnName="MaxFuelGallons" />
+                <ScalarProperty Name="MID" ColumnName="MID" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimFuelTankCapacity">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DimFuelTankCapacity">
+              <MappingFragment StoreEntitySet="DimFuelTankCapacity">
+                <ScalarProperty Name="TankCapacity" ColumnName="TankCapacity" />
+                <ScalarProperty Name="ReserveCapacity" ColumnName="ReserveCapacity" />
+                <ScalarProperty Name="FullTankCapacity" ColumnName="FullTankCapacity" />
+                <ScalarProperty Name="fk_Model" ColumnName="fk_Model" />
+                <ScalarProperty Name="fk_MakeCode" ColumnName="fk_MakeCode" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataBatteryChargingVoltage">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataBatteryChargingVoltage">
+              <MappingFragment StoreEntitySet="DataBatteryChargingVoltage">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataTamperState">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataTamperState">
+              <MappingFragment StoreEntitySet="DataTamperState">
+                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataRemoteSecurityState">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataRemoteSecurityState">
+              <MappingFragment StoreEntitySet="DataRemoteSecurityState">
+                <ScalarProperty Name="IsEnabled" ColumnName="IsEnabled" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataBoostPressure">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataBoostPressure">
+              <MappingFragment StoreEntitySet="DataBoostPressure">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataBoostTemperature">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataBoostTemperature">
+              <MappingFragment StoreEntitySet="DataBoostTemperature">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataEngineOilLevel">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataEngineOilLevel">
+              <MappingFragment StoreEntitySet="DataEngineOilLevel">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataTransmissionOilTemperatureSensorSample">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataTransmissionOilTemperatureSensorSample">
+              <MappingFragment StoreEntitySet="DataTransmissionOilTemperatureSensorSample">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataPowerMode">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataPowerMode">
+              <MappingFragment StoreEntitySet="DataPowerMode">
+                <ScalarProperty Name="fk_DimPowerModeId" ColumnName="fk_DimPowerModeId" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DimPowerMode">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DimPowerMode">
+              <MappingFragment StoreEntitySet="DimPowerMode">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ExternalCustomerKeyType">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.ExternalCustomerKeyType">
+              <MappingFragment StoreEntitySet="ExternalCustomerKeyType">
+                <ScalarProperty Name="KeyType" ColumnName="KeyType" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataOperator">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataOperator">
+              <MappingFragment StoreEntitySet="DataOperator">
+                <ScalarProperty Name="ExternalOperatorID" ColumnName="ExternalOperatorID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="ExternalCustomerKeyTypeId" ColumnName="ExternalCustomerKeyTypeId" />
+                <ScalarProperty Name="ExternalKeyValue" ColumnName="ExternalKeyValue" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="DebugRefID" ColumnName="DebugRefID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="DataDieselExhaustFluid">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.DataDieselExhaustFluid">
+              <MappingFragment StoreEntitySet="DataDieselExhaustFluid">
+                <ScalarProperty Name="UpdateUTC" ColumnName="UpdateUTC" />
+                <ScalarProperty Name="LevelPercent" ColumnName="LevelPercent" />
+                <ScalarProperty Name="ConsumptionGallons" ColumnName="ConsumptionGallons" />
+                <ScalarProperty Name="AssetID" ColumnName="AssetID" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="fk_DimSourceID" ColumnName="fk_DimSourceID" />
+                <ScalarProperty Name="SourceMsgID" ColumnName="SourceMsgID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer>
+    <edmx:Connection>
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram Name="NHDataModel" ZoomLevel="76" xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.AntiData" Width="1.5" PointX="0.5" PointY="5.75" Height="1.6039844048023224" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataEngineParameters" Width="1.5" PointX="3" PointY="47.875" Height="3.8931689453125031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataEngineStartStop" Width="1.5" PointX="3" PointY="10.75" Height="2.5571907552083335" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataFaultDiagnostic" Width="1.5" PointX="6" PointY="26.25" Height="3.0714322916666674" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataFaultEvent" Width="1.5" PointX="3" PointY="24.375" Height="2.9070849609375031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataFenceAlarm" Width="1.5" PointX="3" PointY="43.25" Height="3.4001269531250031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataHoursLocation" Width="1.5" PointX="3" PointY="52.75" Height="3.8931689453125031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataIgnOnOff" Width="1.5" PointX="3" PointY="14.125" Height="2.4140429687500031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataMoving" Width="1.5" PointX="3" PointY="7.5" Height="2.4140429687499996" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataMSSKeyID" Width="1.5" PointX="3" PointY="17.5" Height="2.2496956380208353" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataServiceMeterAdjustment" Width="1.5" PointX="3" PointY="28.625" Height="2.4140429687500031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataSiteState" Width="1.5" PointX="3" PointY="32.125" Height="2.4140429687500031" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataSpeeding" Width="1.5" PointX="3" PointY="39.75" Height="2.7427376302083317" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimSeverityLevel" Width="1.5" PointX="0.75" PointY="31.375" Height="1.7976693056027102" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimSource" Width="4.5" PointX="0.75" PointY="26" Height="3.9282032144069703" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimDatalink" Width="1.5" PointX="0.75" PointY="0.875" Height="1.7566536458333333" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataFluidAnalysis" Width="2" PointX="2.875" PointY="0.5" Height="4.7149055989583326" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataPassThroughPortData" Width="1.5" PointX="9.375" PointY="0.75" Height="2.41404296875" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataTamperSecurityStatus" Width="2.125" PointX="9.375" PointY="4.75" Height="2.7494921875000102" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataRawCANMessage" Width="1.875" PointX="6.375" PointY="0.625" Height="2.41404296875" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimUnitType" Width="1.5" PointX="11.375" PointY="8.75" Height="1.4033821614583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataParametersReport" Width="1.5" PointX="5.375" PointY="11.75" Height="3.7109993489583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataStatisticsReport" Width="1.5" PointX="7.375" PointY="11.75" Height="4.0956022135416674" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimEngineState" Width="1.5" PointX="9.375" PointY="11.75" Height="1.4033821614583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataGensetOperationalState" Width="1.5" PointX="12.375" PointY="3.75" Height="2.2496956380208246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataProjectTagFileError" Width="1.5" PointX="11.375" PointY="11.75" Height="2.4140429687500102" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataPowerState" Width="1.5" PointX="11.75" PointY="0.875" Height="2.5571907552083246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataIdleTimeOut" Width="1.5" PointX="14.375" PointY="0.75" Height="2.3648893229166674" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.SensorAspects" Width="1.5" PointX="15.375" PointY="4.75" Height="1.4033821614583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.SensorType" Width="1.5" PointX="15.375" PointY="7.75" Height="1.4033821614583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataTirePressureMonitorSystem" Width="1.5" PointX="9.375" PointY="15.75" Height="4.0956022135416674" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataCustomUtilizationEvent" Width="1.5" PointX="15.375" PointY="10.75" Height="2.9417936197916674" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimCustomUtilizationEventType" Width="1.5" PointX="11.375" PointY="15.75" Height="1.4033821614583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataEngineTempSensorSample" Width="1.5" PointX="13.375" PointY="15.75" Height="2.7494921875000102" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.OEMDataSourceType" Width="1.5" PointX="15.375" PointY="15.75" Height="1.4033821614583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataCNHCANAlarmCode" Width="1.5" PointX="16.375" PointY="0.75" Height="2.7494921875000102" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimCNHSeverityLevel" Width="1.5" PointX="5.375" PointY="16.75" Height="1.4033821614583246" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataCatInspection" Width="1.5" PointX="17.375" PointY="4.75" Height="4.6725065104166674" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataTirePressureMonitorInfo" Width="1.5" PointX="17.375" PointY="10.75" Height="3.5186979166666674" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataTamperLevel" Width="4.125" PointX="17.375" PointY="15.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataDeviceBatteryRemaining" Width="1.5" PointX="19.375" PointY="4.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataSecurityPendingStartMode" Width="3.75" PointX="18.375" PointY="0.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataSwitchState" Width="1.5" PointX="5.375" PointY="19.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataFeedDigitalSwitchStatus" Width="1.5" PointX="19.375" PointY="8.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataEngineLubeOilTemperatureSensorSample" Width="1.5" PointX="5.375" PointY="8.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataEngineRPMSensorSample" Width="1.5" PointX="7.375" PointY="8.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataHydraulicOilTemperatureSensorSample" Width="1.5" PointX="5.375" PointY="4.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataEngineOilPressureSensorSample" Width="1.5" PointX="11.375" PointY="19.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CustomDataEngineParameters" Width="1.5" PointX="13.375" PointY="19.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimFuelTankCapacity" Width="1.5" PointX="19.375" PointY="12.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataBatteryChargingVoltage" Width="1.5" PointX="15.375" PointY="19.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataTamperState" Width="1.5" PointX="17.375" PointY="19.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataRemoteSecurityState" Width="1.5" PointX="19.375" PointY="19.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataBoostPressure" Width="1.5" PointX="7.375" PointY="20.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataBoostTemperature" Width="1.5" PointX="21.375" PointY="4.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataEngineOilLevel" Width="1.5" PointX="21.375" PointY="7.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataTransmissionOilTemperatureSensorSample" Width="1.5" PointX="21.375" PointY="10.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataPowerMode" Width="1.5" PointX="21.75" PointY="19.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DimPowerMode" Width="1.5" PointX="0.75" PointY="21.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.ExternalCustomerKeyType" Width="1.5" PointX="22.375" PointY="13.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataOperator" Width="1.5" PointX="9.375" PointY="22.75" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.DataDieselExhaustFluid" Width="1.5" PointX="15.375" PointY="22.75" />
+        </Diagram></edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

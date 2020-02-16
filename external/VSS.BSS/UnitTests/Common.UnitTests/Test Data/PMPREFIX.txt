@@ -1,0 +1,29 @@
+<PMSerialNumberPrefix>
+<smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://smi.cat.com/smiweb/schema/v2/pmModelorPrefixSerialNoList.xsd">
+  <products code="9TK">
+      <modelInfo checkListUSURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/US/3135" checkListMetricURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/Metric/3135" code="900">
+        <salesModel>85C</salesModel>
+        <modifiedDate>2000-08-18 00:00:00.0</modifiedDate>
+        <SerialNumberOrPrefix low="1" high="99999">9TK</SerialNumberOrPrefix>
+      </modelInfo>
+    </products>
+  </smiweb:product>
+  <smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://smi.cat.com/smiweb/schema/v2/pmModelorPrefixSerialNoList.xsd">
+    <products code="ADK">
+      <modelInfo checkListUSURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/US/3270" checkListMetricURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/Metric/3270" code="901">
+        <salesModel>35</salesModel>
+        <modifiedDate>2000-08-10 00:00:00.0</modifiedDate>
+        <SerialNumberOrPrefix low="1" high="99999">ADK</SerialNumberOrPrefix>
+      </modelInfo>
+    </products>
+  </smiweb:product>
+  <smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://smi.cat.com/smiweb/schema/v2/pmModelorPrefixSerialNoList.xsd">
+    <products code="XXX">
+      <modelInfo checkListUSURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/US/1000" checkListMetricURI="https://smi.cat.com/smiweb/rest/v2/pmCheckList/Metric/1000" code="1000">
+         <salesModel>301.6C</salesModel>
+         <modifiedDate>2010-04-15 00:00:00.0</modifiedDate>
+         <SerialNumberOrPrefix low="1" high="99999">XXX</SerialNumberOrPrefix>
+      </modelInfo>
+    </products>
+  </smiweb:product>
+</PMSerialNumberPrefix>

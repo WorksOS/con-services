@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<event:eidQuery xmlns:event="http://www.cat.com/em/feed/v6/Event" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v6/Event https://emfeed.rd.cat.com/EMFeedFiles/schema/v6/Event.xsd">
+   <nextBuffer>
+      <url>https://embatch.cat.com/EMServices/rest/v1/eidList/109_CDL</url>
+      <moreData>false</moreData>
+   </nextBuffer>
+   <eid>
+      <id>1_CDL</id>
+      <indicator>1</indicator>
+      <dataLinkCode>CDL</dataLinkCode>
+      <descriptions>
+         <description lang="en">Engine Oil Filter Restriction Derate - updated description</description>
+         <description lang="es">Reducción de potencia restringida filtro del aceite del motor</description>
+         <description lang="fr">Corriger le colmatage du filtre à huile du mo</description>
+      </descriptions>
+   </eid>
+</event:eidQuery>

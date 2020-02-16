@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<equipmentData:equipments
+	xmlns:equipmentData="http://www.cat.com/equipmentdata/v2/EquipmentData"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.cat.com/equipmentdata/v2/EquipmentData https://equipmentdatamc.rd.cat.com/EquipmentDataServices/schema/v2/EquipmentData.xsd">
+   <NextBuffer>
+      <url>https://equipmentdatamc.rd.cat.com/EquipmentDataServices/rest/v2/equipments/all</url>
+      <moreData>true</moreData>
+   </NextBuffer>
+	<equipment>
+		<serialNumber>0RCW12165</serialNumber> 
+			<make>
+				<code>CAT</code> 
+			</make>
+		<equipmentOwners>
+		  <inConflict>false</inConflict> 
+	   </equipmentOwners>
+    </equipment>
+	<equipment>
+		<serialNumber>RE8137C</serialNumber> 
+			<make>
+				<code>CAT</code> 
+			</make>
+		<equipmentOwners>
+			<inConflict>false</inConflict> 
+			<equipmentOwner>
+				<dealerCustomer>
+					<dealer>
+					  <code>TD00</code> 
+					  <name>Demo Dealer</name> 
+					</dealer>
+					<customer>
+					  <id>296943160</id> 
+					  <name>ED Test Test</name> 
+					  <isInternal>true</isInternal> 
+					</customer>
+				  <accountNumber>9910203</accountNumber> 
+				  <accountName>Rental CAT BCP</accountName> 
+				</dealerCustomer>
+			    <ownershipTypeCode>R</ownershipTypeCode> 
+				<jobsite>1</jobsite> 
+		</equipmentOwner>
+		<equipmentOwner>
+			<dealerCustomer>
+				<dealer>
+					  <code>D480</code> 
+					  <name>WHAYNE SUPPLY COMPANY</name> 
+	            </dealer>
+				<customer>
+					  <id>296943057</id> 
+					  <name>Sotreq S.A. Âmtà cí últìma</name> 
+					  <isInternal>false</isInternal> 
+				  </customer>
+				  <accountNumber>032627</accountNumber> 
+				  <accountName>REYNOLDS INC V-7690</accountName> 
+			  </dealerCustomer>
+			  <ownershipStartDate>1969-12-31T00:00:00</ownershipStartDate> 
+			  <ownershipTypeCode>R</ownershipTypeCode> 
+			  <jobsite>1</jobsite> 
+		 </equipmentOwner>
+		 <equipmentOwner>
+			<dealerCustomer>
+				<dealer>
+					  <code>TD00</code> 
+					  <name>Demo Dealer</name> 
+				</dealer>
+				<customer>
+					  <id>296943160</id> 
+					  <name>ED Test Test</name> 
+					  <isInternal>true</isInternal> 
+				</customer>
+				<accountNumber>032627</accountNumber> 
+				<accountName>REYNOLDS INC</accountName> 
+			  </dealerCustomer>
+			  <ownershipTypeCode>R</ownershipTypeCode> 
+			  <jobsite>1</jobsite> 
+		 </equipmentOwner>
+	</equipmentOwners>
+  </equipment>
+
+</equipmentData:equipments>

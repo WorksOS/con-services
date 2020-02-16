@@ -1,0 +1,786 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="NHOEMDataModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="NHOEMDataModelStoreContainer">
+          <EntitySet Name="CAT_AntiData" EntityType="NHOEMDataModel.Store.CAT_AntiData" store:Type="Tables" store:Schema="dbo" store:Name="CAT_AntiData" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator">
+            <DefiningQuery>SELECT 
+      [CAT_AntiData].[InsertUTC] AS [InsertUTC], 
+      [CAT_AntiData].[Data] AS [Data], 
+      [CAT_AntiData].[ExceptionText] AS [ExceptionText]
+      FROM [dbo].[CAT_AntiData] AS [CAT_AntiData]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="CAT_Diagnostic" EntityType="NHOEMDataModel.Store.CAT_Diagnostic" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_DigStatus" EntityType="NHOEMDataModel.Store.CAT_DigStatus" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_Engine" EntityType="NHOEMDataModel.Store.CAT_Engine" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_Event" EntityType="NHOEMDataModel.Store.CAT_Event" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_FenceAlert" EntityType="NHOEMDataModel.Store.CAT_FenceAlert" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_Fluid" EntityType="NHOEMDataModel.Store.CAT_Fluid" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_Fuel" EntityType="NHOEMDataModel.Store.CAT_Fuel" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_ManualSMU" EntityType="NHOEMDataModel.Store.CAT_ManualSMU" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_PayloadCycle" EntityType="NHOEMDataModel.Store.CAT_PayloadCycle" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_SMULoc" EntityType="NHOEMDataModel.Store.CAT_SMULoc" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="CAT_StartStop" EntityType="NHOEMDataModel.Store.CAT_StartStop" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="UnparsedXML" EntityType="NHOEMDataModel.Store.UnparsedXML" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+        </EntityContainer>
+        <!--Errors Found During Generation:
+      warning 6002: The table/view 'NH_OEMData.dbo.CAT_AntiData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      -->
+        <EntityType Name="CAT_AntiData">
+          <Key>
+            <PropertyRef Name="InsertUTC" />
+            <PropertyRef Name="Data" />
+          </Key>
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="Data" Type="xml" Nullable="false" />
+          <Property Name="ExceptionText" Type="varchar" MaxLength="4000" />
+        </EntityType>
+        <EntityType Name="CAT_Diagnostic">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="DatalinkID" Type="int" Nullable="false" />
+          <Property Name="MID" Type="bigint" Nullable="false" />
+          <Property Name="CID" Type="int" Nullable="false" />
+          <Property Name="FMI" Type="int" Nullable="false" />
+          <Property Name="Occurrences" Type="tinyint" Nullable="false" />
+          <Property Name="SeverityLevelID" Type="int" Nullable="false" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_DigStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="PowerMode" Type="tinyint" Nullable="false" />
+          <Property Name="Pending" Type="bit" Nullable="false" />
+          <Property Name="Switch1Active" Type="bit" Nullable="false" />
+          <Property Name="Switch2Active" Type="bit" Nullable="false" />
+          <Property Name="Switch3Active" Type="bit" Nullable="false" />
+          <Property Name="Switch4Active" Type="bit" Nullable="false" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_Engine">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="MaxFuelOneEighthGallons" Type="float" />
+          <Property Name="IdleFuelOneEighthGallons" Type="float" />
+          <Property Name="EngineIdleOneTwentiethHours" Type="float" />
+          <Property Name="Starts" Type="int" />
+          <Property Name="Revolutions" Type="bigint" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_Event">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="DatalinkID" Type="int" Nullable="false" />
+          <Property Name="MID" Type="bigint" Nullable="false" />
+          <Property Name="EID" Type="int" Nullable="false" />
+          <Property Name="Occurrences" Type="tinyint" Nullable="false" />
+          <Property Name="SeverityLevelID" Type="int" Nullable="false" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_FenceAlert">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="TimeWatchActive" Type="bit" Nullable="false" />
+          <Property Name="ExclusiveWatchActive" Type="bit" Nullable="false" />
+          <Property Name="InclusiveWatchActive" Type="bit" Nullable="false" />
+          <Property Name="TimeWatchAlarm" Type="bit" Nullable="false" />
+          <Property Name="ExclusiveWatchAlarm" Type="bit" Nullable="false" />
+          <Property Name="InclusiveWatchAlarm" Type="bit" Nullable="false" />
+          <Property Name="SatelliteBlockage" Type="bit" Nullable="false" />
+          <Property Name="DisconnectSwitchUsed" Type="bit" Nullable="false" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_Fluid">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="SampleNumber" Type="bigint" Nullable="false" />
+          <Property Name="TextID" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="SampleTakenDate" Type="datetime2" Nullable="false" />
+          <Property Name="SampleConfirmedUTC" Type="datetime2" />
+          <Property Name="CompartmentName" Type="nvarchar" Nullable="false" MaxLength="256" />
+          <Property Name="CompartmentID" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="MeterValue" Type="float" />
+          <Property Name="MeterValueUnit" Type="char" MaxLength="1" />
+          <Property Name="OverallEvaluation" Type="varchar" MaxLength="3" />
+          <Property Name="Status" Type="char" Nullable="false" MaxLength="1" />
+          <Property Name="ActionNumber" Type="bigint" />
+          <Property Name="ActionUTC" Type="datetime2" />
+          <Property Name="ActionDescription" Type="nvarchar" MaxLength="500" />
+          <Property Name="ActionedByID" Type="varchar" MaxLength="50" />
+          <Property Name="ActionedByFirstName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ActionedByLastName" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="CAT_Fuel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="ConsumptionOneEighthGallons" Type="float" />
+          <Property Name="LevelPercent" Type="float" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_ManualSMU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="RuntimeBeforeHours" Type="float" Nullable="false" />
+          <Property Name="RuntimeAfterHours" Type="float" Nullable="false" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_PayloadCycle">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="Payload" Type="bigint" />
+          <Property Name="Utilization" Type="bigint" />
+          <Property Name="Cycle" Type="bigint" />
+        </EntityType>
+        <EntityType Name="CAT_SMULoc">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="SMU" Type="float" />
+          <Property Name="Latitude" Type="float" />
+          <Property Name="Longitude" Type="float" />
+          <Property Name="LocIsValid" Type="bit" Nullable="false" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_StartStop">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="MessageID" Type="bigint" Nullable="false" />
+          <Property Name="MasterMsgID" Type="bigint" Nullable="false" />
+          <Property Name="EventUTC" Type="datetime2" Nullable="false" />
+          <Property Name="SerialNumber" Type="nvarchar" MaxLength="24" />
+          <Property Name="MakeCode" Type="nvarchar" MaxLength="3" />
+          <Property Name="GpsDeviceID" Type="nvarchar" MaxLength="50" />
+          <Property Name="DeviceTypeID" Type="int" Nullable="false" />
+          <Property Name="StartUTC" Type="datetime2" />
+          <Property Name="StopUTC" Type="datetime2" />
+          <Property Name="RecordID" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UnparsedXML">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="InsertUTC" Type="datetime2" Nullable="false" />
+          <Property Name="XMLData" Type="xml" Nullable="false" />
+          <Property Name="URL" Type="nvarchar" MaxLength="1024" />
+        </EntityType>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="VSS.Hosted.VLCommon" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="NH_OEMDATA">
+          <EntitySet Name="CAT_AntiData" EntityType="VSS.Hosted.VLCommon.CAT_AntiData" />
+          <EntitySet Name="CAT_Diagnostic" EntityType="VSS.Hosted.VLCommon.CAT_Diagnostic" />
+          <EntitySet Name="CAT_DigStatus" EntityType="VSS.Hosted.VLCommon.CAT_DigStatus" />
+          <EntitySet Name="CAT_Engine" EntityType="VSS.Hosted.VLCommon.CAT_Engine" />
+          <EntitySet Name="CAT_Event" EntityType="VSS.Hosted.VLCommon.CAT_Event" />
+          <EntitySet Name="CAT_FenceAlert" EntityType="VSS.Hosted.VLCommon.CAT_FenceAlert" />
+          <EntitySet Name="CAT_Fuel" EntityType="VSS.Hosted.VLCommon.CAT_Fuel" />
+          <EntitySet Name="CAT_ManualSMU" EntityType="VSS.Hosted.VLCommon.CAT_ManualSMU" />
+          <EntitySet Name="CAT_SMULoc" EntityType="VSS.Hosted.VLCommon.CAT_SMULoc" />
+          <EntitySet Name="CAT_StartStop" EntityType="VSS.Hosted.VLCommon.CAT_StartStop" />
+          <EntitySet Name="UnparsedXMLs" EntityType="VSS.Hosted.VLCommon.UnparsedXML" />
+          <EntitySet Name="CAT_Fluid" EntityType="VSS.Hosted.VLCommon.CAT_Fluid" />
+          <EntitySet Name="CAT_PayloadCycle" EntityType="VSS.Hosted.VLCommon.CAT_PayloadCycle" />
+        </EntityContainer>
+        <EntityType Name="CAT_AntiData">
+          <Key>
+            <PropertyRef Name="InsertUTC" />
+            <PropertyRef Name="Data" />
+          </Key>
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="Data" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="ExceptionText" Type="String" MaxLength="4000" Unicode="false" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="CAT_Diagnostic">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="DatalinkID" Type="Int32" Nullable="false" />
+          <Property Name="MID" Type="Int64" Nullable="false" />
+          <Property Name="CID" Type="Int32" Nullable="false" />
+          <Property Name="FMI" Type="Int32" Nullable="false" />
+          <Property Name="Occurrences" Type="Byte" Nullable="false" />
+          <Property Name="SeverityLevelID" Type="Int32" Nullable="false" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_DigStatus">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="PowerMode" Type="Byte" Nullable="false" />
+          <Property Name="Pending" Type="Boolean" Nullable="false" />
+          <Property Name="Switch1Active" Type="Boolean" Nullable="false" />
+          <Property Name="Switch2Active" Type="Boolean" Nullable="false" />
+          <Property Name="Switch3Active" Type="Boolean" Nullable="false" />
+          <Property Name="Switch4Active" Type="Boolean" Nullable="false" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_Engine">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="MaxFuelOneEighthGallons" Type="Double" />
+          <Property Name="IdleFuelOneEighthGallons" Type="Double" />
+          <Property Name="EngineIdleOneTwentiethHours" Type="Double" />
+          <Property Name="Starts" Type="Int32" />
+          <Property Name="Revolutions" Type="Int64" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_Event">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="DatalinkID" Type="Int32" Nullable="false" />
+          <Property Name="MID" Type="Int64" Nullable="false" />
+          <Property Name="EID" Type="Int32" Nullable="false" />
+          <Property Name="Occurrences" Type="Byte" Nullable="false" />
+          <Property Name="SeverityLevelID" Type="Int32" Nullable="false" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_FenceAlert">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="TimeWatchActive" Type="Boolean" Nullable="false" />
+          <Property Name="ExclusiveWatchActive" Type="Boolean" Nullable="false" />
+          <Property Name="InclusiveWatchActive" Type="Boolean" Nullable="false" />
+          <Property Name="TimeWatchAlarm" Type="Boolean" Nullable="false" />
+          <Property Name="ExclusiveWatchAlarm" Type="Boolean" Nullable="false" />
+          <Property Name="InclusiveWatchAlarm" Type="Boolean" Nullable="false" />
+          <Property Name="SatelliteBlockage" Type="Boolean" Nullable="false" />
+          <Property Name="DisconnectSwitchUsed" Type="Boolean" Nullable="false" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_Fuel">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="ConsumptionOneEighthGallons" Type="Double" />
+          <Property Name="LevelPercent" Type="Double" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_ManualSMU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="RuntimeBeforeHours" Type="Double" Nullable="false" />
+          <Property Name="RuntimeAfterHours" Type="Double" Nullable="false" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_SMULoc">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="SMU" Type="Double" />
+          <Property Name="Latitude" Type="Double" />
+          <Property Name="Longitude" Type="Double" />
+          <Property Name="LocIsValid" Type="Boolean" Nullable="false" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CAT_StartStop">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="MessageID" Type="Int64" Nullable="false" />
+          <Property Name="MasterMsgID" Type="Int64" Nullable="false" />
+          <Property Name="EventUTC" Type="DateTime" Nullable="false" />
+          <Property Name="SerialNumber" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="MakeCode" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="GpsDeviceID" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="DeviceTypeID" Type="Int32" Nullable="false" />
+          <Property Name="StartUTC" Type="DateTime" />
+          <Property Name="StopUTC" Type="DateTime" />
+          <Property Type="Int64" Name="RecordID" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UnparsedXML">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="InsertUTC" Type="DateTime" Nullable="false" />
+          <Property Name="XMLData" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="URL" Type="String" MaxLength="1024" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="CAT_Fluid">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" />
+          <Property Type="Int64" Name="MessageID" Nullable="false" />
+          <Property Type="Int64" Name="MasterMsgID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" />
+          <Property Type="String" Name="SerialNumber" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="MakeCode" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="GpsDeviceID" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="DeviceTypeID" Nullable="false" />
+          <Property Type="Int64" Name="SampleNumber" Nullable="false" />
+          <Property Type="String" Name="TextID" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Description" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="SampleTakenDate" Nullable="false" />
+          <Property Type="DateTime" Name="SampleConfirmedUTC" />
+          <Property Type="String" Name="CompartmentName" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="CompartmentID" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Double" Name="MeterValue" />
+          <Property Type="String" Name="MeterValueUnit" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Type="String" Name="OverallEvaluation" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Status" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Type="Int64" Name="ActionNumber" />
+          <Property Type="DateTime" Name="ActionUTC" />
+          <Property Type="String" Name="ActionDescription" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ActionedByID" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ActionedByFirstName" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ActionedByLastName" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="CAT_PayloadCycle">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Type="Int64" Name="ID" Nullable="false" a:StoreGeneratedPattern="Identity" xmlns:a="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="DateTime" Name="InsertUTC" Nullable="false" />
+          <Property Type="Int64" Name="MessageID" Nullable="false" />
+          <Property Type="Int64" Name="MasterMsgID" Nullable="false" />
+          <Property Type="DateTime" Name="EventUTC" Nullable="false" />
+          <Property Type="String" Name="SerialNumber" MaxLength="24" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="MakeCode" MaxLength="3" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="GpsDeviceID" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Int32" Name="DeviceTypeID" Nullable="false" />
+          <Property Type="Int64" Name="Payload" />
+          <Property Type="Int64" Name="Utilization" />
+          <Property Type="Int64" Name="Cycle" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="NHOEMDataModelStoreContainer" CdmEntityContainer="NH_OEMDATA">
+          <EntitySetMapping Name="CAT_AntiData"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_AntiData"><MappingFragment StoreEntitySet="CAT_AntiData">
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="Data" ColumnName="Data" />
+            <ScalarProperty Name="ExceptionText" ColumnName="ExceptionText" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_Diagnostic"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_Diagnostic"><MappingFragment StoreEntitySet="CAT_Diagnostic">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="DatalinkID" ColumnName="DatalinkID" />
+            <ScalarProperty Name="MID" ColumnName="MID" />
+            <ScalarProperty Name="CID" ColumnName="CID" />
+            <ScalarProperty Name="FMI" ColumnName="FMI" />
+            <ScalarProperty Name="Occurrences" ColumnName="Occurrences" />
+            <ScalarProperty Name="SeverityLevelID" ColumnName="SeverityLevelID" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_DigStatus"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_DigStatus"><MappingFragment StoreEntitySet="CAT_DigStatus">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="PowerMode" ColumnName="PowerMode" />
+            <ScalarProperty Name="Pending" ColumnName="Pending" />
+            <ScalarProperty Name="Switch1Active" ColumnName="Switch1Active" />
+            <ScalarProperty Name="Switch2Active" ColumnName="Switch2Active" />
+            <ScalarProperty Name="Switch3Active" ColumnName="Switch3Active" />
+            <ScalarProperty Name="Switch4Active" ColumnName="Switch4Active" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_Engine"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_Engine"><MappingFragment StoreEntitySet="CAT_Engine">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="MaxFuelOneEighthGallons" ColumnName="MaxFuelOneEighthGallons" />
+            <ScalarProperty Name="IdleFuelOneEighthGallons" ColumnName="IdleFuelOneEighthGallons" />
+            <ScalarProperty Name="EngineIdleOneTwentiethHours" ColumnName="EngineIdleOneTwentiethHours" />
+            <ScalarProperty Name="Starts" ColumnName="Starts" />
+            <ScalarProperty Name="Revolutions" ColumnName="Revolutions" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_Event"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_Event"><MappingFragment StoreEntitySet="CAT_Event">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="DatalinkID" ColumnName="DatalinkID" />
+            <ScalarProperty Name="MID" ColumnName="MID" />
+            <ScalarProperty Name="EID" ColumnName="EID" />
+            <ScalarProperty Name="Occurrences" ColumnName="Occurrences" />
+            <ScalarProperty Name="SeverityLevelID" ColumnName="SeverityLevelID" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_FenceAlert"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_FenceAlert"><MappingFragment StoreEntitySet="CAT_FenceAlert">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="TimeWatchActive" ColumnName="TimeWatchActive" />
+            <ScalarProperty Name="ExclusiveWatchActive" ColumnName="ExclusiveWatchActive" />
+            <ScalarProperty Name="InclusiveWatchActive" ColumnName="InclusiveWatchActive" />
+            <ScalarProperty Name="TimeWatchAlarm" ColumnName="TimeWatchAlarm" />
+            <ScalarProperty Name="ExclusiveWatchAlarm" ColumnName="ExclusiveWatchAlarm" />
+            <ScalarProperty Name="InclusiveWatchAlarm" ColumnName="InclusiveWatchAlarm" />
+            <ScalarProperty Name="SatelliteBlockage" ColumnName="SatelliteBlockage" />
+            <ScalarProperty Name="DisconnectSwitchUsed" ColumnName="DisconnectSwitchUsed" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_Fuel"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_Fuel"><MappingFragment StoreEntitySet="CAT_Fuel">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="ConsumptionOneEighthGallons" ColumnName="ConsumptionOneEighthGallons" />
+            <ScalarProperty Name="LevelPercent" ColumnName="LevelPercent" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_ManualSMU"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_ManualSMU"><MappingFragment StoreEntitySet="CAT_ManualSMU">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="RuntimeBeforeHours" ColumnName="RuntimeBeforeHours" />
+            <ScalarProperty Name="RuntimeAfterHours" ColumnName="RuntimeAfterHours" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_SMULoc"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_SMULoc"><MappingFragment StoreEntitySet="CAT_SMULoc">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="SMU" ColumnName="SMU" />
+            <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+            <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+            <ScalarProperty Name="LocIsValid" ColumnName="LocIsValid" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_StartStop"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_StartStop"><MappingFragment StoreEntitySet="CAT_StartStop">
+            <ScalarProperty Name="RecordID" ColumnName="RecordID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+            <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+            <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+            <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+            <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+            <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+            <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+            <ScalarProperty Name="StartUTC" ColumnName="StartUTC" />
+            <ScalarProperty Name="StopUTC" ColumnName="StopUTC" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="UnparsedXMLs"><EntityTypeMapping TypeName="VSS.Hosted.VLCommon.UnparsedXML"><MappingFragment StoreEntitySet="UnparsedXML">
+            <ScalarProperty Name="ID" ColumnName="ID" />
+            <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+            <ScalarProperty Name="XMLData" ColumnName="XMLData" />
+            <ScalarProperty Name="URL" ColumnName="URL" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="CAT_Fluid">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_Fluid">
+              <MappingFragment StoreEntitySet="CAT_Fluid">
+                <ScalarProperty Name="ActionedByLastName" ColumnName="ActionedByLastName" />
+                <ScalarProperty Name="ActionedByFirstName" ColumnName="ActionedByFirstName" />
+                <ScalarProperty Name="ActionedByID" ColumnName="ActionedByID" />
+                <ScalarProperty Name="ActionDescription" ColumnName="ActionDescription" />
+                <ScalarProperty Name="ActionUTC" ColumnName="ActionUTC" />
+                <ScalarProperty Name="ActionNumber" ColumnName="ActionNumber" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="OverallEvaluation" ColumnName="OverallEvaluation" />
+                <ScalarProperty Name="MeterValueUnit" ColumnName="MeterValueUnit" />
+                <ScalarProperty Name="MeterValue" ColumnName="MeterValue" />
+                <ScalarProperty Name="CompartmentID" ColumnName="CompartmentID" />
+                <ScalarProperty Name="CompartmentName" ColumnName="CompartmentName" />
+                <ScalarProperty Name="SampleConfirmedUTC" ColumnName="SampleConfirmedUTC" />
+                <ScalarProperty Name="SampleTakenDate" ColumnName="SampleTakenDate" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="TextID" ColumnName="TextID" />
+                <ScalarProperty Name="SampleNumber" ColumnName="SampleNumber" />
+                <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+                <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+                <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+                <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CAT_PayloadCycle">
+            <EntityTypeMapping TypeName="VSS.Hosted.VLCommon.CAT_PayloadCycle">
+              <MappingFragment StoreEntitySet="CAT_PayloadCycle">
+                <ScalarProperty Name="Cycle" ColumnName="Cycle" />
+                <ScalarProperty Name="Utilization" ColumnName="Utilization" />
+                <ScalarProperty Name="Payload" ColumnName="Payload" />
+                <ScalarProperty Name="DeviceTypeID" ColumnName="DeviceTypeID" />
+                <ScalarProperty Name="GpsDeviceID" ColumnName="GpsDeviceID" />
+                <ScalarProperty Name="MakeCode" ColumnName="MakeCode" />
+                <ScalarProperty Name="SerialNumber" ColumnName="SerialNumber" />
+                <ScalarProperty Name="EventUTC" ColumnName="EventUTC" />
+                <ScalarProperty Name="MasterMsgID" ColumnName="MasterMsgID" />
+                <ScalarProperty Name="MessageID" ColumnName="MessageID" />
+                <ScalarProperty Name="InsertUTC" ColumnName="InsertUTC" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="NHOEMDataModel">
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_AntiData" Width="1.5" PointX="0.75" PointY="0.75" Height="1.59568359375" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_Diagnostic" Width="1.5" PointX="2.75" PointY="0.75" Height="3.9033007812499996" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_DigStatus" Width="1.5" PointX="4.75" PointY="0.75" Height="3.9033007812499996" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_Engine" Width="1.5" PointX="0.75" PointY="5.75" Height="3.7109993489583335" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_Event" Width="1.5" PointX="2.75" PointY="5.75" Height="3.7109993489583335" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_FenceAlert" Width="1.5" PointX="4.75" PointY="5.75" Height="4.2879036458333317" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_Fuel" Width="1.5" PointX="6.75" PointY="0.75" Height="3.1340950520833317" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_ManualSMU" Width="1.5" PointX="6.75" PointY="4.75" Height="3.1340950520833317" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_SMULoc" Width="1.5" PointX="8.75" PointY="0.75" Height="3.5186979166666674" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_StartStop" Width="1.5" PointX="8.75" PointY="5.75" Height="3.1340950520833353" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.UnparsedXML" Width="1.5" PointX="6.75" PointY="9.75" Height="1.7879850260416674" IsExpanded="true" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_Fluid" Width="1.5" PointX="9.375" PointY="9.75" Height="5.2079475911458317" />
+        <EntityTypeShape EntityType="VSS.Hosted.VLCommon.CAT_PayloadCycle" Width="1.5" PointX="0.75" PointY="10.75" Height="2.9070849609374996" />
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>

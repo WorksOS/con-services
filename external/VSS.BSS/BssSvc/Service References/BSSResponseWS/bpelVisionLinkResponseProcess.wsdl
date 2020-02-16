@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:tns="http://xmlns.oracle.com/bpelVisionLinkResponseProcess" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://www.trimble.com/BusinessSupport/v2/Response" xmlns:client="http://xmlns.oracle.com/bpelVisionLinkResponseProcess" name="bpelVisionLinkResponseProcess" targetNamespace="http://xmlns.oracle.com/bpelVisionLinkResponseProcess" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <plnk:partnerLinkType name="bpelVisionLinkResponseProcess">
+    <plnk:role name="bpelVisionLinkResponseProcessProvider">
+      <plnk:portType name="tns:bpelVisionLinkResponseProcess" />
+    </plnk:role>
+  </plnk:partnerLinkType>
+  <types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+      <import schemaLocation="bpelVisionLinkResponseProcess.xsd" namespace="http://xmlns.oracle.com/bpelVisionLinkResponseProcess" />
+    </schema>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+      <import schemaLocation="ResponsePayload.xsd" namespace="http://www.trimble.com/BusinessSupport/v2/Response" />
+    </schema>
+  </types>
+  <message name="bpelVisionLinkResponseProcessRequestMessage">
+    <part name="payload" element="ns1:Response" />
+  </message>
+  <message name="bpelVisionLinkResponseProcessResponseMessage">
+    <part name="payload" element="client:bpelVisionLinkResponseProcessProcessResponse" />
+  </message>
+  <portType name="bpelVisionLinkResponseProcess">
+    <operation name="process">
+      <input message="client:bpelVisionLinkResponseProcessRequestMessage" />
+      <output message="client:bpelVisionLinkResponseProcessResponseMessage" />
+    </operation>
+  </portType>
+  <binding name="bpelVisionLinkResponseProcessBinding" type="client:bpelVisionLinkResponseProcess">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="process">
+      <soap:operation soapAction="process" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="TNVTCSVLResponse_IB">
+    <port name="bpelVisionLinkResponseProcessPort" binding="client:bpelVisionLinkResponseProcessBinding">
+      <soap:address location="http://usd-am-app-233.trimblecorp.net:7777/orabpel/vss/TNVTCSVLResponse_IB/1.5" />
+    </port>
+  </service>
+</definitions>

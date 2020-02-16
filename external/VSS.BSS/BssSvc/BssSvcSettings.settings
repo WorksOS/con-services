@@ -1,0 +1,42 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VSS.Nighthawk.NHBssSvc" GeneratedClassName="BssSvcSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="IncludeFeedbackTestEndpoints" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="BssFeedBackTasks" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">BSSFirstReport,BSSFirmwareVersion</Value>
+    </Setting>
+    <Setting Name="BssFeedbackRunTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:15:00</Value>
+    </Setting>
+    <Setting Name="EnableBssFeedback" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="WebServerContains" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Web</Value>
+    </Setting>
+    <Setting Name="AppServerContains" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">App</Value>
+    </Setting>
+    <Setting Name="BSSMessageProcessingDelay" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:00:05</Value>
+    </Setting>
+    <Setting Name="BSSMessageRetryDelay" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">0,0|1,15|2,30|3,60|4,120|5,240</Value>
+    </Setting>
+    <Setting Name="MaxFailures" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+    <Setting Name="RunTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:05:00</Value>
+    </Setting>
+    <Setting Name="BssFeedbackInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">01:00:00</Value>
+    </Setting>
+    <Setting Name="BSSStuckMessageProcessingTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:05:00</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

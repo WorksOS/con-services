@@ -1,0 +1,17 @@
+version: 0.0
+os: windows
+
+files:
+  - source: \
+    destination: D:\Services\MasterDataSyncService
+
+hooks:
+   BeforeInstall:
+    - location: DeployScripts\before-install.bat
+      timeout: 90
+   AfterInstall:
+    - location: DeployScripts\DeployBinaries.bat
+      timeout: 90
+   ApplicationStart:
+    - location: DeployScripts\after-install.bat
+      timeout: 90

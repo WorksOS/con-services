@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.trimble.com/v1/SecuritySvc"
+	xmlns:security="http://www.trimble.com/v1/SecuritySvc"
+	elementFormDefault="unqualified">
+
+  <element name="AssetSecurityStatusHistory">
+    <complexType>
+      <annotation>
+        <documentation />
+      </annotation>
+      <sequence>
+        <element name="assetInfo" type="security:AssetInfo" minOccurs="1" maxOccurs="1" />
+        <element name="assetSecurityStatusHistoryList" type="security:AssetSecurityStatusHistoryList" minOccurs="00" />
+      </sequence>
+    </complexType>
+  </element>
+
+  <complexType name="AssetInfo">
+    <annotation>
+      <documentation>
+        Information about the Equipment on which the Telematics device that sent this message is deployed.
+      </documentation>
+    </annotation>
+    <sequence>
+      <element name="serialNumber" minOccurs="1" maxOccurs="1">
+        <annotation>
+          <documentation>
+            The serial number of the Equipment.
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="make" minOccurs="1" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Equipment make (e.g. CAT)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="deviceType" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Device Type (e.g. MTS522)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+
+    </sequence>
+  </complexType>
+
+  <complexType name="AssetSecurityStatusHistoryList">
+
+    <annotation>
+      <documentation>
+        Asset securitystatus history list
+      </documentation>
+    </annotation>
+    <sequence>
+      <element name="AssetSecurityStatusHistoryItem" type="security:AssetSecurityStatusHistoryItem" minOccurs="0" maxOccurs="unbounded"></element>
+    </sequence>
+  </complexType>
+
+  <complexType name="AssetSecurityStatusHistoryItem">
+    <annotation>
+      <documentation />
+    </annotation>
+    <sequence>
+
+      <element name="userAccount" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            User Account
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="dealerName" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Dealer Name
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="accountName" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Account Name
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+
+      <element name="eventType" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Event type (OTA Request or Device security status)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="20" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+
+      <element name="targetStartMode" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Target StartMode (Normaoperation, Derated and Disabled)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="0" />
+          </restriction>
+        </simpleType>
+      </element>
+
+      <element name="currentStartMode" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Current StartMode (Normaoperation, Derated and Disabled)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="0" />
+          </restriction>
+        </simpleType>
+      </element>
+
+      <element name="targetTamperLevel" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Target TamperLevel (Off, TamperLevel1, TamperLevel2 and TamperLevel3)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="0" />
+          </restriction>
+        </simpleType>
+      </element>
+
+      <element name="currentTamperLevel" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Current TamperLevel (Off, TamperLevel1, TamperLevel2 and TamperLevel3)
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="0" />
+          </restriction>
+        </simpleType>
+      </element>
+
+      <element name="startModeTrigger" minOccurs="0" maxOccurs="1">
+        <annotation>
+          <documentation>
+            StartMode Trigger
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="0" />
+          </restriction>
+        </simpleType>
+      </element>
+
+      <element name="timeStampUTC" minOccurs="0" maxOccurs="1" type="dateTime">
+        <annotation>
+          <documentation>
+            Time stamp
+          </documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+</schema>

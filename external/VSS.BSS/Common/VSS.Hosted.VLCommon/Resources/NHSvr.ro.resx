@@ -1,0 +1,3160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PowerModeAlertMessageBodySMS" xml:space="preserve">
+    <value>Cont Alerte VisionLink: {0} {1} Setat La: {2} pentru {3}/{4} la {5}</value>
+  </data>
+  <data name="2DProjectMonitoring" xml:space="preserve">
+    <value>Monitorizare Proiect 2D</value>
+  </data>
+  <data name="3DProjectMonitoring" xml:space="preserve">
+    <value>Monitorizare Proiect 3D</value>
+  </data>
+  <data name="deviceTypeTHREEPDATA" xml:space="preserve">
+    <value>3PDATA</value>
+  </data>
+  <data name="deviceTypeMTS523" xml:space="preserve">
+    <value>523</value>
+  </data>
+  <data name="zipDescription" xml:space="preserve">
+    <value>&lt;p&gt;These zip files contain example codes for the integration of VisionLink API. By default, the examples in these zip files invoke the production service. Please read the README.txt file to understand how to build the projects.&lt;/p&gt;&lt;p&gt;Note: These examples may contain VirtualSite Solutions' unpublished proprietary information which may constitute a trade secret and/or be confidential. These Sample codes are meant to be used purely for educational purposes assisting with usage and integration of VisionLink APIs and may not be copied or disclosed to others. Copyright notice is precautionary only, and does not imply publication.&lt;/p&gt;</value>
+  </data>
+  <data name="apiSiteIntroduction" xml:space="preserve">
+    <value>&lt;p&gt;Welcome to VisionLink API documentation. In this page you will find all the information you need to get started. You will also find a more detailed list of all the available services, sample codes and examples.&lt;/p&gt;&lt;p&gt;If you are not a programmer and just need an overview of the VisionLink API, please read the &lt;a href="/Docs/{0}/Overview.pdf" class="contentLink" target="_blank"&gt;Overview Document&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Read the &lt;a href="/Docs/{0}/ProgrammersReference.pdf" target="_blank" class="contentLink"&gt;Programmer’s Reference&lt;/a&gt; to learn more on how to use the API service. It is important that the VisionLink API users review this reference closely as it contains useful information that will expedite the integration process.&lt;/p&gt;&lt;p&gt; The first step in accessing the VisionLink API service is to acquire an API queue assignment as well as a non-expiring VisionLink API user account id/password. You can do that by contacting your account Administrator, requesting your choice of API topics, and following instructions in the Welcome email to set up your API password.&lt;/p&gt;</value>
+  </data>
+  <data name="diagnosticsDescription" xml:space="preserve">
+    <value>Un diagnostic se referă la un proces din cadrul unui modul de control electronic (ECM) de detectare, afișare, și/sau stocare a informațiilor de funcționare anormală a mașinii/motorului. Fiecare diagnostic este reprezentat de cinci elemente de date: nivel diagnostic, modulul ID (MID) de raporatre a diagnosticului, identificatorul de diagnostic (sau identificatorul componentei, CID), indicatorul de mod de eroare (FMI) și timpul înregistrării diagnosticului.</value>
+  </data>
+  <data name="NewAccountSupportEmailBody" xml:space="preserve">
+    <value>Un nou cont VisionLink {0} a fost creat. &lt;BR&gt;Detalii Cont: &lt;BR&gt;Contact Primar: {1}&lt;BR&gt;  Email: {2}&lt;BR&gt; BSS ID: {3} &lt;BR&gt;Activare Link: {4}</value>
+  </data>
+  <data name="notEnoughPolygonPoints" xml:space="preserve">
+    <value>Un contur poligonal trebuie să conțină cel puțin 3 puncte.</value>
+  </data>
+  <data name="SavCreationEmailHeader" xml:space="preserve">
+    <value>O Vizualizare Activ Partajat afost creată pentru a vizualiza următoarele Active în contul personal Vision Link. Pentru mai multe detalii contactați {0} în {1}</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>Despre</value>
+  </data>
+  <data name="account" xml:space="preserve">
+    <value>Cont</value>
+  </data>
+  <data name="SpeedingAlertEmailBody" xml:space="preserve">
+    <value>Nume Cont: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Viteză Limită Activ: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Viteză Maximă: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Timp Oprire exces Viteză: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Durată: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {12}</value>
+  </data>
+  <data name="EngineIdleDailyAlertEmailBody" xml:space="preserve">
+    <value>Nume Cont: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID Activ: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;De La Data: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;La Data: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Durată: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Prag: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {14}</value>
+  </data>
+  <data name="PowerModeAlertEmailBody" xml:space="preserve">
+    <value>Nume Cont: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Mod Putere Setat La: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Durată: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {11}</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Fabricant: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Descriere ECM: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Osie/Nr. Pneu: {8}/{9}&lt;BR&gt;&amp;#xD;&amp;#xA;Presiune Pneu (psi): {13}&lt;BR&gt;&amp;#xD;&amp;#xA; Temperature Pneu (&amp;#xb0;C): {14}&lt;BR&gt;&amp;#xD;&amp;#xA;Stare Senzor: {15}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {16}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} expiră la {9} ore.&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} expiră la {9} ore.&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {6}</value>
+  </data>
+  <data name="ZoneAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație:{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {9}</value>
+  </data>
+  <data name="RadioMachineSecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Nume Cont: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Mod Startare: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {9}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {9}</value>
+  </data>
+  <data name="FluidAnalysisAlertBody" xml:space="preserve">
+    <value>Nume Cont: {7}&lt;BR&gt; Prioritate Rezultat: {0}&lt;BR&gt; Activ ID: {1}&lt;BR&gt; S/N: {2}&lt;BR&gt; Fabricant Activ: {8}&lt;BR&gt; Model Activ: {9}&lt;BR&gt; Tip Alertă: {3}&lt;BR&gt; Titlu Alertă: {4}&lt;BR&gt; Etich. Nr. și Sursă: {5}&lt;BR&gt; Dată Probă Luată: {6}</value>
+  </data>
+  <data name="AlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {10}</value>
+  </data>
+  <data name="SecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Nume Cont: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Mod Start: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Declanșator Securitate: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {10}</value>
+  </data>
+  <data name="FuelLossAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Schimbare Nivel Combustibil: -{7}%&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {11}</value>
+  </data>
+  <data name="LoadDistanceAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Distanță Încărcătură: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {11}</value>
+  </data>
+  <data name="FaultAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Fabricant Activ: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Cod Eroare: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Descriere Eroare: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Severitate: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Contor Ore: {13}</value>
+  </data>
+  <data name="SwitchAlertMessageBody" xml:space="preserve">
+    <value>Nume Cont: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Activ ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marcă Activ: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Model Activ: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Tip Alertă: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titlu Alertă: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Descriere Comutator: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Stare Comutator: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Dată: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Locație: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Sector: {8}</value>
+  </data>
+  <data name="accountType" xml:space="preserve">
+    <value>Tip Cont</value>
+  </data>
+  <data name="FluidAnalysisAlertSMS" xml:space="preserve">
+    <value>Cont: {3}  Prioritate Rezultat: {0} - Nr. Lab.: {1} - Sursă: {2}</value>
+  </data>
+  <data name="acreAbbreviation" xml:space="preserve">
+    <value>Acri</value>
+  </data>
+  <data name="FluidActionRequiredPriority" xml:space="preserve">
+    <value>Acțiune Necesară</value>
+  </data>
+  <data name="actionTaken" xml:space="preserve">
+    <value>Acțiune Luată</value>
+  </data>
+  <data name="actualEndDateTime" xml:space="preserve">
+    <value>Dată Finală Actuală</value>
+  </data>
+  <data name="actualStartDateTime" xml:space="preserve">
+    <value>Dată Startare Actuală</value>
+  </data>
+  <data name="aemp" xml:space="preserve">
+    <value>AEMP</value>
+  </data>
+  <data name="aempRequestAccess" xml:space="preserve">
+    <value>AEMP: Solicitare Acces</value>
+  </data>
+  <data name="AlertCounts" xml:space="preserve">
+    <value>Număr Alerte</value>
+  </data>
+  <data name="AlertDetails" xml:space="preserve">
+    <value>Detalii Alerte</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Tip Alertă</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>Alerte</value>
+  </data>
+  <data name="alignment" xml:space="preserve">
+    <value>Aliniament</value>
+  </data>
+  <data name="AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="eventDataDescription" xml:space="preserve">
+    <value>Un evenimet se referă la detectarea unei predefiniri, sau în afara limitelor, sau a unei condiții anormale a unei mașini, a unui motor sau a sistemului de monitorizare. Fiecare eveniment este reprezentat de patru elemente de date: nivel eveniment, modul ID (MID) pentru raportare eveniment, identificator eveniment și timpul de înregistrare al evenimentului.</value>
+  </data>
+  <data name="apiDocumentation" xml:space="preserve">
+    <value>Documentație API</value>
+  </data>
+  <data name="appliedFilter" xml:space="preserve">
+    <value>Filtru Aplicat</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Arie</value>
+  </data>
+  <data name="asset" xml:space="preserve">
+    <value>Activ</value>
+  </data>
+  <data name="ExclusionZoneAlertDescription" xml:space="preserve">
+    <value>Activ Introdus {0}</value>
+  </data>
+  <data name="SiteEntryAlertDescription" xml:space="preserve">
+    <value>Activ Introdus {0}</value>
+  </data>
+  <data name="InclusionZoneAlertDescription" xml:space="preserve">
+    <value>Activ Ieșit {0}</value>
+  </data>
+  <data name="SiteExitAlertDescription" xml:space="preserve">
+    <value>Activ Ieșit {0}</value>
+  </data>
+  <data name="assetFuelBurn" xml:space="preserve">
+    <value>Comb. Consumat Activ</value>
+  </data>
+  <data name="assetFuelReport" xml:space="preserve">
+    <value>Raport Combustibil Activ</value>
+  </data>
+  <data name="AssetFuelSingleAsset" xml:space="preserve">
+    <value>Raport Activ Singular Combustibil Activ</value>
+  </data>
+  <data name="NotReportingAlertDescription" xml:space="preserve">
+    <value>Activul nu a raportat de la {0}</value>
+  </data>
+  <data name="AssetHealth" xml:space="preserve">
+    <value>Raport Condiție Activ</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Raport Istoric Activ</value>
+  </data>
+  <data name="assetHistoryReport" xml:space="preserve">
+    <value>Raport Istoric Activ</value>
+  </data>
+  <data name="assetID" xml:space="preserve">
+    <value>Activ ID</value>
+  </data>
+  <data name="assetIdSnVin" xml:space="preserve">
+    <value>Activ ID/Serial #/VIN</value>
+  </data>
+  <data name="stateMileageReportTitle" xml:space="preserve">
+    <value>Raport Kilometraj Activ per Stat / Provincie</value>
+  </data>
+  <data name="AssetOff" xml:space="preserve">
+    <value>Activ Oprit</value>
+  </data>
+  <data name="AssetOn" xml:space="preserve">
+    <value>Activ Pornit</value>
+  </data>
+  <data name="assetOperation" xml:space="preserve">
+    <value>Operare Activ</value>
+  </data>
+  <data name="AssetSecurityLastActivityReport" xml:space="preserve">
+    <value>Securitate Activ - Raport Ultima Activitate</value>
+  </data>
+  <data name="AssetSecurityUserActivityReport" xml:space="preserve">
+    <value>Securitate Activ - Raport Activitate Utilizator</value>
+  </data>
+  <data name="AssetSpeedingReport" xml:space="preserve">
+    <value>Raport Viteză Activ</value>
+  </data>
+  <data name="assetType" xml:space="preserve">
+    <value>Tip Activ</value>
+  </data>
+  <data name="assetUsageReport" xml:space="preserve">
+    <value>Raport Utilizare Activ</value>
+  </data>
+  <data name="AssetUsageSingleAsset" xml:space="preserve">
+    <value>Raport Activ Singular Utilizare Activ</value>
+  </data>
+  <data name="AssetUsageSummaryReport" xml:space="preserve">
+    <value>Raport Sumar Utilizare Activ</value>
+  </data>
+  <data name="assetUtilization" xml:space="preserve">
+    <value>Utilizare Activ</value>
+  </data>
+  <data name="assetUtilizationReport" xml:space="preserve">
+    <value>Raport Utilizare Activ</value>
+  </data>
+  <data name="assets" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="attachmentUsage" xml:space="preserve">
+    <value>Utilizare Atașament</value>
+  </data>
+  <data name="autoMapReset" xml:space="preserve">
+    <value>Resetare Auto + Hartă</value>
+  </data>
+  <data name="autoIdle" xml:space="preserve">
+    <value>Relanti Auto</value>
+  </data>
+  <data name="automatic" xml:space="preserve">
+    <value>Automatic</value>
+  </data>
+  <data name="average" xml:space="preserve">
+    <value>Medie</value>
+  </data>
+  <data name="averageFuelBurnRateForAssetsInReport" xml:space="preserve">
+    <value>Rată Consum Carburant Medie pentru Active în Raport</value>
+  </data>
+  <data name="averagedSitetoSwitch" xml:space="preserve">
+    <value>Medie Sector la Comutator</value>
+  </data>
+  <data name="avg" xml:space="preserve">
+    <value>Medie</value>
+  </data>
+  <data name="AwaitingFirstReport" xml:space="preserve">
+    <value>În Așteptare Primul Raport</value>
+  </data>
+  <data name="axleTireNo" xml:space="preserve">
+    <value>Nr. Axe/Pneuri</value>
+  </data>
+  <data name="azimuth" xml:space="preserve">
+    <value>Azimut</value>
+  </data>
+  <data name="BackFilledLoadCount" xml:space="preserve">
+    <value>Indice Productivitate Umplut Anterior</value>
+  </data>
+  <data name="backhoe" xml:space="preserve">
+    <value>Backhoe</value>
+  </data>
+  <data name="BackhoeLoaderOperation" xml:space="preserve">
+    <value>Raport Operare Încărcător Backhoe</value>
+  </data>
+  <data name="backhoeOperation" xml:space="preserve">
+    <value>Operare Backhoe</value>
+  </data>
+  <data name="bar" xml:space="preserve">
+    <value>BAR</value>
+  </data>
+  <data name="baseSurface" xml:space="preserve">
+    <value>Suprafață Bază</value>
+  </data>
+  <data name="bladeOnGround" xml:space="preserve">
+    <value>Lamă Pe Sol</value>
+  </data>
+  <data name="boostPressure" xml:space="preserve">
+    <value>Boost Pressure</value>
+  </data>
+  <data name="boostPressureHeader" xml:space="preserve">
+    <value>Boost Pressure Report</value>
+  </data>
+  <data name="boostTemperature" xml:space="preserve">
+    <value>Boost Temperature</value>
+  </data>
+  <data name="boostTemperatureHeader" xml:space="preserve">
+    <value>Boost Temperature Report</value>
+  </data>
+  <data name="bottomCyclesPerHour" xml:space="preserve">
+    <value>Bază {0} - Cicluri/Oră (Total)</value>
+  </data>
+  <data name="bottomPayloadPerCycle" xml:space="preserve">
+    <value>Bază {0} - Încărcătură Utilă/Ciclu (Total)</value>
+  </data>
+  <data name="bottomPayloadPerHour" xml:space="preserve">
+    <value>Bază {0} - Încărcătură Utilă/Oră (Total)</value>
+  </data>
+  <data name="geolocationNotSupported" xml:space="preserve">
+    <value>Browser-ul nu oferă locație.</value>
+  </data>
+  <data name="bulking" xml:space="preserve">
+    <value>Expandare</value>
+  </data>
+  <data name="burnRate" xml:space="preserve">
+    <value>Rată Consum</value>
+  </data>
+  <data name="celsiusAbbrev" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Anulare</value>
+  </data>
+  <data name="catDataFeeds" xml:space="preserve">
+    <value>CAT Data Feeds</value>
+  </data>
+  <data name="catDataTopicsRequestAccess" xml:space="preserve">
+    <value>Topică CAT Data: Solicitare Acces</value>
+  </data>
+  <data name="centreLine" xml:space="preserve">
+    <value>Ax</value>
+  </data>
+  <data name="catDataFeedFormDescription" xml:space="preserve">
+    <value>Verificați oricât de multe topici dorite și faceți clic pe "Solicitare Email". Veți primi un email, într-un interval de o săptămână, conținând toate informațiile necesare pentru a accesa topicele dorite.</value>
+  </data>
+  <data name="claim" xml:space="preserve">
+    <value>Solicitare</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Apăsați Aici</value>
+  </data>
+  <data name="clientBuildNumber" xml:space="preserve">
+    <value>Număr Versiune Client</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Închis</value>
+  </data>
+  <data name="cmv" xml:space="preserve">
+    <value>CMV</value>
+  </data>
+  <data name="cmvChange" xml:space="preserve">
+    <value>Schimbare CMV</value>
+  </data>
+  <data name="cmvChangeReport" xml:space="preserve">
+    <value>Raport Schimbare CMV</value>
+  </data>
+  <data name="cmvSummary" xml:space="preserve">
+    <value>Sumar CMV</value>
+  </data>
+  <data name="cmvSummaryReport" xml:space="preserve">
+    <value>Raport Sumar CMV</value>
+  </data>
+  <data name="coarse" xml:space="preserve">
+    <value>Brut</value>
+  </data>
+  <data name="code" xml:space="preserve">
+    <value>Cod</value>
+  </data>
+  <data name="codeSamples" xml:space="preserve">
+    <value>Cod Probe</value>
+  </data>
+  <data name="compacted" xml:space="preserve">
+    <value>Compactat</value>
+  </data>
+  <data name="compaction" xml:space="preserve">
+    <value>Compactare</value>
+  </data>
+  <data name="company" xml:space="preserve">
+    <value>Companie</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Complet</value>
+  </data>
+  <data name="completeLayer" xml:space="preserve">
+    <value>Strat Complet</value>
+  </data>
+  <data name="completeService" xml:space="preserve">
+    <value>Revizie Completă</value>
+  </data>
+  <data name="Configured" xml:space="preserve">
+    <value>Configurat</value>
+  </data>
+  <data name="confirmed" xml:space="preserve">
+    <value>Confirmat</value>
+  </data>
+  <data name="couldNotConvertDataModelBoundaryToGrid" xml:space="preserve">
+    <value>Sistemul de coordonate nu a putut să convertească punctele contur ale modelului de date.</value>
+  </data>
+  <data name="emptyCoordinateSystem" xml:space="preserve">
+    <value>Sistem de coordonate neselectat</value>
+  </data>
+  <data name="dcToIRecIncompleteCS" xml:space="preserve">
+    <value>Sistemul de coordonate este incomplet (nespecificat în întregime) (DCToIRecord converter)</value>
+  </data>
+  <data name="virtualSiteSolutionsAllRightsReserved" xml:space="preserve">
+    <value>Copyright 2014 VirtualSite Solutions LLC. Toate drepturile rezervate.</value>
+  </data>
+  <data name="couldNotConvertCSDFile" xml:space="preserve">
+    <value>Nu se poate converti fișier definiție sistem de coordonate</value>
+  </data>
+  <data name="coverage" xml:space="preserve">
+    <value>Acoperire</value>
+  </data>
+  <data name="createdUser" xml:space="preserve">
+    <value>Creat De</value>
+  </data>
+  <data name="cubicYard" xml:space="preserve">
+    <value>Cub iard</value>
+  </data>
+  <data name="currentFilterSettings" xml:space="preserve">
+    <value>Setări Filtru Curente</value>
+  </data>
+  <data name="dcToIRecScaleOnlyProj" xml:space="preserve">
+    <value>Proiecția curentă trebuie să fie scalată (DCToIRecord converter)</value>
+  </data>
+  <data name="customerInfo" xml:space="preserve">
+    <value>Info Client</value>
+  </data>
+  <data name="customerName" xml:space="preserve">
+    <value>Nume Client</value>
+  </data>
+  <data name="customerNumber" xml:space="preserve">
+    <value>Număr Client</value>
+  </data>
+  <data name="cut" xml:space="preserve">
+    <value>Tăiere</value>
+  </data>
+  <data name="cutFillReport" xml:space="preserve">
+    <value>Raport Tăiere Umplere</value>
+  </data>
+  <data name="cutfill" xml:space="preserve">
+    <value>Tăiere/Umplere</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Raport Timp Ciclu</value>
+  </data>
+  <data name="cycleTimeReport" xml:space="preserve">
+    <value>Raport Timp Ciclu</value>
+  </data>
+  <data name="cycles" xml:space="preserve">
+    <value>Cicluri</value>
+  </data>
+  <data name="cyclesPerHour" xml:space="preserve">
+    <value>Cicluri/Oră</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Zilnic</value>
+  </data>
+  <data name="dailyIdleMessage" xml:space="preserve">
+    <value>Timp La Relanti Zilnic mai lung decât {0} {1}</value>
+  </data>
+  <data name="dataOccurredOutsideOfDateRange" xml:space="preserve">
+    <value>Date aflate în afara intervalului de timp afișat</value>
+  </data>
+  <data name="dataOccurredOutsideOfDay" xml:space="preserve">
+    <value>Date aflate in afara zilei</value>
+  </data>
+  <data name="dataType" xml:space="preserve">
+    <value>Tip Date</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Dată</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Data Creării</value>
+  </data>
+  <data name="dateLastReported" xml:space="preserve">
+    <value>Ultima Dată Raportată</value>
+  </data>
+  <data name="dateModuleAccessProvided" xml:space="preserve">
+    <value>Furnizare dată acces modul</value>
+  </data>
+  <data name="dateRange" xml:space="preserve">
+    <value>Interval Date</value>
+  </data>
+  <data name="dateTime" xml:space="preserve">
+    <value>Dată/Timp</value>
+  </data>
+  <data name="dcn" xml:space="preserve">
+    <value>DCN</value>
+  </data>
+  <data name="dealerCode" xml:space="preserve">
+    <value>Cod Dealer</value>
+  </data>
+  <data name="dealerName" xml:space="preserve">
+    <value>Nume Dealer</value>
+  </data>
+  <data name="UserAccountsReportEmailBody" xml:space="preserve">
+    <value>Stimați Administratori VisionLink,&lt;br/&gt;&lt;br/&gt;Pentru o mai bună administrare a accesului la cont, oferim acum un raport complet al tuturor utilizatorilor VisionLink pe care îi aveți, pentru a vă permite să revedeți și să actualizați contul după necesități. Vă rugăm să vă conectați la VisionLink și să efectuați schimbările necesare la conturile utilizatorilor.&lt;br/&gt;&lt;br/&gt; Apăsați pe link-ul de mai jos pentru a descărca raportul&lt;br/&gt;  {0} &lt;br/&gt;&lt;br/&gt;  Cu respect,&lt;br/&gt;&lt;br/&gt;Echipa VisionLink</value>
+  </data>
+  <data name="ApiUserEmailBody" xml:space="preserve">
+    <value>Stimați {0} {1},&lt;br&gt;&lt;br&gt; Bine ați venit la serviciile VisionLink® API. Accesați link-ul de mai jos pentru a seta parola și a accesa serviciile API. Acest link este activ pentru 30 de zile.Dacă link-ul de mai jos nu este activ, folosiți metoda de copiere și alipire într-o fereastră nouă de browser.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;br&gt;Numele utilizator pentru VisionLink API este {3}.&lt;br&gt;Aveți acces la următoarele servicii API:&lt;br&gt;  {4} &lt;br&gt;&lt;br&gt;Notă: Dacă nu solicitați un nou cont utilizator API sau actualizați la un cont existent, contactați Administratorul.</value>
+  </data>
+  <data name="VerifyUserEmailBody" xml:space="preserve">
+    <value>Stimați {0} {1},&lt;br&gt;&lt;br&gt; Bine ați venit la serviciile VisionLink®. Accesați link-ul de mai jos pentru a verifica noul sau actualizatul cont utilizator. Acest link este activ pentru 30 de zile. Dacă acest link nu funcționează folosiți opțiunea de copiere și alipire într-o nouă fereastră a browser-ului.&lt;br&gt;&lt;br&gt; {2}&lt;br&gt;&lt;br&gt;Pentru software-ul VisionLink nume utilizator este {3} și nume cont este {4}. Utilizatorilor VisionLink nou veniți li se va solicita setarea parolei pentru verificare.&lt;br&gt;&lt;br&gt; Notă: Dacă nu solicitați un nou cont utilizator sau actualizați la un cont existent, contactați Administratorul.</value>
+  </data>
+  <data name="engineStartStopDescription" xml:space="preserve">
+    <value>Furnizează o listă a timpilor de startare și oprire pentru fiecare mașină și o cheie MSS de identificare operator, transmisă zilnic la startarea raportului, sau atunci când buferul de bord a atins capacitatea maximă.</value>
+  </data>
+  <data name="loadCountsDescription" xml:space="preserve">
+    <value>Oferă toate informațiile relevante referitoare la indice de productivitate bazat pe Monitorizare Încărcare &amp; Ciclu. Include Lat/Long, contururi geo-fence, și distanțele parcurse pentru evenimentele de încărcare și decărcare.</value>
+  </data>
+  <data name="digitalSwitchStatusDescription" xml:space="preserve">
+    <value>Furnizează toate informațiile de stare relevante despre modul de alimentare și starea pornit/oprit a comutatorului digital de la modulul Dispozitive. Comunică informațiile de stare particulare ale ECM-ului. Dacă oricare byte de definire este setat pe "Da", aceasta denotă că o condiție particulară s-a petrecut de la ultimul raport al byte-urilor de stare, fie în mesajul de stare, fie în raportul SMU.</value>
+  </data>
+  <data name="fenceAlertDescription" xml:space="preserve">
+    <value>Furnizează toate informațiile de stare relevante despre activitatea de urmărire a produselor bazate pe timp, și alarmele generate către modulul Dispozitive. Comunică informațiile de stare particulare ale ECM-ului. Dacă oricare byte de definire este setat pe "Da", aceasta denotă că o condiție particulară s-a petrecut de la ultimul raport al byte-urilor de stare, fie în mesajul de stare, fie în raportul SMU.</value>
+  </data>
+  <data name="fuelDescription" xml:space="preserve">
+    <value>Furnizează cantitatea de combustibil folosită de modulul Dispozitive, prin consum sau nivel. Informațiile de combustibil sunt furnizate ca parte a mesajului de stare, care conține consum combustibil și/sau procentajul de combustibil rămas al echipamentului.</value>
+  </data>
+  <data name="engineParametersDescription" xml:space="preserve">
+    <value>Furnizează informații importante ale Motorului, cum ar fi Combustibil la Relanti, pentru un Modul Dispozitiv.</value>
+  </data>
+  <data name="smuLocationDescription" xml:space="preserve">
+    <value>Furnizează utilizarea echipamentului în ore, de când acest Dispozitiv a fost pornit sau a fost ultima dată resetat, adițional la latitudinea și longitudinea mașinii pe care este montat Dispozitivul. Datele sunt generate de către ECM, pentru a urmări utilizarea echipamentului. ECM urmărește timpul de funcționare al motorului și oferă latitudinea și longitudinea mașinii pe care este montat Dispozitivul.</value>
+  </data>
+  <data name="derate" xml:space="preserve">
+    <value>Reducere</value>
+  </data>
+  <data name="Derated" xml:space="preserve">
+    <value>Imobilizată</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Descriere</value>
+  </data>
+  <data name="design" xml:space="preserve">
+    <value>Proiect</value>
+  </data>
+  <data name="desiredApiTopic" xml:space="preserve">
+    <value>Topică API Dorită</value>
+  </data>
+  <data name="desiredDataFeed" xml:space="preserve">
+    <value>Data Feed Dorită</value>
+  </data>
+  <data name="destination" xml:space="preserve">
+    <value>Destinație</value>
+  </data>
+  <data name="detailedAssetCycleTimeReport" xml:space="preserve">
+    <value>Raport Timp Ciclu Activ Detaliat</value>
+  </data>
+  <data name="detailedAssetLoadCountReport" xml:space="preserve">
+    <value>Raport Detaliat Indice Productivitate Activ</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Dispozitiv</value>
+  </data>
+  <data name="deviceID" xml:space="preserve">
+    <value>ID Dispozitiv</value>
+  </data>
+  <data name="deviceType" xml:space="preserve">
+    <value>Tip Dispozitiv</value>
+  </data>
+  <data name="diagnostic" xml:space="preserve">
+    <value>Diagnostic</value>
+  </data>
+  <data name="DiagnosticEvents" xml:space="preserve">
+    <value>Eroare Diagnostic</value>
+  </data>
+  <data name="diagnosticsData" xml:space="preserve">
+    <value>Date Diagnostice</value>
+  </data>
+  <data name="digitalSwitchStatus" xml:space="preserve">
+    <value>Stare Comutator Digital</value>
+  </data>
+  <data name="direction" xml:space="preserve">
+    <value>Direcție</value>
+  </data>
+  <data name="directions" xml:space="preserve">
+    <value>Direcții</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Dezactivare</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Dezactivat</value>
+  </data>
+  <data name="distanceCategory" xml:space="preserve">
+    <value>Categorie Distanță</value>
+  </data>
+  <data name="distanceDriven" xml:space="preserve">
+    <value>Distanță Parcursă</value>
+  </data>
+  <data name="distanceTravelled" xml:space="preserve">
+    <value>Distanță Parcursă</value>
+  </data>
+  <data name="doNotShowAgain" xml:space="preserve">
+    <value>Nu afișa din nou</value>
+  </data>
+  <data name="firstEpochBladePositionDoesNotLieWithinProjectBoundary" xml:space="preserve">
+    <value>Nu se află între contururile spațiale ale Proiectului</value>
+  </data>
+  <data name="dozer" xml:space="preserve">
+    <value>Buldozer</value>
+  </data>
+  <data name="DueAt" xml:space="preserve">
+    <value>Scadent La</value>
+  </data>
+  <data name="dueIn" xml:space="preserve">
+    <value>Scadent În</value>
+  </data>
+  <data name="DueOn" xml:space="preserve">
+    <value>Scadent la</value>
+  </data>
+  <data name="dumpEvent" xml:space="preserve">
+    <value>Eveniment Descărcare</value>
+  </data>
+  <data name="dumpLocation" xml:space="preserve">
+    <value>Locație Descărcare</value>
+  </data>
+  <data name="dumpTime" xml:space="preserve">
+    <value>Timp Descărcare</value>
+  </data>
+  <data name="dumpToDumpDistance" xml:space="preserve">
+    <value>Distanță de la Descărcare la Descărcare</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Durată</value>
+  </data>
+  <data name="earliest" xml:space="preserve">
+    <value>Cel mai vechi</value>
+  </data>
+  <data name="easting" xml:space="preserve">
+    <value>Est</value>
+  </data>
+  <data name="efficiency" xml:space="preserve">
+    <value>Eficiență</value>
+  </data>
+  <data name="elevation" xml:space="preserve">
+    <value>Elevație</value>
+  </data>
+  <data name="elevationReport" xml:space="preserve">
+    <value>Raport Elevație</value>
+  </data>
+  <data name="elevationType" xml:space="preserve">
+    <value>Tip Elevație</value>
+  </data>
+  <data name="email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="emailRequest" xml:space="preserve">
+    <value>Solicitare Email</value>
+  </data>
+  <data name="endDate" xml:space="preserve">
+    <value>Dată Finală</value>
+  </data>
+  <data name="endDateSMU" xml:space="preserve">
+    <value>Contor Ore Dată Finală</value>
+  </data>
+  <data name="endDateLocation" xml:space="preserve">
+    <value>Locație Dată Finală</value>
+  </data>
+  <data name="endDateMustBeHigher" xml:space="preserve">
+    <value>Data de sfârșit trebuie să fie mai recentă decât data de start</value>
+  </data>
+  <data name="endHourMeter" xml:space="preserve">
+    <value>Contor Oră Finală</value>
+  </data>
+  <data name="endTime" xml:space="preserve">
+    <value>Timp Final</value>
+  </data>
+  <data name="GensetCoolingDown" xml:space="preserve">
+    <value>Răcire Motor</value>
+  </data>
+  <data name="engineCoolantTemperature" xml:space="preserve">
+    <value>Temperatură Agent Răcire Motor</value>
+  </data>
+  <data name="coolantTemperatureHeader" xml:space="preserve">
+    <value>Raport Temperatură Agent Răcire Motor</value>
+  </data>
+  <data name="EngineIdle" xml:space="preserve">
+    <value>Raport Motor La Relanti</value>
+  </data>
+  <data name="engineLubeOilTemperature" xml:space="preserve">
+    <value>Temperatură Ulei Motor</value>
+  </data>
+  <data name="lubeOilTemperatureHeader" xml:space="preserve">
+    <value>Raport Temperatură Ulei Motor</value>
+  </data>
+  <data name="EngineOff" xml:space="preserve">
+    <value>Motor Oprit</value>
+  </data>
+  <data name="engineOilLevelIndication" xml:space="preserve">
+    <value>Engine Oil Level Indicator</value>
+  </data>
+  <data name="engineOilLevelPercent" xml:space="preserve">
+    <value>Engine Oil Level Indicator %</value>
+  </data>
+  <data name="engineOilLevelIndicatorHeader" xml:space="preserve">
+    <value>Engine Oil Level Indicator Report</value>
+  </data>
+  <data name="engineOilPressure" xml:space="preserve">
+    <value>Presiune Ulei Motor</value>
+  </data>
+  <data name="oilPressureHeader" xml:space="preserve">
+    <value>Raport Presiune Ulei Motor</value>
+  </data>
+  <data name="EngineOn" xml:space="preserve">
+    <value>Motor Pornit</value>
+  </data>
+  <data name="engineParameters" xml:space="preserve">
+    <value>Parametrii Motor</value>
+  </data>
+  <data name="GensetRunning" xml:space="preserve">
+    <value>Motor La Funcționare</value>
+  </data>
+  <data name="eventTypeEngineStart" xml:space="preserve">
+    <value>Startare Motor</value>
+  </data>
+  <data name="engineStartStopTime" xml:space="preserve">
+    <value>Timp Startare/Oprire Motor</value>
+  </data>
+  <data name="engineStatus" xml:space="preserve">
+    <value>Stare Motor</value>
+  </data>
+  <data name="eventTypeEngineStop" xml:space="preserve">
+    <value>Oprire motor</value>
+  </data>
+  <data name="GensetEngineStopped" xml:space="preserve">
+    <value>Motor Oprit</value>
+  </data>
+  <data name="GensetEngineStopping" xml:space="preserve">
+    <value>Se oprește Motorul</value>
+  </data>
+  <data name="displayName" xml:space="preserve">
+    <value>Româna</value>
+  </data>
+  <data name="equalsPassTarget" xml:space="preserve">
+    <value>Treceri Egale Țintă</value>
+  </data>
+  <data name="event" xml:space="preserve">
+    <value>Eveniment</value>
+  </data>
+  <data name="eventCount" xml:space="preserve">
+    <value>Contor Eveniment</value>
+  </data>
+  <data name="eventData" xml:space="preserve">
+    <value>Date Eveniment</value>
+  </data>
+  <data name="eventDescription" xml:space="preserve">
+    <value>Descriere Eveniment</value>
+  </data>
+  <data name="FaultCodes" xml:space="preserve">
+    <value>Eroare Eveniment</value>
+  </data>
+  <data name="eventType" xml:space="preserve">
+    <value>Tip Eveniment</value>
+  </data>
+  <data name="excavator" xml:space="preserve">
+    <value>Excavator</value>
+  </data>
+  <data name="ExcavatorUsageReport" xml:space="preserve">
+    <value>Raport Utilizare Excavator</value>
+  </data>
+  <data name="exception" xml:space="preserve">
+    <value>A avut loc o excepție</value>
+  </data>
+  <data name="ExclusionZone" xml:space="preserve">
+    <value>Zonă Excluziune</value>
+  </data>
+  <data name="expectedRuntime" xml:space="preserve">
+    <value>Timp Funcționare Prevăzut</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Dată Expirare</value>
+  </data>
+  <data name="fahrenheitAbbrev" xml:space="preserve">
+    <value>F</value>
+  </data>
+  <data name="failedOnRequestProfile" xml:space="preserve">
+    <value>Eroare la solicitare profil</value>
+  </data>
+  <data name="failedOnRequestColourGraduatedProfile" xml:space="preserve">
+    <value>Eroare la solicitare profil graduat color</value>
+  </data>
+  <data name="submissionBaseConnectionFailure" xml:space="preserve">
+    <value>Eșuare la conectare server Date Production.</value>
+  </data>
+  <data name="failedToConvertClientWGSCoords" xml:space="preserve">
+    <value>Eroare conversie coordonate client WGS84</value>
+  </data>
+  <data name="dcToIRecFailedToCreateAZIParamsObject" xml:space="preserve">
+    <value>Eroare creare un obiect IAZIParameters (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedCreateCSIB" xml:space="preserve">
+    <value>Eroare creare CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToCreateDCToIRecordConverter" xml:space="preserve">
+    <value>Eroare creare convertor DCtoIRecord</value>
+  </data>
+  <data name="failedToGetCSSettings" xml:space="preserve">
+    <value>Eroare la obținerea setărilor sistemului de coordonate</value>
+  </data>
+  <data name="dcToIRecFailedToGetGeoidInfo" xml:space="preserve">
+    <value>Imposibil de obținut informații geoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateConstGeoid" xml:space="preserve">
+    <value>Eroare la crearea unui geoid cu constantă de separare CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateDatumGrid" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe de fișier datum grid CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateEllipsoid" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe elipsoid CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateGridGeoid" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe de CSIB Grid Geoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMolodenskyDatum" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe CSIB Molodensky datum (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMultiRegressionDatum" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe CSIB Multiple Regression Parameter datum (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateSevenParamsDatum" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe CSIB Seven Parameter datum (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateWGS84Datum" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe CSIB WGS84 datum (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneBasedSite" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe CSIB Zone Based Site (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneGroup" xml:space="preserve">
+    <value>Eroare la crearea unei instanțe CSIB Zone Group (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToLoadCSIB" xml:space="preserve">
+    <value>Eroare la încărcare CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToNotifyCSChange" xml:space="preserve">
+    <value>Eroare notificare schimbare sistem de coordonate</value>
+  </data>
+  <data name="failedToObtainCoordinateSystemInterlock" xml:space="preserve">
+    <value>Eroare la obținerea conectării sistemului de coordonate</value>
+  </data>
+  <data name="dcToIRecFailedToOpenCalibrationReader" xml:space="preserve">
+    <value>Eroare la deschidere cititor Calibrare (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToPerformCoordinateConversion" xml:space="preserve">
+    <value>Eroare la execuția conversiei coodonatelor.</value>
+  </data>
+  <data name="dcToIRecFailedToReadCSIB" xml:space="preserve">
+    <value>Eroare la citire CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadInCSIB" xml:space="preserve">
+    <value>Eroare la citire în CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToReadLineworkBoundaryFile" xml:space="preserve">
+    <value>Eroare la citirea fișierului de contur linie de lucru.</value>
+  </data>
+  <data name="dcToIRecFailedToReadZone" xml:space="preserve">
+    <value>Eroare la citirea zonei (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadZoneBasedSite" xml:space="preserve">
+    <value>Eroare la citire sector ZoneBased (DCToIRecord converter)</value>
+  </data>
+  <data name="submissionResultConnectionFailure" xml:space="preserve">
+    <value>Eșuare la receptarea rezultatelor de la serverul Date Production.</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemHorizontalAdjustmentFile" xml:space="preserve">
+    <value>Eroare la solicitare fișier de ajustare orizontală a sistemului de coordonate</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemProjectionFile" xml:space="preserve">
+    <value>Eroare solicitare fișier proiecție sistem de coordonate</value>
+  </data>
+  <data name="failedToRequestDatamodelStatistics" xml:space="preserve">
+    <value>Eroare la solicitarea statisticilor modelului de date</value>
+  </data>
+  <data name="failedToRequestFileFromTCC" xml:space="preserve">
+    <value>Eroare la solicitare fișier de la TTC.</value>
+  </data>
+  <data name="failedToRequestSubgridExistenceMap" xml:space="preserve">
+    <value>Eroare la solicitare hartă existentă sub-grilă</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneInfo" xml:space="preserve">
+    <value>Eroare setare info zonă (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToWriteCSDStream" xml:space="preserve">
+    <value>Eroare scriere flux definire sistem de coordonate</value>
+  </data>
+  <data name="dcToIRecFailedToWriteCSIB" xml:space="preserve">
+    <value>Eroare scriere CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteDatum" xml:space="preserve">
+    <value>Eroare scriere datum (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteGeoid" xml:space="preserve">
+    <value>Eroare scriere geoid (DCToIRecord converter)</value>
+  </data>
+  <data name="faultCode" xml:space="preserve">
+    <value>Cod Eroare</value>
+  </data>
+  <data name="faultCodeDiagnostic" xml:space="preserve">
+    <value>Cod Eroare - Diagnostic</value>
+  </data>
+  <data name="faultCodeEvent" xml:space="preserve">
+    <value>Cod Eroare - Eveniment</value>
+  </data>
+  <data name="faultCodeDate" xml:space="preserve">
+    <value>Dată Cod Eroare</value>
+  </data>
+  <data name="faultCodeHourMeter" xml:space="preserve">
+    <value>Contor Ore Cod Eroare</value>
+  </data>
+  <data name="faultCodeLocation" xml:space="preserve">
+    <value>Locație Cod Eroare</value>
+  </data>
+  <data name="faultCodeOdometer" xml:space="preserve">
+    <value>Odometru Cod Eroare</value>
+  </data>
+  <data name="faultCodeReport" xml:space="preserve">
+    <value>Raport Cod Eroare</value>
+  </data>
+  <data name="assetHealthSummary" xml:space="preserve">
+    <value>Raport Sumar Cod Eroare</value>
+  </data>
+  <data name="faultCodesLabel" xml:space="preserve">
+    <value>Coduri Eroare</value>
+  </data>
+  <data name="faultCodeCounts" xml:space="preserve">
+    <value>Număr Erori</value>
+  </data>
+  <data name="faultCodeDetails" xml:space="preserve">
+    <value>Detalii Eroare</value>
+  </data>
+  <data name="tagFileReaderCorruptedTAGFileData" xml:space="preserve">
+    <value>Fișierul conține date corupte.</value>
+  </data>
+  <data name="noGridEpochsFoundInTAGFile" xml:space="preserve">
+    <value>Fișierul conține date de producție ne-valide.</value>
+  </data>
+  <data name="submissionVerbConnectionFailure" xml:space="preserve">
+    <value>A eșuat submisia fișierului.</value>
+  </data>
+  <data name="fill" xml:space="preserve">
+    <value>Umple</value>
+  </data>
+  <data name="locationAppSummary" xml:space="preserve">
+    <value>Găsire Ultima Locație Cunoscută a Activelor</value>
+  </data>
+  <data name="fine" xml:space="preserve">
+    <value>Fin</value>
+  </data>
+  <data name="firmwareVersion" xml:space="preserve">
+    <value>Versiune Firmware</value>
+  </data>
+  <data name="first" xml:space="preserve">
+    <value>Primul</value>
+  </data>
+  <data name="firstname" xml:space="preserve">
+    <value>Prenume</value>
+  </data>
+  <data name="verifyEmailBodyFirstTimeUser" xml:space="preserve">
+    <value>Utilizatori nou-veniți: Conectați-vă la contul VisionLink folosind aceste credențiale.&lt;/br&gt;Nume utilizator:{0},&lt;/br&gt; Parolă:{1}&lt;/br&gt;După conectare vi se va solicita să schimbați parola.&lt;/br&gt;&lt;/br&gt;</value>
+  </data>
+  <data name="FleetEventCountReport" xml:space="preserve">
+    <value>Raport Contor Eveniment Flotă</value>
+  </data>
+  <data name="fleetFuelReport" xml:space="preserve">
+    <value>Raport Combustibil Flotă</value>
+  </data>
+  <data name="FleetStatus" xml:space="preserve">
+    <value>Raport Stare Flotă</value>
+  </data>
+  <data name="fleetStatusReport" xml:space="preserve">
+    <value>Raport Stare Flotă</value>
+  </data>
+  <data name="fleetSummary" xml:space="preserve">
+    <value>Sumar Flotă</value>
+  </data>
+  <data name="fleetSummaryCustomReport" xml:space="preserve">
+    <value>Raport Personalizat Sumar Flotă</value>
+  </data>
+  <data name="FleetUsage" xml:space="preserve">
+    <value>Raport Utilizare Flotă</value>
+  </data>
+  <data name="fleetUsageReport" xml:space="preserve">
+    <value>Raport Consum Flotă</value>
+  </data>
+  <data name="FleetUtilization" xml:space="preserve">
+    <value>Raport Utilizare Flotă</value>
+  </data>
+  <data name="FluidAnalysis" xml:space="preserve">
+    <value>Analize Fluid</value>
+  </data>
+  <data name="fluidAnalysisReport" xml:space="preserve">
+    <value>Raport Analize Fluid</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Înainte</value>
+  </data>
+  <data name="feetAbbrev" xml:space="preserve">
+    <value>ft</value>
+  </data>
+  <data name="fuel" xml:space="preserve">
+    <value>Combustibil</value>
+  </data>
+  <data name="fuelPercentRemaining" xml:space="preserve">
+    <value>Combustibil % Rămas</value>
+  </data>
+  <data name="fuelBurnPieChartTitle" xml:space="preserve">
+    <value>Combustibil Consumat</value>
+  </data>
+  <data name="fuelBurned" xml:space="preserve">
+    <value>Combustibil Consumat</value>
+  </data>
+  <data name="fuelBurnedByAsset" xml:space="preserve">
+    <value>Combustibil Consumat de către Activ</value>
+  </data>
+  <data name="fuelBurnedByAssetsTopTen" xml:space="preserve">
+    <value>Combustibil Consumat de către Activ: Primele 10</value>
+  </data>
+  <data name="fuelConsumedIdle" xml:space="preserve">
+    <value>Combustibil Consumat (Relanti)</value>
+  </data>
+  <data name="fuelConsumedTotal" xml:space="preserve">
+    <value>Combustibil Consumat (Total)</value>
+  </data>
+  <data name="fuelInformation" xml:space="preserve">
+    <value>Informații Combustibil</value>
+  </data>
+  <data name="fuelLevel" xml:space="preserve">
+    <value>Nivel Combustibil</value>
+  </data>
+  <data name="fuelLevelIndicator" xml:space="preserve">
+    <value>Indicator Nivel Combustibil</value>
+  </data>
+  <data name="fuelLevelPercent" xml:space="preserve">
+    <value>Indicator Nivel Combustibil %</value>
+  </data>
+  <data name="levelIndicatorHeader" xml:space="preserve">
+    <value>Raport Indicator Nivel Combustibil</value>
+  </data>
+  <data name="FuelLoss" xml:space="preserve">
+    <value>Pierderi Combustibil</value>
+  </data>
+  <data name="FuelLossAlertDescription" xml:space="preserve">
+    <value>Pierdere Combustibil de {0}%</value>
+  </data>
+  <data name="fuelPercentageRemaining" xml:space="preserve">
+    <value>Procent Combustibil Rămas</value>
+  </data>
+  <data name="fuelRemaining" xml:space="preserve">
+    <value>Combustibil Rămas</value>
+  </data>
+  <data name="fuelUtilizationTopic" xml:space="preserve">
+    <value>Consum Combustibil</value>
+  </data>
+  <data name="FuelUtilization" xml:space="preserve">
+    <value>Raport Consum Combustibil</value>
+  </data>
+  <data name="fuelUtilizationReport" xml:space="preserve">
+    <value>Raport Utilizare Combustibil</value>
+  </data>
+  <data name="FullSiteURL" xml:space="preserve">
+    <value>Site Versiune Completă</value>
+  </data>
+  <data name="gal" xml:space="preserve">
+    <value>gal</value>
+  </data>
+  <data name="galhr" xml:space="preserve">
+    <value>gal/hr</value>
+  </data>
+  <data name="gallonsBarChartXAxisLabel" xml:space="preserve">
+    <value>Galoane</value>
+  </data>
+  <data name="gallonshr" xml:space="preserve">
+    <value>Galoane / Ore</value>
+  </data>
+  <data name="gallonsBurned" xml:space="preserve">
+    <value>Galoane Consumate</value>
+  </data>
+  <data name="geoFenceAlert" xml:space="preserve">
+    <value>Alertă Barieră GEO</value>
+  </data>
+  <data name="gpsAccuracy" xml:space="preserve">
+    <value>Acuratețe GPS</value>
+  </data>
+  <data name="GPSAntennaDisconnectedTimerExpired" xml:space="preserve">
+    <value>Antenă GPS Deconectată</value>
+  </data>
+  <data name="GPSGSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Pierdere Semnal GPS/GSM</value>
+  </data>
+  <data name="GridReport" xml:space="preserve">
+    <value>Raport Grilă</value>
+  </data>
+  <data name="gridSize" xml:space="preserve">
+    <value>Dimensiune Grilă</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>Grup</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Grupuri</value>
+  </data>
+  <data name="GSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Pierdere Semnal GSM</value>
+  </data>
+  <data name="hectareAbbreviation" xml:space="preserve">
+    <value>Ha</value>
+  </data>
+  <data name="hardwareDataError" xml:space="preserve">
+    <value>Eroare Date Hardware</value>
+  </data>
+  <data name="ForgotPasswordEmailBody" xml:space="preserve">
+    <value>Hello {0},&lt;BR /&gt;&lt;BR /&gt;Utilizator ID este {1}&lt;BR /&gt;&lt;BR /&gt; Hello {0},&lt;BR /&gt;&lt;BR /&gt;Nume Utilizator VisionLink este {1}.&lt;BR /&gt;&lt;BR /&gt;Pentru a reseta parola, faceți clic pe adresa de mai jos (sau copiați și alipiți acest URL la o altă fereastră a navigatorului de internet):&lt;BR /&gt;&lt;BR /&gt; {2}&lt;BR /&gt;&lt;BR /&gt; Pentru securitatea D-voastră, această adresă va fi activă pentru 24 de ore și numai pentru o resetare reușită a parolei.  &lt;BR /&gt;&lt;BR /&gt;Dacă nu ați solicitat resetarea parolei, este posibil ca un alt utilizator să fi introdus eronat adresa de email sau nume utilizator ale D-voastră la încercarea de a reseta parola. În acest caz, ignorați acest email. &lt;BR /&gt;&lt;BR /&gt;Cu respect,&lt;BR /&gt;Echipa De Asistență VisionLink</value>
+  </data>
+  <data name="NewAccountRegEmailBody" xml:space="preserve">
+    <value>Hello {0}&lt;BR&gt;&lt;BR&gt;Ați primit acest email care vă notifică că a fost creat un cont VisionLink cu numele {1}&lt;BR&gt;&lt;BR&gt;. Următorul pas este să navigați la VisionLink Account Registration Page, unde veți avea posibilitatea să activați acest cont prin crearea unui nume utilizator și a unei parole. După aceea puteți folosi aceste credențiale pentru a accesa acest cont folosind VisionLink Web Application.&lt;BR&gt;&lt;BR&gt;Faceți clic pe acest link de mai jos care vă va conduce la VisionLink Account Registration Page:&lt;BR&gt;{2}&lt;BR&gt;&lt;BR&gt;Link-ul va expira după ce acest cont a fost activat. Totuși, login-uri adiționale pot fi create în cadrul VisionLink Web Application odată ce s-a completat înregistrarea.&lt;BR&gt;&lt;BR&gt;După completarea activării contului, puteți accesa aplicația VisionLink Web via următorului link:&lt;BR&gt;{3}</value>
+  </data>
+  <data name="OnDemandEmailBody" xml:space="preserve">
+    <value>Hello,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Apăsați pe link-ul de mai jos pentru a descărca raportul. &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Notă: Ați primit acest email pentru că ați fost listat ca recipient pentru acest Raport. Acest link va fi activ pentru 30 de zile. Pentru orice întrebări, contactați Administratorul de Site VisionLink.</value>
+  </data>
+  <data name="ScheduleReportEmailBodyWithoutUnsubscribe" xml:space="preserve">
+    <value>Hello,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt;Apăsați link-ul de mai jos pentru a descărca raportul &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Notă: Ați primit acest email pentru că sunteți listat ca recipient pentru acest Raport Planificat. Acest link va fi activ pentru 30 de zile. Dacă aveți vre-o întrebare contactați Administratorul VisionLink.&lt;BR /&gt;&lt;BR /&gt;*** Rapoartele Planificate Zilnice, Săptămânale sau Lunare pentru Stare Flotă, revizii Restante și Vizualizare Activ Partajat conțin informații actualizate la momentul deschiderii acestora.</value>
+  </data>
+  <data name="ScheduleReportEmailBody" xml:space="preserve">
+    <value>Hello,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Apăsați link-ul de mai jos pentru a descărca raportul &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Notă: Ați primit acest email pentru că ați fost listat ca un recipient pentru acest Raport Planificat. Acest link va fi activ pentru 30 de zile. Pentru orice neclaritate contactați administratorul VisionLink.&lt;BR /&gt;&lt;BR /&gt;Dacă doriți să vă dezabonați de la primirea acestui raport pe viitor, apăsați {2}.&lt;BR /&gt;&lt;BR /&gt;*** Rapoartele Planificate Zilnice, Săptămânale și Lunare pentru Stare Flotă, Revizii Scadente și Vizualizare Active Partajate conțin informații actualizate la momentul deschiderii raportului.</value>
+  </data>
+  <data name="HH" xml:space="preserve">
+    <value>HH</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Ridicat</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Maxim</value>
+  </data>
+  <data name="home" xml:space="preserve">
+    <value>Pagină Start</value>
+  </data>
+  <data name="hourMeter" xml:space="preserve">
+    <value>Contor Ore</value>
+  </data>
+  <data name="hours" xml:space="preserve">
+    <value>Ore</value>
+  </data>
+  <data name="hoursOfUse" xml:space="preserve">
+    <value>Ore de Utilizare</value>
+  </data>
+  <data name="hoursLocation" xml:space="preserve">
+    <value>Ore/Locație</value>
+  </data>
+  <data name="hr" xml:space="preserve">
+    <value>oră</value>
+  </data>
+  <data name="hrs" xml:space="preserve">
+    <value>ore</value>
+  </data>
+  <data name="hybrid" xml:space="preserve">
+    <value>Hibrid</value>
+  </data>
+  <data name="hydraulicOilTemperature" xml:space="preserve">
+    <value>Temperatură Ulei Hidraulic</value>
+  </data>
+  <data name="hydraulicTemperatureHeader" xml:space="preserve">
+    <value>Raport Temperatură Ulei Hidraulic</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Relanti</value>
+  </data>
+  <data name="idleEventsMessage" xml:space="preserve">
+    <value>Evenimente La Relanti mai lungi decât {0} {1}</value>
+  </data>
+  <data name="idleFuelBurned" xml:space="preserve">
+    <value>Combustibil Consumat la Relanti</value>
+  </data>
+  <data name="idleHourMeter" xml:space="preserve">
+    <value>Contor Ore la Relanti</value>
+  </data>
+  <data name="idleHours" xml:space="preserve">
+    <value>Ore Relanti</value>
+  </data>
+  <data name="idleTime" xml:space="preserve">
+    <value>Timp Relanti</value>
+  </data>
+  <data name="idleTimeOut" xml:space="preserve">
+    <value>Timeout Relanti</value>
+  </data>
+  <data name="idling" xml:space="preserve">
+    <value>În Relanti</value>
+  </data>
+  <data name="idlingFuelBurned" xml:space="preserve">
+    <value>Combustibil Consumat La Relanti</value>
+  </data>
+  <data name="IgnitionOff" xml:space="preserve">
+    <value>Igniție Oprită</value>
+  </data>
+  <data name="IgnitionOn" xml:space="preserve">
+    <value>Igniție Pornită</value>
+  </data>
+  <data name="ignitionStatus" xml:space="preserve">
+    <value>Stare Igniție</value>
+  </data>
+  <data name="inProgress" xml:space="preserve">
+    <value>În-desfășurare</value>
+  </data>
+  <data name="inactiveNoRuntime" xml:space="preserve">
+    <value>Inactiv – Niciun Timp Funcționare</value>
+  </data>
+  <data name="includeSupercededLifts" xml:space="preserve">
+    <value>Include Ridicări Eliminate</value>
+  </data>
+  <data name="InclusionZone" xml:space="preserve">
+    <value>Zonă Incluziune</value>
+  </data>
+  <data name="incomplete" xml:space="preserve">
+    <value>Incomplet</value>
+  </data>
+  <data name="incorrectUsernameOrPassword" xml:space="preserve">
+    <value>Nume utilizator sau parolă incorecte.</value>
+  </data>
+  <data name="incorrectWorkingTime" xml:space="preserve">
+    <value>Valoare incorectă pentru calculare Timp În Lucru.</value>
+  </data>
+  <data name="dcToIRecInifiniteAdjustmentSlopeValue" xml:space="preserve">
+    <value>Valoare pantă ajustare infinită (DCToIRecord converter)</value>
+  </data>
+  <data name="insufficientDataForCalculation" xml:space="preserve">
+    <value>Insuficiente date pentru calcul</value>
+  </data>
+  <data name="singleDayCalloutNegativeValue" xml:space="preserve">
+    <value>Precizie insuficientă a contorului timpului de funcționare pentru un calcul corect</value>
+  </data>
+  <data name="dateRangeCalloutNegativeValue" xml:space="preserve">
+    <value>Precizie insuficientă a contorului timpului de funcționare pentru un calcul corect în intervalul de date</value>
+  </data>
+  <data name="introduction" xml:space="preserve">
+    <value>Introducere</value>
+  </data>
+  <data name="invalidCoordinateRange" xml:space="preserve">
+    <value>Limite coordonate nevalide</value>
+  </data>
+  <data name="suppliedDataModelBoundaryContainsInsufficeintVertices" xml:space="preserve">
+    <value>Date nevalide contur model.</value>
+  </data>
+  <data name="dcToIRecInvalidEllipsoid" xml:space="preserve">
+    <value>Elipsoid nevalid (DCToIRecord converter)</value>
+  </data>
+  <data name="InValidReportRequest" xml:space="preserve">
+    <value>Cerere raport excel nevalidă.</value>
+  </data>
+  <data name="InvalidSeedPosition" xml:space="preserve">
+    <value>Poziție LLH/NEE nevalidă în fișierul tag</value>
+  </data>
+  <data name="InvalidMSSKey" xml:space="preserve">
+    <value>Cheie MSS ne-validă</value>
+  </data>
+  <data name="invalidResponseCode" xml:space="preserve">
+    <value>Cod răspuns nevalid</value>
+  </data>
+  <data name="invalidSubscriptions" xml:space="preserve">
+    <value>Subscripții invalide.</value>
+  </data>
+  <data name="invalidTagFile" xml:space="preserve">
+    <value>Fișier TAG ne-valid.</value>
+  </data>
+  <data name="invalidValueDetected" xml:space="preserve">
+    <value>Valoare invalidă detectată</value>
+  </data>
+  <data name="singleDayCalloutSpike" xml:space="preserve">
+    <value>Valoare nevalidă detectată</value>
+  </data>
+  <data name="dateRangeCalloutSpike" xml:space="preserve">
+    <value>Valoare nevalidă detectată în intervalul de date</value>
+  </data>
+  <data name="kilometers" xml:space="preserve">
+    <value>Kilometri</value>
+  </data>
+  <data name="km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kmL" xml:space="preserve">
+    <value>km/l</value>
+  </data>
+  <data name="kms" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kpa" xml:space="preserve">
+    <value>kPa</value>
+  </data>
+  <data name="kph" xml:space="preserve">
+    <value>kmh</value>
+  </data>
+  <data name="leftAbbrev" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="ltr" xml:space="preserve">
+    <value>l</value>
+  </data>
+  <data name="ltrhr" xml:space="preserve">
+    <value>l/hr</value>
+  </data>
+  <data name="FluidAnalysisAlertDescription" xml:space="preserve">
+    <value>Lab. #:  {0} Compartiment: {1} Severitate:</value>
+  </data>
+  <data name="labNumber" xml:space="preserve">
+    <value>Număr Lab.</value>
+  </data>
+  <data name="language" xml:space="preserve">
+    <value>Limbă</value>
+  </data>
+  <data name="last" xml:space="preserve">
+    <value>Ultim</value>
+  </data>
+  <data name="lastKnownLocation" xml:space="preserve">
+    <value>Ultima Locație Cunoscută</value>
+  </data>
+  <data name="lastKnownStatus" xml:space="preserve">
+    <value>Ultima Stare Cunoscută</value>
+  </data>
+  <data name="lastReportedStatus" xml:space="preserve">
+    <value>Ultima Stare Cunoscută</value>
+  </data>
+  <data name="lastLogin" xml:space="preserve">
+    <value>Ultimul Login</value>
+  </data>
+  <data name="lastLoginDate" xml:space="preserve">
+    <value>Ultima Dată de Conectare</value>
+  </data>
+  <data name="lastloginUTC" xml:space="preserve">
+    <value>UTC Ultim Login</value>
+  </data>
+  <data name="lastname" xml:space="preserve">
+    <value>Ultimul Nume</value>
+  </data>
+  <data name="lastReported" xml:space="preserve">
+    <value>Ultimul Raportat</value>
+  </data>
+  <data name="lastReportedLocation" xml:space="preserve">
+    <value>Ultima Locașie Raportată</value>
+  </data>
+  <data name="lastReportedTime" xml:space="preserve">
+    <value>Ultimul Timp Raportat</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Ultima Actualizată</value>
+  </data>
+  <data name="lastNDays" xml:space="preserve">
+    <value>Ultimele {0} Zile</value>
+  </data>
+  <data name="latitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Lat.</value>
+  </data>
+  <data name="latest" xml:space="preserve">
+    <value>Ultimele</value>
+  </data>
+  <data name="latestUserActivity" xml:space="preserve">
+    <value>Ultima Activitate Utilizator</value>
+  </data>
+  <data name="LaunchVLApp" xml:space="preserve">
+    <value>Lansare Aplicații VisionLink</value>
+  </data>
+  <data name="leaseOwnership" xml:space="preserve">
+    <value>Închiriere Proprietate</value>
+  </data>
+  <data name="passesLessthan" xml:space="preserve">
+    <value>Mai puțin de {0} treceri</value>
+  </data>
+  <data name="lessThanNPercent" xml:space="preserve">
+    <value>Mai puțin de {0}%</value>
+  </data>
+  <data name="level0" xml:space="preserve">
+    <value>Nivel 0</value>
+  </data>
+  <data name="level1" xml:space="preserve">
+    <value>Nivel 1</value>
+  </data>
+  <data name="level2" xml:space="preserve">
+    <value>Nivel 2</value>
+  </data>
+  <data name="level3" xml:space="preserve">
+    <value>Nivel 3</value>
+  </data>
+  <data name="lifetimeFuel" xml:space="preserve">
+    <value>Combustibil Durată de Funcționare</value>
+  </data>
+  <data name="lifetimeFuelMeter" xml:space="preserve">
+    <value>Contor Combustibil Durată de Funcționare</value>
+  </data>
+  <data name="lifetimeIdleFuelMeter" xml:space="preserve">
+    <value>Contor Combustibil La relanti Durată de Funcționare</value>
+  </data>
+  <data name="layerNumber" xml:space="preserve">
+    <value>Strat</value>
+  </data>
+  <data name="lift" xml:space="preserve">
+    <value>Strat</value>
+  </data>
+  <data name="InValidLink" xml:space="preserve">
+    <value>Link-ul a expirat.</value>
+  </data>
+  <data name="litersBarChartXAxisLabel" xml:space="preserve">
+    <value>Litri</value>
+  </data>
+  <data name="litershr" xml:space="preserve">
+    <value>Litri / Oră</value>
+  </data>
+  <data name="litersBurned" xml:space="preserve">
+    <value>Litri Consumați</value>
+  </data>
+  <data name="loadAndCycleMonitoring" xml:space="preserve">
+    <value>Monitorizare Încărcare &amp; Ciclu</value>
+  </data>
+  <data name="LoadCount" xml:space="preserve">
+    <value>Raport Indice Productivitate</value>
+  </data>
+  <data name="loadCountReport" xml:space="preserve">
+    <value>Raport Indice Productivitate</value>
+  </data>
+  <data name="loadCounts" xml:space="preserve">
+    <value>Indice Productivitate</value>
+  </data>
+  <data name="loadCountsAndCycleTimes" xml:space="preserve">
+    <value>Indice Productivitate și Timpi Ciclu</value>
+  </data>
+  <data name="LoadDistance" xml:space="preserve">
+    <value>Distanță Încărcare</value>
+  </data>
+  <data name="LoadDistanceAlertDescription" xml:space="preserve">
+    <value>Distanță Încărcare {0}</value>
+  </data>
+  <data name="loadEvent" xml:space="preserve">
+    <value>Eveniment Încărcare</value>
+  </data>
+  <data name="loadLocation" xml:space="preserve">
+    <value>Locație Încărcare</value>
+  </data>
+  <data name="loadQuality" xml:space="preserve">
+    <value>Calitate Încărcătură</value>
+  </data>
+  <data name="loadTime" xml:space="preserve">
+    <value>Timp Încărcare</value>
+  </data>
+  <data name="loadToDumpDistance" xml:space="preserve">
+    <value>Distanță Încărcare-Descărcare</value>
+  </data>
+  <data name="loadToLoadDistance" xml:space="preserve">
+    <value>Distanță Încărcare- Încărcare</value>
+  </data>
+  <data name="assetLoadedLoading" xml:space="preserve">
+    <value>Încărcat De</value>
+  </data>
+  <data name="loader" xml:space="preserve">
+    <value>Încărcător</value>
+  </data>
+  <data name="loaderOperation" xml:space="preserve">
+    <value>Operare Încărcător</value>
+  </data>
+  <data name="loads" xml:space="preserve">
+    <value>Încărcături</value>
+  </data>
+  <data name="locate" xml:space="preserve">
+    <value>Localizare</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Locație</value>
+  </data>
+  <data name="geolocationPositionUnavailable" xml:space="preserve">
+    <value>Locația nu este disponibilă.</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="loginCreationDate" xml:space="preserve">
+    <value>Dată Creare Conectare</value>
+  </data>
+  <data name="loginfailed" xml:space="preserve">
+    <value>Conectare Eșuată</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="longitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Long.</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Scăzut</value>
+  </data>
+  <data name="LowSensorBattery" xml:space="preserve">
+    <value>Baterie Scăzută</value>
+  </data>
+  <data name="LowFuel" xml:space="preserve">
+    <value>Carburant Redus</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Minim</value>
+  </data>
+  <data name="metersAbbrev" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="m3" xml:space="preserve">
+    <value>m3</value>
+  </data>
+  <data name="meterUpdateSummary" xml:space="preserve">
+    <value>Ore Mașină</value>
+  </data>
+  <data name="machineIdleEvent" xml:space="preserve">
+    <value>Mașină La Relanti</value>
+  </data>
+  <data name="machineName" xml:space="preserve">
+    <value>Nume Mașină</value>
+  </data>
+  <data name="make" xml:space="preserve">
+    <value>Marcă</value>
+  </data>
+  <data name="makeModel" xml:space="preserve">
+    <value>Fabricant/Model</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Manual</value>
+  </data>
+  <data name="map" xml:space="preserve">
+    <value>Hartă</value>
+  </data>
+  <data name="mapReset" xml:space="preserve">
+    <value>Resetare Hartă</value>
+  </data>
+  <data name="mappingType" xml:space="preserve">
+    <value>Tip Mapare</value>
+  </data>
+  <data name="markCompleted" xml:space="preserve">
+    <value>Marcare Completată</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>Material</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="maxSpeed" xml:space="preserve">
+    <value>Viteză Max</value>
+  </data>
+  <data name="maxRecordsReached" xml:space="preserve">
+    <value>Număr maxim de înregistrări</value>
+  </data>
+  <data name="maximumTemperature" xml:space="preserve">
+    <value>Temperatură Maximă</value>
+  </data>
+  <data name="deviceTypeMCHYPHEN3" xml:space="preserve">
+    <value>MC-3</value>
+  </data>
+  <data name="mdp" xml:space="preserve">
+    <value>MDP</value>
+  </data>
+  <data name="mdpSummary" xml:space="preserve">
+    <value>Sumar MDP</value>
+  </data>
+  <data name="mdpSummaryReport" xml:space="preserve">
+    <value>Raport Sumar MDP</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Mediu</value>
+  </data>
+  <data name="meter" xml:space="preserve">
+    <value>Contor</value>
+  </data>
+  <data name="meterReading" xml:space="preserve">
+    <value>Citire Contor</value>
+  </data>
+  <data name="meterUpdate" xml:space="preserve">
+    <value>Actualizare Contor</value>
+  </data>
+  <data name="meterUpdateSent" xml:space="preserve">
+    <value>Actualizare Contor Trimisă</value>
+  </data>
+  <data name="mi" xml:space="preserve">
+    <value>mi</value>
+  </data>
+  <data name="mileGal" xml:space="preserve">
+    <value>mile/gal</value>
+  </data>
+  <data name="mileage" xml:space="preserve">
+    <value>Mile</value>
+  </data>
+  <data name="miles" xml:space="preserve">
+    <value>mile</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>min.</value>
+  </data>
+  <data name="minimumTemperature" xml:space="preserve">
+    <value>Temperatură Minimă</value>
+  </data>
+  <data name="Missed" xml:space="preserve">
+    <value>Omis</value>
+  </data>
+  <data name="missingMeterValueDetected" xml:space="preserve">
+    <value>Valoare contor lipsă, detectată</value>
+  </data>
+  <data name="singleDayCalloutMissingMeterValue" xml:space="preserve">
+    <value>Lipsă valoare contor detectată</value>
+  </data>
+  <data name="dateRangeCalloutMissingMeterValue" xml:space="preserve">
+    <value>Lipsă valoare contor detectată în intervalul de date</value>
+  </data>
+  <data name="MM" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="modelYear" xml:space="preserve">
+    <value>An Model</value>
+  </data>
+  <data name="module" xml:space="preserve">
+    <value>Modul</value>
+  </data>
+  <data name="moduleAccessProvidedBy" xml:space="preserve">
+    <value>Acces Modul este furnizat de</value>
+  </data>
+  <data name="FluidMonitorPriority" xml:space="preserve">
+    <value>Monitorizare</value>
+  </data>
+  <data name="monitoredCycleDetailsReport" xml:space="preserve">
+    <value>Raport Detalii Ciclu Monitorizat</value>
+  </data>
+  <data name="monitoredLoadCountDetailsReport" xml:space="preserve">
+    <value>Raport Detalii Indice Productivitate Monitorizat</value>
+  </data>
+  <data name="monitoredSiteDetailsReport" xml:space="preserve">
+    <value>Raport Detalii Sector Monitorizat</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Lunar</value>
+  </data>
+  <data name="more" xml:space="preserve">
+    <value>Continuă</value>
+  </data>
+  <data name="moreThan" xml:space="preserve">
+    <value>Mai mult decât</value>
+  </data>
+  <data name="passesMorethan" xml:space="preserve">
+    <value>Mai mult de {0} treceri</value>
+  </data>
+  <data name="top10MostFrequentlyOccurringFaults" xml:space="preserve">
+    <value>Cele Mai Frecvente Coduri de Eroare Apărute (Primele 10)</value>
+  </data>
+  <data name="MovementWithAssetOff" xml:space="preserve">
+    <value>Mișcare cu Activ Oprit</value>
+  </data>
+  <data name="MovementWithAssetOn" xml:space="preserve">
+    <value>Mișcare cu Activ Pornit</value>
+  </data>
+  <data name="movingStatus" xml:space="preserve">
+    <value>Stare Mișcare</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="deviceTypeMTHYPHEN10" xml:space="preserve">
+    <value>MT-10</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENElectricEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Electric Engine</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENMotorEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Motor Engine</value>
+  </data>
+  <data name="MulitpleProjects" xml:space="preserve">
+    <value>Proiecte multiple găsite</value>
+  </data>
+  <data name="multipleSelections" xml:space="preserve">
+    <value>Selecțiuni Multiple</value>
+  </data>
+  <data name="notApplicable" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Nume</value>
+  </data>
+  <data name="nearbyAssets" xml:space="preserve">
+    <value>Active Apropiate</value>
+  </data>
+  <data name="nearbyAssetsByProductFamily" xml:space="preserve">
+    <value>Serie Produs Similar</value>
+  </data>
+  <data name="NewAccountSupportEmailSubject" xml:space="preserve">
+    <value>Informație Înregistrare Cont Nou</value>
+  </data>
+  <data name="nextService" xml:space="preserve">
+    <value>Următoarea Revizie</value>
+  </data>
+  <data name="FluidNoActionPriority" xml:space="preserve">
+    <value>Nicio Acțiune</value>
+  </data>
+  <data name="noBoundariesInLineworkFile" xml:space="preserve">
+    <value>Niciun contur în fișierul linie de lucru.</value>
+  </data>
+  <data name="noChange" xml:space="preserve">
+    <value>Nicio Schimbare</value>
+  </data>
+  <data name="noComment" xml:space="preserve">
+    <value>Fără comentarii</value>
+  </data>
+  <data name="noConnectionToServer" xml:space="preserve">
+    <value>Nicio conexiune la server</value>
+  </data>
+  <data name="noData" xml:space="preserve">
+    <value>Fară Date</value>
+  </data>
+  <data name="noDumpFound" xml:space="preserve">
+    <value>Nicio Descărcare</value>
+  </data>
+  <data name="noDumpSwitch" xml:space="preserve">
+    <value>Nicun Comutator Eveniment Descărcare detectat</value>
+  </data>
+  <data name="NoEndDate" xml:space="preserve">
+    <value>Nicio Dată Finală</value>
+  </data>
+  <data name="noFilter" xml:space="preserve">
+    <value>Niciun Filtru</value>
+  </data>
+  <data name="NoIntervals" xml:space="preserve">
+    <value>Niciun Interval</value>
+  </data>
+  <data name="noItemsFound" xml:space="preserve">
+    <value>Niciun obiect găsit</value>
+  </data>
+  <data name="noLoadFound" xml:space="preserve">
+    <value>Nicio Încărcare</value>
+  </data>
+  <data name="noLoadSwitch" xml:space="preserve">
+    <value>Niciun Comutator Eveniment Încăcare detectat</value>
+  </data>
+  <data name="NoMatchingProjectArea" xml:space="preserve">
+    <value>Nu s-a găsit nicio arie de proiect identică</value>
+  </data>
+  <data name="NoMatchingProjectDate" xml:space="preserve">
+    <value>Nu s-a găsit nicio dată/timp identică</value>
+  </data>
+  <data name="NoPending" xml:space="preserve">
+    <value>Nimic În Așteptare</value>
+  </data>
+  <data name="noResultReturned" xml:space="preserve">
+    <value>Niciun rezultat returnat</value>
+  </data>
+  <data name="noResults" xml:space="preserve">
+    <value>Niciun rezultat</value>
+  </data>
+  <data name="noStopMovmentInValidSite" xml:space="preserve">
+    <value>Niciun Stop Mișcare detectat în Tip Sector valid</value>
+  </data>
+  <data name="noStopMovement" xml:space="preserve">
+    <value>Niciun Eveniment Stop Mișcare detectat</value>
+  </data>
+  <data name="noSuchDataModel" xml:space="preserve">
+    <value>Nu există acest model de date</value>
+  </data>
+  <data name="NoValidCellPassesInTagfile" xml:space="preserve">
+    <value>Nicio celulă de trecere validă a fost găsită în fișierul(ele) tag</value>
+  </data>
+  <data name="InvalidPosition" xml:space="preserve">
+    <value>Nicio poziție validă în fișiertag</value>
+  </data>
+  <data name="NotReporting" xml:space="preserve">
+    <value>Ne-Raportare</value>
+  </data>
+  <data name="devicetypenodevice" xml:space="preserve">
+    <value>NICIO</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>Niciunul</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="NormalOperation" xml:space="preserve">
+    <value>Operare Normală</value>
+  </data>
+  <data name="northing" xml:space="preserve">
+    <value>Nord</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Nedisponibil</value>
+  </data>
+  <data name="NotPending" xml:space="preserve">
+    <value>Ne-Urgent</value>
+  </data>
+  <data name="GensetNotReadyToRun" xml:space="preserve">
+    <value>Nepregătit Să Fucționeze</value>
+  </data>
+  <data name="notVerified" xml:space="preserve">
+    <value>Neverificată</value>
+  </data>
+  <data name="dcToIRecNotWGS84Ellipsoid" xml:space="preserve">
+    <value>Nu este un elipsoid WGS84 (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecNotWGS84EllipsoidSameAsProj" xml:space="preserve">
+    <value>Nu este un elipsoid WGS84 în inregistratrea datum (DCToIRecord converter)</value>
+  </data>
+  <data name="NotReportingforExcelReport" xml:space="preserve">
+    <value>Ne-Raportare</value>
+  </data>
+  <data name="SavEmailFooter" xml:space="preserve">
+    <value>Notă: Acesta este un email de notificare. Ați fost adăugat la această listă de notificare pentru că sunteți un Utilizator Administrator al propriului VisionLink Account.</value>
+  </data>
+  <data name="notes" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="occurrenceCount" xml:space="preserve">
+    <value>Contor Ocurențe</value>
+  </data>
+  <data name="odometer" xml:space="preserve">
+    <value>Odometru</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>Oprit</value>
+  </data>
+  <data name="offset" xml:space="preserve">
+    <value>Decalaj</value>
+  </data>
+  <data name="offsetFromBench" xml:space="preserve">
+    <value>Ofset de la Reper</value>
+  </data>
+  <data name="offsetFromDesign" xml:space="preserve">
+    <value>Ofset de la Proiect</value>
+  </data>
+  <data name="offsetFromProfile" xml:space="preserve">
+    <value>Ofset de la Profil</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>Pornit</value>
+  </data>
+  <data name="onGrade" xml:space="preserve">
+    <value>Pe Sol</value>
+  </data>
+  <data name="onMachineDesign" xml:space="preserve">
+    <value>Proiect Pe Mașină</value>
+  </data>
+  <data name="OnBoardServiceToolCommand" xml:space="preserve">
+    <value>Comandă On-Board Service Tool</value>
+  </data>
+  <data name="InvalidOnGroundFlag" xml:space="preserve">
+    <value>indicator on_ground nesetat sau invalid în fișier tag</value>
+  </data>
+  <data name="OpenAlerts" xml:space="preserve">
+    <value>Deschide Alerte</value>
+  </data>
+  <data name="operationModeBreakup" xml:space="preserve">
+    <value>Mod Operare Break up</value>
+  </data>
+  <data name="operatorID" xml:space="preserve">
+    <value>Operator ID</value>
+  </data>
+  <data name="operatorName" xml:space="preserve">
+    <value>Nume Operator</value>
+  </data>
+  <data name="origin" xml:space="preserve">
+    <value>Origine</value>
+  </data>
+  <data name="OTACommand" xml:space="preserve">
+    <value>Comandă OTA</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Altele</value>
+  </data>
+  <data name="overCompacted" xml:space="preserve">
+    <value>Supra Compactat</value>
+  </data>
+  <data name="overcompactedLayer" xml:space="preserve">
+    <value>Strat Supra Compactat</value>
+  </data>
+  <data name="maxLevel" xml:space="preserve">
+    <value>Peste Nivel Maxim</value>
+  </data>
+  <data name="overPassTarget" xml:space="preserve">
+    <value>Treceri Peste Țintă</value>
+  </data>
+  <data name="OverPressure" xml:space="preserve">
+    <value>Supra Presiune</value>
+  </data>
+  <data name="OverTemperature" xml:space="preserve">
+    <value>Supra Temperatură</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>Expirat</value>
+  </data>
+  <data name="serviceDueSummary" xml:space="preserve">
+    <value>Serviciu Expirat și Următor</value>
+  </data>
+  <data name="OverdueBy" xml:space="preserve">
+    <value>Expirat de</value>
+  </data>
+  <data name="pMode" xml:space="preserve">
+    <value>Mod P</value>
+  </data>
+  <data name="pageXofY" xml:space="preserve">
+    <value>Pagina &amp;[Page] a &amp;[Pages]</value>
+  </data>
+  <data name="MachineParametersReport" xml:space="preserve">
+    <value>Rapoarte Parametrice</value>
+  </data>
+  <data name="passCount" xml:space="preserve">
+    <value>Contor Treceri</value>
+  </data>
+  <data name="passCountDetail" xml:space="preserve">
+    <value>Detalii Contor Treceri</value>
+  </data>
+  <data name="passCountDetailReport" xml:space="preserve">
+    <value>Raport Detalii Contor Treceri</value>
+  </data>
+  <data name="passCountSummary" xml:space="preserve">
+    <value>Sumar Contor Treceri</value>
+  </data>
+  <data name="passCountSummaryReport" xml:space="preserve">
+    <value>Raport Sumar Contor Treceri</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Parolă</value>
+  </data>
+  <data name="payload" xml:space="preserve">
+    <value>Încărcătură Utilă</value>
+  </data>
+  <data name="PayloadReport" xml:space="preserve">
+    <value>Raport Încărcătură Utilă</value>
+  </data>
+  <data name="payloadPerCycle" xml:space="preserve">
+    <value>Încărcătură utilă/Ciclu</value>
+  </data>
+  <data name="payloadPerFuel" xml:space="preserve">
+    <value>Încărcătură utilă/Combustibil</value>
+  </data>
+  <data name="payloadPerHour" xml:space="preserve">
+    <value>Încărcătură utilă/Oră</value>
+  </data>
+  <data name="chartWorkSheetTitle" xml:space="preserve">
+    <value>PayloadChart</value>
+  </data>
+  <data name="dataWorkSheetTitle" xml:space="preserve">
+    <value>Date Încărcătură Utilă</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>În Așteptare</value>
+  </data>
+  <data name="performance" xml:space="preserve">
+    <value>Performanță</value>
+  </data>
+  <data name="performedBy" xml:space="preserve">
+    <value>Efectuat De</value>
+  </data>
+  <data name="phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="deviceTypePL420" xml:space="preserve">
+    <value>PL420</value>
+  </data>
+  <data name="deviceTypePL431" xml:space="preserve">
+    <value>PL431</value>
+  </data>
+  <data name="deviceTypeMTS521" xml:space="preserve">
+    <value>PL521</value>
+  </data>
+  <data name="deviceTypeMTS522" xml:space="preserve">
+    <value>PL522</value>
+  </data>
+  <data name="deviceTypePLE641PLUSPL631" xml:space="preserve">
+    <value>PLE641+PL631</value>
+  </data>
+  <data name="changeDatesOrBoundary" xml:space="preserve">
+    <value>Modificați fie datele, fie conturul proiectului.</value>
+  </data>
+  <data name="cookiesRequired" xml:space="preserve">
+    <value>Activați cookies la acest browser.</value>
+  </data>
+  <data name="javascriptRequired" xml:space="preserve">
+    <value>Activați javascript și cookies pentru acest browser.</value>
+  </data>
+  <data name="enterYourPassword" xml:space="preserve">
+    <value>Introduceți parolă.</value>
+  </data>
+  <data name="enterYourUsername" xml:space="preserve">
+    <value>Introduceți Nume Utilizator.</value>
+  </data>
+  <data name="pleaseInstallBlackBerryMaps" xml:space="preserve">
+    <value>Instalați hărți BlackBerry.</value>
+  </data>
+  <data name="excelRowLimitReached" xml:space="preserve">
+    <value>Notați că datele returnate depășesc limita rândurilor în Excel și nu sunt incluse în raport.</value>
+  </data>
+  <data name="selectService" xml:space="preserve">
+    <value>Selectați o revizie înainte de a trimite o solicitare.</value>
+  </data>
+  <data name="PM" xml:space="preserve">
+    <value>PM</value>
+  </data>
+  <data name="PowerLoss" xml:space="preserve">
+    <value>Cădere de Tensiune</value>
+  </data>
+  <data name="PowerMode" xml:space="preserve">
+    <value>Mod Putere</value>
+  </data>
+  <data name="pressure" xml:space="preserve">
+    <value>Presiune</value>
+  </data>
+  <data name="probProcessing" xml:space="preserve">
+    <value>Probleme apărute pe parcursul procesării.</value>
+  </data>
+  <data name="productFamily" xml:space="preserve">
+    <value>Serie Produs</value>
+  </data>
+  <data name="project" xml:space="preserve">
+    <value>Proiect</value>
+  </data>
+  <data name="overlappingProject" xml:space="preserve">
+    <value>Proiectele nu se pot suprapune temporal (dată început și sfârșit) și spațial (contur proiect).</value>
+  </data>
+  <data name="proofingRun" xml:space="preserve">
+    <value>Verificare Execuție</value>
+  </data>
+  <data name="proximityLoads" xml:space="preserve">
+    <value>Încărcături Proximitate</value>
+  </data>
+  <data name="proximitytoSwitch" xml:space="preserve">
+    <value>Proximitate la Comutator</value>
+  </data>
+  <data name="psi" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="purchaseDate" xml:space="preserve">
+    <value>Dată Cumpărare</value>
+  </data>
+  <data name="rightAbbrev" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="raw" xml:space="preserve">
+    <value>Date Brute</value>
+  </data>
+  <data name="reconciled" xml:space="preserve">
+    <value>Reconciliat</value>
+  </data>
+  <data name="ReconciledLoadDumpEvent" xml:space="preserve">
+    <value>Eveniment Încărcare/Descărcare Reconciliat</value>
+  </data>
+  <data name="recordedBy" xml:space="preserve">
+    <value>Înregistrat La</value>
+  </data>
+  <data name="registeredDealer" xml:space="preserve">
+    <value>Dealer Înregistrat</value>
+  </data>
+  <data name="release" xml:space="preserve">
+    <value>Eliberare</value>
+  </data>
+  <data name="rememberMe" xml:space="preserve">
+    <value>Memorează</value>
+  </data>
+  <data name="reportDateRange" xml:space="preserve">
+    <value>Raport Interval Date</value>
+  </data>
+  <data name="reportGeneratedDate" xml:space="preserve">
+    <value>Raport Date Generate</value>
+  </data>
+  <data name="reportType" xml:space="preserve">
+    <value>Tip raport</value>
+  </data>
+  <data name="reportedTime" xml:space="preserve">
+    <value>Timp Raportat</value>
+  </data>
+  <data name="requestAccess" xml:space="preserve">
+    <value>Solicitare Access</value>
+  </data>
+  <data name="requestCanceled" xml:space="preserve">
+    <value>Cerere anulată</value>
+  </data>
+  <data name="requestSentSuccessfully" xml:space="preserve">
+    <value>Solicitare de acces trimisă cu succes.</value>
+  </data>
+  <data name="abortedDueToPipelineTimeout" xml:space="preserve">
+    <value>Cerere abandonată datorită unui timeout la coadă</value>
+  </data>
+  <data name="requestHasBeenCancelled" xml:space="preserve">
+    <value>Solicitarea a fost anulată</value>
+  </data>
+  <data name="resolved" xml:space="preserve">
+    <value>Rezolvat</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Reîncercare</value>
+  </data>
+  <data name="reverse" xml:space="preserve">
+    <value>Înapoi</value>
+  </data>
+  <data name="roadDesign" xml:space="preserve">
+    <value>Proiect Drum</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>RPM</value>
+  </data>
+  <data name="running" xml:space="preserve">
+    <value>Funcționare</value>
+  </data>
+  <data name="runningTotal" xml:space="preserve">
+    <value>Funcționare (Total)</value>
+  </data>
+  <data name="runningBurnRate" xml:space="preserve">
+    <value>Rată Consum În Funcțiune</value>
+  </data>
+  <data name="runningFuelBurned" xml:space="preserve">
+    <value>Comb. Consumat În Funcț.</value>
+  </data>
+  <data name="runningUtil" xml:space="preserve">
+    <value>Utilizare Funcționare</value>
+  </data>
+  <data name="runtime" xml:space="preserve">
+    <value>Timp Funcționare</value>
+  </data>
+  <data name="runTimePercentage" xml:space="preserve">
+    <value>Runtime Percentage</value>
+  </data>
+  <data name="sn" xml:space="preserve">
+    <value>S/N</value>
+  </data>
+  <data name="sampleDate" xml:space="preserve">
+    <value>Date Probă</value>
+  </data>
+  <data name="satellite" xml:space="preserve">
+    <value>Satelit</value>
+  </data>
+  <data name="requestScheduleFailure" xml:space="preserve">
+    <value>Eroare Orar</value>
+  </data>
+  <data name="requestScheduleLoadTooHigh" xml:space="preserve">
+    <value>Încărcătura Planificată este prea mare</value>
+  </data>
+  <data name="requestScheduleTimeout" xml:space="preserve">
+    <value>Timeout Orar</value>
+  </data>
+  <data name="schemaExamples" xml:space="preserve">
+    <value>Exemple Schemă</value>
+  </data>
+  <data name="scraper" xml:space="preserve">
+    <value>Scraper</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Căutare</value>
+  </data>
+  <data name="sec" xml:space="preserve">
+    <value>sec.</value>
+  </data>
+  <data name="secondPoint" xml:space="preserve">
+    <value>Punct Secund</value>
+  </data>
+  <data name="TamperSecurityStatus" xml:space="preserve">
+    <value>Stare Securitate</value>
+  </data>
+  <data name="selectAsset" xml:space="preserve">
+    <value>Selectare Activ</value>
+  </data>
+  <data name="selectAssets" xml:space="preserve">
+    <value>Selectați Active</value>
+  </data>
+  <data name="selectDateRange" xml:space="preserve">
+    <value>Selectare Interval Dată</value>
+  </data>
+  <data name="selectFuelPercentRemaining" xml:space="preserve">
+    <value>Selectați % Combustibil Rămas</value>
+  </data>
+  <data name="selectGroup" xml:space="preserve">
+    <value>Selectați Grup</value>
+  </data>
+  <data name="selectProductFamily" xml:space="preserve">
+    <value>Selectați Serie Produs</value>
+  </data>
+  <data name="selectSite" xml:space="preserve">
+    <value>Selectați Sector</value>
+  </data>
+  <data name="selectedDesign" xml:space="preserve">
+    <value>Proiect Selectat</value>
+  </data>
+  <data name="selectionLimitReached" xml:space="preserve">
+    <value>Limită Selecție Atinsă</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Trimitere</value>
+  </data>
+  <data name="sensor" xml:space="preserve">
+    <value>Senzor</value>
+  </data>
+  <data name="serialNumber" xml:space="preserve">
+    <value>Număr Serial</value>
+  </data>
+  <data name="serverBuildNumber" xml:space="preserve">
+    <value>Număr Fabricație Server</value>
+  </data>
+  <data name="service" xml:space="preserve">
+    <value>Revizie</value>
+  </data>
+  <data name="serviceDate" xml:space="preserve">
+    <value>Dată Revizie</value>
+  </data>
+  <data name="ServiceDue" xml:space="preserve">
+    <value>Revizie Scadentă</value>
+  </data>
+  <data name="ServiceDueMileageBased" xml:space="preserve">
+    <value>Revizie Scadentă (Bazat pe Mile)</value>
+  </data>
+  <data name="serviceDueReport" xml:space="preserve">
+    <value>Raport Revizie Scadentă</value>
+  </data>
+  <data name="MaintenanceHistoryReport" xml:space="preserve">
+    <value>Raport Istoric Revizie</value>
+  </data>
+  <data name="serviceInterval" xml:space="preserve">
+    <value>Interval Revizie</value>
+  </data>
+  <data name="serviceIntervalCompleted" xml:space="preserve">
+    <value>Interval Revizie Completat</value>
+  </data>
+  <data name="serviceIntervals" xml:space="preserve">
+    <value>Intervale Revizie</value>
+  </data>
+  <data name="serviceNotes" xml:space="preserve">
+    <value>Note Revizie</value>
+  </data>
+  <data name="serviceStopped" xml:space="preserve">
+    <value>Serviciu Oprit</value>
+  </data>
+  <data name="servicesOffered" xml:space="preserve">
+    <value>Revizii Oferite</value>
+  </data>
+  <data name="sessionExpired" xml:space="preserve">
+    <value>Sesiune expirată datorită inactivității sau a unui login duplicat.</value>
+  </data>
+  <data name="severity" xml:space="preserve">
+    <value>Severitate</value>
+  </data>
+  <data name="SavTerminationHeaderForBss" xml:space="preserve">
+    <value>Vizualizare Activ Partajat a fost terminată datorită funcțiilor Admin efectuate în Trimble Store. Contactați administratorul lui {0} pentru mai multe detalii.</value>
+  </data>
+  <data name="SavTerminationHeaderForWizard" xml:space="preserve">
+    <value>Vizualizare Activ Partajat pentru următoarele Active a fost terminată pentru că utilizatorul Creator a șters această Vizualizare, sau pentru că Vizualizarea a expirat.</value>
+  </data>
+  <data name="SavNotificationHeader" xml:space="preserve">
+    <value>Vizualizare Activ Partajat pentru Activele următoare expiră la {0}.</value>
+  </data>
+  <data name="SharedAssetViewReport" xml:space="preserve">
+    <value>Raport Vizualizare Activ Partajat</value>
+  </data>
+  <data name="sharedToOrganization" xml:space="preserve">
+    <value>Partajat La Organizație</value>
+  </data>
+  <data name="shrinkage" xml:space="preserve">
+    <value>Contractare</value>
+  </data>
+  <data name="SimCardRemovedTimerExpired" xml:space="preserve">
+    <value>Card SIM Îndepărtată</value>
+  </data>
+  <data name="site" xml:space="preserve">
+    <value>Sector</value>
+  </data>
+  <data name="siteBoundary" xml:space="preserve">
+    <value>Contur Sector</value>
+  </data>
+  <data name="SiteEntry" xml:space="preserve">
+    <value>Intrare Sector</value>
+  </data>
+  <data name="siteAlertsWarning" xml:space="preserve">
+    <value>Evenimentele de intrare și ieșire sector sunt derivate de la locațiile recepționate de la mașină. Aceste evnimente pot fi întârziate sau omise în funcție de când mașina raportează locația.</value>
+  </data>
+  <data name="SiteEntryOrExit" xml:space="preserve">
+    <value>Intrare sau Ieșire Sector</value>
+  </data>
+  <data name="siteEntryOutsideReportDateRange" xml:space="preserve">
+    <value>Intrare sector în afara intervalelor de date din raport</value>
+  </data>
+  <data name="SiteExit" xml:space="preserve">
+    <value>Ieșire Sector</value>
+  </data>
+  <data name="siteExitOutsideReportDateRange" xml:space="preserve">
+    <value>Ieșire sector în afara intervalelor de date din raport</value>
+  </data>
+  <data name="siteName" xml:space="preserve">
+    <value>Nume Sector</value>
+  </data>
+  <data name="SiteRuntime" xml:space="preserve">
+    <value>Raport Timp Funcționare Sector</value>
+  </data>
+  <data name="siteRuntimeReport" xml:space="preserve">
+    <value>Raport Timp Funcționare Sector</value>
+  </data>
+  <data name="sitetoSite" xml:space="preserve">
+    <value>Sector La Sector</value>
+  </data>
+  <data name="sites" xml:space="preserve">
+    <value>Sectoare</value>
+  </data>
+  <data name="toManyPoints" xml:space="preserve">
+    <value>Sectoarele pot conține un maximum de 50 de puncte.</value>
+  </data>
+  <data name="skipped" xml:space="preserve">
+    <value>Omis</value>
+  </data>
+  <data name="smuLocation" xml:space="preserve">
+    <value>Locație SMU</value>
+  </data>
+  <data name="deviceTypeSNM451" xml:space="preserve">
+    <value>SNM451</value>
+  </data>
+  <data name="errorMessage" xml:space="preserve">
+    <value>A apărut o problemă la solicitarea d-voastră. Încercați din nou.</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Sursă</value>
+  </data>
+  <data name="Speeding" xml:space="preserve">
+    <value>Viteză Excesivă</value>
+  </data>
+  <data name="sqft" xml:space="preserve">
+    <value>sq ft</value>
+  </data>
+  <data name="sqm" xml:space="preserve">
+    <value>sq m</value>
+  </data>
+  <data name="SS" xml:space="preserve">
+    <value>Sec</value>
+  </data>
+  <data name="standardMode" xml:space="preserve">
+    <value>Mod Standard</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="startDate" xml:space="preserve">
+    <value>Dată Startare</value>
+  </data>
+  <data name="startHourMeter" xml:space="preserve">
+    <value>Contor Ore Startare</value>
+  </data>
+  <data name="startLocation" xml:space="preserve">
+    <value>Locație Start</value>
+  </data>
+  <data name="startMode" xml:space="preserve">
+    <value>Mod Start</value>
+  </data>
+  <data name="startSpeedDateTime" xml:space="preserve">
+    <value>Startare Dată și Timp Viteză</value>
+  </data>
+  <data name="startSpeedLocation" xml:space="preserve">
+    <value>Startare Locație Viteză</value>
+  </data>
+  <data name="startTime" xml:space="preserve">
+    <value>Timp Start</value>
+  </data>
+  <data name="StateMileageReport" xml:space="preserve">
+    <value>Kilometraj per Stat</value>
+  </data>
+  <data name="stateProvince" xml:space="preserve">
+    <value>Stat/Provincie</value>
+  </data>
+  <data name="state" xml:space="preserve">
+    <value>Per Stat</value>
+  </data>
+  <data name="station" xml:space="preserve">
+    <value>Stație</value>
+  </data>
+  <data name="StationOffset" xml:space="preserve">
+    <value>Raport Ofset Stație</value>
+  </data>
+  <data name="stationOffsetReport" xml:space="preserve">
+    <value>Raport Ofset Stație</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Stare</value>
+  </data>
+  <data name="stn" xml:space="preserve">
+    <value>Staț.</value>
+  </data>
+  <data name="stop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="stopLocation" xml:space="preserve">
+    <value>Oprire Locație</value>
+  </data>
+  <data name="stopSpeedDateTime" xml:space="preserve">
+    <value>Oprire Dată și Timp Viteză</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Succes</value>
+  </data>
+  <data name="suggestUsingTargetOverride" xml:space="preserve">
+    <value>Recomandare folosire setare suprascriere țintă.</value>
+  </data>
+  <data name="SummaryData" xml:space="preserve">
+    <value>Sumar Dată</value>
+  </data>
+  <data name="summaryOfLoadsByHaulDistance" xml:space="preserve">
+    <value>Sumarul Încărcăturilor după Distanță de Transport</value>
+  </data>
+  <data name="summaryVolumes" xml:space="preserve">
+    <value>Sumar Volume</value>
+  </data>
+  <data name="summaryVolumesReport" xml:space="preserve">
+    <value>Raport Sumar Volume</value>
+  </data>
+  <data name="surplusDeficitVolume" xml:space="preserve">
+    <value>Volum Surplus/Deficit</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>Comutator</value>
+  </data>
+  <data name="switchClosed" xml:space="preserve">
+    <value>Comutator Închis</value>
+  </data>
+  <data name="switchName" xml:space="preserve">
+    <value>Nume Comutator</value>
+  </data>
+  <data name="switchOn" xml:space="preserve">
+    <value>Comutator Activat</value>
+  </data>
+  <data name="switchOpen" xml:space="preserve">
+    <value>Comutator Deschis</value>
+  </data>
+  <data name="switchtoSiteorSitetoSwitch" xml:space="preserve">
+    <value>Comutator la Sector sau Sector la Comutator</value>
+  </data>
+  <data name="switchtoSwitch" xml:space="preserve">
+    <value>Comutator la Comutator</value>
+  </data>
+  <data name="tagfileLiftNumber" xml:space="preserve">
+    <value>Număr Strat tagfile</value>
+  </data>
+  <data name="tamperResistance" xml:space="preserve">
+    <value>Rezistență Alterare</value>
+  </data>
+  <data name="TamperResolvedConnectiontoOffBoard" xml:space="preserve">
+    <value>Alterare Rezolvată</value>
+  </data>
+  <data name="TamperUninstalled" xml:space="preserve">
+    <value>Alterare Neinstalată</value>
+  </data>
+  <data name="deviceTypeTAP66" xml:space="preserve">
+    <value>TAP66</value>
+  </data>
+  <data name="target" xml:space="preserve">
+    <value>Țintă</value>
+  </data>
+  <data name="targetCMV" xml:space="preserve">
+    <value>Țintă CMV</value>
+  </data>
+  <data name="targetCMVRange" xml:space="preserve">
+    <value>Limite Țintă CMV</value>
+  </data>
+  <data name="targetMDP" xml:space="preserve">
+    <value>Țintă MDP</value>
+  </data>
+  <data name="targetMDPRange" xml:space="preserve">
+    <value>Limite Țintă MDP</value>
+  </data>
+  <data name="targetPassCount" xml:space="preserve">
+    <value>Număr Treceri Țintă</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Temperatură</value>
+  </data>
+  <data name="temperatureReport" xml:space="preserve">
+    <value>Raport Temperatură</value>
+  </data>
+  <data name="terrain" xml:space="preserve">
+    <value>Teren</value>
+  </data>
+  <data name="aempInformation" xml:space="preserve">
+    <value>Informațiile AEMP permit utilizatorului să acceseze un instantaneu de date al flotei pentru analiza unor indicatori la nivel înalt și introspecțiunea datelor.</value>
+  </data>
+  <data name="assetUtilizationDescription" xml:space="preserve">
+    <value>Asset Utilization API returnează informații de utilizare ale activului (precum timp la relanti, timp în lucru, etc.) pentru fiecare activ individual din flotă, care acceptă utilizarea. Pentru a primi aceste informații, toate activele trebuie să aibă un plan de revizie Core and Health valid, pentru o perioadă dată.</value>
+  </data>
+  <data name="assetsDescription" xml:space="preserve">
+    <value>Assets API este o listă a tuturor activelor din flotă. Acest API oferă informații detaliate (de ex. serie produs, an de fabricație, tip dispozitiv și număr serial, etc) despre fiecare activ individual din flotă.</value>
+  </data>
+  <data name="dcToIRecDatumFailedToLoad" xml:space="preserve">
+    <value>Eroare încărcare datum CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="fleetSummaryDescription" xml:space="preserve">
+    <value>Fluxul de date Sumar Flotă oferă o vedere generală asupra stării flotei. Acesta include informații precum SMULoc, Kilometri, Raportare stări, Locație, etc. pentru fiecare activ din flotă.</value>
+  </data>
+  <data name="unsubscribedAssets" xml:space="preserve">
+    <value>Următoarele active nu sunt acceptate pentru acest raport, pentru intervalul de timp selectat. Informațiii despre Sumar Cod Eroare sunt disponibile numai pentru dispozitivele PL321 și 522/523 cu un plan de revizie Cat® Health activ.</value>
+  </data>
+  <data name="noReportDataAssets" xml:space="preserve">
+    <value>În acest raport următoarele active nu conțin date</value>
+  </data>
+  <data name="reportDataAssets" xml:space="preserve">
+    <value>În acest raport următoarele active conțin date</value>
+  </data>
+  <data name="noDataAssets" xml:space="preserve">
+    <value>Următoarele active nu au date</value>
+  </data>
+  <data name="noDataSites" xml:space="preserve">
+    <value>Următoarele sectoare nu au date</value>
+  </data>
+  <data name="fuelUtilizationDescription" xml:space="preserve">
+    <value>Fuel Utilization API oferă informații despre utilizarea combustibilului (cum ar fi Consum Combustibil, combustibil în lucru consumat, etc) pentru fiecare activ individual din flotă care acceptă utilizarea. Pentru a primi aceste informații toate activele trebuie să aibă un plan de revizii Core and Health valid, pentru o perioadă dată.</value>
+  </data>
+  <data name="invalidUser003" xml:space="preserve">
+    <value>Parola introdusă este incorectă.\nContul a fost blocat, încercați peste 30 de minute.</value>
+  </data>
+  <data name="invalidUser001" xml:space="preserve">
+    <value>Introducere nume utilizator sau parolă incorecte.</value>
+  </data>
+  <data name="erroneousFuel" xml:space="preserve">
+    <value>{0} a raportat Consum Carburant neprevăzut pentru perioada de timp.</value>
+  </data>
+  <data name="erroneousIdleTime" xml:space="preserve">
+    <value>{0} a raportat Timp Relanti neprevăzut pentru perioada de timp.</value>
+  </data>
+  <data name="erroneousRuntime" xml:space="preserve">
+    <value>{0} a raportat Timp Funcționare neprevăzut pentru perioada de timp.</value>
+  </data>
+  <data name="erroneousWorkingTime" xml:space="preserve">
+    <value>{0} a raportat Timp În Lucru neprevăzut pentru perioada de timp.</value>
+  </data>
+  <data name="issueSendingEmail" xml:space="preserve">
+    <value>A apărut o problemă la expedierea email-ului, contactați administratorul.</value>
+  </data>
+  <data name="InvalidUserAccess" xml:space="preserve">
+    <value>Acest cont nu este configurat pentru accesul clientului la VisionLink. Folosiți alte credențiale sau contactați asistența.</value>
+  </data>
+  <data name="assetOperationDescription" xml:space="preserve">
+    <value>Acest punct final este responsabil să ofere informații de operare ale activului, cum ar fi timp în lucru și timp la relanti când definițiile de lucru sunt folosite pentru a calcula informațiile de utilizare. Pentru a obține aceste informații toate activele trebuie să aibă un plan de revizii Core and Health valid, pentru o perioadă dată de timp.</value>
+  </data>
+  <data name="requiredField" xml:space="preserve">
+    <value>Acesta este un teren necesar.</value>
+  </data>
+  <data name="incompleteLoadError" xml:space="preserve">
+    <value>Încărcare incompletă - eroare date hardware</value>
+  </data>
+  <data name="incompleteLoadNoDump" xml:space="preserve">
+    <value>Aceasta este o încărcare incompletă - niciun timp de descărcare găsit</value>
+  </data>
+  <data name="incompleteLoadNoLoad" xml:space="preserve">
+    <value>Aceasta este o încărcare incompletă - niciun timp de descărcare găsit</value>
+  </data>
+  <data name="incompleteLoad" xml:space="preserve">
+    <value>Acesta este un Indice de Productivitate incomplet</value>
+  </data>
+  <data name="TrimbleOperationsReportDescription" xml:space="preserve">
+    <value>This report provides the list of users and their details, who fall under the category of Corporate.</value>
+  </data>
+  <data name="InActiveSchedule" xml:space="preserve">
+    <value>Raport Planificat nu este valid. Contactați Administrator VisionLink pentru a edita acest raport.</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Timp</value>
+  </data>
+  <data name="geolocationTimeout" xml:space="preserve">
+    <value>Time-out la recuperarea locației.</value>
+  </data>
+  <data name="timedOut" xml:space="preserve">
+    <value>Timed out</value>
+  </data>
+  <data name="TireMonitoring" xml:space="preserve">
+    <value>Monitorizare Pneu</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Titlu</value>
+  </data>
+  <data name="deviceTypeTM3000" xml:space="preserve">
+    <value>TM3000</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Astăzi</value>
+  </data>
+  <data name="ton" xml:space="preserve">
+    <value>Tonă (US)</value>
+  </data>
+  <data name="tonne" xml:space="preserve">
+    <value>Tonă</value>
+  </data>
+  <data name="tooThickLayer" xml:space="preserve">
+    <value>Strat Prea Gros</value>
+  </data>
+  <data name="topSurface" xml:space="preserve">
+    <value>Suprafață Superioară</value>
+  </data>
+  <data name="topCyclesPerHour" xml:space="preserve">
+    <value>Superior {0} - Cicluri/Oră (Total)</value>
+  </data>
+  <data name="topPayloadPerCycle" xml:space="preserve">
+    <value>Superior {0} - Încărcătură Utilă/Ciclu (Total)</value>
+  </data>
+  <data name="topPayloadPerHour" xml:space="preserve">
+    <value>Superior {0} - Încărcătură Utilă/Oră (Total)</value>
+  </data>
+  <data name="total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="totalAreaCovered" xml:space="preserve">
+    <value>Arie Totală Acoperită</value>
+  </data>
+  <data name="totalCutVolume" xml:space="preserve">
+    <value>Volum Tăiere Total</value>
+  </data>
+  <data name="totalDistance" xml:space="preserve">
+    <value>Distanță Totală</value>
+  </data>
+  <data name="totalFillVolume" xml:space="preserve">
+    <value>Volum Umplere Total</value>
+  </data>
+  <data name="totalFuel" xml:space="preserve">
+    <value>Combustibil Total</value>
+  </data>
+  <data name="totalHoursByAsset" xml:space="preserve">
+    <value>Ore Totale de Către Activ</value>
+  </data>
+  <data name="totalIdleEvents" xml:space="preserve">
+    <value>Total Evenimente La Relanti</value>
+  </data>
+  <data name="totalIdleTime" xml:space="preserve">
+    <value>Timp relanti Total</value>
+  </data>
+  <data name="totalLoads" xml:space="preserve">
+    <value>Total Încărcături</value>
+  </data>
+  <data name="totalMachineCovPlan" xml:space="preserve">
+    <value>Total Suprafață Plană Acoperire Mașină</value>
+  </data>
+  <data name="totalRuntime" xml:space="preserve">
+    <value>Timp Funcționare Total</value>
+  </data>
+  <data name="totalTime" xml:space="preserve">
+    <value>Timp Total</value>
+  </data>
+  <data name="totalVolume" xml:space="preserve">
+    <value>Volum Total</value>
+  </data>
+  <data name="totals" xml:space="preserve">
+    <value>Totaluri</value>
+  </data>
+  <data name="trackMapping" xml:space="preserve">
+    <value>Mapare Șenilă</value>
+  </data>
+  <data name="transmissionOilTemperature" xml:space="preserve">
+    <value>Transmission Oil Temperature</value>
+  </data>
+  <data name="transmissionOilTemperatureHeader" xml:space="preserve">
+    <value>Transmission Oil Temperature Report</value>
+  </data>
+  <data name="travel" xml:space="preserve">
+    <value>Deplasare</value>
+  </data>
+  <data name="truck" xml:space="preserve">
+    <value>Camion</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Tip</value>
+  </data>
+  <data name="ucid" xml:space="preserve">
+    <value>UCID</value>
+  </data>
+  <data name="invalidSessionID" xml:space="preserve">
+    <value>Imposibil de autentificat folosind SessionID furnizată. Efectuați login.</value>
+  </data>
+  <data name="dcToIRecFailedToCreateCSIBObject" xml:space="preserve">
+    <value>Imposibil de creat un obiect ICSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="unableToDetermineDataModel" xml:space="preserve">
+    <value>Imposibil a determina modelul date.</value>
+  </data>
+  <data name="unableToDetermineMachine" xml:space="preserve">
+    <value>Imposibil a determina mașina.</value>
+  </data>
+  <data name="UnableToDetermineProjectID" xml:space="preserve">
+    <value>Imposibil a determina ID Proiect</value>
+  </data>
+  <data name="dcToIRecFailedToGetZoneParams" xml:space="preserve">
+    <value>Imposibil de a recupera parametrii zonă (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneParams" xml:space="preserve">
+    <value>Imposibil de setat parametrii zonă (DCToIRecord converter)</value>
+  </data>
+  <data name="underCompacted" xml:space="preserve">
+    <value>Sub Compactat</value>
+  </data>
+  <data name="undercompactedLayer" xml:space="preserve">
+    <value>Strat Sub Compactat</value>
+  </data>
+  <data name="minLevel" xml:space="preserve">
+    <value>Sub Nivel minim</value>
+  </data>
+  <data name="underPassTarget" xml:space="preserve">
+    <value>Treceri Sub Țintă</value>
+  </data>
+  <data name="UnderPressure" xml:space="preserve">
+    <value>Sub Presiune</value>
+  </data>
+  <data name="unexpectedError" xml:space="preserve">
+    <value>Eroare Neprevăzută</value>
+  </data>
+  <data name="erroneousFuelExcluded" xml:space="preserve">
+    <value>Consum Combustibil Neprevăzut raportat de către {0} a fost exclus din acest calcul.</value>
+  </data>
+  <data name="erroneousFuelOrIdleTimeExcluded" xml:space="preserve">
+    <value>Timp Relanti și Consum Combustibil Neprevăzut raportate de către {0} au fost excluse din acest calcul.</value>
+  </data>
+  <data name="erroneousIdleTimeExcluded" xml:space="preserve">
+    <value>Timp Relanti Neprevăzut raportat de către {0} a fost exclus din acest calcul.</value>
+  </data>
+  <data name="erroneousFuelOrRuntimeExcluded" xml:space="preserve">
+    <value>Timp Funcționare și/sau Consum Carburant Neprevăzut raportat de către {0} au fost excluse din acest calcul.</value>
+  </data>
+  <data name="erroneousRuntimeExcluded" xml:space="preserve">
+    <value>Timp Funcționare Neprevăzut raportat de către {0} a fost exclus din acest calcul.</value>
+  </data>
+  <data name="erroneousFuelOrWorkingTimeExcluded" xml:space="preserve">
+    <value>Timp În lucru și/sau Consum Combustibil Neprevăzut raportat de către {0} a fost exclus din acest calcul.</value>
+  </data>
+  <data name="erroneousWorkingOrRuntimeExcluded" xml:space="preserve">
+    <value>Timp În Lucru sau Timp de Funcționare Neprevazut raportat de către {0} a fost exclus din acest calcul.</value>
+  </data>
+  <data name="erroneousWorkingTimeExcluded" xml:space="preserve">
+    <value>Timp În Lucru Neprevăzut raportat de către {0} a fost exclus din acest calcul.</value>
+  </data>
+  <data name="universalCustomer" xml:space="preserve">
+    <value>Client Universal</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Necunoscut</value>
+  </data>
+  <data name="dcToIRecUnknownCSType" xml:space="preserve">
+    <value>Tip de sistem de coordonate necunoscut (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnknownDatumModel" xml:space="preserve">
+    <value>S-a găsit o ajustare datum necunoscută și a fost ignorată (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownError" xml:space="preserve">
+    <value>A avut loc o eroare necunoscută</value>
+  </data>
+  <data name="geolocationUnknownError" xml:space="preserve">
+    <value>Eroare necunoscută la recuperarea locației.</value>
+  </data>
+  <data name="dcToIRecUnknownGeoidModel" xml:space="preserve">
+    <value>S-a găsit un model geoid necunoscut și a fost ignorat (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownMachine" xml:space="preserve">
+    <value>Mașină necunoscută.</value>
+  </data>
+  <data name="dcToIRecUnknownProjType" xml:space="preserve">
+    <value>Tip proiecție necunoscut (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownTagfileError" xml:space="preserve">
+    <value>Eroare fișier tag necunoscută</value>
+  </data>
+  <data name="Unsubscribe" xml:space="preserve">
+    <value>Dezabonare</value>
+  </data>
+  <data name="UnsubscribeConfirmation" xml:space="preserve">
+    <value>Confirmare Dezabonare</value>
+  </data>
+  <data name="unsupportedCSDFileType" xml:space="preserve">
+    <value>Tip fișier definiții sistem de coordonate incompatibil</value>
+  </data>
+  <data name="dcToIRecUnsupportedDatum" xml:space="preserve">
+    <value>Datum incompatibilă (DCToIRecord converter)</value>
+  </data>
+  <data name="unsupportedDisplayType" xml:space="preserve">
+    <value>Tip consolă incompatibil</value>
+  </data>
+  <data name="unsupportedFilterAttribute" xml:space="preserve">
+    <value>Atribut filtru incompatibil</value>
+  </data>
+  <data name="dcToIRecUnsupportedGeoid" xml:space="preserve">
+    <value>Geoid incompatibil (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnsupportedZoneOrientation" xml:space="preserve">
+    <value>Orientare zonă incompatibilă (DCToIRecord converter)</value>
+  </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>Următor</value>
+  </data>
+  <data name="update" xml:space="preserve">
+    <value>Actualizare</value>
+  </data>
+  <data name="updateMeter" xml:space="preserve">
+    <value>Actualizează Contor</value>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>Utilizare</value>
+  </data>
+  <data name="useCurrentSelection" xml:space="preserve">
+    <value>Folosiți Selecția Curentă</value>
+  </data>
+  <data name="userAccountsReportHeader" xml:space="preserve">
+    <value>Raport Conturi Utilizator</value>
+  </data>
+  <data name="userActivity" xml:space="preserve">
+    <value>Activitate Utilizator</value>
+  </data>
+  <data name="userDefinedPolygon" xml:space="preserve">
+    <value>Poligon Definit de Utilizator</value>
+  </data>
+  <data name="geolocationPermissionDenied" xml:space="preserve">
+    <value>Folosirea locației este refuzată utilizatorului.</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Utilizator inexistent. Contactați administratorul.</value>
+  </data>
+  <data name="UserPrivilegesReport" xml:space="preserve">
+    <value>Raport Privilegii Utilizator</value>
+  </data>
+  <data name="userType" xml:space="preserve">
+    <value>Tip Utilizator</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Nume Utilizator</value>
+  </data>
+  <data name="invalidUsernameOrPassword" xml:space="preserve">
+    <value>Nume Utilizator sau Parolă ne-valide, introduceți din nou.</value>
+  </data>
+  <data name="utilizationCalloutsExistInData" xml:space="preserve">
+    <value>Există Comentarii Utilizare în Date</value>
+  </data>
+  <data name="utilizationHours" xml:space="preserve">
+    <value>Ore Utilizare</value>
+  </data>
+  <data name="ValidMSSKey" xml:space="preserve">
+    <value>Cheie MSS validă</value>
+  </data>
+  <data name="dateRangeCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Valoarea include date în afara intervalului de date selectat</value>
+  </data>
+  <data name="singleDayCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Valoarea include date în afara zilei specificate</value>
+  </data>
+  <data name="mustBeUnformattedInteger" xml:space="preserve">
+    <value>Valoarea trebuie reprezentată ca un întreg fără virgule sau zecimale.</value>
+  </data>
+  <data name="varies" xml:space="preserve">
+    <value>Variază</value>
+  </data>
+  <data name="emailVerified" xml:space="preserve">
+    <value>Verificare Stare</value>
+  </data>
+  <data name="verified" xml:space="preserve">
+    <value>Verificat</value>
+  </data>
+  <data name="vibeState" xml:space="preserve">
+    <value>Stare Vibe</value>
+  </data>
+  <data name="fuelLevelSummary" xml:space="preserve">
+    <value>Vizualizare Active care Necesită Realimentare</value>
+  </data>
+  <data name="faultCodesSummary" xml:space="preserve">
+    <value>Vizualizare Coduri Eroare pentru Active</value>
+  </data>
+  <data name="utilizationHoursSummary" xml:space="preserve">
+    <value>Vizualizare Ore de Utilizare</value>
+  </data>
+  <data name="AlertsSummary" xml:space="preserve">
+    <value>Vizualizare Alerte Deschise pentru un Activ</value>
+  </data>
+  <data name="fuelBurnSummary" xml:space="preserve">
+    <value>Vizualizare Consum Recent Combustibil pentru Active</value>
+  </data>
+  <data name="vin" xml:space="preserve">
+    <value>VIN</value>
+  </data>
+  <data name="VisionLinkOperationsReport" xml:space="preserve">
+    <value>Raport Operații - VisionLink</value>
+  </data>
+  <data name="EngineIdleDailyAlertMessageBodySMS" xml:space="preserve">
+    <value>Cont Alertă VisionLink: {0} Ore La Relanti Zilnice {1} pentru {2}/{3} la {4} Contor Ore {5}</value>
+  </data>
+  <data name="SpeedingAlertMessageBodySMS" xml:space="preserve">
+    <value>Cont Alertă VisionLink: {0} {1}, Viteză Max: {2} mph pentru {3}/{4}. Oprire timp viteză excesivă {5}</value>
+  </data>
+  <data name="SwitchAlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă VisionLink Cont: {4} Detalii Comutator pentru {0}/{1} la {2} {3} </value>
+  </data>
+  <data name="AlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă VisionLink Cont: {4} {0} pentru {1}/{2} la {3} Contor Ore: {5}</value>
+  </data>
+  <data name="SecurityStatusAlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă VisionLink Cont: {4} {0} pentru {1}/{2} la {3} Contor Ore: {5}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă VisionLink Cont: {5} {0} pentru {1}/{2} la {3} {4} Contor Ore: {6}</value>
+  </data>
+  <data name="FaultAlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă VisionLink Cont: {5} {0} pentru {1}/{2} la {3} {4} Severitate: {7} Contor Ore: {6}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă VisionLink Cont: {5} {0} pentru {1}/{2}. {3} expiră la {4} ore. Contor Ore: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă VisionLink Cont: {5} {0} pentru {1}/{2}. {3} expiră la {4} mile.</value>
+  </data>
+  <data name="AlertSubject" xml:space="preserve">
+    <value>Alertă VisionLink {0} pentru ID: {1} S/N: {2}</value>
+  </data>
+  <data name="ApiUserEmailSubject" xml:space="preserve">
+    <value>Asistență VisionLink API Access</value>
+  </data>
+  <data name="visionLinkApiDocumentation" xml:space="preserve">
+    <value>Documentație API VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopics" xml:space="preserve">
+    <value>Topice API VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopicsRequestAccess" xml:space="preserve">
+    <value>Topice API VisionLink: Solicitare Acces</value>
+  </data>
+  <data name="visionLinkAPIDatafeedDocumentation" xml:space="preserve">
+    <value>API VisionLink: Documentație Datafeed</value>
+  </data>
+  <data name="VLApp" xml:space="preserve">
+    <value>Aplicații VisionLink</value>
+  </data>
+  <data name="FluidAnalysisAlertSubject" xml:space="preserve">
+    <value>Rezultate Analize Fluid VisionLink pentru ID: {0} S/N: {1}</value>
+  </data>
+  <data name="locationUnknownFeatureDisabled" xml:space="preserve">
+    <value>VisionLink nu a determinat locația D-voastră. Această opțiune a fost dezactivată. Încercați din nou mai târziu.</value>
+  </data>
+  <data name="SavTerminationSubject" xml:space="preserve">
+    <value>Notificare VisionLink - Vizualizare Activ Partajat Terminată</value>
+  </data>
+  <data name="ForgotPasswordEmailSubject" xml:space="preserve">
+    <value>Asistență Parolă VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopicsDescription" xml:space="preserve">
+    <value>VisionLink Ready API oferă o modalitate de utilizare a datelor referitoare la VisionLink în format data-feed proiectat pentru facilizarea accesului de către aplicații terță parte. VL-Ready API sunt de obicei folosite de către dealeri, clienți, și integratori, care doresc să integreze datele referitoare la VisonLink în sisteme ERP, contabilitate sau alte sisteme terță parte. Pentru mai multe informații referitoare la VL-Ready API, consultați &lt;a href="/Docs/{0}/VisionLink VL-Ready User Guide.pdf" class="contentLink" target="_blank"&gt;VL Ready User Guide&lt;/a&gt;.</value>
+  </data>
+  <data name="SavCreationSubject" xml:space="preserve">
+    <value>Vizualizare Activ Partajat VisionLink creat de {0}</value>
+  </data>
+  <data name="SavNotificationSubject" xml:space="preserve">
+    <value>Notificare Expirare Vizualizare Activ Partajat VisionLink</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Alertă Monitorizare Pneu VisionLink Cont:{0}  {1}/{2} la {3} Contor Ore: {4}</value>
+  </data>
+  <data name="UserAccountReportTitle" xml:space="preserve">
+    <value>Raport Cont Utilizator VisionLink</value>
+  </data>
+  <data name="UserAccountsReport" xml:space="preserve">
+    <value>VisionLink User Account Report</value>
+  </data>
+  <data name="VerifyUserEmailSubject" xml:space="preserve">
+    <value>Verificare cont utilizator VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopics" xml:space="preserve">
+    <value>Teme VL Ready API</value>
+  </data>
+  <data name="vlmobileClient" xml:space="preserve">
+    <value>Client VLMobile</value>
+  </data>
+  <data name="volume" xml:space="preserve">
+    <value>Volum</value>
+  </data>
+  <data name="VolumesAndCompaction" xml:space="preserve">
+    <value>Volume și Compactare</value>
+  </data>
+  <data name="warningTargetDataSometimesAbsent" xml:space="preserve">
+    <value>Atenție! date țintă lipsă uneori.</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Săptămânal</value>
+  </data>
+  <data name="firstTimeLogin" xml:space="preserve">
+    <value>VisionLink. Navigați la pagina www.myvisionlink.com pentru a schimba parola.</value>
+  </data>
+  <data name="NewAccountEmailSubject" xml:space="preserve">
+    <value>Bun Venit la VisionLink ! Înregistrați cont</value>
+  </data>
+  <data name="wheelTracking" xml:space="preserve">
+    <value>Mapare Pneu</value>
+  </data>
+  <data name="withinLevels" xml:space="preserve">
+    <value>Între Nivele</value>
+  </data>
+  <data name="workInProgress" xml:space="preserve">
+    <value>Lucru în Curs de Execuție</value>
+  </data>
+  <data name="working" xml:space="preserve">
+    <value>În Lucru</value>
+  </data>
+  <data name="workingFuelBurned" xml:space="preserve">
+    <value>Combustibil În Lucru Consumat</value>
+  </data>
+  <data name="workingHours" xml:space="preserve">
+    <value>Ore În Lucru</value>
+  </data>
+  <data name="workingStatus" xml:space="preserve">
+    <value>Stare În Lucru</value>
+  </data>
+  <data name="workingTime" xml:space="preserve">
+    <value>Timp În Lucru</value>
+  </data>
+  <data name="workingUtil" xml:space="preserve">
+    <value>Utilizare În Lucru</value>
+  </data>
+  <data name="AlreadyUnsubscribe" xml:space="preserve">
+    <value>Deja v-ați dezabonat la acest raport.</value>
+  </data>
+  <data name="UnsubscribeConfirmationMessage" xml:space="preserve">
+    <value>Ați solicitat să vă dezabonați de la Raportul Planificat '{0}'. Pentru a confirma, apăsați 'OK'. Dacă nu veți confirma, adresa de email nu va fi dezabonată.</value>
+  </data>
+  <data name="accountLocked" xml:space="preserve">
+    <value>Contul a fost blocat. Încercați din nou în 30 de minute.</value>
+  </data>
+  <data name="invalidUser002" xml:space="preserve">
+    <value>Contul a fost blocat. Încercați după 30 de minute.</value>
+  </data>
+  <data name="UnsubscribeSuccessMessage" xml:space="preserve">
+    <value>Adresa de email a fost cu succes dezabonată de la '{0}'.</value>
+  </data>
+  <data name="passwordExpired" xml:space="preserve">
+    <value>Parola a expirat. Conectați-vă la pagina www.myvisionlink.com pentru a schimba parola.</value>
+  </data>
+  <data name="selectionLimitReachedMessage" xml:space="preserve">
+    <value>Selecția excede limita sistemului. Această selecție va fi limitată la {0} active.</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zonă</value>
+  </data>
+  <data name="zoneExclusive" xml:space="preserve">
+    <value>Zonă Exclusivă</value>
+  </data>
+  <data name="zoneInclusive" xml:space="preserve">
+    <value>Zonă Inclusivă</value>
+  </data>
+  <data name="exceedsMaximumValue" xml:space="preserve">
+    <value>{0} depășește valoarea maximă</value>
+  </data>
+  <data name="requiredFieldWithName" xml:space="preserve">
+    <value>{0} este un câmp obligatoriu.</value>
+  </data>
+  <data name="mustBeNumber" xml:space="preserve">
+    <value>{0} trebuie să fie un număr.</value>
+  </data>
+  <data name="mustBeValidDate" xml:space="preserve">
+    <value>{0} trebuie să fie o dată validă.</value>
+  </data>
+  <data name="mustBeBetweenXandY" xml:space="preserve">
+    <value>{0} trebuie să fie între {1} și {2}.</value>
+  </data>
+  <data name="mustBeLessThanXCharacters" xml:space="preserve">
+    <value>{0} trebuie să aibă mai puțin de {1} caractere.</value>
+  </data>
+  <data name="mustNotBeInTheFuture" xml:space="preserve">
+    <value>{0} nu trebuie să fie în viitor.</value>
+  </data>
+  <data name="ServiceDueAlertDescription" xml:space="preserve">
+    <value>Revizie {0} scadentă la</value>
+  </data>
+</root>

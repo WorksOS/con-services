@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.trimble.com/v2/SecuritySvc"
+	xmlns:security="http://www.trimble.com/v2/SecuritySvc"
+	elementFormDefault="unqualified">
+
+	<element name="assetSecurityStatus">
+		<complexType>
+			<annotation>
+				<documentation />
+			</annotation>
+			<sequence>
+				<element name="equipmentInfo" type="security:EquipmentInfo" minOccurs="1" maxOccurs="1" />
+				<element name="securityStatus" type="security:SecurityStatus" minOccurs="1" maxOccurs="1" />
+			</sequence>
+		</complexType>
+	</element>
+
+	<complexType name="EquipmentInfo">
+		<annotation>
+			<documentation>
+				Information about the Equipment on which the Telematics device that sent this message is deployed.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="serialNumber" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						The serial number of the Equipment.
+					</documentation>
+				</annotation>
+				<simpleType>
+					<restriction base="string">
+						<maxLength value="50" />
+						<minLength value="1" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="make" minOccurs="1" maxOccurs="1">
+				<annotation>
+					<documentation>
+						Equipment make (e.g. CAT)
+					</documentation>
+				</annotation>
+				<simpleType>
+					<restriction base="string">
+						<length value="3" />
+					</restriction>
+				</simpleType>
+			</element>
+			<element name="currentStatus" type="security:MachineStatus" minOccurs="0" maxOccurs="1" />
+      <element name="currentHours" type="security:MachineHours" minOccurs="0" maxOccurs="1" />      
+			<element name="currentLocation" type="security:Location" minOccurs="0" maxOccurs="1" />
+      <element name="deviceType" minOccurs="1" maxOccurs="1">
+        <annotation>
+          <documentation>
+            Device Type
+          </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50" />
+            <minLength value="1" />
+          </restriction>
+        </simpleType>
+      </element>
+		</sequence>
+	</complexType>
+  
+	<complexType name="MachineStatus">
+		<annotation>
+			<documentation />
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<attribute name="timestamp" type="dateTime"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+  
+	<complexType name="Location">
+		<annotation>
+			<documentation>
+				The GPS coordinate of the equipment at the time of
+				message send. The latitude and longitude are in WGS 84
+				format.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element name="latitude" type="double" minOccurs="1" maxOccurs="1" />
+			<element name="longitude" type="double" minOccurs="1" maxOccurs="1" />
+			<element name="validity" minOccurs="0" maxOccurs="1">
+				<simpleType>
+					<restriction base="string">
+						<enumeration value="I" />
+						<enumeration value="V" />
+						<length value="1" />
+					</restriction>
+				</simpleType>
+			</element>
+		</sequence>
+		<attribute name="timestamp" type="dateTime"/>
+	</complexType>
+
+  <complexType name="MachineHours">
+   <annotation>
+      <documentation>Last Known Hour Meter Reading for the Asset as reported by the Telematics Device.</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="decimal">
+        <attribute name="timestamp" type="dateTime"/>
+      </extension>
+    </simpleContent>
+  </complexType>
+
+	<complexType name="SecurityStatus">
+		<annotation>
+			<documentation />
+		</annotation>
+		<sequence>
+			<element name="currentTamperLevel" type="security:TamperLevel" minOccurs="0" maxOccurs="1" />
+			<element name="pendingTamperLevel" type="security:TamperLevel" minOccurs="0" maxOccurs="1" />
+			<element name="currentStartMode" type="security:MachineStartMode" minOccurs="0" maxOccurs="1" />
+			<element name="pendingStartMode" type="security:MachineStartMode" minOccurs="0" maxOccurs="1" />
+      <element name="configuredStartMode" type="security:MachineStartMode" minOccurs="0" maxOccurs="1" />
+			<element name="securityMode" type="string" minOccurs="0" maxOccurs="1" />
+		</sequence>
+	</complexType>
+
+	<complexType name="TamperLevel">
+		<annotation>
+			<documentation />
+		</annotation>
+		<sequence>
+			<element name="level" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="source" type="string" minOccurs="0" maxOccurs="1" />
+		</sequence>
+		<attribute name="timestamp" type="dateTime"/>
+	</complexType>
+
+	<complexType name="MachineStartMode">
+		<annotation>
+			<documentation />
+		</annotation>
+		<sequence>
+			<element name="startMode" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="source" type="string" minOccurs="0" maxOccurs="1" />
+			<element name="reasonCode" type="string" minOccurs="0" maxOccurs="1" />
+		</sequence>
+		<attribute name="timestamp" type="dateTime"/>
+	</complexType>
+</schema>

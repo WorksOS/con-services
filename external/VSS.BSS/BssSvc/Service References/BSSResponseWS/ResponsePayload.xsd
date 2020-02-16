@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://www.trimble.com/BusinessSupport/v2/Response" elementFormDefault="qualified" targetNamespace="http://www.trimble.com/BusinessSupport/v2/Response" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Response" type="ResponseType" />
+  <xs:complexType name="ResponseType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="TargetStack" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SequenceNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ControlNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EndPointName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ProcessedUTC" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Success" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ErrorCode" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="ErrorDescription" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

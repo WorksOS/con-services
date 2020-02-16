@@ -1,0 +1,1070 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{11AA9227-B87E-44E3-98D5-C786D4A37E9C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>UnitTests</RootNamespace>
+    <AssemblyName>UnitTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="antlr.runtime, Version=2.7.6.2, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\antlr.runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>ThirdPartyDLLs\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging, Version=1.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net, Version=1.2.0.2, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Common.Logging.Log4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="EFProviderWrapperToolkit">
+      <HintPath>ThirdPartyDLLs\EFProviderWrapperToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="EFTracingProvider">
+      <HintPath>ThirdPartyDLLs\EFTracingProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <!--<Reference Include="Fake.CoordinateSystem">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Fake.CoordinateSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Fake.CTCT">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Fake.CTCT.dll</HintPath>
+    </Reference>
+    <Reference Include="Fake.Teigha">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Fake.Teigha.dll</HintPath>
+    </Reference>-->
+    <Reference Include="FluorineFx">
+      <HintPath>ThirdPartyDLLs\FluorineFx.dll</HintPath>
+    </Reference>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\HashLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.COMRVRSGEOSERVERLib">
+      <HintPath>ThirdPartyDLLs\Interop.COMRVRSGEOSERVERLib.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="MassTransit, Version=2.9.0.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\MassTransit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Http">
+      <HintPath>ThirdPartyDLLs\Microsoft.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Http.Extensions">
+      <HintPath>ThirdPartyDLLs\Microsoft.Http.Extensions.dll</HintPath>
+    </Reference>
+    <!--<Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Microsoft.Practices.EnterpriseLibrary.Validation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation.Configuration.Design, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Microsoft.Practices.EnterpriseLibrary.Validation.Configuration.Design.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation.Integration.WinForms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Microsoft.Practices.EnterpriseLibrary.Validation.Integration.WinForms.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ObjectBuilder2, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Microsoft.Practices.ObjectBuilder2.dll</HintPath>
+    </Reference>-->
+    <Reference Include="Microsoft.ServiceModel.Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Microsoft.ServiceModel.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Microsoft.SqlServer.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Web.Atlas, Version=2.0.50727.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Microsoft.Web.Atlas.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MongoDB.Bson, Version=1.8.1.20, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=1.8.1.20, Culture=neutral, PublicKeyToken=f686731cfb9cc103, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Ninject, Version=2.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Ninject\V2.2.1.4\Ninject.dll</HintPath>
+    </Reference>
+    <Reference Include="opentoken-agent, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\opentoken-agent.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceModelEx">
+      <HintPath>ThirdPartyDLLs\ServiceModelEx.dll</HintPath>
+    </Reference>
+    <!--<Reference Include="ShineOn.Rtl, Version=1.0.1.0, Culture=neutral, PublicKeyToken=cab6c8a94d03ec96, processorArchitecture=MSIL">
+      <HintPath>..\..\ThreeDCommon\ThirdPartyDLLs\ShineOn.Rtl.dll</HintPath>
+    </Reference>-->
+    <Reference Include="Spring.Aop">
+      <HintPath>ThirdPartyDLLs\Spring.Aop.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Core">
+      <HintPath>ThirdPartyDLLs\Spring.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Services">
+      <HintPath>ThirdPartyDLLs\Spring.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Web">
+      <HintPath>ThirdPartyDLLs\Spring.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Configuration.Install" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Entity.Design">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.Services">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Data.SqlServerCe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Device" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.SelfHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.Http.SelfHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Presentation">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <!--<Reference Include="TCC2.API">
+      <HintPath>..\..\ThreeDCommon\ThirdPartyDLLs\TCC2.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.DiskIO">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.DiskIO.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Antenna">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Geodetic.Antenna.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Math">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Geodetic.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Optical">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Geodetic.Optical.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Receiver">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Geodetic.Receiver.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Geodetic.Reductions">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Geodetic.Reductions.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Properties">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Properties.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Alignment">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Alignment.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Collections">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Coordinates">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Coordinates.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Core">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.COGO">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.COGO.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.Construction">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.Construction.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.GNSSData">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.GNSSData.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.RawData">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.RawData.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.Results">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.Results.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.SCS">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.SCS.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Data.SCS.Utilities">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Data.SCS.Utilities.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.FeatureDefinitions">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.FeatureDefinitions.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Features">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Features.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.ForeignCad">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.ForeignCad.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Gem">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Gem.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Geometry">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Geometry.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Interfaces">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Persistence">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Persistence.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Reports">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Reports.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.SurveyCAD">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.SurveyCAD.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.SyncServiceIntegration">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.SyncServiceIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.TTMetrics">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.TTMetrics.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vce.Units">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vce.Units.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.Vis.Model">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.Vis.Model.dll</HintPath>
+    </Reference>
+    <Reference Include="Trimble.WinCE">
+      <HintPath>..\..\ClientServices\NHWebServices\ThirdPartyDLLs\MassHaul\Trimble.WinCE.dll</HintPath>
+    </Reference>-->
+    <Reference Include="Trinet.Core.IO.Ntfs, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Trinet.Core.IO.Ntfs.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Nighthawk.Instrumentation">
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\VSS.Nighthawk.Instrumentation.dll</HintPath>
+    </Reference>
+    <!--<Reference Include="VSS.Nighthawk.PerformanceCounterMediator">
+      <ExecutableExtension>.exe</ExecutableExtension>
+      <HintPath>..\..\CommonLibrary\VSS.Hosted.VLCommon\ThirdPartyDLLs\VSS.Nighthawk.PerformanceCounterMediator.exe</HintPath>
+    </Reference>
+    <Reference Include="VSS.Velociraptor.Library">
+      <HintPath>..\..\ThreeDCommon\RaptorShimDLLs\VSS.Velociraptor.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Velociraptor.PDSInterface">
+      <HintPath>..\..\ThreeDCommon\RaptorShimDLLs\VSS.Velociraptor.PDSInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Velociraptor.ProjectListener">
+      <HintPath>..\..\ThreeDCommon\RaptorShimDLLs\VSS.Velociraptor.ProjectListener.dll</HintPath>
+    </Reference>-->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="A5N210SecondWindowTestsFaults.cs" />
+    <Compile Include="A5N210SecondWindowTestsPayload.cs" />
+    <Compile Include="ActiveUserSelectedAssetsTest.cs" />
+    <Compile Include="AdHocTests.cs" />
+    <Compile Include="AssetCurrentStatusTest.cs" />
+    <Compile Include="AssetFeatureAPITests.cs" />
+    <Compile Include="AssetIDCacheTest.cs" />
+    <Compile Include="A5N2ConfigDataTest.cs" />
+    <Compile Include="BSS Tests\Activities\AdminUserUpdateTests.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerCreateReferenceTests.cs" />
+    <Compile Include="BSS Tests\Activities\AssetAddReferenceTests.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerUpdateReferenceTests.cs" />
+    <Compile Include="BSS Tests\SummaryHelperTests.cs" />
+    <Compile Include="DataAccess Tests\DbViewAccessTest.cs" />
+    <Compile Include="MongoMockHelper.cs" />
+    <Compile Include="PayloadUtilizationScenariosETLTest.cs" />
+    <Compile Include="AssetIDChangesAPITest.cs" />
+    <Compile Include="BSS Tests\AssetStatusEnum.cs" />
+    <Compile Include="BSS Tests\ServiceViewAPITestHelper.cs" />
+    <Compile Include="MaintenanceIntervalStatusEnum.cs" />
+    <Compile Include="ObjectContextTransactionScopeTests.cs" />
+    <Compile Include="OemAssetInformationStrategyTests.cs" />
+    <Compile Include="AssetTest.cs" />
+    <Compile Include="DailyReportMasterDisconnectTest.cs" />
+    <Compile Include="A5N210SecondWindowTests.cs" />
+    <Compile Include="BSS Tests\Activities\AssetCreateTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Activities\AssetRemoveDeviceHistoryTests.cs" />
+    <Compile Include="BSS Tests\Activities\CancelledServicePlanConfigurationTests.cs" />
+    <Compile Include="BSS Tests\Activities\DeActivateDeviceStateTests.cs" />
+    <Compile Include="BSS Tests\Activities\DeRegisterDeviceStateOTATests.cs" />
+    <Compile Include="BSS Tests\Activities\DeRegisterDeviceStateTests.cs" />
+    <Compile Include="BSS Tests\Activities\DeviceAssetSwapTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Activities\DeviceSwapRecordAssetHistoryTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Activities\DeviceTransferOwnershipTests.cs" />
+    <Compile Include="BSS Tests\Activities\MapDeviceRegistrationToDeviceAssetContextTests.cs" />
+    <Compile Include="BSS Tests\Activities\MapDeviceReplacementToDeviceAssetContextTests.cs" />
+    <Compile Include="BSS Tests\Activities\MapServicePlanToDeviceServiceContextTests.cs" />
+    <Compile Include="BSS Tests\Activities\RegisterDeviceStateTests.cs" />
+    <Compile Include="BSS Tests\Activities\ServicePlanActivateTests.cs" />
+    <Compile Include="BSS Tests\Activities\ActivatedServicePlanConfigurationTests.cs" />
+    <Compile Include="BSS Tests\Activities\ServiceTransferTests.cs" />
+    <Compile Include="BSS Tests\Activities\ManageCustomerServiceViewsTests.cs" />
+    <Compile Include="BSS Tests\Activities\ServiceViewTransferTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Activities\UpdateDeviceStateTests.cs" />
+    <Compile Include="BSS Tests\Core\BssAssetDeviceHistoryServiceTests.cs" />
+    <Compile Include="BSS Tests\Core\BssServiceServiceTests.cs" />
+    <Compile Include="BSS Tests\Core\BssServiceViewServiceTests.cs" />
+    <Compile Include="BSS Tests\Core\EmailNotificationResultProcessorTests.cs" />
+    <Compile Include="BSS Tests\Core\EnumTests.cs" />
+    <Compile Include="BSS Tests\Fakes\BssAssetDeviceHistoryServiceExceptionFake.cs" />
+    <Compile Include="BSS Tests\Fakes\BssAssetDeviceHistoryServiceFake.cs" />
+    <Compile Include="BSS Tests\Activities\DeviceRemoveFromAssetHistoryTests.cs" />
+    <Compile Include="BSS Tests\Activities\AssetRemoveDeviceTests.cs" />
+    <Compile Include="BSS Tests\Activities\AssetUpdateTests.cs" />
+    <Compile Include="BSS Tests\Activities\DeviceRemoveFromAssetTests.cs" />
+    <Compile Include="BSS Tests\Core\AssetDeviceContextTests.cs" />
+    <Compile Include="BSS Tests\Fakes\BssPLOTAServiceExceptionFake.cs" />
+    <Compile Include="BSS Tests\Fakes\BssPLOTAServiceFake.cs" />
+    <Compile Include="BSS Tests\Helpers\BssTestHelper.cs" />
+    <Compile Include="BSS Tests\ServiceViewAPITests.cs" />
+    <Compile Include="BSS Tests\Validators\AssetDeviceContextCreateValidatorTests.cs" />
+    <Compile Include="BSS Tests\Activities\AssetDeviceHistoryCreateTests.cs" />
+    <Compile Include="BSS Tests\Activities\DeviceCreateTests.cs" />
+    <Compile Include="BSS Tests\Activities\DevicePersonalityCreateTests.cs" />
+    <Compile Include="BSS Tests\Activities\MapInstallBaseToAssetDeviceContextTests.cs" />
+    <Compile Include="BSS Tests\Core\BssAssetServiceTests.cs" />
+    <Compile Include="BSS Tests\Fakes\BssAssetServiceFake.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Fakes\BssDeviceServiceFake.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerRelationshipDeleteTests.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerUpdateTests.cs" />
+    <Compile Include="BSS Tests\Activities\MapAccountHierarchyToCustomerContextTests.cs" />
+    <Compile Include="BSS Tests\Activities\AdminUserCreateTests.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerDeactivateTests.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerCreateTests.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerReactivateTests.cs" />
+    <Compile Include="BSS Tests\Activities\CustomerRelationshipCreateTests.cs" />
+    <Compile Include="BSS Tests\Activities\InvalidActionTests.cs" />
+    <Compile Include="BSS Tests\Activities\ValidateActivityTests.cs" />
+    <Compile Include="BSS Tests\BssHelper.cs" />
+    <Compile Include="BSS Tests\BssUnitTestBase.cs" />
+    <Compile Include="BSS Tests\Core\ActivityResultTests.cs" />
+    <Compile Include="BSS Tests\Core\BssCustomerServiceTests.cs" />
+    <Compile Include="BSS Tests\Core\BssDeviceServiceTests.cs" />
+    <Compile Include="BSS Tests\Core\BssWorkflowFactoryTests.cs" />
+    <Compile Include="BSS Tests\Core\LoggingResultProcessorTests.cs" />
+    <Compile Include="BSS Tests\Core\RequireTests.cs" />
+    <Compile Include="BSS Tests\Core\InputDictionaryTests.cs" />
+    <Compile Include="BSS Tests\Activities\MapCurrentStateToCustomerContextTests.cs" />
+    <Compile Include="BSS Tests\Core\WorkflowDataAccessTests.cs" />
+    <Compile Include="BSS Tests\Core\WorkflowRunnerTests.cs" />
+    <Compile Include="BSS Tests\Fakes\BssCustomerServiceExceptionFake.cs" />
+    <Compile Include="BSS Tests\Fakes\BssCustomerServiceFake.cs" />
+    <Compile Include="BSS Tests\Fakes\BssServiceViewServiceExceptionFake.cs" />
+    <Compile Include="BSS Tests\Fakes\BssServiceViewServiceFake.cs" />
+    <Compile Include="BSS Tests\Fakes\BssAssetServiceExceptionFake.cs" />
+    <Compile Include="BSS Tests\Fakes\BssDeviceServiceExceptionFake.cs" />
+    <Compile Include="BSS Tests\Helpers\BssMessageHelper.cs" />
+    <Compile Include="BSS Tests\Helpers\ConsoleResultProcessor.cs" />
+    <Compile Include="BSS Tests\Validators\AccountHierarchyDataContractValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\AccountHierarchyDeletedValidatorTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Validators\AccountHierarchyValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\AssetDeviceContextUpdateValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\CustomerContextCreatedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\CustomerContextDeactivatedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\CustomerContextDeletedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\CustomerContextTests.cs" />
+    <Compile Include="BSS Tests\Validators\CustomerContextReactivatedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\CustomerContextValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\CustomerTypeUpdateValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DataContractValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DealerNetworkUpdateValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\AssetDeviceContextValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceAssetContextReplacedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceAssetContextSwappedValidatorTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Validators\DeviceAssetContextValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceRegistrationDataContractValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceReplacementDataContractValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceServiceContextValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceStatusContextDeRegisteredValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceStatusContextRegisteredValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\DeviceStatusContextValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\InstallBaseUpdatedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\InstallBaseValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\InstallBaseDataContractValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\MakeCodeValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\ServicePlanActivatedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\ServicePlanCancelledValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\ServicePlanDataContractValidatorTests.cs" />
+    <Compile Include="BSS Tests\Validators\ServicePlanUpdatedValidatorTests.cs" />
+    <Compile Include="BSS Tests\Workflows\AccountHierarchyCreateWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\AccountHierarchyDeactivateWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\AccountHierarchyDeleteWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\AccountHierarchyReactivateWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\AccountHierarchyUpdateWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\DeviceRegistrationDeregisteredWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\DeviceRegistrationRegisteredWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\DeviceReplacementReplacedWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\DeviceReplacementSwappedWorkflowTests.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BSS Tests\Workflows\InstallBaseCreatedWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\InstallBaseUpdatedMergeWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\InstallBaseUpdatedWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\ServicePlanActivatedWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\ServicePlanCancelledWorkflowTests.cs" />
+    <Compile Include="BSS Tests\Workflows\ServicePlanUpdatedWorkflowTests.cs" />
+    <Compile Include="BssProvisioningMsgAPITest.cs" />
+    <Compile Include="BssResponseMsgAPITest.cs" />
+    <Compile Include="ContextSwitchingTests.cs" />
+    <Compile Include="CustomerAPITest.cs" />
+    <Compile Include="FaultAccessTest.cs" />
+    <Compile Include="DeviceAPITest.cs" />
+    <Compile Include="DeviceConfigTest.cs" />
+    <Compile Include="NHBssEndPointSvcTest.cs" />
+    <Compile Include="NHBssMessageProcessorTest.cs" />
+    <Compile Include="NHBSSResponseProcessorTest.cs" />
+    <Compile Include="NHDataSaverTest.cs" />
+    <Compile Include="PLFaultExceptionTest.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="DotNetExtensionsTest.cs" />
+    <Compile Include="ConversionFactorsTest.cs" />
+    <Compile Include="EquipmentAPITest.cs" />
+    <Compile Include="FirmwareAPITest.cs" />
+    <Compile Include="ReportFluidAnalysisTest.cs" />
+    <Compile Include="ReportPLActivityChargeTest.cs" />
+    <Compile Include="ReportLogicTestBase.cs" />
+    <Compile Include="ReportLogicTestMTS.cs" />
+    <Compile Include="ReportLogicTestPL.cs" />
+    <Compile Include="ReportLogicTestTT.cs" />
+    <Compile Include="BSS Tests\Activities\ServicePlanTerminateTests.cs" />
+    <Compile Include="ServiceViewAPITest.cs" />
+    <Compile Include="MTSConfigDataTest.cs" />
+    <Compile Include="NHSvrTest.cs" />
+    <Compile Include="OTAConfigMessagesTest.cs" />
+    <Compile Include="PLConfigDataTest.cs" />
+    <Compile Include="PLMessageTest.cs" />
+    <Compile Include="SessionAPITest.cs" />
+    <Compile Include="SiteAPITest.cs" />
+    <Compile Include="MachineEventMessageTest.cs" />
+    <Compile Include="PLOutboundFormatterTest.cs" />
+    <Compile Include="TestHelper.cs" />
+    <Compile Include="HashUtilsTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UserAPITest.cs" />
+    <Compile Include="SpatialTzTest.cs" />
+    <Compile Include="WebApi\AssertEx.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Test Data\SpringInstrumentationTest.xml" />
+    <Content Include="ThirdPartyDLLs\antlr.runtime.dll" />
+    <Content Include="ThirdPartyDLLs\AutoMapper.dll" />
+    <Content Include="ThirdPartyDLLs\Common.Logging.dll" />
+    <Content Include="ThirdPartyDLLs\Common.Logging.Log4Net.dll" />
+    <Content Include="ThirdPartyDLLs\EFProviderWrapperToolkit.dll" />
+    <Content Include="ThirdPartyDLLs\EFTracingProvider.dll" />
+    <Content Include="ThirdPartyDLLs\EntityFramework.dll" />
+    <Content Include="ThirdPartyDLLs\EntityFramework.SqlServer.dll" />
+    <Content Include="ThirdPartyDLLs\FluorineFx.dll" />
+    <Content Include="ThirdPartyDLLs\HashLib.dll" />
+    <Content Include="ThirdPartyDLLs\Interop.COMRVRSGEOSERVERLib.dll" />
+    <Content Include="ThirdPartyDLLs\log4net.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.Http.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.Http.Extensions.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.ServiceModel.Web.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.SqlServer.Types.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.Web.Atlas.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.Web.Infrastructure.dll">
+      <Link>Microsoft.Web.Infrastructure.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="AuthoringTests.txt" />
+    <Content Include="ReportLogicTestData\Util_PL_ZeroRTWithIdle.xml" />
+    <Content Include="ReportLogicTestData\Util_PL_ZeroRT.xml" />
+    <Content Include="ReportLogicTestData\Fuel_PL_ThreeDaySpanWithGap.xml" />
+    <Content Include="ReportLogicTestData\Fuel_PL_TwoDaySpan.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOnIsOn_RevOrder.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOnIsOn_RevOrder_Expected.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_Mov_AcrossDayBoundary_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOffIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOffIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOnIsOnLunch_2DaySpan.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOffIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOffIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOffIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOffIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOffIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOffIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_Mov_AcrossDayBoundary.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_StopMovTimeEqualsIgnOffTime_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_TT_Happy_SingleRT.xml" />
+    <Content Include="ReportLogicTestData\Util_TT_Happy.xml" />
+    <Content Include="ReportLogicTestData\Util_TT_Happy_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_TT_Happy_SingleRT_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOffIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOffIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOnIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOnIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOnIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSMSOnIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOffIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOffIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOnIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOnIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOnIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothMSSMOnIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOffIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOffIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOnIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOnIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOnIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMMSOnIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOffIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOffIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOnIsOn.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOnIsOnLunch.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOnIsOnLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\IdleWork_XC_Happy_BothSMSMOnIsOn_Expected.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_SensorInv_Expected.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_Mov.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_MovLunch.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_MovLunch_Expected.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_Mov_Expected.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_Sensor.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_SensorInv.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_Happy_Sensor_Expected.xml" />
+    <Content Include="ReportLogicTestData\Util_XC_StopMovTimeEqualsIgnOffTime.xml" />
+    <Content Include="Test Data\ALLSUBS_BUG8816.txt" />
+    <Content Include="Test Data\ALLSUBS_Changed.txt" />
+    <Content Include="Test Data\ALLSUBS_RCE8840.txt" />
+    <Content Include="Test Data\ALLSUBS_RCE8840_CAT.txt" />
+    <Content Include="Test Data\DEVICEDETAILS_InvalidCharacters_NotFixed.txt" />
+    <Content Include="Test Data\DEVICEDETAILS_InvalidCharacters.txt" />
+    <Content Include="Test Data\DeviceDetails_GlobalGram.txt" />
+    <Content Include="Test Data\DeviceDetails_MissingGlobalGram.txt" />
+    <Content Include="Test Data\Microstrategy\TestInput.xml" />
+    <Content Include="Test Data\MODEL_TTT.txt" />
+    <Content Include="Test Data\MODEL_MG.txt" />
+    <Content Include="Test Data\MODEL_PL.txt" />
+    <Content Include="Test Data\PMIntervalData\PMINTERVAL_MODEL7661.txt" />
+    <Content Include="Test Data\PMIntervalData\PMINTERVAL_MODEL7662.txt" />
+    <Content Include="Test Data\PMIntervalData\PMINTERVAL_MODEL7721.txt" />
+    <Content Include="Test Data\PMPREFIX_FilterB9H.txt" />
+    <Content Include="Test Data\DIGSTATUS2.txt" />
+    <Content Include="Test Data\DIGSTATUS2_Expected.txt" />
+    <Content Include="Test Data\DIGSTATUS2_Replay_Expected.txt" />
+    <Content Include="Test Data\PMINTERVAL_US8998_Bookmark.txt" />
+    <Content Include="Test Data\PMCHECKLIST_108020.txt" />
+    <Content Include="Test Data\PMCHECKLIST_Updated.txt" />
+    <Content Include="Test Data\PMINTERVAL_BUG8815.txt" />
+    <Content Include="Test Data\PMINTERVAL_RankBug.txt" />
+    <Content Include="Test Data\PMINTERVAL_Updated.txt" />
+    <Content Include="Test Data\PMINTERVAL_US8998.txt" />
+    <Content Include="Test Data\PMINTERVAL_US8998_Rank.txt" />
+    <Content Include="Test Data\PMINTERVAL_US8998_Updated.txt" />
+    <Content Include="Test Data\PMINTERVAL_US8998_ZEROFREQUENCY.txt" />
+    <Content Include="Test Data\PMPREFIX_Updated.txt" />
+    <Content Include="Test Data\PMPREFIX.txt" />
+    <Content Include="Test Data\PMCHECKLIST.txt" />
+    <Content Include="Test Data\PMINTERVAL.txt" />
+    <Content Include="Test Data\EVENTREACTION.txt" />
+    <Content Include="Test Data\FENCEALERT39046000.txt" />
+    <Content Include="Test Data\FENCEALERT39046000_Expected.txt" />
+    <Content Include="Test Data\MANUALSMU.txt" />
+    <Content Include="Test Data\GEOFENCEVALIDATION.txt" />
+    <Content Include="Test Data\CREATEDEVICE_DevicePresent.txt" />
+    <Content Include="Test Data\CREATEDEVICE_DifferentDevice.txt" />
+    <Content Include="Test Data\CREATEDEVICE.txt" />
+    <Content Include="Test Data\CREATEDEVICE_Unsupported.txt" />
+    <Content Include="Test Data\DEVICEDETAILS_DifferentDevice.txt" />
+    <Content Include="Test Data\DEVICEDETAILS.txt" />
+    <Content Include="Test Data\DeviceDetails_SerializationDefect.txt" />
+    <Content Include="Test Data\DIAGNOSTIC_Expected.txt" />
+    <Content Include="Test Data\DIAGNOSTIC_Replay_Expected.txt" />
+    <Content Include="Test Data\ENGINE_Expected.txt" />
+    <Content Include="Test Data\ENGINE_Replay_Expected.txt" />
+    <Content Include="Test Data\EVENT_Expected.txt" />
+    <Content Include="Test Data\EVENT_Replay_Expected.txt" />
+    <Content Include="Test Data\FENCEALERT_Expected.txt" />
+    <Content Include="Test Data\FUEL_Expected.txt" />
+    <Content Include="Test Data\FUEL_Replay_Expected.txt" />
+    <Content Include="Test Data\HistoricalData\DIAGNOSTIC_Actual.txt" />
+    <Content Include="Test Data\HistoricalData\DIAGNOSTIC_Expected.txt" />
+    <Content Include="Test Data\HistoricalData\ENGINE.txt" />
+    <Content Include="Test Data\HistoricalData\ENGINE_Actual.txt" />
+    <Content Include="Test Data\HistoricalData\ENGINE_Expected.txt" />
+    <Content Include="Test Data\HistoricalData\EVENT.txt" />
+    <Content Include="Test Data\HistoricalData\EVENT_Actual.txt" />
+    <Content Include="Test Data\HistoricalData\EVENT_Expected.txt" />
+    <Content Include="Test Data\HistoricalData\FENCEALERT.txt" />
+    <Content Include="Test Data\HistoricalData\FENCEALERT_Actual.txt" />
+    <Content Include="Test Data\HistoricalData\FENCEALERT_Expected.txt" />
+    <Content Include="Test Data\HistoricalData\FUEL.txt" />
+    <Content Include="Test Data\HistoricalData\FUEL_Actual.txt" />
+    <Content Include="Test Data\HistoricalData\FUEL_Expected.txt" />
+    <Content Include="Test Data\HistoricalData\SMULOC2.txt" />
+    <Content Include="Test Data\HistoricalData\SMULOC2_Actual.txt" />
+    <Content Include="Test Data\HistoricalData\DIAGNOSTIC.txt" />
+    <Content Include="Test Data\HistoricalData\SMULOC2_Expected.txt" />
+    <Content Include="Test Data\HistoricalData\STARTSTOP.txt" />
+    <Content Include="Test Data\HistoricalData\STARTSTOP_Actual.txt" />
+    <Content Include="Test Data\HistoricalData\STARTSTOP_Expected.txt" />
+    <Content Include="Test Data\MANUALSMU_Expected.txt" />
+    <Content Include="Test Data\MIDLIST.txt" />
+    <Content Include="Test Data\MIDLIST_Changed.txt" />
+    <Content Include="Test Data\OWNERSHIP_Changed.txt" />
+    <Content Include="Test Data\FMILIST.txt" />
+    <Content Include="Test Data\FMILIST_UpdatedDesc.txt" />
+    <Content Include="Test Data\EIDLIST_UpdatedDesc.txt" />
+    <Content Include="Test Data\EIDLIST.txt" />
+    <Content Include="Test Data\EVENT_Roundtrip.txt" />
+    <Content Include="Test Data\ALLSUBS.txt" />
+    <Content Include="Test Data\OWNERSHIP_Conflict.txt" />
+    <Content Include="Test Data\OWNERSHIP_DEALERANDINTERNAL.txt" />
+    <Content Include="Test Data\OWNERSHIP_DEALEREXTERNALANDINTERNAL.txt" />
+    <Content Include="Test Data\OWNERSHIP_DEALERONLY.txt" />
+    <Content Include="Test Data\PRODUCT.txt" />
+    <Content Include="Test Data\ReplayDevices.txt" />
+    <Content Include="Test Data\SMULOC2_BUG4741.txt" />
+    <Content Include="Test Data\SMULOC2_BUG4741_Expected.txt" />
+    <Content Include="Test Data\SMULOC2_Expected.txt" />
+    <Content Include="Test Data\SMULOC2_Replay_Expected.txt" />
+    <Content Include="Test Data\SMULOC2_Bug9160.txt" />
+    <Content Include="Test Data\STARTSTOP_Expected.txt" />
+    <Content Include="Test Data\STARTSTOP_Replay_Expected.txt" />
+    <Content Include="Test Data\TIMEFENCE2.txt" />
+    <Content Include="Test Data\CUSTPROV.txt" />
+    <Content Include="Test Data\DEALERPROV.txt" />
+    <Content Include="Test Data\MakeData.txt" />
+    <Content Include="Test Data\TD00.txt" />
+    <Content Include="Test Data\DIAGNOSTIC.txt" />
+    <Content Include="Test Data\EmptyTestData.txt" />
+    <Content Include="Test Data\ENGINE.txt" />
+    <Content Include="Test Data\EVENT.txt" />
+    <Content Include="Test Data\FENCEALERT.txt" />
+    <Content Include="Test Data\FUEL.txt" />
+    <Content Include="Test Data\OWNERSHIP.txt" />
+    <Content Include="Test Data\SMULOC2.txt" />
+    <Content Include="Test Data\STARTSTOP.txt" />
+    <Content Include="Test Data\TIMEFENCE.txt" />
+    <Content Include="Test Data\TIMEFENCEVALIDATION.txt" />
+    <Content Include="Test Data\TIMEFENCEVALIDATION_Inactive.txt" />
+    <Content Include="Test Data\TIMEFENCEVALIDATION_InvalidDays.txt" />
+    <Content Include="Test Data\TIMEFENCEVALIDATION_InvalidHours.txt" />
+    <Content Include="Test Data\TIMEFENCEVALIDATION_MultipleInvalidForSameAsset.txt" />
+    <Content Include="ThirdPartyDLLs\Microsoft.Web.Infrastructure.dll" />
+    <Content Include="ThirdPartyDLLs\MongoDB.Bson.dll" />
+    <Content Include="ThirdPartyDLLs\MongoDB.Driver.dll" />
+    <Content Include="ThirdPartyDLLs\Moq.dll" />
+    <Content Include="ThirdPartyDLLs\Newtonsoft.Json.dll" />
+    <Content Include="ThirdPartyDLLs\Ninject\V2.2.1.4\Ninject.dll" />
+    <Content Include="ThirdPartyDLLs\Ninject\V2.2.1.4\Ninject.Extensions.Wcf.dll" />
+    <Content Include="ThirdPartyDLLs\Ninject\V3.0.1.10\Ninject.dll" />
+    <Content Include="ThirdPartyDLLs\opentoken-agent.dll" />
+    <Content Include="ThirdPartyDLLs\ServiceModelEx.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Aop.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Core.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Services.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Web.dll" />
+    <Content Include="ThirdPartyDLLs\System.Data.SqlServerCe.dll" />
+    <Content Include="ThirdPartyDLLs\System.Net.Http.dll" />
+    <Content Include="ThirdPartyDLLs\System.Net.Http.Formatting.dll" />
+    <Content Include="ThirdPartyDLLs\System.Net.Http.WebRequest.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Helpers.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Http.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Http.SelfHost.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Http.WebHost.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Mvc.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Razor.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.WebPages.Deployment.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.WebPages.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.WebPages.Razor.dll" />
+    <Content Include="ThirdPartyDLLs\Trinet.Core.IO.Ntfs.dll" />
+    <Content Include="ThirdPartyDLLs\UnityAutoMoq.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\BssSvc\NHBssSvc.csproj">
+      <Project>{7A85E470-0D51-4FCA-A67C-4FCA9DF329E3}</Project>
+      <Name>NHBssSvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.DataOut.Interfaces\VSS.DataOut.Interfaces.csproj">
+      <Project>{D8252900-4795-4554-84D8-F7713741922C}</Project>
+      <Name>VSS.DataOut.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.DeviceCapabilityService.Interfaces\VSS.DeviceCapabilityService.Interfaces.csproj">
+      <Project>{99EC2DF5-A524-401D-9459-E11E8C7B771E}</Project>
+      <Name>VSS.DeviceCapabilityService.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.Hosted.VLCommon\VSS.Hosted.VLCommon.csproj">
+      <Project>{78A163DA-1F9C-4E23-B735-40B87408C25B}</Project>
+      <Name>VSS.Hosted.VLCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.Nighthawk.ExternalDataTypes\VSS.Nighthawk.ExternalDataTypes.csproj">
+      <Project>{c1a38874-c53b-4b2e-9fae-805475f80df1}</Project>
+      <Name>VSS.Nighthawk.ExternalDataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.Nighthawk.Log4Net\VSS.Nighthawk.Log4Net.csproj">
+      <Project>{a6150f4b-c8fe-4d4c-8b64-b7485c4c6877}</Project>
+      <Name>VSS.Nighthawk.Log4Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.ReferenceIdentifierService.Interfaces\VSS.ReferenceIdentifierService.Interfaces.csproj">
+      <Project>{c6a1c25d-0d52-4a13-87df-c6fad997e69b}</Project>
+      <Name>VSS.ReferenceIdentifierService.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.BaseEvents\VSS.BaseEvents.csproj">
+      <Project>{c2fd2357-c0e3-4b01-958d-feed8ca382a4}</Project>
+      <Name>VSS.BaseEvents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.UnitTest.Common\VSS.UnitTest.Common.csproj">
+      <Project>{5EB08124-319A-4EF0-ABA7-6858A56B432B}</Project>
+      <Name>VSS.UnitTest.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Test Data\Schema\AssetIDChanges.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v4\Diagnostic_v4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v5\CommonSchema_For_Fence_v5.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v5\Event_v5.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v6\CommonSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v6\EngineParameters.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test References\ThreeDAPIs.accessor" />
+    <None Include="Test Data\Schema\CommonSchema.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="App.config.build-vm-02" />
+    <None Include="App.config.build-vm-01" />
+    <None Include="Test Data\Schema\v1\AssetSecurityStatusHistory_V1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v1\AssetSecurityStatus_V1.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v1\CommonSchema_v1.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v1\ServiceMeterLocation_v1.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\AssetSecurityStatus_V2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v2\CommonSchema.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\CommonSchema_v2.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\CommonSchema_v2_Wrapper.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\Diagnostic_v2.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\DigitalSwitchStatus2_v2.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\Event_v2.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\FenceAlert_v2.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\ServiceMeterLocation_v2.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v2\StartStopTime_v2.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\v3\AssetSecurityStatus_v3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v3\CommonSchema_v3.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\Diagnostic_v3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\DigitalSwitchStatus3_v3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v3\FenceAlert_v3.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\ServiceMeterLocation_v3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\StartStopTime_v3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v4\AssetSecurityStatus_v4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v4\CommonSchema_v4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v4\Event_v4.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\Fuel_v4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v5\CommonSchema_v5.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\EngineParameters_v5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Test Data\Schema\v5\Fence_v5.xsd">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test Data\Schema\Fence_v6.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <Shadow Include="Test References\VSS.Hosted.VLCommon.accessor" />
+    <None Include="Test References\VSS.Nighthawk.NHBssSvc.accessor" />
+    <None Include="Test References\VSS.Nighthawk.TelematicsSync.accessor" />
+    <None Include="Test References\VSS.Nighthawk.NHNighthawkSync.accessor" />
+    <None Include="Test References\VSS.Nighthawk.NHAdminServices.accessor" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!--  To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:pref="http://www.myvisionlink.com/feed/v3/CommonFeed" elementFormDefault="unqualified" xmlns:feed="http://www.myvisionlink.com/feed/v3/CommonFeed" xmlns:digitalSwitch2="http://www.myvisionlink.com/feed/v3/DigitalSwitchStatus3" targetNamespace="http://www.myvisionlink.com/feed/v3/DigitalSwitchStatus3" xmlns="http://www.w3.org/2001/XMLSchema">
+  <import schemaLocation="CommonSchema.xsd" namespace="http://www.myvisionlink.com/feed/v3/CommonFeed"/> <complexType name="Message">
+    <annotation>
+      <documentation> Delivers all relevant status information about the power mode and digital switch turned on/off on PLM module. Communicates the particular status information of the ECM. If any of the byte that it defines is set to "Yes", this denotes that a particular condition has occurred since last report of this status byte in either the status message or SMU report. </documentation>
+    </annotation> <sequence>
+      <element name="header" maxOccurs="1" minOccurs="1" type="feed:TopicHeader"/> <element name="powerMode" maxOccurs="1" minOccurs="1">
+        <annotation>
+          <documentation> Power Mode is the power mode of the module at the time this status byte was constructed </documentation>
+        </annotation> <simpleType>
+          <restriction base="int">
+            <enumeration value="0"/>
+            <enumeration value="1"/>
+            <enumeration value="2"/>
+            <enumeration value="3"/>
+          </restriction>
+        </simpleType>
+      </element> <element name="pending" maxOccurs="1" minOccurs="1" type="feed:YesNo">
+        <annotation>
+          <documentation> Any event or diagnostic alert is pending for sending </documentation>
+        </annotation>
+      </element> <element name="switch1Active" maxOccurs="1" minOccurs="1" type="feed:YesNo">
+        <annotation>
+          <documentation> Digital Switch #1 Active </documentation>
+        </annotation>
+      </element> <element name="switch2Active" maxOccurs="1" minOccurs="1" type="feed:YesNo">
+        <annotation>
+          <documentation> Digital Switch #2 Active </documentation>
+        </annotation>
+      </element> <element name="switch3Active" maxOccurs="1" minOccurs="1" type="feed:YesNo">
+        <annotation>
+          <documentation> Digital Switch #3 Active </documentation>
+        </annotation>
+      </element> <element name="switch4Active" maxOccurs="1" minOccurs="1" type="feed:YesNo">
+        <annotation>
+          <documentation> Digital Switch #4 Active </documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType> <element name="topic" type="digitalSwitch2:TopicBlock">
+    <annotation>
+      <documentation> Communicates the particular status information of the ECM. If any of the byte that it defines is set to "Yes", this denotes that a particular condition has occurred since last report of this status byte in either the status message or SMU report. </documentation>
+    </annotation>
+  </element> <complexType name="TopicBlock">
+    <sequence>
+      <element name="nextBuffer" maxOccurs="1" minOccurs="1" type="feed:NextBuffer"/>
+      <element name="message" maxOccurs="unbounded" minOccurs="1" type="digitalSwitch2:Message"/>
+    </sequence>
+  </complexType>
+</schema>

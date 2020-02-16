@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{50F3C7DE-AA36-458F-9825-EEB796138E37}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.NHOPSvc.Common</RootNamespace>
+    <AssemblyName>VSS.NHOPSvc.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>%24/Nighthawk/NH/Trunk/Server/CommonLibrary/VSS.NHOPSvc.Common</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <SccAuxPath>http://sjc3-nhd-tfsv01.vss-eng.com:8080/tfs/vss</SccAuxPath>
+    <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ThirdPartyDLLs\Autofac.Configuration.dll" />
+    <Content Include="ThirdPartyDLLs\Autofac.dll" />
+    <Content Include="ThirdPartyDLLs\Autofac.Extras.DynamicProxy2.dll" />
+    <Content Include="ThirdPartyDLLs\Castle.Core.dll" />
+    <Content Include="ThirdPartyDLLs\log4net.dll" />
+    <Content Include="ThirdPartyDLLs\Magnum.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.AutofacIntegration.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.Log4NetIntegration.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.Transports.RabbitMq.dll" />
+    <Content Include="ThirdPartyDLLs\Newtonsoft.Json.dll" />
+    <Content Include="ThirdPartyDLLs\RabbitMQ.Client.dll" />
+    <Content Include="ThirdPartyDLLs\Topshelf.dll" />
+    <Content Include="ThirdPartyDLLs\Topshelf.Log4Net.dll" />
+    <Content Include="ThirdPartyDLLs\VSS.Nighthawk.MassTransit.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D8252900-4795-4554-84D8-F7713741922C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.Nighthawk.DataOut.Interfaces</RootNamespace>
+    <AssemblyName>VSS.Nighthawk.DataOut.Interfaces</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Local|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Local\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|AnyCPU'">
+    <OutputPath>bin\Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|AnyCPU'">
+    <OutputPath>bin\IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Commands\ISendOutboundMessageCommand.cs" />
+    <Compile Include="Enums\DeviceTypeEnum.cs" />
+    <Compile Include="Enums\MachineStartStatus.cs" />
+    <Compile Include="Enums\MessageStatusEnum.cs" />
+    <Compile Include="Enums\ReportingFrequencyInterval.cs" />
+    <Compile Include="Enums\TamperResistanceStatus.cs" />
+    <Compile Include="Events\IAssetIdConfigurationChangedEvent.cs" />
+    <Compile Include="Events\IDisableRapidReportingEvent.cs" />
+    <Compile Include="Events\IEnableRapidReportingEvent.cs" />
+    <Compile Include="Events\ILocationStatusUpdateRequestedEvent.cs" />
+    <Compile Include="Events\IReportingFrequencyChangedEvent.cs" />
+    <Compile Include="Events\ISetDailyReportFrequencyEvent.cs" />
+    <Compile Include="Events\IDigitalSwitchConfigurationEvent.cs" />
+    <Compile Include="Events\IDisableMaintenanceModeEvent.cs" />
+    <Compile Include="Events\IDiscreteInputConfigurationEvent.cs" />
+    <Compile Include="Events\IEnableMaintenanceModeEvent.cs" />
+    <Compile Include="Events\IFirstDailyReportStartTimeUtcChangedEvent.cs" />
+    <Compile Include="Events\IGetStartModeEvent.cs" />
+    <Compile Include="Events\IGetTamperLevelEvent.cs" />
+    <Compile Include="Events\IMovingCriteriaConfigurationChangedEvent.cs" />
+    <Compile Include="Events\ISetStartModeEvent.cs" />
+    <Compile Include="Events\ISetTamperLevelEvent.cs" />
+    <Compile Include="Events\ISiteDispatchedEvent.cs" />
+    <Compile Include="Events\ISiteRemovedEvent.cs" />
+    <Compile Include="Events\IHourMeterModifiedEvent.cs" />
+    <Compile Include="Events\IOdometerModifiedEvent.cs" />
+    <Compile Include="Models\Asset.cs" />
+    <Compile Include="Models\Block.cs" />
+    <Compile Include="Models\BlockDefinitions\AssetName.cs" />
+    <Compile Include="Models\BlockDefinitions\DailyReportFrequency.cs" />
+    <Compile Include="Models\BlockDefinitions\MaintenanceMode\DisableMaintenanceMode.cs" />
+    <Compile Include="Models\BlockDefinitions\MaintenanceMode\EnableMaintenanceMode.cs" />
+    <Compile Include="Models\BlockDefinitions\RapidReporting\DisableRapidReporting.cs" />
+    <Compile Include="Models\BlockDefinitions\RapidReporting\EnableRapidReporting.cs" />
+    <Compile Include="Models\BlockDefinitions\ReportingFrequency.cs" />
+    <Compile Include="Models\BlockDefinitions\StartModeConfiguration.cs" />
+    <Compile Include="Models\BlockDefinitions\StartModeStatusUpdate.cs" />
+    <Compile Include="Models\BlockDefinitions\SwitchConfiguration\DigitalSwitchConfiguration.cs" />
+    <Compile Include="Models\BlockDefinitions\LocationStatusUpdate.cs" />
+    <Compile Include="Models\BlockDefinitions\MovementDurationSeconds.cs" />
+    <Compile Include="Models\BlockDefinitions\MovementRadiusKilometers.cs" />
+    <Compile Include="Models\BlockDefinitions\MovementSpeedKilometers.cs" />
+    <Compile Include="Models\BlockDefinitions\OdometerKilometersAdjustment.cs" />
+    <Compile Include="Models\BlockDefinitions\ReportStartTimeUtc.cs" />
+    <Compile Include="Models\BlockDefinitions\RuntimeHoursAdjustment.cs" />
+    <Compile Include="Models\BlockDefinitions\Site\Point.cs" />
+    <Compile Include="Models\BlockDefinitions\Site\PolygonSiteConfiguration.cs" />
+    <Compile Include="Models\BlockDefinitions\Site\RemovePolygonSite.cs" />
+    <Compile Include="Models\BlockDefinitions\SwitchConfiguration\DiscreteInputConfiguration.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\BlockDefinitions\SwitchConfiguration\Monitored.cs" />
+    <Compile Include="Models\BlockDefinitions\SwitchConfiguration\SwitchState.cs" />
+    <Compile Include="Models\BlockDefinitions\SwitchConfiguration\WakeUpWhenClosed.cs" />
+    <Compile Include="Models\BlockDefinitions\TamperLevelConfiguration.cs" />
+    <Compile Include="Models\BlockDefinitions\TamperLevelStatusUpdate.cs" />
+    <Compile Include="Models\Destination.cs" />
+    <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\Header.cs" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\OutOfBandTestBlock.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Xsd\DataOutCommandApi.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Xsd\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.BaseEvents\VSS.BaseEvents.csproj">
+      <Project>{c2fd2357-c0e3-4b01-958d-feed8ca382a4}</Project>
+      <Name>VSS.BaseEvents</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

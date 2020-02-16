@@ -1,0 +1,96 @@
+﻿Welcome!
+
+You are reading the guidelines for using and maintaining the VisionLink Common Library project.
+
+This library project contains all models, types, business logic, services and miscellaneous utility classes
+that are used by two or more VisionLink web or application-server hosted applications.
+
+Model
+At the core of this library are the domain types, or "entity models". These are represented as Edmx models. 
+The edmx models are essentially entity relationship diagrams, in the language of the ADO.NET Entity Framework, with mappings.
+
+SimpleEntities
+VisionLink uses the Simple Entities pattern whereby plain-old C# objects are code-generated from the entities in the model.
+These entity types are expected to be used throughout the services layer, and by the client applications. There is no
+expectation or need to wrap the entities in any other data structures for communication through the services layer and between objects
+within the applications. Simple Entities strives to keep the complexity of the data structure to a minimum and passes entity 
+instances directly to service methods. The simple entities pattern allows only simple property modification to entity instances 
+by client applications. More complex operations, such as changing the relationships between entities or accomplishing 
+a combination of inserts, updates, and deletes, are represented in the structure of the service methods in the service layer.
+
+The beauty of the simple entities approach is that no extra types are required and no effort has to be put into mapping data 
+from one type to another. The same entities may be used (by referencing this assembly, or through services proxies) 
+on browser, desktop or mobile deployed VisionLink client applications, providing the client app deployment is controlled 
+and in sync with the hosted tiers of the application. Even non.NET VisionLink client apps can work with these types, if desired, 
+because they are simple data structures and easy to make interoperable, eg using Flex Remoting, REST, JSON, 
+or other. 
+
+So, the POCO entity types are expected to pervade and proliferate freely through all VisionLink applications.
+However, these types are not public, ie not to be published or exposed externally outside
+of the bounds of a running VisionLink application.
+
+T4 templates are used to code-generate the domain types, from the edmx models.
+
+A T4 template is also used to produce enum types from nominated lookup tables in the DB.
+Please use these in preference to hand-crafting an enum.
+
+Persistance-Ignorance
+ModelAccess
+Each of VisionLinks models has an accompanying Model interface. The interface defines the contract
+for persistance-ignorant access to the model types.
+
+The interfaces each have an ADO.NET Entity Framework implementation, targeting Microsoft SQL Server.
+This design pattern supports other implementations being added in the future.
+
+ADO.NET Data Access
+This library also contains traditional ADO.NET data access classes, and helper code for
+invoking stored procedures.
+There are only two good reasons why you should write ADO.NET data access code: 
+1) Your app need to perform bulk create/update operations, for which EF is not the best tool for the job
+2) You have complex query logic that can only be written in T-SQL and prevents the use of LINQ to Entities
+The latter should not happen very often.
+
+Mongo
+Data access for Mongo is contained in this folder.
+
+All data-access code, be it via the Entity Framework, T-SQL stored procedures, mongo data
+access, or whatever, is and should be, contained in this library.
+
+Resources
+All user-facing text, for all VisionLink applications, is contained in .NET resx resources, in this library.
+
+Services
+Common VisionLink application business logic is packaged as a collection of business-centric services, supporting
+a Service-Orientated Architecture in VisionLink.
+<more to write here...>
+
+Utilities
+The litmus test for adding classes to this folder is, can this class be used in *any* .NET project? This is for 
+very general stuff, with no VSS business logic whatsoever, and no references to VSS namespaced types.
+
+VLCommon Unit tests
+Unit tests for the code contained in the VLCommon library are contained in the VSS.Hosted.VLCommon.Test project.
+Applications may have their own Unit Test projects, to cover code contained within the applications namespace.
+However, unit tests for VSS.Hosted.VLCommon.* code must reside in the VSS.Hosted.VLCommon.Test project
+and nowhere else.
+
+VSS.UnitTest.Common
+The Unit Test framework and helpers reside in the VSS.UnitTest.Common project. This project supports the reuse of 
+the VSS unit test framework amoungst VisionLink application projects.
+
+How to Use this library
+This library compiles to a single dll, called VSS.Hosted.VLCommon, which is built to the output folder "VLCommon"
+which is located directly off the Trunk root folder at TBD. 
+The VLCommon folder also contains third-party dlls.
+Your application project should utilize the dlls in VLCommon through Dll references. Do not make copies of these dlls
+in your application project or solution as you run the risk of your application having an out-of-date and
+incompatible version of the VLCommon library dll.
+
+A developer who modifies or extends this library is expected to check in the compiled dll to the VLCommon folder
+upon completion of their work, so that it is available to other developers by doing a get-latest of the VLCommon
+folder from source-control.
+
+Developers are discouraged from making a project reference to the VSS.Hosted.VLCommon project within their application
+solution, because this results in an increased build time for the developers, on their workstations, and also
+could lead to code changes being made in VLCommon, inadvertantly, without the developer being aware of and maintaining
+the Unit tests for the VLCommon project.

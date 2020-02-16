@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<manualSMU:topic xmlns:manualSMU="http://www.cat.com/em/feed/v1/ManualServiceMeter" xmlns:feed="http://www.cat.com/em/feed/v1/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v1/ManualServiceMeter https://emfeed.rd.cat.com/EMFeedFiles/schema/v1/ManualServiceMeter.xsd">   
+<nextBuffer>
+   <url>https://emfeed.rd.cat.com/EMFeedService/v1/feed/allqueue/MANUALSMU/28525629</url>
+   <moreData>false</moreData>
+</nextBuffer>
+<message>
+      <header>
+         <messageId>28525606</messageId>
+         <masterMsgId>8172080</masterMsgId>
+         <equipment>
+            <serialNumber>HORSTMANN20091110</serialNumber>
+            <make>IHC</make>
+         </equipment>
+         <moduleCode>HORSTMANN_PHILLIP_A</moduleCode>
+         <moduleTime>2009-07-28 10:04:01</moduleTime>
+         <receivedTime>2009-12-09 21:27:25</receivedTime>
+      </header>
+      <serviceMeter>
+         <before>
+            <value>5000</value>
+            <uom>Hours</uom>
+         </before>
+         <after>
+            <value>1100</value>
+            <uom>Hours</uom>
+         </after>
+      </serviceMeter>
+   </message>
+<message>
+      <header>
+         <messageId>28525629</messageId>
+         <masterMsgId>8172097</masterMsgId>
+         <equipment>
+            <serialNumber>HORSTMANN20091110</serialNumber>
+            <make>IHC</make>
+         </equipment>
+         <moduleCode>HORSTMANN_PHILLIP_A</moduleCode>
+         <moduleTime>2008-09-18 13:08:45</moduleTime>
+         <receivedTime>2009-12-09 21:29:44</receivedTime>
+      </header>
+      <serviceMeter>
+         <before>
+            <value>50</value>
+            <uom>Hours</uom>
+         </before>
+         <after>
+            <value>200</value>
+            <uom>Hours</uom>
+         </after>
+      </serviceMeter>
+ </message>
+ <!--INVALID - Missing the 'Before' hours value -->
+ <message>
+      <header>
+         <messageId>28525729</messageId>
+         <masterMsgId>8172297</masterMsgId>
+         <equipment>
+            <serialNumber>HORSTMANN20091110</serialNumber>
+            <make>IHC</make>
+         </equipment>
+         <moduleCode>HORSTMANN_PHILLIP_A</moduleCode>
+         <moduleTime>2008-09-18 15:08:45</moduleTime>
+         <receivedTime>2009-12-09 21:35:44</receivedTime>
+      </header>
+      <serviceMeter>
+         <before>            
+            <uom>Hours</uom>
+         </before>
+         <after>
+            <value>200</value>
+            <uom>Hours</uom>
+         </after>
+      </serviceMeter>
+ </message>
+ <!--INVALID - Missing the 'After' section -->
+ <message>
+      <header>
+         <messageId>28525729</messageId>
+         <masterMsgId>8172297</masterMsgId>
+         <equipment>
+            <serialNumber>HORSTMANN20091110</serialNumber>
+            <make>IHC</make>
+         </equipment>
+         <moduleCode>HORSTMANN_PHILLIP_A</moduleCode>
+         <moduleTime>2008-09-18 15:08:45</moduleTime>
+         <receivedTime>2009-12-09 21:35:44</receivedTime>
+      </header>
+      <serviceMeter>
+         <before>            
+			<value>50</value>
+            <uom>Hours</uom>
+         </before>
+      </serviceMeter>
+ </message>
+</manualSMU:topic>

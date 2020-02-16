@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns = "http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="4.0">
+
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)'=='Debug' ">Debug</Configuration>
+    <Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+    <Configuration Condition=" '$(Configuration)'=='Dev' ">Dev</Configuration>
+    <Configuration Condition=" '$(Configuration)'=='IQA' ">IQA</Configuration>
+    <Configuration Condition=" '$(Configuration)'=='Alpha' ">Alpha</Configuration>
+    <Configuration Condition=" '$(Configuration)'=='Production' ">Production</Configuration>
+  </PropertyGroup>
+  <ItemGroup>
+    <OutDir Include=".\AppSvr_Debug" Condition=" '$(Configuration)'=='Debug' " />
+    <OutDir Include=".\AppSvr_Release" Condition=" '$(Configuration)'=='' "/>
+    <OutDir Include=".\AppSvr_Dev" Condition=" '$(Configuration)'=='Dev' "/>
+    <OutDir Include=".\AppSvr_IQA" Condition=" '$(Configuration)'=='IQA' "/>
+    <OutDir Include=".\AppSvr_Alpha" Condition=" '$(Configuration)'=='Alpha' "/>
+    <OutDir Include=".\AppSvr_Production" Condition=" '$(Configuration)'=='Production' "/>
+    <SolutionFile Include=".\BSS.sln" />
+  </ItemGroup>
+  
+  <Target Name="Clean">
+    <RemoveDir Directories="@(OutDir)"  Condition="Exists(@(OutDir))"/>
+  </Target>
+
+  <Target Name="RestorePackages" Condition="Exists(@(SolutionFile))">
+    <Exec Command="&quot;.\.nuget\NuGet.exe&quot; restore &quot;@(SolutionFile)&quot;" />
+  </Target>
+  
+  <Target Name="Build">
+    <MSBuild Projects="@(SolutionFile);" Properties="OutDir=%(OutDir.FullPath);Configuration=$(Configuration)"></MSBuild>
+  </Target>
+  
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+  
+  <Target Name="FullBuild" DependsOnTargets="Rebuild;" />
+  
+</Project>

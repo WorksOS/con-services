@@ -1,0 +1,235 @@
+﻿<PMIntervals>
+<PMInterval measurementStandard="US">
+<smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:java="http://xml.apache.org/xslt/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/smi/v2/smiweb https://smi.rd.cat.com/smiweb/schema/v2/pmCheckList.xsd">
+   <pmIntervals segmentValue="4351">
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34783" code="34783">
+         <description>PM 1 (250 HOUR INTERVAL)</description>
+         <totalLaborHours>3.0</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+
+         <SMCS>
+            <Comp Description="PM 1">7501</Comp>
+            <Job Description="PERFORM">540</Job>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34785" code="34785">
+         <description>PM 2 (500 HOUR INTERVAL) ENGINE OIL CHANGE</description>
+
+         <totalLaborHours>6.0</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="PM 2">7502</Comp>
+            <Job Description="PERFORM">540</Job>
+
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34786" code="34786">
+         <description>PM 2F (500 HOUR INITIAL INTERVAL)</description>
+         <totalLaborHours>0.5</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+
+         <SMCS>
+            <Comp Description="PM 2">7502</Comp>
+            <Job Description="PERFORM">540</Job>
+            <Quantity Description="FIRST ONE">F</Quantity>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34789" code="34789">
+
+         <description>PM 3 (1000 HOUR INTERVAL) HYDRAULIC OIL CHANGE</description>
+         <totalLaborHours>8.5</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="PM 3">7503</Comp>
+
+            <Job Description="PERFORM">540</Job>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34791" code="34791">
+         <description>PM 4 (2000 HOUR INTERVAL)</description>
+         <totalLaborHours>9.5</totalLaborHours>
+         <firstInterval>0</firstInterval>
+
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="PM 4">7504</Comp>
+            <Job Description="PERFORM">540</Job>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34793" code="34793">
+
+         <description>PM50F (50 HOUR INITIAL INTERVAL)</description>
+         <totalLaborHours>3.0</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="50 SERVICE HOUR MAINTENANCE">7521</Comp>
+
+            <Job Description="PERFORM">540</Job>
+            <Quantity Description="FIRST ONE">F</Quantity>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34795" code="34795">
+         <description>PM6000 (6000 HOUR INTERVAL)</description>
+         <totalLaborHours>1.5</totalLaborHours>
+
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="6000 SERVICE HOUR MAINTENANCE">7543</Comp>
+            <Job Description="PERFORM">540</Job>
+         </SMCS>
+      </pmSegment>
+
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34797" code="34797">
+         <description>PM3000 (3000 HOUR INTERVAL)</description>
+         <totalLaborHours>1.0</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="3000 SERVICE HOUR MAINTENANCE">7545</Comp>
+
+            <Job Description="PERFORM">540</Job>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34799" code="34799">
+         <description>PM12000 (12000 HOUR INTERVAL)</description>
+         <totalLaborHours>1.5</totalLaborHours>
+         <firstInterval>0</firstInterval>
+
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="12000 SERVICE HOUR MAINTENANCE">7548</Comp>
+            <Job Description="PERFORM">540</Job>
+         </SMCS>
+      </pmSegment>
+   </pmIntervals>
+</smiweb:product>
+</PMInterval>
+<PMInterval measurementStandard="Metric">
+<smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:java="http://xml.apache.org/xslt/java" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/smi/v2/smiweb https://smi.rd.cat.com/smiweb/schema/v2/pmCheckList.xsd">
+   <pmIntervals segmentValue="4351">
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34784" code="34784">
+         <description>PM 1 METRIC (250 HOUR INTERVAL)</description>
+         <totalLaborHours>3.0</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+
+         <SMCS>
+            <Comp Description="PM 1">7501</Comp>
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34787" code="34787">
+
+         <description>PM 2 METRIC (500 HOUR INTERVAL) ENGINE OIL CHANGE</description>
+         <totalLaborHours>6.0</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="PM 2">7502</Comp>
+
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34788" code="34788">
+         <description>PM 2F METRIC (500 HOUR INITIAL INTERVAL)</description>
+         <totalLaborHours>0.5</totalLaborHours>
+
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="PM 2">7502</Comp>
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+
+            <Quantity Description="FIRST ONE">F</Quantity>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34790" code="34790">
+         <description>PM 3 METRIC (1000 HOUR INTERVAL) HYDRAULIC OIL CHANGE</description>
+         <totalLaborHours>8.5</totalLaborHours>
+         <firstInterval>0</firstInterval>
+
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="PM 3">7503</Comp>
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+         </SMCS>
+      </pmSegment>
+
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34792" code="34792">
+         <description>PM 4 METRIC (2000 HOUR INTERVAL)</description>
+         <totalLaborHours>9.5</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="PM 4">7504</Comp>
+
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34794" code="34794">
+         <description>PM50F METRIC (50 HOUR INITIAL INTERVAL)</description>
+         <totalLaborHours>3.0</totalLaborHours>
+
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="50 SERVICE HOUR MAINTENANCE">7521</Comp>
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+
+            <Quantity Description="FIRST ONE">F</Quantity>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34796" code="34796">
+         <description>PM6000 METRIC (6000 HOUR INTERVAL)</description>
+         <totalLaborHours>1.5</totalLaborHours>
+         <firstInterval>0</firstInterval>
+
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="6000 SERVICE HOUR MAINTENANCE">7543</Comp>
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+         </SMCS>
+      </pmSegment>
+
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34798" code="34798">
+         <description>PM3000 METRIC (3000 HOUR INTERVAL)</description>
+         <totalLaborHours>1.0</totalLaborHours>
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="3000 SERVICE HOUR MAINTENANCE">7545</Comp>
+
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+         </SMCS>
+      </pmSegment>
+      <pmSegment partListURI="https://smi.rd.cat.com/smiweb/rest/v2/pmSegmentList/34800" code="34800">
+         <description>PM12000 METRIC (12000 HOUR INTERVAL)</description>
+         <totalLaborHours>1.5</totalLaborHours>
+
+         <firstInterval>0</firstInterval>
+         <nextInterval>0</nextInterval>
+         <SMCS>
+            <Comp Description="12000 SERVICE HOUR MAINTENANCE">7548</Comp>
+            <Job Description="PERFORM">540</Job>
+            <Mod Description="METRIC">MTX</Mod>
+
+         </SMCS>
+      </pmSegment>
+   </pmIntervals>
+</smiweb:product>
+</PMInterval>
+</PMIntervals>

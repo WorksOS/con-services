@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="VSS.Nighthawk.DeviceCapabilityService" GeneratedClassName="Config">
+  <Profiles />
+  <Settings>
+    <Setting Name="BaseUri" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://localhost:8001</Value>
+    </Setting>
+    <Setting Name="DeviceTypeCacheLifetimeMinutes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="EndpointCacheLifetimeMinutes" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="DispatcherAESKeyByte" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Bothriospondylus</Value>
+    </Setting>
+    <Setting Name="DispatcherAESIVByte" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">GreatLeonopteryx</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

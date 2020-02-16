@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<digitalSwitch2:topic xmlns:digitalSwitch2="http://www.cat.com/em/feed/v2/DigitalSwitchStataus2" xmlns:feed="http://www.cat.com/em/feed/v2/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v2/DIgitalSwitchStatus2 https://emfeed.cat.com/EMFeedFiles/schema/v2/DigitalSwitchStatus2.xsd">
+   
+<nextBuffer>
+   <url>https://emfeed.rd.cat.com/EMFeedService/v2/feed/nighthawk/DIGSTATUS2/11974014</url>
+   <moreData>true</moreData>
+</nextBuffer>
+<message>
+      <header>
+         <messageId>12096877</messageId>
+
+         <masterMsgId>5504319</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+
+         </equipment>
+         <moduleCode>-DATA_FEED_TEST08783</moduleCode>
+         <moduleTime>2009-02-05 20:00:51</moduleTime>
+         <receivedTime>2009-02-05 20:00:51</receivedTime>
+      </header>
+      <powerMode>0</powerMode>
+      <pending>No</pending>
+      <switch1Active>Yes</switch1Active>
+      <switch2Active>No</switch2Active>
+      <switch3Active>No</switch3Active>
+      <switch4Active>No</switch4Active>
+   </message>
+
+<message>
+      <header>
+         <messageId>12096937</messageId>
+         <masterMsgId>5504364</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08764</serialNumber>
+            <make>CAT</make>
+
+            <model>DFTEST_351</model>
+            <nickname>NICK_351</nickname>
+         </equipment>
+         <moduleCode>-DATA_FEED_TEST08764</moduleCode>
+         <moduleTime>2009-02-05 19:12:51</moduleTime>
+         <receivedTime>2009-02-05 19:12:51</receivedTime>
+
+      </header>
+      <powerMode>1</powerMode>
+      <pending>Yes</pending>
+      <switch1Active>No</switch1Active>
+      <switch2Active>Yes</switch2Active>
+      <switch3Active>No</switch3Active>
+      <switch4Active>No</switch4Active>
+   </message>
+   <message>
+      <header>
+         <messageId>11971925</messageId>
+         <masterMsgId>5491887</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+         </equipment>
+         <moduleCode>-DQ0200020816Q1</moduleCode>
+         <moduleTime>2009-02-05 19:12:51</moduleTime>
+         <receivedTime>2009-02-05 19:12:51</receivedTime>
+
+      </header>
+      <powerMode>2</powerMode>
+      <pending>No</pending>
+      <switch1Active>No</switch1Active>
+      <switch2Active>No</switch2Active>
+      <switch3Active>Yes</switch3Active>
+      <switch4Active>No</switch4Active>
+   </message>
+   <message>
+      <header>
+         <messageId>11971925</messageId>
+         <masterMsgId>5491887</masterMsgId>
+         <equipment>
+            <serialNumber>-1CF08783</serialNumber>
+            <make>CAT</make>
+
+            <model>DFTEST_723</model>
+            <nickname>NICK_723</nickname>
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-02-05 19:12:51</moduleTime>
+         <receivedTime>2009-02-05 19:12:51</receivedTime>
+
+      </header>
+      <powerMode>3</powerMode>
+      <pending>Yes</pending>
+      <switch1Active>No</switch1Active>
+      <switch2Active>No</switch2Active>
+      <switch3Active>No</switch3Active>
+      <switch4Active>Yes</switch4Active>
+   </message>
+</digitalSwitch2:topic>
+

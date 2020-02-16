@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<equipmentData:equipments xmlns:equipmentData="http://www.cat.com/equipmentdata/v2/EquipmentData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/equipmentdata/v2/EquipmentData https://equipmentdatamc.rd.cat.com:443/EquipmentDataServices/schema/v2/EquipmentData.xsd">
+   <NextBuffer>
+      <url>https://equipmentdatamc.rd.cat.com:443/EquipmentDataServices/rest/v2/equipments/all/2522</url>
+      <moreData>true</moreData>
+   </NextBuffer>  
+   <equipment>
+      <serialNumber>0123456789</serialNumber>
+      <make>
+         <code>CAT</code>
+      </make>
+      <equipmentOwners>
+         <inConflict>true</inConflict>
+         <equipmentOwner>
+            <dealerCustomer>
+
+               <dealer>
+                  <code>TD00</code>
+                  <name>Demo Dealer</name>
+               </dealer>
+               <customer>
+                  <id>987654</id>
+                  <name>ACERT</name>
+                  <isInternal>false</isInternal>
+               </customer>
+               <accountNumber>  </accountNumber>
+               <accountName>ACERT</accountName>
+            </dealerCustomer>
+            <nickname>Red Dozer</nickname>
+         </equipmentOwner>
+
+         <equipmentOwner>
+            <dealerCustomer>
+               <dealer>
+                  <code>TD00</code>
+                  <name>Demo Dealer</name>
+               </dealer>
+               <customer>
+                  <id>2969473160</id>
+                  <name>ED Test Test</name>
+                  <isInternal>false</isInternal>
+               </customer>
+               <accountNumber>206725</accountNumber>
+               <accountName>CLOVERFORK MINING &amp;</accountName>
+            </dealerCustomer>
+            <nickname>Big Red</nickname>
+
+         </equipmentOwner>
+      </equipmentOwners>
+   </equipment>
+</equipmentData:equipments>
+

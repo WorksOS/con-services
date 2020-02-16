@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?> 
+<fence:topic xmlns:fence="http://www.cat.com/em/feed/v5/Fence" xmlns:feed="http://www.cat.com/em/feed/v5/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v5/Fence https://emfeed.rd.cat.com/EMFeedFiles/schema/v5/Fence.xsd"> 
+    
+<nextBuffer> 
+   <url>https://emfeed.rd.cat.com/EMFeedService/v5/feed/allqueue/FENCEALERT/33635473</url> 
+   <moreData>false</moreData> 
+</nextBuffer> 
+<message> 
+      <header>
+         <messageId>25636396</messageId>
+         <masterMsgId>31484216</masterMsgId>
+         <equipment>
+            <serialNumber>-B9D01487</serialNumber>
+            <make>CAT</make>
+            <model>140M</model>
+         </equipment>
+         <moduleCode>-DQCAT0009325Q1</moduleCode>
+         <moduleTime>2009-10-04 04:57:47</moduleTime>
+         <receivedTime>2009-10-04 05:00:04</receivedTime>
+      </header>
+      <timeWatchActive>Y</timeWatchActive> 
+      <exclusiveWatchActive>Y</exclusiveWatchActive> 
+      <inclusiveWatchActive>Y</inclusiveWatchActive> 
+      <timeWatchAlarm>Y</timeWatchAlarm> 
+      <exclusiveWatchAlarm>N</exclusiveWatchAlarm> 
+      <inclusiveWatchAlarm>N</inclusiveWatchAlarm> 
+   </message> 
+<message> 
+      <header>
+         <messageId>25636396</messageId>
+         <masterMsgId>31484216</masterMsgId>
+         <equipment>
+            <serialNumber>-B9D01487</serialNumber>
+            <make>CAT</make>
+            <model>140M</model>
+         </equipment>
+         <moduleCode>-DQCAT0009325Q1</moduleCode>
+         <moduleTime>2009-10-04 04:57:47</moduleTime>
+         <receivedTime>2009-10-04 05:00:04</receivedTime>
+      </header>
+      <timeWatchActive>Y</timeWatchActive> 
+      <exclusiveWatchActive>Y</exclusiveWatchActive> 
+      <inclusiveWatchActive>Y</inclusiveWatchActive> 
+      <timeWatchAlarm>Y</timeWatchAlarm> 
+      <exclusiveWatchAlarm>Y</exclusiveWatchAlarm> 
+      <inclusiveWatchAlarm>Y</inclusiveWatchAlarm> 
+      <satelliteBlockage>Y</satelliteBlockage> 
+      <disconnectSwitchUsed>Y</disconnectSwitchUsed> 
+   </message> 
+</fence:topic> 

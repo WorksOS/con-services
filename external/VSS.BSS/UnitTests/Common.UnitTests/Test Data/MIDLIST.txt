@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?> 
+<module:midQuery xmlns:module="http://www.cat.com/em/feed/v6/Module" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v6/Module https://emfeed.cat.com/EMFeedFiles/schema/v6/Module.xsd">
+  <nextBuffer>
+    <url>https://embatch.cat.com/EMServices/rest/v1/midList/12</url> 
+    <moreData>false</moreData> 
+  </nextBuffer>
+  <mid>
+    <id>9</id> 
+    <descriptions>
+      <description lang="en">Handheld Service Tool</description> 
+      <description lang="es">Programa de servicio de mano</description> 
+      <description lang="fr">Dispositif manuel</description> 
+    </descriptions>
+  </mid>
+  <mid>
+    <id>10</id> 
+    <descriptions>
+      <description lang="en">DDT</description> 
+      <description lang="es">DDT</description> 
+      <description lang="fr">DDT</description> 
+    </descriptions>
+  </mid>
+  <mid>
+    <id>11</id> 
+    <descriptions>
+      <description lang="en">Com Adapter</description> 
+      <description lang="es">Adaptador com</description> 
+      <description lang="fr">Adaptateur Com</description> 
+    </descriptions>
+  </mid>
+  <mid>
+    <id>119</id> 
+    <descriptions>
+      <description lang="en">Paver Burner #2</description> 
+      <description lang="es">Quemador pavimentadora número 2</description> 
+      <description lang="fr">Épandeur brûleur N°2</description> 
+    </descriptions>
+  </mid>
+</module:midQuery>

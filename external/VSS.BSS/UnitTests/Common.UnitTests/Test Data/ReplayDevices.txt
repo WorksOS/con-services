@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<smuLoc:topic xmlns:smuLoc="http://www.cat.com/em/feed/v2/ServiceMeterLocation" xmlns:feed="http://www.cat.com/em/feed/v2/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v2/ServiceMeterLocation https://emfeed.cat.com/EMFeedFiles/schema/v2/ServiceMeterLocation.xsd">
+<nextBuffer>
+<url></url>
+<moreData>false</moreData>
+</nextBuffer>
+  <!-- Valid -->
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315420</masterMsgId>
+         <equipment>
+            <serialNumber>-MWP02718</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-09-16 23:49:14</moduleTime>
+         <receivedTime>2009-09-17 05:00:13</receivedTime>
+      </header>
+      <serviceMeter>
+         <value>1563</value>
+         <uom>Hours</uom>
+      </serviceMeter>
+      <location>
+         <latitude>44.05657</latitude>
+         <longitude>-75.81073</longitude>
+         <validity>V</validity>
+      </location>
+   </message>
+   <!-- Invalid - validity specified as invalid -->
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315434</masterMsgId>
+         <equipment>
+            <serialNumber>-N1A01456</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200020816Q1</moduleCode>
+         <moduleTime>2009-09-16 23:26:59</moduleTime>
+         <receivedTime>2009-09-17 05:00:21</receivedTime>
+      </header>
+      <serviceMeter>
+         <value>3927</value>
+         <uom>Hours</uom>
+      </serviceMeter>
+      <location>
+         <latitude>50.32887</latitude>
+         <longitude>7.429033</longitude>
+         <validity>I</validity>
+      </location>
+   </message>
+   <!-- Valid - missing validityspecified block - assumed to be good -->
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315421</masterMsgId>
+         <equipment>
+            <serialNumber>-MWP02718</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-09-16 23:50:14</moduleTime>
+         <receivedTime>2009-09-17 05:01:13</receivedTime>
+      </header>
+      <serviceMeter>
+         <value>1563</value>
+         <uom>Hours</uom>
+      </serviceMeter>
+      <location>
+         <latitude>44.05657</latitude>
+         <longitude>-75.81073</longitude>         
+      </location>
+   </message>
+   <!-- Invalid - missing location block -->
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315421</masterMsgId>
+         <equipment>
+            <serialNumber>-MWP02718</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-09-16 23:51:14</moduleTime>
+         <receivedTime>2009-09-17 05:02:13</receivedTime>
+      </header>
+      <serviceMeter>
+         <value>1563</value>
+         <uom>Hours</uom>
+      </serviceMeter>      
+   </message>
+      <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315421</masterMsgId>
+         <equipment>
+            <serialNumber>DOUGTEST</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>REPLAYDEVICE1</moduleCode>
+         <moduleTime>2009-09-16 23:51:14</moduleTime>
+         <receivedTime>2009-09-17 05:02:13</receivedTime>
+      </header>
+      <serviceMeter>
+         <value>1563</value>
+         <uom>Hours</uom>
+      </serviceMeter>      
+   </message>
+      <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315421</masterMsgId>
+         <equipment>
+            <serialNumber>DOUGTEST2</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>REPLAYDEVICE2</moduleCode>
+         <moduleTime>2009-09-16 23:51:14</moduleTime>
+         <receivedTime>2009-09-17 05:02:13</receivedTime>
+      </header>
+      <serviceMeter>
+         <value>1563</value>
+         <uom>Hours</uom>
+      </serviceMeter>      
+   </message>
+ </smuLoc:topic>

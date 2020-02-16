@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema elementFormDefault="unqualified" xmlns:feed="http://www.cat.com/em/feed/v5/CommonFeed" targetNamespace="http://www.cat.com/em/feed/v5/CommonFeed" xmlns="http://www.w3.org/2001/XMLSchema">
+  <simpleType name="YesNo">
+    <annotation>
+      <documentation> Enumeration for data type that can only contain a 'Y' or an 'N'. </documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="Y"/>
+      <enumeration value="N"/>
+      <maxLength value="1"/>
+      <minLength value="1"/>
+    </restriction>
+  </simpleType>
+  <simpleType name="UnitOfMeasure">
+    <annotation>
+      <documentation> Unit of measure for an element. Example values would be gallons, hours etc... </documentation>
+    </annotation>
+    <restriction base="string">
+      <enumeration value="Hours"/>
+      <enumeration value="Percentage"/>
+      <enumeration value="Count"/>
+      <enumeration value="Gallons"/>
+      <enumeration value="Miles"/>
+      <maxLength value="25"/>
+      <minLength value="1"/>
+    </restriction>
+  </simpleType>
+  <complexType name="ServiceMeter">
+    <annotation>
+      <documentation> The operational hours on the equipment at the time this message was sent. </documentation>
+    </annotation>
+    <sequence>
+      <element name="value" maxOccurs="1" minOccurs="1" type="long"/>
+      <element name="uom" maxOccurs="1" minOccurs="1" type="feed:UnitOfMeasure"/>
+    </sequence>
+  </complexType>
+  <complexType name="Mileage">
+    <annotation>
+      <documentation> The operational miles on the equipment at the time this message was sent. </documentation>
+    </annotation>
+    <sequence>
+      <element name="value" maxOccurs="1" minOccurs="1" type="long"/>
+      <element name="uom" maxOccurs="1" minOccurs="1" type="feed:UnitOfMeasure"/>
+    </sequence>
+  </complexType>
+  <complexType name="Location">
+    <annotation>
+      <documentation> The GPS coordinate of the equipment at the time of message send. The latitude and longitude are in WGS 84 format. </documentation>
+    </annotation>
+    <sequence>
+      <element name="latitude" maxOccurs="1" minOccurs="1" type="double"/>
+      <element name="longitude" maxOccurs="1" minOccurs="1" type="double"/>
+      <element name="validity" maxOccurs="1" minOccurs="0">
+        <simpleType>
+          <restriction base="string">
+            <enumeration value="I"/>
+            <enumeration value="V"/>
+            <length value="1"/>
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="Equipment">
+    <annotation>
+      <documentation> Equipment on which the Telematics device that sent this message was deployed. </documentation>
+    </annotation>
+    <sequence>
+      <element name="serialNumber" maxOccurs="1" minOccurs="1">
+        <annotation>
+          <documentation> Equipment serial number. </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="20"/>
+            <minLength value="1"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="make" maxOccurs="1" minOccurs="1">
+        <annotation>
+          <documentation> Equipment make (e.g. CAT) </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <length value="3"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="model" maxOccurs="1" minOccurs="0">
+        <annotation>
+          <documentation>Equipment model.</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50"/>
+            <minLength value="1"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="nickname" maxOccurs="1" minOccurs="0">
+        <annotation>
+          <documentation>Equipment nickname.</documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="50"/>
+            <minLength value="1"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="equipmentVIN" maxOccurs="1" minOccurs="0">
+        <annotation>
+          <documentation> Vehicle identification number. </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="20"/>
+            <minLength value="1"/>
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+  <complexType name="TopicHeader">
+    <annotation>
+      <documentation> This message header contains all the data common to all feed topics. </documentation>
+    </annotation>
+    <sequence>
+      <element name="messageId" maxOccurs="1" minOccurs="1" type="long">
+        <annotation>
+          <documentation> The unique message id assigned to the device message by the EM feed. This unique id should be utilized by a feed client for duplicate message delivery detection. </documentation>
+        </annotation>
+      </element>
+      <element name="masterMsgId" maxOccurs="1" minOccurs="1" type="long">
+        <annotation>
+          <documentation> The unique message id assigned to the parent message. The data feed allows for multiple feed messages to be broken out of a single device message. For example a Location can be extracted from an Event device message and delivered to the client subscribing to the SMU Location feed. The event data itself may be delivered as a separate message delivered to an Event feed subscriber. This id can be used to correlate feed messages that have been extracted from a single device message. </documentation>
+        </annotation>
+      </element>
+      <element name="equipment" maxOccurs="1" minOccurs="1" type="feed:Equipment"/>
+      <element name="moduleCode" maxOccurs="1" minOccurs="1">
+        <annotation>
+          <documentation> The unique identifier for the Telematics device having sent this message. </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="20"/>
+            <minLength value="1"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="moduleTime" maxOccurs="1" minOccurs="1">
+        <annotation>
+          <documentation> The date and time with which the device stamped the message prior to message send. This date is in international date format (see ISO standard 8601) as follows: yyyy-MM-dd HH:mm:ss (where HH is 0-23) The time zone for the date/time is GMT. </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="23"/>
+            <minLength value="19"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="receivedTime" maxOccurs="1" minOccurs="1">
+        <annotation>
+          <documentation> The date and time at which the message was received within Caterpillar Inc. IT infrastructure. This date is in international date format (see ISO standard 8601) as follows: yyyy-MM-dd HH:mm:ss (where HH is 0-23) The time zone for the date/time is GMT. </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <minLength value="19"/>
+            <maxLength value="23"/>
+          </restriction>
+        </simpleType>
+      </element>
+      <element name="owner" maxOccurs="1" minOccurs="0">
+        <annotation>
+          <documentation> The entity owning the equipment. In nearly all cases this attribute will be null. The owner attribute was added to address a specific need that arose in the context of a third party data integration project. </documentation>
+        </annotation>
+        <simpleType>
+          <restriction base="string">
+            <maxLength value="200"/>
+            <minLength value="1"/>
+          </restriction>
+        </simpleType>
+      </element>
+    </sequence>
+  </complexType>
+  <simpleType name="ModuleTime">
+    <annotation>
+      <documentation> The date and time with which the device stamped the message prior to message send. This date is in international date format (see ISO standard 8601) as follows: yyyy-MM-dd HH:mm:ss (where HH is 0-23) The time zone for the date/time is GMT. </documentation>
+    </annotation>
+    <restriction base="string"/>
+  </simpleType>
+  <simpleType name="ReceivedTime">
+    <annotation>
+      <documentation> The date and time at which the message was received within Caterpillar Inc. IT infrastructure. This date is in international date format (see ISO standard 8601) as follows: yyyy-MM-dd HH:mm:ss (where HH is 0-23) The time zone for the date/time is GMT. </documentation>
+    </annotation>
+    <restriction base="string"/>
+  </simpleType>
+  <complexType name="NextBuffer">
+    <sequence>
+      <element name="url" maxOccurs="1" minOccurs="1" type="anyURI">
+        <annotation>
+          <documentation> URL returning the next buffer of messages from the specified queue. The url attribute is to be utilized by client application code when navigating the contents of a queue. </documentation>
+        </annotation>
+      </element>
+      <element name="moreData" maxOccurs="1" minOccurs="1" type="boolean">
+        <annotation>
+          <documentation> This value will be true when more messages exist in the queue ready for retrieval. The value will be false if there are no more messages available in the queue. Client code should iteratively invoke the nextBuffer url until either a 404 exception is received (indicating there are 0 messages available at the specified queue position) or moreData is false (indicating there are messages in the result set but there were not enough messages to completely fill the buffer size configured for the queue. Upon receipt of a false value the client application should wait until the next scheduled service invocation interval to invoke the service again. This attribute prevents a client from issuing many back to back service invocations, each returning only a couple messages. A false return should prompt the client to go back to "sleep" or wait until the next scheduled interval before trying again. </documentation>
+        </annotation>
+      </element>
+    </sequence>
+  </complexType>
+
+  <complexType name="MIDLINK" >
+    <annotation>
+      <documentation>Module IDentifier</documentation>
+    </annotation>
+    <simpleContent>
+      <extension base="string">
+        <attribute name="info" type="anyURI">
+          <annotation>
+            <documentation>
+              Contains the url that can be invoked to return more
+              information about the MID.
+            </documentation>
+          </annotation>
+        </attribute>
+      </extension>
+    </simpleContent>
+  </complexType>
+
+  <simpleType name="DataLink">
+    <restriction base="string">
+      <enumeration value="ATA"></enumeration>
+      <enumeration value="CDL"></enumeration>
+      <enumeration value="UNKNOWN"></enumeration>
+    </restriction>
+  </simpleType>
+</schema>

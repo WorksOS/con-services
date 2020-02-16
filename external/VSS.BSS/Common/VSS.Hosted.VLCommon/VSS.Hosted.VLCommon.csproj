@@ -1,0 +1,1295 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{78A163DA-1F9C-4E23-B735-40B87408C25B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.Hosted.VLCommon</RootNamespace>
+    <AssemblyName>VSS.Hosted.VLCommon</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Local|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Local\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|AnyCPU'">
+    <OutputPath>bin\Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|AnyCPU'">
+    <OutputPath>bin\IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging, Version=1.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net, Version=1.2.0.2, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\Common.Logging.Log4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="EFProviderWrapperToolkit">
+      <HintPath>..\AppSvrThirdPartyDLLs\EFProviderWrapperToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="EFTracingProvider">
+      <HintPath>..\AppSvrThirdPartyDLLs\EFTracingProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\HashLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.COMRVRSGEOSERVERLib">
+      <HintPath>..\AppSvrThirdPartyDLLs\Interop.COMRVRSGEOSERVERLib.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\AppSvrThirdPartyDLLs\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MassTransit, Version=2.7.0.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\MassTransit.dll</HintPath>
+    </Reference>
+    <Reference Include="MassTransit.Log4NetIntegration, Version=2.9.0.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\MassTransit.Log4NetIntegration.dll</HintPath>
+    </Reference>
+    <Reference Include="MassTransit.Transports.RabbitMq, Version=2.9.0.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\MassTransit.Transports.RabbitMq.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ServiceModel.Web">
+      <HintPath>..\AppSvrThirdPartyDLLs\Microsoft.ServiceModel.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\Microsoft.SqlServer.Types.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Atlas">
+      <HintPath>..\AppSvrThirdPartyDLLs\Microsoft.Web.Atlas.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="opentoken-agent">
+      <HintPath>..\AppSvrThirdPartyDLLs\opentoken-agent.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=105.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\RestSharp.105.2.3\lib\net451\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Spring.Aop">
+      <HintPath>..\AppSvrThirdPartyDLLs\Spring.Aop.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Core">
+      <HintPath>..\AppSvrThirdPartyDLLs\Spring.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Services">
+      <HintPath>..\AppSvrThirdPartyDLLs\Spring.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Web">
+      <HintPath>..\AppSvrThirdPartyDLLs\Spring.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Device" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VSS.Nighthawk.Instrumentation">
+      <HintPath>..\AppSvrThirdPartyDLLs\VSS.Nighthawk.Instrumentation.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Nighthawk.MassTransit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AppSvrThirdPartyDLLs\VSS.Nighthawk.MassTransit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="DataAccess\SqlClient\AccountLookup.cs" />
+    <Compile Include="DataAccess\SqlClient\FaultAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\PLDeviceAccess.cs" />
+    <Compile Include="DataAccess\Views\DbViewAccess.cs" />
+    <Compile Include="Events\AssetCreatedEvent.cs" />
+    <Compile Include="Events\AssetUpdatedEvent.cs" />
+    <Compile Include="Events\CustomerCreatedEvent.cs" />
+    <Compile Include="Events\CustomerDeactivatedEvent.cs" />
+    <Compile Include="Events\CustomerReactivatedEvent.cs" />
+    <Compile Include="Events\CustomerUpdatedEvent.cs" />
+    <Compile Include="Events\DeviceOwnershipTransferredEvent.cs" />
+    <Compile Include="Events\DeviceProvisionedEvent.cs" />
+    <Compile Include="Events\DeviceSubscribedEvent.cs" />
+    <Compile Include="Events\EventMessageSequence.cs" />
+    <Compile Include="Events\EventSourceEnum.cs" />
+    <Compile Include="Events\LocationReceivedEvent.cs" />
+    <Compile Include="Helpers\clipper.cs" />
+    <Compile Include="Helpers\ProjectMasterData\AssociateProjectCustomer.cs" />
+    <Compile Include="Helpers\ProjectMasterData\AssociateProjectGeofence.cs" />
+    <Compile Include="Helpers\ProjectMasterData\CreateProjectEvent.cs" />
+    <Compile Include="Helpers\ProjectMasterData\DeleteProjectEvent.cs" />
+    <Compile Include="Helpers\ProjectMasterData\IProjectEvent.cs" />
+    <Compile Include="Helpers\ProjectMasterData\ProjectSynchronizer.cs" />
+    <Compile Include="Helpers\ProjectMasterData\RestoreProjectEvent.cs" />
+    <Compile Include="Helpers\ProjectMasterData\UpdateProjectEvent.cs" />
+    <Compile Include="Helpers\SitesOverlapHelper.cs" />
+    <Compile Include="Helpers\UserTypeHelper.cs" />
+    <Compile Include="Model\IObjectContextTransactionScope.cs" />
+    <Compile Include="Model\ObjectContextTransactionScope.cs" />
+    <Compile Include="Model\SimpleEntities\ActiveUser.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ActiveUserAssetSelection.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppAlarm.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppFeatureSet.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppFeatureSetAppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Asset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetAlias.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetBurnRates.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetDeviceHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetExpectedRuntimeHoursProjected.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetMonitoring.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetReposessionHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetSecurityIncident.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetWorkingDefinition.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BookmarkManager.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSMessages.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSProvisioningMsg.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSResponseEndPoint.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSResponseMsg.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CGSyncBookMark.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ConfigType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Contact.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CoordinateSystem.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CrosscheckConfig.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Customer.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerAsset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerRelationship.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerRelationshipAudit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerRelationshipExport.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerRelationshipType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerStore.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DailyReport.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Datalink.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DealerNetwork.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Device.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceFirmwareVersion.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceICDSeries.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DevicePartNumber.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DevicePersonality.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceState.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceTypeServiceType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ECMDatalinkInfo.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ECMInfo.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EmailPriority.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EmailQueue.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ExternalUser.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FaultType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Feature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeatureAccess.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeatureType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeatureURLTemplate.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FederatedLogonInfo.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FirmwareUpdateStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Icon.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\INHOPDataObject.cs" />
+    <Compile Include="Model\SimpleEntities\Language.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Make.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MID.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ModelVariant.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MonitoringMachineType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTS500FirmwareVersion.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSBIT.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSDevice.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSMessage.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSOut.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NighthawkSync.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Notice.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NoticeLanguage.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PersonalityType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PLDevice.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PLOut.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMCompletedService.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMInterval.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMIntervalAsset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMIntervalInstance.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMSalesModel.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMServiceCompletionType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMTrackingType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PressureUnit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProductFamily.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Project.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProjectType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\RuntimeCalibration.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SalesModel.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Sequence.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Service.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceProvider.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceTypeAppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceTypeMap.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceView.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SharedView.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Site.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SiteDispatched.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SiteType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Store.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TDMGClaimedDevices.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TelematicsSync.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TemperatureUnit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TermsOfUse.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TimeZoneStandardAbbreviation.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TopicPriority.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TopicScalePolicy.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TTDevice.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TTOut.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UnitType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\User.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserActivation.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserActivationStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserFeatureAudit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserNoticeDismissed.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserPasswordHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserPreferences.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\VLAdminErrorMsg.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\VLSupportAudit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_Address.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_AssetWorkingSet.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_Asset_AppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_Asset_AssetFeature_bckup_20140112.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_CustomerIDsWithMaxAssetsForAirLift.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_DealerOwnedAssets.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_FactAssetCustomerSite.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_FaultDescriptions.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_ParentCustomerOwnedAssets.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\WorkDefinition.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ServiceOrchestration\Interfaces\ICancellationTokenControl.cs" />
+    <Compile Include="ServiceOrchestration\Interfaces\ICancellationTokenSource.cs" />
+    <Compile Include="ServiceOrchestration\Interfaces\IHostedService.cs" />
+    <Compile Include="Services\Aspects\ExceptionLogger.cs" />
+    <Compile Include="Services\Aspects\MethodCallLogger.cs" />
+    <Compile Include="Services\Aspects\ObfuscateAttribute.cs" />
+    <Compile Include="Services\Aspects\ObjectContextManager.cs" />
+    <Compile Include="Services\Aspects\SnapshotAttribute.cs" />
+    <Compile Include="Services\AssetIDCache.cs" />
+    <Compile Include="Services\Bss\AccountInfo.cs" />
+    <Compile Include="Services\Bss\Activities\AdminUserUpdate.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerAddReference.cs" />
+    <Compile Include="Services\Bss\Activities\AssetAddReference.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerRelationshipUpdate.cs" />
+    <Compile Include="Services\Bss\Activities\UpdateBssIdsForCustomerCreatedByCatStore.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerUpdateReference.cs" />
+    <Compile Include="Services\Bss\Core\Results\NotifyResult.cs" />
+    <Compile Include="Services\Bss\Helpers\RabbitMqConnectionConfig.cs" />
+    <Compile Include="Services\Bss\Interfaces\IBssReference.cs" />
+    <Compile Include="Services\Bss\Interfaces\IConnectionConfig.cs" />
+    <Compile Include="Services\EquipmentAPI.cs" />
+    <Compile Include="Services\Interfaces\IMaintenanceAPI.cs" />
+    <Compile Include="Services\MaintenanceAPI.cs" />
+    <Compile Include="Services\MDM\Interfaces\IConfigurationManager.cs" />
+    <Compile Include="Services\MDM\Interfaces\IHttpRequestWrapper.cs" />
+    <Compile Include="Services\MDM\Common\AppConfigurationManager.cs" />
+    <Compile Include="Services\MDM\Common\CacheManager.cs" />
+    <Compile Include="Services\MDM\Common\HttpRequestWrapper.cs" />
+    <Compile Include="Services\MDM\Common\JsonHelper.cs" />
+    <Compile Include="Services\MDM\Common\StringConstants.cs" />
+    <Compile Include="Services\MDM\Common\TPassAuthorizationManager.cs" />
+    <Compile Include="Services\MDM\Interfaces\ICacheManager.cs" />
+    <Compile Include="Services\MDM\Interfaces\ITpassAuthorizationManager.cs" />
+    <Compile Include="Services\MDM\CustomerService.cs" />
+    <Compile Include="Services\MDM\DeviceService.cs" />
+    <Compile Include="Services\MDM\Interfaces\IAssetService.cs" />
+    <Compile Include="Services\MDM\Interfaces\ISubscriptionService.cs" />
+    <Compile Include="Services\MDM\MDMHelpers.cs" />
+    <Compile Include="Services\MDM\Interfaces\ICustomerService.cs" />
+    <Compile Include="Services\MDM\Interfaces\IDeviceService.cs" />
+    <Compile Include="Services\MDM\Interfaces\IGeofenceService.cs" />
+    <Compile Include="Services\MDM\AssetService.cs" />
+    <Compile Include="Services\Interfaces\IProjectMonitoringSiteProvider.cs" />
+    <Compile Include="Services\MDM\Interfaces\IWorkDefinitionService.cs" />
+    <Compile Include="Services\MDM\Models\AppCredentials.cs" />
+    <Compile Include="Services\MDM\Models\CustomerModels.cs" />
+    <Compile Include="Services\MDM\Models\GeofenceModels.cs" />
+    <Compile Include="Services\MDM\Models\GroupModels.cs" />
+    <Compile Include="Services\MDM\Models\OAuthToken.cs" />
+    <Compile Include="Services\MDM\Models\ServiceRequestMessage.cs" />
+    <Compile Include="Services\MDM\Models\ServiceResponseMessage.cs" />
+    <Compile Include="Services\MDM\ServiceBase.cs" />
+    <Compile Include="Services\MDM\GeofenceService.cs" />
+    <Compile Include="Services\MDM\SubscriptionService.cs" />
+    <Compile Include="Services\MDM\WorkDefinitionService.cs" />
+    <Compile Include="Services\MDM\Models\DeviceModel.cs" />
+    <Compile Include="Services\MTSMessages\FirmwareUpdateResponse.cs" />
+    <Compile Include="Services\MTSMessages\MTSUpdateDeviceConfig.cs" />
+    <Compile Include="Services\MTSMessages\PersonalityReportMessage.cs" />
+    <Compile Include="Services\ServiceContracts\ProxyEndpointProvider.cs" />
+    <Compile Include="Services\TDMGDeviceClaim\Interface\IHttpTDMGClientWrapper.cs" />
+    <Compile Include="Services\TimerService.cs" />
+    <Compile Include="Services\Types\AssetCurrentStatusInfo.cs" />
+    <Compile Include="Services\Types\AssetSecurityEventStatus.cs" />
+    <Compile Include="Services\Types\NoticeForDisplay.cs" />
+    <Compile Include="Model\SimpleEntities\ScheduleReportAccessAudit.cs" />
+    <Compile Include="Model\SimpleEntities\ScheduleReportCurrentStatus.cs" />
+    <Compile Include="Model\SimpleEntities\ScheduleReportHistory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataAccess\SqlClient\ActiveUserSelectedAssetsAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\AddressSaver.cs" />
+    <Compile Include="DataAccess\SqlClient\AlertCountAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\FactPMDueAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\PMCopyIntervalAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\PMGetAllintervalsAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\PMIntervalInstanceSaver.cs" />
+    <Compile Include="DataAccess\SqlClient\ProjectSiteMonitoringAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\ServiceViewSaver.cs" />
+    <Compile Include="DataAccess\SqlClient\SiteAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\SqlAccessMethods.cs" />
+    <Compile Include="DataAccess\SqlClient\SqlReaderAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\StoredProcDefinition.cs" />
+    <Compile Include="Model\NHOpModel.Designer.cs">
+      <DependentUpon>NHOpModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Model\ObjectContextFactory.cs" />
+    <Compile Include="Model\SimpleEntities\EnumCommon.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EnumCommon.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FixupCollection.cs" />
+    <Compile Include="Model\SimpleEntities\IFact.cs" />
+    <Compile Include="Model\SimpleEntities\INH_OP.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOpEnums.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOpEnums.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOpModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOpModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOpModelPartials.cs" />
+    <Compile Include="Model\SimpleEntities\NH_OP.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OPMock.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OPMock.ObjectSet.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\NHSvr.Designer.cs">
+      <DependentUpon>NHSvr.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Resources\VLResourceManager.cs" />
+    <Compile Include="Services\API.cs" />
+    <Compile Include="Services\Aspects\Authorizor.cs" />
+    <Compile Include="Services\Aspects\AuthorizorAttribute.cs" />
+    <Compile Include="Services\AssetFeatureAPI.cs" />
+    <Compile Include="Services\AssetIDChangesAPI.cs" />
+    <Compile Include="Services\BssDataGenerator.cs" />
+    <Compile Include="Services\BssProvisioningMsgAPI.cs" />
+    <Compile Include="Services\BssResponseMsgAPI.cs" />
+    <Compile Include="Services\Bss\Activities\ActivatedServicePlanConfiguration.cs" />
+    <Compile Include="Services\Bss\Activities\AdminUserCreate.cs" />
+    <Compile Include="Services\Bss\Activities\AssetCreate.cs" />
+    <Compile Include="Services\Bss\Activities\AssetDeviceHistoryCreate.cs" />
+    <Compile Include="Services\Bss\Activities\AssetRemoveDevice.cs" />
+    <Compile Include="Services\Bss\Activities\AssetRemoveDeviceHistory.cs" />
+    <Compile Include="Services\Bss\Activities\AssetUpdate.cs" />
+    <Compile Include="Services\Bss\Activities\CancelledServicePlanConfiguration.cs" />
+    <Compile Include="Services\Bss\Activities\ResetAssetOnOffTrackingForDeviceReplacement.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerCreate.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerDeactivate.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerReactivate.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerRelationshipCreate.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerRelationshipDelete.cs" />
+    <Compile Include="Services\Bss\Activities\CustomerUpdate.cs" />
+    <Compile Include="Services\Bss\Activities\DeActivateDeviceState.cs" />
+    <Compile Include="Services\Bss\Activities\DeRegisterDeviceState.cs" />
+    <Compile Include="Services\Bss\Activities\DeRegisterDeviceStateOTA.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceAssetSwap.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceCreate.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceOwnershipTransfer.cs" />
+    <Compile Include="Services\Bss\Activities\DevicePersonalityCreate.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceReconfigure.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceRemoveFromOldAsset.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceRemoveFromOldAssetHistory.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceSwapRecordAssetHistory.cs" />
+    <Compile Include="Services\Bss\Activities\DeviceTransferOwnershipHistory.cs" />
+    <Compile Include="Services\Bss\Activities\InvalidAction.cs" />
+    <Compile Include="Services\Bss\Activities\ManageCustomerServiceViews.cs" />
+    <Compile Include="Services\Bss\Activities\MapAccountHierarchyToCustomerContext.cs" />
+    <Compile Include="Services\Bss\Activities\MapCurrentStateToCustomerContext.cs" />
+    <Compile Include="Services\Bss\Activities\MapDeviceRegistrationToDeviceAssetContext.cs" />
+    <Compile Include="Services\Bss\Activities\MapDeviceReplacementToDeviceAssetContext.cs" />
+    <Compile Include="Services\Bss\Activities\MapInstallBaseToAssetDeviceContext.cs" />
+    <Compile Include="Services\Bss\Activities\MapServicePlanToDeviceServiceContext.cs" />
+    <Compile Include="Services\Bss\Activities\NotificationActivity.cs" />
+    <Compile Include="Services\Bss\Activities\RegisterDeviceState.cs" />
+    <Compile Include="Services\Bss\Activities\ServicePlanActivate.cs" />
+    <Compile Include="Services\Bss\Activities\ServicePlanTerminate.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceTransfer.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewActionForParent.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewCreate.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewCreateForDeviceReplacement.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewCreateForParent.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewManagementForDeviceTransfer.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewManagementForMergeTransfer.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewManagementForOwnershipTransfer.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewTerminateForAsset.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewTerminateForOldAsset.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewTerminationForParent.cs" />
+    <Compile Include="Services\Bss\Activities\ServiceViewTransfer.cs" />
+    <Compile Include="Services\Bss\Activities\UpdateDeviceState.cs" />
+    <Compile Include="Services\Bss\Activities\Validate.cs" />
+    <Compile Include="Services\Bss\BssMessageProcessor.cs" />
+    <Compile Include="Services\Bss\BssPayloadProcessor.cs" />
+    <Compile Include="Services\Bss\BssResponseResultProcessor.cs" />
+    <Compile Include="Services\Bss\Core\Activity.cs" />
+    <Compile Include="Services\Bss\Core\ActivitySequences\ActivitySequence.cs" />
+    <Compile Include="Services\Bss\Core\ActivitySequences\DoSequence.cs" />
+    <Compile Include="Services\Bss\Core\ActivitySequences\IfThenElseSequence.cs" />
+    <Compile Include="Services\Bss\Core\ActivitySequences\WhileSequence.cs" />
+    <Compile Include="Services\Bss\Core\BssWorkflowFactory.cs" />
+    <Compile Include="Services\Bss\Core\Contexts\AssetDeviceContext.cs" />
+    <Compile Include="Services\Bss\Core\Contexts\CustomerContext.cs" />
+    <Compile Include="Services\Bss\Core\Contexts\DeviceAssetContext.cs" />
+    <Compile Include="Services\Bss\Core\Contexts\DeviceServiceContext.cs" />
+    <Compile Include="Services\Bss\Core\Contexts\DeviceStatusContext.cs" />
+    <Compile Include="Services\Bss\Core\Data\Data.cs" />
+    <Compile Include="Services\Bss\Core\Data\DataContext.cs" />
+    <Compile Include="Services\Bss\Core\InputsDictionary.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IActivity.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IActivitySequence.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssAssetDeviceHistoryService.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssAssetService.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssConfiguration.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssCustomerService.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssDeviceService.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssEmailService.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssPLOTAService.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IBssServiceViewService.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IValidator.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IWorkflow.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IWorkflowFactory.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IWorkflowResultProcessor.cs" />
+    <Compile Include="Services\Bss\Core\Interfaces\IWorkflowRunner.cs" />
+    <Compile Include="Services\Bss\Core\ResultProcessors\BatchLoggingResultProcessor.cs" />
+    <Compile Include="Services\Bss\Core\ResultProcessors\EmailingResultProcessor.cs" />
+    <Compile Include="Services\Bss\Core\ResultProcessors\EmailNotificationResultProcessor.cs" />
+    <Compile Include="Services\Bss\Core\ResultProcessors\LoggingResultProcessor.cs" />
+    <Compile Include="Services\Bss\Core\Results\ActivityResult.cs" />
+    <Compile Include="Services\Bss\Core\Results\BssErrorResult.cs" />
+    <Compile Include="Services\Bss\Core\Results\DebugResult.cs" />
+    <Compile Include="Services\Bss\Core\Results\ErrorResult.cs" />
+    <Compile Include="Services\Bss\Core\Results\ExceptionResult.cs" />
+    <Compile Include="Services\Bss\Core\Results\WarningResult.cs" />
+    <Compile Include="Services\Bss\Core\Results\WorkflowResult.cs" />
+    <Compile Include="Services\Bss\Core\Services\BssAssetDeviceHistoryService.cs" />
+    <Compile Include="Services\Bss\Core\Services\BssAssetService.cs" />
+    <Compile Include="Services\Bss\Core\Services\BssCustomerService.cs" />
+    <Compile Include="Services\Bss\Core\Services\BssDeviceService.cs" />
+    <Compile Include="Services\Bss\Core\Services\BssEmailService.cs" />
+    <Compile Include="Services\Bss\Core\Services\BssPLOTAService.cs" />
+    <Compile Include="Services\Bss\Core\Services\BssServiceViewService.cs" />
+    <Compile Include="Services\Bss\Core\Services\Services.cs" />
+    <Compile Include="Services\Bss\Core\Services\ServiceViewInfoDto.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\ActivityHelper.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\BssConfiguration.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\BssConstants.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\BssMessageAction.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\BssMessageExtensions.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\CoreConstants.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\CoreExtensions.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\CustomerContextExtensions.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\Enums.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\Require.cs" />
+    <Compile Include="Services\Bss\Core\Utilities\SummaryHelper.cs" />
+    <Compile Include="Services\Bss\Core\Validator.cs" />
+    <Compile Include="Services\Bss\Core\Workflow.cs" />
+    <Compile Include="Services\Bss\Core\WorkflowFactory.cs" />
+    <Compile Include="Services\Bss\Core\WorkflowProcessor.cs" />
+    <Compile Include="Services\Bss\Core\WorkflowRunner.cs" />
+    <Compile Include="Services\Bss\DeviceConfig.cs" />
+    <Compile Include="Services\Bss\Schema\V2\AccountHierarchy.cs" />
+    <Compile Include="Services\Bss\Schema\V2\AssetIDChanges.cs" />
+    <Compile Include="Services\Bss\Schema\V2\BssCommon.cs" />
+    <Compile Include="Services\Bss\Schema\V2\DeviceRegistration.cs" />
+    <Compile Include="Services\Bss\Schema\V2\DeviceReplacement.cs" />
+    <Compile Include="Services\Bss\Schema\V2\InstallBase.cs" />
+    <Compile Include="Services\Bss\Schema\V2\Response.cs" />
+    <Compile Include="Services\Bss\Schema\V2\ServicePlan.cs" />
+    <Compile Include="Services\Bss\Validators\AccountHierarchyDataContractValidator.cs" />
+    <Compile Include="Services\Bss\Validators\AccountHierarchyDeletedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\AccountHierarchyValidator.cs" />
+    <Compile Include="Services\Bss\Validators\AssetDeviceContextCreateValidator.cs" />
+    <Compile Include="Services\Bss\Validators\AssetDeviceContextUpdatedMergeValidator.cs" />
+    <Compile Include="Services\Bss\Validators\AssetDeviceContextUpdateValidator.cs" />
+    <Compile Include="Services\Bss\Validators\AssetDeviceContextValidator.cs" />
+    <Compile Include="Services\Bss\Validators\CustomerContextCreatedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\CustomerContextDeactivatedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\CustomerContextDeletedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\CustomerContextReactivatedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\CustomerContextUpdatedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\CustomerContextValidator.cs" />
+    <Compile Include="Services\Bss\Validators\CustomerTypeUpdateValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DataContractValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DealerNetworkUpdateValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceAssetContextReplacedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceAssetContextSwappedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceAssetContextValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceRegistrationDataContractValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceReplacementDataContractValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceServiceContextValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceStatusContextDeRegisteredValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceStatusContextRegisteredValidator.cs" />
+    <Compile Include="Services\Bss\Validators\DeviceStatusContextValidator.cs" />
+    <Compile Include="Services\Bss\Validators\InstallBaseDataContractValidator.cs" />
+    <Compile Include="Services\Bss\Validators\InstallBaseUpdatedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\InstallBaseValidator.cs" />
+    <Compile Include="Services\Bss\Validators\MakeCodeValidator.cs" />
+    <Compile Include="Services\Bss\Validators\ServicePlanActivatedValidator.cs" />
+    <Compile Include="Services\Bss\Validators\ServicePlanCancelledValidator.cs" />
+    <Compile Include="Services\Bss\Validators\ServicePlanDataContractValidator.cs" />
+    <Compile Include="Services\Bss\Validators\ServicePlanUpdatedValidator.cs" />
+    <Compile Include="Services\Bss\Workflows\AccountHierarchyCreatedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\AccountHierarchyDeactivatedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\AccountHierarchyDeletedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\AccountHierarchyReactivatedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\AccountHierarchyUpdatedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\DeviceRegistrationDeregisteredWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\DeviceRegistrationRegisteredWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\DeviceReplacementReplacedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\DeviceReplacementSwappedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\InstallBaseCreatedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\InstallBaseUpdatedMergeWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\InstallBaseUpdatedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\InvalidActionWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\ServicePlanActivatedWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\ServicePlanCancelledWorkflow.cs" />
+    <Compile Include="Services\Bss\Workflows\ServicePlanUpdatedWorkflow.cs" />
+    <Compile Include="Services\CalibrationHelper.cs" />
+    <Compile Include="Services\CustomerAPI.cs" />
+    <Compile Include="Services\DeviceAPI.cs" />
+    <Compile Include="Services\EmailAPI.cs" />
+    <Compile Include="Services\EntityExtensions.cs" />
+    <Compile Include="Services\Interfaces\IUUIDSequentialGuid.cs" />
+    <Compile Include="Services\SiteDispatchedEventArgs.cs" />
+    <Compile Include="Services\SiteRemovedEventArgs.cs" />
+    <Compile Include="Services\Types\AlertContainer.cs" />
+    <Compile Include="Services\Types\AlertDetail.cs" />
+    <Compile Include="Services\Types\AlertIncidentDescription.cs" />
+    <Compile Include="Services\Types\AlertIncidentItem.cs" />
+    <Compile Include="Services\Types\AssetAlerts.cs" />
+    <Compile Include="Services\Types\AssetAndDeviceInfo.cs" />
+    <Compile Include="Services\Types\AssetInfo.cs" />
+    <Compile Include="Services\Types\AssetLocation.cs" />
+    <Compile Include="Services\Types\CommunicationOutModeEnum.cs" />
+    <Compile Include="Services\Types\DeviceTypeFeatureEnum.cs" />
+    <Compile Include="Services\Types\DeviceTypePropertiesEnum.cs" />
+    <Compile Include="Services\Types\A5N2ConfigData.cs" />
+    <Compile Include="Services\Types\ECMDetail.cs" />
+    <Compile Include="Services\Types\ICDMessages.cs" />
+    <Compile Include="Services\Types\InfoWindowData.cs" />
+    <Compile Include="Services\Types\AssetServiceDue.cs" />
+    <Compile Include="Services\Types\AssetUtilDailyFlattened.cs" />
+    <Compile Include="Services\Types\CompleteServiceDetailsContainer.cs" />
+    <Compile Include="Services\Types\AssetFuelLevel.cs" />
+    <Compile Include="Services\Types\FuelBurned.cs" />
+    <Compile Include="Services\Types\FuelBurnedDetails.cs" />
+    <Compile Include="Services\Types\FuelBurnedListTypeEnum.cs" />
+    <Compile Include="Services\Types\FuelUtilDailyFlattened.cs" />
+    <Compile Include="Services\Types\LocationData.cs" />
+    <Compile Include="Services\Types\MakeEnum.cs" />
+    <Compile Include="Services\Types\MakeFeatureEnum.cs" />
+    <Compile Include="Services\Types\MetersToUpdate.cs" />
+    <Compile Include="Services\Types\ReportedAndPendingMetersForAsset.cs" />
+    <Compile Include="Services\Types\AssetWithLocation.cs" />
+    <Compile Include="Services\Types\ProjectMonitoringMachine.cs" />
+    <Compile Include="Services\Types\UserInfo.cs" />
+    <Compile Include="Services\Types\UserDetails.cs" />
+    <Compile Include="Services\Types\UtilizationHoursListTypeEnum.cs" />
+    <Compile Include="Services\Types\PrimaryDataSourceEnum.cs" />
+    <Compile Include="Services\Types\AssetFaultCode.cs" />
+    <Compile Include="Services\Types\FaultCodeDetails.cs" />
+    <Compile Include="Services\Types\FaultCodeItem.cs" />
+    <Compile Include="Services\Types\FaultCodeItemsContainer.cs" />
+    <Compile Include="Services\Types\ServiceIntervalItem.cs" />
+    <Compile Include="Services\Types\ServiceIntervalItemsContainer.cs" />
+    <Compile Include="Services\Types\ItemNamePair.cs" />
+    <Compile Include="Services\Types\ServiceInterval.cs" />
+    <Compile Include="Services\Types\UtilizationCallout.cs" />
+    <Compile Include="Services\Types\UtilizationData.cs" />
+    <Compile Include="Services\Types\UtilizationHours.cs" />
+    <Compile Include="Services\Types\UtilizationHoursDetails.cs" />
+    <Compile Include="Services\Types\UtilizationCalloutDisplayResultEnum.cs" />
+    <Compile Include="Services\UUIDSequentialGuid.cs" />
+    <Compile Include="Utilities\DeviceTypeList.cs" />
+    <Compile Include="Utilities\EFExtensions.cs" />
+    <Compile Include="Utilities\EvaluateTireAlerts.cs" />
+    <Compile Include="Utilities\DeviceTypeFeatureMap.cs" />
+    <Compile Include="Utilities\AppFeatureMap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Utilities\ExceptionRenderer.cs" />
+    <Compile Include="Utilities\IEnumerableExtension.cs" />
+    <Compile Include="Utilities\MSMQUtils.cs" />
+    <Compile Include="Utilities\ObjectContextTransactionParams.cs" />
+    <Compile Include="Utilities\SiteUtilities.cs" />
+    <Compile Include="Utilities\SpringObjectFactory.cs" />
+    <Compile Include="Utilities\SpringProxyHandle.cs" />
+    <Compile Include="Utilities\UtilizationCalloutHelper.cs" />
+    <Compile Include="Services\FirmwareAPI.cs" />
+    <Compile Include="Services\Interfaces\IAssetFeatureAPI.cs" />
+    <Compile Include="Services\Interfaces\IBssProvisioningMsgAPI.cs" />
+    <Compile Include="Services\Interfaces\IBssResponseMsgAPI.cs" />
+    <Compile Include="Services\Interfaces\ICustomerAPI.cs" />
+    <Compile Include="Services\Interfaces\IDeviceAPI.cs" />
+    <Compile Include="Services\Interfaces\IEmailAPI.cs" />
+    <Compile Include="Services\Interfaces\IEquipmentAPI.cs" />
+    <Compile Include="Services\Interfaces\IFirmwareAPI.cs" />
+    <Compile Include="Services\Interfaces\IMTSOutboundAPI.cs" />
+    <Compile Include="Services\Interfaces\IPLOutboundAPI.cs" />
+    <Compile Include="Services\Interfaces\IPMDuePopulatorAPI.cs" />
+    <Compile Include="Services\Interfaces\IServiceViewAPI.cs" />
+    <Compile Include="Services\Interfaces\ISessionAPI.cs" />
+    <Compile Include="Services\Interfaces\ISiteAPI.cs" />
+    <Compile Include="Services\Interfaces\ITTOutboundAPI.cs" />
+    <Compile Include="Services\Interfaces\IUserAPI.cs" />
+    <Compile Include="Services\MessageSequenceAPI.cs" />
+    <Compile Include="Services\MTSMessages\BaseMessages.cs" />
+    <Compile Include="Services\MTSMessages\BaseUserDataMessage.cs" />
+    <Compile Include="Services\MTSMessages\BitConfigurationMessages.cs" />
+    <Compile Include="Services\MTSMessages\ConfigureGatewayMessage.cs" />
+    <Compile Include="Services\MTSMessages\ConfigurePolygonMessage.cs" />
+    <Compile Include="Services\MTSMessages\ECMAddressClaims.cs" />
+    <Compile Include="Services\MTSMessages\J1939ParameterID.cs" />
+    <Compile Include="Services\MTSMessages\J1939ParameterReportPayloadParser.cs" />
+    <Compile Include="Services\MTSMessages\J1939PublicParametersRequest.cs" />
+    <Compile Include="Services\MTSMessages\MachineEventBlock.cs" />
+    <Compile Include="Services\MTSMessages\MachineEventBlockGatewayPayload.cs" />
+    <Compile Include="Services\MTSMessages\MachineEventBlockRadioMessages.cs" />
+    <Compile Include="Services\MTSMessages\MachineEventBlockVehicleBusPayload.cs" />
+    <Compile Include="Services\MTSMessages\MachineEventMessage.cs" />
+    <Compile Include="Services\MTSMessages\MachineEventNestedMessages.cs" />
+    <Compile Include="Services\MTSMessages\MachineEventTypeEnum.cs" />
+    <Compile Include="Services\MTSMessages\MessageParsersSupport.cs" />
+    <Compile Include="Services\MTSMessages\PlatformEvents.cs" />
+    <Compile Include="Services\MTSMessages\PlatformMessageBase.cs" />
+    <Compile Include="Services\MTSMessages\SendDataToDevice.cs" />
+    <Compile Include="Services\MTSMessages\ServiceOutageMessage.cs" />
+    <Compile Include="Services\MTSMessages\TrackerMessages.cs" />
+    <Compile Include="Services\MTSMessages\TrackerUserDataMessage.cs" />
+    <Compile Include="Services\MTSMessages\UnsupportedMessageResponse.cs" />
+    <Compile Include="Services\MTSMessages\UpdateFirmwareRequestMessage.cs" />
+    <Compile Include="Services\MTSMessages\UserDataMessages.cs" />
+    <Compile Include="Services\MTSMessages\VehicleBusJ1939ParametersReportBlock.cs" />
+    <Compile Include="Services\MTSMessages\VehicleBusJ1939ParametersReportMessage.cs" />
+    <Compile Include="Services\MTSMessages\VehicleBusJ1939ParametersReportTypeEnum.cs" />
+    <Compile Include="Services\MTSMessages\VehicleBusJ1939StatisticsReportBlock.cs" />
+    <Compile Include="Services\MTSMessages\VehicleBusJ1939StatisticsReportMessage.cs" />
+    <Compile Include="Services\MTSOutboundAPI.cs" />
+    <Compile Include="Services\MTSOutboundFormatter.cs" />
+    <Compile Include="Services\NHMemoryCache.cs" />
+    <Compile Include="Services\OemAssetInformationStrategy.cs" />
+    <Compile Include="Services\PLMessages\CumulativesMessage.cs" />
+    <Compile Include="Services\PLMessages\FaultDiagnostic.cs" />
+    <Compile Include="Services\PLMessages\FaultEvent.cs" />
+    <Compile Include="Services\PLMessages\FenceConfig.cs" />
+    <Compile Include="Services\PLMessages\PL121AndPL321VIMSOTAConfigMessages.cs" />
+    <Compile Include="Services\PLMessages\PL321OTAConfigMessages.cs" />
+    <Compile Include="Services\PLMessages\PLMessageBase.cs" />
+    <Compile Include="Services\PLMessages\PLMessageEnums.cs" />
+    <Compile Include="Services\PLMessages\PLQueryCommandEnum.cs" />
+    <Compile Include="Services\PLMessages\ProductWatchActivation.cs" />
+    <Compile Include="Services\PLOutboundAPI.cs" />
+    <Compile Include="Services\PLOutboundFormatter.cs" />
+    <Compile Include="Services\PMDuePopulatorAPI.cs" />
+    <Compile Include="Services\PMDuePopulator\AssetWrapper.cs" />
+    <Compile Include="Services\PMDuePopulator\PMIntervalInstanceWrapper.cs" />
+    <Compile Include="Services\PMDuePopulator\PMIntervalWrapper.cs" />
+    <Compile Include="Services\ServiceContracts\ConfigStatusSvcClient.cs" />
+    <Compile Include="Services\ServiceContracts\ContractConstants.cs" />
+    <Compile Include="Services\ServiceContracts\GloablGramSatelliteNumber.cs" />
+    <Compile Include="Services\ServiceContracts\IConfigStatusSvc.cs" />
+    <Compile Include="Services\ServiceContracts\IIntegrationProcessor.cs" />
+    <Compile Include="Services\ServiceContracts\INHExcelReportProcessor.cs" />
+    <Compile Include="Services\ServiceContracts\IntegrationProcessorClient.cs" />
+    <Compile Include="Services\ServiceContracts\MTSEcmInfo.cs" />
+    <Compile Include="Services\ServiceContracts\PLDeviceDetailsConfigInfo.cs" />
+    <Compile Include="Services\ServiceContracts\ProcessorClientBase.cs" />
+    <Compile Include="Services\ServiceContracts\ProxyFactory.cs" />
+    <Compile Include="Services\ServiceViewAPI.cs" />
+    <Compile Include="Services\SessionAPI.cs" />
+    <Compile Include="Services\SessionContext.cs" />
+    <Compile Include="Services\SiteAPI.cs" />
+    <Compile Include="Services\TrimTracMessages\TrimTracCommands.cs" />
+    <Compile Include="Services\TrimTracMessages\TrimTracMessage.cs" />
+    <Compile Include="Services\TrimTracMessages\TTParser.cs" />
+    <Compile Include="Services\TTOutboundAPI.cs" />
+    <Compile Include="Services\Types\AssetDetail.cs" />
+    <Compile Include="Services\Types\ConfigTypeEnum.cs" />
+    <Compile Include="Services\Types\DeviceConfigCommon.cs" />
+    <Compile Include="Services\Types\ExpectedRuntimeHours.cs" />
+    <Compile Include="Services\Types\FeatureAppEnum.cs" />
+    <Compile Include="Services\Types\FeatureChildEnum.cs" />
+    <Compile Include="Services\Types\MessageStatusEnum.cs" />
+    <Compile Include="Services\Types\MonitoringMachineTypeEnum.cs" />
+    <Compile Include="Services\Types\MTSConfigData.cs" />
+    <Compile Include="Services\Types\Param.cs" />
+    <Compile Include="Services\Types\PLConfigData.cs" />
+    <Compile Include="Services\Types\PMCompletedInstance.cs" />
+    <Compile Include="Services\Types\PMIntervalInstanceTypeEnum.cs" />
+    <Compile Include="Services\Types\PMIntervalStateEnum.cs" />
+    <Compile Include="Services\Types\PMIntervalWithNextDueHours.cs" />
+    <Compile Include="Services\Types\TTConfigData.cs" />
+    <Compile Include="Services\Types\UnitsTypeEnum.cs" />
+    <Compile Include="Services\Types\UserLocationPreferenceEnum.cs" />
+    <Compile Include="Services\UploadService\IPathMapper.cs" />
+    <Compile Include="Services\UploadService\UploadService.cs" />
+    <Compile Include="Services\UserAPI.cs" />
+    <Compile Include="Services\UserFeatureAccess.cs" />
+    <Compile Include="Utilities\AppServiceInstaller.cs" />
+    <Compile Include="Utilities\BitArray.cs" />
+    <Compile Include="Utilities\BitShifter.cs" />
+    <Compile Include="Utilities\BitVector32.cs" />
+    <Compile Include="Utilities\ConversionFactors.cs" />
+    <Compile Include="Utilities\Crc.cs" />
+    <Compile Include="Utilities\DotNetExtensions.cs" />
+    <Compile Include="Utilities\EncryptionUtils.cs" />
+    <Compile Include="Utilities\GpsDate.cs" />
+    <Compile Include="Utilities\HashUtils.cs" />
+    <Compile Include="Utilities\HexDump.cs" />
+    <Compile Include="Utilities\IEnumerableDatatableExtensions.cs" />
+    <Compile Include="Utilities\IntentionallyThrownException.cs" />
+    <Compile Include="Utilities\IQueryableExtension.cs" />
+    <Compile Include="Utilities\log4netExtensions.cs" />
+    <Compile Include="Utilities\LogAppender.cs" />
+    <Compile Include="Utilities\NamedTimeZone.cs" />
+    <Compile Include="Services\NHHost.cs" />
+    <Compile Include="Utilities\ObjectExtentions.cs" />
+    <Compile Include="Utilities\Point.cs" />
+    <Compile Include="Utilities\Polygon.cs" />
+    <Compile Include="Utilities\RobbinsFormulae.cs" />
+    <Compile Include="Utilities\SpringServiceHostFactory.cs" />
+    <Compile Include="Utilities\UtcSeconds.cs" />
+    <Compile Include="Utilities\WCFExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\Bss\Core\Contexts\Customer\" />
+    <Folder Include="Services\Bss\Factories\" />
+    <Folder Include="Services\TDMGDeviceClaim\Implementation\" />
+    <Folder Include="Services\WebMapService\schema\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DeveloperGuidelines.txt" />
+    <Content Include="Resources\README.txt" />
+    <Content Include="Resources\ResGen.exe" />
+    <Content Include="Resources\TdbToResX.exe" />
+    <Content Include="Resources\TransIt.exe" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Autofac.Configuration.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Autofac.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Common.Logging.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Common.Logging.Log4Net.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\EFProviderWrapperToolkit.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\EFTracingProvider.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\HashLib.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Interop.COMRVRSGEOSERVERLib.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\log4net.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Magnum.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\MassTransit.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\MassTransit.Log4NetIntegration.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\MassTransit.Transports.RabbitMq.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Microsoft.ServiceModel.Web.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Microsoft.SqlServer.Types.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Microsoft.Web.Atlas.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Newtonsoft.Json.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\opentoken-agent.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Spring.Aop.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Spring.Core.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Spring.Services.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Spring.Web.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Topshelf.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\Topshelf.Log4Net.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\VSS.Nighthawk.Instrumentation.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\VSS.Nighthawk.MassTransit.dll" />
+    <Content Include="..\AppSvrThirdPartyDLLs\VSS.Nighthawk.PerformanceCounterMediator.exe" />
+    <Content Include="..\AppSvrThirdPartyDLLs\VSS.Nighthawk.SecurityExtensions.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <EntityDeploy Include="Model\NHOpModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>NHOpModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model\SimpleEntities\EnumCommon.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EnumCommon.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOpEnums.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOpEnums.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOpModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOpModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOpModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOpModel.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Resources\NHSvr.tdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\NHSvr.bg.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.cs.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\NHSvr.da.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.de.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.el.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\NHSvr.es.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.fr.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.hu.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.it.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.ja.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.ko.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.nl.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.no.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.pl.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.pt.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>NHSvr.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\NHSvr.ro.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\NHSvr.ru.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.sl.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.sv.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.th.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.tr.resx" />
+    <EmbeddedResource Include="Resources\NHSvr.zh.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.BaseEvents\VSS.BaseEvents.csproj">
+      <Project>{c2fd2357-c0e3-4b01-958d-feed8ca382a4}</Project>
+      <Name>VSS.BaseEvents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.DeviceCapabilityService.Interfaces\VSS.DeviceCapabilityService.Interfaces.csproj">
+      <Project>{99ec2df5-a524-401d-9459-e11e8c7b771e}</Project>
+      <Name>VSS.DeviceCapabilityService.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Nighthawk.ExternalDataTypes\VSS.Nighthawk.ExternalDataTypes.csproj">
+      <Project>{c1a38874-c53b-4b2e-9fae-805475f80df1}</Project>
+      <Name>VSS.Nighthawk.ExternalDataTypes</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

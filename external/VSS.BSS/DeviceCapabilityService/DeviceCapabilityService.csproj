@@ -1,0 +1,415 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0BC19DBC-8317-4BCF-BB58-5B71BEF9C1B0}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.Nighthawk.DeviceCapabilityService</RootNamespace>
+    <AssemblyName>VSS.Nighthawk.DeviceCapabilityService</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\AppSvr_Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\AppSvr_Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\AppSvr_Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>..\AppSvr_Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Local|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Local\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Local|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\AppSvr_Local\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Label="SlowCheetah">
+    <SlowCheetahToolsPath>$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\packages\SlowCheetah.2.5.15\tools\))</SlowCheetahToolsPath>
+    <SlowCheetah_EnableImportFromNuGet Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='' ">true</SlowCheetah_EnableImportFromNuGet>
+    <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
+    <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|x86'">
+    <OutputPath>bin\x86\Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>..\AppSvr_Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|x86'">
+    <OutputPath>bin\x86\Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|AnyCPU'">
+    <OutputPath>..\AppSvr_Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|x86'">
+    <OutputPath>bin\x86\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>..\AppSvr_Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|x86'">
+    <OutputPath>bin\x86\IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|AnyCPU'">
+    <OutputPath>..\AppSvr_IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Configuration, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\Autofac.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Autofac.Integration.WebApi, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\Autofac.Integration.WebApi.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnum, Version=2.1.3.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\Magnum.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\WebSvrThirdPartyDLLs\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\WebSvrThirdPartyDLLs\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.SelfHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\WebSvrThirdPartyDLLs\System.Web.Http.SelfHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\WebSvrThirdPartyDLLs\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Topshelf, Version=3.1.135.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\Topshelf.dll</HintPath>
+    </Reference>
+    <Reference Include="Topshelf.Log4Net, Version=3.1.135.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Common\AppSvrThirdPartyDLLs\Topshelf.Log4Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Config.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\EndpointConfigCollection.cs" />
+    <Compile Include="Configuration\EndpointConfigElement.cs" />
+    <Compile Include="Configuration\HandlerConfigCollection.cs" />
+    <Compile Include="Configuration\HandlerConfigElement.cs" />
+    <Compile Include="Configuration\HandlerConfigSection.cs" />
+    <Compile Include="Controllers\AssetSettingsController.cs" />
+    <Compile Include="Controllers\DeviceConfigController.cs" />
+    <Compile Include="Controllers\LocationUpdateRequestedController.cs" />
+    <Compile Include="Controllers\SiteAdministrationController.cs" />
+    <Compile Include="Data\CacheManager.cs" />
+    <Compile Include="Data\CacheManagerConfig.cs" />
+    <Compile Include="Data\Storage.cs" />
+    <Compile Include="Helpers\DeviceHandlerExceptionHelper.cs" />
+    <Compile Include="Helpers\DeviceHandlerParameters.cs" />
+    <Compile Include="Helpers\DeviceHandlers\CrossCheckDeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\DCM300DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\MANUALDEVICEDeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL131DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL121DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL141DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL161DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL231DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL240BDeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL240DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL241DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL321DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL420DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL421DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL431DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL440DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL631DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PL641DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PLE631DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PLE641DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PLE641PLUSPL631DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\PLE742DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\Series521DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\Series522DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\Series523DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\SNM451DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\SNM940DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\SNM941DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\TAP66DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\TM3000DeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\TrimTracDeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceHandlers\UnknownDeviceHandler.cs" />
+    <Compile Include="Helpers\DeviceQueryHelper.cs" />
+    <Compile Include="Helpers\DeviceQueryModelBinder.cs" />
+    <Compile Include="Helpers\NHOPFactory.cs" />
+    <Compile Include="Helpers\Processors\AssetSettingsProcessor.cs" />
+    <Compile Include="Helpers\Processors\DeviceConfigProcessor.cs" />
+    <Compile Include="Helpers\Processors\LocationUpdateRequestedProcessor.cs" />
+    <Compile Include="Helpers\Processors\SiteAdministrationProcessor.cs" />
+    <Compile Include="Helpers\UnknownDeviceException.cs" />
+    <Compile Include="Interfaces\IAssetSettingsProcessor.cs" />
+    <Compile Include="Interfaces\ICacheManager.cs" />
+    <Compile Include="Interfaces\ICacheManagerConfig.cs" />
+    <Compile Include="Interfaces\IDeviceConfigProcessor.cs" />
+    <Compile Include="Interfaces\IDeviceHandlerParameters.cs" />
+    <Compile Include="Interfaces\IDeviceHandlerStrategy.cs" />
+    <Compile Include="Interfaces\IDeviceQueryHelper.cs" />
+    <Compile Include="Interfaces\ILocationUpdateRequestedProcessor.cs" />
+    <Compile Include="Interfaces\ISiteAdministrationProcessor.cs" />
+    <Compile Include="Interfaces\IStorage.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\RestService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.Alpha.config">
+      <DependentUpon>app.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+      <TransformOnBuild>true</TransformOnBuild>
+    </None>
+    <None Include="app.Debug.config">
+      <DependentUpon>app.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="app.Dev.config">
+      <DependentUpon>app.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="app.IQA.config">
+      <DependentUpon>app.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="app.Local.config">
+      <DependentUpon>app.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="app.Production.config">
+      <DependentUpon>app.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="app.Release.config">
+      <DependentUpon>app.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Config.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Config.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\VSS.DataOut.Interfaces\VSS.DataOut.Interfaces.csproj">
+      <Project>{D8252900-4795-4554-84D8-F7713741922C}</Project>
+      <Name>VSS.DataOut.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\VSS.DeviceCapabilityService.Interfaces\VSS.DeviceCapabilityService.Interfaces.csproj">
+      <Project>{99EC2DF5-A524-401D-9459-E11E8C7B771E}</Project>
+      <Name>VSS.DeviceCapabilityService.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\VSS.Hosted.VLCommon\VSS.Hosted.VLCommon.csproj">
+      <Project>{78a163da-1f9c-4e23-b735-40b87408c25b}</Project>
+      <Name>VSS.Hosted.VLCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\VSS.MTSGateway.Interfaces\VSS.MTSGateway.Interfaces.csproj">
+      <Project>{B737A86F-B193-4166-BF94-E028A5491612}</Project>
+      <Name>VSS.MTSGateway.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\VSS.Nighthawk.ExternalDataTypes\VSS.Nighthawk.ExternalDataTypes.csproj">
+      <Project>{c1a38874-c53b-4b2e-9fae-805475f80df1}</Project>
+      <Name>VSS.Nighthawk.ExternalDataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\VSS.BaseEvents\VSS.BaseEvents.csproj">
+      <Project>{c2fd2357-c0e3-4b01-958d-feed8ca382a4}</Project>
+      <Name>VSS.BaseEvents</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ThirdPartyDLLs\Aspose.Cells.dll" />
+    <Content Include="ThirdPartyDLLs\Autofac.Configuration.dll" />
+    <Content Include="ThirdPartyDLLs\Autofac.dll" />
+    <Content Include="ThirdPartyDLLs\Autofac.Integration.WebApi.dll" />
+    <Content Include="ThirdPartyDLLs\Castle.Core.dll" />
+    <Content Include="ThirdPartyDLLs\Common.Logging.dll" />
+    <Content Include="ThirdPartyDLLs\HashLib.dll" />
+    <Content Include="ThirdPartyDLLs\log4net.dll" />
+    <Content Include="ThirdPartyDLLs\Magnum.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.ServiceModel.Web.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.Web.Atlas.dll" />
+    <Content Include="ThirdPartyDLLs\Newtonsoft.Json.dll" />
+    <Content Include="ThirdPartyDLLs\opentoken-agent.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Aop.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Core.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Services.dll" />
+    <Content Include="ThirdPartyDLLs\System.Net.Http.dll" />
+    <Content Include="ThirdPartyDLLs\System.Net.Http.Formatting.dll" />
+    <Content Include="ThirdPartyDLLs\System.Net.Http.WebRequest.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Http.dll" />
+    <Content Include="ThirdPartyDLLs\System.Web.Http.SelfHost.dll" />
+    <Content Include="ThirdPartyDLLs\Topshelf.dll" />
+    <Content Include="ThirdPartyDLLs\Topshelf.Log4Net.dll" />
+    <Content Include="ThirdPartyDLLs\VSS.Nighthawk.Instrumentation.dll" />
+    <Content Include="ThirdPartyDLLs\VSS.Nighthawk.PerformanceCounterMediator.exe" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

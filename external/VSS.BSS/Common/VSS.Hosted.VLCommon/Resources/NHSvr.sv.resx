@@ -1,0 +1,3160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PowerModeAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larmkonto: {0} {1} Ställ in: {2} för {3}/{4} vid {5}</value>
+  </data>
+  <data name="2DProjectMonitoring" xml:space="preserve">
+    <value>2D-projektövervakning</value>
+  </data>
+  <data name="3DProjectMonitoring" xml:space="preserve">
+    <value>3D-projektövervakning</value>
+  </data>
+  <data name="deviceTypeTHREEPDATA" xml:space="preserve">
+    <value>3PDATA</value>
+  </data>
+  <data name="deviceTypeMTS523" xml:space="preserve">
+    <value>523</value>
+  </data>
+  <data name="zipDescription" xml:space="preserve">
+    <value>&lt;p&gt;These zip files contain example codes for the integration of VisionLink API. By default, the examples in these zip files invoke the production service. Please read the README.txt file to understand how to build the projects.&lt;/p&gt;&lt;p&gt;Note: These examples may contain VirtualSite Solutions' unpublished proprietary information which may constitute a trade secret and/or be confidential. These Sample codes are meant to be used purely for educational purposes assisting with usage and integration of VisionLink APIs and may not be copied or disclosed to others. Copyright notice is precautionary only, and does not imply publication.&lt;/p&gt;</value>
+  </data>
+  <data name="apiSiteIntroduction" xml:space="preserve">
+    <value>&lt;p&gt;Welcome to VisionLink API documentation. In this page you will find all the information you need to get started. You will also find a more detailed list of all the available services, sample codes and examples.&lt;/p&gt;&lt;p&gt;If you are not a programmer and just need an overview of the VisionLink API, please read the &lt;a href="/Docs/{0}/Overview.pdf" class="contentLink" target="_blank"&gt;Overview Document&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Read the &lt;a href="/Docs/{0}/ProgrammersReference.pdf" target="_blank" class="contentLink"&gt;Programmer’s Reference&lt;/a&gt; to learn more on how to use the API service. It is important that the VisionLink API users review this reference closely as it contains useful information that will expedite the integration process.&lt;/p&gt;&lt;p&gt; The first step in accessing the VisionLink API service is to acquire an API queue assignment as well as a non-expiring VisionLink API user account id/password. You can do that by contacting your account Administrator, requesting your choice of API topics, and following instructions in the Welcome email to set up your API password.&lt;/p&gt;</value>
+  </data>
+  <data name="diagnosticsDescription" xml:space="preserve">
+    <value>Diagnostik syftar på en process i en elektronisk kontrollmodul (ECM) för spårning, visning och/eller lagring av onormal maskin-/motorinformation. Varje diagnostikpost består av fem dataelement: diagnostiknivån, modul-ID:t (MID) som rapporterar diagnostiken, diagnostikidentifieraren (eller komponentidentifieraren, CID), fellägesindikatorn (FMI) och diagnostiktidsstämpeln.</value>
+  </data>
+  <data name="NewAccountSupportEmailBody" xml:space="preserve">
+    <value>Ett nytt VisionLink-konto {0} har skapats. &lt;BR&gt;Kontoinformation: &lt;BR&gt;Primär kontakt: {1}&lt;BR&gt; E-post: {2}&lt;BR&gt; BSS-ID: {3} &lt;BR&gt;Aktiveringslänk: {4}</value>
+  </data>
+  <data name="notEnoughPolygonPoints" xml:space="preserve">
+    <value>En polygongräns måste innehålla minst tre punkter.</value>
+  </data>
+  <data name="SavCreationEmailHeader" xml:space="preserve">
+    <value>En vy för delade anordningar har skapats för visning av följande anordningar på ditt VisionLink-konto. Om du vill ha mer information kontaktar du {0} på {1}</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>Om</value>
+  </data>
+  <data name="account" xml:space="preserve">
+    <value>Konto</value>
+  </data>
+  <data name="SpeedingAlertEmailBody" xml:space="preserve">
+    <value>Kontonamn: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningstyp: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Varningstyp: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Varningsrubrik: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Hastighetsgräns för anordning: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Maxhastighet: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Stopptid för fortkörning: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Varaktighet: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Anläggning: {12}</value>
+  </data>
+  <data name="EngineIdleDailyAlertEmailBody" xml:space="preserve">
+    <value>Kontonamn: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningens märke: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningens modell: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Fråndatum: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Tilldatum: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Varaktighet: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Tröskel: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {14}</value>
+  </data>
+  <data name="PowerModeAlertEmailBody" xml:space="preserve">
+    <value>Kontonamn: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningstyp: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmrubrik: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Effektläge inställt till: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Varaktighet: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {11}</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;ECM-beskrivning: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Axel-/däcknummer: {8}/{9}&lt;BR&gt;&amp;#xD;&amp;#xA;Däcktryck (psi): {13}&lt;BR&gt;&amp;#xD;&amp;#xA; Däcktemperatur (&amp;#xb0;C): {14}&lt;BR&gt;&amp;#xD;&amp;#xA;Sensorstatus: {15}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {16}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} ska utföras efter {9} timmar.&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} ska utföras efter {9} miles.&lt;BR&gt;&amp;#xD;&amp;#xA;Vägmätare: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {6}</value>
+  </data>
+  <data name="ZoneAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge:{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {9}</value>
+  </data>
+  <data name="RadioMachineSecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Kontonamn: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Startläge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {9}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {9}</value>
+  </data>
+  <data name="FluidAnalysisAlertBody" xml:space="preserve">
+    <value>Kontonamn: {7}&lt;BR&gt;  Resultatprioritet: {0}&lt;BR&gt;  Anordnings-ID: {1}&lt;BR&gt;  Serienummer: {2}&lt;BR&gt;  Anordningsmärke: {8}&lt;BR&gt;  Anordningsmodell: {9}&lt;BR&gt;  Larmtyp: {3}&lt;BR&gt;  Larmtitel: {4}&lt;BR&gt;  Labbnummer och källa: {5}&lt;BR&gt;  Datum för provtagning: {6}</value>
+  </data>
+  <data name="AlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {10}</value>
+  </data>
+  <data name="SecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Kontonamn: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Startläge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Säkerhetsutlösare: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {10}</value>
+  </data>
+  <data name="FuelLossAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Bränslenivåförändring: -{7} %&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {11}</value>
+  </data>
+  <data name="LoadDistanceAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Lastavstånd: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {11}</value>
+  </data>
+  <data name="FaultAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Felkod: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Felbeskrivning: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Allvarsgrad: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Timmätare: {13}</value>
+  </data>
+  <data name="SwitchAlertMessageBody" xml:space="preserve">
+    <value>Kontonamn: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordnings-ID: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Serienummer: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmärke: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Anordningsmodell: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtyp: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Larmtitel: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Omkopplarbeskrivning: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Omkopplartillstånd: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Läge: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Plats: {8}</value>
+  </data>
+  <data name="accountType" xml:space="preserve">
+    <value>Kontotyp</value>
+  </data>
+  <data name="FluidAnalysisAlertSMS" xml:space="preserve">
+    <value>Konto: {3}  Resultatprioritet: {0} - Labbnr.: {1} - Källa: {2}</value>
+  </data>
+  <data name="acreAbbreviation" xml:space="preserve">
+    <value>Acres</value>
+  </data>
+  <data name="FluidActionRequiredPriority" xml:space="preserve">
+    <value>Åtgärd krävs</value>
+  </data>
+  <data name="actionTaken" xml:space="preserve">
+    <value>Åtgärd utförd</value>
+  </data>
+  <data name="actualEndDateTime" xml:space="preserve">
+    <value>Faktiskt slutdatum</value>
+  </data>
+  <data name="actualStartDateTime" xml:space="preserve">
+    <value>Faktiskt startdatum</value>
+  </data>
+  <data name="aemp" xml:space="preserve">
+    <value>AEMP</value>
+  </data>
+  <data name="aempRequestAccess" xml:space="preserve">
+    <value>AEMP: Begär åtkomst</value>
+  </data>
+  <data name="AlertCounts" xml:space="preserve">
+    <value>Larmantal</value>
+  </data>
+  <data name="AlertDetails" xml:space="preserve">
+    <value>Larminformation</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Larmtyp</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>Larm</value>
+  </data>
+  <data name="alignment" xml:space="preserve">
+    <value>Utsättning</value>
+  </data>
+  <data name="AM" xml:space="preserve">
+    <value>FM</value>
+  </data>
+  <data name="eventDataDescription" xml:space="preserve">
+    <value>En händelse står för spårandet av ett fördefinierat eller intervallavvikande onormalt tillstånd inom maskinen, motorn eller systemet som övervakas. Varje händelse består av fyra dataelement: händelsenivån, modul-ID:t (MID) som rapporterar händelsen, händelseidentifieraren och händelsens tidsstämpel.</value>
+  </data>
+  <data name="apiDocumentation" xml:space="preserve">
+    <value>API-dokumentation</value>
+  </data>
+  <data name="appliedFilter" xml:space="preserve">
+    <value>Tillämpat filter</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="asset" xml:space="preserve">
+    <value>Anordning</value>
+  </data>
+  <data name="ExclusionZoneAlertDescription" xml:space="preserve">
+    <value>Anordningen körde in {0}</value>
+  </data>
+  <data name="SiteEntryAlertDescription" xml:space="preserve">
+    <value>Anordningen körde in {0}</value>
+  </data>
+  <data name="InclusionZoneAlertDescription" xml:space="preserve">
+    <value>Anordningen körde ut {0}</value>
+  </data>
+  <data name="SiteExitAlertDescription" xml:space="preserve">
+    <value>Anordningen körde ut {0}</value>
+  </data>
+  <data name="assetFuelBurn" xml:space="preserve">
+    <value>Anordningens bränsleförbr.</value>
+  </data>
+  <data name="assetFuelReport" xml:space="preserve">
+    <value>Anordningsbränslerapport</value>
+  </data>
+  <data name="AssetFuelSingleAsset" xml:space="preserve">
+    <value>Bränslerapport för enskild anordning</value>
+  </data>
+  <data name="NotReportingAlertDescription" xml:space="preserve">
+    <value>Anordningen har inte rapporterat sedan {0}</value>
+  </data>
+  <data name="AssetHealth" xml:space="preserve">
+    <value>Funktionsstatusrapport för anordning</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Historikrapport för anordning</value>
+  </data>
+  <data name="assetHistoryReport" xml:space="preserve">
+    <value>Historikrapport för anordning</value>
+  </data>
+  <data name="assetID" xml:space="preserve">
+    <value>Anordnings-ID</value>
+  </data>
+  <data name="assetIdSnVin" xml:space="preserve">
+    <value>Anordnings-ID/serienr./chassinummer</value>
+  </data>
+  <data name="stateMileageReportTitle" xml:space="preserve">
+    <value>Anordningens körsträcka efter Stat/Provins-rapport</value>
+  </data>
+  <data name="AssetOff" xml:space="preserve">
+    <value>Anordningen av</value>
+  </data>
+  <data name="AssetOn" xml:space="preserve">
+    <value>Anordningen på</value>
+  </data>
+  <data name="assetOperation" xml:space="preserve">
+    <value>Anordningsdrift</value>
+  </data>
+  <data name="AssetSecurityLastActivityReport" xml:space="preserve">
+    <value>Tillgångssäkerhet - Rapport för senaste aktivitet</value>
+  </data>
+  <data name="AssetSecurityUserActivityReport" xml:space="preserve">
+    <value>Tillgångssäkerhet - Rapport för användaraktivitet</value>
+  </data>
+  <data name="AssetSpeedingReport" xml:space="preserve">
+    <value>Fortkörningsrapport för tillgång</value>
+  </data>
+  <data name="assetType" xml:space="preserve">
+    <value>Anordningstyp</value>
+  </data>
+  <data name="assetUsageReport" xml:space="preserve">
+    <value>Rapport om anordningsanvändning</value>
+  </data>
+  <data name="AssetUsageSingleAsset" xml:space="preserve">
+    <value>Användningsrapport för enskild anordning</value>
+  </data>
+  <data name="AssetUsageSummaryReport" xml:space="preserve">
+    <value>Sammanfattningsrapport om anordningsanvändning</value>
+  </data>
+  <data name="assetUtilization" xml:space="preserve">
+    <value>Anordningsanvändning</value>
+  </data>
+  <data name="assetUtilizationReport" xml:space="preserve">
+    <value>Rapport om anordningsanvändning</value>
+  </data>
+  <data name="assets" xml:space="preserve">
+    <value>Anordningar</value>
+  </data>
+  <data name="attachmentUsage" xml:space="preserve">
+    <value>Anv. av tillbehör</value>
+  </data>
+  <data name="autoMapReset" xml:space="preserve">
+    <value>Automatisk + kartåterställning</value>
+  </data>
+  <data name="autoIdle" xml:space="preserve">
+    <value>Autotomgång</value>
+  </data>
+  <data name="automatic" xml:space="preserve">
+    <value>Automatisk</value>
+  </data>
+  <data name="average" xml:space="preserve">
+    <value>Genomsnitt</value>
+  </data>
+  <data name="averageFuelBurnRateForAssetsInReport" xml:space="preserve">
+    <value>Genomsnittlig bränsleförbrukning för anordningar i rapporten</value>
+  </data>
+  <data name="averagedSitetoSwitch" xml:space="preserve">
+    <value>Genomsnitt för plats till omkopplare</value>
+  </data>
+  <data name="avg" xml:space="preserve">
+    <value>Genomsn.</value>
+  </data>
+  <data name="AwaitingFirstReport" xml:space="preserve">
+    <value>Väntar på första rapporten</value>
+  </data>
+  <data name="axleTireNo" xml:space="preserve">
+    <value>Axel-/däcknr.</value>
+  </data>
+  <data name="azimuth" xml:space="preserve">
+    <value>Azimut</value>
+  </data>
+  <data name="BackFilledLoadCount" xml:space="preserve">
+    <value>Återfylld lasträkning</value>
+  </data>
+  <data name="backhoe" xml:space="preserve">
+    <value>Grävlastare</value>
+  </data>
+  <data name="BackhoeLoaderOperation" xml:space="preserve">
+    <value>Rapport om grävlastardrift</value>
+  </data>
+  <data name="backhoeOperation" xml:space="preserve">
+    <value>Grävlastardrift</value>
+  </data>
+  <data name="bar" xml:space="preserve">
+    <value>BAR</value>
+  </data>
+  <data name="baseSurface" xml:space="preserve">
+    <value>Basyta</value>
+  </data>
+  <data name="bladeOnGround" xml:space="preserve">
+    <value>Blad på marken</value>
+  </data>
+  <data name="boostPressure" xml:space="preserve">
+    <value>Boost Pressure</value>
+  </data>
+  <data name="boostPressureHeader" xml:space="preserve">
+    <value>Boost Pressure Report</value>
+  </data>
+  <data name="boostTemperature" xml:space="preserve">
+    <value>Boost Temperature</value>
+  </data>
+  <data name="boostTemperatureHeader" xml:space="preserve">
+    <value>Boost Temperature Report</value>
+  </data>
+  <data name="bottomCyclesPerHour" xml:space="preserve">
+    <value>Lägst {0} - Cykler/timme (totalt)</value>
+  </data>
+  <data name="bottomPayloadPerCycle" xml:space="preserve">
+    <value>Lägst {0} - Nyttolast/cykel (totalt)</value>
+  </data>
+  <data name="bottomPayloadPerHour" xml:space="preserve">
+    <value>Lägst {0} - Nyttolast/timme (totalt)</value>
+  </data>
+  <data name="geolocationNotSupported" xml:space="preserve">
+    <value>Webbläsaren anger inte läget.</value>
+  </data>
+  <data name="bulking" xml:space="preserve">
+    <value>Volymökning</value>
+  </data>
+  <data name="burnRate" xml:space="preserve">
+    <value>Bränsleförbrukning</value>
+  </data>
+  <data name="celsiusAbbrev" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <data name="catDataFeeds" xml:space="preserve">
+    <value>CAT-datakällor</value>
+  </data>
+  <data name="catDataTopicsRequestAccess" xml:space="preserve">
+    <value>CAT-datakategorier: Begär åtkomst</value>
+  </data>
+  <data name="centreLine" xml:space="preserve">
+    <value>Centrumlinje</value>
+  </data>
+  <data name="catDataFeedFormDescription" xml:space="preserve">
+    <value>Markera så många API-kategorier du behöver och klicka på “Skicka begäran med e-post”. Inom en vecka kommer du att få ett e-postmeddelande med all information som behövs för att få åtkomst till önskade kategorier.</value>
+  </data>
+  <data name="claim" xml:space="preserve">
+    <value>Boka</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Klicka här</value>
+  </data>
+  <data name="clientBuildNumber" xml:space="preserve">
+    <value>Klientversionsnummer</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Stäng</value>
+  </data>
+  <data name="cmv" xml:space="preserve">
+    <value>CMV</value>
+  </data>
+  <data name="cmvChange" xml:space="preserve">
+    <value>CMV-ändring</value>
+  </data>
+  <data name="cmvChangeReport" xml:space="preserve">
+    <value>CMV-ändringsrapport</value>
+  </data>
+  <data name="cmvSummary" xml:space="preserve">
+    <value>CMV-sammanfattning</value>
+  </data>
+  <data name="cmvSummaryReport" xml:space="preserve">
+    <value>CMV-sammanfattningsrapport</value>
+  </data>
+  <data name="coarse" xml:space="preserve">
+    <value>Grov</value>
+  </data>
+  <data name="code" xml:space="preserve">
+    <value>Kod</value>
+  </data>
+  <data name="codeSamples" xml:space="preserve">
+    <value>Kodprov</value>
+  </data>
+  <data name="compacted" xml:space="preserve">
+    <value>Packad</value>
+  </data>
+  <data name="compaction" xml:space="preserve">
+    <value>Packning</value>
+  </data>
+  <data name="company" xml:space="preserve">
+    <value>Företag</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Slutförd</value>
+  </data>
+  <data name="completeLayer" xml:space="preserve">
+    <value>Slutför lager</value>
+  </data>
+  <data name="completeService" xml:space="preserve">
+    <value>Slutför service</value>
+  </data>
+  <data name="Configured" xml:space="preserve">
+    <value>Konfigurerad</value>
+  </data>
+  <data name="confirmed" xml:space="preserve">
+    <value>Bekräftat</value>
+  </data>
+  <data name="couldNotConvertDataModelBoundaryToGrid" xml:space="preserve">
+    <value>Koordinatsystemfel vid konvertering av datamodellgränspunkter.</value>
+  </data>
+  <data name="emptyCoordinateSystem" xml:space="preserve">
+    <value>Koordinatsystemet är tomt</value>
+  </data>
+  <data name="dcToIRecIncompleteCS" xml:space="preserve">
+    <value>Koordinatsystemet är ofullständigt (inte helt specificerat) (DCToIRecord converter)</value>
+  </data>
+  <data name="virtualSiteSolutionsAllRightsReserved" xml:space="preserve">
+    <value>Copyright 2014 VirtualSite Solutions LLC. Med ensamrätt.</value>
+  </data>
+  <data name="couldNotConvertCSDFile" xml:space="preserve">
+    <value>Det gick inte att konvertera koordinatsystemets definitionsfil</value>
+  </data>
+  <data name="coverage" xml:space="preserve">
+    <value>Täckning</value>
+  </data>
+  <data name="createdUser" xml:space="preserve">
+    <value>Skapad av</value>
+  </data>
+  <data name="cubicYard" xml:space="preserve">
+    <value>yd3</value>
+  </data>
+  <data name="currentFilterSettings" xml:space="preserve">
+    <value>Aktuella filterinställningar</value>
+  </data>
+  <data name="dcToIRecScaleOnlyProj" xml:space="preserve">
+    <value>Den aktuella projektionens skala bör anpassas (DCToIRecord converter)</value>
+  </data>
+  <data name="customerInfo" xml:space="preserve">
+    <value>Kundinformation</value>
+  </data>
+  <data name="customerName" xml:space="preserve">
+    <value>Kundnamn</value>
+  </data>
+  <data name="customerNumber" xml:space="preserve">
+    <value>Kundnummer</value>
+  </data>
+  <data name="cut" xml:space="preserve">
+    <value>Schakta</value>
+  </data>
+  <data name="cutFillReport" xml:space="preserve">
+    <value>Schaktnings-/fyllningsrapport</value>
+  </data>
+  <data name="cutfill" xml:space="preserve">
+    <value>Schaktning/fyllning</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Cykeltidsrapport</value>
+  </data>
+  <data name="cycleTimeReport" xml:space="preserve">
+    <value>Cykeltidsrapport</value>
+  </data>
+  <data name="cycles" xml:space="preserve">
+    <value>Cykler</value>
+  </data>
+  <data name="cyclesPerHour" xml:space="preserve">
+    <value>Cykler/timme</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Daglig</value>
+  </data>
+  <data name="dailyIdleMessage" xml:space="preserve">
+    <value>Daglig tomgångstid längre än {0} {1}</value>
+  </data>
+  <data name="dataOccurredOutsideOfDateRange" xml:space="preserve">
+    <value>Det finns data som är utanför datumintervallet</value>
+  </data>
+  <data name="dataOccurredOutsideOfDay" xml:space="preserve">
+    <value>Det finns data som är utanför dagen</value>
+  </data>
+  <data name="dataType" xml:space="preserve">
+    <value>Datatyp</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Datum för skapande</value>
+  </data>
+  <data name="dateLastReported" xml:space="preserve">
+    <value>Datum för senaste rapport</value>
+  </data>
+  <data name="dateModuleAccessProvided" xml:space="preserve">
+    <value>Datum för tillhandahållen modulåtkomst</value>
+  </data>
+  <data name="dateRange" xml:space="preserve">
+    <value>Datumintervall</value>
+  </data>
+  <data name="dateTime" xml:space="preserve">
+    <value>Datum/klockslag</value>
+  </data>
+  <data name="dcn" xml:space="preserve">
+    <value>DCN</value>
+  </data>
+  <data name="dealerCode" xml:space="preserve">
+    <value>Försäljarkod</value>
+  </data>
+  <data name="dealerName" xml:space="preserve">
+    <value>Säljarens namn</value>
+  </data>
+  <data name="UserAccountsReportEmailBody" xml:space="preserve">
+    <value>Bäste VisionLink-administratör,&lt;br/&gt;&lt;br/&gt;Som ett försök att hjälpa dig att bättre hantera tillgången till ditt konto har vi skickat dig en rapport om alla dina VisionLink-användaren för att låta dig granska och uppdatera ditt konto enligt behov. För att utföra eventuella ändringar i användarkonton loggar du in på VisionLink.&lt;br/&gt;&lt;br/&gt;Klicka på länken nedan för att hämta rapporten&lt;br/&gt;  {0} &lt;br/&gt;&lt;br/&gt;  Respektfullt,&lt;br/&gt;&lt;br/&gt;VisionLink-teamet</value>
+  </data>
+  <data name="ApiUserEmailBody" xml:space="preserve">
+    <value>Kära {0} {1},&lt;br&gt;&lt;br&gt; Välkommen till VisionLink® API services. Var god klicka på länken nedan för att ställa in ditt lösenord för API services. Denna länk är aktiv i 30 dagar. Om länken nedan inte fungerar, kopiera och klistra in länken i ett nytt webbläsarfönster.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;br&gt;Ditt VisionLink API-användarnamn är {3}.&lt;br&gt;Du har åtkomst till följande API-tjänster:&lt;br&gt;  {4} &lt;br&gt;&lt;br&gt;OBS: Om du inte har begärt ett nytt API-användarkonto eller uppdateringar av ditt existerande konto, kontakta din administratör.</value>
+  </data>
+  <data name="VerifyUserEmailBody" xml:space="preserve">
+    <value>Kära {0} {1},&lt;br&gt;&lt;br&gt; Välkommen till VisionLink®. Var god klicka på länken nedan för att verifiera ditt nya eller uppdaterade användarkonto. Denna länk är aktiv i 30 dagar. Om länken nedan inte fungerar, kopiera och klistra in länken i ett nytt webbläsarfönster.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;/br&gt;Ditt VisionLink-användarnamn är {3} och kontonamnet är {4}. Förstagångsanvändare av VisionLink kommer att uppmanas att välja lösenord vid verifieringen.&lt;br&gt;&lt;br&gt; OBS: Om du inte har begärt ett nytt användarkonto eller uppdateringar av ditt existerande konto, kontakta din administratör.</value>
+  </data>
+  <data name="engineStartStopDescription" xml:space="preserve">
+    <value>Levererar en lista med start- och stopptider för maskinen och MSS-nyckeln som identifierar föraren, via sändning dagligen vid rapportstarttiden eller andra tider om det inbyggda buffertminnets högsta kapacitet uppnåtts.</value>
+  </data>
+  <data name="loadCountsDescription" xml:space="preserve">
+    <value>Levererar all relevant information om lastantal baserat på last- &amp; cykelövervakning. Detta inkluderar lat/long, geografiska gränser, datum/tid, anordnings-ID, och körd sträcka för last- och tippningshändelser.</value>
+  </data>
+  <data name="digitalSwitchStatusDescription" xml:space="preserve">
+    <value>Levererar all relevant statusinformation om strömförsörjningsläget och den digitala omkopplarens på/av-läge på enhetsmodulen. Den överför den aktuella statusinformationen för ECM:en. Om någon av de bytes som den definierar är angiven som "Ja" betyder det att ett visst tillstånd har inträtt sedan förra rapporten av denna statusbyte i antingen statusmeddelandet eller SMU-rapporten.</value>
+  </data>
+  <data name="fenceAlertDescription" xml:space="preserve">
+    <value>Levererar all relevant statusinformation om den tidsbaserade produktbevakningsaktiviteten och de larm som genererats av enhetsmodulen. Den överför den aktuella statusinformationen för ECM:en. Om någon av de bytes som den definierar är angiven som "Ja" betyder det att ett visst tillstånd har inträtt sedan förra rapporten av denna statusbyte i antingen statusmeddelandet eller SMU-rapporten.</value>
+  </data>
+  <data name="fuelDescription" xml:space="preserve">
+    <value>Levererar information om bränsleanvändning i enhetsmodulen efter förbrukning eller nivå. Bränsleinformationen levereras som en del av ett statusmeddelande som innehåller information om bränsleförbrukning och/eller procentandel av utrustningens bränsle som återstår.</value>
+  </data>
+  <data name="engineParametersDescription" xml:space="preserve">
+    <value>Levererar viktig motorinformation, till exempel om tomgångstid och tomgångsförbrukning för en enhetsmodul.</value>
+  </data>
+  <data name="smuLocationDescription" xml:space="preserve">
+    <value>Levererar information om utrustningsanvändningen i timmar sedan enheten startades eller senast återställdes, och om latitud och longitud för den maskin som enheten är monterad på. Data genereras av ECM:en för dokumentationen av utrustningsanvändningen. ECM:en dokumenterar den tid som motorn körs och levererar information om latitud och longitud för den maskin som enheten är monterad på.</value>
+  </data>
+  <data name="derate" xml:space="preserve">
+    <value>Reducera</value>
+  </data>
+  <data name="Derated" xml:space="preserve">
+    <value>Reducerad</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Beskrivning</value>
+  </data>
+  <data name="design" xml:space="preserve">
+    <value>Modell</value>
+  </data>
+  <data name="desiredApiTopic" xml:space="preserve">
+    <value>Önskad API-kategori</value>
+  </data>
+  <data name="desiredDataFeed" xml:space="preserve">
+    <value>Önskad datakälla</value>
+  </data>
+  <data name="destination" xml:space="preserve">
+    <value>Destination</value>
+  </data>
+  <data name="detailedAssetCycleTimeReport" xml:space="preserve">
+    <value>Detaljerad cykeltidsrapport för anordning</value>
+  </data>
+  <data name="detailedAssetLoadCountReport" xml:space="preserve">
+    <value>Detaljerad rapport om anordningslastantal</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Enhet</value>
+  </data>
+  <data name="deviceID" xml:space="preserve">
+    <value>Enhets-ID</value>
+  </data>
+  <data name="deviceType" xml:space="preserve">
+    <value>Enhetstyp</value>
+  </data>
+  <data name="diagnostic" xml:space="preserve">
+    <value>Diagnostik</value>
+  </data>
+  <data name="DiagnosticEvents" xml:space="preserve">
+    <value>Diagnostikfel</value>
+  </data>
+  <data name="diagnosticsData" xml:space="preserve">
+    <value>Diagnostikdata</value>
+  </data>
+  <data name="digitalSwitchStatus" xml:space="preserve">
+    <value>Status för digital omkopplare</value>
+  </data>
+  <data name="direction" xml:space="preserve">
+    <value>Riktning</value>
+  </data>
+  <data name="directions" xml:space="preserve">
+    <value>Vägbeskrivning</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Inaktivera</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Inaktiverad</value>
+  </data>
+  <data name="distanceCategory" xml:space="preserve">
+    <value>Avståndskategori</value>
+  </data>
+  <data name="distanceDriven" xml:space="preserve">
+    <value>Körd sträcka</value>
+  </data>
+  <data name="distanceTravelled" xml:space="preserve">
+    <value>Körd sträcka</value>
+  </data>
+  <data name="doNotShowAgain" xml:space="preserve">
+    <value>Visa inte detta igen</value>
+  </data>
+  <data name="firstEpochBladePositionDoesNotLieWithinProjectBoundary" xml:space="preserve">
+    <value>Ligger inte inom projektets rumsomfång</value>
+  </data>
+  <data name="dozer" xml:space="preserve">
+    <value>Schaktmaskin</value>
+  </data>
+  <data name="DueAt" xml:space="preserve">
+    <value>Ska utföras efter</value>
+  </data>
+  <data name="dueIn" xml:space="preserve">
+    <value>Ska utföras om</value>
+  </data>
+  <data name="DueOn" xml:space="preserve">
+    <value>Ska utföras den</value>
+  </data>
+  <data name="dumpEvent" xml:space="preserve">
+    <value>Tipphändelse</value>
+  </data>
+  <data name="dumpLocation" xml:space="preserve">
+    <value>Tipplats</value>
+  </data>
+  <data name="dumpTime" xml:space="preserve">
+    <value>Tipptid</value>
+  </data>
+  <data name="dumpToDumpDistance" xml:space="preserve">
+    <value>Sträcka mellan tippningar</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Varaktighet</value>
+  </data>
+  <data name="earliest" xml:space="preserve">
+    <value>Tidigaste</value>
+  </data>
+  <data name="easting" xml:space="preserve">
+    <value>Östlig</value>
+  </data>
+  <data name="efficiency" xml:space="preserve">
+    <value>Effektivitet</value>
+  </data>
+  <data name="elevation" xml:space="preserve">
+    <value>Höjd</value>
+  </data>
+  <data name="elevationReport" xml:space="preserve">
+    <value>Höjdrapport</value>
+  </data>
+  <data name="elevationType" xml:space="preserve">
+    <value>Höjdtyp</value>
+  </data>
+  <data name="email" xml:space="preserve">
+    <value>E-post</value>
+  </data>
+  <data name="emailRequest" xml:space="preserve">
+    <value>E-postbegäran</value>
+  </data>
+  <data name="endDate" xml:space="preserve">
+    <value>Slutdatum</value>
+  </data>
+  <data name="endDateSMU" xml:space="preserve">
+    <value>Slutdatumtimmätare</value>
+  </data>
+  <data name="endDateLocation" xml:space="preserve">
+    <value>Slutdatumläge</value>
+  </data>
+  <data name="endDateMustBeHigher" xml:space="preserve">
+    <value>Slutdatum måste vara större än startdatum</value>
+  </data>
+  <data name="endHourMeter" xml:space="preserve">
+    <value>Timmätarstopp</value>
+  </data>
+  <data name="endTime" xml:space="preserve">
+    <value>Sluttid</value>
+  </data>
+  <data name="GensetCoolingDown" xml:space="preserve">
+    <value>Motornedkylning</value>
+  </data>
+  <data name="engineCoolantTemperature" xml:space="preserve">
+    <value>Motorns kylmedelstemperatur</value>
+  </data>
+  <data name="coolantTemperatureHeader" xml:space="preserve">
+    <value>Rapport för motorns kylmedelstemperatur</value>
+  </data>
+  <data name="EngineIdle" xml:space="preserve">
+    <value>Rapport om motortomgång</value>
+  </data>
+  <data name="engineLubeOilTemperature" xml:space="preserve">
+    <value>Motorns smörjoljetemperatur</value>
+  </data>
+  <data name="lubeOilTemperatureHeader" xml:space="preserve">
+    <value>Rapport för motorns smörjoljetemperatur</value>
+  </data>
+  <data name="EngineOff" xml:space="preserve">
+    <value>Motor av</value>
+  </data>
+  <data name="engineOilLevelIndication" xml:space="preserve">
+    <value>Engine Oil Level Indicator</value>
+  </data>
+  <data name="engineOilLevelPercent" xml:space="preserve">
+    <value>Engine Oil Level Indicator %</value>
+  </data>
+  <data name="engineOilLevelIndicatorHeader" xml:space="preserve">
+    <value>Engine Oil Level Indicator Report</value>
+  </data>
+  <data name="engineOilPressure" xml:space="preserve">
+    <value>Motoroljetryck</value>
+  </data>
+  <data name="oilPressureHeader" xml:space="preserve">
+    <value>Rapport för motorns oljetryck</value>
+  </data>
+  <data name="EngineOn" xml:space="preserve">
+    <value>Motor på</value>
+  </data>
+  <data name="engineParameters" xml:space="preserve">
+    <value>Motorparametrar</value>
+  </data>
+  <data name="GensetRunning" xml:space="preserve">
+    <value>Motorn i gång</value>
+  </data>
+  <data name="eventTypeEngineStart" xml:space="preserve">
+    <value>Motorstart</value>
+  </data>
+  <data name="engineStartStopTime" xml:space="preserve">
+    <value>Motorns start-/stopptid</value>
+  </data>
+  <data name="engineStatus" xml:space="preserve">
+    <value>Motorstatus</value>
+  </data>
+  <data name="eventTypeEngineStop" xml:space="preserve">
+    <value>Motorstopp</value>
+  </data>
+  <data name="GensetEngineStopped" xml:space="preserve">
+    <value>Motorn stoppad</value>
+  </data>
+  <data name="GensetEngineStopping" xml:space="preserve">
+    <value>Motorn stoppas</value>
+  </data>
+  <data name="displayName" xml:space="preserve">
+    <value>Svenska</value>
+  </data>
+  <data name="equalsPassTarget" xml:space="preserve">
+    <value>Lika med passeringsmål</value>
+  </data>
+  <data name="event" xml:space="preserve">
+    <value>Händelse</value>
+  </data>
+  <data name="eventCount" xml:space="preserve">
+    <value>Händelseantal</value>
+  </data>
+  <data name="eventData" xml:space="preserve">
+    <value>Händelsedata</value>
+  </data>
+  <data name="eventDescription" xml:space="preserve">
+    <value>Händelsebeskrivning</value>
+  </data>
+  <data name="FaultCodes" xml:space="preserve">
+    <value>Händelsefel</value>
+  </data>
+  <data name="eventType" xml:space="preserve">
+    <value>Händelsetyp</value>
+  </data>
+  <data name="excavator" xml:space="preserve">
+    <value>Grävmaskin</value>
+  </data>
+  <data name="ExcavatorUsageReport" xml:space="preserve">
+    <value>Användningsrapport för grävmaskin</value>
+  </data>
+  <data name="exception" xml:space="preserve">
+    <value>Ett undantagsfel inträffade</value>
+  </data>
+  <data name="ExclusionZone" xml:space="preserve">
+    <value>Undantagszon</value>
+  </data>
+  <data name="expectedRuntime" xml:space="preserve">
+    <value>Förväntad drifttid</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Utgångsdatum</value>
+  </data>
+  <data name="fahrenheitAbbrev" xml:space="preserve">
+    <value>F</value>
+  </data>
+  <data name="failedOnRequestProfile" xml:space="preserve">
+    <value>Fel vid profilbegäran</value>
+  </data>
+  <data name="failedOnRequestColourGraduatedProfile" xml:space="preserve">
+    <value>Fel vid begäran av färggraderad profil</value>
+  </data>
+  <data name="submissionBaseConnectionFailure" xml:space="preserve">
+    <value>Det gick inte att ansluta till produktionsdataservern.</value>
+  </data>
+  <data name="failedToConvertClientWGSCoords" xml:space="preserve">
+    <value>Det gick inte att konvertera klientens WGS84-koordinater</value>
+  </data>
+  <data name="dcToIRecFailedToCreateAZIParamsObject" xml:space="preserve">
+    <value>Det gick inte att skapa ett IAZIParameters-objekt (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedCreateCSIB" xml:space="preserve">
+    <value>Det gick inte att skapa CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToCreateDCToIRecordConverter" xml:space="preserve">
+    <value>Det gick inte att skapa DCtoIRecord converter</value>
+  </data>
+  <data name="failedToGetCSSettings" xml:space="preserve">
+    <value>Det gick inte att hämta koordinatsysteminställningar</value>
+  </data>
+  <data name="dcToIRecFailedToGetGeoidInfo" xml:space="preserve">
+    <value>Det gick inte att hämta geoidinformation (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateConstGeoid" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB-konstantsepareringsgeoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateDatumGrid" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB-datumplannätsfilen (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateEllipsoid" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB-ellipsoiden (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateGridGeoid" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB-plannätsgeoiden (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMolodenskyDatum" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB Molodensky-data (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMultiRegressionDatum" xml:space="preserve">
+    <value>Det gick inte att instansiera data för CSIB-multipelregressionsparametern (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateSevenParamsDatum" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB Seven Parameter-data (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateWGS84Datum" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB WGS84-data (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneBasedSite" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB-zonbaserad plats (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneGroup" xml:space="preserve">
+    <value>Det gick inte att instansiera CSIB-zongruppen (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToLoadCSIB" xml:space="preserve">
+    <value>Det gick inte att läsa in CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToNotifyCSChange" xml:space="preserve">
+    <value>Det gick inte att meddela att koordinatsystemet ändrades</value>
+  </data>
+  <data name="failedToObtainCoordinateSystemInterlock" xml:space="preserve">
+    <value>Det gick inte att hämta koordinatsystemskopplingen</value>
+  </data>
+  <data name="dcToIRecFailedToOpenCalibrationReader" xml:space="preserve">
+    <value>Det gick inte att öppna kalibreringsläsaren (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToPerformCoordinateConversion" xml:space="preserve">
+    <value>Det gick inte att konvertera koordinaterna.</value>
+  </data>
+  <data name="dcToIRecFailedToReadCSIB" xml:space="preserve">
+    <value>Det gick inte att läsa CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadInCSIB" xml:space="preserve">
+    <value>Det gick inte att läsa in CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToReadLineworkBoundaryFile" xml:space="preserve">
+    <value>Det gick inte att läsa filen med linjearbetesgränser.</value>
+  </data>
+  <data name="dcToIRecFailedToReadZone" xml:space="preserve">
+    <value>Det gick inte att läsa zonen (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadZoneBasedSite" xml:space="preserve">
+    <value>Det gick inte att läsa den zonbaserade platsen (DCToIRecord converter)</value>
+  </data>
+  <data name="submissionResultConnectionFailure" xml:space="preserve">
+    <value>Det gick inte att ta emot resultat från produktionsdataservern.</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemHorizontalAdjustmentFile" xml:space="preserve">
+    <value>Det gick inte att begära filen för horisontell koordinatsystemjustering</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemProjectionFile" xml:space="preserve">
+    <value>Det gick inte att begära filen för koordinatsystemprojektion</value>
+  </data>
+  <data name="failedToRequestDatamodelStatistics" xml:space="preserve">
+    <value>Det gick inte att begära datamodellstatistik</value>
+  </data>
+  <data name="failedToRequestFileFromTCC" xml:space="preserve">
+    <value>Det gick inte att efterfråga fil från TCC.</value>
+  </data>
+  <data name="failedToRequestSubgridExistenceMap" xml:space="preserve">
+    <value>Det gick inte att begära karta för underplannätsexistens</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneInfo" xml:space="preserve">
+    <value>Det gick inte att ställa in zoninformation (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToWriteCSDStream" xml:space="preserve">
+    <value>Det gick inte att skriva definitionsströmmen för koordinatsystemet</value>
+  </data>
+  <data name="dcToIRecFailedToWriteCSIB" xml:space="preserve">
+    <value>Det gick inte att skriva CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteDatum" xml:space="preserve">
+    <value>Det gick inte att skriva data (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteGeoid" xml:space="preserve">
+    <value>Det gick inte att skriva geoid (DCToIRecord converter)</value>
+  </data>
+  <data name="faultCode" xml:space="preserve">
+    <value>Felkod</value>
+  </data>
+  <data name="faultCodeDiagnostic" xml:space="preserve">
+    <value>Felkod - Diagnostik</value>
+  </data>
+  <data name="faultCodeEvent" xml:space="preserve">
+    <value>Felkod - Händelse</value>
+  </data>
+  <data name="faultCodeDate" xml:space="preserve">
+    <value>Datum för felkod</value>
+  </data>
+  <data name="faultCodeHourMeter" xml:space="preserve">
+    <value>Felkod för timmätare</value>
+  </data>
+  <data name="faultCodeLocation" xml:space="preserve">
+    <value>Läge för felkod</value>
+  </data>
+  <data name="faultCodeOdometer" xml:space="preserve">
+    <value>Felkod för vägmätare</value>
+  </data>
+  <data name="faultCodeReport" xml:space="preserve">
+    <value>Felkodsrapport</value>
+  </data>
+  <data name="assetHealthSummary" xml:space="preserve">
+    <value>Sammanfattningsrapport för felkoder</value>
+  </data>
+  <data name="faultCodesLabel" xml:space="preserve">
+    <value>Felkoder</value>
+  </data>
+  <data name="faultCodeCounts" xml:space="preserve">
+    <value>Felantal</value>
+  </data>
+  <data name="faultCodeDetails" xml:space="preserve">
+    <value>Felinformation</value>
+  </data>
+  <data name="tagFileReaderCorruptedTAGFileData" xml:space="preserve">
+    <value>Filen innehåller skadade data.</value>
+  </data>
+  <data name="noGridEpochsFoundInTAGFile" xml:space="preserve">
+    <value>Filen innehåller ogiltiga produktionsdata.</value>
+  </data>
+  <data name="submissionVerbConnectionFailure" xml:space="preserve">
+    <value>Det gick inte att skicka filen.</value>
+  </data>
+  <data name="fill" xml:space="preserve">
+    <value>Fyllning</value>
+  </data>
+  <data name="locationAppSummary" xml:space="preserve">
+    <value>Hitta senaste kända läge för anordningar</value>
+  </data>
+  <data name="fine" xml:space="preserve">
+    <value>Fin</value>
+  </data>
+  <data name="firmwareVersion" xml:space="preserve">
+    <value>Firmwareversion</value>
+  </data>
+  <data name="first" xml:space="preserve">
+    <value>Första</value>
+  </data>
+  <data name="firstname" xml:space="preserve">
+    <value>Förnamn</value>
+  </data>
+  <data name="verifyEmailBodyFirstTimeUser" xml:space="preserve">
+    <value>Förstagångsanvändare: Logga in på ditt VisionLink-konto med dessa uppgifter.&lt;/br&gt;Användarnamn:{0},&lt;/br&gt; Lösenord:{1}&lt;/br&gt;Du kommer att uppmanas att ändra ditt lösenord vid inloggningen.&lt;/br&gt;&lt;/br&gt;</value>
+  </data>
+  <data name="FleetEventCountReport" xml:space="preserve">
+    <value>Händelseantalsrapport vagnpark</value>
+  </data>
+  <data name="fleetFuelReport" xml:space="preserve">
+    <value>Bränslerapport för vagnpark</value>
+  </data>
+  <data name="FleetStatus" xml:space="preserve">
+    <value>Statusrapport för vagnpark</value>
+  </data>
+  <data name="fleetStatusReport" xml:space="preserve">
+    <value>Rapport om status för vagnpark</value>
+  </data>
+  <data name="fleetSummary" xml:space="preserve">
+    <value>Sammanfattning av vagnpark</value>
+  </data>
+  <data name="fleetSummaryCustomReport" xml:space="preserve">
+    <value>Standardrapport för vagnparköversikt</value>
+  </data>
+  <data name="FleetUsage" xml:space="preserve">
+    <value>Användningsrapport för vagnpark</value>
+  </data>
+  <data name="fleetUsageReport" xml:space="preserve">
+    <value>Användningsrapport för vagnpark</value>
+  </data>
+  <data name="FleetUtilization" xml:space="preserve">
+    <value>Rapport om utnyttjande av vagnpark</value>
+  </data>
+  <data name="FluidAnalysis" xml:space="preserve">
+    <value>Vätskeanalys</value>
+  </data>
+  <data name="fluidAnalysisReport" xml:space="preserve">
+    <value>Vätskeanalysrapport</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Framåt</value>
+  </data>
+  <data name="feetAbbrev" xml:space="preserve">
+    <value>ft</value>
+  </data>
+  <data name="fuel" xml:space="preserve">
+    <value>Bränsle</value>
+  </data>
+  <data name="fuelPercentRemaining" xml:space="preserve">
+    <value>Återstående procentandel bränsle</value>
+  </data>
+  <data name="fuelBurnPieChartTitle" xml:space="preserve">
+    <value>Bränsleförbrukning</value>
+  </data>
+  <data name="fuelBurned" xml:space="preserve">
+    <value>Förbrukat bränsle</value>
+  </data>
+  <data name="fuelBurnedByAsset" xml:space="preserve">
+    <value>Bränsle förbrukat av anordningen</value>
+  </data>
+  <data name="fuelBurnedByAssetsTopTen" xml:space="preserve">
+    <value>Bränsle förbrukat av anordningar: de 10 högsta</value>
+  </data>
+  <data name="fuelConsumedIdle" xml:space="preserve">
+    <value>Förbrukat bränsle (tomgång)</value>
+  </data>
+  <data name="fuelConsumedTotal" xml:space="preserve">
+    <value>Förbrukat bränsle (totalt)</value>
+  </data>
+  <data name="fuelInformation" xml:space="preserve">
+    <value>Bränsleinformation</value>
+  </data>
+  <data name="fuelLevel" xml:space="preserve">
+    <value>Bränslenivå</value>
+  </data>
+  <data name="fuelLevelIndicator" xml:space="preserve">
+    <value>Bränslenivåindikator</value>
+  </data>
+  <data name="fuelLevelPercent" xml:space="preserve">
+    <value>Bränslenivåindikator %</value>
+  </data>
+  <data name="levelIndicatorHeader" xml:space="preserve">
+    <value>Rapport för bränslenivåindikator</value>
+  </data>
+  <data name="FuelLoss" xml:space="preserve">
+    <value>Bränsleförlust</value>
+  </data>
+  <data name="FuelLossAlertDescription" xml:space="preserve">
+    <value>Bränsleförlust på {0} %</value>
+  </data>
+  <data name="fuelPercentageRemaining" xml:space="preserve">
+    <value>Återstående bränsleprocent</value>
+  </data>
+  <data name="fuelRemaining" xml:space="preserve">
+    <value>Återstående bränsle</value>
+  </data>
+  <data name="fuelUtilizationTopic" xml:space="preserve">
+    <value>Bränsleanvändning</value>
+  </data>
+  <data name="FuelUtilization" xml:space="preserve">
+    <value>Bränsleanvändningsrapport</value>
+  </data>
+  <data name="fuelUtilizationReport" xml:space="preserve">
+    <value>Bränsleanvändningsrapport</value>
+  </data>
+  <data name="FullSiteURL" xml:space="preserve">
+    <value>Fullständig webbplats</value>
+  </data>
+  <data name="gal" xml:space="preserve">
+    <value>gal</value>
+  </data>
+  <data name="galhr" xml:space="preserve">
+    <value>gal/h</value>
+  </data>
+  <data name="gallonsBarChartXAxisLabel" xml:space="preserve">
+    <value>Gallons</value>
+  </data>
+  <data name="gallonshr" xml:space="preserve">
+    <value>Gallons/timme</value>
+  </data>
+  <data name="gallonsBurned" xml:space="preserve">
+    <value>Förbrukade gallons</value>
+  </data>
+  <data name="geoFenceAlert" xml:space="preserve">
+    <value>GEO-gränslarm</value>
+  </data>
+  <data name="gpsAccuracy" xml:space="preserve">
+    <value>GPS-noggrannhet</value>
+  </data>
+  <data name="GPSAntennaDisconnectedTimerExpired" xml:space="preserve">
+    <value>GPS-antenn frånkopplad</value>
+  </data>
+  <data name="GPSGSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>GPS/GSM-signalförlust</value>
+  </data>
+  <data name="GridReport" xml:space="preserve">
+    <value>Plannätsrapport</value>
+  </data>
+  <data name="gridSize" xml:space="preserve">
+    <value>Plannätsstorlek</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>Grupp</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Grupper</value>
+  </data>
+  <data name="GSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>GSM-signalförlust</value>
+  </data>
+  <data name="hectareAbbreviation" xml:space="preserve">
+    <value>ha</value>
+  </data>
+  <data name="hardwareDataError" xml:space="preserve">
+    <value>Maskinvarudatafel</value>
+  </data>
+  <data name="ForgotPasswordEmailBody" xml:space="preserve">
+    <value>Hej {0}!&lt;BR /&gt;&lt;BR /&gt;Ditt VisionLink-användarnamn är {1}&lt;BR /&gt;&lt;BR /&gt;. För att återställa ditt lösenord klickar du på länken nedan (eller kopierar URL-adressen och klistrar in den i ett nytt webbläsarfönster):&lt;BR /&gt;&lt;BR /&gt; {2}&lt;BR /&gt;&lt;BR /&gt; Av säkerhetsskäl kommer denna länk att vara aktiv i 24 timmar och kommer bara att fungera för en (1) lösenordsåterställning. &lt;BR /&gt;&lt;BR /&gt;Om du inte har begärt att få återställa ditt lösenord beror det förmodligen på att en annan användare har angett din e-postadress eller ditt användarnamn av misstag vid ett försök att återställa ett lösenord. I så fall kan du bortse från det här e-postmeddelandet. &lt;BR /&gt;&lt;BR /&gt;Med vänliga hälsningar,&lt;BR /&gt;VisionLink-supportteamet</value>
+  </data>
+  <data name="NewAccountRegEmailBody" xml:space="preserve">
+    <value>Hej! {0}&lt;BR&gt;&lt;BR&gt;Det här e-postmeddelandet har skickats till dig för att tala om att ett VisionLink-konto har skapats med namnet {1}&lt;BR&gt;&lt;BR&gt;Nästa steg är att gå till VisionLink-kontoregistreringssidan, där du kan aktivera ditt konto genom att skapa ett användarnamn och ett lösenord. Du kan sedan använda dessa användaruppgifter för att logga in på ditt konto med hjälp av VisionLink Web Application.&lt;BR&gt;&lt;BR&gt;Klicka på länken nedan för att gå till VisionLink-kontoregistreringssidan:&lt;BR&gt;{2}&lt;BR&gt;&lt;BR&gt;Ovanstående länk kommer att sluta att fungera efter att kontot har aktiverats. Du kan dock skapa fler inloggningsuppgifter i VisionLink Web Application när registreringen är klar.&lt;BR&gt;&lt;BR&gt;När du har aktiverat ditt konto kan du få åtkomst till VisionLink Web Application via följande länk:&lt;BR&gt;{3}</value>
+  </data>
+  <data name="OnDemandEmailBody" xml:space="preserve">
+    <value>Hej!&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Klicka på länken nedan för att hämta rapporten &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Obs! Du får detta e-postmeddelande eftersom du har listats som mottagare av den här rapporten. Den här länken kommer att vara aktiv i 30 dagar. Om du har några frågor kontaktar du din VisionLink-administratör.</value>
+  </data>
+  <data name="ScheduleReportEmailBodyWithoutUnsubscribe" xml:space="preserve">
+    <value>Hej,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Var god klicka på länken nedan för att ladda ner rapporten &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; OBS: Du har fått detta meddelande för att du har registrerats som mottagare för denna schemalagda rapport. Denna länk kommer att vara aktiv i 30 dagar. Om du har några frågor, var god kontakta din VisionLink-administratör.&lt;BR /&gt;&lt;BR /&gt;*** De schemalagda dagliga, veckoliga och månatliga rapporterna för vagnparkstatus, kommande service och vyn för delade anordningar innehåller uppdaterad information som baseras på när rapporten öppnas.</value>
+  </data>
+  <data name="ScheduleReportEmailBody" xml:space="preserve">
+    <value>Hej!&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Klicka på länken nedan för att hämta rapporten &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Obs! Du får detta e-postmeddelande eftersom du har listats som mottagare av den här schemalagda rapporten. Den här länken kommer att vara aktiv i 30 dagar. Om du har några frågor kontaktar du din VisionLink-administratör.&lt;BR /&gt;&lt;BR /&gt;Om du vill avsluta prenumerationen så att du inte får den här rapporten i framtiden klickar du på {2}.&lt;BR /&gt;&lt;BR /&gt;*** Rapporten för status för vagnpark, kommande service och vy för delade anordningar, och som är schemalagd för varje dag, vecka eller månad, innehåller aktuell information baserad på när rapporten öppnas.</value>
+  </data>
+  <data name="HH" xml:space="preserve">
+    <value>HH</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Hög</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Högsta</value>
+  </data>
+  <data name="home" xml:space="preserve">
+    <value>Hem</value>
+  </data>
+  <data name="hourMeter" xml:space="preserve">
+    <value>Timmätare</value>
+  </data>
+  <data name="hours" xml:space="preserve">
+    <value>Timmar</value>
+  </data>
+  <data name="hoursOfUse" xml:space="preserve">
+    <value>Användningstimmar</value>
+  </data>
+  <data name="hoursLocation" xml:space="preserve">
+    <value>Timmar/läge</value>
+  </data>
+  <data name="hr" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="hrs" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="hybrid" xml:space="preserve">
+    <value>Hybrid</value>
+  </data>
+  <data name="hydraulicOilTemperature" xml:space="preserve">
+    <value>Hydrauloljetemperatur</value>
+  </data>
+  <data name="hydraulicTemperatureHeader" xml:space="preserve">
+    <value>Rapport för hydrauloljetemperatur</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Tomgång</value>
+  </data>
+  <data name="idleEventsMessage" xml:space="preserve">
+    <value>Tomgångshändelser längre än {0} {1}</value>
+  </data>
+  <data name="idleFuelBurned" xml:space="preserve">
+    <value>Bränsleåtgång vid tomgång</value>
+  </data>
+  <data name="idleHourMeter" xml:space="preserve">
+    <value>Mätare för tomgångstid</value>
+  </data>
+  <data name="idleHours" xml:space="preserve">
+    <value>Tomgångstimmar</value>
+  </data>
+  <data name="idleTime" xml:space="preserve">
+    <value>Tomgångstid</value>
+  </data>
+  <data name="idleTimeOut" xml:space="preserve">
+    <value>Timeout för tomgång</value>
+  </data>
+  <data name="idling" xml:space="preserve">
+    <value>Tomgång</value>
+  </data>
+  <data name="idlingFuelBurned" xml:space="preserve">
+    <value>Bränsleåtgång vid tomgång</value>
+  </data>
+  <data name="IgnitionOff" xml:space="preserve">
+    <value>Tändning från</value>
+  </data>
+  <data name="IgnitionOn" xml:space="preserve">
+    <value>Tändning till</value>
+  </data>
+  <data name="ignitionStatus" xml:space="preserve">
+    <value>Tändningsstatus</value>
+  </data>
+  <data name="inProgress" xml:space="preserve">
+    <value>Pågående</value>
+  </data>
+  <data name="inactiveNoRuntime" xml:space="preserve">
+    <value>Inaktiva – Ingen drifttid</value>
+  </data>
+  <data name="includeSupercededLifts" xml:space="preserve">
+    <value>Inkludera ersatta lyfter</value>
+  </data>
+  <data name="InclusionZone" xml:space="preserve">
+    <value>Inkluderingszon</value>
+  </data>
+  <data name="incomplete" xml:space="preserve">
+    <value>Ofullständig</value>
+  </data>
+  <data name="incorrectUsernameOrPassword" xml:space="preserve">
+    <value>Fel användarnamn eller lösenord.</value>
+  </data>
+  <data name="incorrectWorkingTime" xml:space="preserve">
+    <value>Felaktiga värden för beräkning av arbetstid.</value>
+  </data>
+  <data name="dcToIRecInifiniteAdjustmentSlopeValue" xml:space="preserve">
+    <value>Lutningsvärde för oändlig justering (DCToIRecord converter)</value>
+  </data>
+  <data name="insufficientDataForCalculation" xml:space="preserve">
+    <value>Otillräckliga data för beräkning</value>
+  </data>
+  <data name="singleDayCalloutNegativeValue" xml:space="preserve">
+    <value>Otillräcklig precision för drifttidsmätare för giltig beräkning</value>
+  </data>
+  <data name="dateRangeCalloutNegativeValue" xml:space="preserve">
+    <value>Otillräcklig precision för drifttidsmätare för giltig beräkning inom datumintervall</value>
+  </data>
+  <data name="introduction" xml:space="preserve">
+    <value>Inledning</value>
+  </data>
+  <data name="invalidCoordinateRange" xml:space="preserve">
+    <value>Ogiltigt koordinatintervall</value>
+  </data>
+  <data name="suppliedDataModelBoundaryContainsInsufficeintVertices" xml:space="preserve">
+    <value>Ogiltig datamodellgräns.</value>
+  </data>
+  <data name="dcToIRecInvalidEllipsoid" xml:space="preserve">
+    <value>Ogiltig ellipsoid (DCToIRecord converter)</value>
+  </data>
+  <data name="InValidReportRequest" xml:space="preserve">
+    <value>Ogiltig Excel-rapportbegäran.</value>
+  </data>
+  <data name="InvalidSeedPosition" xml:space="preserve">
+    <value>Ogiltig LLH/NÖH-utgångsposition i taggfil</value>
+  </data>
+  <data name="InvalidMSSKey" xml:space="preserve">
+    <value>Ogiltig MSS-nyckel</value>
+  </data>
+  <data name="invalidResponseCode" xml:space="preserve">
+    <value>Ogiltig responskod</value>
+  </data>
+  <data name="invalidSubscriptions" xml:space="preserve">
+    <value>Ogiltiga abonnemang.</value>
+  </data>
+  <data name="invalidTagFile" xml:space="preserve">
+    <value>Ogiltig TAG-fil.</value>
+  </data>
+  <data name="invalidValueDetected" xml:space="preserve">
+    <value>Ogiltigt värde hittades</value>
+  </data>
+  <data name="singleDayCalloutSpike" xml:space="preserve">
+    <value>Ogiltigt värde hittades</value>
+  </data>
+  <data name="dateRangeCalloutSpike" xml:space="preserve">
+    <value>Ogiltigt värde hittades inom datumintervall</value>
+  </data>
+  <data name="kilometers" xml:space="preserve">
+    <value>Kilometer</value>
+  </data>
+  <data name="km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kmL" xml:space="preserve">
+    <value>km/l</value>
+  </data>
+  <data name="kms" xml:space="preserve">
+    <value>kms</value>
+  </data>
+  <data name="kpa" xml:space="preserve">
+    <value>kPa</value>
+  </data>
+  <data name="kph" xml:space="preserve">
+    <value>km/h</value>
+  </data>
+  <data name="leftAbbrev" xml:space="preserve">
+    <value>V</value>
+  </data>
+  <data name="ltr" xml:space="preserve">
+    <value>l</value>
+  </data>
+  <data name="ltrhr" xml:space="preserve">
+    <value>l/h</value>
+  </data>
+  <data name="FluidAnalysisAlertDescription" xml:space="preserve">
+    <value>Labbnr.:  {0} Avdelning: {1} Allvarsgrad:</value>
+  </data>
+  <data name="labNumber" xml:space="preserve">
+    <value>Labbnummer</value>
+  </data>
+  <data name="language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="last" xml:space="preserve">
+    <value>Sista</value>
+  </data>
+  <data name="lastKnownLocation" xml:space="preserve">
+    <value>Sista kända läge</value>
+  </data>
+  <data name="lastKnownStatus" xml:space="preserve">
+    <value>Senast kända status</value>
+  </data>
+  <data name="lastReportedStatus" xml:space="preserve">
+    <value>Sista kända status</value>
+  </data>
+  <data name="lastLogin" xml:space="preserve">
+    <value>Senaste inloggning</value>
+  </data>
+  <data name="lastLoginDate" xml:space="preserve">
+    <value>Senaste inloggningsdatum</value>
+  </data>
+  <data name="lastloginUTC" xml:space="preserve">
+    <value>Senaste inloggning UTC</value>
+  </data>
+  <data name="lastname" xml:space="preserve">
+    <value>Efternamn</value>
+  </data>
+  <data name="lastReported" xml:space="preserve">
+    <value>Senast rapporterad</value>
+  </data>
+  <data name="lastReportedLocation" xml:space="preserve">
+    <value>Senast rapporterade plats</value>
+  </data>
+  <data name="lastReportedTime" xml:space="preserve">
+    <value>Senast rapporterade tid</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Senast uppdaterad</value>
+  </data>
+  <data name="lastNDays" xml:space="preserve">
+    <value>De senaste {0} dagarna</value>
+  </data>
+  <data name="latitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Lat.</value>
+  </data>
+  <data name="latest" xml:space="preserve">
+    <value>Senaste</value>
+  </data>
+  <data name="latestUserActivity" xml:space="preserve">
+    <value>Senaste aktivitet för användare</value>
+  </data>
+  <data name="LaunchVLApp" xml:space="preserve">
+    <value>Starta VisionLink-applikationer</value>
+  </data>
+  <data name="leaseOwnership" xml:space="preserve">
+    <value>leasingägande</value>
+  </data>
+  <data name="passesLessthan" xml:space="preserve">
+    <value>Färre än {0} passeringar</value>
+  </data>
+  <data name="lessThanNPercent" xml:space="preserve">
+    <value>Mindre än {0} %</value>
+  </data>
+  <data name="level0" xml:space="preserve">
+    <value>Nivå 0</value>
+  </data>
+  <data name="level1" xml:space="preserve">
+    <value>Nivå 1</value>
+  </data>
+  <data name="level2" xml:space="preserve">
+    <value>Nivå 2</value>
+  </data>
+  <data name="level3" xml:space="preserve">
+    <value>Nivå 3</value>
+  </data>
+  <data name="lifetimeFuel" xml:space="preserve">
+    <value>Total bränsleförbrukning</value>
+  </data>
+  <data name="lifetimeFuelMeter" xml:space="preserve">
+    <value>Mätare för total bränsleförbrukning</value>
+  </data>
+  <data name="lifetimeIdleFuelMeter" xml:space="preserve">
+    <value>Mätare för total bränsleförbrukning vid tomgång</value>
+  </data>
+  <data name="layerNumber" xml:space="preserve">
+    <value>Lyft</value>
+  </data>
+  <data name="lift" xml:space="preserve">
+    <value>Lyft</value>
+  </data>
+  <data name="InValidLink" xml:space="preserve">
+    <value>Länken har upphört att gälla.</value>
+  </data>
+  <data name="litersBarChartXAxisLabel" xml:space="preserve">
+    <value>Liter</value>
+  </data>
+  <data name="litershr" xml:space="preserve">
+    <value>Liter/timme</value>
+  </data>
+  <data name="litersBurned" xml:space="preserve">
+    <value>Förbrukat antal liter</value>
+  </data>
+  <data name="loadAndCycleMonitoring" xml:space="preserve">
+    <value>Last- &amp; cykelövervakning</value>
+  </data>
+  <data name="LoadCount" xml:space="preserve">
+    <value>Lastantalsrapport</value>
+  </data>
+  <data name="loadCountReport" xml:space="preserve">
+    <value>Rapport om lastantal</value>
+  </data>
+  <data name="loadCounts" xml:space="preserve">
+    <value>Lastantal</value>
+  </data>
+  <data name="loadCountsAndCycleTimes" xml:space="preserve">
+    <value>Lastantal och cykeltider</value>
+  </data>
+  <data name="LoadDistance" xml:space="preserve">
+    <value>Lastavstånd</value>
+  </data>
+  <data name="LoadDistanceAlertDescription" xml:space="preserve">
+    <value>Lastavstånd {0}</value>
+  </data>
+  <data name="loadEvent" xml:space="preserve">
+    <value>Lasthändelse</value>
+  </data>
+  <data name="loadLocation" xml:space="preserve">
+    <value>Lastningsplats</value>
+  </data>
+  <data name="loadQuality" xml:space="preserve">
+    <value>Lastkvalitet</value>
+  </data>
+  <data name="loadTime" xml:space="preserve">
+    <value>Lastningstid</value>
+  </data>
+  <data name="loadToDumpDistance" xml:space="preserve">
+    <value>Sträcka mellan lastning och tippning</value>
+  </data>
+  <data name="loadToLoadDistance" xml:space="preserve">
+    <value>Sträcka mellan lastningar</value>
+  </data>
+  <data name="assetLoadedLoading" xml:space="preserve">
+    <value>Lastad av</value>
+  </data>
+  <data name="loader" xml:space="preserve">
+    <value>Lastare</value>
+  </data>
+  <data name="loaderOperation" xml:space="preserve">
+    <value>Lastardrift</value>
+  </data>
+  <data name="loads" xml:space="preserve">
+    <value>Laster</value>
+  </data>
+  <data name="locate" xml:space="preserve">
+    <value>Hitta</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Läge</value>
+  </data>
+  <data name="geolocationPositionUnavailable" xml:space="preserve">
+    <value>Läge inte tillgängligt.</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Inloggning</value>
+  </data>
+  <data name="loginCreationDate" xml:space="preserve">
+    <value>Datum för skapande av inloggning</value>
+  </data>
+  <data name="loginfailed" xml:space="preserve">
+    <value>Inloggningen misslyckades</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Utloggning</value>
+  </data>
+  <data name="longitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Lon.</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Låg</value>
+  </data>
+  <data name="LowSensorBattery" xml:space="preserve">
+    <value>Svagt batteri</value>
+  </data>
+  <data name="LowFuel" xml:space="preserve">
+    <value>Låg bränslenivå</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Lägsta</value>
+  </data>
+  <data name="metersAbbrev" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="m3" xml:space="preserve">
+    <value>m3</value>
+  </data>
+  <data name="meterUpdateSummary" xml:space="preserve">
+    <value>Maskintimmar</value>
+  </data>
+  <data name="machineIdleEvent" xml:space="preserve">
+    <value>Maskin på tomgång</value>
+  </data>
+  <data name="machineName" xml:space="preserve">
+    <value>Maskinnamn</value>
+  </data>
+  <data name="make" xml:space="preserve">
+    <value>Märke</value>
+  </data>
+  <data name="makeModel" xml:space="preserve">
+    <value>Märke/modell</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Manuell</value>
+  </data>
+  <data name="map" xml:space="preserve">
+    <value>Karta</value>
+  </data>
+  <data name="mapReset" xml:space="preserve">
+    <value>Kartåterställning</value>
+  </data>
+  <data name="mappingType" xml:space="preserve">
+    <value>Kartläggningstyp</value>
+  </data>
+  <data name="markCompleted" xml:space="preserve">
+    <value>Markera som slutförd</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>Material</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Max.</value>
+  </data>
+  <data name="maxSpeed" xml:space="preserve">
+    <value>Maxhastighet</value>
+  </data>
+  <data name="maxRecordsReached" xml:space="preserve">
+    <value>Största antal poster uppnått</value>
+  </data>
+  <data name="maximumTemperature" xml:space="preserve">
+    <value>Maxtemperatur</value>
+  </data>
+  <data name="deviceTypeMCHYPHEN3" xml:space="preserve">
+    <value>MC-3</value>
+  </data>
+  <data name="mdp" xml:space="preserve">
+    <value>MDP</value>
+  </data>
+  <data name="mdpSummary" xml:space="preserve">
+    <value>MDP-sammanfattning</value>
+  </data>
+  <data name="mdpSummaryReport" xml:space="preserve">
+    <value>MDP-sammanfattningsrapport</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Medelhög</value>
+  </data>
+  <data name="meter" xml:space="preserve">
+    <value>Mätare</value>
+  </data>
+  <data name="meterReading" xml:space="preserve">
+    <value>Mätarställning</value>
+  </data>
+  <data name="meterUpdate" xml:space="preserve">
+    <value>Mätaruppdatering</value>
+  </data>
+  <data name="meterUpdateSent" xml:space="preserve">
+    <value>Mätaruppdatering skickad</value>
+  </data>
+  <data name="mi" xml:space="preserve">
+    <value>mi</value>
+  </data>
+  <data name="mileGal" xml:space="preserve">
+    <value>mile/gal</value>
+  </data>
+  <data name="mileage" xml:space="preserve">
+    <value>Körd sträcka</value>
+  </data>
+  <data name="miles" xml:space="preserve">
+    <value>miles</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Min.</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>min.</value>
+  </data>
+  <data name="minimumTemperature" xml:space="preserve">
+    <value>Minimitemperatur</value>
+  </data>
+  <data name="Missed" xml:space="preserve">
+    <value>Missad</value>
+  </data>
+  <data name="missingMeterValueDetected" xml:space="preserve">
+    <value>Saknat mätarvärde upptäcktes</value>
+  </data>
+  <data name="singleDayCalloutMissingMeterValue" xml:space="preserve">
+    <value>Saknat mätarvärde upptäcktes</value>
+  </data>
+  <data name="dateRangeCalloutMissingMeterValue" xml:space="preserve">
+    <value>Saknat mätarvärde upptäcktes inom datumintervall</value>
+  </data>
+  <data name="MM" xml:space="preserve">
+    <value>MM</value>
+  </data>
+  <data name="model" xml:space="preserve">
+    <value>Modell</value>
+  </data>
+  <data name="modelYear" xml:space="preserve">
+    <value>Årsmodell</value>
+  </data>
+  <data name="module" xml:space="preserve">
+    <value>Modul</value>
+  </data>
+  <data name="moduleAccessProvidedBy" xml:space="preserve">
+    <value>Modulåtkomst tillhandahållen av</value>
+  </data>
+  <data name="FluidMonitorPriority" xml:space="preserve">
+    <value>Övervaka</value>
+  </data>
+  <data name="monitoredCycleDetailsReport" xml:space="preserve">
+    <value>Rapport om övervakad cykel</value>
+  </data>
+  <data name="monitoredLoadCountDetailsReport" xml:space="preserve">
+    <value>Rapport om övervakat lastantal</value>
+  </data>
+  <data name="monitoredSiteDetailsReport" xml:space="preserve">
+    <value>Rapport om övervakad platsinformation</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Månatlig</value>
+  </data>
+  <data name="more" xml:space="preserve">
+    <value>Mer</value>
+  </data>
+  <data name="moreThan" xml:space="preserve">
+    <value>Mer än</value>
+  </data>
+  <data name="passesMorethan" xml:space="preserve">
+    <value>Fler än {0} passeringar</value>
+  </data>
+  <data name="top10MostFrequentlyOccurringFaults" xml:space="preserve">
+    <value>De vanligaste felkoderna (topp 10)</value>
+  </data>
+  <data name="MovementWithAssetOff" xml:space="preserve">
+    <value>Förflyttning med anordningen av</value>
+  </data>
+  <data name="MovementWithAssetOn" xml:space="preserve">
+    <value>Förflyttning med anordningen på</value>
+  </data>
+  <data name="movingStatus" xml:space="preserve">
+    <value>Förflyttningsstatus</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="deviceTypeMTHYPHEN10" xml:space="preserve">
+    <value>MT-10</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENElectricEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Electric Engine</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENMotorEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Motor Engine</value>
+  </data>
+  <data name="MulitpleProjects" xml:space="preserve">
+    <value>Flera projekt hittades</value>
+  </data>
+  <data name="multipleSelections" xml:space="preserve">
+    <value>Flera val</value>
+  </data>
+  <data name="notApplicable" xml:space="preserve">
+    <value>Gäller ej</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>Gäller ej</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Namn</value>
+  </data>
+  <data name="nearbyAssets" xml:space="preserve">
+    <value>Anordningar i närheten</value>
+  </data>
+  <data name="nearbyAssetsByProductFamily" xml:space="preserve">
+    <value>Närliggande produktfamilj</value>
+  </data>
+  <data name="NewAccountSupportEmailSubject" xml:space="preserve">
+    <value>Registreringsinformation för nytt konto</value>
+  </data>
+  <data name="nextService" xml:space="preserve">
+    <value>Nästa service</value>
+  </data>
+  <data name="FluidNoActionPriority" xml:space="preserve">
+    <value>Ingen åtgärd</value>
+  </data>
+  <data name="noBoundariesInLineworkFile" xml:space="preserve">
+    <value>Inga gränser i linjearbetesfil.</value>
+  </data>
+  <data name="noChange" xml:space="preserve">
+    <value>Ingen ändring</value>
+  </data>
+  <data name="noComment" xml:space="preserve">
+    <value>Ingen kommentar</value>
+  </data>
+  <data name="noConnectionToServer" xml:space="preserve">
+    <value>Ingen anslutning till servern</value>
+  </data>
+  <data name="noData" xml:space="preserve">
+    <value>Inga data</value>
+  </data>
+  <data name="noDumpFound" xml:space="preserve">
+    <value>ingen tipp hittad</value>
+  </data>
+  <data name="noDumpSwitch" xml:space="preserve">
+    <value>ingen tippomkopplingshändelse upptäckt</value>
+  </data>
+  <data name="NoEndDate" xml:space="preserve">
+    <value>Inget slutdatum</value>
+  </data>
+  <data name="noFilter" xml:space="preserve">
+    <value>Inget filter</value>
+  </data>
+  <data name="NoIntervals" xml:space="preserve">
+    <value>Inga intervall</value>
+  </data>
+  <data name="noItemsFound" xml:space="preserve">
+    <value>Inga objekt hittades</value>
+  </data>
+  <data name="noLoadFound" xml:space="preserve">
+    <value>ingen last hittad</value>
+  </data>
+  <data name="noLoadSwitch" xml:space="preserve">
+    <value>ingen lastomkopplingshändelse upptäckt</value>
+  </data>
+  <data name="NoMatchingProjectArea" xml:space="preserve">
+    <value>Ingen matchande projektarea hittades</value>
+  </data>
+  <data name="NoMatchingProjectDate" xml:space="preserve">
+    <value>Inget matchande projektdatum/-klockslag hittades</value>
+  </data>
+  <data name="NoPending" xml:space="preserve">
+    <value>Ingen väntande</value>
+  </data>
+  <data name="noResultReturned" xml:space="preserve">
+    <value>Inget resultat har returnerats</value>
+  </data>
+  <data name="noResults" xml:space="preserve">
+    <value>Inga resultat</value>
+  </data>
+  <data name="noStopMovmentInValidSite" xml:space="preserve">
+    <value>ingen stopprörelse upptäckt i giltig platstyp</value>
+  </data>
+  <data name="noStopMovement" xml:space="preserve">
+    <value>ingen stopprörelse upptäckt</value>
+  </data>
+  <data name="noSuchDataModel" xml:space="preserve">
+    <value>Datamodell saknas</value>
+  </data>
+  <data name="NoValidCellPassesInTagfile" xml:space="preserve">
+    <value>Inga giltiga cellpasseringar hittades i taggfil(er)</value>
+  </data>
+  <data name="InvalidPosition" xml:space="preserve">
+    <value>Ingen giltig position i taggfilen</value>
+  </data>
+  <data name="NotReporting" xml:space="preserve">
+    <value>Icke-rapporterande</value>
+  </data>
+  <data name="devicetypenodevice" xml:space="preserve">
+    <value>INGEN</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>Ingen</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="NormalOperation" xml:space="preserve">
+    <value>Normal drift</value>
+  </data>
+  <data name="northing" xml:space="preserve">
+    <value>Nordlig</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Ej tillgänglig</value>
+  </data>
+  <data name="NotPending" xml:space="preserve">
+    <value>Inte väntande</value>
+  </data>
+  <data name="GensetNotReadyToRun" xml:space="preserve">
+    <value>Inte klar att köras</value>
+  </data>
+  <data name="notVerified" xml:space="preserve">
+    <value>Ej verifierad</value>
+  </data>
+  <data name="dcToIRecNotWGS84Ellipsoid" xml:space="preserve">
+    <value>Inte WGS84-ellipsoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecNotWGS84EllipsoidSameAsProj" xml:space="preserve">
+    <value>Inte WGS84-ellipsoid i datauppsättning (DCToIRecord converter)</value>
+  </data>
+  <data name="NotReportingforExcelReport" xml:space="preserve">
+    <value>Icke-rapporterande</value>
+  </data>
+  <data name="SavEmailFooter" xml:space="preserve">
+    <value>Obs! Detta är ett välkomstmeddelande. Du har lagts till på denna meddelandelista eftersom du är administratörsanvändare på ditt VisionLink-konto.</value>
+  </data>
+  <data name="notes" xml:space="preserve">
+    <value>Anm.</value>
+  </data>
+  <data name="occurrenceCount" xml:space="preserve">
+    <value>Förekomstantal</value>
+  </data>
+  <data name="odometer" xml:space="preserve">
+    <value>Vägmätare</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>Av</value>
+  </data>
+  <data name="offset" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="offsetFromBench" xml:space="preserve">
+    <value>Offset från pall</value>
+  </data>
+  <data name="offsetFromDesign" xml:space="preserve">
+    <value>Offset från modell</value>
+  </data>
+  <data name="offsetFromProfile" xml:space="preserve">
+    <value>Offset från profil</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>På</value>
+  </data>
+  <data name="onGrade" xml:space="preserve">
+    <value>På lutning</value>
+  </data>
+  <data name="onMachineDesign" xml:space="preserve">
+    <value>Modell på maskin</value>
+  </data>
+  <data name="OnBoardServiceToolCommand" xml:space="preserve">
+    <value>Internt serviceverktygskommando</value>
+  </data>
+  <data name="InvalidOnGroundFlag" xml:space="preserve">
+    <value>on_ground-flagga inte angiven eller ogiltig i taggfil</value>
+  </data>
+  <data name="OpenAlerts" xml:space="preserve">
+    <value>Öppna larm</value>
+  </data>
+  <data name="operationModeBreakup" xml:space="preserve">
+    <value>Driftsläge, avbrott</value>
+  </data>
+  <data name="operatorID" xml:space="preserve">
+    <value>Förar-ID</value>
+  </data>
+  <data name="operatorName" xml:space="preserve">
+    <value>Förarnamn</value>
+  </data>
+  <data name="origin" xml:space="preserve">
+    <value>Origo</value>
+  </data>
+  <data name="OTACommand" xml:space="preserve">
+    <value>Trådlöst kommando</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Övrigt</value>
+  </data>
+  <data name="overCompacted" xml:space="preserve">
+    <value>Överpackad</value>
+  </data>
+  <data name="overcompactedLayer" xml:space="preserve">
+    <value>Överpackat lager</value>
+  </data>
+  <data name="maxLevel" xml:space="preserve">
+    <value>Ã–ver maxnivÃ¥</value>
+  </data>
+  <data name="overPassTarget" xml:space="preserve">
+    <value>Över passeringsmål</value>
+  </data>
+  <data name="OverPressure" xml:space="preserve">
+    <value>För högt tryck</value>
+  </data>
+  <data name="OverTemperature" xml:space="preserve">
+    <value>För hög temperatur</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>Försenad</value>
+  </data>
+  <data name="serviceDueSummary" xml:space="preserve">
+    <value>Försenad och kommande service</value>
+  </data>
+  <data name="OverdueBy" xml:space="preserve">
+    <value>Försenad med</value>
+  </data>
+  <data name="pMode" xml:space="preserve">
+    <value>Effektläge</value>
+  </data>
+  <data name="pageXofY" xml:space="preserve">
+    <value>Sida &amp;[Page] av &amp;[Pages]</value>
+  </data>
+  <data name="MachineParametersReport" xml:space="preserve">
+    <value>Parameterrapporter</value>
+  </data>
+  <data name="passCount" xml:space="preserve">
+    <value>Passeringsantal</value>
+  </data>
+  <data name="passCountDetail" xml:space="preserve">
+    <value>Information om passeringsantal</value>
+  </data>
+  <data name="passCountDetailReport" xml:space="preserve">
+    <value>Detaljerad rapport om passeringsantal</value>
+  </data>
+  <data name="passCountSummary" xml:space="preserve">
+    <value>Sammanfattning över passeringsantal</value>
+  </data>
+  <data name="passCountSummaryReport" xml:space="preserve">
+    <value>Sammanfattningsrapport om passeringsantal</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Lösenord</value>
+  </data>
+  <data name="payload" xml:space="preserve">
+    <value>Nyttolast</value>
+  </data>
+  <data name="PayloadReport" xml:space="preserve">
+    <value>Nyttolastrapport</value>
+  </data>
+  <data name="payloadPerCycle" xml:space="preserve">
+    <value>Nyttolast/cykel</value>
+  </data>
+  <data name="payloadPerFuel" xml:space="preserve">
+    <value>Nyttolast/bränsle</value>
+  </data>
+  <data name="payloadPerHour" xml:space="preserve">
+    <value>Nyttolast/timme</value>
+  </data>
+  <data name="chartWorkSheetTitle" xml:space="preserve">
+    <value>Nyttolasttabell</value>
+  </data>
+  <data name="dataWorkSheetTitle" xml:space="preserve">
+    <value>Nyttolastdata</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Väntande</value>
+  </data>
+  <data name="performance" xml:space="preserve">
+    <value>Prestanda</value>
+  </data>
+  <data name="performedBy" xml:space="preserve">
+    <value>Utförd av</value>
+  </data>
+  <data name="phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="deviceTypePL420" xml:space="preserve">
+    <value>PL420</value>
+  </data>
+  <data name="deviceTypePL431" xml:space="preserve">
+    <value>PL431</value>
+  </data>
+  <data name="deviceTypeMTS521" xml:space="preserve">
+    <value>PL521</value>
+  </data>
+  <data name="deviceTypeMTS522" xml:space="preserve">
+    <value>PL522</value>
+  </data>
+  <data name="deviceTypePLE641PLUSPL631" xml:space="preserve">
+    <value>PLE641+PL631</value>
+  </data>
+  <data name="changeDatesOrBoundary" xml:space="preserve">
+    <value>Ändra antingen projektdatumen eller projektgränsen.</value>
+  </data>
+  <data name="cookiesRequired" xml:space="preserve">
+    <value>Aktivera cookies i den här webbläsaren.</value>
+  </data>
+  <data name="javascriptRequired" xml:space="preserve">
+    <value>Aktivera javaskript och cookies i den här webbläsaren.</value>
+  </data>
+  <data name="enterYourPassword" xml:space="preserve">
+    <value>Ange ditt lösenord.</value>
+  </data>
+  <data name="enterYourUsername" xml:space="preserve">
+    <value>Ange ditt användarnamn.</value>
+  </data>
+  <data name="pleaseInstallBlackBerryMaps" xml:space="preserve">
+    <value>Installera BlackBerry Maps.</value>
+  </data>
+  <data name="excelRowLimitReached" xml:space="preserve">
+    <value>Observera att dataresultaten överskrider gränsen för antalet rader i Excel och inte tas med i rapporten.</value>
+  </data>
+  <data name="selectService" xml:space="preserve">
+    <value>Välj en service innan du skickar begäran.</value>
+  </data>
+  <data name="PM" xml:space="preserve">
+    <value>EM</value>
+  </data>
+  <data name="PowerLoss" xml:space="preserve">
+    <value>Strömavbrott</value>
+  </data>
+  <data name="PowerMode" xml:space="preserve">
+    <value>Effektläge</value>
+  </data>
+  <data name="pressure" xml:space="preserve">
+    <value>Tryck</value>
+  </data>
+  <data name="probProcessing" xml:space="preserve">
+    <value>Ett problem uppstod under bearbetningen.</value>
+  </data>
+  <data name="productFamily" xml:space="preserve">
+    <value>Produktfamilj</value>
+  </data>
+  <data name="project" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
+  <data name="overlappingProject" xml:space="preserve">
+    <value>Projekt får inte överlappa varandra både i tid (start- och slutdatum) och i rum (projektgräns).</value>
+  </data>
+  <data name="proofingRun" xml:space="preserve">
+    <value>Testkörning</value>
+  </data>
+  <data name="proximityLoads" xml:space="preserve">
+    <value>Närhedslaster</value>
+  </data>
+  <data name="proximitytoSwitch" xml:space="preserve">
+    <value>Närhet till omkopplare</value>
+  </data>
+  <data name="psi" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="purchaseDate" xml:space="preserve">
+    <value>Köpdatum</value>
+  </data>
+  <data name="rightAbbrev" xml:space="preserve">
+    <value>H</value>
+  </data>
+  <data name="raw" xml:space="preserve">
+    <value>Rådata</value>
+  </data>
+  <data name="reconciled" xml:space="preserve">
+    <value>Sammanjämkad</value>
+  </data>
+  <data name="ReconciledLoadDumpEvent" xml:space="preserve">
+    <value>Sammanjämkad last-/tippningshändelse</value>
+  </data>
+  <data name="recordedBy" xml:space="preserve">
+    <value>Registrerat av</value>
+  </data>
+  <data name="registeredDealer" xml:space="preserve">
+    <value>Registrerad återförsäljare</value>
+  </data>
+  <data name="release" xml:space="preserve">
+    <value>Frigör</value>
+  </data>
+  <data name="rememberMe" xml:space="preserve">
+    <value>Kom ihåg mig</value>
+  </data>
+  <data name="reportDateRange" xml:space="preserve">
+    <value>Rapportens datumintervall</value>
+  </data>
+  <data name="reportGeneratedDate" xml:space="preserve">
+    <value>Datum då rapporten genererades</value>
+  </data>
+  <data name="reportType" xml:space="preserve">
+    <value>Rapporttyp</value>
+  </data>
+  <data name="reportedTime" xml:space="preserve">
+    <value>Rapporteringstid</value>
+  </data>
+  <data name="requestAccess" xml:space="preserve">
+    <value>Begär åtkomst</value>
+  </data>
+  <data name="requestCanceled" xml:space="preserve">
+    <value>Begäran avbröts</value>
+  </data>
+  <data name="requestSentSuccessfully" xml:space="preserve">
+    <value>Begäran om åtkomst har skickats.</value>
+  </data>
+  <data name="abortedDueToPipelineTimeout" xml:space="preserve">
+    <value>Begäran har avbrutits på grund av pipeline-timeout</value>
+  </data>
+  <data name="requestHasBeenCancelled" xml:space="preserve">
+    <value>Begäran har avbrutits</value>
+  </data>
+  <data name="resolved" xml:space="preserve">
+    <value>Löst</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Försök igen</value>
+  </data>
+  <data name="reverse" xml:space="preserve">
+    <value>Bakåt</value>
+  </data>
+  <data name="roadDesign" xml:space="preserve">
+    <value>Vägdesign</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>VPM</value>
+  </data>
+  <data name="running" xml:space="preserve">
+    <value>Drift</value>
+  </data>
+  <data name="runningTotal" xml:space="preserve">
+    <value>Drift (totalt)</value>
+  </data>
+  <data name="runningBurnRate" xml:space="preserve">
+    <value>Bränsleförbrukning vid drift</value>
+  </data>
+  <data name="runningFuelBurned" xml:space="preserve">
+    <value>Bränsleförbr. vid drift</value>
+  </data>
+  <data name="runningUtil" xml:space="preserve">
+    <value>Driftanvändning</value>
+  </data>
+  <data name="runtime" xml:space="preserve">
+    <value>Drifttid</value>
+  </data>
+  <data name="runTimePercentage" xml:space="preserve">
+    <value>Runtime Percentage</value>
+  </data>
+  <data name="sn" xml:space="preserve">
+    <value>Serienr.</value>
+  </data>
+  <data name="sampleDate" xml:space="preserve">
+    <value>Provdatum</value>
+  </data>
+  <data name="satellite" xml:space="preserve">
+    <value>Satellit</value>
+  </data>
+  <data name="requestScheduleFailure" xml:space="preserve">
+    <value>Schemafel</value>
+  </data>
+  <data name="requestScheduleLoadTooHigh" xml:space="preserve">
+    <value>Schemabelastningen är för hög</value>
+  </data>
+  <data name="requestScheduleTimeout" xml:space="preserve">
+    <value>Schema-timeout</value>
+  </data>
+  <data name="schemaExamples" xml:space="preserve">
+    <value>Schemaexempel</value>
+  </data>
+  <data name="scraper" xml:space="preserve">
+    <value>Vägskrapa</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Sök</value>
+  </data>
+  <data name="sec" xml:space="preserve">
+    <value>sek.</value>
+  </data>
+  <data name="secondPoint" xml:space="preserve">
+    <value>Andra punkt</value>
+  </data>
+  <data name="TamperSecurityStatus" xml:space="preserve">
+    <value>Säkerhetsstatus</value>
+  </data>
+  <data name="selectAsset" xml:space="preserve">
+    <value>Välj anordning</value>
+  </data>
+  <data name="selectAssets" xml:space="preserve">
+    <value>Välj anordningar</value>
+  </data>
+  <data name="selectDateRange" xml:space="preserve">
+    <value>Välj datumintervall</value>
+  </data>
+  <data name="selectFuelPercentRemaining" xml:space="preserve">
+    <value>Välj återstående % bränsle</value>
+  </data>
+  <data name="selectGroup" xml:space="preserve">
+    <value>Välj grupp</value>
+  </data>
+  <data name="selectProductFamily" xml:space="preserve">
+    <value>Välj produktfamilj</value>
+  </data>
+  <data name="selectSite" xml:space="preserve">
+    <value>Välj plats</value>
+  </data>
+  <data name="selectedDesign" xml:space="preserve">
+    <value>Vald modell</value>
+  </data>
+  <data name="selectionLimitReached" xml:space="preserve">
+    <value>Urvalsgränsen har nåtts</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Skicka</value>
+  </data>
+  <data name="sensor" xml:space="preserve">
+    <value>Sensor</value>
+  </data>
+  <data name="serialNumber" xml:space="preserve">
+    <value>Serienummer</value>
+  </data>
+  <data name="serverBuildNumber" xml:space="preserve">
+    <value>Serverversionsnummer</value>
+  </data>
+  <data name="service" xml:space="preserve">
+    <value>Service</value>
+  </data>
+  <data name="serviceDate" xml:space="preserve">
+    <value>Servicedatum</value>
+  </data>
+  <data name="ServiceDue" xml:space="preserve">
+    <value>Kommande service</value>
+  </data>
+  <data name="ServiceDueMileageBased" xml:space="preserve">
+    <value>Kommande service (baserat på körsträcka)</value>
+  </data>
+  <data name="serviceDueReport" xml:space="preserve">
+    <value>Rapport om kommande service</value>
+  </data>
+  <data name="MaintenanceHistoryReport" xml:space="preserve">
+    <value>Servicehistorikrapport</value>
+  </data>
+  <data name="serviceInterval" xml:space="preserve">
+    <value>Serviceintervall</value>
+  </data>
+  <data name="serviceIntervalCompleted" xml:space="preserve">
+    <value>Serviceintervall slutfört</value>
+  </data>
+  <data name="serviceIntervals" xml:space="preserve">
+    <value>Serviceintervall</value>
+  </data>
+  <data name="serviceNotes" xml:space="preserve">
+    <value>Serviceanteckningar</value>
+  </data>
+  <data name="serviceStopped" xml:space="preserve">
+    <value>Service stoppad</value>
+  </data>
+  <data name="servicesOffered" xml:space="preserve">
+    <value>Service som erbjuds</value>
+  </data>
+  <data name="sessionExpired" xml:space="preserve">
+    <value>Sessionen avslutades på grund av inaktivitet eller dubbelinloggning.</value>
+  </data>
+  <data name="severity" xml:space="preserve">
+    <value>Allvarsgrad</value>
+  </data>
+  <data name="SavTerminationHeaderForBss" xml:space="preserve">
+    <value>Vyn över delade anordningar för följande anordningar har avslutats på grund av administrativa åtgärder i Trimble Store. Kontakta administratören för {0} om du vill ha mer information.</value>
+  </data>
+  <data name="SavTerminationHeaderForWizard" xml:space="preserve">
+    <value>Vyn över delade anordningar för följande anordningar har avslutats antingen för att den som skapat denna vy har tagit bort den eller för att vyn är utgången.</value>
+  </data>
+  <data name="SavNotificationHeader" xml:space="preserve">
+    <value>Vyn över delade anordningar för följande anordningar går ut {0}.</value>
+  </data>
+  <data name="SharedAssetViewReport" xml:space="preserve">
+    <value>Rapport för vy över delade anordningar</value>
+  </data>
+  <data name="sharedToOrganization" xml:space="preserve">
+    <value>Delas med organisationen</value>
+  </data>
+  <data name="shrinkage" xml:space="preserve">
+    <value>Volymminskning</value>
+  </data>
+  <data name="SimCardRemovedTimerExpired" xml:space="preserve">
+    <value>SIM-kort borttaget</value>
+  </data>
+  <data name="site" xml:space="preserve">
+    <value>Plats</value>
+  </data>
+  <data name="siteBoundary" xml:space="preserve">
+    <value>Platsgräns</value>
+  </data>
+  <data name="SiteEntry" xml:space="preserve">
+    <value>Platsingång</value>
+  </data>
+  <data name="siteAlertsWarning" xml:space="preserve">
+    <value>Platsingångs- eller platsutgångshändelser härleds från lägesangivelser som tas emot från maskinen. Dessa händelser kan vara försenade eller saknas beroende på när maskinen rapporterar läget.</value>
+  </data>
+  <data name="SiteEntryOrExit" xml:space="preserve">
+    <value>Platsingång eller -utgång</value>
+  </data>
+  <data name="siteEntryOutsideReportDateRange" xml:space="preserve">
+    <value>Platsingång utanför rapportens datumintervall</value>
+  </data>
+  <data name="SiteExit" xml:space="preserve">
+    <value>Platsutgång</value>
+  </data>
+  <data name="siteExitOutsideReportDateRange" xml:space="preserve">
+    <value>Platsutgång utanför rapportens datumintervall</value>
+  </data>
+  <data name="siteName" xml:space="preserve">
+    <value>Platsnamn</value>
+  </data>
+  <data name="SiteRuntime" xml:space="preserve">
+    <value>Platskörtidrapport</value>
+  </data>
+  <data name="siteRuntimeReport" xml:space="preserve">
+    <value>Platskörtidrapport</value>
+  </data>
+  <data name="sitetoSite" xml:space="preserve">
+    <value>Plats till plats</value>
+  </data>
+  <data name="sites" xml:space="preserve">
+    <value>Platser</value>
+  </data>
+  <data name="toManyPoints" xml:space="preserve">
+    <value>Platser kan innehålla högst 50 punkter.</value>
+  </data>
+  <data name="skipped" xml:space="preserve">
+    <value>Hoppades över</value>
+  </data>
+  <data name="smuLocation" xml:space="preserve">
+    <value>SMU-läge</value>
+  </data>
+  <data name="deviceTypeSNM451" xml:space="preserve">
+    <value>SNM451</value>
+  </data>
+  <data name="errorMessage" xml:space="preserve">
+    <value>Ett problem uppstod när din begäran skulle bearbetas. Försök igen.</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Källa</value>
+  </data>
+  <data name="Speeding" xml:space="preserve">
+    <value>Snabbkörning</value>
+  </data>
+  <data name="sqft" xml:space="preserve">
+    <value>Kvadratfot</value>
+  </data>
+  <data name="sqm" xml:space="preserve">
+    <value>kvm</value>
+  </data>
+  <data name="SS" xml:space="preserve">
+    <value>SS</value>
+  </data>
+  <data name="standardMode" xml:space="preserve">
+    <value>Standardläge</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Starta</value>
+  </data>
+  <data name="startDate" xml:space="preserve">
+    <value>Startdatum</value>
+  </data>
+  <data name="startHourMeter" xml:space="preserve">
+    <value>Timmätarstart</value>
+  </data>
+  <data name="startLocation" xml:space="preserve">
+    <value>Startläge</value>
+  </data>
+  <data name="startMode" xml:space="preserve">
+    <value>Startläge</value>
+  </data>
+  <data name="startSpeedDateTime" xml:space="preserve">
+    <value>Starthastighet datum och tid</value>
+  </data>
+  <data name="startSpeedLocation" xml:space="preserve">
+    <value>Starthastighet plats</value>
+  </data>
+  <data name="startTime" xml:space="preserve">
+    <value>Starttid</value>
+  </data>
+  <data name="StateMileageReport" xml:space="preserve">
+    <value>Körsträcka per stat</value>
+  </data>
+  <data name="stateProvince" xml:space="preserve">
+    <value>Stat/provins</value>
+  </data>
+  <data name="state" xml:space="preserve">
+    <value>StateWise</value>
+  </data>
+  <data name="station" xml:space="preserve">
+    <value>Station</value>
+  </data>
+  <data name="StationOffset" xml:space="preserve">
+    <value>Stations-offset-rapport</value>
+  </data>
+  <data name="stationOffsetReport" xml:space="preserve">
+    <value>Stations-offset-rapport</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="stn" xml:space="preserve">
+    <value>Stn</value>
+  </data>
+  <data name="stop" xml:space="preserve">
+    <value>Stoppa</value>
+  </data>
+  <data name="stopLocation" xml:space="preserve">
+    <value>Stopplats</value>
+  </data>
+  <data name="stopSpeedDateTime" xml:space="preserve">
+    <value>Stopphastighet datum och tid</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Godkänt</value>
+  </data>
+  <data name="suggestUsingTargetOverride" xml:space="preserve">
+    <value>Föreslå användning av en inställning som åsidosätter mål.</value>
+  </data>
+  <data name="SummaryData" xml:space="preserve">
+    <value>Sammanfattningsdata</value>
+  </data>
+  <data name="summaryOfLoadsByHaulDistance" xml:space="preserve">
+    <value>Sammanfattning av laster efter transportavstånd</value>
+  </data>
+  <data name="summaryVolumes" xml:space="preserve">
+    <value>Sammanfattningsvolymer</value>
+  </data>
+  <data name="summaryVolumesReport" xml:space="preserve">
+    <value>Rapport om sammanfattning av volymer</value>
+  </data>
+  <data name="surplusDeficitVolume" xml:space="preserve">
+    <value>Överskotts-/underskottsvolym</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>Omkopplare</value>
+  </data>
+  <data name="switchClosed" xml:space="preserve">
+    <value>Omkopplare stängd</value>
+  </data>
+  <data name="switchName" xml:space="preserve">
+    <value>Omkopplarens namn</value>
+  </data>
+  <data name="switchOn" xml:space="preserve">
+    <value>Omkopplare på</value>
+  </data>
+  <data name="switchOpen" xml:space="preserve">
+    <value>Omkopplare öppen</value>
+  </data>
+  <data name="switchtoSiteorSitetoSwitch" xml:space="preserve">
+    <value>Omkopplare till plats eller plats till omkopplare</value>
+  </data>
+  <data name="switchtoSwitch" xml:space="preserve">
+    <value>Omkopplare till omkopplare</value>
+  </data>
+  <data name="tagfileLiftNumber" xml:space="preserve">
+    <value>Taggfil, lyftnummer</value>
+  </data>
+  <data name="tamperResistance" xml:space="preserve">
+    <value>Ändringsskydd</value>
+  </data>
+  <data name="TamperResolvedConnectiontoOffBoard" xml:space="preserve">
+    <value>Ändring löst</value>
+  </data>
+  <data name="TamperUninstalled" xml:space="preserve">
+    <value>Ändring avinstallerad</value>
+  </data>
+  <data name="deviceTypeTAP66" xml:space="preserve">
+    <value>TAP66</value>
+  </data>
+  <data name="target" xml:space="preserve">
+    <value>Mål</value>
+  </data>
+  <data name="targetCMV" xml:space="preserve">
+    <value>CMV-mål</value>
+  </data>
+  <data name="targetCMVRange" xml:space="preserve">
+    <value>CMV-målintervall</value>
+  </data>
+  <data name="targetMDP" xml:space="preserve">
+    <value>Mål-MDP</value>
+  </data>
+  <data name="targetMDPRange" xml:space="preserve">
+    <value>Mål-MDP-intervall</value>
+  </data>
+  <data name="targetPassCount" xml:space="preserve">
+    <value>Mål för passeringsantal</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Temperatur</value>
+  </data>
+  <data name="temperatureReport" xml:space="preserve">
+    <value>Temperaturrapport</value>
+  </data>
+  <data name="terrain" xml:space="preserve">
+    <value>Terräng</value>
+  </data>
+  <data name="aempInformation" xml:space="preserve">
+    <value>Med AEMP-information kan användaren få åtkomst till sin vagnparks ögonblicksbilddata för att göra allmänna trend- och dataanalyser.</value>
+  </data>
+  <data name="assetUtilizationDescription" xml:space="preserve">
+    <value>Med API:t för anordningsanvändning hämtas informationen om anordningsanvändning (till exempel tomgångstid, arbetstid, osv.) för varje enskild anordning i vagnparken som stöder användning. För att dataflödet ska bli tillgängligt för alla anordningar måste de ha en giltig grund- och funktionsstatusserviceplan för den aktuella perioden.</value>
+  </data>
+  <data name="assetsDescription" xml:space="preserve">
+    <value>Anordnings-API:t är helt enkelt listan över alla anordningar i din vagnpark. Via detta API får du mer detaljerad information (det vill säga om produktfamilj, tillverkningsår, enhetstyp och serienummer, osv.) om varje enskild anordning i vagnparken.</value>
+  </data>
+  <data name="dcToIRecDatumFailedToLoad" xml:space="preserve">
+    <value>CSIB-data lästes inte in (DCToIRecord converter)</value>
+  </data>
+  <data name="fleetSummaryDescription" xml:space="preserve">
+    <value>Parköversikt-dataflödet ger en allmän överblick över din vagnparks aktuella status. Det innehåller information om till exempel SMU-läge, körd sträcka, rapporteringsstatus och läge för varje anordning i din vagnpark.</value>
+  </data>
+  <data name="unsubscribedAssets" xml:space="preserve">
+    <value>Följande anordningar stöds inte för denna rapport för det valda tidsintervallet. Felkodssammanfattningsinformation är bara tillgänglig för PL321- och 522/523-enheter med en aktiv Cat® Health-serviceplan.</value>
+  </data>
+  <data name="noReportDataAssets" xml:space="preserve">
+    <value>Följande tillgångar bidrog inte med några data till denna rapport</value>
+  </data>
+  <data name="reportDataAssets" xml:space="preserve">
+    <value>Följande tillgångar har bidragit med data till denna rapport</value>
+  </data>
+  <data name="noDataAssets" xml:space="preserve">
+    <value>Följande anordningar har inga data</value>
+  </data>
+  <data name="noDataSites" xml:space="preserve">
+    <value>Följande platser har inga data</value>
+  </data>
+  <data name="fuelUtilizationDescription" xml:space="preserve">
+    <value>Med API:t för bränsleanvändning hämtas informationen om bränsleanvändning (till exempel bränsleförbrukning, arbetsbränsleförbrukning, osv.) för varje enskild anordning i vagnparken som stöder användning. För att dataflödet ska bli tillgängligt för alla anordningar måste de ha en giltig grund- och funktionsstatusserviceplan för den aktuella perioden.</value>
+  </data>
+  <data name="invalidUser003" xml:space="preserve">
+    <value>Det angivna lösenordet är felaktigt.\nDitt konto har låsts, försök igen om 30 minuter.</value>
+  </data>
+  <data name="invalidUser001" xml:space="preserve">
+    <value>Användarnamnet eller lösenordet du angav är felaktigt.</value>
+  </data>
+  <data name="erroneousFuel" xml:space="preserve">
+    <value>{0} rapporterade oväntad bränsleåtgång för tidsperioden.</value>
+  </data>
+  <data name="erroneousIdleTime" xml:space="preserve">
+    <value>{0} rapporterade oväntad tomgångstid för tidsperioden.</value>
+  </data>
+  <data name="erroneousRuntime" xml:space="preserve">
+    <value>{0} rapporterade oväntad drifttid för tidsperioden.</value>
+  </data>
+  <data name="erroneousWorkingTime" xml:space="preserve">
+    <value>{0} rapporterade oväntad arbetstid för tidsperioden.</value>
+  </data>
+  <data name="issueSendingEmail" xml:space="preserve">
+    <value>Ett problem uppstod när e-postmeddelandet skulle skickas. Kontakta administratören.</value>
+  </data>
+  <data name="InvalidUserAccess" xml:space="preserve">
+    <value>Detta konto är inte konfigurerat för VisionLink-klientåtkomst. Var god använd en annan inloggning eller kontakta support.</value>
+  </data>
+  <data name="assetOperationDescription" xml:space="preserve">
+    <value>Denna slutpunkt ger information om anordningsdriften av typen arbetstid och tomgångstid när arbetsdefinitioner används för beräkning av användningsinformation. För att dataflödet ska bli tillgängligt för alla anordningar måste de ha en giltig grund- och funktionsstatusserviceplan för den aktuella perioden.</value>
+  </data>
+  <data name="requiredField" xml:space="preserve">
+    <value>Det här fältet måste fyllas i.</value>
+  </data>
+  <data name="incompleteLoadError" xml:space="preserve">
+    <value>Detta är en ofullständig lastning - maskinvarudatafel</value>
+  </data>
+  <data name="incompleteLoadNoDump" xml:space="preserve">
+    <value>Detta är en ofullständig lastning - ingen tipptid hittades</value>
+  </data>
+  <data name="incompleteLoadNoLoad" xml:space="preserve">
+    <value>Detta är en ofullständig lastning - ingen lastningstid hittades</value>
+  </data>
+  <data name="incompleteLoad" xml:space="preserve">
+    <value>Detta är ett ufullständigt lastantal</value>
+  </data>
+  <data name="TrimbleOperationsReportDescription" xml:space="preserve">
+    <value>This report provides the list of users and their details, who fall under the category of Corporate.</value>
+  </data>
+  <data name="InActiveSchedule" xml:space="preserve">
+    <value>Denna schemalagda rapport är ogiltig. Kontakta din VisionLink-administratör om du vill redigera den här rapporten.</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Tid</value>
+  </data>
+  <data name="geolocationTimeout" xml:space="preserve">
+    <value>Timeout vid hämtning av läge.</value>
+  </data>
+  <data name="timedOut" xml:space="preserve">
+    <value>Tidsgränsen uppnåddes</value>
+  </data>
+  <data name="TireMonitoring" xml:space="preserve">
+    <value>Däckövervakning</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="deviceTypeTM3000" xml:space="preserve">
+    <value>TM3000</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>I dag</value>
+  </data>
+  <data name="ton" xml:space="preserve">
+    <value>Ton (US)</value>
+  </data>
+  <data name="tonne" xml:space="preserve">
+    <value>Ton</value>
+  </data>
+  <data name="tooThickLayer" xml:space="preserve">
+    <value>För tjockt lager</value>
+  </data>
+  <data name="topSurface" xml:space="preserve">
+    <value>Översta ytan</value>
+  </data>
+  <data name="topCyclesPerHour" xml:space="preserve">
+    <value>Högst {0} - Cykler/timme (totalt)</value>
+  </data>
+  <data name="topPayloadPerCycle" xml:space="preserve">
+    <value>Högst {0} - Nyttolast/cykel (totalt)</value>
+  </data>
+  <data name="topPayloadPerHour" xml:space="preserve">
+    <value>Högst {0} - Nyttolast/timme (totalt)</value>
+  </data>
+  <data name="total" xml:space="preserve">
+    <value>Totalt</value>
+  </data>
+  <data name="totalAreaCovered" xml:space="preserve">
+    <value>Totalt täckt område</value>
+  </data>
+  <data name="totalCutVolume" xml:space="preserve">
+    <value>Total schaktningsvolym</value>
+  </data>
+  <data name="totalDistance" xml:space="preserve">
+    <value>Total sträcka</value>
+  </data>
+  <data name="totalFillVolume" xml:space="preserve">
+    <value>Total fyllningsvolym</value>
+  </data>
+  <data name="totalFuel" xml:space="preserve">
+    <value>Total bränslemängd</value>
+  </data>
+  <data name="totalHoursByAsset" xml:space="preserve">
+    <value>Totalt antal timmar per anordning</value>
+  </data>
+  <data name="totalIdleEvents" xml:space="preserve">
+    <value>Totalt antal tomgångshändelser</value>
+  </data>
+  <data name="totalIdleTime" xml:space="preserve">
+    <value>Total tomgångstid</value>
+  </data>
+  <data name="totalLoads" xml:space="preserve">
+    <value>Totalt antal laster</value>
+  </data>
+  <data name="totalMachineCovPlan" xml:space="preserve">
+    <value>Totalt maskintäckningsplanområde</value>
+  </data>
+  <data name="totalRuntime" xml:space="preserve">
+    <value>Total drifttid</value>
+  </data>
+  <data name="totalTime" xml:space="preserve">
+    <value>Total tidsåtgång</value>
+  </data>
+  <data name="totalVolume" xml:space="preserve">
+    <value>Totalvolym</value>
+  </data>
+  <data name="totals" xml:space="preserve">
+    <value>Totalt</value>
+  </data>
+  <data name="trackMapping" xml:space="preserve">
+    <value>Spåra kartläggning</value>
+  </data>
+  <data name="transmissionOilTemperature" xml:space="preserve">
+    <value>Transmission Oil Temperature</value>
+  </data>
+  <data name="transmissionOilTemperatureHeader" xml:space="preserve">
+    <value>Transmission Oil Temperature Report</value>
+  </data>
+  <data name="travel" xml:space="preserve">
+    <value>Körning</value>
+  </data>
+  <data name="truck" xml:space="preserve">
+    <value>Lastbil</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Typ</value>
+  </data>
+  <data name="ucid" xml:space="preserve">
+    <value>UCID</value>
+  </data>
+  <data name="invalidSessionID" xml:space="preserve">
+    <value>Det gick inte att autentisera med angivet sessions-ID. Logga in.</value>
+  </data>
+  <data name="dcToIRecFailedToCreateCSIBObject" xml:space="preserve">
+    <value>Det gick inte att skapa ett ICSIB-objekt (DCToIRecord converter)</value>
+  </data>
+  <data name="unableToDetermineDataModel" xml:space="preserve">
+    <value>Det gick inte att fastställa datamodellen.</value>
+  </data>
+  <data name="unableToDetermineMachine" xml:space="preserve">
+    <value>Det gick inte att fastställa maskinen.</value>
+  </data>
+  <data name="UnableToDetermineProjectID" xml:space="preserve">
+    <value>Det går inte att fastställa projekt-ID</value>
+  </data>
+  <data name="dcToIRecFailedToGetZoneParams" xml:space="preserve">
+    <value>Det gick inte att hämta zonparametrar (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneParams" xml:space="preserve">
+    <value>Det gick inte att ställa in zonparametrar (DCToIRecord converter)</value>
+  </data>
+  <data name="underCompacted" xml:space="preserve">
+    <value>Underpackad</value>
+  </data>
+  <data name="undercompactedLayer" xml:space="preserve">
+    <value>Underpackat lager</value>
+  </data>
+  <data name="minLevel" xml:space="preserve">
+    <value>Under miniminivån</value>
+  </data>
+  <data name="underPassTarget" xml:space="preserve">
+    <value>Under passeringsantal</value>
+  </data>
+  <data name="UnderPressure" xml:space="preserve">
+    <value>För lågt tryck</value>
+  </data>
+  <data name="unexpectedError" xml:space="preserve">
+    <value>Oväntat fel</value>
+  </data>
+  <data name="erroneousFuelExcluded" xml:space="preserve">
+    <value>Oväntad bränsleåtgång som rapporterades av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="erroneousFuelOrIdleTimeExcluded" xml:space="preserve">
+    <value>Oväntad tomgångstid och/eller bränsleåtgång som rapporterats av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="erroneousIdleTimeExcluded" xml:space="preserve">
+    <value>Oväntad tomgångstid som rapporterats av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="erroneousFuelOrRuntimeExcluded" xml:space="preserve">
+    <value>Oväntad drifttid och/eller bränsleåtgång som rapporterats av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="erroneousRuntimeExcluded" xml:space="preserve">
+    <value>Oväntad drifttid som rapporterats av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="erroneousFuelOrWorkingTimeExcluded" xml:space="preserve">
+    <value>Oväntad arbetstid och/eller bränsleåtgång som rapporterats av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="erroneousWorkingOrRuntimeExcluded" xml:space="preserve">
+    <value>Oväntad arbetstid eller drifttid som rapporterats av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="erroneousWorkingTimeExcluded" xml:space="preserve">
+    <value>Oväntad arbetstid som rapporterats av {0} har tagits bort från denna beräkning.</value>
+  </data>
+  <data name="universalCustomer" xml:space="preserve">
+    <value>Universell kund</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Okänt</value>
+  </data>
+  <data name="dcToIRecUnknownCSType" xml:space="preserve">
+    <value>Okänd koordinatsystemtyp (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnknownDatumModel" xml:space="preserve">
+    <value>Okänd datumjustering hittades och ignorerades (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownError" xml:space="preserve">
+    <value>Ett okänt fel uppstod</value>
+  </data>
+  <data name="geolocationUnknownError" xml:space="preserve">
+    <value>Okänt fel vid hämtning av läge.</value>
+  </data>
+  <data name="dcToIRecUnknownGeoidModel" xml:space="preserve">
+    <value>En okänd geoidmodell hittades och ignorerades (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownMachine" xml:space="preserve">
+    <value>Okänd maskin.</value>
+  </data>
+  <data name="dcToIRecUnknownProjType" xml:space="preserve">
+    <value>Okänd projektionstyp (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownTagfileError" xml:space="preserve">
+    <value>Okänt taggfilsfel</value>
+  </data>
+  <data name="Unsubscribe" xml:space="preserve">
+    <value>Avsluta prenumerationen</value>
+  </data>
+  <data name="UnsubscribeConfirmation" xml:space="preserve">
+    <value>Bekräftelse av avslutad prenumeration</value>
+  </data>
+  <data name="unsupportedCSDFileType" xml:space="preserve">
+    <value>Filtypen för koordinatsystemsdefinition stöds inte</value>
+  </data>
+  <data name="dcToIRecUnsupportedDatum" xml:space="preserve">
+    <value>Datum stöds inte (DCToIRecord converter)</value>
+  </data>
+  <data name="unsupportedDisplayType" xml:space="preserve">
+    <value>Visningstypen stöds inte</value>
+  </data>
+  <data name="unsupportedFilterAttribute" xml:space="preserve">
+    <value>Filterattributet stöds inte</value>
+  </data>
+  <data name="dcToIRecUnsupportedGeoid" xml:space="preserve">
+    <value>Geoiden stöds inte (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnsupportedZoneOrientation" xml:space="preserve">
+    <value>Zonorienteringen stöds inte (DCToIRecord converter)</value>
+  </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>Kommande</value>
+  </data>
+  <data name="update" xml:space="preserve">
+    <value>Uppdatera</value>
+  </data>
+  <data name="updateMeter" xml:space="preserve">
+    <value>Uppdatera mätare</value>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>Användning</value>
+  </data>
+  <data name="useCurrentSelection" xml:space="preserve">
+    <value>Använd aktuellt urval</value>
+  </data>
+  <data name="userAccountsReportHeader" xml:space="preserve">
+    <value>Användarkontorapport</value>
+  </data>
+  <data name="userActivity" xml:space="preserve">
+    <value>Användaraktivitet</value>
+  </data>
+  <data name="userDefinedPolygon" xml:space="preserve">
+    <value>Användardefinierad polygon</value>
+  </data>
+  <data name="geolocationPermissionDenied" xml:space="preserve">
+    <value>Användaren nekades användning av läget.</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Användaren finns inte. Kontakta din administratör.</value>
+  </data>
+  <data name="UserPrivilegesReport" xml:space="preserve">
+    <value>Rapport för användarprivilegier</value>
+  </data>
+  <data name="userType" xml:space="preserve">
+    <value>Användartyp</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Användarnamn</value>
+  </data>
+  <data name="invalidUsernameOrPassword" xml:space="preserve">
+    <value>Användarnamnet eller lösenordet är ogiltigt. Försök igen.</value>
+  </data>
+  <data name="utilizationCalloutsExistInData" xml:space="preserve">
+    <value>Användningskommentarer finns i data</value>
+  </data>
+  <data name="utilizationHours" xml:space="preserve">
+    <value>Användningstimmar</value>
+  </data>
+  <data name="ValidMSSKey" xml:space="preserve">
+    <value>Giltig MSS-nyckel</value>
+  </data>
+  <data name="dateRangeCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Värdet innehåller data som befinner sig utanför det valda datumintervallet</value>
+  </data>
+  <data name="singleDayCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Värdet innehåller data som befinner sig utanför den angivna dagen</value>
+  </data>
+  <data name="mustBeUnformattedInteger" xml:space="preserve">
+    <value>Värdet måste representeras som ett heltal som inte innehåller kommatecken eller decimaler.</value>
+  </data>
+  <data name="varies" xml:space="preserve">
+    <value>Varierar</value>
+  </data>
+  <data name="emailVerified" xml:space="preserve">
+    <value>Verifieringsstatus</value>
+  </data>
+  <data name="verified" xml:space="preserve">
+    <value>Verifierad</value>
+  </data>
+  <data name="vibeState" xml:space="preserve">
+    <value>Vibrationsstatus</value>
+  </data>
+  <data name="fuelLevelSummary" xml:space="preserve">
+    <value>Visa anordningar som behöver tankas</value>
+  </data>
+  <data name="faultCodesSummary" xml:space="preserve">
+    <value>Visa felkoder för anordningar</value>
+  </data>
+  <data name="utilizationHoursSummary" xml:space="preserve">
+    <value>Visa användningstimmar</value>
+  </data>
+  <data name="AlertsSummary" xml:space="preserve">
+    <value>Visa öppna larm för en anordning</value>
+  </data>
+  <data name="fuelBurnSummary" xml:space="preserve">
+    <value>Visa nyligen inträffad bränsleanvändning för anordningar</value>
+  </data>
+  <data name="vin" xml:space="preserve">
+    <value>Chassinummer</value>
+  </data>
+  <data name="VisionLinkOperationsReport" xml:space="preserve">
+    <value>VisionLink - Verksamhetsrapport</value>
+  </data>
+  <data name="EngineIdleDailyAlertMessageBodySMS" xml:space="preserve">
+    <value>Larmkonto för VisionLink: {0} Dagligt antal tomgångstimmar {1} för {2}/{3} vid {4} timmätare {5}</value>
+  </data>
+  <data name="SpeedingAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larmkonto: {0} {1}, Maxhastighet: {2} mph för {3}/{4}. Tid för stopp för fortkörning {5}</value>
+  </data>
+  <data name="SwitchAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larm                                                                                              Konto: {4}                                                                                                    Omkopplardetaljer för {0}/{1} vid {2}                                                              {3}</value>
+  </data>
+  <data name="AlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larm  Konto: {4}  {0} för {1}/{2} på {3} Timmätare: {5}</value>
+  </data>
+  <data name="SecurityStatusAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larm  Konto: {4}  {0} för {1}/{2} på {3} Timmätare: {5}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larm  Konto: {5} {0} för {1}/{2} vid tidpunkten {3} {4} Timmätare: {6}</value>
+  </data>
+  <data name="FaultAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larm  Konto: {5}  {0} för {1}/{2} på {3}  {4} Allvarsgrad: {7} Timmätare: {6}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larm  Konto: {5}  {0} för {1}/{2}. {3} infaller om {4} timmar. Timmätare: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-larm Konto: {5} {0} för {1}/{2}. {3} infaller om {4} miles.</value>
+  </data>
+  <data name="AlertSubject" xml:space="preserve">
+    <value>VisionLink-larm {0} för ID: {1} serienr.: {2}</value>
+  </data>
+  <data name="ApiUserEmailSubject" xml:space="preserve">
+    <value>Hjälp för VisionLink API-åtkomst</value>
+  </data>
+  <data name="visionLinkApiDocumentation" xml:space="preserve">
+    <value>VisionLink-API-dokumentation</value>
+  </data>
+  <data name="visionLinkApiTopics" xml:space="preserve">
+    <value>VisionLink-API-avsnitt</value>
+  </data>
+  <data name="visionLinkApiTopicsRequestAccess" xml:space="preserve">
+    <value>VisionLink-API-avsnitt: Begär åtkomst</value>
+  </data>
+  <data name="visionLinkAPIDatafeedDocumentation" xml:space="preserve">
+    <value>VisionLink-API: Dataflödesdokumentation</value>
+  </data>
+  <data name="VLApp" xml:space="preserve">
+    <value>VisionLink-applikationer</value>
+  </data>
+  <data name="FluidAnalysisAlertSubject" xml:space="preserve">
+    <value>VisionLink-vätskeanalysresultat för ID: {0} serienr.: {1}</value>
+  </data>
+  <data name="locationUnknownFeatureDisabled" xml:space="preserve">
+    <value>VisionLink har inte fastställt ditt läge. Den här funktionen har inaktiverats. Försök igen senare.</value>
+  </data>
+  <data name="SavTerminationSubject" xml:space="preserve">
+    <value>VisionLink-meddelande - Vy över delade anordningar avslutad</value>
+  </data>
+  <data name="ForgotPasswordEmailSubject" xml:space="preserve">
+    <value>VisionLink-lösenordshjälp</value>
+  </data>
+  <data name="vlReadyAPITopicsDescription" xml:space="preserve">
+    <value>Med VisionLink-klara API:er kan du använda dina VisionLink-relaterade data i ett dataflödesformat utformat för enkel åtkomst med tredjepartsverktyg. VL-klara API:er används ofta av återförsäljare, kunder och integratörer som vill integrera VisionLink-relaterade data i sina ERP-system, bokföringssystem eller andra tredjepartssystem. Mer information om VL-klara API:er finns i &lt;a href="/Docs/{0}/VisionLink VL-Ready User Guide.pdf" class="contentLink" target="_blank"&gt;VL Ready User Guide&lt;/a&gt;.</value>
+  </data>
+  <data name="SavCreationSubject" xml:space="preserve">
+    <value>VisionLink-vy över delade anordningar skapad av {0}</value>
+  </data>
+  <data name="SavNotificationSubject" xml:space="preserve">
+    <value>Meddelande om utgången VisionLink-vy över delade anordningar</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>VisionLink-däckövervakningslarm  Konto: {0}  {1}/{2} på {3} Timmätare: {4}</value>
+  </data>
+  <data name="UserAccountReportTitle" xml:space="preserve">
+    <value>VisionLink-användarkontorapport</value>
+  </data>
+  <data name="UserAccountsReport" xml:space="preserve">
+    <value>VisionLink User Account Report</value>
+  </data>
+  <data name="VerifyUserEmailSubject" xml:space="preserve">
+    <value>VisionLink-användarkontoverifikation</value>
+  </data>
+  <data name="vlReadyAPITopics" xml:space="preserve">
+    <value>Avsnitt om VL-klara API:er</value>
+  </data>
+  <data name="vlmobileClient" xml:space="preserve">
+    <value>VLMobile-klient</value>
+  </data>
+  <data name="volume" xml:space="preserve">
+    <value>Volym</value>
+  </data>
+  <data name="VolumesAndCompaction" xml:space="preserve">
+    <value>Volymer och packning</value>
+  </data>
+  <data name="warningTargetDataSometimesAbsent" xml:space="preserve">
+    <value>Varning! måldata saknas ibland.</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Veckans</value>
+  </data>
+  <data name="firstTimeLogin" xml:space="preserve">
+    <value>Välkommen till VisionLink. Var god logga in på www.myvisionlink.com för att ändra ditt lösenord.</value>
+  </data>
+  <data name="NewAccountEmailSubject" xml:space="preserve">
+    <value>Välkommen till VisionLink. Registrera ditt konto.</value>
+  </data>
+  <data name="wheelTracking" xml:space="preserve">
+    <value>Hjulspårning</value>
+  </data>
+  <data name="withinLevels" xml:space="preserve">
+    <value>Inom nivåerna</value>
+  </data>
+  <data name="workInProgress" xml:space="preserve">
+    <value>Arbete pågår</value>
+  </data>
+  <data name="working" xml:space="preserve">
+    <value>Arbete</value>
+  </data>
+  <data name="workingFuelBurned" xml:space="preserve">
+    <value>Arbetsbränsleåtgång</value>
+  </data>
+  <data name="workingHours" xml:space="preserve">
+    <value>Arbetstimmar</value>
+  </data>
+  <data name="workingStatus" xml:space="preserve">
+    <value>Arbetsstatus</value>
+  </data>
+  <data name="workingTime" xml:space="preserve">
+    <value>Arbetstid</value>
+  </data>
+  <data name="workingUtil" xml:space="preserve">
+    <value>Arbetsanvändning</value>
+  </data>
+  <data name="AlreadyUnsubscribe" xml:space="preserve">
+    <value>Du har redan avslutat prenumerationen på den här rapporten.</value>
+  </data>
+  <data name="UnsubscribeConfirmationMessage" xml:space="preserve">
+    <value>Du har begärt att din prenumeration på den schemalagda rapporten "{0}" ska avslutas. Bekräfta genom att klicka på OK. Om du inte gör något kommer prenumerationen till din e-postadress inte att avslutas.</value>
+  </data>
+  <data name="accountLocked" xml:space="preserve">
+    <value>Ditt konto har låsts. Försök igen om 30 minuter.</value>
+  </data>
+  <data name="invalidUser002" xml:space="preserve">
+    <value>Ditt konto har låsts. Försök igen om 30 minuter.</value>
+  </data>
+  <data name="UnsubscribeSuccessMessage" xml:space="preserve">
+    <value>Prenumerationen på "{0}" till din e-postadress har avslutats.</value>
+  </data>
+  <data name="passwordExpired" xml:space="preserve">
+    <value>Ditt lösenord har upphört. Var god logga in på www.myvisionlink.com för att ändra ditt lösenord.</value>
+  </data>
+  <data name="selectionLimitReachedMessage" xml:space="preserve">
+    <value>Ditt urval överskred systemets gräns. Detta urval kommer att begränsas till {0} anordningar.</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zon</value>
+  </data>
+  <data name="zoneExclusive" xml:space="preserve">
+    <value>Zonuteslutande</value>
+  </data>
+  <data name="zoneInclusive" xml:space="preserve">
+    <value>Zoninkluderande</value>
+  </data>
+  <data name="exceedsMaximumValue" xml:space="preserve">
+    <value>{0} överskrider det högsta tillåtna värdet</value>
+  </data>
+  <data name="requiredFieldWithName" xml:space="preserve">
+    <value>{0} är ett obligatoriskt fält.</value>
+  </data>
+  <data name="mustBeNumber" xml:space="preserve">
+    <value>{0} måste vara ett numeriskt värde.</value>
+  </data>
+  <data name="mustBeValidDate" xml:space="preserve">
+    <value>{0} måste vara ett giltigt datum.</value>
+  </data>
+  <data name="mustBeBetweenXandY" xml:space="preserve">
+    <value>{0} måste vara mellan {1} och {2}.</value>
+  </data>
+  <data name="mustBeLessThanXCharacters" xml:space="preserve">
+    <value>{0} måste ha färre än {1} tecken.</value>
+  </data>
+  <data name="mustNotBeInTheFuture" xml:space="preserve">
+    <value>{0} får inte ligga i framtiden.</value>
+  </data>
+  <data name="ServiceDueAlertDescription" xml:space="preserve">
+    <value>{0} Kommande service vid</value>
+  </data>
+</root>

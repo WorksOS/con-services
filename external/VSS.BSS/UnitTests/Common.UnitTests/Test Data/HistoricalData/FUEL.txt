@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<fuel:topic xmlns:fuel="http://www.cat.com/em/feed/v3/Fuel" xmlns:feed="http://www.cat.com/em/feed/v3/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v3/Fuel https://emfeed.cat.com/EMFeedFiles/schema/v3/Fuel.xsd">
+<nextBuffer>
+<url></url>
+<moreData>false</moreData>
+</nextBuffer>
+
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315420</masterMsgId>
+         <equipment>
+            <serialNumber>-MWP02718</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200079955DQ1</moduleCode>
+         <moduleTime>2009-09-16 23:49:14</moduleTime>
+         <receivedTime>2009-09-17 05:00:13</receivedTime>
+      </header>
+      <consumption>
+         <value>73290</value>
+         <uom>Gallons</uom>
+      </consumption>
+      <level>
+         <value>62</value>
+         <uom>Percentage</uom>
+      </level>
+   </message>
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315434</masterMsgId>
+         <equipment>
+            <serialNumber>-N1A01456</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200020816Q1</moduleCode>
+         <moduleTime>2009-09-16 23:26:59</moduleTime>
+         <receivedTime>2009-09-17 05:00:21</receivedTime>
+      </header>
+      <consumption>
+         <value>132745</value>
+         <uom>Gallons</uom>
+      </consumption>
+      <level>
+         <value>56</value>
+         <uom>Percentage</uom>
+      </level>
+   </message>
+ </fuel:topic>

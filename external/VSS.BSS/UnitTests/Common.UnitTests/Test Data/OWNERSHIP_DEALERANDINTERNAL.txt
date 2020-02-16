@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<equipmentData:equipments xmlns:equipmentData="http://www.cat.com/equipmentdata/v2/EquipmentData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/equipmentdata/v2/EquipmentData https://equipmentdatamc.rd.cat.com:443/EquipmentDataServices/schema/v2/EquipmentData.xsd">
+   <NextBuffer>
+      <url>https://equipmentdatamc.rd.cat.com:443/EquipmentDataServices/rest/v2/equipments/all/2522</url>
+      <moreData>true</moreData>
+   </NextBuffer>  
+   <equipment>
+      <serialNumber>930840</serialNumber>
+      <make>
+         <code>CAT</code>
+      </make>
+      <equipmentOwners>
+         <inConflict>false</inConflict> 
+			<equipmentOwner>
+				<dealerCustomer>
+					<dealer>
+					  <code>TD999</code> 
+					  <name>Test Demo Dealer</name> 
+					</dealer>
+					<customer>
+					  <id>12345</id> 
+					  <name>Test Internal Customer</name> 
+					  <isInternal>true</isInternal> 
+					</customer>
+				  <accountNumber>6789</accountNumber> 
+				  <accountName>Test Internal Account</accountName> 
+				</dealerCustomer>
+			    <ownershipTypeCode>R</ownershipTypeCode> 
+				<jobsite>1</jobsite> 
+		</equipmentOwner>
+      </equipmentOwners>
+   </equipment>
+</equipmentData:equipments>
+

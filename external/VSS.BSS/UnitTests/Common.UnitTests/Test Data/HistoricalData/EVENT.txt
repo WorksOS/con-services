@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<event:topic xmlns:event="http://www.cat.com/em/feed/v4/Event" xmlns:feed="http://www.cat.com/em/feed/v4/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v4/Event https://emfeed.cat.com/EMFeedFiles/schema/v4/Event.xsd">
+<nextBuffer>
+<url></url>
+<moreData>false</moreData>
+</nextBuffer>
+
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>68383699</masterMsgId>
+         <equipment>
+            <serialNumber>-A7G00605</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200008428Q1</moduleCode>
+         <moduleTime>2008-03-31 23:57:00</moduleTime>
+         <receivedTime>2008-04-01 06:00:21</receivedTime>
+      </header>
+      <numberOfEvents>1</numberOfEvents>
+      <eventBlock>
+         <event>
+            <level>0</level>
+            <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/81">81</mid>
+            <eid info="https://emfeed.cat.com/EMFeedService/v4/eid/CDL/49">
+               <identifier>49</identifier>
+            </eid>
+            <occurances>6</occurances>
+            <timestamp>2008-03-31 11:19:45</timestamp>
+         </event>
+      </eventBlock>
+   </message>
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>68383700</masterMsgId>
+         <equipment>
+            <serialNumber>-A7J00249</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0000070999Q1</moduleCode>
+         <moduleTime>2008-04-01 00:00:01</moduleTime>
+         <receivedTime>2008-04-01 06:00:23</receivedTime>
+      </header>
+      <numberOfEvents>3</numberOfEvents>
+      <eventBlock>
+         <event>
+            <level>0</level>
+            <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/81">81</mid>
+            <eid info="https://emfeed.cat.com/EMFeedService/v4/eid/CDL/627">
+               <identifier>627</identifier>
+            </eid>
+            <occurances>1</occurances>
+            <timestamp>2008-03-28 12:46:23</timestamp>
+         </event>
+         <event>
+            <level>0</level>
+            <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/81">81</mid>
+            <eid info="https://emfeed.cat.com/EMFeedService/v4/eid/CDL/49">
+               <identifier>49</identifier>
+            </eid>
+            <occurances>2</occurances>
+            <timestamp>2008-03-28 15:00:42</timestamp>
+         </event>
+         <event>
+            <level>0</level>
+            <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/81">81</mid>
+            <eid info="https://emfeed.cat.com/EMFeedService/v4/eid/CDL/627">
+               <identifier>627</identifier>
+            </eid>
+            <occurances>2</occurances>
+            <timestamp>2008-03-30 13:01:11</timestamp>
+         </event>
+      </eventBlock>
+   </message>
+   </event:topic>

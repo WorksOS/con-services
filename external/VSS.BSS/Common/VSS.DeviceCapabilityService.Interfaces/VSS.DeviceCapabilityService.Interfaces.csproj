@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{99EC2DF5-A524-401D-9459-E11E8C7B771E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.Nighthawk.DeviceCapabilityService.Interfaces</RootNamespace>
+    <AssemblyName>VSS.Nighthawk.DeviceCapabilityService.Interfaces</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Local|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Local\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|AnyCPU'">
+    <OutputPath>bin\Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|AnyCPU'">
+    <OutputPath>bin\IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EasyHttp, Version=1.6.58.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\EasyHttp.dll</HintPath>
+    </Reference>
+    <Reference Include="JsonFx, Version=2.0.1209.2802, Culture=neutral, PublicKeyToken=315052dd637f8a52, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\JsonFx.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Magnum, Version=2.1.3.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Magnum.dll</HintPath>
+    </Reference>
+    <Reference Include="MassTransit, Version=2.9.0.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\MassTransit.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DTOs\IEndpointDescriptor.cs" />
+    <Compile Include="DTOs\IFactoryOutboundEventTypeDescriptor.cs" />
+    <Compile Include="Factories\IAssetSettingsFactory.cs" />
+    <Compile Include="Factories\ILocationStatusUpdateRequestedEventFactory.cs" />
+    <Compile Include="Factories\IDeviceConfigFactory.cs" />
+    <Compile Include="Factories\ISiteAdministrationEventFactory.cs" />
+    <Compile Include="Implementations\Constants.cs" />
+    <Compile Include="Implementations\DTOs\EndpointDescriptor.cs" />
+    <Compile Include="Implementations\DTOs\FactoryOutboundEventTypeDescriptor.cs" />
+    <Compile Include="Implementations\Factories\DeviceConfigFactory.cs" />
+    <Compile Include="Implementations\Factories\SiteAdministrationEventFactory.cs" />
+    <Compile Include="Implementations\Helpers\HttpResponseWrapper.cs" />
+    <Compile Include="Implementations\Helpers\IHttpResponseWrapper.cs" />
+    <Compile Include="Implementations\Helpers\EventTypeHelper.cs" />
+    <Compile Include="Implementations\Helpers\HttpClientWrapper.cs" />
+    <Compile Include="Implementations\Helpers\IEventTypeHelper.cs" />
+    <Compile Include="Implementations\Helpers\IHttpClientWrapper.cs" />
+    <Compile Include="Implementations\Helpers\IStringEncryptor.cs" />
+    <Compile Include="Implementations\Helpers\StringEncryptor.cs" />
+    <Compile Include="Implementations\Query\DeviceQuery.cs" />
+    <Compile Include="Query\IDeviceQuery.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceBusExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ThirdPartyDLLs\EasyHttp.dll" />
+    <Content Include="ThirdPartyDLLs\JsonFx.dll" />
+    <Content Include="ThirdPartyDLLs\log4net.dll" />
+    <Content Include="ThirdPartyDLLs\Magnum.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.dll" />
+    <Content Include="ThirdPartyDLLs\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.BaseEvents\VSS.BaseEvents.csproj">
+      <Project>{c2fd2357-c0e3-4b01-958d-feed8ca382a4}</Project>
+      <Name>VSS.BaseEvents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.DataOut.Interfaces\VSS.DataOut.Interfaces.csproj">
+      <Project>{D8252900-4795-4554-84D8-F7713741922C}</Project>
+      <Name>VSS.DataOut.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.MTSGateway.Interfaces\VSS.MTSGateway.Interfaces.csproj">
+      <Project>{B737A86F-B193-4166-BF94-E028A5491612}</Project>
+      <Name>VSS.MTSGateway.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Nighthawk.ExternalDataTypes\VSS.Nighthawk.ExternalDataTypes.csproj">
+      <Project>{c1a38874-c53b-4b2e-9fae-805475f80df1}</Project>
+      <Name>VSS.Nighthawk.ExternalDataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\VSS.Nighthawk.Log4Net\VSS.Nighthawk.Log4Net.csproj">
+      <Project>{a6150f4b-c8fe-4d4c-8b64-b7485c4c6877}</Project>
+      <Name>VSS.Nighthawk.Log4Net</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

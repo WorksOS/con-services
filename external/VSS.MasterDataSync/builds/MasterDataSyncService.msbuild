@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0"
+         DefaultTargets="Build"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>    
+	<SolutionName Condition=" '$(SolutionName)'=='' ">VSS.MasterDataSync</SolutionName>
+	<SourceRoot>$(MSBuildThisFileDirectory)..\</SourceRoot>
+    <SourceHome>$(SourceRoot)</SourceHome>
+	
+	<Configuration Condition=" '$(Configuration)'=='Debug' ">Debug</Configuration>
+	<Configuration Condition=" '$(Configuration)'=='' ">Release</Configuration>
+	<Configuration Condition=" '$(Configuration)'=='Dev' ">Dev</Configuration>	
+	<Configuration Condition=" '$(Configuration)'=='IQA' ">IQA</Configuration>	
+	<Configuration Condition=" '$(Configuration)'=='Perf' ">Perf</Configuration>
+	<Configuration Condition=" '$(Configuration)'=='Alpha' ">Alpha</Configuration>
+	<Configuration Condition=" '$(Configuration)'=='Prod' ">Prod</Configuration>
+	
+    <OutDir Condition=" '$(OutDir)'=='' ">$(SourceRoot)bin\$(SolutionName)</OutDir>
+	<AppSpecDir Condition=" '$(AppSpecDir)'=='' ">$(SourceRoot)MasterDataSync</AppSpecDir>
+	<DeployScriptsDir Condition=" '$(DeployScriptsDir)'=='' ">$(SourceRoot)MasterDataSync\DeployScripts</DeployScriptsDir>
+    <ToolsHome Condition=" '$(ToolsHome)'=='' ">$(SourceRoot)tools\</ToolsHome>
+	<BuildPkgDir Condition=" '$(BuildPkgDir)'=='' ">$(SourceRoot)build package\$(SolutionName)</BuildPkgDir>
+	
+  </PropertyGroup>
+  <ItemGroup>
+    <Solution Include="$(SourceRoot)$(SolutionName).sln">
+      <AdditionalProperties>OutDir=$(OutDir);Configuration=$(Configuration)</AdditionalProperties>
+    </Solution>        
+  </ItemGroup>
+  
+  <Target Name="FullBuild" DependsOnTargets="Clean;Build" />
+  <Target Name="Clean">
+    <RemoveDir Directories="$(OutDir)" Condition="Exists($(OutDir))" />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="RestorePackages">	
+	<MSBuild Targets="Build" Projects="@(Solution);" />	
+  </Target> 
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />  
+  <Target Name="RestorePackages" Condition="Exists(@(Solution))">
+    <Exec Command="&quot;$(ToolsHome)NuGet\NuGet.exe&quot; restore &quot;%(Solution.Identity)&quot;" />
+  </Target>
+   <UsingTask TaskName="Zip" TaskFactory="CodeTaskFactory"  AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v12.0.dll" >
+    <ParameterGroup>
+      <Directory ParameterType="System.String" Required="true" />	  
+    </ParameterGroup>
+    <Task>
+      <Reference Include="System.IO.Compression.FileSystem" />
+      <Code>System.IO.Compression.ZipFile.CreateFromDirectory(Directory, Directory + ".zip");</Code>
+    </Task>
+  </UsingTask>
+  <Target Name="Package"> 	
+  <RemoveDir Directories="$(BuildPkgDir)" Condition="Exists($(BuildPkgDir))" />
+	<Exec Command="ROBOCOPY &quot;$(OutDir)&quot; &quot;$(BuildPkgDir)&quot; *.* /S /XD *Test* /XF *Test* /XF *xUnit* /XF *NSubstitute*" IgnoreExitCode="true" />
+	<Exec Command="ROBOCOPY &quot;$(AppSpecDir)&quot; &quot;$(BuildPkgDir)&quot; appspec.yml" IgnoreExitCode="true"/>
+	<Exec Command="ROBOCOPY &quot;$(DeployScriptsDir)&quot; &quot;$(BuildPkgDir)\DeployScripts&quot;" IgnoreExitCode="true"/>
+	<ZIP Directory="$(BuildPkgDir)" />
+  </Target>
+</Project>

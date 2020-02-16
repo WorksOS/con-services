@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<equipmentData:DealerMakeCodes xmlns:equipmentData="http://www.cat.com/equipmentdata/v1/EquipmentData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/equipmentdata/v1/EquipmentData https://equipmentdatamc.rd.cat.com:443/EquipmentDataServices/schema/v1/EquipmentData.xsd">
+   <NextBuffer>
+      <url/>
+      <moreData>false</moreData>
+   </NextBuffer>
+   <DealerMakeCode>
+      <Dealer>
+         <code>CAT </code>
+
+      </Dealer>
+      <dealerMake>AA</dealerMake>
+      <Make>
+         <code>CAT</code>
+         <description>CATERPILLAR INC</description>
+      </Make>
+   </DealerMakeCode>
+   <DealerMakeCode>
+      <Dealer>
+         <code>L110</code>
+      </Dealer>
+      <dealerMake>AT</dealerMake>
+      <Make>
+         <code>A58</code>
+
+         <description>ATLAS</description>
+      </Make>
+   </DealerMakeCode>
+</equipmentData:DealerMakeCodes>

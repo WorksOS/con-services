@@ -1,0 +1,99 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFrameworks>netcoreapp2.0;net471</TargetFrameworks>
+		<RootNamespace>VSS.Messaging.BaseDataConsumer</RootNamespace>
+		<AssemblyName>VSS.Messaging.BaseDataConsumer</AssemblyName>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<Company>VirtualSite Solutions</Company>
+		<Copyright>Copyright © Trimble 2018</Copyright>
+		<ApplicationIcon />
+		<OutputType>Exe</OutputType>
+		<StartupObject />
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<Configurations>Debug;Release;Alpha;Dev;Prod</Configurations>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp2.0|AnyCPU'">
+		<DefineConstants>TRACE;DEBUG</DefineConstants>
+		<DebugType>full</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<AllowedReferenceRelatedFileExtensions>.pdb</AllowedReferenceRelatedFileExtensions>
+	</PropertyGroup>
+	<Target Name="AddReferenceRelatedPathsToCopyLocal" AfterTargets="ResolveAssemblyReferences">
+		<ItemGroup>
+			<ReferenceCopyLocalPaths Include="@(_ReferenceRelatedPaths)" />
+		</ItemGroup>
+	</Target>
+
+	<ItemGroup>
+		<!-- Export Template wizard is unable to include librdkafka, workaround is to comment following nuget reference and uncomment it after exporting it to zip file -->
+		<PackageReference Include="Confluent.Kafka" Version="0.11.4" />
+		<PackageReference Include="librdkafka.redist" Version="0.11.4" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="1.1.2" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
+		<PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="3.1.66" />
+		<PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+		<PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
+		<PackageReference Include="System.Net.Primitives" Version="4.3.0" />
+		<PackageReference Include="VSS.Messaging.Connector" Version="2.0.0.220" />
+		<PackageReference Include="VSS.Messaging.Destination.MySql" Version="2.0.0.220" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="app.config.Alpha.xml">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>app.config.xml</DependentUpon>
+		</None>
+		<None Update="app.config.Debug.xml">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>app.config.xml</DependentUpon>
+		</None>
+		<None Update="app.config.Dev.xml">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>app.config.xml</DependentUpon>
+		</None>
+		<None Update="app.config.Prod.xml">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>app.config.xml</DependentUpon>
+		</None>
+		<None Update="app.config.Release.xml">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>app.config.xml</DependentUpon>
+		</None>
+		<None Update="app.config.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TransformOnBuild>true</TransformOnBuild>
+		</None>
+		<None Update="log.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="newrelic.Alpha.config">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>newrelic.config</DependentUpon>
+		</None>
+		<None Update="newrelic.config">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<TransformOnBuild>true</TransformOnBuild>
+		</None>
+		<None Update="newrelic.Debug.config">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>newrelic.config</DependentUpon>
+		</None>
+		<None Update="newrelic.Dev.config">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>newrelic.config</DependentUpon>
+		</None>
+		<None Update="newrelic.Prod.config">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>newrelic.config</DependentUpon>
+		</None>
+		<None Update="newrelic.Release.config">
+			<IsTransformFile>true</IsTransformFile>
+			<DependentUpon>newrelic.config</DependentUpon>
+		</None>
+	</ItemGroup>
+
+</Project>

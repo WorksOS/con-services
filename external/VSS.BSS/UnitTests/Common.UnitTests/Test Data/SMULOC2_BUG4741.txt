@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<smuLoc:topic xmlns:smuLoc="http://www.cat.com/em/feed/v2/ServiceMeterLocation"
+xmlns:feed="http://www.cat.com/em/feed/v2/Common"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.cat.com/em/feed/v2/ServiceMeterLocation https://emfeed.cat.com/EMFeedFiles/schema/v2/ServiceMeterLocation.xsd">
+
+  <nextBuffer>
+    <url>
+    https://emfeed.cat.com/EMFeedService/v2/feed/nighthawk/SMULOC/23595024</url>
+    <moreData>true</moreData>
+  </nextBuffer>
+  <message>
+    <header>
+      <messageId>23592919</messageId>
+      <masterMsgId>30803980</masterMsgId>
+      <equipment>
+        <serialNumber>3YK00343</serialNumber>
+        <make>CAT</make>
+        <model>135H</model>
+        <nickname>16001</nickname>
+      </equipment>
+      <moduleCode>0IBDJ231513M1</moduleCode>
+      <moduleTime>2009-09-26 05:35:00</moduleTime>
+      <receivedTime>2009-09-26 05:45:14</receivedTime>
+    </header>
+    <serviceMeter>
+      <value>4174</value>
+      <uom>Hours</uom>
+    </serviceMeter>
+    <location>
+      <latitude>33.473705</latitude>
+      <longitude>-81.982056</longitude>
+      <validity>V</validity>
+    </location>
+  </message>
+</smuLoc:topic>

@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ExpectedUtilizationEvents>
+  <UtilizationEvent>
+    <ID>0</ID>
+    <DeviceTypeID>0</DeviceTypeID>
+    <IsWorking>false</IsWorking>
+    <IsOn>true</IsOn>
+    <RuntimeEventTypeID>2</RuntimeEventTypeID>
+    <MeterSeconds p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <InsertUTC>0001-01-01T00:00:00</InsertUTC>
+    <EventUTC>0001-01-01T00:00:00</EventUTC>
+    <ReceivedUTC>0001-01-01T00:00:00</ReceivedUTC>
+    <SensorNumber p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <EventDeviceTime>0001-01-01T00:00:00</EventDeviceTime>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <ID>0</ID>
+    <DeviceTypeID>0</DeviceTypeID>
+    <IsWorking>true</IsWorking>
+    <IsOn>true</IsOn>
+    <RuntimeEventTypeID>4</RuntimeEventTypeID>
+    <MeterSeconds p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <InsertUTC>0001-01-01T00:00:00</InsertUTC>
+    <EventUTC>0001-01-01T00:00:00</EventUTC>
+    <ReceivedUTC>0001-01-01T00:00:00</ReceivedUTC>
+    <SensorNumber p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <EventDeviceTime>0001-01-01T00:00:00</EventDeviceTime>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <ID>0</ID>
+    <DeviceTypeID>0</DeviceTypeID>
+    <IsWorking>true</IsWorking>
+    <IsOn>false</IsOn>
+    <RuntimeEventTypeID>3</RuntimeEventTypeID>
+    <MeterSeconds p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <InsertUTC>0001-01-01T00:00:00</InsertUTC>
+    <EventUTC>0001-01-01T00:00:00</EventUTC>
+    <ReceivedUTC>0001-01-01T00:00:00</ReceivedUTC>
+    <SensorNumber p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <EventDeviceTime>0001-01-01T00:00:00</EventDeviceTime>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <ID>0</ID>
+    <DeviceTypeID>0</DeviceTypeID>
+    <IsWorking>true</IsWorking>
+    <IsOn>false</IsOn>
+    <RuntimeEventTypeID>4</RuntimeEventTypeID>
+    <MeterSeconds p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <InsertUTC>0001-01-01T00:00:00</InsertUTC>
+    <EventUTC>0001-01-01T00:00:00</EventUTC>
+    <ReceivedUTC>0001-01-01T00:00:00</ReceivedUTC>
+    <SensorNumber p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <EventDeviceTime>0001-01-01T00:00:00</EventDeviceTime>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <ID>0</ID>
+    <DeviceTypeID>0</DeviceTypeID>
+    <IsWorking>false</IsWorking>
+    <IsOn>true</IsOn>
+    <RuntimeEventTypeID>3</RuntimeEventTypeID>
+    <MeterSeconds p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <InsertUTC>0001-01-01T00:00:00</InsertUTC>
+    <EventUTC>0001-01-01T00:00:00</EventUTC>
+    <ReceivedUTC>0001-01-01T00:00:00</ReceivedUTC>
+    <SensorNumber p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <EventDeviceTime>0001-01-01T00:00:00</EventDeviceTime>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <ID>0</ID>
+    <DeviceTypeID>0</DeviceTypeID>
+    <IsWorking>false</IsWorking>
+    <IsOn>false</IsOn>
+    <RuntimeEventTypeID>2</RuntimeEventTypeID>
+    <MeterSeconds p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <InsertUTC>0001-01-01T00:00:00</InsertUTC>
+    <EventUTC>0001-01-01T00:00:00</EventUTC>
+    <ReceivedUTC>0001-01-01T00:00:00</ReceivedUTC>
+    <SensorNumber p3:nil="true" xmlns:p3="http://www.w3.org/2001/XMLSchema-instance" />
+    <EventDeviceTime>0001-01-01T00:00:00</EventDeviceTime>
+  </UtilizationEvent>
+</ExpectedUtilizationEvents>

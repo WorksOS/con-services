@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TestInput>
+  <ElementPromptTest>
+    <MSTRRenderXmlTest>
+      <ExpectedOutput>
+        <ElementPrompt>
+          <pa pt="7" pin="0" did="123" tp="10">
+            <mi>
+              <es>
+                <at did="SomeID" tp="12" />
+                <e emt="1" ei="SomeID:1" art="1" disp_n="one" />
+                <e emt="1" ei="SomeID:2" art="1" disp_n="two" />
+                <e emt="1" ei="SomeID:3" art="1" disp_n="three" />
+              </es>
+            </mi>
+          </pa>
+        </ElementPrompt>
+      </ExpectedOutput>
+    </MSTRRenderXmlTest>
+  </ElementPromptTest>
+
+  <TextPromptTest>
+    <MSTRRenderXmlTest>
+      <ExpectedOutput>
+        <TextPrompt>
+          <pa pt="5" pin="0" did="123" tp="10">12/12/2010</pa>
+        </TextPrompt>
+      </ExpectedOutput>
+    </MSTRRenderXmlTest>
+  </TextPromptTest>
+
+  <ObjectPromptTest>
+    <MSTRRenderXmlTest>
+      <ExpectedOutput>
+        <ObjectPrompt>
+          <pa pt="6" pin="0" did="123" tp="10">
+            <mi>
+              <fct fcn="0" cc="1" sto="1" pfc="0" pcc="1">
+                <f did="234" tp="1" />
+              </fct>
+            </mi>
+          </pa>
+          <pa pt="5" pin="0" did="456" tp="10">34</pa>
+        </ObjectPrompt>
+      </ExpectedOutput>
+    </MSTRRenderXmlTest>
+  </ObjectPromptTest>
+
+  <FilterTest>
+    <MSTRRenderXmlTest>
+      <ExpectedOutput>
+        <f did="123" tp="1" />
+      </ExpectedOutput>
+    </MSTRRenderXmlTest>
+  </FilterTest>
+
+  <PromptStructureSelectorMock>
+    <PromptNames>
+      <SelectAssets>
+
+      </SelectAssets>
+      <Date ID="12345">
+        <ObjectPrompt>
+          <ObjID>12345</ObjID>
+          <Filters>
+            <FilterID name="DateRange">4567</FilterID>
+            <FilterID name="CurrentWeek">1234</FilterID>
+            <FilterID name="PreviousWeek">5678</FilterID>
+          </Filters>
+          <Params>
+            <Prompt FilterID="4567">
+              <TextPrompt>
+                <ObjID>345</ObjID>
+                <Params>
+                  <TextInput name="StartDate">123</TextInput>
+                </Params>
+              </TextPrompt>
+            </Prompt>
+            <Prompt FilterID="4567">
+              <TextPrompt>
+                <ObjID>378</ObjID>
+                <Params>
+                  <TextInput name="EndDate">123</TextInput>
+                </Params>
+              </TextPrompt>
+            </Prompt>
+          </Params>
+        </ObjectPrompt>
+      </Date>
+      <Date></Date>
+      <EventTypes></EventTypes>
+    </PromptNames>
+  </PromptStructureSelectorMock>
+
+  <ParameterBuilderTest>
+    <MSTRBuildTestWithPromptFilter>
+      <Input index="1">
+        <Parameters>
+          <Date>
+            <DateRange>
+              <StartDate>10/10/2010</StartDate>
+              <EndDate>12/12/2010</EndDate>
+            </DateRange>
+          </Date>
+        </Parameters>
+      </Input>
+
+      <ExpectedOutput>
+        <rsl>
+          <pa pt="6" pin="0" did="12345" tp="10">
+            <mi>
+              <fct fcn="0" cc="1" sto="1" pfc="0" pcc="1">
+                <f did="4567" tp="1" />
+              </fct>
+            </mi>
+          </pa>
+          <pa pt="5" pin="0" did="345" tp="10">10/10/2010</pa>
+          <pa pt="5" pin="0" did="378" tp="10">12/12/2010</pa>
+        </rsl>
+      </ExpectedOutput>
+    </MSTRBuildTestWithPromptFilter>
+
+    <MSTRBuildTestReverseTransform>
+      <Input index="1">
+        <Parameters>
+          <Date>
+            <DateRange>
+              <StartDate>10/10/2010</StartDate>
+              <EndDate>12/12/2010</EndDate>
+            </DateRange>
+          </Date>
+        </Parameters>
+      </Input>
+    </MSTRBuildTestReverseTransform>
+
+    <MSTRBuildTestWithStandaloneFilter>
+      <Input index="1">
+        <Parameters>
+          <Date>
+            <CurrentWeek></CurrentWeek>
+          </Date>
+        </Parameters>
+      </Input>
+
+      <ExpectedOutput>
+        <rsl>
+          <pa pt="6" pin="0" did="12345" tp="10">
+            <mi>
+              <fct fcn="0" cc="1" sto="1" pfc="0" pcc="1">
+                <f did="1234" tp="1" />
+              </fct>
+            </mi>
+          </pa>
+        </rsl>
+      </ExpectedOutput>
+    </MSTRBuildTestWithStandaloneFilter>
+  </ParameterBuilderTest>
+</TestInput>

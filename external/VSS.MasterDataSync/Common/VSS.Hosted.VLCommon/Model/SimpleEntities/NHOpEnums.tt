@@ -1,0 +1,88 @@
+﻿<#@ template language="C#" debug="false" hostspecific="true"#>
+<#@ include file="EnumCommon.tt"#>
+<#@ output extension=".cs"#>
+<#
+string inputFile = @"..\NHOpModel.edmx"; 
+string dbName = "NH_OP";
+var enumTypes = new[] { 
+        new {ValueField="ID", NameField="Name", TypeName="AlertParameterType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="AlertType"}, 
+        new {ValueField="ID", NameField="Name", TypeName="BSSStatus"}, 
+       // This isn't used widely and hasn't been kept up to date: new {ValueField="ID", NameField="Description", TypeName="ConfigType"}, 
+        new {ValueField="ID", NameField="Name", TypeName="CustomerRelationshipType"}, 
+        new {ValueField="ID", NameField="Name", TypeName="CustomerType"}, 
+        new {ValueField="ID", NameField="Name", TypeName="Datalink"}, 
+        new {ValueField="ID", NameField="Name", TypeName="DealerNetwork"}, 
+        new {ValueField="ID", NameField="Description", TypeName="DeviceState"}, 
+        new {ValueField="ID", NameField="Name", TypeName="DeviceType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="FaultType"}, 
+        new {ValueField="ID", NameField="Name", TypeName="Feature"}, 
+        new {ValueField="ID", NameField="Name", TypeName="FeatureAccess"}, 
+        new {ValueField="ID", NameField="Description", TypeName="FirmwareUpdateStatus"}, 
+        new {ValueField="ID", NameField="Description", TypeName="FuelType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="Icon"}, 
+        new {ValueField="ID", NameField="ISOName", TypeName="Language"}, 
+        new {ValueField="ID", NameField="Description", TypeName="OptionType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="OwnershipType"}, 
+        new {ValueField="ID", NameField="Name", TypeName="PersonalityType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="PMServiceCompletionType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="PMTrackingType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="SessionType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="SiteType"}, 
+        new {ValueField="ID", NameField="Description", TypeName="TopicScalePolicy"}, 
+        new {ValueField="ID", NameField="Description", TypeName="WorkDefinition"}, 
+        new {ValueField="ID", NameField="Name", TypeName="AssetOnboardingProcess"},
+        new {ValueField="ID", NameField="Name", TypeName="DeviceICDSeries"},
+        new {ValueField="ID", NameField="Description", TypeName="DXFUnitsType"},
+        new {ValueField="ID", NameField="Description", TypeName="ImportedFileType"},
+        new {ValueField="ID", NameField="Name", TypeName="TemperatureUnit"},
+        new {ValueField="ID", NameField="Name", TypeName="ModelVariant"},
+        new {ValueField="ID", NameField="Name", TypeName="ServiceType"},
+        new {ValueField="ID", NameField="Description", TypeName="UserActivationStatus"},
+		new {ValueField="ID", NameField="Frequency", TypeName="ScheduleReportFrequency"},   
+		new {ValueField="ID", NameField="Status", TypeName="SchedulerStatus"},
+		new {ValueField="ID", NameField="Name", TypeName="EmailPriority"},
+		new {ValueField="ID", NameField="Status", TypeName="ScheduleReportFileStatus"},
+		new {ValueField="ID", NameField="Description", TypeName="MassHaulWorkGroupType"},
+		new {ValueField="ID", NameField="Name", TypeName="PressureUnit"},
+		new {ValueField="ID", NameField="Description", TypeName="AlertAssetSelection"},
+		new {ValueField="ID", NameField="Name", TypeName="AppFeature"}, 
+		new {ValueField="ID", NameField="Name", TypeName="AppFeatureSet"}, 
+		new {ValueField="ID", NameField="Name", TypeName="Store"},
+		new {ValueField="ID", NameField="Name", TypeName="ProjectType"},
+		new {ValueField="ID", NameField="Name", TypeName="FeatureType"},
+		new {ValueField="ID", NameField="Description", TypeName="MassHaulState"}
+		};
+#>
+<#
+EntityFrameworkTemplateFileManager fileManager = EntityFrameworkTemplateFileManager.Create(this);
+EdmItemCollection itemCollection =  new MetadataLoader(this).CreateEdmItemCollection(inputFile);
+EntityContainer container = (from containers in itemCollection.GetItems<EntityContainer>() where containers.Name == dbName select containers).FirstOrDefault();
+if (container == null)
+{
+  return "// No EntityContainer exists in the model, so no code was generated";
+}
+WriteHeader(fileManager);
+WriteNamespace();
+BeginScope();
+CodeGenerationTools code = new CodeGenerationTools(this);
+foreach (EntityType entity in itemCollection.GetItems<EntityType>().OrderBy(e => e.Name))
+{
+  var enumInfo = (from types in enumTypes where types.TypeName == entity.Name select types).SingleOrDefault();
+	if ( enumInfo == null )
+	  continue;
+
+   // fileManager.StartNewFile(entity.Name + "Enum.cs");
+	#>
+<#=Accessibility.ForType(entity)#> enum <#=code.Escape(entity)#>Enum
+<#
+  BeginScope();
+  string enumTokenLine=WriteEnum(container.Name, entity, enumInfo.ValueField, enumInfo.NameField);
+#>
+<#=enumTokenLine #>
+<#
+  EndScope();
+}
+EndScope();
+fileManager.Process();
+#>

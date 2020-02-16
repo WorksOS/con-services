@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<equipmentData:Customers xmlns:equipmentData="http://www.cat.com/equipmentdata/v1/EquipmentData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/equipmentdata/v1/EquipmentData https://equipmentdatamc.rd.cat.com/EquipmentDataServices/schema/v1/EquipmentData.xsd">
+   <Customer>
+      <id>2969484101</id>
+      <name>AGCO Corp Ag Chem Inc</name>
+      <isInternal>false</isInternal>
+   </Customer>
+</equipmentData:Customers>

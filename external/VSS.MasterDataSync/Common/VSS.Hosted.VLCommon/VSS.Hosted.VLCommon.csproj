@@ -1,0 +1,1828 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{78A163DA-1F9C-4E23-B735-40B87408C25B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.Hosted.VLCommon</RootNamespace>
+    <AssemblyName>VSS.Hosted.VLCommon</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|AnyCPU'">
+    <OutputPath>bin\Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
+    <OutputPath>bin\Prod\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|AnyCPU'">
+    <OutputPath>bin\IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Common.Logging, Version=1.2.0.0, Culture=neutral, PublicKeyToken=af08829b84f0328e">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Common.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net, Version=1.2.0.2, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Common.Logging.Log4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="EFProviderWrapperToolkit">
+      <HintPath>ThirdPartyDLLs\EFProviderWrapperToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="EFTracingProvider">
+      <HintPath>ThirdPartyDLLs\EFTracingProvider.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\HashLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.COMRVRSGEOSERVERLib">
+      <HintPath>ThirdPartyDLLs\Interop.COMRVRSGEOSERVERLib.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>ThirdPartyDLLs\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ServiceModel.Web">
+      <HintPath>ThirdPartyDLLs\Microsoft.ServiceModel.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Types, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.SqlServer.Types.10.50.1600.1\lib\Net20\Microsoft.SqlServer.Types.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Atlas">
+      <HintPath>ThirdPartyDLLs\Microsoft.Web.Atlas.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="opentoken-agent">
+      <HintPath>ThirdPartyDLLs\opentoken-agent.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Aop">
+      <HintPath>ThirdPartyDLLs\Spring.Aop.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Core">
+      <HintPath>ThirdPartyDLLs\Spring.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Services">
+      <HintPath>ThirdPartyDLLs\Spring.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Spring.Web">
+      <HintPath>ThirdPartyDLLs\Spring.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Device" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activation" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VSS.Nighthawk.Instrumentation">
+      <HintPath>ThirdPartyDLLs\VSS.Nighthawk.Instrumentation.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Nighthawk.MassTransit, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\VSS.Nighthawk.MassTransit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Model\IObjectContextTransactionScope.cs" />
+    <Compile Include="Model\NHOpModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\ObjectContextTransactionScope.cs" />
+    <Compile Include="Model\SimpleEntities\ActiveUser.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ActiveUserAssetSelection.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AEMPDataFeedURL.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Alert.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertAsset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertAssetAssociation.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertAssetGroup.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertAssetOccupancySite.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertAssetSelection.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertContact.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertDeviceTypeSwitchMask.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertFault.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertIncident.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertNote.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertParameter.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertParameterType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertSite.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AlertZones.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppAlarm.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppFeatureSet.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AppFeatureSetAppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Asset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetAlias.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetBurnRates.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetCycle.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetDeviceHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetExpectedRuntimeHoursHistoric.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetExpectedRuntimeHoursProjected.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetGroup.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetGroupAsset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetMonitoring.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetOnboardingProcess.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetOnboardingProcessCompleted.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetOperator.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetReposessionHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetSecurityIncident.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetSensorMaterialType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetWorkingDefinition.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BatteryChargeVoltage.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BookmarkManager.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BookmarkManagerTagFile.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BoostPressure.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BoostTemperature.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSMessages.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSProvisioningMsg.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSResponseEndPoint.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSResponseMsg.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\BSSStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_PayloadCycle.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CNHAlarmCodeMap.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ConfigType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Contact.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CoordinateSystem.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CrosscheckConfig.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomDataEngineParameters.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Customer.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerAsset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerRelationship.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerRelationshipExport.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerRelationshipType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerStore.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CustomerType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Cycle.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DailyReport.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DailyUsageMetrics.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataBatteryChargingVoltage.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataBoostPressure.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataBoostTemperature.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataCatInspection.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataCNHCANAlarmCode.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataCustomUtilizationEvent.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataDeviceBatteryRemaining.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataDieselExhaustFluid.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataEngineLubeOilTemperatureSensorSample.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataEngineOilLevel.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataEngineOilPressureSensorSample.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataEngineRPMSensorSample.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataEngineTempSensorSample.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataHydraulicOilTemperatureSensorSample.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataIdleTimeOut.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Datalink.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataOperator.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataPowerMode.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataPowerState.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataProjectTagFileError.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataRemoteSecurityState.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataSecurityPendingStartMode.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataSwitchState.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataTamperLevel.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataTamperState.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataTirePressureMonitorInfo.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataTirePressureMonitorSystem.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataTransmissionOilTemperatureSensorSample.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DealerNetwork.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DealerNetworkServiceType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Device.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceCurrentStatus.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceFirmwareVersion.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceICDSeries.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceIPConfig.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DevicePartNumber.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DevicePersonality.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceState.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceTypeServiceType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DeviceTypeSwitchMask.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DigitalSwitchStatus.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAddressStateBoundary.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAlertSubType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAppFeatureSet.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimCNHSeverityLevel.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimCustomUtilizationEventType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimDeviceType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimEmulatedEventType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimFaultDescriptionOverride.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimFuelTankCapacity.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimLoadIncompleteType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimLoadQualityType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimMassHaulMasterZoneRoute.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimMassHaulType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimMaterialType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimMonitoringMachineType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimPowerMode.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSensorAspects.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSensorType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSharedView.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSiteAssetMonitoringArchive.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimUtilizationType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimWarningLevel.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DriverIDConfig.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DXFUnitsType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ECMAddressClaim.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ECMDatalinkInfo.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ECMInfo.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EmailPriority.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EmailQueue.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EngineLubeOilTemperature.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EngineOilLevel.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EngineOilPressure.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EngineTemperature.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ExternalCustomerKeyType.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ExternalUser.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetCustomUtilizationDaily.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetCycleEventEmulatedManual.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetProjectTagFileError.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetSiteUtilization.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactCatInspection.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactExcavatorUtilization.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactPayloadCycleUtilizationDaily.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactTireMonitorLevelPeriod.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactTireMonitorSummary.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactTireMonitorSystem.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Fault.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FaultDescription.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FaultDescriptionOverride.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FaultParameter.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FaultParameterType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FaultType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Feature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeatureAccess.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeatureType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeatureURLTemplate.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FederatedLogonInfo.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FenceAlarm.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FirmwareUpdateStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\GatewayServiceProvider.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Hierarchy.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\HierHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\HierNodeAssoc.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\HydraulicOilTemperature.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Icon.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ImportedFile.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ImportedFileHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ImportedFileType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\INHOPDataObject.cs" />
+    <Compile Include="Model\SimpleEntities\J1939DefaultMIDDescription.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\J1939ParameterParser.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Language.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Make.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulBalance.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulBalanceZone.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulMasterZone.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulPlan.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulPlanLine.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulRoute.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulState.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulWorkGroupType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MassHaulZoneTransfer.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MasterDataSync.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MaterialType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MessageSequence.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MID.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MIDDesc.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ModelVariant.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MonitoringMachineType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTS500FirmwareVersion.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSBIT.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSDevice.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSMessage.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSOut.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\MTSPortBasedMessages.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NighthawkSync.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NodeType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Notice.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NoticeLanguage.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\OEMThemecolor.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PersonalityType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMCATCheckListStep.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMCATInterval.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMCheckListStep.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMCompletedService.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMCompletedServiceAuditHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMInterval.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMIntervalAsset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMIntervalInstance.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMPart.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMSalesModel.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMServiceCompletionType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PMTrackingType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PressureUnit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProductFamily.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProductFamilyIcon.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Project.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProjectDataFilter.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProjectService.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProjectSetting.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProjectSiteSetting.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProjectSiteUser.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ProjectType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\RunTimeAdjustment.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SalesModel.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReport.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportAccess.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportContact.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportFileStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportFrequency.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportLocation.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportTimeTable.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportTimeTableHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SchedulerStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Sensor.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Service.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceProvider.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceReference.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceTypeAppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceTypeMap.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ServiceView.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SharedAsset.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SharedCustomer.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SharedView.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SharedViewNote.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SISLinkCodes_Staging.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SISLink_FFDiag.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SISLink_FFEvents.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Site.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SiteDispatched.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SiteType.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SMSQueue.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Speeding.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\StateBoundary.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Store.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SubscriptionMapping.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SubscriptionPlan.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TDMGClaimedDevices.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TelematicsSync.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TemperatureUnit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TermsOfUse.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TimeZoneStandardAbbreviation.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TopicPriority.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TopicScalePolicy.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TransmissionOilTemperatureSensorSample.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Tz_DaylightSavingDateRule.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Tz_DayLightYearly.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Tz_TimeZone.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Tz_World_MP.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UnifyCustomerToken.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UsageMetricsDataElement.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UsageMetricsGroup.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\User.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserActivation.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserActivationStatus.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserAlertFavorites.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserGroupFavorites.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserNoticeDismissed.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserPasswordHistory.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserPreferences.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UserSiteFavorites.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\VLAdminErrorMsg.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\VLSupportAudit.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_Address.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_AssetWorkingSet.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_Asset_AppFeature.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_CustomerIDsWithMaxAssetsForAirLift.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_DealerOwnedAssets.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_FactAssetCustomerSite.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_FaultDescriptions.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_ParentCustomerOwnedAssets.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_ServiceView.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\WorkDefinition.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Zone.cs">
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Services\MDM\Interfaces\IConfigurationManager.cs" />
+    <Compile Include="Services\MDM\Interfaces\IHttpRequestWrapper.cs" />
+    <Compile Include="Services\MDM\Common\AppConfigurationManager.cs" />
+    <Compile Include="Services\MDM\Common\CacheManager.cs" />
+    <Compile Include="Services\MDM\Common\HttpRequestWrapper.cs" />
+    <Compile Include="Services\MDM\Common\JsonHelper.cs" />
+    <Compile Include="Services\MDM\Common\StringConstants.cs" />
+    <Compile Include="Services\MDM\Common\TPassAuthorizationManager.cs" />
+    <Compile Include="Services\MDM\Interfaces\ICacheManager.cs" />
+    <Compile Include="Services\MDM\Interfaces\ITpassAuthorizationManager.cs" />
+    <Compile Include="Services\MDM\Models\AppCredentials.cs" />
+    <Compile Include="Services\MDM\Models\OAuthToken.cs" />
+    <Compile Include="Services\MDM\Models\ServiceRequestMessage.cs" />
+    <Compile Include="Services\MDM\Models\ServiceResponseMessage.cs" />
+    <Compile Include="Services\MDM\Models\TokenCredentials.cs" />
+    <Compile Include="Model\SimpleEntities\OEMDataSourceType.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PLDevice.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PLMessage.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\PLOut.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ReportEmailContact.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\RuntimeCalibration.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ScheduleReportAccessAudit.cs" />
+    <Compile Include="Model\SimpleEntities\ScheduleReportCurrentStatus.cs" />
+    <Compile Include="Model\SimpleEntities\ScheduleReportHistory.cs" />
+    <Compile Include="Model\SimpleEntities\SensorAspects.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SensorType.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Sequence.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\SFD_MTSMessage.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TTDevice.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TTMessage.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\TTOut.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UnitType.cs">
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_AssetOperation.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_AssetUtilizationDaily.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_FactAssetSiteUtilization.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_FaultDescription.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_MaintenanceUsage.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_WorkingSetService.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataAccess\SqlClient\SqlAccessMethods.cs" />
+    <Compile Include="DataAccess\SqlClient\SqlReaderAccess.cs" />
+    <Compile Include="DataAccess\SqlClient\StoredProcDefinition.cs" />
+    <Compile Include="Model\NHDataModel.Designer.cs">
+      <DependentUpon>NHDataModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Model\NHOEMDataModel.Designer.cs">
+      <DependentUpon>NHOEMDataModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Model\NHOpModel.Designer.cs">
+      <DependentUpon>NHOpModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Model\NHRawModel.Designer.cs">
+      <DependentUpon>NHRawModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Model\NHRptModel.Designer.cs">
+      <DependentUpon>NHRptModel.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Model\ObjectContextFactory.cs" />
+    <Compile Include="Model\SimpleEntities\AntiData.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetCurrentSecurityStatus.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetCurrentStatus.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\AssetDiscreteIOState.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_AntiData.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_Diagnostic.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_DigStatus.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_Engine.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_Event.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_FenceAlert.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_Fluid.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_Fuel.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_ManualSMU.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_SMULoc.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\CAT_StartStop.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Configuration.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataFeedDigitalSwitchStatus.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataEngineParameters.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataEngineStartStop.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataFaultDiagnostic.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataFaultEvent.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataFenceAlarm.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataFluidAnalysis.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataGensetOperationalState.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataHoursLocation.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataIgnOnOff.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataMoving.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataMSSKeyID.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataParametersReport.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataPassThroughPortData.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataRawCANMessage.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataServiceMeterAdjustment.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataSiteState.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataSpeeding.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataStatisticsReport.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DataTamperSecurityStatus.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAddress.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAsset.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetBurnRates.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetCycle.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetExpectedRuntimeHours.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetGroup.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetHistoryEventType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetMonitoring.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetMonitoringSettings.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetWorkingDefinition.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimAssetWorkingState.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimConfiguration.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimCustomer.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimDatalink.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimEngineState.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimEventType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimFault.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimFaultDescription.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimFaultParameter.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimFaultParameterType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimFaultType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimKeyDate.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimLanguage.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimMassHaulPlan.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimMID.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimMIDDesc.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimModelVariant.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimProjectSiteSetting.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimReportServicePlan.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimReportType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSensor.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimServiceType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimServiceView.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSeverityLevel.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSeverityLevelIDMap.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSISLinkCodes.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSite.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSiteType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimSource.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimTimeZone.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimUnitType.cs">
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimUtilizationCalloutType.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\DimWorkDefinition.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EngineParameters.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\EnumCommon.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EnumCommon.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\Event.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetCustomerSite.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetCycles.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetLoadCountPeriod.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetOperationPeriod.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactAssetUtilizationDaily.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactFault.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactPMCompletedService.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactPMDue.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FactSiteAssetDaily.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedDigitalSwitchStatus.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedEngineParameters.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedEngStartStop.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedFaultDiagnostic.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedFaultEvent.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedFenceAlarm.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedFuel.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FeedSMULocation.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FixupCollection.cs" />
+    <Compile Include="Model\SimpleEntities\FluidAnalysis.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\FuelLossCandidate.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\HoursLocation.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\IFact.cs" />
+    <Compile Include="Model\SimpleEntities\INHDataObject.cs" />
+    <Compile Include="Model\SimpleEntities\INH_DATA.cs">
+      <DependentUpon>NHDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\INH_OEMDATA.cs">
+      <DependentUpon>NHOEMDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\INH_OP.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\INH_RAW.cs">
+      <DependentUpon>NHRawModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\INH_RPT.cs">
+      <DependentUpon>NHRptModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\IOEMDataObject.cs" />
+    <Compile Include="Model\SimpleEntities\NHDataEnums.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHDataEnums.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHDataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHDataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOEMDataModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOEMDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOEMDataModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOEMDataModelPartials.cs" />
+    <Compile Include="Model\SimpleEntities\NHOpEnums.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOpEnums.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOpModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOpModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHOpModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHOpModelPartials.cs" />
+    <Compile Include="Model\SimpleEntities\NHRawEnums.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHRawEnums.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHRawModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHRawModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHRawModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHRawModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHRawModelPartials.cs" />
+    <Compile Include="Model\SimpleEntities\NHRptEnums.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHRptEnums.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHRptModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHRptModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHRptModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NHRptModelPartials.cs" />
+    <Compile Include="Model\SimpleEntities\NH_DATA.cs">
+      <DependentUpon>NHDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_DATAMock.cs">
+      <DependentUpon>NHDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_DATAMock.ObjectSet.cs">
+      <DependentUpon>NHDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OEMDATA.cs">
+      <DependentUpon>NHOEMDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OEMDATAMock.cs">
+      <DependentUpon>NHOEMDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OEMDATAMock.ObjectSet.cs">
+      <DependentUpon>NHOEMDataModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OP.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OPMock.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_OPMock.ObjectSet.cs">
+      <DependentUpon>NHOpModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_RAW.cs">
+      <DependentUpon>NHRawModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_RAWMock.cs">
+      <DependentUpon>NHRawModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_RAWMock.ObjectSet.cs">
+      <DependentUpon>NHRawModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_RPT.cs">
+      <DependentUpon>NHRptModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_RPTMock.cs">
+      <DependentUpon>NHRptModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\NH_RPTMock.ObjectSet.cs">
+      <DependentUpon>NHRptModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ReportParameter.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ReportTemplateBinary.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\ReportWorkingSet.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\UnparsedXML.cs">
+      <DependentUpon>NHOEMDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_AssetUsage.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_FuelUsage.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_LocationHistory.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_WorkingSet.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\vw_WorkingSetPopulation.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\SimpleEntities\WorkingSiteOccupancy.cs">
+      <DependentUpon>NHRptModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Services\PLMessages\PLMessageEnums.cs" />
+    <Compile Include="Services\Types\ICDMessages.cs" />
+    <Compile Include="Services\Types\MessageStatusEnum.cs" />
+    <Compile Include="Services\Types\PLConfigData.cs" />
+    <Compile Include="Services\Types\UnitsTypeEnum.cs" />
+    <Compile Include="Utilities\DotNetExtensions.cs" />
+    <Compile Include="Utilities\log4netExtensions.cs" />
+    <Compile Include="Utilities\LogAppender.cs" />
+    <Compile Include="Utilities\Point.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ThirdPartyDLLs\Autofac.Configuration.dll" />
+    <Content Include="ThirdPartyDLLs\Autofac.dll" />
+    <Content Include="ThirdPartyDLLs\Common.Logging.dll" />
+    <Content Include="ThirdPartyDLLs\Common.Logging.Log4Net.dll" />
+    <Content Include="ThirdPartyDLLs\EFProviderWrapperToolkit.dll" />
+    <Content Include="ThirdPartyDLLs\EFTracingProvider.dll" />
+    <Content Include="ThirdPartyDLLs\HashLib.dll" />
+    <Content Include="ThirdPartyDLLs\Interop.COMRVRSGEOSERVERLib.dll" />
+    <Content Include="ThirdPartyDLLs\log4net.dll" />
+    <Content Include="ThirdPartyDLLs\Magnum.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.Log4NetIntegration.dll" />
+    <Content Include="ThirdPartyDLLs\MassTransit.Transports.RabbitMq.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.ServiceModel.Web.dll" />
+    <Content Include="ThirdPartyDLLs\Microsoft.Web.Atlas.dll" />
+    <Content Include="ThirdPartyDLLs\opentoken-agent.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Aop.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Core.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Services.dll" />
+    <Content Include="ThirdPartyDLLs\Spring.Web.dll" />
+    <Content Include="ThirdPartyDLLs\Topshelf.dll" />
+    <Content Include="ThirdPartyDLLs\Topshelf.Log4Net.dll" />
+    <Content Include="ThirdPartyDLLs\VSS.Nighthawk.Instrumentation.dll" />
+    <Content Include="ThirdPartyDLLs\VSS.Nighthawk.MassTransit.dll" />
+    <Content Include="ThirdPartyDLLs\VSS.Nighthawk.PerformanceCounterMediator.exe" />
+    <Content Include="ThirdPartyDLLs\VSS.Nighthawk.SecurityExtensions.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <EntityDeploy Include="Model\NHDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>NHDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <EntityDeploy Include="Model\NHOEMDataModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>NHOEMDataModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <EntityDeploy Include="Model\NHOpModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>NHOpModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <EntityDeploy Include="Model\NHRawModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>NHRawModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <EntityDeploy Include="Model\NHRptModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>NHRptModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Model\NHOpModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOpModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\EnumCommon.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EnumCommon.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHDataEnums.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHDataEnums.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHDataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHDataModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHDataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHDataModel.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOEMDataModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOEMDataModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOEMDataModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOEMDataModel.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOpEnums.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOpEnums.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOpModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOpModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHOpModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHOpModel.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHRawEnums.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHRawEnums.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHRawModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHRawModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHRawModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHRawModel.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHRptEnums.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHRptEnums.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHRptModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHRptModel.Context.cs</LastGenOutput>
+    </None>
+    <None Include="Model\SimpleEntities\NHRptModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NHRptModel.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

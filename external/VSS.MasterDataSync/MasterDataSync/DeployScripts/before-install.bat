@@ -1,0 +1,1 @@
+powershell.exe  -ExecutionPolicy Bypass -File D:\Services\MasterDataSyncService\DeployScripts\stop-service.ps1

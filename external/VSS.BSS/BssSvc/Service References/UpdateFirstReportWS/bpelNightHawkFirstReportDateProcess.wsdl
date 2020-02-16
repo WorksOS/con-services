@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:tns="http://xmlns.trimble.com/bpelNightHawkFirstReportDateProcess" xmlns:plnk="http://schemas.xmlsoap.org/ws/2003/05/partner-link/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns1="http://www.trimble.com/BusinessSupport/v1/FirstReport" xmlns:client="http://xmlns.trimble.com/bpelNightHawkFirstReportDateProcess" name="bpelNightHawkFirstReportDateProcess" targetNamespace="http://xmlns.trimble.com/bpelNightHawkFirstReportDateProcess" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <plnk:partnerLinkType name="bpelNightHawkFirstReportDateProcess">
+    <plnk:role name="bpelNightHawkFirstReportDateProcessProvider">
+      <plnk:portType name="tns:bpelNightHawkFirstReportDateProcess" />
+    </plnk:role>
+  </plnk:partnerLinkType>
+  <types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+      <import schemaLocation="bpelNightHawkFirstReportDateProcess.xsd" namespace="http://xmlns.trimble.com/bpelNightHawkFirstReportDateProcess" />
+    </schema>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema">
+      <import schemaLocation="NightHawkFirstReportDate.xsd" namespace="http://www.trimble.com/BusinessSupport/v1/FirstReport" />
+    </schema>
+  </types>
+  <message name="bpelNightHawkFirstReportDateProcessRequestMessage">
+    <part name="payload" element="ns1:FirstReport" />
+  </message>
+  <message name="bpelNightHawkFirstReportDateProcessResponseMessage">
+    <part name="payload" element="client:bpelNightHawkFirstReportDateProcessProcessResponse" />
+  </message>
+  <portType name="bpelNightHawkFirstReportDateProcess">
+    <operation name="process">
+      <input message="client:bpelNightHawkFirstReportDateProcessRequestMessage" />
+      <output message="client:bpelNightHawkFirstReportDateProcessResponseMessage" />
+    </operation>
+  </portType>
+  <binding name="bpelNightHawkFirstReportDateProcessBinding" type="client:bpelNightHawkFirstReportDateProcess">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="process">
+      <soap:operation soapAction="process" style="document" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="bpelNightHawkFirstReportDateProcess">
+    <port name="bpelNightHawkFirstReportDateProcessPort" binding="client:bpelNightHawkFirstReportDateProcessBinding">
+      <soap:address location="http://usd-am-app-196.trimblecorp.net:7777/orabpel/vss/bpelNightHawkFirstReportDateProcess/1.1" />
+    </port>
+  </service>
+</definitions>

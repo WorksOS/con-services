@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<startStopTime:topic xmlns:startStopTime="http://www.cat.com/em/feed/v2/StartStopTime" xmlns:feed="http://www.cat.com/em/feed/v2/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v2/StartStopTime https://emfeed.cat.com/EMFeedFiles/schema/v2/StartStopTime.xsd">
+<nextBuffer>
+<url></url>
+<moreData>false</moreData>
+</nextBuffer>
+
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315446</masterMsgId>
+         <equipment>
+            <serialNumber>-BYM00415</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200019512Q1</moduleCode>
+         <moduleTime>2009-09-16 23:51:02</moduleTime>
+         <receivedTime>2009-09-17 05:00:31</receivedTime>
+      </header>
+      <totalStartStops>5</totalStartStops>
+      <startStopBlock>
+         <startStop>
+            <start>2009-09-16 06:44:56</start>
+            <stop>2009-09-16 08:35:42</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+         <startStop>
+            <start>2009-09-16 10:07:08</start>
+            <stop>2009-09-16 10:07:18</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+         <startStop>
+            <start>2009-09-16 10:32:46</start>
+            <stop>2009-09-16 11:53:55</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+         <startStop>
+            <start>2009-09-16 12:44:19</start>
+            <stop>2009-09-16 14:23:12</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+         <startStop>
+            <start>2009-09-16 15:06:31</start>
+            <stop>2009-09-16 16:31:31</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+      </startStopBlock>
+   </message>
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>119315586</masterMsgId>
+         <equipment>
+            <serialNumber>-A6G02420</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200041542Q1</moduleCode>
+         <moduleTime>2009-09-16 23:48:02</moduleTime>
+         <receivedTime>2009-09-17 05:01:54</receivedTime>
+      </header>
+      <totalStartStops>3</totalStartStops>
+      <startStopBlock>
+         <startStop>
+            <start>2009-09-16 10:14:12</start>
+            <stop>2009-09-16 10:30:17</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+         <startStop>
+            <start>2009-09-16 12:47:33</start>
+            <stop>2009-09-16 12:56:47</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+         <startStop>
+            <start>2009-09-16 13:59:52</start>
+            <stop>2009-09-16 14:26:35</stop>
+            <operatorId>0.0</operatorId>
+         </startStop>
+      </startStopBlock>
+   </message>
+</startStopTime:topic>

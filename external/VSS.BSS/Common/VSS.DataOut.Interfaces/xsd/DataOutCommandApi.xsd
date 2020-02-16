@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.myvisionlink.com/TelematicsData/Outbound" xmlns="http://www.myvisionlink.com/TelematicsData/Outbound">
+  <xs:simpleType name="guid">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="Asset" nillable="true" type="Asset" />
+  <xs:complexType name="Asset">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="AssetUid" type="guid" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MakeCode" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SerialNumber" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="VIN" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Block" nillable="true" type="Block" />
+  <xs:complexType name="Block" />
+  <xs:element name="AssetName" nillable="true" type="AssetName" />
+  <xs:complexType name="AssetName">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="1" name="Value" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DailyReportFrequency" nillable="true" type="DailyReportFrequency" />
+  <xs:complexType name="DailyReportFrequency">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Value" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DisableMaintenanceMode" nillable="true" type="DisableMaintenanceMode" />
+  <xs:complexType name="DisableMaintenanceMode">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DisableRapidReporting" nillable="true" type="DisableRapidReporting" />
+  <xs:complexType name="DisableRapidReporting">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="EnableMaintenanceMode" nillable="true" type="EnableMaintenanceMode" />
+  <xs:complexType name="EnableMaintenanceMode">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="StartUtc" type="xs:dateTime" />
+          <xs:element minOccurs="1" maxOccurs="1" name="DurationHours" type="xs:int" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="EnableRapidReporting" nillable="true" type="EnableRapidReporting" />
+  <xs:complexType name="EnableRapidReporting">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="StartModeConfiguration" nillable="true" type="StartModeConfiguration" />
+  <xs:complexType name="StartModeConfiguration">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="StartMode" type="MachineStartStatus" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="MachineStartStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NotConfigured" />
+      <xs:enumeration value="NoPending" />
+      <xs:enumeration value="NormalOperation" />
+      <xs:enumeration value="Derate" />
+      <xs:enumeration value="Disable" />
+      <xs:enumeration value="NormalOperationPending" />
+      <xs:enumeration value="DeratedPending" />
+      <xs:enumeration value="DisabledPending" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ReportingFrequency" nillable="true" type="ReportingFrequency" />
+  <xs:complexType name="ReportingFrequency">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Frequency" type="xs:int" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Interval" type="ReportingFrequencyInterval" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="ReportingFrequencyInterval">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Minute" />
+      <xs:enumeration value="Hour" />
+      <xs:enumeration value="Day" />
+      <xs:enumeration value="Week" />
+      <xs:enumeration value="Month" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="StartModeStatusUpdate" nillable="true" type="StartModeStatusUpdate" />
+  <xs:complexType name="StartModeStatusUpdate">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DigitalSwitchConfiguration" nillable="true" type="DigitalSwitchConfiguration" />
+  <xs:complexType name="DigitalSwitchConfiguration">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Number" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="1" name="SwitchOnDescription" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="SensitivitySeconds" type="xs:double" />
+          <xs:element minOccurs="1" maxOccurs="1" name="State" type="SwitchState" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Monitored" type="Monitored" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="SwitchState">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NotInstalled" />
+      <xs:enumeration value="NotConfigured" />
+      <xs:enumeration value="NormallyOpen" />
+      <xs:enumeration value="NormallyClosed" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="Monitored">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Always" />
+      <xs:enumeration value="KeyOffEngineOff" />
+      <xs:enumeration value="KeyOnEngineOff" />
+      <xs:enumeration value="KeyOnEngineOn" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="LocationStatusUpdate" nillable="true" type="LocationStatusUpdate" />
+  <xs:complexType name="LocationStatusUpdate">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MovementDurationSeconds" nillable="true" type="MovementDurationSeconds" />
+  <xs:complexType name="MovementDurationSeconds">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Value" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MovementRadiusKilometers" nillable="true" type="MovementRadiusKilometers" />
+  <xs:complexType name="MovementRadiusKilometers">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Value" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="MovementSpeedKilometers" nillable="true" type="MovementSpeedKilometers" />
+  <xs:complexType name="MovementSpeedKilometers">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Value" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="OdometerKilometersAdjustment" nillable="true" type="OdometerKilometersAdjustment" />
+  <xs:complexType name="OdometerKilometersAdjustment">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Before" nillable="true" type="xs:double" />
+          <xs:element minOccurs="1" maxOccurs="1" name="After" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ReportStartTimeUtc" nillable="true" type="ReportStartTimeUtc" />
+  <xs:complexType name="ReportStartTimeUtc">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Value" type="xs:dateTime" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="RuntimeHoursAdjustment" nillable="true" type="RuntimeHoursAdjustment" />
+  <xs:complexType name="RuntimeHoursAdjustment">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Before" nillable="true" type="xs:double" />
+          <xs:element minOccurs="1" maxOccurs="1" name="After" type="xs:double" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Point" nillable="true" type="Point" />
+  <xs:complexType name="Point">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="Latitude" type="xs:double" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Longitude" type="xs:double" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="PolygonSiteConfiguration" nillable="true" type="PolygonSiteConfiguration" />
+  <xs:complexType name="PolygonSiteConfiguration">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="SiteID" type="guid" />
+          <xs:element minOccurs="0" maxOccurs="1" name="Name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="Polygon" type="ArrayOfPoint" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfPoint">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="Point" nillable="true" type="Point" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="RemovePolygonSite" nillable="true" type="RemovePolygonSite" />
+  <xs:complexType name="RemovePolygonSite">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="SiteID" type="guid" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="DiscreteInputConfiguration" nillable="true" type="DiscreteInputConfiguration" />
+  <xs:complexType name="DiscreteInputConfiguration">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="Number" type="xs:int" />
+          <xs:element minOccurs="0" maxOccurs="1" name="Name" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="OpenDescription" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="1" name="ClosedDescription" type="xs:string" />
+          <xs:element minOccurs="1" maxOccurs="1" name="SensitivitySeconds" type="xs:double" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Enabled" type="xs:boolean" />
+          <xs:element minOccurs="1" maxOccurs="1" name="Monitored" nillable="true" type="Monitored" />
+          <xs:element minOccurs="0" maxOccurs="1" name="WakeUp" type="WakeUpWhenClosed" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="WakeUpWhenClosed" />
+  <xs:element name="Monitored" type="Monitored" />
+  <xs:element name="SwitchState" type="SwitchState" />
+  <xs:element name="WakeUpWhenClosed" nillable="true" type="WakeUpWhenClosed" />
+  <xs:element name="TamperLevelConfiguration" nillable="true" type="TamperLevelConfiguration" />
+  <xs:complexType name="TamperLevelConfiguration">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block">
+        <xs:sequence>
+          <xs:element minOccurs="1" maxOccurs="1" name="TamperLevel" type="TamperResistanceStatus" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:simpleType name="TamperResistanceStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NoPending" />
+      <xs:enumeration value="Off" />
+      <xs:enumeration value="TamperResistanceLevel1" />
+      <xs:enumeration value="TamperResistanceLevel2" />
+      <xs:enumeration value="TamperResistanceLevel3" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="TamperLevelStatusUpdate" nillable="true" type="TamperLevelStatusUpdate" />
+  <xs:complexType name="TamperLevelStatusUpdate">
+    <xs:complexContent mixed="false">
+      <xs:extension base="Block" />
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="Destination" nillable="true" type="Destination" />
+  <xs:complexType name="Destination">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Device" type="Device" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Asset" type="Asset" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="Device">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="DeviceId" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="DeviceType" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Device" nillable="true" type="Device" />
+  <xs:element name="Header" nillable="true" type="Header" />
+  <xs:complexType name="Header">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Destination" type="Destination" />
+      <xs:element minOccurs="0" maxOccurs="1" name="TimestampUtc" type="xs:dateTime" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="Message" nillable="true" type="Message" />
+  <xs:complexType name="Message">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="Header" type="Header" />
+      <xs:element minOccurs="0" maxOccurs="1" name="Blocks" type="ArrayOfChoice1" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ArrayOfChoice1">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+      <xs:element minOccurs="1" maxOccurs="1" name="PolygonSiteConfiguration" nillable="true" type="PolygonSiteConfiguration" />
+      <xs:element minOccurs="1" maxOccurs="1" name="EnableMaintenanceMode" nillable="true" type="EnableMaintenanceMode" />
+      <xs:element minOccurs="1" maxOccurs="1" name="OdometerKilometersAdjustment" nillable="true" type="OdometerKilometersAdjustment" />
+      <xs:element minOccurs="1" maxOccurs="1" name="StartModeStatusUpdate" nillable="true" type="StartModeStatusUpdate" />
+      <xs:element minOccurs="1" maxOccurs="1" name="DigitalSwitchConfiguration" nillable="true" type="DigitalSwitchConfiguration" />
+      <xs:element minOccurs="1" maxOccurs="1" name="DailyReportFrequency" nillable="true" type="DailyReportFrequency" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RemovePolygonSite" nillable="true" type="RemovePolygonSite" />
+      <xs:element minOccurs="1" maxOccurs="1" name="StartModeConfiguration" nillable="true" type="StartModeConfiguration" />
+      <xs:element minOccurs="1" maxOccurs="1" name="MovementDurationSeconds" nillable="true" type="MovementDurationSeconds" />
+      <xs:element minOccurs="1" maxOccurs="1" name="AssetName" nillable="true" type="AssetName" />
+      <xs:element minOccurs="1" maxOccurs="1" name="TamperLevelStatusUpdate" nillable="true" type="TamperLevelStatusUpdate" />
+      <xs:element minOccurs="1" maxOccurs="1" name="MovementRadiusKilometers" nillable="true" type="MovementRadiusKilometers" />
+      <xs:element minOccurs="1" maxOccurs="1" name="Block" nillable="true" type="Block" />
+      <xs:element minOccurs="1" maxOccurs="1" name="RuntimeHoursAdjustment" nillable="true" type="RuntimeHoursAdjustment" />
+      <xs:element minOccurs="1" maxOccurs="1" name="LocationStatusUpdate" nillable="true" type="LocationStatusUpdate" />
+      <xs:element minOccurs="1" maxOccurs="1" name="ReportStartTimeUtc" nillable="true" type="ReportStartTimeUtc" />
+      <xs:element minOccurs="1" maxOccurs="1" name="DisableMaintenanceMode" nillable="true" type="DisableMaintenanceMode" />
+      <xs:element minOccurs="1" maxOccurs="1" name="MovementSpeedKilometers" nillable="true" type="MovementSpeedKilometers" />
+      <xs:element minOccurs="1" maxOccurs="1" name="DiscreteInputConfiguration" nillable="true" type="DiscreteInputConfiguration" />
+      <xs:element minOccurs="1" maxOccurs="1" name="TamperLevelConfiguration" nillable="true" type="TamperLevelConfiguration" />
+      <xs:element minOccurs="1" maxOccurs="1" name="ReportingFrequency" nillable="true" type="ReportingFrequency" />
+      <xs:element minOccurs="1" maxOccurs="1" name="DisableRapidReporting" nillable="true" type="DisableRapidReporting" />
+      <xs:element minOccurs="1" maxOccurs="1" name="EnableRapidReporting" nillable="true" type="EnableRapidReporting" />
+    </xs:choice>
+  </xs:complexType>
+</xs:schema>

@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<engine:topic xmlns:engine="http://www.cat.com/em/feed/v4/EngineParameters" xmlns:feed="http://www.cat.com/em/feed/v4/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v4/EngineParameters https://emfeed.cat.com/EMFeedFiles/schema/v4/EngineParameters.xsd">
+<nextBuffer>
+<url></url>
+<moreData>false</moreData>
+</nextBuffer>
+
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>68383702</masterMsgId>
+         <equipment>
+            <serialNumber>-RAS01006</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0200052437Q1</moduleCode>
+         <moduleTime>2008-03-31 23:56:26</moduleTime>
+         <receivedTime>2008-04-01 06:00:29</receivedTime>
+      </header>
+      <maxFuel>
+         <value>26143</value>
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>409</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+         <value>1087</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>245</value>
+         <uom>Count</uom>
+      </starts>
+      <revolutions>
+         <value>5391853</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+   <message>
+      <header>
+         <messageId>0</messageId>
+         <masterMsgId>68383707</masterMsgId>
+         <equipment>
+            <serialNumber>-7PZ01419</serialNumber>
+            <make>CAT</make>
+         </equipment>
+         <moduleCode>-DQ0000031110Q1</moduleCode>
+         <moduleTime>2008-03-31 23:48:58</moduleTime>
+         <receivedTime>2008-04-01 06:00:34</receivedTime>
+      </header>
+      <maxFuel>
+         <value>0</value>
+         <uom>Gallons</uom>
+      </maxFuel>
+      <idleFuel>
+         <value>0</value>
+         <uom>Gallons</uom>
+      </idleFuel>
+      <idleTime>
+         <value>0</value>
+         <uom>Hours</uom>
+      </idleTime>
+      <starts>
+         <value>0</value>
+         <uom>Count</uom>
+      </starts>
+      <revolutions>
+         <value>0</value>
+         <uom>Count</uom>
+      </revolutions>
+   </message>
+   </engine:topic>

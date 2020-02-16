@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="66a5339f-709f-463f-b22c-375d4539b2c4" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="https://ihub-waf.am.trimblecorp.net/orabpel/vss/bpelNighthawkChangesPublishProcess/1.0?WSDL" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="NightHawkUpdate.xsd" MetadataType="Schema" ID="4f11897b-0277-46a8-9459-2321e77bc31e" SourceId="1" SourceUrl="https://ihub-waf.am.trimblecorp.net/orabpel/vss/bpelNighthawkChangesPublishProcess/NightHawkUpdate.xsd" />
+    <MetadataFile FileName="bpelNighthawkChangesPublishProcess.wsdl" MetadataType="Wsdl" ID="4d5c3834-9a7b-433d-9973-36e6f7308fea" SourceId="1" SourceUrl="https://ihub-waf.am.trimblecorp.net/orabpel/vss/bpelNighthawkChangesPublishProcess/1.0?WSDL" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

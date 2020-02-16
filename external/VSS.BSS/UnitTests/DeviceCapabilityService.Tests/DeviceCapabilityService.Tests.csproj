@@ -1,0 +1,229 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6020DD3F-B50A-40C9-9C45-81FB24611D51}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.Nighthawk.DeviceCapabilityService.Tests</RootNamespace>
+    <AssemblyName>VSS.Nighthawk.DeviceCapabilityService.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Local|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Local\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Alpha|AnyCPU'">
+    <OutputPath>bin\Alpha\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Production|AnyCPU'">
+    <OutputPath>bin\Production\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'IQA|AnyCPU'">
+    <OutputPath>bin\IQA\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="EasyHttp, Version=1.6.58.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="MassTransit">
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\MassTransit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq, Version=4.0.10827.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ThirdPartyDLLs\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Topshelf">
+      <HintPath>..\..\Common\AppSvrThirdPartyDLLs\Topshelf.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CacheManagerTests\CacheManagerTests.cs" />
+    <Compile Include="ConfigurationTests\ConfigTests.cs" />
+    <Compile Include="ControllerTests\AssetSettingsControllerTests.cs" />
+    <Compile Include="ControllerTests\SiteAdministrationControllerTests.cs" />
+    <Compile Include="ControllerTests\DeviceConfigControllerTests.cs" />
+    <Compile Include="ControllerTests\LocationUpdateRequestedControllerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL131DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL141DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL440DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\TM3000DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\SNM940DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\SNM451DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PLE641PLUSPL631DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PLE641DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PLE631DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL641DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL631DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL241DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL231DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\MANUALDEVICEDeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\DCM300DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\CrossCheckDeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL121DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL321DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL420DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL421DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\PL431DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\Series521DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\Series522DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\Series523DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\TAP66DeviceHandlerTests.cs" />
+    <Compile Include="DeviceHandlerTests\TrimTracDeviceHandler.cs" />
+    <Compile Include="DeviceHandlerTests\UnknownDeviceHandlerTests.cs" />
+    <Compile Include="DeviceQueryHelperTests.cs" />
+    <Compile Include="DeviceQueryModelBinderTests.cs" />
+    <Compile Include="Helpers\AssertEx.cs" />
+    <Compile Include="Helpers\Helpers.cs" />
+    <Compile Include="EventTypeHelperTests.cs" />
+    <Compile Include="InterfaceTests\EventTypeHelperTests.cs" />
+    <Compile Include="InterfaceTests\DeviceConfigFactoryTests.cs" />
+    <Compile Include="InterfaceTests\SiteAdministrationEventFactoryTests.cs" />
+    <Compile Include="ProcessorTests\AssetSettingsProcessorTests.cs" />
+    <Compile Include="ProcessorTests\DeviceConfigProcessorTests.cs" />
+    <Compile Include="ProcessorTests\LocationUpdateRequestedProcessorTests.cs" />
+    <Compile Include="ProcessorTests\SiteAdministrationProcessorTests.cs" />
+    <Compile Include="ProgramTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceBusExtensionsTests.cs" />
+    <Compile Include="StorageTests.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\VSS.DataOut.Interfaces\VSS.DataOut.Interfaces.csproj">
+      <Project>{D8252900-4795-4554-84D8-F7713741922C}</Project>
+      <Name>VSS.DataOut.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.DeviceCapabilityService.Interfaces\VSS.DeviceCapabilityService.Interfaces.csproj">
+      <Project>{99EC2DF5-A524-401D-9459-E11E8C7B771E}</Project>
+      <Name>VSS.DeviceCapabilityService.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.Hosted.VLCommon\VSS.Hosted.VLCommon.csproj">
+      <Project>{78A163DA-1F9C-4E23-B735-40B87408C25B}</Project>
+      <Name>VSS.Hosted.VLCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.MTSGateway.Interfaces\VSS.MTSGateway.Interfaces.csproj">
+      <Project>{B737A86F-B193-4166-BF94-E028A5491612}</Project>
+      <Name>VSS.MTSGateway.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.Nighthawk.ExternalDataTypes\VSS.Nighthawk.ExternalDataTypes.csproj">
+      <Project>{c1a38874-c53b-4b2e-9fae-805475f80df1}</Project>
+      <Name>VSS.Nighthawk.ExternalDataTypes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\VSS.BaseEvents\VSS.BaseEvents.csproj">
+      <Project>{c2fd2357-c0e3-4b01-958d-feed8ca382a4}</Project>
+      <Name>VSS.BaseEvents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\DeviceCapabilityService\DeviceCapabilityService.csproj">
+      <Project>{0BC19DBC-8317-4BCF-BB58-5B71BEF9C1B0}</Project>
+      <Name>DeviceCapabilityService</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ThirdPartyDLLs\Moq.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

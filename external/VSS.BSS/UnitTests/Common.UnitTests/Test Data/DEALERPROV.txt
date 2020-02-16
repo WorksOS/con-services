@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<equipmentData:Dealers xmlns:equipmentData="http://www.cat.com/equipmentdata/v1/EquipmentData" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/equipmentdata/v1/EquipmentData https://equipmentdatamc.rd.cat.com/EquipmentDataServices/schema/v1/EquipmentData.xsd">
+   <Dealer>
+      <code>TD999</code>
+      <name>Demo Dealer</name>
+   </Dealer>
+</equipmentData:Dealers>

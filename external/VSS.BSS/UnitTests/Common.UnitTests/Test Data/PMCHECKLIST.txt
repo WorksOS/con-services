@@ -1,0 +1,59 @@
+<PMCheckListStepsAndParts>
+	<smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/smi/v2/smiweb https://smi.cat.com/smiweb/schema/v2/pmSegmentList.xsd">
+	   <Segment code="2000">
+		  <Interval code="3000">
+			<ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+			<JobOperation>TAKE &amp; ANALYZE S-O-S SAMPLE FR ENGINE OIL</JobOperation>
+			<Parts code="4000">
+				<PartInfo code="SOS">
+					<PartNumber>SOS</PartNumber>
+					<Quantity>1.1</Quantity>
+					<Description>SCHEDULED OIL SAMPLE</Description>
+					<AdditionalNotes>ENGINE OIL SAMPLE</AdditionalNotes>
+				</PartInfo>
+				<PartInfo code="SOS2">
+					<PartNumber>SOS2</PartNumber>
+					<Quantity>1.1</Quantity>
+					<Description>SCHEDULED OIL SAMPLE2&amp;</Description>
+					<AdditionalNotes>ENGINE OIL SAMPLE2</AdditionalNotes>
+				</PartInfo>
+				<PartInfo code="Monkey Wrench">
+					<PartNumber>Monkey Wrench</PartNumber>
+					<Quantity>2.2</Quantity>
+					<Description>I'm a monkey wrench</Description>
+					<AdditionalNotes>Throw me in the works &amp; turn</AdditionalNotes>
+				</PartInfo>
+			</Parts>
+			<SMCS>
+				<Comp Description="ENGINE OIL">1348</Comp>
+				<Job Description="TAKE &amp; ANALYZE S-O-S SAMPLE FR">008</Job>
+			</SMCS>
+		  </Interval>
+		  <Interval code="3001">
+			<ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+			<JobOperation>CHECK FINAL DRIVE FLUID LEVEL</JobOperation>
+			<SMCS>
+				<Comp Description="FINAL DRIVE">4050</Comp>
+				<Job Description="CHECK">535</Job>
+				<Mod Description="FLUID LEVEL">FLV</Mod>
+			</SMCS>
+		  </Interval>
+		  <Interval code="3002">
+			<ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+			<JobOperation>PERFORM PM 1</JobOperation>
+			<Parts code="4001">
+				<PartInfo code="SOS">
+					<PartNumber>SOS</PartNumber>
+					<Quantity>999.9</Quantity>
+					<Description>SCHEDULED OIL SAMPLE &amp; UPDATED</Description>
+					<AdditionalNotes>ENGINE OIL SAMPLE &amp; UPDATED</AdditionalNotes>
+				</PartInfo>
+			</Parts>
+			<SMCS>
+				<Comp Description="PM 1">7501</Comp>
+				<Job Description="PERFORM">540</Job>
+			</SMCS>
+		  </Interval>
+	   </Segment>
+	</smiweb:product>
+</PMCheckListStepsAndParts>

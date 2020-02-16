@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ExpectedUtilizationEvents>
+  <UtilizationEvent>
+    <IsWorking>false</IsWorking>
+    <IsOn>true</IsOn>
+    <RuntimeEventTypeID>2</RuntimeEventTypeID>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <IsWorking>true</IsWorking>
+    <IsOn>true</IsOn>
+    <RuntimeEventTypeID>4</RuntimeEventTypeID>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <IsWorking>false</IsWorking>
+    <IsOn>false</IsOn>
+    <RuntimeEventTypeID>4</RuntimeEventTypeID>
+  </UtilizationEvent>
+  <UtilizationEvent>
+    <IsWorking>false</IsWorking>
+    <IsOn>false</IsOn>
+    <RuntimeEventTypeID>2</RuntimeEventTypeID>
+  </UtilizationEvent>
+</ExpectedUtilizationEvents>

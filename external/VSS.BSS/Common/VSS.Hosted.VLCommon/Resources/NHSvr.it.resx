@@ -1,0 +1,3160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PowerModeAlertMessageBodySMS" xml:space="preserve">
+    <value>Account avvisi VisionLink: {0} {1} impostato su: {2} per {3}/{4} a {5}</value>
+  </data>
+  <data name="2DProjectMonitoring" xml:space="preserve">
+    <value>Monitoraggio progetto 2D</value>
+  </data>
+  <data name="3DProjectMonitoring" xml:space="preserve">
+    <value>Monitoraggio progetto 3D</value>
+  </data>
+  <data name="deviceTypeTHREEPDATA" xml:space="preserve">
+    <value>3PDATA</value>
+  </data>
+  <data name="deviceTypeMTS523" xml:space="preserve">
+    <value>523</value>
+  </data>
+  <data name="zipDescription" xml:space="preserve">
+    <value>&lt;p&gt;These zip files contain example codes for the integration of VisionLink API. By default, the examples in these zip files invoke the production service. Please read the README.txt file to understand how to build the projects.&lt;/p&gt;&lt;p&gt;Note: These examples may contain VirtualSite Solutions' unpublished proprietary information which may constitute a trade secret and/or be confidential. These Sample codes are meant to be used purely for educational purposes assisting with usage and integration of VisionLink APIs and may not be copied or disclosed to others. Copyright notice is precautionary only, and does not imply publication.&lt;/p&gt;</value>
+  </data>
+  <data name="apiSiteIntroduction" xml:space="preserve">
+    <value>&lt;p&gt;Welcome to VisionLink API documentation. In this page you will find all the information you need to get started. You will also find a more detailed list of all the available services, sample codes and examples.&lt;/p&gt;&lt;p&gt;If you are not a programmer and just need an overview of the VisionLink API, please read the &lt;a href="/Docs/{0}/Overview.pdf" class="contentLink" target="_blank"&gt;Overview Document&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Read the &lt;a href="/Docs/{0}/ProgrammersReference.pdf" target="_blank" class="contentLink"&gt;Programmer’s Reference&lt;/a&gt; to learn more on how to use the API service. It is important that the VisionLink API users review this reference closely as it contains useful information that will expedite the integration process.&lt;/p&gt;&lt;p&gt; The first step in accessing the VisionLink API service is to acquire an API queue assignment as well as a non-expiring VisionLink API user account id/password. You can do that by contacting your account Administrator, requesting your choice of API topics, and following instructions in the Welcome email to set up your API password.&lt;/p&gt;</value>
+  </data>
+  <data name="diagnosticsDescription" xml:space="preserve">
+    <value>Una diagnostica fa riferimento a un processo all'interno di un modulo di controllo elettronico (ECM) per il rilevamento, la visualizzazione e/o la memorizzazione delle informazioni su una macchina o un motore anomali. Ogni diagnostica viene rappresentata da cinque elementi di dati: il livello diagnostico, l'ID modulo  (MID) che riporta la diagnostica, l'identificativo della diagnostica (o identificativo componente, CID), l'indicatore della modalità di errore (FMI) e l'indicazione di ora/data della diagnostica.</value>
+  </data>
+  <data name="NewAccountSupportEmailBody" xml:space="preserve">
+    <value>Creato un nuovo account VisionLink {0}. &lt;BR&gt;Dettagli account: &lt;BR&gt;Contatto primario: {1}&lt;BR&gt;  E-mail: {2}&lt;BR&gt; ID BSS: {3} &lt;BR&gt;Link attivazione: {4}</value>
+  </data>
+  <data name="notEnoughPolygonPoints" xml:space="preserve">
+    <value>Un perimetro di poligono deve contenere almeno 3 punti.</value>
+  </data>
+  <data name="SavCreationEmailHeader" xml:space="preserve">
+    <value>Si è creata una Vista macchine condivise per visualizzare le macchine seguenti nel conto VisionLink. Per ulteriori dettagli contattare {0} in  {1}</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="SpeedingAlertEmailBody" xml:space="preserve">
+    <value>Nome account: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo  avviso: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Limite velocità macchina: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Velocità massima: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Arresta accelerazione: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Durata: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {12}</value>
+  </data>
+  <data name="EngineIdleDailyAlertEmailBody" xml:space="preserve">
+    <value>Nome account: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Dalla data: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Alla data: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Durata: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Soglia: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Contaore: {14}</value>
+  </data>
+  <data name="PowerModeAlertEmailBody" xml:space="preserve">
+    <value>Nome account: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Modalità motoreower impostata su: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Durata: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Contaore: {11}</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;ECM Descrizione: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Asse/Numero pneumatico: {8}/{9}&lt;BR&gt;&amp;#xD;&amp;#xA;Pressione pneumatico (psi): {13}&lt;BR&gt;&amp;#xD;&amp;#xA; Temperatura pneumatico (&amp;#xb0;C): {14}&lt;BR&gt;&amp;#xD;&amp;#xA;Stato sensore: {15}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {16}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} dovuto alle ore {9}.&lt;BR&gt;&amp;#xD;&amp;#xA;Contaore: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} dovuto a {9}.&lt;BR&gt;&amp;#xD;&amp;#xA;Odometro: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {6}</value>
+  </data>
+  <data name="ZoneAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione:{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {9}</value>
+  </data>
+  <data name="RadioMachineSecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Nome account: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Modo avvio: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {9}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {9}</value>
+  </data>
+  <data name="FluidAnalysisAlertBody" xml:space="preserve">
+    <value>Nome account: {7}&lt;BR&gt; Priorità risultato: {0}&lt;BR&gt; ID macchina: {1}&lt;BR&gt; S/N: {2}&lt;BR&gt; &lt;BR&gt;Asset Make: {8}&lt;BR&gt; Asset Model: {9}&lt;BR&gt; Alert Type: {3}&lt;BR&gt; Nome account: {7}&lt;BR&gt; Priorità risultato: {0}&lt;BR&gt; ID macchina: {1}&lt;BR&gt; S/N: {2}&lt;BR&gt; Marca macchina: {8}&lt;BR&gt; Modello macchina: {9}&lt;BR&gt; Tipo avviso: {3}&lt;BR&gt; Titolo avviso: {4}&lt;BR&gt; N. Lab e provenienza: {5}&lt;BR&gt; Data prelievo campione: {6}</value>
+  </data>
+  <data name="AlertMessageBody" xml:space="preserve">
+    <value>Nome account: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {10}</value>
+  </data>
+  <data name="SecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Nome account: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Modo avvio: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Trigger di sicurezza: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {10}</value>
+  </data>
+  <data name="FuelLossAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Modifica livello carburante: -{7}%&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {11}</value>
+  </data>
+  <data name="LoadDistanceAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Distanza carico: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {11}</value>
+  </data>
+  <data name="FaultAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;ID macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Codice di errore: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Descrizione errore: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Gravità: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Posizione: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Conta ore: {13}</value>
+  </data>
+  <data name="SwitchAlertMessageBody" xml:space="preserve">
+    <value>Nome account: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;ID Macchina: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;S/N: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Marca macchina: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Modello macchina: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Tipo avviso: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Titolo avviso: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Descrizione interruttori: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Stato interruttori: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Data: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Luogo: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Sito: {8}</value>
+  </data>
+  <data name="accountType" xml:space="preserve">
+    <value>Tipo di account</value>
+  </data>
+  <data name="FluidAnalysisAlertSMS" xml:space="preserve">
+    <value>Account: {3}  Priorità risultato: {0} - N. lab.: {1} - Fonte: {2}</value>
+  </data>
+  <data name="acreAbbreviation" xml:space="preserve">
+    <value>Acri</value>
+  </data>
+  <data name="FluidActionRequiredPriority" xml:space="preserve">
+    <value>Azione richiesta</value>
+  </data>
+  <data name="actionTaken" xml:space="preserve">
+    <value>Azione eseguita</value>
+  </data>
+  <data name="actualEndDateTime" xml:space="preserve">
+    <value>Data fine corrente</value>
+  </data>
+  <data name="actualStartDateTime" xml:space="preserve">
+    <value>Data inizio corrente</value>
+  </data>
+  <data name="aemp" xml:space="preserve">
+    <value>AEMP</value>
+  </data>
+  <data name="aempRequestAccess" xml:space="preserve">
+    <value>AEMP: richiesta di accesso</value>
+  </data>
+  <data name="AlertCounts" xml:space="preserve">
+    <value>Conteggi avvisi</value>
+  </data>
+  <data name="AlertDetails" xml:space="preserve">
+    <value>Dettagli avvisi</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Tipo avviso</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>Avvisi</value>
+  </data>
+  <data name="alignment" xml:space="preserve">
+    <value>Allineamento</value>
+  </data>
+  <data name="AM" xml:space="preserve">
+    <value>AM</value>
+  </data>
+  <data name="eventDataDescription" xml:space="preserve">
+    <value>Un evento che si riferisce al rilevamento di una condizione predefinita o fuori intervallo o anormale di una macchina, motore o sistema monitorati. Ogni evento viene rappresentato da quattro elementi di dati: il livello evento, l'ID modulo (MID) che riporta l'evento, l'identificativo dell'evento e ora/data evento.</value>
+  </data>
+  <data name="apiDocumentation" xml:space="preserve">
+    <value>Documentazione API</value>
+  </data>
+  <data name="appliedFilter" xml:space="preserve">
+    <value>Filtro applicato</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Area</value>
+  </data>
+  <data name="asset" xml:space="preserve">
+    <value>Macchina</value>
+  </data>
+  <data name="ExclusionZoneAlertDescription" xml:space="preserve">
+    <value>Macchina entrata {0}</value>
+  </data>
+  <data name="SiteEntryAlertDescription" xml:space="preserve">
+    <value>Macchina entrata {0}</value>
+  </data>
+  <data name="InclusionZoneAlertDescription" xml:space="preserve">
+    <value>Macchina uscita {0}</value>
+  </data>
+  <data name="SiteExitAlertDescription" xml:space="preserve">
+    <value>Macchina uscita {0}</value>
+  </data>
+  <data name="assetFuelBurn" xml:space="preserve">
+    <value>Carburante consumato macchina</value>
+  </data>
+  <data name="assetFuelReport" xml:space="preserve">
+    <value>Rapporto carburante macchina</value>
+  </data>
+  <data name="AssetFuelSingleAsset" xml:space="preserve">
+    <value>Carburante macchina rapporto macchina singola</value>
+  </data>
+  <data name="NotReportingAlertDescription" xml:space="preserve">
+    <value>La macchina non ha segnalato da {0}</value>
+  </data>
+  <data name="AssetHealth" xml:space="preserve">
+    <value>Rapporto salute macchina</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Rapporto cronologia macchina</value>
+  </data>
+  <data name="assetHistoryReport" xml:space="preserve">
+    <value>Rapporto storico macchina</value>
+  </data>
+  <data name="assetID" xml:space="preserve">
+    <value>ID macchina</value>
+  </data>
+  <data name="assetIdSnVin" xml:space="preserve">
+    <value>ID macchina/Seriale#/VIN</value>
+  </data>
+  <data name="stateMileageReportTitle" xml:space="preserve">
+    <value>Chilometraggio macchina in base a rapporto Stato / Provincia</value>
+  </data>
+  <data name="AssetOff" xml:space="preserve">
+    <value>Macchina spenta</value>
+  </data>
+  <data name="AssetOn" xml:space="preserve">
+    <value>Macchina accesa</value>
+  </data>
+  <data name="assetOperation" xml:space="preserve">
+    <value>Funzionamento macchina</value>
+  </data>
+  <data name="AssetSecurityLastActivityReport" xml:space="preserve">
+    <value>Sicurezza macchina - Rapporto ultima attività</value>
+  </data>
+  <data name="AssetSecurityUserActivityReport" xml:space="preserve">
+    <value>Sicurezza macchina - Rapporto attività utente</value>
+  </data>
+  <data name="AssetSpeedingReport" xml:space="preserve">
+    <value>Rapporto velocità macchina</value>
+  </data>
+  <data name="assetType" xml:space="preserve">
+    <value>Tipo macchina</value>
+  </data>
+  <data name="assetUsageReport" xml:space="preserve">
+    <value>Rapporto utilizzo macchina</value>
+  </data>
+  <data name="AssetUsageSingleAsset" xml:space="preserve">
+    <value>Utilizzo macchina rapporto singolo macchina</value>
+  </data>
+  <data name="AssetUsageSummaryReport" xml:space="preserve">
+    <value>Rapporto riepilogo utilizzo macchina</value>
+  </data>
+  <data name="assetUtilization" xml:space="preserve">
+    <value>Utilizzo macchina</value>
+  </data>
+  <data name="assetUtilizationReport" xml:space="preserve">
+    <value>Rapporto utilizzo macchina</value>
+  </data>
+  <data name="assets" xml:space="preserve">
+    <value>Macchine</value>
+  </data>
+  <data name="attachmentUsage" xml:space="preserve">
+    <value>Utilizzo accessorio</value>
+  </data>
+  <data name="autoMapReset" xml:space="preserve">
+    <value>Ripristino Auto + Mappa</value>
+  </data>
+  <data name="autoIdle" xml:space="preserve">
+    <value>Regolazione automatica minimo</value>
+  </data>
+  <data name="automatic" xml:space="preserve">
+    <value>Automatico</value>
+  </data>
+  <data name="average" xml:space="preserve">
+    <value>Media</value>
+  </data>
+  <data name="averageFuelBurnRateForAssetsInReport" xml:space="preserve">
+    <value>Consumo medio di carburante delle macchine nel rapporto</value>
+  </data>
+  <data name="averagedSitetoSwitch" xml:space="preserve">
+    <value>Sito a interruttore media calcolata</value>
+  </data>
+  <data name="avg" xml:space="preserve">
+    <value>Med</value>
+  </data>
+  <data name="AwaitingFirstReport" xml:space="preserve">
+    <value>In attesa primo rapporto</value>
+  </data>
+  <data name="axleTireNo" xml:space="preserve">
+    <value>N. asse/pneumatico</value>
+  </data>
+  <data name="azimuth" xml:space="preserve">
+    <value>Azimut</value>
+  </data>
+  <data name="BackFilledLoadCount" xml:space="preserve">
+    <value>Conteggio carico riempimento di riporto eseguito</value>
+  </data>
+  <data name="backhoe" xml:space="preserve">
+    <value>Terna</value>
+  </data>
+  <data name="BackhoeLoaderOperation" xml:space="preserve">
+    <value>Rapporto funzionamento terna caricatrice</value>
+  </data>
+  <data name="backhoeOperation" xml:space="preserve">
+    <value>Funzionamento terna</value>
+  </data>
+  <data name="bar" xml:space="preserve">
+    <value>BAR</value>
+  </data>
+  <data name="baseSurface" xml:space="preserve">
+    <value>Superficie base</value>
+  </data>
+  <data name="bladeOnGround" xml:space="preserve">
+    <value>Lama a terra</value>
+  </data>
+  <data name="boostPressure" xml:space="preserve">
+    <value>Boost Pressure</value>
+  </data>
+  <data name="boostPressureHeader" xml:space="preserve">
+    <value>Boost Pressure Report</value>
+  </data>
+  <data name="boostTemperature" xml:space="preserve">
+    <value>Boost Temperature</value>
+  </data>
+  <data name="boostTemperatureHeader" xml:space="preserve">
+    <value>Boost Temperature Report</value>
+  </data>
+  <data name="bottomCyclesPerHour" xml:space="preserve">
+    <value>Fondo {0} - Cicli/Ora (Totale)</value>
+  </data>
+  <data name="bottomPayloadPerCycle" xml:space="preserve">
+    <value>Fondo {0} - Carico utile/Ciclo (Totale)</value>
+  </data>
+  <data name="bottomPayloadPerHour" xml:space="preserve">
+    <value>Fondo {0} - Carico utile/Ora (Totale)</value>
+  </data>
+  <data name="geolocationNotSupported" xml:space="preserve">
+    <value>Il browser non fornisce la posizione.</value>
+  </data>
+  <data name="bulking" xml:space="preserve">
+    <value>Rigonfiamento</value>
+  </data>
+  <data name="burnRate" xml:space="preserve">
+    <value>Tasso combustione</value>
+  </data>
+  <data name="celsiusAbbrev" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Annulla</value>
+  </data>
+  <data name="catDataFeeds" xml:space="preserve">
+    <value>Feed dati CAT</value>
+  </data>
+  <data name="catDataTopicsRequestAccess" xml:space="preserve">
+    <value>Argomenti dati CAT: richiesta di accesso</value>
+  </data>
+  <data name="centreLine" xml:space="preserve">
+    <value>Mezzeria</value>
+  </data>
+  <data name="catDataFeedFormDescription" xml:space="preserve">
+    <value>Selezionare tutti gli argomenti API desiderati e fare clic su “Richiesta email”. Si riceverà un e-mail entro una settimana, con le informazioni necessarie per l'accesso agli argomenti desiderati.</value>
+  </data>
+  <data name="claim" xml:space="preserve">
+    <value>Prendi possesso</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Fare clic qui</value>
+  </data>
+  <data name="clientBuildNumber" xml:space="preserve">
+    <value>Numero costruzione cliente</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Chiudere</value>
+  </data>
+  <data name="cmv" xml:space="preserve">
+    <value>CMV</value>
+  </data>
+  <data name="cmvChange" xml:space="preserve">
+    <value>Cambio CMV</value>
+  </data>
+  <data name="cmvChangeReport" xml:space="preserve">
+    <value>Rapporto cambio CMV</value>
+  </data>
+  <data name="cmvSummary" xml:space="preserve">
+    <value>Riepilogo CMV</value>
+  </data>
+  <data name="cmvSummaryReport" xml:space="preserve">
+    <value>Rapporto sommario CMV</value>
+  </data>
+  <data name="coarse" xml:space="preserve">
+    <value>Grezzo</value>
+  </data>
+  <data name="code" xml:space="preserve">
+    <value>Codice</value>
+  </data>
+  <data name="codeSamples" xml:space="preserve">
+    <value>Campioni codice</value>
+  </data>
+  <data name="compacted" xml:space="preserve">
+    <value>Compattato</value>
+  </data>
+  <data name="compaction" xml:space="preserve">
+    <value>Compattazione</value>
+  </data>
+  <data name="company" xml:space="preserve">
+    <value>Società</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Completo</value>
+  </data>
+  <data name="completeLayer" xml:space="preserve">
+    <value>Strato completato</value>
+  </data>
+  <data name="completeService" xml:space="preserve">
+    <value>Servizio completo</value>
+  </data>
+  <data name="Configured" xml:space="preserve">
+    <value>Configurato</value>
+  </data>
+  <data name="confirmed" xml:space="preserve">
+    <value>Confermato</value>
+  </data>
+  <data name="couldNotConvertDataModelBoundaryToGrid" xml:space="preserve">
+    <value>Errore del sistema coordinate nella conversione del modello dati per punti confine.</value>
+  </data>
+  <data name="emptyCoordinateSystem" xml:space="preserve">
+    <value>Il sistema coordinate è vuoto</value>
+  </data>
+  <data name="dcToIRecIncompleteCS" xml:space="preserve">
+    <value>Il sistema coordinate è incompleto (non completamente specificato) (DCToIRecord converter)</value>
+  </data>
+  <data name="virtualSiteSolutionsAllRightsReserved" xml:space="preserve">
+    <value>Copyright 2014 VirtualSite Solutions LLC. Tutti i diritti riservati.</value>
+  </data>
+  <data name="couldNotConvertCSDFile" xml:space="preserve">
+    <value>Impossibile convertire il file di definizione sistema coordinate</value>
+  </data>
+  <data name="coverage" xml:space="preserve">
+    <value>Copertura</value>
+  </data>
+  <data name="createdUser" xml:space="preserve">
+    <value>Creato da</value>
+  </data>
+  <data name="cubicYard" xml:space="preserve">
+    <value>yd3</value>
+  </data>
+  <data name="currentFilterSettings" xml:space="preserve">
+    <value>Impostazioni filtro corrente</value>
+  </data>
+  <data name="dcToIRecScaleOnlyProj" xml:space="preserve">
+    <value>La proiezione corrente dovrebbe essere scalata nelle dimensioni (DCToIRecord converter)</value>
+  </data>
+  <data name="customerInfo" xml:space="preserve">
+    <value>Info cliente</value>
+  </data>
+  <data name="customerName" xml:space="preserve">
+    <value>Nome cliente</value>
+  </data>
+  <data name="customerNumber" xml:space="preserve">
+    <value>Numero cliente</value>
+  </data>
+  <data name="cut" xml:space="preserve">
+    <value>Sterro</value>
+  </data>
+  <data name="cutFillReport" xml:space="preserve">
+    <value>Rapporto sterro-riempimento</value>
+  </data>
+  <data name="cutfill" xml:space="preserve">
+    <value>Sterro/Riempimento</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Rapporto Durata ciclo</value>
+  </data>
+  <data name="cycleTimeReport" xml:space="preserve">
+    <value>Rapporto durata ciclo</value>
+  </data>
+  <data name="cycles" xml:space="preserve">
+    <value>Cicli</value>
+  </data>
+  <data name="cyclesPerHour" xml:space="preserve">
+    <value>Cicli/Ora</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Quotidiano</value>
+  </data>
+  <data name="dailyIdleMessage" xml:space="preserve">
+    <value>Tempo di inattività giornaliero superiore a {0} {1}</value>
+  </data>
+  <data name="dataOccurredOutsideOfDateRange" xml:space="preserve">
+    <value>I dati si sono verificati al di fuori dell'intervallo date</value>
+  </data>
+  <data name="dataOccurredOutsideOfDay" xml:space="preserve">
+    <value>I dati si sono verificati al di fuori del giorno</value>
+  </data>
+  <data name="dataType" xml:space="preserve">
+    <value>Tipo dati</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Data creazione</value>
+  </data>
+  <data name="dateLastReported" xml:space="preserve">
+    <value>Ultima data riportata</value>
+  </data>
+  <data name="dateModuleAccessProvided" xml:space="preserve">
+    <value>Data assegnazione accesso a modulo</value>
+  </data>
+  <data name="dateRange" xml:space="preserve">
+    <value>Intervallo date</value>
+  </data>
+  <data name="dateTime" xml:space="preserve">
+    <value>Data/ora</value>
+  </data>
+  <data name="dcn" xml:space="preserve">
+    <value>DCN</value>
+  </data>
+  <data name="dealerCode" xml:space="preserve">
+    <value>Codice fornitore</value>
+  </data>
+  <data name="dealerName" xml:space="preserve">
+    <value>Nome concessionario</value>
+  </data>
+  <data name="UserAccountsReportEmailBody" xml:space="preserve">
+    <value>Gentile amministratore di VisionLink,&lt;br/&gt;&lt;br/&gt;Nello sforzo di aiutarla a meglio gestire il suo account, le abbiamo fornito un rapporto di tutti gli utenti VisionLink e questo le permette di revisionare e aggiornare il suo account in base alle proprie necessità. La preghiamo di fare il login a VisionLink e di eseguire le necessarie modifiche agli account utenti.&lt;br/&gt;&lt;br/&gt; La preghiamo di cliccare sul link sotto per scaricare il rapporto&lt;br/&gt;  {0} &lt;br/&gt;&lt;br/&gt;  Rispettosamente,&lt;br/&gt;&lt;br/&gt;Il team di VisionLink</value>
+  </data>
+  <data name="ApiUserEmailBody" xml:space="preserve">
+    <value>Gentile {0} {1},&lt;br&gt;&lt;br&gt; Benvenuto ai servizi  VisionLink® API. Cliccare sul link sotto per impostare la password ai servizi API. Il presente link rimane attivo per 30 giorni. Se il link sotto non dovesse funzionare, si prega di copiare e incollare lo stesso in una nuova finestra del browser.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;br&gt;Il vostro nome utente VisionLink API è {3}.&lt;br&gt;Avete l’accesso ai seguenti servizi API:&lt;br&gt;  {4} &lt;br&gt;&lt;br&gt;Nota: se non avete richiesto un nuovo account utente API o degli aggiornamenti al vostro account esistente, si prega di contattare il proprio amministratore.</value>
+  </data>
+  <data name="VerifyUserEmailBody" xml:space="preserve">
+    <value>Gentile {0} {1},&lt;br&gt;&lt;br&gt; Benvenuto in VisionLink®. Cliccare sul link sotto per verificare il nuovo o aggiornato account. Il presente link rimane attivo per 30 giorni. Se il link non dovesse funzionare, si prega di copiarlo e incollarlo sulla barra indirizzi di una nuova pagina del browser.&lt;br&gt;&lt;br&gt; {2}&lt;br&gt;&lt;/br&gt;Il vostro nome utente VisionLink è {3} e il vostro nome account è {4}. I nuovi utenti Visionlink verranno invitati a impostare la password durante la verifica.&lt;br&gt;&lt;br&gt;  Nota: se non avete richiesto un nuovo account utente o degli aggiornamenti all’account esistente, contattare il proprio amministratore.</value>
+  </data>
+  <data name="engineStartStopDescription" xml:space="preserve">
+    <value>Consente di avere un elenco delle ore di avvio e arresto per la macchina e la chiave MSS che identifica l'operatore, trasmessa giornalmente all'ora di avvio del rapporto o da altri orari se il buffer integrato raggiunge la propria capacità.</value>
+  </data>
+  <data name="loadCountsDescription" xml:space="preserve">
+    <value>Fornisce tutte le informazioni rilevanti in merito ai conteggi carico basati su Monitoraggio Carico &amp; Ciclo. Include Lat/Long, confini di geo-recinzione, data/ora, ID macchina e distanza percorsa duranti gli eventi carico e scarico.</value>
+  </data>
+  <data name="digitalSwitchStatusDescription" xml:space="preserve">
+    <value>Fornisce tutte le informazioni di stato rilevanti in merito alla modalità motore e l'interruttore digitale per accensione e spegnimento sul modulo Dispositivo. Comunica informazioni di stato particolari dell'ECM. Se uno dei byte che definisce è impostato su "Sì", questo indica che si è verificata una condizione particolare dall'ultimo byte di questo stato in un rapporto SMU o messaggio di stato.</value>
+  </data>
+  <data name="fenceAlertDescription" xml:space="preserve">
+    <value>Fornisce tutte le informazioni rilevanti di stato sull'attività di osservazione prodotto basata sull'orario e sugli avvisi generati dal modulo Dispositivo. Comunica lo stato particolare dell'ECM. Se uno dei byte definiti è impostato su "Sì", questo indica che si è verificata una determinata situazione dall'ultimo rapporto di questo byte di stato in un messaggio di stato o rapporto SMU.</value>
+  </data>
+  <data name="fuelDescription" xml:space="preserve">
+    <value>Fornisce info sull'uso carburante del modulo Dispositivo per consumo o livello. Le informazioni sul carburante vengono fornite come parte del messaggio di stato che contiene il consumo di carburante e/o la percentuale di carburante residuo.</value>
+  </data>
+  <data name="engineParametersDescription" xml:space="preserve">
+    <value>Fornisce importanti informazioni sul motore come Tempo di inattività e Carburante durante inattività per il modulo Dispositivo.</value>
+  </data>
+  <data name="smuLocationDescription" xml:space="preserve">
+    <value>Fornisce l'utilizzo dell'apparecchiatura per ora da quando il dispositivo viene acceso o dall'ultimo ripristino in aggiunta a latitudine e longitudine della macchina su cui è montato il dispositivo. L'ECM monitora la durata del funzionamento del motore e fornisce latitudine e longitudine del macchinario su cui il dispositivo è montato.</value>
+  </data>
+  <data name="derate" xml:space="preserve">
+    <value>Declassamento</value>
+  </data>
+  <data name="Derated" xml:space="preserve">
+    <value>Declassato</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="design" xml:space="preserve">
+    <value>Progetto</value>
+  </data>
+  <data name="desiredApiTopic" xml:space="preserve">
+    <value>Argomento API desiderato</value>
+  </data>
+  <data name="desiredDataFeed" xml:space="preserve">
+    <value>Feed dati desiderato</value>
+  </data>
+  <data name="destination" xml:space="preserve">
+    <value>Destinazione</value>
+  </data>
+  <data name="detailedAssetCycleTimeReport" xml:space="preserve">
+    <value>Rapporto dettagliato durata ciclo macchina</value>
+  </data>
+  <data name="detailedAssetLoadCountReport" xml:space="preserve">
+    <value>Rapporto dettagliato conteggio carico macchina</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Dispositivo</value>
+  </data>
+  <data name="deviceID" xml:space="preserve">
+    <value>ID dispositivo</value>
+  </data>
+  <data name="deviceType" xml:space="preserve">
+    <value>Tipo dispositivo</value>
+  </data>
+  <data name="diagnostic" xml:space="preserve">
+    <value>Diagnostica</value>
+  </data>
+  <data name="DiagnosticEvents" xml:space="preserve">
+    <value>Errore di diagnostica</value>
+  </data>
+  <data name="diagnosticsData" xml:space="preserve">
+    <value>Dati diagnostici</value>
+  </data>
+  <data name="digitalSwitchStatus" xml:space="preserve">
+    <value>Stato interruttore digitale</value>
+  </data>
+  <data name="direction" xml:space="preserve">
+    <value>Direzione</value>
+  </data>
+  <data name="directions" xml:space="preserve">
+    <value>Direzioni</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Disabilita</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabilitato</value>
+  </data>
+  <data name="distanceCategory" xml:space="preserve">
+    <value>Categoria distanza</value>
+  </data>
+  <data name="distanceDriven" xml:space="preserve">
+    <value>Distanza percorsa</value>
+  </data>
+  <data name="distanceTravelled" xml:space="preserve">
+    <value>Distanza percorsa</value>
+  </data>
+  <data name="doNotShowAgain" xml:space="preserve">
+    <value>Non visualizzare di nuovo</value>
+  </data>
+  <data name="firstEpochBladePositionDoesNotLieWithinProjectBoundary" xml:space="preserve">
+    <value>Non rientra nei confini spaziali del progetto</value>
+  </data>
+  <data name="dozer" xml:space="preserve">
+    <value>Bulldozer</value>
+  </data>
+  <data name="DueAt" xml:space="preserve">
+    <value>Scadenza a</value>
+  </data>
+  <data name="dueIn" xml:space="preserve">
+    <value>Scadenza tra</value>
+  </data>
+  <data name="DueOn" xml:space="preserve">
+    <value>Scadenza il</value>
+  </data>
+  <data name="dumpEvent" xml:space="preserve">
+    <value>Evento scarico</value>
+  </data>
+  <data name="dumpLocation" xml:space="preserve">
+    <value>Luogo scarico</value>
+  </data>
+  <data name="dumpTime" xml:space="preserve">
+    <value>Orario scarico</value>
+  </data>
+  <data name="dumpToDumpDistance" xml:space="preserve">
+    <value>Distanza da scarico a scarico</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Durata</value>
+  </data>
+  <data name="earliest" xml:space="preserve">
+    <value>Il più recente</value>
+  </data>
+  <data name="easting" xml:space="preserve">
+    <value>Verso Est</value>
+  </data>
+  <data name="efficiency" xml:space="preserve">
+    <value>Efficienza</value>
+  </data>
+  <data name="elevation" xml:space="preserve">
+    <value>Elevazione</value>
+  </data>
+  <data name="elevationReport" xml:space="preserve">
+    <value>Rapporto elevazione</value>
+  </data>
+  <data name="elevationType" xml:space="preserve">
+    <value>Tipo elevazione</value>
+  </data>
+  <data name="email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="emailRequest" xml:space="preserve">
+    <value>Richiesta e-mail</value>
+  </data>
+  <data name="endDate" xml:space="preserve">
+    <value>Data fine</value>
+  </data>
+  <data name="endDateSMU" xml:space="preserve">
+    <value>Data fine contaore</value>
+  </data>
+  <data name="endDateLocation" xml:space="preserve">
+    <value>Data fine posizione</value>
+  </data>
+  <data name="endDateMustBeHigher" xml:space="preserve">
+    <value>La data Fine deve essere maggiore della data Inizio</value>
+  </data>
+  <data name="endHourMeter" xml:space="preserve">
+    <value>Fine contatore</value>
+  </data>
+  <data name="endTime" xml:space="preserve">
+    <value>Ora fine</value>
+  </data>
+  <data name="GensetCoolingDown" xml:space="preserve">
+    <value>Raffreddamento motore</value>
+  </data>
+  <data name="engineCoolantTemperature" xml:space="preserve">
+    <value>Temperatura liquido refrigerante motore</value>
+  </data>
+  <data name="coolantTemperatureHeader" xml:space="preserve">
+    <value>Rapporto temperatura liquido refrigerante motore</value>
+  </data>
+  <data name="EngineIdle" xml:space="preserve">
+    <value>Rapporto motore in attività</value>
+  </data>
+  <data name="engineLubeOilTemperature" xml:space="preserve">
+    <value>Temperatura lubrificante motore</value>
+  </data>
+  <data name="lubeOilTemperatureHeader" xml:space="preserve">
+    <value>Rapporto temperatura lubrificante motore</value>
+  </data>
+  <data name="EngineOff" xml:space="preserve">
+    <value>Motore spento</value>
+  </data>
+  <data name="engineOilLevelIndication" xml:space="preserve">
+    <value>Engine Oil Level Indicator</value>
+  </data>
+  <data name="engineOilLevelPercent" xml:space="preserve">
+    <value>Engine Oil Level Indicator %</value>
+  </data>
+  <data name="engineOilLevelIndicatorHeader" xml:space="preserve">
+    <value>Engine Oil Level Indicator Report</value>
+  </data>
+  <data name="engineOilPressure" xml:space="preserve">
+    <value>Pressione olio motore</value>
+  </data>
+  <data name="oilPressureHeader" xml:space="preserve">
+    <value>Temperatura pressione olio motore</value>
+  </data>
+  <data name="EngineOn" xml:space="preserve">
+    <value>Motore acceso</value>
+  </data>
+  <data name="engineParameters" xml:space="preserve">
+    <value>Parametri motore</value>
+  </data>
+  <data name="GensetRunning" xml:space="preserve">
+    <value>Motore in funzionamento</value>
+  </data>
+  <data name="eventTypeEngineStart" xml:space="preserve">
+    <value>Avvio motore</value>
+  </data>
+  <data name="engineStartStopTime" xml:space="preserve">
+    <value>Ora avvio/arresto motore</value>
+  </data>
+  <data name="engineStatus" xml:space="preserve">
+    <value>Stato motore</value>
+  </data>
+  <data name="eventTypeEngineStop" xml:space="preserve">
+    <value>Arresto motore</value>
+  </data>
+  <data name="GensetEngineStopped" xml:space="preserve">
+    <value>Motore arrestato</value>
+  </data>
+  <data name="GensetEngineStopping" xml:space="preserve">
+    <value>Arresto motore in corso</value>
+  </data>
+  <data name="displayName" xml:space="preserve">
+    <value>Italiano</value>
+  </data>
+  <data name="equalsPassTarget" xml:space="preserve">
+    <value>Passo target uguale</value>
+  </data>
+  <data name="event" xml:space="preserve">
+    <value>Evento</value>
+  </data>
+  <data name="eventCount" xml:space="preserve">
+    <value>Conteggio eventi</value>
+  </data>
+  <data name="eventData" xml:space="preserve">
+    <value>Dati evento</value>
+  </data>
+  <data name="eventDescription" xml:space="preserve">
+    <value>Descrizione evento</value>
+  </data>
+  <data name="FaultCodes" xml:space="preserve">
+    <value>Errore evento</value>
+  </data>
+  <data name="eventType" xml:space="preserve">
+    <value>Tipo di evento</value>
+  </data>
+  <data name="excavator" xml:space="preserve">
+    <value>Scavatore</value>
+  </data>
+  <data name="ExcavatorUsageReport" xml:space="preserve">
+    <value>Rapporto utilizzo escavatore</value>
+  </data>
+  <data name="exception" xml:space="preserve">
+    <value>Si è verificata una eccezione</value>
+  </data>
+  <data name="ExclusionZone" xml:space="preserve">
+    <value>Zona di esclusione</value>
+  </data>
+  <data name="expectedRuntime" xml:space="preserve">
+    <value>Tempo di funzionamento previsto</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Data scadenza</value>
+  </data>
+  <data name="fahrenheitAbbrev" xml:space="preserve">
+    <value>F</value>
+  </data>
+  <data name="failedOnRequestProfile" xml:space="preserve">
+    <value>Richiesta profilo non riuscita</value>
+  </data>
+  <data name="failedOnRequestColourGraduatedProfile" xml:space="preserve">
+    <value>Richiesta di profilo graduato colore non riuscita</value>
+  </data>
+  <data name="submissionBaseConnectionFailure" xml:space="preserve">
+    <value>Impossibile connettersi al server Dati di produzione.</value>
+  </data>
+  <data name="failedToConvertClientWGSCoords" xml:space="preserve">
+    <value>Impossibile convertire coordinate WGS84 client</value>
+  </data>
+  <data name="dcToIRecFailedToCreateAZIParamsObject" xml:space="preserve">
+    <value>Impossibile creare un oggetto IAZIParameters (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedCreateCSIB" xml:space="preserve">
+    <value>Impossibile creare CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToCreateDCToIRecordConverter" xml:space="preserve">
+    <value>Impossibile creare DCtoIRecord converter</value>
+  </data>
+  <data name="failedToGetCSSettings" xml:space="preserve">
+    <value>Impossibile ottenere le impostazioni del sistema di coordinate</value>
+  </data>
+  <data name="dcToIRecFailedToGetGeoidInfo" xml:space="preserve">
+    <value>Impossibile ottenere le informazioni del geoide (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateConstGeoid" xml:space="preserve">
+    <value>Impossibile istanziare separazione costante geoide CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateDatumGrid" xml:space="preserve">
+    <value>Impossibile istanziare file griglia dato CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateEllipsoid" xml:space="preserve">
+    <value>Impossibile istanziare ellissoide CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateGridGeoid" xml:space="preserve">
+    <value>Impossibile istanziare griglia geoide CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMolodenskyDatum" xml:space="preserve">
+    <value>Impossibile istanziare dato Molodensky CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMultiRegressionDatum" xml:space="preserve">
+    <value>Impossibile istanziare dato parametro regressione multipla CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateSevenParamsDatum" xml:space="preserve">
+    <value>Impossibile istanziare dato a sette parametri CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateWGS84Datum" xml:space="preserve">
+    <value>Impossibile istanziare dato WGS84 CSIB  (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneBasedSite" xml:space="preserve">
+    <value>Impossibile istanziare sito su zona CSIB  (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneGroup" xml:space="preserve">
+    <value>Impossibile istanziare gruppo zona CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToLoadCSIB" xml:space="preserve">
+    <value>Impossibile caricare CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToNotifyCSChange" xml:space="preserve">
+    <value>Impossibile notificare che il sistema di coordinate è cambiato</value>
+  </data>
+  <data name="failedToObtainCoordinateSystemInterlock" xml:space="preserve">
+    <value>Impossibile ottenere interblocco sistema di coordinate</value>
+  </data>
+  <data name="dcToIRecFailedToOpenCalibrationReader" xml:space="preserve">
+    <value>Impossibile aprire lettore calibrazione (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToPerformCoordinateConversion" xml:space="preserve">
+    <value>Impossibile eseguire conversione coordinate.</value>
+  </data>
+  <data name="dcToIRecFailedToReadCSIB" xml:space="preserve">
+    <value>Impossibile leggere CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadInCSIB" xml:space="preserve">
+    <value>Impossibile leggere nel CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToReadLineworkBoundaryFile" xml:space="preserve">
+    <value>Impossibile leggere file linee confine.</value>
+  </data>
+  <data name="dcToIRecFailedToReadZone" xml:space="preserve">
+    <value>Impossibile leggere la zona (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadZoneBasedSite" xml:space="preserve">
+    <value>Impossibile leggere il sito su zone (DCToIRecord converter)</value>
+  </data>
+  <data name="submissionResultConnectionFailure" xml:space="preserve">
+    <value>Impossibile ricevere i risultati dal server Dati di produzione.</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemHorizontalAdjustmentFile" xml:space="preserve">
+    <value>Impossibile richiedere file di aggiustamento orizzontale del sistema di coordinate</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemProjectionFile" xml:space="preserve">
+    <value>Impossibile richiedere file proiezione sistema di coordinate</value>
+  </data>
+  <data name="failedToRequestDatamodelStatistics" xml:space="preserve">
+    <value>Impossibile richiedere statistiche modello dati</value>
+  </data>
+  <data name="failedToRequestFileFromTCC" xml:space="preserve">
+    <value>Impossibile richiedere file da TCC.</value>
+  </data>
+  <data name="failedToRequestSubgridExistenceMap" xml:space="preserve">
+    <value>Impossibile richiedere mappa esistenza griglia secondaria</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneInfo" xml:space="preserve">
+    <value>Impossibile impostare informazioni zona (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToWriteCSDStream" xml:space="preserve">
+    <value>Impossibile scrivere flusso definizione sistema coordinate</value>
+  </data>
+  <data name="dcToIRecFailedToWriteCSIB" xml:space="preserve">
+    <value>Impossibile scrivere CSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteDatum" xml:space="preserve">
+    <value>Impossibile scrivere dato (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteGeoid" xml:space="preserve">
+    <value>Impossibile scrivere geoide (DCToIRecord converter)</value>
+  </data>
+  <data name="faultCode" xml:space="preserve">
+    <value>Codice errore</value>
+  </data>
+  <data name="faultCodeDiagnostic" xml:space="preserve">
+    <value>Codice errore - diagnostica</value>
+  </data>
+  <data name="faultCodeEvent" xml:space="preserve">
+    <value>Codice errore - evento</value>
+  </data>
+  <data name="faultCodeDate" xml:space="preserve">
+    <value>Data codice errore</value>
+  </data>
+  <data name="faultCodeHourMeter" xml:space="preserve">
+    <value>Contaore codice errore</value>
+  </data>
+  <data name="faultCodeLocation" xml:space="preserve">
+    <value>Posizione codice errore</value>
+  </data>
+  <data name="faultCodeOdometer" xml:space="preserve">
+    <value>Odometro codice errore</value>
+  </data>
+  <data name="faultCodeReport" xml:space="preserve">
+    <value>Rapporto codice errore</value>
+  </data>
+  <data name="assetHealthSummary" xml:space="preserve">
+    <value>Rapporto riepilogo codici errore</value>
+  </data>
+  <data name="faultCodesLabel" xml:space="preserve">
+    <value>Codici errore</value>
+  </data>
+  <data name="faultCodeCounts" xml:space="preserve">
+    <value>Conteggi di errore</value>
+  </data>
+  <data name="faultCodeDetails" xml:space="preserve">
+    <value>Dettagli errore</value>
+  </data>
+  <data name="tagFileReaderCorruptedTAGFileData" xml:space="preserve">
+    <value>Il file contiene dati danneggiati.</value>
+  </data>
+  <data name="noGridEpochsFoundInTAGFile" xml:space="preserve">
+    <value>Il file contiene dati produzione non validi.</value>
+  </data>
+  <data name="submissionVerbConnectionFailure" xml:space="preserve">
+    <value>Invio file non riuscito.</value>
+  </data>
+  <data name="fill" xml:space="preserve">
+    <value>Riempimento</value>
+  </data>
+  <data name="locationAppSummary" xml:space="preserve">
+    <value>Trovare ultima posizione nota delle macchine.</value>
+  </data>
+  <data name="fine" xml:space="preserve">
+    <value>Fine</value>
+  </data>
+  <data name="firmwareVersion" xml:space="preserve">
+    <value>Versione firmware</value>
+  </data>
+  <data name="first" xml:space="preserve">
+    <value>Primo</value>
+  </data>
+  <data name="firstname" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="verifyEmailBodyFirstTimeUser" xml:space="preserve">
+    <value>Nuovi utenti: eseguire il login all'account VisionLink utilizzanto queste credenziali. &lt;/br&gt;Nome utente:{0},&lt;/br&gt; Password:{1}&lt;/br&gt;Verrà chiesto di modificare la password una volta eseguito il primo login.&lt;/br&gt;&lt;/br&gt;</value>
+  </data>
+  <data name="FleetEventCountReport" xml:space="preserve">
+    <value>Rapporto conteggio eventi macchine</value>
+  </data>
+  <data name="fleetFuelReport" xml:space="preserve">
+    <value>Rapporto carburante flotta</value>
+  </data>
+  <data name="FleetStatus" xml:space="preserve">
+    <value>Rapporto stato flotta</value>
+  </data>
+  <data name="fleetStatusReport" xml:space="preserve">
+    <value>Rapporto stati flotta</value>
+  </data>
+  <data name="fleetSummary" xml:space="preserve">
+    <value>Sommario flotta</value>
+  </data>
+  <data name="fleetSummaryCustomReport" xml:space="preserve">
+    <value>Rapporto personalizzato Riepilogo flotta</value>
+  </data>
+  <data name="FleetUsage" xml:space="preserve">
+    <value>Rapporto utilizzo flotta</value>
+  </data>
+  <data name="fleetUsageReport" xml:space="preserve">
+    <value>Rapporto utilizzo flotta</value>
+  </data>
+  <data name="FleetUtilization" xml:space="preserve">
+    <value>Rapporto utilizzo flotta</value>
+  </data>
+  <data name="FluidAnalysis" xml:space="preserve">
+    <value>Analisi dei fluidi</value>
+  </data>
+  <data name="fluidAnalysisReport" xml:space="preserve">
+    <value>Rapporto Analisi dei fluidi</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Avanti</value>
+  </data>
+  <data name="feetAbbrev" xml:space="preserve">
+    <value>ft</value>
+  </data>
+  <data name="fuel" xml:space="preserve">
+    <value>Carburante</value>
+  </data>
+  <data name="fuelPercentRemaining" xml:space="preserve">
+    <value>% carburante restante</value>
+  </data>
+  <data name="fuelBurnPieChartTitle" xml:space="preserve">
+    <value>Consumo carburante</value>
+  </data>
+  <data name="fuelBurned" xml:space="preserve">
+    <value>Carburante consumato</value>
+  </data>
+  <data name="fuelBurnedByAsset" xml:space="preserve">
+    <value>Carburante consumato per macchina</value>
+  </data>
+  <data name="fuelBurnedByAssetsTopTen" xml:space="preserve">
+    <value>Carburante consumato per macchina: Top 10</value>
+  </data>
+  <data name="fuelConsumedIdle" xml:space="preserve">
+    <value>Carburante consumato (in inattività)</value>
+  </data>
+  <data name="fuelConsumedTotal" xml:space="preserve">
+    <value>Carburante consumato (totale)</value>
+  </data>
+  <data name="fuelInformation" xml:space="preserve">
+    <value>Informazioni carburante</value>
+  </data>
+  <data name="fuelLevel" xml:space="preserve">
+    <value>Livello carburante</value>
+  </data>
+  <data name="fuelLevelIndicator" xml:space="preserve">
+    <value>Indicatore livello carburante</value>
+  </data>
+  <data name="fuelLevelPercent" xml:space="preserve">
+    <value>Indicatore % livello carburante</value>
+  </data>
+  <data name="levelIndicatorHeader" xml:space="preserve">
+    <value>Rapporto indicatore livello carburante</value>
+  </data>
+  <data name="FuelLoss" xml:space="preserve">
+    <value>Perdita carburante</value>
+  </data>
+  <data name="FuelLossAlertDescription" xml:space="preserve">
+    <value>Perdita carburante di {0}%</value>
+  </data>
+  <data name="fuelPercentageRemaining" xml:space="preserve">
+    <value>Percentuale carburante rimanente</value>
+  </data>
+  <data name="fuelRemaining" xml:space="preserve">
+    <value>Carburante rimanente</value>
+  </data>
+  <data name="fuelUtilizationTopic" xml:space="preserve">
+    <value>Utilizzo carburante</value>
+  </data>
+  <data name="FuelUtilization" xml:space="preserve">
+    <value>Rapporto utilizzo carburante</value>
+  </data>
+  <data name="fuelUtilizationReport" xml:space="preserve">
+    <value>Rapporto uso carburante</value>
+  </data>
+  <data name="FullSiteURL" xml:space="preserve">
+    <value>Sito completo</value>
+  </data>
+  <data name="gal" xml:space="preserve">
+    <value>gal</value>
+  </data>
+  <data name="galhr" xml:space="preserve">
+    <value>gal/ora</value>
+  </data>
+  <data name="gallonsBarChartXAxisLabel" xml:space="preserve">
+    <value>Galloni</value>
+  </data>
+  <data name="gallonshr" xml:space="preserve">
+    <value>Galloni/ora</value>
+  </data>
+  <data name="gallonsBurned" xml:space="preserve">
+    <value>Galloni consumati</value>
+  </data>
+  <data name="geoFenceAlert" xml:space="preserve">
+    <value>Allerta confine GEO</value>
+  </data>
+  <data name="gpsAccuracy" xml:space="preserve">
+    <value>Precisione GPS</value>
+  </data>
+  <data name="GPSAntennaDisconnectedTimerExpired" xml:space="preserve">
+    <value>Antenna GPS disconnessa</value>
+  </data>
+  <data name="GPSGSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Perdita segnale GPS/GSM</value>
+  </data>
+  <data name="GridReport" xml:space="preserve">
+    <value>Rapporto griglia</value>
+  </data>
+  <data name="gridSize" xml:space="preserve">
+    <value>Dimensioni griglia</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>Gruppo</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Gruppi</value>
+  </data>
+  <data name="GSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Perdita segnale GSM</value>
+  </data>
+  <data name="hectareAbbreviation" xml:space="preserve">
+    <value>Ha</value>
+  </data>
+  <data name="hardwareDataError" xml:space="preserve">
+    <value>Errore dati hardware</value>
+  </data>
+  <data name="ForgotPasswordEmailBody" xml:space="preserve">
+    <value>Salve {0},&lt;BR /&gt;&lt;BR /&gt;Il vostro nome utente VisionLink è {1}.&lt;BR /&gt;&lt;BR /&gt;Per effettuare il reset della password, fare clic sul link sottostante (o copiare e incollare l'URL in una nuova finestra del browser):&lt;BR /&gt;&lt;BR /&gt; {2}&lt;BR /&gt;&lt;BR /&gt;Per la vostra sicurezza, questo link sarà attivo per 24 ore e solo per un tentativo riuscito di reset della password.  &lt;BR /&gt;&lt;BR /&gt;Se non si è richiesto di effettuare il reset della password, è probabile che un altro utente abbia inserito il vostro indirizzo email o nome utente per errore mentre tentava di resettare una password. In questo caso, si prega di ignorare questa email. &lt;BR /&gt;&lt;BR /&gt;Cordiali saluti,&lt;BR /&gt;Team di Supporto VisionLink</value>
+  </data>
+  <data name="NewAccountRegEmailBody" xml:space="preserve">
+    <value>Benvenuti {0}&lt;BR&gt;&lt;BR&gt; Questa e-mail è stata inviata per informare della creazione di un account VisionLink con il nome {1}&lt;BR&gt;&lt;BR&gt;Il passo successivo è andare alla pagina di registrazione account VisionLink, dove è possibile attivare l'account creando nome utente e password. Tali credenziali possono poi essere usate per accedere al proprio account usando l'applicazione web VisionLink.&lt;BR&gt;&lt;BR&gt;Fare clic sul link in basso per andare alla pagina di registrazione account VisionLink:&lt;BR&gt;{2}&lt;BR&gt;&lt;BR&gt;Il link in alto non sarà più utilizzabile una volta attivato l'account. Tuttavia è possibile creare accessi aggiuntivi direttamente nell'applicazione web VisionLink, una volta completata la registrazione.&lt;BR&gt;&lt;BR&gt;Dopo aver attivato l'account, è possibile accedere all'applicazione web VisionLink dal seguente link:&lt;BR&gt;{3} </value>
+  </data>
+  <data name="OnDemandEmailBody" xml:space="preserve">
+    <value>Benvenuti,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Fare clic sul link sottostante per scaricare il rapporto &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Nota: ricevete questa email poichè siete stati elencanti come destinatari di questo rapporto. Questo collegamento sarà attivo 30 giorni. Per eventuali richieste, contattare l'amministratore VisionLink.</value>
+  </data>
+  <data name="ScheduleReportEmailBodyWithoutUnsubscribe" xml:space="preserve">
+    <value>Salve,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Cliccare sul link sotto per scaricare il rapporto &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Nota: state ricevendo la presente email perché siete presenti nell’elenco destinatari rapporto pianificato. Il presente link rimane attivo per 30 giorni. Per ulteriori domande, si prega di contattare il proprio amministratore VisionLink.&lt;BR /&gt;&lt;BR /&gt;*** I rapporti pianificati giornalieri, settimanali e mensili dello Stato flotta, Servizio scaduto e Vista macchine condivise contengono informazioni aggiornate all'apertura del rapporto.</value>
+  </data>
+  <data name="ScheduleReportEmailBody" xml:space="preserve">
+    <value>Benvenuti,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Fare clic sul link sottostante per scaricare il rapporto &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Nota: ricevete questa email poichè siete stati elencanti come destinatari di questo rapporto pianificato. Questo collegamento sarà attivo 30 giorni. Per eventuali richieste, contattare l'amministratore VisionLink.&lt;BR /&gt;&lt;BR /&gt;Se desiderate annullare la sottoscrizione per la ricezione di questo rapporto, fare clic su {2}. &lt;BR /&gt;&lt;BR /&gt;*** I rappporti pianificati giornalieri, settimanalie mensili per lo stato della flotta, la manutenzione dovuta e la Vista macchina condivisa contengono informazioni aggiornate basate su quando il rapporto è aperto.</value>
+  </data>
+  <data name="HH" xml:space="preserve">
+    <value>HH</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Alto</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Il più alto</value>
+  </data>
+  <data name="home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="hourMeter" xml:space="preserve">
+    <value>Contaore</value>
+  </data>
+  <data name="hours" xml:space="preserve">
+    <value>Ore</value>
+  </data>
+  <data name="hoursOfUse" xml:space="preserve">
+    <value>Ore di utilizzo</value>
+  </data>
+  <data name="hoursLocation" xml:space="preserve">
+    <value>Ore/posizione</value>
+  </data>
+  <data name="hr" xml:space="preserve">
+    <value>ora</value>
+  </data>
+  <data name="hrs" xml:space="preserve">
+    <value>ore</value>
+  </data>
+  <data name="hybrid" xml:space="preserve">
+    <value>Ibrido</value>
+  </data>
+  <data name="hydraulicOilTemperature" xml:space="preserve">
+    <value>Temperatura olio idraulico</value>
+  </data>
+  <data name="hydraulicTemperatureHeader" xml:space="preserve">
+    <value>Rapporto temperatura olio idraulico</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>In inattività</value>
+  </data>
+  <data name="idleEventsMessage" xml:space="preserve">
+    <value>Eventi in inattività per oltre {0} {1}</value>
+  </data>
+  <data name="idleFuelBurned" xml:space="preserve">
+    <value>Consumo di carburante in inattività</value>
+  </data>
+  <data name="idleHourMeter" xml:space="preserve">
+    <value>Conta ore in inattività</value>
+  </data>
+  <data name="idleHours" xml:space="preserve">
+    <value>Ore di inattività</value>
+  </data>
+  <data name="idleTime" xml:space="preserve">
+    <value>Durata in inattività</value>
+  </data>
+  <data name="idleTimeOut" xml:space="preserve">
+    <value>Timeout inattività</value>
+  </data>
+  <data name="idling" xml:space="preserve">
+    <value>In inattività</value>
+  </data>
+  <data name="idlingFuelBurned" xml:space="preserve">
+    <value>Carburante utilizzato in inattività</value>
+  </data>
+  <data name="IgnitionOff" xml:space="preserve">
+    <value>Accensione inserita</value>
+  </data>
+  <data name="IgnitionOn" xml:space="preserve">
+    <value>Accensione disinserita</value>
+  </data>
+  <data name="ignitionStatus" xml:space="preserve">
+    <value>Stato accensione</value>
+  </data>
+  <data name="inProgress" xml:space="preserve">
+    <value>In avanzamento</value>
+  </data>
+  <data name="inactiveNoRuntime" xml:space="preserve">
+    <value>Inattivo - Nessun Tempo di funzionamento</value>
+  </data>
+  <data name="includeSupercededLifts" xml:space="preserve">
+    <value>Includi montacarichi sostituiti</value>
+  </data>
+  <data name="InclusionZone" xml:space="preserve">
+    <value>Zona d'inclusione</value>
+  </data>
+  <data name="incomplete" xml:space="preserve">
+    <value>Incompleto</value>
+  </data>
+  <data name="incorrectUsernameOrPassword" xml:space="preserve">
+    <value>Nome utente o password non corrette.</value>
+  </data>
+  <data name="incorrectWorkingTime" xml:space="preserve">
+    <value>Valore errato per calcolo Tempo di funzionamento</value>
+  </data>
+  <data name="dcToIRecInifiniteAdjustmentSlopeValue" xml:space="preserve">
+    <value>Aggiustamento valore pendenza infinito (DCToIRecord converter)</value>
+  </data>
+  <data name="insufficientDataForCalculation" xml:space="preserve">
+    <value>Dati insufficienti per il calcolo</value>
+  </data>
+  <data name="singleDayCalloutNegativeValue" xml:space="preserve">
+    <value>Precisione contaore tempo di funzionamento insufficiente per un calcolo valido.</value>
+  </data>
+  <data name="dateRangeCalloutNegativeValue" xml:space="preserve">
+    <value>Precisione contaore tempo di funzionamento insufficiente  per calcolo valido nell'intervallo di date</value>
+  </data>
+  <data name="introduction" xml:space="preserve">
+    <value>Introduzione</value>
+  </data>
+  <data name="invalidCoordinateRange" xml:space="preserve">
+    <value>Intervallo coordinate non valido</value>
+  </data>
+  <data name="suppliedDataModelBoundaryContainsInsufficeintVertices" xml:space="preserve">
+    <value>Confine modello dati non valido.</value>
+  </data>
+  <data name="dcToIRecInvalidEllipsoid" xml:space="preserve">
+    <value>Ellissoide non valido (DCToIRecord converter)</value>
+  </data>
+  <data name="InValidReportRequest" xml:space="preserve">
+    <value>Richiesta rapporto Excel non valida.</value>
+  </data>
+  <data name="InvalidSeedPosition" xml:space="preserve">
+    <value>Posizione di serie LLH/NE non valida nel file tag</value>
+  </data>
+  <data name="InvalidMSSKey" xml:space="preserve">
+    <value>Chiave MSS non valida</value>
+  </data>
+  <data name="invalidResponseCode" xml:space="preserve">
+    <value>Codice risposta non valido</value>
+  </data>
+  <data name="invalidSubscriptions" xml:space="preserve">
+    <value>Abbonamenti non validi.</value>
+  </data>
+  <data name="invalidTagFile" xml:space="preserve">
+    <value>File TAG non valido.</value>
+  </data>
+  <data name="invalidValueDetected" xml:space="preserve">
+    <value>Rilevato valore non valido</value>
+  </data>
+  <data name="singleDayCalloutSpike" xml:space="preserve">
+    <value>Rilevato valore non valido</value>
+  </data>
+  <data name="dateRangeCalloutSpike" xml:space="preserve">
+    <value>Rilevato valore non valido nell'intervallo di date</value>
+  </data>
+  <data name="kilometers" xml:space="preserve">
+    <value>Chilometri</value>
+  </data>
+  <data name="km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kmL" xml:space="preserve">
+    <value>km/l</value>
+  </data>
+  <data name="kms" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kpa" xml:space="preserve">
+    <value>kPa</value>
+  </data>
+  <data name="kph" xml:space="preserve">
+    <value>km/h</value>
+  </data>
+  <data name="leftAbbrev" xml:space="preserve">
+    <value>S</value>
+  </data>
+  <data name="ltr" xml:space="preserve">
+    <value>l</value>
+  </data>
+  <data name="ltrhr" xml:space="preserve">
+    <value>l/ora</value>
+  </data>
+  <data name="FluidAnalysisAlertDescription" xml:space="preserve">
+    <value>Lab #:  {0} Compartimento: {1} Gravità:</value>
+  </data>
+  <data name="labNumber" xml:space="preserve">
+    <value>Numero lab</value>
+  </data>
+  <data name="language" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="last" xml:space="preserve">
+    <value>Ultimo</value>
+  </data>
+  <data name="lastKnownLocation" xml:space="preserve">
+    <value>Ultima posizione conosciuta</value>
+  </data>
+  <data name="lastKnownStatus" xml:space="preserve">
+    <value>Ultimo stato conosciuto</value>
+  </data>
+  <data name="lastReportedStatus" xml:space="preserve">
+    <value>Ultimo stato conosciuto</value>
+  </data>
+  <data name="lastLogin" xml:space="preserve">
+    <value>Ultimo login</value>
+  </data>
+  <data name="lastLoginDate" xml:space="preserve">
+    <value>Data ultimo login</value>
+  </data>
+  <data name="lastloginUTC" xml:space="preserve">
+    <value>Ultimo login UTC</value>
+  </data>
+  <data name="lastname" xml:space="preserve">
+    <value>Cognome</value>
+  </data>
+  <data name="lastReported" xml:space="preserve">
+    <value>Ultimo riportato</value>
+  </data>
+  <data name="lastReportedLocation" xml:space="preserve">
+    <value>Ultima posizione registrata</value>
+  </data>
+  <data name="lastReportedTime" xml:space="preserve">
+    <value>Ultimo orario riportato</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Ultimo aggiornamento</value>
+  </data>
+  <data name="lastNDays" xml:space="preserve">
+    <value>Gli ultimi {0} giorni</value>
+  </data>
+  <data name="latitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Lat</value>
+  </data>
+  <data name="latest" xml:space="preserve">
+    <value>Il più recente</value>
+  </data>
+  <data name="latestUserActivity" xml:space="preserve">
+    <value>Attività ultimo utente</value>
+  </data>
+  <data name="LaunchVLApp" xml:space="preserve">
+    <value>Lancia applicazioni VisionLink</value>
+  </data>
+  <data name="leaseOwnership" xml:space="preserve">
+    <value>Proprietario leasing</value>
+  </data>
+  <data name="passesLessthan" xml:space="preserve">
+    <value>Meno di {0} passi</value>
+  </data>
+  <data name="lessThanNPercent" xml:space="preserve">
+    <value>Meno del {0}%</value>
+  </data>
+  <data name="level0" xml:space="preserve">
+    <value>Livello 0</value>
+  </data>
+  <data name="level1" xml:space="preserve">
+    <value>Livello 1</value>
+  </data>
+  <data name="level2" xml:space="preserve">
+    <value>Livello 2</value>
+  </data>
+  <data name="level3" xml:space="preserve">
+    <value>Livello 3</value>
+  </data>
+  <data name="lifetimeFuel" xml:space="preserve">
+    <value>Carburante totale ciclo vita</value>
+  </data>
+  <data name="lifetimeFuelMeter" xml:space="preserve">
+    <value>Contatore carburante totale ciclo vita</value>
+  </data>
+  <data name="lifetimeIdleFuelMeter" xml:space="preserve">
+    <value>Contatore carburante in inattività totale ciclo vita</value>
+  </data>
+  <data name="layerNumber" xml:space="preserve">
+    <value>Sollevamento</value>
+  </data>
+  <data name="lift" xml:space="preserve">
+    <value>Sollevamento</value>
+  </data>
+  <data name="InValidLink" xml:space="preserve">
+    <value>Il collegamento è scaduto.</value>
+  </data>
+  <data name="litersBarChartXAxisLabel" xml:space="preserve">
+    <value>Litri</value>
+  </data>
+  <data name="litershr" xml:space="preserve">
+    <value>Litri/ora</value>
+  </data>
+  <data name="litersBurned" xml:space="preserve">
+    <value>Litri consumati</value>
+  </data>
+  <data name="loadAndCycleMonitoring" xml:space="preserve">
+    <value>Monitoraggio carico &amp; ciclo</value>
+  </data>
+  <data name="LoadCount" xml:space="preserve">
+    <value>Rapporto Conteggio carico</value>
+  </data>
+  <data name="loadCountReport" xml:space="preserve">
+    <value>Rapporto conteggio carico</value>
+  </data>
+  <data name="loadCounts" xml:space="preserve">
+    <value>Conteggio carichi</value>
+  </data>
+  <data name="loadCountsAndCycleTimes" xml:space="preserve">
+    <value>Conteggio carichi e orari ciclo</value>
+  </data>
+  <data name="LoadDistance" xml:space="preserve">
+    <value>Distanza carico</value>
+  </data>
+  <data name="LoadDistanceAlertDescription" xml:space="preserve">
+    <value>Distanza carico {0}</value>
+  </data>
+  <data name="loadEvent" xml:space="preserve">
+    <value>Evento carico</value>
+  </data>
+  <data name="loadLocation" xml:space="preserve">
+    <value>Zona carico</value>
+  </data>
+  <data name="loadQuality" xml:space="preserve">
+    <value>Qualità carico</value>
+  </data>
+  <data name="loadTime" xml:space="preserve">
+    <value>Orario carico</value>
+  </data>
+  <data name="loadToDumpDistance" xml:space="preserve">
+    <value>Distanza da carico a scarico</value>
+  </data>
+  <data name="loadToLoadDistance" xml:space="preserve">
+    <value>Distanza da carico a carico</value>
+  </data>
+  <data name="assetLoadedLoading" xml:space="preserve">
+    <value>Caricato da</value>
+  </data>
+  <data name="loader" xml:space="preserve">
+    <value>Pala meccanica</value>
+  </data>
+  <data name="loaderOperation" xml:space="preserve">
+    <value>Funzionamento pala meccanica</value>
+  </data>
+  <data name="loads" xml:space="preserve">
+    <value>Carichi</value>
+  </data>
+  <data name="locate" xml:space="preserve">
+    <value>Localizzare</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Posizione</value>
+  </data>
+  <data name="geolocationPositionUnavailable" xml:space="preserve">
+    <value>Posizione non disponibile.</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Accesso</value>
+  </data>
+  <data name="loginCreationDate" xml:space="preserve">
+    <value>Data creazione login</value>
+  </data>
+  <data name="loginfailed" xml:space="preserve">
+    <value>Login non riuscito</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Logout</value>
+  </data>
+  <data name="longitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Lon</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Basso</value>
+  </data>
+  <data name="LowSensorBattery" xml:space="preserve">
+    <value>Batteria scarica</value>
+  </data>
+  <data name="LowFuel" xml:space="preserve">
+    <value>Carburante scarso</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Il più basso</value>
+  </data>
+  <data name="metersAbbrev" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="m3" xml:space="preserve">
+    <value>m3</value>
+  </data>
+  <data name="meterUpdateSummary" xml:space="preserve">
+    <value>Ore macchinario</value>
+  </data>
+  <data name="machineIdleEvent" xml:space="preserve">
+    <value>Inattività macchina</value>
+  </data>
+  <data name="machineName" xml:space="preserve">
+    <value>Nome macchina</value>
+  </data>
+  <data name="make" xml:space="preserve">
+    <value>Marca</value>
+  </data>
+  <data name="makeModel" xml:space="preserve">
+    <value>Marca/Modello</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Manuale</value>
+  </data>
+  <data name="map" xml:space="preserve">
+    <value>Mappa</value>
+  </data>
+  <data name="mapReset" xml:space="preserve">
+    <value>Ripristino mappa</value>
+  </data>
+  <data name="mappingType" xml:space="preserve">
+    <value>Tipo mappatura</value>
+  </data>
+  <data name="markCompleted" xml:space="preserve">
+    <value>Contrassegna Completato</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>Materiale</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="maxSpeed" xml:space="preserve">
+    <value>Velocità massima</value>
+  </data>
+  <data name="maxRecordsReached" xml:space="preserve">
+    <value>Massimo registrazioni raggiunte</value>
+  </data>
+  <data name="maximumTemperature" xml:space="preserve">
+    <value>Temperatura massima</value>
+  </data>
+  <data name="deviceTypeMCHYPHEN3" xml:space="preserve">
+    <value>MC-3</value>
+  </data>
+  <data name="mdp" xml:space="preserve">
+    <value>MDP</value>
+  </data>
+  <data name="mdpSummary" xml:space="preserve">
+    <value>Riepilogo MDP</value>
+  </data>
+  <data name="mdpSummaryReport" xml:space="preserve">
+    <value>Rapporto sommario MDP</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Medio</value>
+  </data>
+  <data name="meter" xml:space="preserve">
+    <value>Contatore</value>
+  </data>
+  <data name="meterReading" xml:space="preserve">
+    <value>Lettura contatore</value>
+  </data>
+  <data name="meterUpdate" xml:space="preserve">
+    <value>Aggiornamento contatore</value>
+  </data>
+  <data name="meterUpdateSent" xml:space="preserve">
+    <value>Aggiornamento contatore inviato</value>
+  </data>
+  <data name="mi" xml:space="preserve">
+    <value>mi</value>
+  </data>
+  <data name="mileGal" xml:space="preserve">
+    <value>miglio/gal</value>
+  </data>
+  <data name="mileage" xml:space="preserve">
+    <value>Chilometraggio</value>
+  </data>
+  <data name="miles" xml:space="preserve">
+    <value>miglia</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="minimumTemperature" xml:space="preserve">
+    <value>Temperatura minima</value>
+  </data>
+  <data name="Missed" xml:space="preserve">
+    <value>Mancato</value>
+  </data>
+  <data name="missingMeterValueDetected" xml:space="preserve">
+    <value>Rilevato valore contatore mancante</value>
+  </data>
+  <data name="singleDayCalloutMissingMeterValue" xml:space="preserve">
+    <value>Rilevato valore contatore mancante</value>
+  </data>
+  <data name="dateRangeCalloutMissingMeterValue" xml:space="preserve">
+    <value>Rilevato valore contatore mancante nell'intervallo di date</value>
+  </data>
+  <data name="MM" xml:space="preserve">
+    <value>MM</value>
+  </data>
+  <data name="model" xml:space="preserve">
+    <value>Modello</value>
+  </data>
+  <data name="modelYear" xml:space="preserve">
+    <value>Anno modello</value>
+  </data>
+  <data name="module" xml:space="preserve">
+    <value>Modulo</value>
+  </data>
+  <data name="moduleAccessProvidedBy" xml:space="preserve">
+    <value>Accesso a modulo fornito da</value>
+  </data>
+  <data name="FluidMonitorPriority" xml:space="preserve">
+    <value>Schermo</value>
+  </data>
+  <data name="monitoredCycleDetailsReport" xml:space="preserve">
+    <value>Rapporto dettagli ciclo monitorato</value>
+  </data>
+  <data name="monitoredLoadCountDetailsReport" xml:space="preserve">
+    <value>Rapporto dettagli conteggio carico monitorato</value>
+  </data>
+  <data name="monitoredSiteDetailsReport" xml:space="preserve">
+    <value>Rapporto dettagli sito monitorato</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Mensile</value>
+  </data>
+  <data name="more" xml:space="preserve">
+    <value>Più dati</value>
+  </data>
+  <data name="moreThan" xml:space="preserve">
+    <value>Più di</value>
+  </data>
+  <data name="passesMorethan" xml:space="preserve">
+    <value>Più di {0} passi</value>
+  </data>
+  <data name="top10MostFrequentlyOccurringFaults" xml:space="preserve">
+    <value>Codici errore più frequenti (Top 10)</value>
+  </data>
+  <data name="MovementWithAssetOff" xml:space="preserve">
+    <value>Movimento con macchina spenta</value>
+  </data>
+  <data name="MovementWithAssetOn" xml:space="preserve">
+    <value>Movimento con macchina accesa</value>
+  </data>
+  <data name="movingStatus" xml:space="preserve">
+    <value>Stato movimento</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="deviceTypeMTHYPHEN10" xml:space="preserve">
+    <value>MT-10</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENElectricEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Electric Engine</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENMotorEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Motor Engine</value>
+  </data>
+  <data name="MulitpleProjects" xml:space="preserve">
+    <value>Trovati progetti multipli</value>
+  </data>
+  <data name="multipleSelections" xml:space="preserve">
+    <value>Selezioni multiple</value>
+  </data>
+  <data name="notApplicable" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>N/A</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="nearbyAssets" xml:space="preserve">
+    <value>Macchine più vicine</value>
+  </data>
+  <data name="nearbyAssetsByProductFamily" xml:space="preserve">
+    <value>Macchine più vicine per famiglia di prodotto</value>
+  </data>
+  <data name="NewAccountSupportEmailSubject" xml:space="preserve">
+    <value>Informazioni di registrazione nuovo account</value>
+  </data>
+  <data name="nextService" xml:space="preserve">
+    <value>Prossimo servizio</value>
+  </data>
+  <data name="FluidNoActionPriority" xml:space="preserve">
+    <value>Nessuna azione</value>
+  </data>
+  <data name="noBoundariesInLineworkFile" xml:space="preserve">
+    <value>Nessun confine nel file linework.</value>
+  </data>
+  <data name="noChange" xml:space="preserve">
+    <value>Nessuna modifica</value>
+  </data>
+  <data name="noComment" xml:space="preserve">
+    <value>Nessun commento</value>
+  </data>
+  <data name="noConnectionToServer" xml:space="preserve">
+    <value>Nessuna connessione al server</value>
+  </data>
+  <data name="noData" xml:space="preserve">
+    <value>Nessun dato</value>
+  </data>
+  <data name="noDumpFound" xml:space="preserve">
+    <value>scarico non trovato</value>
+  </data>
+  <data name="noDumpSwitch" xml:space="preserve">
+    <value>evento Commuta Scarico non rilevato</value>
+  </data>
+  <data name="NoEndDate" xml:space="preserve">
+    <value>Nessuna data fine</value>
+  </data>
+  <data name="noFilter" xml:space="preserve">
+    <value>Nessun filtro</value>
+  </data>
+  <data name="NoIntervals" xml:space="preserve">
+    <value>Nessun intervallo</value>
+  </data>
+  <data name="noItemsFound" xml:space="preserve">
+    <value>Nessuna voce trovata</value>
+  </data>
+  <data name="noLoadFound" xml:space="preserve">
+    <value>carico non rilevato</value>
+  </data>
+  <data name="noLoadSwitch" xml:space="preserve">
+    <value>evento Commuta Carico non rilevato</value>
+  </data>
+  <data name="NoMatchingProjectArea" xml:space="preserve">
+    <value>Nessuna area progetto corrispondente trovata</value>
+  </data>
+  <data name="NoMatchingProjectDate" xml:space="preserve">
+    <value>Nessuna data/ora progetto corrispondente trovata</value>
+  </data>
+  <data name="NoPending" xml:space="preserve">
+    <value>Nessun servizio in sospeso</value>
+  </data>
+  <data name="noResultReturned" xml:space="preserve">
+    <value>Non sono stati restituiti risultati</value>
+  </data>
+  <data name="noResults" xml:space="preserve">
+    <value>Nessun risultato</value>
+  </data>
+  <data name="noStopMovmentInValidSite" xml:space="preserve">
+    <value>nessun Ferma Movimento rilevato nella Tipologia Sito</value>
+  </data>
+  <data name="noStopMovement" xml:space="preserve">
+    <value>nessun evento Ferma Movimento rilevato</value>
+  </data>
+  <data name="noSuchDataModel" xml:space="preserve">
+    <value>Nessun modello dati come questo</value>
+  </data>
+  <data name="NoValidCellPassesInTagfile" xml:space="preserve">
+    <value>Nessun passaggio cella valido trovato nel(i) file tag</value>
+  </data>
+  <data name="InvalidPosition" xml:space="preserve">
+    <value>Nessuna posizione valida nel file tag</value>
+  </data>
+  <data name="NotReporting" xml:space="preserve">
+    <value>Nessun rapporto in esecuzione</value>
+  </data>
+  <data name="devicetypenodevice" xml:space="preserve">
+    <value>NESSUNO</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>Nessuno</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normale</value>
+  </data>
+  <data name="NormalOperation" xml:space="preserve">
+    <value>Funzionamento normale</value>
+  </data>
+  <data name="northing" xml:space="preserve">
+    <value>Verso Nord</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Non disponibile</value>
+  </data>
+  <data name="NotPending" xml:space="preserve">
+    <value>Non in sospeso</value>
+  </data>
+  <data name="GensetNotReadyToRun" xml:space="preserve">
+    <value>Non pronto per funzionare</value>
+  </data>
+  <data name="notVerified" xml:space="preserve">
+    <value>Non verificato</value>
+  </data>
+  <data name="dcToIRecNotWGS84Ellipsoid" xml:space="preserve">
+    <value>Nessun ellissoide WGS84 (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecNotWGS84EllipsoidSameAsProj" xml:space="preserve">
+    <value>Nessun ellissoide WGS84 nella registrazione dato (DCToIRecord converter)</value>
+  </data>
+  <data name="NotReportingforExcelReport" xml:space="preserve">
+    <value>Nessun rapporto in esecuzione</value>
+  </data>
+  <data name="SavEmailFooter" xml:space="preserve">
+    <value>Nota: questa è una email di notifica di cortesia. Siete stati aggiunti a questo elenco di notifica perchè siete un utente amministratore del vostro account VisionLink.</value>
+  </data>
+  <data name="notes" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="occurrenceCount" xml:space="preserve">
+    <value>Conteggio delle occorrenze</value>
+  </data>
+  <data name="odometer" xml:space="preserve">
+    <value>Odometro</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>SPENTO</value>
+  </data>
+  <data name="offset" xml:space="preserve">
+    <value>Offset</value>
+  </data>
+  <data name="offsetFromBench" xml:space="preserve">
+    <value>Offset da terrazzamento</value>
+  </data>
+  <data name="offsetFromDesign" xml:space="preserve">
+    <value>Offset da progetto</value>
+  </data>
+  <data name="offsetFromProfile" xml:space="preserve">
+    <value>Offset da profilo</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>Accesso</value>
+  </data>
+  <data name="onGrade" xml:space="preserve">
+    <value>Sul livello</value>
+  </data>
+  <data name="onMachineDesign" xml:space="preserve">
+    <value>Progetto su macchina</value>
+  </data>
+  <data name="OnBoardServiceToolCommand" xml:space="preserve">
+    <value>Comando Strumento assistenza a bordo</value>
+  </data>
+  <data name="InvalidOnGroundFlag" xml:space="preserve">
+    <value>il flag on_ground non è impostato o non è valido nel file tag</value>
+  </data>
+  <data name="OpenAlerts" xml:space="preserve">
+    <value>Avvisi aperti</value>
+  </data>
+  <data name="operationModeBreakup" xml:space="preserve">
+    <value>Funzionamento modalità rottura</value>
+  </data>
+  <data name="operatorID" xml:space="preserve">
+    <value>ID operatore</value>
+  </data>
+  <data name="operatorName" xml:space="preserve">
+    <value>Nome operatore</value>
+  </data>
+  <data name="origin" xml:space="preserve">
+    <value>Origine</value>
+  </data>
+  <data name="OTACommand" xml:space="preserve">
+    <value>Comando OTA</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Altro</value>
+  </data>
+  <data name="overCompacted" xml:space="preserve">
+    <value>Sovra compattato</value>
+  </data>
+  <data name="overcompactedLayer" xml:space="preserve">
+    <value>Strato sovra compattato</value>
+  </data>
+  <data name="maxLevel" xml:space="preserve">
+    <value>Oltre livello massimo</value>
+  </data>
+  <data name="overPassTarget" xml:space="preserve">
+    <value>Oltre obiettivo passo</value>
+  </data>
+  <data name="OverPressure" xml:space="preserve">
+    <value>Sovrapressione</value>
+  </data>
+  <data name="OverTemperature" xml:space="preserve">
+    <value>Surriscaldamento</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>Scaduto</value>
+  </data>
+  <data name="serviceDueSummary" xml:space="preserve">
+    <value>Servizio scaduto e imminente</value>
+  </data>
+  <data name="OverdueBy" xml:space="preserve">
+    <value>Scaduto da</value>
+  </data>
+  <data name="pMode" xml:space="preserve">
+    <value>Modalità P</value>
+  </data>
+  <data name="pageXofY" xml:space="preserve">
+    <value>Pagina &amp;[Pagina] di &amp;[Pagine]</value>
+  </data>
+  <data name="MachineParametersReport" xml:space="preserve">
+    <value>Rapporti parametri</value>
+  </data>
+  <data name="passCount" xml:space="preserve">
+    <value>Conteggio passi</value>
+  </data>
+  <data name="passCountDetail" xml:space="preserve">
+    <value>Dettaglio conteggio passi</value>
+  </data>
+  <data name="passCountDetailReport" xml:space="preserve">
+    <value>Rapporto dettaglio conteggio passi</value>
+  </data>
+  <data name="passCountSummary" xml:space="preserve">
+    <value>Riepilogo conteggio passi</value>
+  </data>
+  <data name="passCountSummaryReport" xml:space="preserve">
+    <value>Rapporto sommario conteggio passi</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="payload" xml:space="preserve">
+    <value>Carico utile</value>
+  </data>
+  <data name="PayloadReport" xml:space="preserve">
+    <value>Rapporto carico utile</value>
+  </data>
+  <data name="payloadPerCycle" xml:space="preserve">
+    <value>Carico utile/Ciclo</value>
+  </data>
+  <data name="payloadPerFuel" xml:space="preserve">
+    <value>Carico utile/Carburante</value>
+  </data>
+  <data name="payloadPerHour" xml:space="preserve">
+    <value>Carico utile/Ora</value>
+  </data>
+  <data name="chartWorkSheetTitle" xml:space="preserve">
+    <value>SchemaCaricoutile</value>
+  </data>
+  <data name="dataWorkSheetTitle" xml:space="preserve">
+    <value>Daticaricoutile</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>In sospeso</value>
+  </data>
+  <data name="performance" xml:space="preserve">
+    <value>Prestazione</value>
+  </data>
+  <data name="performedBy" xml:space="preserve">
+    <value>Eseguito da:</value>
+  </data>
+  <data name="phone" xml:space="preserve">
+    <value>Telefono</value>
+  </data>
+  <data name="deviceTypePL420" xml:space="preserve">
+    <value>PL420</value>
+  </data>
+  <data name="deviceTypePL431" xml:space="preserve">
+    <value>PL431</value>
+  </data>
+  <data name="deviceTypeMTS521" xml:space="preserve">
+    <value>PL521</value>
+  </data>
+  <data name="deviceTypeMTS522" xml:space="preserve">
+    <value>PL522</value>
+  </data>
+  <data name="deviceTypePLE641PLUSPL631" xml:space="preserve">
+    <value>PLE641+PL631</value>
+  </data>
+  <data name="changeDatesOrBoundary" xml:space="preserve">
+    <value>Si prega di modificare le date del progetto o i confini del progetto.</value>
+  </data>
+  <data name="cookiesRequired" xml:space="preserve">
+    <value>Si prega di abilitare i cookie in questo browser.</value>
+  </data>
+  <data name="javascriptRequired" xml:space="preserve">
+    <value>Si prega di abilitare i javascript e i cookie in questo browser.</value>
+  </data>
+  <data name="enterYourPassword" xml:space="preserve">
+    <value>Si prega di inserire la password.</value>
+  </data>
+  <data name="enterYourUsername" xml:space="preserve">
+    <value>Si prega di inserire il nome utente.</value>
+  </data>
+  <data name="pleaseInstallBlackBerryMaps" xml:space="preserve">
+    <value>Si prega di installare mappe BlackBerry.</value>
+  </data>
+  <data name="excelRowLimitReached" xml:space="preserve">
+    <value>Si prega di notare che i dati restituiti eccedono il limite di righe di Excel e non sono inclusi nel rapporto.</value>
+  </data>
+  <data name="selectService" xml:space="preserve">
+    <value>Si prega di selezionare un servizio prima di inviare la richiesta.</value>
+  </data>
+  <data name="PM" xml:space="preserve">
+    <value>PM</value>
+  </data>
+  <data name="PowerLoss" xml:space="preserve">
+    <value>Perdita potenza</value>
+  </data>
+  <data name="PowerMode" xml:space="preserve">
+    <value>Modalità motore</value>
+  </data>
+  <data name="pressure" xml:space="preserve">
+    <value>Pressione</value>
+  </data>
+  <data name="probProcessing" xml:space="preserve">
+    <value>Problema durante l'elaborazione.</value>
+  </data>
+  <data name="productFamily" xml:space="preserve">
+    <value>Famiglia prodotto</value>
+  </data>
+  <data name="project" xml:space="preserve">
+    <value>Progetto</value>
+  </data>
+  <data name="overlappingProject" xml:space="preserve">
+    <value>Più progetti non possono sovrapporsi temporalmente (data inizio e fine) e spazialmente (confini progetto).</value>
+  </data>
+  <data name="proofingRun" xml:space="preserve">
+    <value>Esecuzione di prova</value>
+  </data>
+  <data name="proximityLoads" xml:space="preserve">
+    <value>Carichi di prossimità</value>
+  </data>
+  <data name="proximitytoSwitch" xml:space="preserve">
+    <value>Vicinanza a interruttore</value>
+  </data>
+  <data name="psi" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="purchaseDate" xml:space="preserve">
+    <value>Data acquisto</value>
+  </data>
+  <data name="rightAbbrev" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="raw" xml:space="preserve">
+    <value>RawData</value>
+  </data>
+  <data name="reconciled" xml:space="preserve">
+    <value>Corrispondente</value>
+  </data>
+  <data name="ReconciledLoadDumpEvent" xml:space="preserve">
+    <value>Evento Carico/Scarico corrispondente</value>
+  </data>
+  <data name="recordedBy" xml:space="preserve">
+    <value>Registrato da</value>
+  </data>
+  <data name="registeredDealer" xml:space="preserve">
+    <value>Rivenditore registrato</value>
+  </data>
+  <data name="release" xml:space="preserve">
+    <value>Rilascia</value>
+  </data>
+  <data name="rememberMe" xml:space="preserve">
+    <value>Ricordare</value>
+  </data>
+  <data name="reportDateRange" xml:space="preserve">
+    <value>Intervallo date rapporto</value>
+  </data>
+  <data name="reportGeneratedDate" xml:space="preserve">
+    <value>Data generazione rapporto</value>
+  </data>
+  <data name="reportType" xml:space="preserve">
+    <value>Tipo rapporto</value>
+  </data>
+  <data name="reportedTime" xml:space="preserve">
+    <value>Orario riportato</value>
+  </data>
+  <data name="requestAccess" xml:space="preserve">
+    <value>Richiesta di accesso</value>
+  </data>
+  <data name="requestCanceled" xml:space="preserve">
+    <value>Richiesta annullata</value>
+  </data>
+  <data name="requestSentSuccessfully" xml:space="preserve">
+    <value>Richiesta di accesso inviata correttamente.</value>
+  </data>
+  <data name="abortedDueToPipelineTimeout" xml:space="preserve">
+    <value>La richiesta è stata interrotta a causa del timeout in corso</value>
+  </data>
+  <data name="requestHasBeenCancelled" xml:space="preserve">
+    <value>La richiesta è stata cancellata</value>
+  </data>
+  <data name="resolved" xml:space="preserve">
+    <value>Risolto</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Riprovare</value>
+  </data>
+  <data name="reverse" xml:space="preserve">
+    <value>Invertire</value>
+  </data>
+  <data name="roadDesign" xml:space="preserve">
+    <value>Progetto strada</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>RPM</value>
+  </data>
+  <data name="running" xml:space="preserve">
+    <value>In funzionamento</value>
+  </data>
+  <data name="runningTotal" xml:space="preserve">
+    <value>In funzionamento (totale)</value>
+  </data>
+  <data name="runningBurnRate" xml:space="preserve">
+    <value>Tasso consumo in funzionamento</value>
+  </data>
+  <data name="runningFuelBurned" xml:space="preserve">
+    <value>Carburante consumato in funzionamento</value>
+  </data>
+  <data name="runningUtil" xml:space="preserve">
+    <value>Utilizzo in funzionamento</value>
+  </data>
+  <data name="runtime" xml:space="preserve">
+    <value>Tempo di funzionamento</value>
+  </data>
+  <data name="runTimePercentage" xml:space="preserve">
+    <value>Runtime Percentage</value>
+  </data>
+  <data name="sn" xml:space="preserve">
+    <value>N/S</value>
+  </data>
+  <data name="sampleDate" xml:space="preserve">
+    <value>Data campione</value>
+  </data>
+  <data name="satellite" xml:space="preserve">
+    <value>Satellite</value>
+  </data>
+  <data name="requestScheduleFailure" xml:space="preserve">
+    <value>Programma non riuscito</value>
+  </data>
+  <data name="requestScheduleLoadTooHigh" xml:space="preserve">
+    <value>Il programma di carico è troppo elevato</value>
+  </data>
+  <data name="requestScheduleTimeout" xml:space="preserve">
+    <value>Programma timeout</value>
+  </data>
+  <data name="schemaExamples" xml:space="preserve">
+    <value>Esempi schema</value>
+  </data>
+  <data name="scraper" xml:space="preserve">
+    <value>Ruspa</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Trova</value>
+  </data>
+  <data name="sec" xml:space="preserve">
+    <value>sec</value>
+  </data>
+  <data name="secondPoint" xml:space="preserve">
+    <value>Secondo punto</value>
+  </data>
+  <data name="TamperSecurityStatus" xml:space="preserve">
+    <value>Stato sicurezza</value>
+  </data>
+  <data name="selectAsset" xml:space="preserve">
+    <value>Selezionare macchina</value>
+  </data>
+  <data name="selectAssets" xml:space="preserve">
+    <value>Selezionare macchine</value>
+  </data>
+  <data name="selectDateRange" xml:space="preserve">
+    <value>Selezionare Intervallo date</value>
+  </data>
+  <data name="selectFuelPercentRemaining" xml:space="preserve">
+    <value>Selezionare % carburante restante</value>
+  </data>
+  <data name="selectGroup" xml:space="preserve">
+    <value>Selezionare gruppo</value>
+  </data>
+  <data name="selectProductFamily" xml:space="preserve">
+    <value>Selezionare famiglia prodotto</value>
+  </data>
+  <data name="selectSite" xml:space="preserve">
+    <value>Selezionare sito</value>
+  </data>
+  <data name="selectedDesign" xml:space="preserve">
+    <value>Progetto selezionato</value>
+  </data>
+  <data name="selectionLimitReached" xml:space="preserve">
+    <value>Limite di selezione raggiunto</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Inviare</value>
+  </data>
+  <data name="sensor" xml:space="preserve">
+    <value>Sensore</value>
+  </data>
+  <data name="serialNumber" xml:space="preserve">
+    <value>Numero di serie</value>
+  </data>
+  <data name="serverBuildNumber" xml:space="preserve">
+    <value>Numero build server</value>
+  </data>
+  <data name="service" xml:space="preserve">
+    <value>Servizio</value>
+  </data>
+  <data name="serviceDate" xml:space="preserve">
+    <value>Data servizio</value>
+  </data>
+  <data name="ServiceDue" xml:space="preserve">
+    <value>Servizio dovuto</value>
+  </data>
+  <data name="ServiceDueMileageBased" xml:space="preserve">
+    <value>Servizio scaduto (Basato su chilometraggio)</value>
+  </data>
+  <data name="serviceDueReport" xml:space="preserve">
+    <value>Rapporto Servizio scaduto</value>
+  </data>
+  <data name="MaintenanceHistoryReport" xml:space="preserve">
+    <value>Rapporto cronologia servizio</value>
+  </data>
+  <data name="serviceInterval" xml:space="preserve">
+    <value>Intervallo servizio</value>
+  </data>
+  <data name="serviceIntervalCompleted" xml:space="preserve">
+    <value>Intervallo servizio completato</value>
+  </data>
+  <data name="serviceIntervals" xml:space="preserve">
+    <value>Intervalli servizio</value>
+  </data>
+  <data name="serviceNotes" xml:space="preserve">
+    <value>Note servizio</value>
+  </data>
+  <data name="serviceStopped" xml:space="preserve">
+    <value>Servizio arrestato</value>
+  </data>
+  <data name="servicesOffered" xml:space="preserve">
+    <value>Servizi offerti</value>
+  </data>
+  <data name="sessionExpired" xml:space="preserve">
+    <value>Sessione scaduta per inattività o doppio login.</value>
+  </data>
+  <data name="severity" xml:space="preserve">
+    <value>Gravità</value>
+  </data>
+  <data name="SavTerminationHeaderForBss" xml:space="preserve">
+    <value>La Vista macchine condivise per le seguenti macchine è stata terminata per funzioni Admin eseguite in Trimble Store. Contattare l'amministratore di {0} per ulteriori dettagli.</value>
+  </data>
+  <data name="SavTerminationHeaderForWizard" xml:space="preserve">
+    <value>La Vista macchine condivise per le seguenti macchine è stata terminata o perchè il Creatore ha eliminato questa Vista o perchè la Vista è scaduta.</value>
+  </data>
+  <data name="SavNotificationHeader" xml:space="preserve">
+    <value>La Vista macchine condivise per le seguenti macchine scadrà il {0}. </value>
+  </data>
+  <data name="SharedAssetViewReport" xml:space="preserve">
+    <value>Rapporto vista macchine condivisa</value>
+  </data>
+  <data name="sharedToOrganization" xml:space="preserve">
+    <value>Condivise su Organizzazione</value>
+  </data>
+  <data name="shrinkage" xml:space="preserve">
+    <value>Riduzione</value>
+  </data>
+  <data name="SimCardRemovedTimerExpired" xml:space="preserve">
+    <value>Scheda SIM rimossa</value>
+  </data>
+  <data name="site" xml:space="preserve">
+    <value>Sito</value>
+  </data>
+  <data name="siteBoundary" xml:space="preserve">
+    <value>Confine sito</value>
+  </data>
+  <data name="SiteEntry" xml:space="preserve">
+    <value>Ingresso sito</value>
+  </data>
+  <data name="siteAlertsWarning" xml:space="preserve">
+    <value>Ingresso e uscita sito sono derivati dalle posizioni ricevute dalla macchina. Questi eventi possono essere ritardati e possibilmente persi in base a quando la macchina riporta la posizione.</value>
+  </data>
+  <data name="SiteEntryOrExit" xml:space="preserve">
+    <value>Ingresso o uscita sito</value>
+  </data>
+  <data name="siteEntryOutsideReportDateRange" xml:space="preserve">
+    <value>Ingresso sito al di fuori dell'intervallo data rapporto</value>
+  </data>
+  <data name="SiteExit" xml:space="preserve">
+    <value>Uscita sito</value>
+  </data>
+  <data name="siteExitOutsideReportDateRange" xml:space="preserve">
+    <value>Uscita sito al di fuori dell'intervallo data rapporto</value>
+  </data>
+  <data name="siteName" xml:space="preserve">
+    <value>Nome sito</value>
+  </data>
+  <data name="SiteRuntime" xml:space="preserve">
+    <value>Rapporto tempo di funzionamento sito</value>
+  </data>
+  <data name="siteRuntimeReport" xml:space="preserve">
+    <value>Rapporto tempo di funzionamento sito</value>
+  </data>
+  <data name="sitetoSite" xml:space="preserve">
+    <value>Da sito a sito</value>
+  </data>
+  <data name="sites" xml:space="preserve">
+    <value>Siti</value>
+  </data>
+  <data name="toManyPoints" xml:space="preserve">
+    <value>I siti possono contenere un massimo di 50 punti.</value>
+  </data>
+  <data name="skipped" xml:space="preserve">
+    <value>Saltato</value>
+  </data>
+  <data name="smuLocation" xml:space="preserve">
+    <value>Posizione SMU</value>
+  </data>
+  <data name="deviceTypeSNM451" xml:space="preserve">
+    <value>SNM451</value>
+  </data>
+  <data name="errorMessage" xml:space="preserve">
+    <value>Si è verificato un problema nell'elaborazione della richiesta. Si prega di riprovare.</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Fonte</value>
+  </data>
+  <data name="Speeding" xml:space="preserve">
+    <value>Accelerazione</value>
+  </data>
+  <data name="sqft" xml:space="preserve">
+    <value>ft2</value>
+  </data>
+  <data name="sqm" xml:space="preserve">
+    <value>m2</value>
+  </data>
+  <data name="SS" xml:space="preserve">
+    <value>SS</value>
+  </data>
+  <data name="standardMode" xml:space="preserve">
+    <value>Modalità standard</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Avvio</value>
+  </data>
+  <data name="startDate" xml:space="preserve">
+    <value>Data inizio</value>
+  </data>
+  <data name="startHourMeter" xml:space="preserve">
+    <value>Avviare contatore orario</value>
+  </data>
+  <data name="startLocation" xml:space="preserve">
+    <value>Avviare posizione</value>
+  </data>
+  <data name="startMode" xml:space="preserve">
+    <value>Modalità Avvio</value>
+  </data>
+  <data name="startSpeedDateTime" xml:space="preserve">
+    <value>Data e ora inizio velocità</value>
+  </data>
+  <data name="startSpeedLocation" xml:space="preserve">
+    <value>Posizione inizio velocità</value>
+  </data>
+  <data name="startTime" xml:space="preserve">
+    <value>Ora avvio</value>
+  </data>
+  <data name="StateMileageReport" xml:space="preserve">
+    <value>Chilometraggio stato</value>
+  </data>
+  <data name="stateProvince" xml:space="preserve">
+    <value>Stato/Provincia</value>
+  </data>
+  <data name="state" xml:space="preserve">
+    <value>Per stato</value>
+  </data>
+  <data name="station" xml:space="preserve">
+    <value>Stazione</value>
+  </data>
+  <data name="StationOffset" xml:space="preserve">
+    <value>Rapporto Offset stazione</value>
+  </data>
+  <data name="stationOffsetReport" xml:space="preserve">
+    <value>Rapporto Offset stazione</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="stn" xml:space="preserve">
+    <value>Staz</value>
+  </data>
+  <data name="stop" xml:space="preserve">
+    <value>Arresto</value>
+  </data>
+  <data name="stopLocation" xml:space="preserve">
+    <value>Posizione arresto</value>
+  </data>
+  <data name="stopSpeedDateTime" xml:space="preserve">
+    <value>Data e ora arresto velocità</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Successo</value>
+  </data>
+  <data name="suggestUsingTargetOverride" xml:space="preserve">
+    <value>Si consiglia di utilizzare la configurazione di override target.</value>
+  </data>
+  <data name="SummaryData" xml:space="preserve">
+    <value>Dati riepilogo</value>
+  </data>
+  <data name="summaryOfLoadsByHaulDistance" xml:space="preserve">
+    <value>Sommario dei carichi per distanza trasporto</value>
+  </data>
+  <data name="summaryVolumes" xml:space="preserve">
+    <value>Riepilogo volumi</value>
+  </data>
+  <data name="summaryVolumesReport" xml:space="preserve">
+    <value>Sommario rapporto volumi</value>
+  </data>
+  <data name="surplusDeficitVolume" xml:space="preserve">
+    <value>Surplus/deficit volume</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>Interruttore</value>
+  </data>
+  <data name="switchClosed" xml:space="preserve">
+    <value>Interruttore chiuso</value>
+  </data>
+  <data name="switchName" xml:space="preserve">
+    <value>Nome interruttore</value>
+  </data>
+  <data name="switchOn" xml:space="preserve">
+    <value>Interruttore ON</value>
+  </data>
+  <data name="switchOpen" xml:space="preserve">
+    <value>interruttore aperto</value>
+  </data>
+  <data name="switchtoSiteorSitetoSwitch" xml:space="preserve">
+    <value>Da interruttore a sito oppure da sito a interruttore</value>
+  </data>
+  <data name="switchtoSwitch" xml:space="preserve">
+    <value>Da interruttore a interruttore</value>
+  </data>
+  <data name="tagfileLiftNumber" xml:space="preserve">
+    <value>Numero sollevamenti file tag</value>
+  </data>
+  <data name="tamperResistance" xml:space="preserve">
+    <value>Antimanomissione</value>
+  </data>
+  <data name="TamperResolvedConnectiontoOffBoard" xml:space="preserve">
+    <value>Manomissione risolta</value>
+  </data>
+  <data name="TamperUninstalled" xml:space="preserve">
+    <value>Manomissione non installata</value>
+  </data>
+  <data name="deviceTypeTAP66" xml:space="preserve">
+    <value>TAP66</value>
+  </data>
+  <data name="target" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="targetCMV" xml:space="preserve">
+    <value>Target CCV</value>
+  </data>
+  <data name="targetCMVRange" xml:space="preserve">
+    <value>Intervallo Target CMV</value>
+  </data>
+  <data name="targetMDP" xml:space="preserve">
+    <value>Target MDP</value>
+  </data>
+  <data name="targetMDPRange" xml:space="preserve">
+    <value>Intervallo Target MDP</value>
+  </data>
+  <data name="targetPassCount" xml:space="preserve">
+    <value>Target contatore passi</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Temperatura</value>
+  </data>
+  <data name="temperatureReport" xml:space="preserve">
+    <value>Rapporto temperatura</value>
+  </data>
+  <data name="terrain" xml:space="preserve">
+    <value>Terreno</value>
+  </data>
+  <data name="aempInformation" xml:space="preserve">
+    <value>L'informazione AEMP consente all'utente di accedere ai propri dati istantanea flotta per effettuare analisi di trend di alto livello e introspezione dati.</value>
+  </data>
+  <data name="assetUtilizationDescription" xml:space="preserve">
+    <value>L'API di Utilizzo macchine riporta le informazioni di utilizzo delle macchine (ad esempio il tempo di inattività, il tempo di lavoro, ecc.) per ogni singola macchina della flotta che supporta l'utilizzo. Per ottenere il feed, tutte le attività devono avere un piano di servizio Core and Health valido per il periodo considerato.</value>
+  </data>
+  <data name="assetsDescription" xml:space="preserve">
+    <value>L'API della macchina è semplicemente l'elenco di tutte le macchine della flotta. Questa API fornisce informazioni più precise (per es. famiglia di prodotti, anno di produzione, tipo di dispositivo e numero di serie, ecc.) su ogni singola macchina della flotta.</value>
+  </data>
+  <data name="dcToIRecDatumFailedToLoad" xml:space="preserve">
+    <value>Caricamento dato CSIB non riuscito (DCToIRecord converter)</value>
+  </data>
+  <data name="fleetSummaryDescription" xml:space="preserve">
+    <value>I dati riepilogo flotta forniscono una vista di alto livello dello stato corrente della flotta. Include informazioni come SMULoc, chilometraggio, stato di rapporto, Posizione e così via per ogni macchina della flotta.</value>
+  </data>
+  <data name="unsubscribedAssets" xml:space="preserve">
+    <value>Le seguenti macchine non sono supportate per questo rapporto per il periodo di tempo selezionato. L'informazione del riepilogo codici errore è disponibile solo per i dispositivi PL321 e 522/523 con un piano di servizio Cat® Health attivo.</value>
+  </data>
+  <data name="noReportDataAssets" xml:space="preserve">
+    <value>Nel presente rapporto non ci sono dati originati dalle macchine seguenti</value>
+  </data>
+  <data name="reportDataAssets" xml:space="preserve">
+    <value>Nel presente rapporto ci sono dati originati dalle macchine seguenti</value>
+  </data>
+  <data name="noDataAssets" xml:space="preserve">
+    <value>Le seguenti macchine non hanno dati</value>
+  </data>
+  <data name="noDataSites" xml:space="preserve">
+    <value>I siti seguenti non presentano dati</value>
+  </data>
+  <data name="fuelUtilizationDescription" xml:space="preserve">
+    <value>L'API dell'Utilizzo carburante riporta le informazioni di utilizzo del carburante (ad esempio Consumo di carburante in inattività, Consumo di carburante in lavoro, ecc.) per ogni singola macchina della flotta che supporta l'utilizzo. Per ottenere il feed, tutte le macchine devono avere un piano di servizio Core and Health valido per il periodo considerato.</value>
+  </data>
+  <data name="invalidUser003" xml:space="preserve">
+    <value>La password inserita non è corretta.\nL'account è stato bloccato, provare nuovamente fra 30 minuti.</value>
+  </data>
+  <data name="invalidUser001" xml:space="preserve">
+    <value>Il nome utente o la password inseriti non sono corretti.</value>
+  </data>
+  <data name="erroneousFuel" xml:space="preserve">
+    <value>{0} ha riportato un consumo di carburante non previsto per il periodo di tempo in questione.</value>
+  </data>
+  <data name="erroneousIdleTime" xml:space="preserve">
+    <value>{0} ha riportato un tempo di inattività non previsto per il periodo di tempo in questione.</value>
+  </data>
+  <data name="erroneousRuntime" xml:space="preserve">
+    <value>{0} ha riportato un tempo di funzionamento non previsto per il periodo di tempo in questione.</value>
+  </data>
+  <data name="erroneousWorkingTime" xml:space="preserve">
+    <value>{0} ha riportato un tempo di lavoro non previsto per il periodo di tempo in questione.</value>
+  </data>
+  <data name="issueSendingEmail" xml:space="preserve">
+    <value>Si è verificato un problema nell'invio dell'email, contattare l'amministratore.</value>
+  </data>
+  <data name="InvalidUserAccess" xml:space="preserve">
+    <value>Il presente account non è configurato con l'accesso clienti VisionLink. Si prega di utilizzare delle credenziali di login diverse o di contattare il supporto.</value>
+  </data>
+  <data name="assetOperationDescription" xml:space="preserve">
+    <value>Questo endpoint è responsabile di fornire informazioni sul funzionamento della macchina, quali tempo di lavoro e tempo di inattività quando le definizioni di lavoro sono utilizzate per calcolare le informazioni di utilizzo. Per ottenere il feed, tutte le attività devono avere un piano di servizio Core and Health valido per il periodo considerato.</value>
+  </data>
+  <data name="requiredField" xml:space="preserve">
+    <value>Campo obbligatorio.</value>
+  </data>
+  <data name="incompleteLoadError" xml:space="preserve">
+    <value>Caricamento incompleto - errore dati hardware</value>
+  </data>
+  <data name="incompleteLoadNoDump" xml:space="preserve">
+    <value>Carico incompleto - nessun orario scarico trovato</value>
+  </data>
+  <data name="incompleteLoadNoLoad" xml:space="preserve">
+    <value>Carico incompleto - nessun orario carico trovato</value>
+  </data>
+  <data name="incompleteLoad" xml:space="preserve">
+    <value>Questo è un Carico incompleto</value>
+  </data>
+  <data name="TrimbleOperationsReportDescription" xml:space="preserve">
+    <value>This report provides the list of users and their details, who fall under the category of Corporate.</value>
+  </data>
+  <data name="InActiveSchedule" xml:space="preserve">
+    <value>Questo rapporto pianificato non è valido. Contattare l'amministratore VisionLink per modificare questo rapporto.</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Ora</value>
+  </data>
+  <data name="geolocationTimeout" xml:space="preserve">
+    <value>Time out durante recupero posizione.</value>
+  </data>
+  <data name="timedOut" xml:space="preserve">
+    <value>Tempo scaduto</value>
+  </data>
+  <data name="TireMonitoring" xml:space="preserve">
+    <value>Monitoraggio pneumatico</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Titolo</value>
+  </data>
+  <data name="deviceTypeTM3000" xml:space="preserve">
+    <value>TM3000</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Oggi</value>
+  </data>
+  <data name="ton" xml:space="preserve">
+    <value>Ton</value>
+  </data>
+  <data name="tonne" xml:space="preserve">
+    <value>Tonnellata</value>
+  </data>
+  <data name="tooThickLayer" xml:space="preserve">
+    <value>Strato troppo spesso</value>
+  </data>
+  <data name="topSurface" xml:space="preserve">
+    <value>Superficie superiore</value>
+  </data>
+  <data name="topCyclesPerHour" xml:space="preserve">
+    <value>Alto {0} - Cicli/Ora (Totale)</value>
+  </data>
+  <data name="topPayloadPerCycle" xml:space="preserve">
+    <value>Alto {0} - Carico utile/Ciclo (Totale)</value>
+  </data>
+  <data name="topPayloadPerHour" xml:space="preserve">
+    <value>Alto {0} - Carico utile/Ora (Totale)</value>
+  </data>
+  <data name="total" xml:space="preserve">
+    <value>Totale</value>
+  </data>
+  <data name="totalAreaCovered" xml:space="preserve">
+    <value>Totale area coperta</value>
+  </data>
+  <data name="totalCutVolume" xml:space="preserve">
+    <value>Totale volume sterro</value>
+  </data>
+  <data name="totalDistance" xml:space="preserve">
+    <value>Distanza totale</value>
+  </data>
+  <data name="totalFillVolume" xml:space="preserve">
+    <value>Totale volume riempimento</value>
+  </data>
+  <data name="totalFuel" xml:space="preserve">
+    <value>Carburante totale</value>
+  </data>
+  <data name="totalHoursByAsset" xml:space="preserve">
+    <value>Ore totali per macchina</value>
+  </data>
+  <data name="totalIdleEvents" xml:space="preserve">
+    <value>Totale eventi inattività</value>
+  </data>
+  <data name="totalIdleTime" xml:space="preserve">
+    <value>Totale tempo in inattività</value>
+  </data>
+  <data name="totalLoads" xml:space="preserve">
+    <value>Carichi totali</value>
+  </data>
+  <data name="totalMachineCovPlan" xml:space="preserve">
+    <value>Totale area copertura progetto macchinario</value>
+  </data>
+  <data name="totalRuntime" xml:space="preserve">
+    <value>Tempo di funzionamento totale</value>
+  </data>
+  <data name="totalTime" xml:space="preserve">
+    <value>Tempo totale</value>
+  </data>
+  <data name="totalVolume" xml:space="preserve">
+    <value>Volume totale</value>
+  </data>
+  <data name="totals" xml:space="preserve">
+    <value>Totali</value>
+  </data>
+  <data name="trackMapping" xml:space="preserve">
+    <value>Mappatura tracciato</value>
+  </data>
+  <data name="transmissionOilTemperature" xml:space="preserve">
+    <value>Transmission Oil Temperature</value>
+  </data>
+  <data name="transmissionOilTemperatureHeader" xml:space="preserve">
+    <value>Transmission Oil Temperature Report</value>
+  </data>
+  <data name="travel" xml:space="preserve">
+    <value>Viaggio</value>
+  </data>
+  <data name="truck" xml:space="preserve">
+    <value>Camion</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="ucid" xml:space="preserve">
+    <value>UCID</value>
+  </data>
+  <data name="invalidSessionID" xml:space="preserve">
+    <value>Impossibile eseguire l'autenticazione utilizzando l'ID sessione fornito. Eseguire login.</value>
+  </data>
+  <data name="dcToIRecFailedToCreateCSIBObject" xml:space="preserve">
+    <value>Impossibile creare un oggetto ICSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="unableToDetermineDataModel" xml:space="preserve">
+    <value>Impossibile determinare il modello dati.</value>
+  </data>
+  <data name="unableToDetermineMachine" xml:space="preserve">
+    <value>Impossibile determinare macchina.</value>
+  </data>
+  <data name="UnableToDetermineProjectID" xml:space="preserve">
+    <value>Impossibile determinare l'ID del progetto</value>
+  </data>
+  <data name="dcToIRecFailedToGetZoneParams" xml:space="preserve">
+    <value>Impossibile recuperare parametri zona (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneParams" xml:space="preserve">
+    <value>Impossible impostare parametri zona (DCToIRecord converter)</value>
+  </data>
+  <data name="underCompacted" xml:space="preserve">
+    <value>Sotto compattato</value>
+  </data>
+  <data name="undercompactedLayer" xml:space="preserve">
+    <value>Strato sotto compattato</value>
+  </data>
+  <data name="minLevel" xml:space="preserve">
+    <value>Inferiore al livello min</value>
+  </data>
+  <data name="underPassTarget" xml:space="preserve">
+    <value>Sotto target passo</value>
+  </data>
+  <data name="UnderPressure" xml:space="preserve">
+    <value>Sottopressione</value>
+  </data>
+  <data name="unexpectedError" xml:space="preserve">
+    <value>Errore imprevisto</value>
+  </data>
+  <data name="erroneousFuelExcluded" xml:space="preserve">
+    <value>Il consumo di carburante inatteso riportato da {0} è stato escluso da questo calcolo.</value>
+  </data>
+  <data name="erroneousFuelOrIdleTimeExcluded" xml:space="preserve">
+    <value>Tempo di inattività e/o consumo di carburante non previsto, riportati da {0} sono stati esclusi da questo calcolo.</value>
+  </data>
+  <data name="erroneousIdleTimeExcluded" xml:space="preserve">
+    <value>Il tempo di inattività non previsto riportato da {0} è stato escluso da questo calcolo.</value>
+  </data>
+  <data name="erroneousFuelOrRuntimeExcluded" xml:space="preserve">
+    <value>Tempo di funzionamento e/o consumo carburante non previsto riportati da {0} sono stati esclusi da questo calcolo.</value>
+  </data>
+  <data name="erroneousRuntimeExcluded" xml:space="preserve">
+    <value>Il tempo di funzionamento non previsto riportato da {0} è stato escluso da questo calcolo.</value>
+  </data>
+  <data name="erroneousFuelOrWorkingTimeExcluded" xml:space="preserve">
+    <value>Tempo di funzionamento e/o consumo carburante non previsti riportati da {0} sono stati esclusi da questo calcolo.</value>
+  </data>
+  <data name="erroneousWorkingOrRuntimeExcluded" xml:space="preserve">
+    <value>Tempo di lavoro o tempo di funzionamento non previsti riportati da {0} sono stati esclusi da questo calcolo.</value>
+  </data>
+  <data name="erroneousWorkingTimeExcluded" xml:space="preserve">
+    <value>Il tempo di lavoro non previsto riportato da {0} è stato escluso da questo calcolo.</value>
+  </data>
+  <data name="universalCustomer" xml:space="preserve">
+    <value>Cliente universale</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Sconosciuto</value>
+  </data>
+  <data name="dcToIRecUnknownCSType" xml:space="preserve">
+    <value>Tipo sistema coordinate sconosciuto (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnknownDatumModel" xml:space="preserve">
+    <value>È stato rilevato e ignorato un aggiustamento dato sconoscito (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownError" xml:space="preserve">
+    <value>Si è verificato un errore sconosciuto</value>
+  </data>
+  <data name="geolocationUnknownError" xml:space="preserve">
+    <value>Errore sconosciuto durante recupero posizione.</value>
+  </data>
+  <data name="dcToIRecUnknownGeoidModel" xml:space="preserve">
+    <value>È stato rilevato e ignorato un modello geoide sconosciuto (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownMachine" xml:space="preserve">
+    <value>Macchinario sconosciuto.</value>
+  </data>
+  <data name="dcToIRecUnknownProjType" xml:space="preserve">
+    <value>Tipo proiezione sconosciuto (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownTagfileError" xml:space="preserve">
+    <value>Errore file tag sconosciuto</value>
+  </data>
+  <data name="Unsubscribe" xml:space="preserve">
+    <value>Annulla iscrizione</value>
+  </data>
+  <data name="UnsubscribeConfirmation" xml:space="preserve">
+    <value>Conferma annullamento iscrizione</value>
+  </data>
+  <data name="unsupportedCSDFileType" xml:space="preserve">
+    <value>Tipo file definizione sistema coordinate non supportato</value>
+  </data>
+  <data name="dcToIRecUnsupportedDatum" xml:space="preserve">
+    <value>Dato non supportato (DCToIRecord converter)</value>
+  </data>
+  <data name="unsupportedDisplayType" xml:space="preserve">
+    <value>Tipo schermo non supportato</value>
+  </data>
+  <data name="unsupportedFilterAttribute" xml:space="preserve">
+    <value>Attributo filtro non supportato</value>
+  </data>
+  <data name="dcToIRecUnsupportedGeoid" xml:space="preserve">
+    <value>Geoide non supportato (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnsupportedZoneOrientation" xml:space="preserve">
+    <value>Orientamento zona non supportato (DCToIRecord converter)</value>
+  </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>Imminente</value>
+  </data>
+  <data name="update" xml:space="preserve">
+    <value>Aggiornare</value>
+  </data>
+  <data name="updateMeter" xml:space="preserve">
+    <value>Aggiornare contatore</value>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>Utilizzo</value>
+  </data>
+  <data name="useCurrentSelection" xml:space="preserve">
+    <value>Utilizzare selezione corrente</value>
+  </data>
+  <data name="userAccountsReportHeader" xml:space="preserve">
+    <value>Rapporto account utenti</value>
+  </data>
+  <data name="userActivity" xml:space="preserve">
+    <value>Attività utente</value>
+  </data>
+  <data name="userDefinedPolygon" xml:space="preserve">
+    <value>Poligono definito dall'utente</value>
+  </data>
+  <data name="geolocationPermissionDenied" xml:space="preserve">
+    <value>L'utente ha negato l'utilizzo della posizione.</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Utente inesistente. Si prega di contattare l'ammistratore.</value>
+  </data>
+  <data name="UserPrivilegesReport" xml:space="preserve">
+    <value>Rapporto privilegi utente</value>
+  </data>
+  <data name="userType" xml:space="preserve">
+    <value>Tipo utente</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Nome utente</value>
+  </data>
+  <data name="invalidUsernameOrPassword" xml:space="preserve">
+    <value>Nome utente o password non validi, tentare nuovamente.</value>
+  </data>
+  <data name="utilizationCalloutsExistInData" xml:space="preserve">
+    <value>Didascalie di utilizzo presenti nei dati</value>
+  </data>
+  <data name="utilizationHours" xml:space="preserve">
+    <value>Ore di utilizzo</value>
+  </data>
+  <data name="ValidMSSKey" xml:space="preserve">
+    <value>Chiave MSS valida</value>
+  </data>
+  <data name="dateRangeCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Il valore include dati che si verificano al di fuori dell'intervallo date selezionato</value>
+  </data>
+  <data name="singleDayCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Il valore include dati che si verificano al di fuori del giorno specificato</value>
+  </data>
+  <data name="mustBeUnformattedInteger" xml:space="preserve">
+    <value>Il valore deve essere rappresentato da un numero intero e non deve contenere virgole o decimali.</value>
+  </data>
+  <data name="varies" xml:space="preserve">
+    <value>Varie</value>
+  </data>
+  <data name="emailVerified" xml:space="preserve">
+    <value>Stato verifica</value>
+  </data>
+  <data name="verified" xml:space="preserve">
+    <value>Verificato</value>
+  </data>
+  <data name="vibeState" xml:space="preserve">
+    <value>Stato vibrazione</value>
+  </data>
+  <data name="fuelLevelSummary" xml:space="preserve">
+    <value>Visualizzare macchine che hanno bisogna di rifornimento carburante</value>
+  </data>
+  <data name="faultCodesSummary" xml:space="preserve">
+    <value>Visualizza Codici di errore per le Macchine</value>
+  </data>
+  <data name="utilizationHoursSummary" xml:space="preserve">
+    <value>Visualizza Ore di utilizzo</value>
+  </data>
+  <data name="AlertsSummary" xml:space="preserve">
+    <value>Visualizza avvisi aperti per una macchina</value>
+  </data>
+  <data name="fuelBurnSummary" xml:space="preserve">
+    <value>Visualizza utilizzo carburante recente per le macchine</value>
+  </data>
+  <data name="vin" xml:space="preserve">
+    <value>VIN</value>
+  </data>
+  <data name="VisionLinkOperationsReport" xml:space="preserve">
+    <value>VisionLink - Rapporto operazioni</value>
+  </data>
+  <data name="EngineIdleDailyAlertMessageBodySMS" xml:space="preserve">
+    <value>Account avvisi VisionLink: {0} Ore inattività giornaliere {1} per {2}/{3} a {4} Contaore {5}</value>
+  </data>
+  <data name="SpeedingAlertMessageBodySMS" xml:space="preserve">
+    <value>Account avviso VisionLink: {0} {1}, velocità massima: {2} mph per {3}/{4}. Ora arresto velocità {5}</value>
+  </data>
+  <data name="SwitchAlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso VisionLink Account: {4} Dettagli interruttore per {0}/{1} a {2} {3}  {3}</value>
+  </data>
+  <data name="AlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso VisionLink  Account: {4} {0} per {1}/{2} a {3} Conta ore: {5}</value>
+  </data>
+  <data name="SecurityStatusAlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso VisionLink  Account: {4} {0} per {1}/{2} a {3} Conta ore: {5}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso VisionLink  Account: {5} {0} per {1}/{2} a {3} {4} Conta ore: {6}</value>
+  </data>
+  <data name="FaultAlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso VisionLink  Account: {5} {0} per {1}/{2} a {3} {4} Gravità: {7} Conta ore: {6}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso VisionLink  Account: {5} {0} per {1}/{2}. {3} dovuto alle {4}. Conta ore: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso VisionLink Account: {5}{0} per {1}/{2}. {3} scaduto a {4} miglia.</value>
+  </data>
+  <data name="AlertSubject" xml:space="preserve">
+    <value>Avviso VisionLink {0} per ID: {1} S/N: {2}</value>
+  </data>
+  <data name="ApiUserEmailSubject" xml:space="preserve">
+    <value>Accesso assistenza VisionLink API</value>
+  </data>
+  <data name="visionLinkApiDocumentation" xml:space="preserve">
+    <value>Documentazione  API VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopics" xml:space="preserve">
+    <value>Argomenti API VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopicsRequestAccess" xml:space="preserve">
+    <value>Argomenti API VisionLink: richiesta di accesso</value>
+  </data>
+  <data name="visionLinkAPIDatafeedDocumentation" xml:space="preserve">
+    <value>API VisionLink; documentazione feed di dati</value>
+  </data>
+  <data name="VLApp" xml:space="preserve">
+    <value>Applicazioni VisionLink</value>
+  </data>
+  <data name="FluidAnalysisAlertSubject" xml:space="preserve">
+    <value>Risultati analisi dei fluidi VisionLink per ID: {0} S/N: {1}</value>
+  </data>
+  <data name="locationUnknownFeatureDisabled" xml:space="preserve">
+    <value>VisionLink non ha potuto determinare la posizione. Questa funzionalità è stata disattivata. Riprovare in seguito.</value>
+  </data>
+  <data name="SavTerminationSubject" xml:space="preserve">
+    <value>Notifica VisionLink  - Visualizzazione macchina condivisa terminata</value>
+  </data>
+  <data name="ForgotPasswordEmailSubject" xml:space="preserve">
+    <value>Assitenza password VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopicsDescription" xml:space="preserve">
+    <value>Gli API di VisionLink Ready forniscono un mezzo per utilizzare i dati relativi a VisionLink in un formato feed di dati progettato per un facile accesso da strumenti di terze parti. Gli API di VL-Ready sono generalmente utilizzati dai rivenditori, dai clienti e dai corrieri internazionali che desiderano integrare i dati relativi a VisionLink nel proprio ERP, contabilità o sistemi di terze parti. Per maggiori informazioni su API di VL Ready, fare riferimento alla &lt;a href="/Docs/{0}/VisionLink VL-Ready User Guide.pdf" class="contentLink" target="_blank"&gt;VL Ready User Guide&lt;/a&gt;.</value>
+  </data>
+  <data name="SavCreationSubject" xml:space="preserve">
+    <value>Visualizzazione macchina condivisa VisionLink creata da  {0}</value>
+  </data>
+  <data name="SavNotificationSubject" xml:space="preserve">
+    <value>Notifica scadenza visualizzazione macchina condivisa VisionLink</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Avviso monitoraggio pneumatico VisionLink Account: {0}  {1}/{2} a {3} Conta ore: {4}</value>
+  </data>
+  <data name="UserAccountReportTitle" xml:space="preserve">
+    <value>Rapporto account utente VisionLink</value>
+  </data>
+  <data name="UserAccountsReport" xml:space="preserve">
+    <value>VisionLink User Account Report</value>
+  </data>
+  <data name="VerifyUserEmailSubject" xml:space="preserve">
+    <value>Verifica account utente VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopics" xml:space="preserve">
+    <value>Argomenti API VL Ready</value>
+  </data>
+  <data name="vlmobileClient" xml:space="preserve">
+    <value>Cliente VLMobile</value>
+  </data>
+  <data name="volume" xml:space="preserve">
+    <value>Volume</value>
+  </data>
+  <data name="VolumesAndCompaction" xml:space="preserve">
+    <value>Volumi e compattamento</value>
+  </data>
+  <data name="warningTargetDataSometimesAbsent" xml:space="preserve">
+    <value>Attenzione! Dati obiettivo a volte mancanti.</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Settimanale</value>
+  </data>
+  <data name="firstTimeLogin" xml:space="preserve">
+    <value>Benvenuti in VisionLink. Si prega di fare il login a www.myvisionlink.com per modificare la propria password.</value>
+  </data>
+  <data name="NewAccountEmailSubject" xml:space="preserve">
+    <value>Benvenuto in VisionLink. Registrare il proprio account</value>
+  </data>
+  <data name="wheelTracking" xml:space="preserve">
+    <value>Tracciamento ruote</value>
+  </data>
+  <data name="withinLevels" xml:space="preserve">
+    <value>Entro i livelli</value>
+  </data>
+  <data name="workInProgress" xml:space="preserve">
+    <value>In avanzamento</value>
+  </data>
+  <data name="working" xml:space="preserve">
+    <value>In lavoro</value>
+  </data>
+  <data name="workingFuelBurned" xml:space="preserve">
+    <value>Carburante consumato in lavoro</value>
+  </data>
+  <data name="workingHours" xml:space="preserve">
+    <value>Ore in lavoro</value>
+  </data>
+  <data name="workingStatus" xml:space="preserve">
+    <value>Stato in lavoro</value>
+  </data>
+  <data name="workingTime" xml:space="preserve">
+    <value>Tempo in lavoro</value>
+  </data>
+  <data name="workingUtil" xml:space="preserve">
+    <value>Utilizzo in lavoro</value>
+  </data>
+  <data name="AlreadyUnsubscribe" xml:space="preserve">
+    <value>Si è già eseguito l'annullamento della iscrizione a questo rapporto.</value>
+  </data>
+  <data name="UnsubscribeConfirmationMessage" xml:space="preserve">
+    <value>Si è richiesto l'annullamento della iscrizione al Rapporto pianificato '{0}'. Per confermare, fare clic su 'OK'. Se non si esegue alcuna azione, l'iscrizione dell'indirizzo email non verrà annullata.</value>
+  </data>
+  <data name="accountLocked" xml:space="preserve">
+    <value>L'account è stato bloccato. Si prega di riprovare tra 30 minuti.</value>
+  </data>
+  <data name="invalidUser002" xml:space="preserve">
+    <value>L'account è stato bloccato. Provare fra 30 minuti.</value>
+  </data>
+  <data name="UnsubscribeSuccessMessage" xml:space="preserve">
+    <value>L'iscrizione dell'indirizzo email da '{0}' è stata annuallata con successo.</value>
+  </data>
+  <data name="passwordExpired" xml:space="preserve">
+    <value>La password è scaduta. Si prega di fare il login a www.myvisionlink.com per modificare la propria passwrod.</value>
+  </data>
+  <data name="selectionLimitReachedMessage" xml:space="preserve">
+    <value>La selezione eccede il limite del sistema. Questa selezione verrà limitata a {0} macchine.</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Zona</value>
+  </data>
+  <data name="zoneExclusive" xml:space="preserve">
+    <value>Zona d'esclusione</value>
+  </data>
+  <data name="zoneInclusive" xml:space="preserve">
+    <value>Zona d'inclusione</value>
+  </data>
+  <data name="exceedsMaximumValue" xml:space="preserve">
+    <value>{0} eccede il valore massimo</value>
+  </data>
+  <data name="requiredFieldWithName" xml:space="preserve">
+    <value>{0} è un campo richiesto.</value>
+  </data>
+  <data name="mustBeNumber" xml:space="preserve">
+    <value>{0} deve essere un numero.</value>
+  </data>
+  <data name="mustBeValidDate" xml:space="preserve">
+    <value>{0} deve essere una data valida.</value>
+  </data>
+  <data name="mustBeBetweenXandY" xml:space="preserve">
+    <value>{0} deve essere tra {1} e {2}.</value>
+  </data>
+  <data name="mustBeLessThanXCharacters" xml:space="preserve">
+    <value>{0} deve essere inferiore di {1} caratteri.</value>
+  </data>
+  <data name="mustNotBeInTheFuture" xml:space="preserve">
+    <value>{0} non deve avere una data futura.</value>
+  </data>
+  <data name="ServiceDueAlertDescription" xml:space="preserve">
+    <value>{0} La manutenzione scade il</value>
+  </data>
+</root>

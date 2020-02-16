@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+	<topicsToConsume>VSS.Interfaces.Events.MasterData.ISalesModelEvent.V2,VSS.Interfaces.Events.MasterData.IMakeEvent.V2,VSS.Interfaces.Events.MasterData.IProductFamilyEvent.V2</topicsToConsume>
+	<topicPrefix></topicPrefix>
+	<topicSuffix>-Alpha</topicSuffix>
+	<!-- Which driver does the processor need to use IKVM or Confluent -->
+	<kafkaDriver>IKVM</kafkaDriver>
+	<addKafkaMessageHeaders>false</addKafkaMessageHeaders>
+	<pollMs>5000</pollMs>
+	<databaseUser>_NHOPSvc</databaseUser>
+	<databasePassword>!beP7u-#u</databasePassword>
+	<databaseName>VSS-Store</databaseName>
+	<databaseSuffix>-Alpha</databaseSuffix>
+	<readDatabaseServer>alpha-nh-raw.c31ahitxrkg7.us-west-2.rds.amazonaws.com</readDatabaseServer>
+	<writeDatabaseServer>alpha-nh-raw.c31ahitxrkg7.us-west-2.rds.amazonaws.com</writeDatabaseServer>
+	<connectionString>Data Source=XXXServerXXX;Initial Catalog=VSS-Store-Alpha;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True</connectionString>
+	<kafka>
+		<consumer>
+			<bootstrap.servers>kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+			<group.id>Dev-MasterData-msg_md_basedata_svc</group.id>
+			<max.poll.records>10000</max.poll.records>
+			<enable.auto.commit>false</enable.auto.commit>
+			<auto.offset.reset>latest</auto.offset.reset>
+		</consumer>
+		<producer>
+			<bootstrap.servers>kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+		</producer>
+	</kafka>
+</configuration>

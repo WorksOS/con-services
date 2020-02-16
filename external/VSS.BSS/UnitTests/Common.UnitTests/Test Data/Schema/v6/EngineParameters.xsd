@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:pref="http://www.myvisionlink.com/feed/v6/CommonFeed" elementFormDefault="unqualified" xmlns:feed="http://www.myvisionlink.com/feed/v6/CommonFeed" xmlns:engineParameters="http://www.myvisionlink.com/feed/v6/EngineParameters" targetNamespace="http://www.myvisionlink.com/feed/v6/EngineParameters" xmlns="http://www.w3.org/2001/XMLSchema">
+<import schemaLocation="CommonSchema.xsd" namespace="http://www.myvisionlink.com/feed/v6/CommonFeed"/> <complexType name="Message">
+  <annotation>
+    <documentation> EngineParameters topic containing a message header as well as fuel ECM parameter data. </documentation>
+  </annotation>
+  <sequence>
+    <element name="header" maxOccurs="1" minOccurs="1" type="feed:TopicHeader"/>
+    <element name="maxFuel" maxOccurs="1" minOccurs="0" type="engineParameters:MaxFuel"/>
+    <element name="idleFuel" maxOccurs="1" minOccurs="0" type="engineParameters:IdleFuel"/>
+    <element name="idleTime" maxOccurs="1" minOccurs="0" type="engineParameters:IdleTime"/>
+    <element name="starts" maxOccurs="1" minOccurs="0" type="engineParameters:Starts"/>
+    <element name="revolutions" maxOccurs="1" minOccurs="0" type="engineParameters:Revolutions"/>
+  </sequence>
+</complexType> <element name="topic" type="engineParameters:TopicBlock">
+  <annotation>
+    <documentation> Communicates all relevant status information about the machine along with some cumulative information and engine start stop times. </documentation>
+  </annotation>
+</element> <complexType name="TopicBlock">
+  <sequence>
+    <element name="nextBuffer" maxOccurs="1" minOccurs="1" type="feed:NextBuffer"/>
+    <element name="message" maxOccurs="unbounded" minOccurs="1" type="engineParameters:Message"/>
+  </sequence>
+</complexType> <complexType name="MaxFuel">
+  <sequence>
+    <element name="value" type="int">
+      <annotation>
+        <documentation> Total maximum fuel (in 1/8 gallons). A value of 8 is only 1 gallon and a value of 12 is 1.5 gallons </documentation>
+      </annotation>
+    </element>
+    <element name="uom" type="feed:UnitOfMeasure"/>
+  </sequence>
+</complexType> <complexType name="IdleFuel">
+  <sequence>
+    <element name="value" type="int">
+      <annotation>
+        <documentation> Total fuel used at idle time (in 1/8 gallons). A value of 8 is only 1 gallon and a value of 12 is 1.5 gallons </documentation>
+      </annotation>
+    </element>
+    <element name="uom" type="feed:UnitOfMeasure"/>
+  </sequence>
+</complexType> <complexType name="IdleTime">
+  <sequence>
+    <element name="value" type="int">
+      <annotation>
+        <documentation> Total amount of engine idle time (0.05 hours/bit). A value of 20 is only 1 hour and a value of 30 is 1.5 hours </documentation>
+      </annotation>
+    </element>
+    <element name="uom" type="feed:UnitOfMeasure"/>
+  </sequence>
+</complexType> <complexType name="Starts">
+  <sequence>
+    <element name="value" type="int">
+      <annotation>
+        <documentation> Total number of engine starts </documentation>
+      </annotation>
+    </element>
+    <element name="uom" type="feed:UnitOfMeasure"/>
+  </sequence>
+</complexType> <complexType name="Revolutions">
+  <sequence>
+    <element name="value" type="long">
+      <annotation>
+        <documentation> Total number of engine revolutions (4 revolutions/bit) . A value of 10 is 40 revolutions. </documentation>
+      </annotation>
+    </element>
+    <element name="uom" type="feed:UnitOfMeasure"/>
+  </sequence>
+</complexType>
+</schema>

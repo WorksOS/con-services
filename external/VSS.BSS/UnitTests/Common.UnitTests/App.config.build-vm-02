@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <appSettings>
+    <add key="DeviceCapabilityServiceBaseUri" value="http://localhost:8001/api"/>
+    <add key="SMTPServers" value="sjc3-nhd-smtp01.vss-eng.com"/>
+    <add key="NightHawkLogRoot" value="D:\Nighthawk\Logs"/>
+    <add key="DatabaseUser" value="UnitTests" />
+    <add key="DatabasePassword" value="n_vu25Ew" />
+    <add key="AlertTrigger.ExcessiveIdleWaitTime" value="00:01:00" />
+    <add key="AlertTrigger.EventWaitTime" value="00:05:00" />
+    <add key="AlertTrigger.ResetIdleDeterminationIsRunning" value="00:15:00" />
+    <!-- blank on purpose to suppress rev-geocodes from happening in the context of unit tests (they are slowing the tests)-->
+    <!--<remove key="GoogleKeyValue" />-->
+    <add key="GoogleKeyValue" value="4lxCplLlPM-jiu83kpxyT6JCYR4=" />
+    <!-- blank on purpose to suppress emails being sent to April every time unit tests are run-->
+    <remove key="TCSSupportEmail" />
+    <add key="TCSSupportEmail" value="" />
+    <add key="ClientSettingsProvider.ServiceUri" value="" />
+    <remove key="UploadFolder" />
+    <add key="UploadFolder" value="..\\..\\..\\UnitTests\\APIServicesTests\\ProjectDataServer\\" />
+    <remove key="ProjectDataServer.IPAddress" />
+    <add key="ProjectDataServer.IPAddress" value="mer-dev-01-vm.ap.trimblecorp.net"/>
+    <remove key="ProjectDataServer.SendPort" />
+    <add key="ProjectDataServer.SendPort" value="15008" />
+    <remove key="ProjectDataServer.ListenPort" />
+    <add key="ProjectDataServer.ListenPort" value="15006" />
+    <remove key="TCC.VLRootFilespace" />
+    <add key="TCC.VLRootFilespace" value="VLdatastore-CObuild" />
+    <add key="TCC.VLAccess" value="TCCVLAccess_Build" />
+    <remove key="TCC.BusinessDataCenter" />
+    <add key="TCC.BusinessDataCenter" value="BusinessDataCenter" />
+    <remove key="TCC.JobSitesFolder" />
+    <add key="TCC.JobSitesFolder" value="BC Data/Sites" />
+    <remove key="TCC.DesignsFolder" />
+    <add key="TCC.DesignsFolder" value="Designs" />
+    <add key="TCC.RefreshInterval" value="0.07:00:00" />
+    <add key="BSSMessageRetryDelay" value="0,0|1,15|2,30|3,60|4,120|5,240"/>
+    <!--The maximum number of results to be displayed on certain pages-->
+    <add key="maxResultsPerPage" value="10"/>
+    <add key="pageSize" value="10"/>
+    <!-- This value will be used to determine which values to show in the NHAdmin OTA update screen. 
+         The value will be CN for China Stack, US for US stack -->
+    <add key="OTAStack" value="US" />
+    <add key="InspectionUrl" value="https://cateca--c.na14.visual.force.com/apex/MIA_ReviewInspection?id="/>
+    <add key="HourMeterAjustmentCacheReset" value="10"/>
+    <add key="SkipPercentage" value="0.25"/>
+	<add key="EquipmentFilterSvcBatchSize" value="2"/>
+	<add key="OpenAlertBatchSize" value="2"/>
+    <add key ="AdvProdUrl" value="testurl"/>
+    <add key="AdvProdEncryptionKey" value="$(ktr^!bs"/>
+    <add key="VerifyUserLinkValidity" value="30"/>
+    <add key="VerifyUserEncryptionKey" value="$(ktr^!bs"/>
+    <add key="EmailModifyLimit" value="20"/>
+    <add key="VerificationReminderDayLimit" value="7"/>
+    <add key="VerificationPendingDayLimit" value="1"/>
+    <add key="EnableNewView" value="false"/>
+
+    <!-- VSP config-->
+    <add key="VSP.IdentityAPI.BaseURI" value="https://api-stg.trimble.com/t/trimble.com/vsp-dev-identityapi/v1" />
+    <add key="VSP.IdentityAPI.CreateUser" value="/Identities" />
+    <add key="VSP.IdentityAPI.SetPassword" value="/Identities/Password?loginId={0}" />
+    <add key="VSP.IdentityAPI.GetUser" value="/Identities?loginId={0}" />
+    <add key="VSP.IdentityAPI.UpdateUser" value="/Identities?loginId={0}"/>
+
+    <add key="TPaaS.Token.URI" value="https://identity-stg.trimble.com/token" />
+    <add key="TPaaS.Token.ClientKey" value="Bhh2ZSX5pNUnjTUjVBIr7Wy7ENsa" />
+    <add key="TPaaS.Token.ClientSecret" value="xA2zZygi59PvvGVMAOyKgvzLKqAa" />
+    <add key="TPaaS.Token.Username" value="dev-vlclassicuser@trimble.com" />
+    <add key="TPaaS.Token.Password" value="Password@123" />
+    <add key="EnableIdentityMigration" value="true" />
+    <add key ="VSP.AssetAPI.EnableSync" value ="true"/>
+    <add key ="VSP.GeofenceAPI.EnableSync" value ="true"/>
+    <add key ="VSP.GroupAPI.EnableSync" value ="true"/>
+    <add key ="VSP.CustomerAPI.EnableSync" value ="true"/>
+    <add key ="VSP.DissociateCustomerUser.EnableSync" value ="true"/>
+    <add key="SiteDispatchEnable" value="true" />
+
+    <!--Ignore Following Customers in Next Gen Space-->
+    <!-- Any Customers added to this list in the future may be added with a $ separator in the value attribute-->
+    <add key="CustomersToBeExcludedFromNextGenSync" value="Kiewit Corp"/>
+
+    <!-- Password Change Policy 2.17 i2-->
+    <add key="PasswordHistoryLimit" value="6"/>
+    <add key="PasswordExpiryDaysLimit" value="180"/>
+    <add key="ProjectMasterDataUrl" value=""/>
+    <add key="ProjectMasterDataTimeout" value="180000"/>
+  </appSettings>
+
+  <connectionStrings>
+    <remove name="NH_OP"/>
+    <remove name="NH_RAW"/>
+    <remove name="NH_RPT"/>
+    <remove name="NH_DATA"/>
+    <remove name="NH_OEMDATA"/>
+    <remove name="NH_RABBITMQv2"/>
+    <remove name="NH_RABBITMQ"/>
+    <remove name="NH_MSTR"/>
+    <remove name="NH_METRICS"/>
+    <remove name="NH_DFDB"/>
+    <remove name="NH_DATAIN"/>
+    <remove name="NH_DATAOUT"/>
+    <remove name="NH_Store"/>
+    <remove name="NH_TCA"/>
+    <remove name="NH_CatInspection"/>
+    <remove name="VLStandard"/>
+    <add name="NH_OP" connectionString="metadata=res://*/Model.NHOpModel.csdl|res://*/Model.NHOpModel.ssdl|res://*/Model.NHOpModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=SJC3-NHD-BLDV02.vss-eng.com\SJC3_NHD_SQL01;Initial Catalog=NH_OP;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient"/>
+    <add name="NH_RAW" connectionString="metadata=res://*/Model.NHRawModel.csdl|res://*/Model.NHRawModel.ssdl|res://*/Model.NHRawModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=SJC3-NHD-BLDV02.vss-eng.com\SJC3_NHD_SQL01;Initial Catalog=NH_RAW;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient"/>
+    <add name="NH_RPT" connectionString="metadata=res://*/Model.NHRptModel.csdl|res://*/Model.NHRptModel.ssdl|res://*/Model.NHRptModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=SJC3-NHD-BLDV02.vss-eng.com\SJC3_NHD_SQL01;Initial Catalog=NH_RPT;Persist Security Info=True;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient" />
+    <add name="NH_DATA" connectionString="metadata=res://*/Model.NHDataModel.csdl|res://*/Model.NHDataModel.ssdl|res://*/Model.NHDataModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=SJC3-NHD-BLDV02.vss-eng.com\SJC3_NHD_SQL01;Initial Catalog=NH_DATA;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient" />
+    <add name="NH_OEMDATA" connectionString="metadata=res://*/Model.NHOEMDataModel.csdl|res://*/Model.NHOEMDataModel.ssdl|res://*/Model.NHOEMDataModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=SJC3-NHD-BLDV02.vss-eng.com\SJC3_NHD_SQL01;Initial Catalog=NH_OEMDATA;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient"/>
+    <add name="NH_RABBITMQv2" connectionString="rabbitmq://sjc3-nhd-rabbit.vss-eng.com:8002/XXXMQHOSTXXX/XXXMQNAMEXXX" />
+    <add name="NH_RABBITMQ" connectionString="rabbitmq://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-rabbit.vss-eng.com:8002/XXXMQHOSTXXX/XXXMQNAMEXXX"/>
+    <add name="NH_MSTR" connectionString="metadata=res://*/Model.NHMstrModel.csdl|res://*/Model.NHMstrModel.ssdl|res://*/Model.NHMstrModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=SJC3-NHD-BLDV02.vss-eng.com\SJC3_NHD_SQL01;Initial Catalog=NH_MSTR;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient"/>
+    <add name="NH_METRICS" connectionString="metadata=res://*/Model.NH_METRICS.csdl|res://*/Model.NH_METRICS.ssdl|res://*/Model.NH_METRICS.msl;provider=System.Data.SqlClient;provider connection string=&quot;Data Source=SJC3-NHD-BLDV02.vss-eng.com\SJC3_NHD_SQL01;Initial Catalog=NH_METRICS;Integrated Security=False;User ID=XXXUSERXXX;Password=XXXPASSWORDXXX;MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient"/>
+    <add name="NH_DFDB" connectionString="mongodb://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-nsdv01.vss-eng.com:27017/NH_DEVICEDATA"/>
+    <add name="NH_DATAIN" connectionString="mongodb://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-nsdv01.vss-eng.com:27017/datain"/>
+    <add name="NH_DATAOUT" connectionString="mongodb://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-nsdv01.vss-eng.com:27017/dataout" />
+    <add name="NH_Store" connectionString="mongodb://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-nsdv01.vss-eng.com:27017/Store"/>
+    <add name="NH_TCA" connectionString="mongodb://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-nsdv01.vss-eng.com:27017/NH_TCA"/>
+    <add name="NH_CatInspection" connectionString="mongodb://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-nsdv01.vss-eng.com:27017/Inspection"/>
+    <add name="VLStandard" connectionString="mongodb://XXXUSERXXX:XXXPASSWORDXXX@sjc3-nhd-nsdv01.vss-eng.com:27017/VLStandard"/>
+  </connectionStrings>
+
+  <system.serviceModel>
+    <bindings>
+      <netMsmqBinding>
+        <binding name="mq-no-security" receiveErrorHandling="Drop">
+          <security mode="None">
+            <transport msmqAuthenticationMode="None" msmqProtectionLevel="None" />
+            <message clientCredentialType="None" />
+          </security>
+        </binding>
+      </netMsmqBinding>
+      <netTcpBinding>
+        <binding name="tcp-no-security">
+          <security mode="None" />
+        </binding>
+      </netTcpBinding>
+    </bindings>
+    <client>
+      <endpoint address="net.msmq://./private/NHSiteData" binding="netMsmqBinding" bindingConfiguration="mq-no-security" contract="VSS.Nighthawk.NHOPSvc.SiteDispatcher.ISiteDispatch" name="NHSiteDispatch" />
+      <endpoint address="net.msmq://./private/NHData" binding="netMsmqBinding" bindingConfiguration="mq-no-security" contract="VSS.Hosted.VLCommon.INHDataProcessor" name="NHData" />
+      <endpoint address="net.msmq://./private/NHConfigStatus" name="NHConfigStatus" bindingConfiguration="mq-no-security" binding="netMsmqBinding" contract="VSS.Hosted.VLCommon.IConfigStatus" />
+    </client>
+    <services>
+      <service name="VSS.Nighthawk.NHOPSvc.SiteDispatcher">
+        <endpoint address="net.msmq://./private/NHSiteData" name="NHSiteDispatch" bindingConfiguration="mq-no-security" binding="netMsmqBinding" contract="VSS.Nighthawk.NHOPSvc.SiteDispatcher.ISiteDispatch" />
+      </service>
+      <service name="VSS.Nighthawk.NHOPSvc.ConfigStatus">
+        <endpoint address="net.msmq://./private/NHConfigStatus" name="NHConfigStatus" bindingConfiguration="mq-no-security" binding="netMsmqBinding" contract="VSS.Hosted.VLCommon.IConfigStatus" />
+      </service>
+    </services>
+    <behaviors>
+      <endpointBehaviors>
+        <behavior name="EndPointServiceViewEventBehavior">
+          <dataContractSerializer maxItemsInObjectGraph="4194304" />
+        </behavior>
+      </endpointBehaviors>
+    </behaviors>
+  </system.serviceModel>
+  
+  <system.web>
+    <membership defaultProvider="ClientAuthenticationMembershipProvider">
+      <providers>
+        <add name="ClientAuthenticationMembershipProvider" type="System.Web.ClientServices.Providers.ClientFormsAuthenticationMembershipProvider, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" serviceUri="" />
+      </providers>
+    </membership>
+    <roleManager defaultProvider="ClientRoleProvider" enabled="true">
+      <providers>
+        <add name="ClientRoleProvider" type="System.Web.ClientServices.Providers.ClientRoleProvider, System.Web.Extensions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" serviceUri="" cacheTimeout="86400" />
+      </providers>
+    </roleManager>
+  </system.web>
+</configuration>

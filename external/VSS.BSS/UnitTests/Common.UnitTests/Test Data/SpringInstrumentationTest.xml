@@ -1,0 +1,12 @@
+﻿<objects xmlns="http://www.springframework.net">
+  <object id="UnitTests.SpringProxyTestTarget" type="Spring.Aop.Framework.ProxyFactoryObject, Spring.Aop">
+    <property name="ExposeProxy" value="true" />
+    <property name="Target">
+      <object type="UnitTests.SpringProxyTestTarget, UnitTests" />
+    </property>
+    <property name="InterceptorNames">
+      <list>
+      </list>
+    </property>
+  </object>
+</objects>

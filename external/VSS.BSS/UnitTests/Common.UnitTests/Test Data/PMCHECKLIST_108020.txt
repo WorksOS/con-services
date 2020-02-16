@@ -1,0 +1,173 @@
+﻿<PMCheckListStepsAndParts>
+<smiweb:product xmlns:smiweb="http://www.cat.com/smi/v2/smiweb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/smi/v2/smiweb https://smi.rd.cat.com/smiweb/schema/v2/pmSegmentList.xsd">
+   <Segment code="108021">
+      <Interval code="1211889">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>CLEAN CRANKCASE BREATHER ENGINE</JobOperation>
+         <Parts code="1211889">
+            <PartInfo code="9Y1758">
+               <PartNumber>9Y1758</PartNumber>
+               <Quantity>1</Quantity>
+               <Description>GASKET-BREATHER</Description>
+               <AdditionalNotes>ENGINE CRANKCASE BREATHER SEAL/GASKET</AdditionalNotes>
+            </PartInfo>
+         </Parts>
+         <SMCS>
+            <Comp Description="CRANKCASE BREATHER">1317</Comp>
+            <Job Description="CLEAN">070</Job>
+            <Mod Description="ENGINE">ENG</Mod>
+         </SMCS>
+      </Interval>
+      <Interval code="1211893">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>REPLACE ENGINE OIL &amp; FILTER</JobOperation>
+         <Parts code="1211893">
+            <PartInfo code="DEO (L)">
+               <PartNumber>DEO (L)</PartNumber>
+               <Quantity>35</Quantity>
+               <Description>DIESEL ENGINE OIL (LITERS</Description>
+               <AdditionalNotes>ENGINE OIL</AdditionalNotes>
+            </PartInfo>
+            <PartInfo code="1R1808">
+               <PartNumber>1R1808</PartNumber>
+               <Quantity>1</Quantity>
+               <Description>FILTER ELEMENT AS-ENGINE</Description>
+               <AdditionalNotes>ENGINE OIL FILTER</AdditionalNotes>
+            </PartInfo>
+         </Parts>
+         <SMCS>
+            <Comp Description="ENGINE OIL &amp; FILTER">1318</Comp>
+            <Job Description="REPLACE">510</Job>
+         </SMCS>
+         <Notes>A 500 SERVICE HOUR ENGINE OIL CHANGE INTERVAL IS AVAILABLE, PROVIDED THAT OPERATING CONDITIONS AND RECOMMENDED MULTIGRADE OIL TYPES ARE MET. WHEN THESE REQUIREMENTS ARE NOT MET, SHORTEN THE OIL CHANGE INTERVAL TO 250 SERVICE HOURS, OR USE AN SOS OIL SAMPLING AND ANALYSIS PROGRAM TO DETERMINE AN ACC</Notes>
+      </Interval>
+      <Interval code="1211892">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>TAKE &amp; ANALYZE S-O-S SAMPLE FR ENGINE OIL</JobOperation>
+         <Parts code="1211892">
+            <PartInfo code="SOS">
+               <PartNumber>SOS</PartNumber>
+               <Quantity>1</Quantity>
+               <Description>SCHEDULED OIL SAMPLE</Description>
+               <AdditionalNotes>ENGINE OIL SAMPLE</AdditionalNotes>
+            </PartInfo>
+         </Parts>
+         <SMCS>
+            <Comp Description="ENGINE OIL">1348</Comp>
+            <Job Description="TAKE &amp; ANALYZE S-O-S SAMPLE FR">008</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211891">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>INSPECT V-BELT(S)</JobOperation>
+         <SMCS>
+            <Comp Description="V-BELT(S)">1357</Comp>
+            <Job Description="INSPECT">040</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211897">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>TAKE &amp; ANALYZE S-O-S SAMPLE FR ENGINE COOLANT LEVEL ONE</JobOperation>
+         <Parts code="1211897">
+            <PartInfo code="S-O-S COOL-1">
+               <PartNumber>S-O-S COOL-1</PartNumber>
+               <Quantity>1</Quantity>
+               <Description>LEVEL 1 COOLANT CHECK</Description>
+               <AdditionalNotes>COOLANT SAMPLE</AdditionalNotes>
+            </PartInfo>
+         </Parts>
+         <SMCS>
+            <Comp Description="ENGINE COOLANT">1395</Comp>
+            <Job Description="TAKE &amp; ANALYZE S-O-S SAMPLE FR">008</Job>
+            <Mod Description="LEVEL ONE">L1</Mod>
+         </SMCS>
+      </Interval>
+      <Interval code="1211887">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>CLEAN BATTERY</JobOperation>
+         <SMCS>
+            <Comp Description="BATTERY">1401</Comp>
+            <Job Description="CLEAN">070</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211896">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>LUBRICATE DRIVE SHAFT SPLINE</JobOperation>
+         <SMCS>
+            <Comp Description="DRIVE SHAFT">3253</Comp>
+            <Job Description="LUBRICATE">086</Job>
+            <Mod Description="SPLINE">SN</Mod>
+         </SMCS>
+         <Notes>SEE OMM</Notes>
+      </Interval>
+      <Interval code="1211890">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>CHECK DIFFERENTIAL FLUID LEVEL</JobOperation>
+         <SMCS>
+            <Comp Description="DIFFERENTIAL">3258</Comp>
+            <Job Description="CHECK">535</Job>
+            <Mod Description="FLUID LEVEL">FLV</Mod>
+            <JobLocation Description="FRONT">FRT</JobLocation>
+         </SMCS>
+      </Interval>
+      <Interval code="1211899">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>CHECK DIFFERENTIAL FLUID LEVEL</JobOperation>
+         <SMCS>
+            <Comp Description="DIFFERENTIAL">3258</Comp>
+            <Job Description="CHECK">535</Job>
+            <Mod Description="FLUID LEVEL">FLV</Mod>
+            <JobLocation Description="REAR">RER</JobLocation>
+         </SMCS>
+      </Interval>
+      <Interval code="1211894">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>TEST SERVICE BRAKE</JobOperation>
+         <SMCS>
+            <Comp Description="SERVICE BRAKE">4251</Comp>
+            <Job Description="TEST">081</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211888">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>CHECK BRAKE ACCUMULATOR</JobOperation>
+         <SMCS>
+            <Comp Description="BRAKE ACCUMULATOR">4263</Comp>
+            <Job Description="CHECK">535</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211895">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>TEST PARKING BRAKE</JobOperation>
+         <SMCS>
+            <Comp Description="PARKING BRAKE">4267</Comp>
+            <Job Description="TEST">081</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211886">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>CHECK STEERING COLUMN</JobOperation>
+         <SMCS>
+            <Comp Description="STEERING COLUMN">4310</Comp>
+            <Job Description="CHECK">535</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211898">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>LUBRICATE QUICK COUPLER</JobOperation>
+         <SMCS>
+            <Comp Description="QUICK COUPLER">6129</Comp>
+            <Job Description="LUBRICATE">086</Job>
+         </SMCS>
+      </Interval>
+      <Interval code="1211900">
+         <ServiceIntervalGroupNumber>PM 1</ServiceIntervalGroupNumber>
+         <JobOperation>PERFORM PM 1</JobOperation>
+         <SMCS>
+            <Comp Description="PM 1">7501</Comp>
+            <Job Description="PERFORM">540</Job>
+         </SMCS>
+      </Interval>
+   </Segment>
+</smiweb:product>
+</PMCheckListStepsAndParts>

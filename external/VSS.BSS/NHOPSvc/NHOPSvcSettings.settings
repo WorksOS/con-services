@@ -1,0 +1,90 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="" GeneratedClassName="NHOPSvcSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SiteDispatchEnabled" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="ConfigStatusSvcEnabled" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SiteDispatchRunInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:02:00</Value>
+    </Setting>
+    <Setting Name="SiteDispatchCacheRefreshInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:20:00</Value>
+    </Setting>
+    <Setting Name="SiteDispatchCustomerSitesCacheSlidingExpiration" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">01:00:00</Value>
+    </Setting>
+    <Setting Name="SiteDispatchedSitesCacheSlidingExpiration" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">01:00:00</Value>
+    </Setting>
+    <Setting Name="SiteDispatchAssetCustomerCacheSlidingExpiration" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">01:00:00</Value>
+    </Setting>
+    <Setting Name="PMDuePopulatorSvcRunInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:04:00</Value>
+    </Setting>
+    <Setting Name="PMDuePopulatorSvcBatchSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="PLDeviceOTARunInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">1.00:00:00</Value>
+    </Setting>
+    <Setting Name="DeregSendRetryDelayDays" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">5.00:00:00</Value>
+    </Setting>
+    <Setting Name="DeviceReportingDelayDays" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">2.00:00:00</Value>
+    </Setting>
+    <Setting Name="OTABookMarkedAlertTasks" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">PLDeviceOTADeregister</Value>
+    </Setting>
+    <Setting Name="OTATriggerRunTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:15:00</Value>
+    </Setting>
+    <Setting Name="PMDuePopulatorSvcEnabled" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="PLDeviceOTAEnabled" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AddressSvcRunInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:02:00</Value>
+    </Setting>
+    <Setting Name="EmailSvcEnabled" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="EmailSvcRunInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:01:00</Value>
+    </Setting>
+    <Setting Name="EmailSvcTask" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">EmailSvc</Value>
+    </Setting>
+    <Setting Name="EmailSvcRunTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:05:00</Value>
+    </Setting>
+    <Setting Name="PauseBetweenEmailsMs" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">25</Value>
+    </Setting>
+    <Setting Name="EtlServiceBatchSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">250</Value>
+    </Setting>
+    <Setting Name="EtlServiceRunTimeout" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:15:00</Value>
+    </Setting>
+    <Setting Name="EtlServiceEnabled" Type="System.Boolean" Scope="Application">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="EtlServiceRunInterval" Type="System.TimeSpan" Scope="Application">
+      <Value Profile="(Default)">00:01:00</Value>
+    </Setting>
+    <Setting Name="EmailSvcBatchSize" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">1000</Value>
+    </Setting>
+    <Setting Name="ConsumerLimit" Type="System.Int32" Scope="Application">
+      <Value Profile="(Default)">5</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

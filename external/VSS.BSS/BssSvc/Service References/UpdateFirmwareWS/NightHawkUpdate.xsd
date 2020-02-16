@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://www.trimble.com/BusinessSupport/v1/FirmwareVersion" elementFormDefault="qualified" targetNamespace="http://www.trimble.com/BusinessSupport/v1/FirmwareVersion" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="FirmwareVersion" type="FirmwareVersionType" />
+  <xs:complexType name="FirmwareVersionType">
+    <xs:sequence>
+      <xs:element name="FirmwareVersionList" type="FirmwareVersionListType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FirmwareVersionListType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="FirmwareRecord" type="FirmwareRecordType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="FirmwareRecordType">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="1" name="IBKey" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="SerialNumberVIN" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="MainboardFirmwareVersion" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="GatewayFirmwarePN" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="EquipmentLabel" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="bpelNightHawkChangesPublishProcessProcessResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="result" type="xs:string" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

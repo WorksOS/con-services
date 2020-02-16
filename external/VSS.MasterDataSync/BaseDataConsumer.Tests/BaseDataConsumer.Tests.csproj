@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
+		<AssemblyName>VSS.Messaging.BaseDataConsumer.Tests</AssemblyName>
+		<RootNamespace>VSS.Messaging.BaseDataConsumer.Tests</RootNamespace>
+		<Company>VirtualSite Solutions</Company>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.0.1" />
+		<PackageReference Include="xunit" Version="2.4.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+		<PackageReference Include="VSS.AutofacContrib.NSubstitute" Version="1.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BaseDataConsumer\BaseDataConsumer.csproj" />	  
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="app.config.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

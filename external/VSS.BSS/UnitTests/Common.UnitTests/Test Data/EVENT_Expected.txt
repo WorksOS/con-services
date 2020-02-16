@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfNHDataWrapper xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.nighthawk.com/nighthawk/service/NHData/2009/10">
+  <NHDataWrapper>
+    <Data z:Id="i1" xmlns:d3p1="http://nighthawk.vss.com/data/2009/03" i:type="d3p1:DataFaultEvent" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+      <EntityKey xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" xmlns="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" />
+      <d3p1:AssetID>0</d3p1:AssetID>
+      <d3p1:DebugRefID>12096887</d3p1:DebugRefID>
+      <d3p1:DeviceType>ProductLink</d3p1:DeviceType>
+      <d3p1:DimDatalink i:nil="true" />
+      <d3p1:DimDatalinkReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimDatalinkReference>
+      <d3p1:DimSeverityLevel i:nil="true" />
+      <d3p1:DimSeverityLevelReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSeverityLevelReference>
+      <d3p1:DimSource i:nil="true" />
+      <d3p1:DimSourceReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSourceReference>
+      <d3p1:EID>2133</d3p1:EID>
+      <d3p1:EventUTC>2008-04-01T21:13:18</d3p1:EventUTC>
+      <d3p1:GPSDeviceID>-DATA_FEED_TEST08783</d3p1:GPSDeviceID>
+      <d3p1:ID>0</d3p1:ID>
+      <d3p1:InsertUTC>0001-01-01T00:00:00</d3p1:InsertUTC>
+      <d3p1:MID>122</d3p1:MID>
+      <d3p1:Occurrences>1</d3p1:Occurrences>
+      <d3p1:SourceMsgID>5504320</d3p1:SourceMsgID>
+      <d3p1:fk_DimDatalinkID>1</d3p1:fk_DimDatalinkID>
+      <d3p1:fk_DimSeverityLevelID>2</d3p1:fk_DimSeverityLevelID>
+      <d3p1:fk_DimSourceID>1</d3p1:fk_DimSourceID>
+    </Data>
+    <StoreAttempts>0</StoreAttempts>
+  </NHDataWrapper>
+  <NHDataWrapper>
+    <Data z:Id="i2" xmlns:d3p1="http://nighthawk.vss.com/data/2009/03" i:type="d3p1:DataFaultEvent" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+      <EntityKey xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" xmlns="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" />
+      <d3p1:AssetID>0</d3p1:AssetID>
+      <d3p1:DebugRefID>12096947</d3p1:DebugRefID>
+      <d3p1:DeviceType>ProductLink</d3p1:DeviceType>
+      <d3p1:DimDatalink i:nil="true" />
+      <d3p1:DimDatalinkReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimDatalinkReference>
+      <d3p1:DimSeverityLevel i:nil="true" />
+      <d3p1:DimSeverityLevelReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSeverityLevelReference>
+      <d3p1:DimSource i:nil="true" />
+      <d3p1:DimSourceReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSourceReference>
+      <d3p1:EID>2133</d3p1:EID>
+      <d3p1:EventUTC>2008-04-01T21:13:18</d3p1:EventUTC>
+      <d3p1:GPSDeviceID>-DATA_FEED_TEST08764</d3p1:GPSDeviceID>
+      <d3p1:ID>0</d3p1:ID>
+      <d3p1:InsertUTC>0001-01-01T00:00:00</d3p1:InsertUTC>
+      <d3p1:MID>122</d3p1:MID>
+      <d3p1:Occurrences>1</d3p1:Occurrences>
+      <d3p1:SourceMsgID>5504365</d3p1:SourceMsgID>
+      <d3p1:fk_DimDatalinkID>1</d3p1:fk_DimDatalinkID>
+      <d3p1:fk_DimSeverityLevelID>2</d3p1:fk_DimSeverityLevelID>
+      <d3p1:fk_DimSourceID>1</d3p1:fk_DimSourceID>
+    </Data>
+    <StoreAttempts>0</StoreAttempts>
+  </NHDataWrapper>
+  <NHDataWrapper>
+    <Data z:Id="i3" xmlns:d3p1="http://nighthawk.vss.com/data/2009/03" i:type="d3p1:DataFaultEvent" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+      <EntityKey xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" xmlns="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" />
+      <d3p1:AssetID>0</d3p1:AssetID>
+      <d3p1:DebugRefID>12096947</d3p1:DebugRefID>
+      <d3p1:DeviceType>ProductLink</d3p1:DeviceType>
+      <d3p1:DimDatalink i:nil="true" />
+      <d3p1:DimDatalinkReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimDatalinkReference>
+      <d3p1:DimSeverityLevel i:nil="true" />
+      <d3p1:DimSeverityLevelReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSeverityLevelReference>
+      <d3p1:DimSource i:nil="true" />
+      <d3p1:DimSourceReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSourceReference>
+      <d3p1:EID>2133</d3p1:EID>
+      <d3p1:EventUTC>2008-04-01T21:13:18</d3p1:EventUTC>
+      <d3p1:GPSDeviceID>-DQ0200079955DQ1</d3p1:GPSDeviceID>
+      <d3p1:ID>0</d3p1:ID>
+      <d3p1:InsertUTC>0001-01-01T00:00:00</d3p1:InsertUTC>
+      <d3p1:MID>122</d3p1:MID>
+      <d3p1:Occurrences>1</d3p1:Occurrences>
+      <d3p1:SourceMsgID>5504365</d3p1:SourceMsgID>
+      <d3p1:fk_DimDatalinkID>1</d3p1:fk_DimDatalinkID>
+      <d3p1:fk_DimSeverityLevelID>2</d3p1:fk_DimSeverityLevelID>
+      <d3p1:fk_DimSourceID>1</d3p1:fk_DimSourceID>
+    </Data>
+    <StoreAttempts>0</StoreAttempts>
+  </NHDataWrapper>
+  <NHDataWrapper>
+    <Data z:Id="i4" xmlns:d3p1="http://nighthawk.vss.com/data/2009/03" i:type="d3p1:DataFaultEvent" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/">
+      <EntityKey xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" xmlns="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses" />
+      <d3p1:AssetID>0</d3p1:AssetID>
+      <d3p1:DebugRefID>12096947</d3p1:DebugRefID>
+      <d3p1:DeviceType>ProductLink</d3p1:DeviceType>
+      <d3p1:DimDatalink i:nil="true" />
+      <d3p1:DimDatalinkReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimDatalinkReference>
+      <d3p1:DimSeverityLevel i:nil="true" />
+      <d3p1:DimSeverityLevelReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSeverityLevelReference>
+      <d3p1:DimSource i:nil="true" />
+      <d3p1:DimSourceReference xmlns:d4p1="http://schemas.datacontract.org/2004/07/System.Data.Objects.DataClasses">
+        <d4p1:EntityKey xmlns:d5p1="http://schemas.datacontract.org/2004/07/System.Data" i:nil="true" />
+      </d3p1:DimSourceReference>
+      <d3p1:EID>2133</d3p1:EID>
+      <d3p1:EventUTC>2008-04-01T21:13:18</d3p1:EventUTC>
+      <d3p1:GPSDeviceID>-DQ0200020816Q1</d3p1:GPSDeviceID>
+      <d3p1:ID>0</d3p1:ID>
+      <d3p1:InsertUTC>0001-01-01T00:00:00</d3p1:InsertUTC>
+      <d3p1:MID>122</d3p1:MID>
+      <d3p1:Occurrences>1</d3p1:Occurrences>
+      <d3p1:SourceMsgID>5504365</d3p1:SourceMsgID>
+      <d3p1:fk_DimDatalinkID>1</d3p1:fk_DimDatalinkID>
+      <d3p1:fk_DimSeverityLevelID>2</d3p1:fk_DimSeverityLevelID>
+      <d3p1:fk_DimSourceID>1</d3p1:fk_DimSourceID>
+    </Data>
+    <StoreAttempts>0</StoreAttempts>
+  </NHDataWrapper>
+</ArrayOfNHDataWrapper>

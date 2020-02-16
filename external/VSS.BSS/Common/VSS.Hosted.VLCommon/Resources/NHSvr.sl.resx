@@ -1,0 +1,3160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+		Microsoft ResX Schema
+
+		Version 1.3
+
+		The primary goals of this format is to allow a simple XML format 
+		that is mostly human readable. The generation and parsing of the 
+		various data types are done through the TypeConverter classes 
+		associated with the data types.
+
+		Example:
+
+		... ado.net/XML headers & schema ...
+		<resheader name="resmimetype">text/microsoft-resx</resheader>
+		<resheader name="version">1.3</resheader>
+		<resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+		<resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+		<data name="Name1">this is my long string</data>
+		<data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+		<data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+			[base64 mime encoded serialized .NET Framework object]
+		</data>
+		<data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+			[base64 mime encoded string representing a byte array form of the .NET Framework object]
+		</data>
+
+		There are any number of "resheader" rows that contain simple 
+		name/value pairs.
+
+		Each data row contains a name, and value. The row also contains a 
+		type or mimetype. Type corresponds to a .NET class that support 
+		text/value conversion through the TypeConverter architecture. 
+		Classes that don't support this are serialized and stored with the 
+		mimetype set.
+
+		The mimetype is used for serialized objects, and tells the 
+		ResXResourceReader how to depersist the object. This is currently not 
+		extensible. For a given mimetype the value must be set accordingly:
+
+		Note - application/x-microsoft.net.object.binary.base64 is the format 
+		that the ResXResourceWriter will generate, however the reader can 
+		read any of the formats listed below.
+
+		mimetype: application/x-microsoft.net.object.binary.base64
+		value   : The object must be serialized with 
+			: System.Serialization.Formatters.Binary.BinaryFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.soap.base64
+		value   : The object must be serialized with 
+			: System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+			: and then encoded with base64 encoding.
+
+		mimetype: application/x-microsoft.net.object.bytearray.base64
+		value   : The object must be serialized into a byte array 
+			: using a System.ComponentModel.TypeConverter
+			: and then encoded with base64 encoding.
+	-->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="PowerModeAlertMessageBodySMS" xml:space="preserve">
+    <value>Račun za opozorila programa VisionLink: {0} {1} Nastavljeno na: {2} za {3}/{4} ob {5}</value>
+  </data>
+  <data name="2DProjectMonitoring" xml:space="preserve">
+    <value>2D monitoring projekta</value>
+  </data>
+  <data name="3DProjectMonitoring" xml:space="preserve">
+    <value>3D monitoring projekta</value>
+  </data>
+  <data name="deviceTypeTHREEPDATA" xml:space="preserve">
+    <value>3PDATA</value>
+  </data>
+  <data name="deviceTypeMTS523" xml:space="preserve">
+    <value>523</value>
+  </data>
+  <data name="zipDescription" xml:space="preserve">
+    <value>&lt;p&gt;These zip files contain example codes for the integration of VisionLink API. By default, the examples in these zip files invoke the production service. Please read the README.txt file to understand how to build the projects.&lt;/p&gt;&lt;p&gt;Note: These examples may contain VirtualSite Solutions' unpublished proprietary information which may constitute a trade secret and/or be confidential. These Sample codes are meant to be used purely for educational purposes assisting with usage and integration of VisionLink APIs and may not be copied or disclosed to others. Copyright notice is precautionary only, and does not imply publication.&lt;/p&gt;</value>
+  </data>
+  <data name="apiSiteIntroduction" xml:space="preserve">
+    <value>&lt;p&gt;Welcome to VisionLink API documentation. In this page you will find all the information you need to get started. You will also find a more detailed list of all the available services, sample codes and examples.&lt;/p&gt;&lt;p&gt;If you are not a programmer and just need an overview of the VisionLink API, please read the &lt;a href="/Docs/{0}/Overview.pdf" class="contentLink" target="_blank"&gt;Overview Document&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Read the &lt;a href="/Docs/{0}/ProgrammersReference.pdf" target="_blank" class="contentLink"&gt;Programmer’s Reference&lt;/a&gt; to learn more on how to use the API service. It is important that the VisionLink API users review this reference closely as it contains useful information that will expedite the integration process.&lt;/p&gt;&lt;p&gt; The first step in accessing the VisionLink API service is to acquire an API queue assignment as well as a non-expiring VisionLink API user account id/password. You can do that by contacting your account Administrator, requesting your choice of API topics, and following instructions in the Welcome email to set up your API password.&lt;/p&gt;</value>
+  </data>
+  <data name="diagnosticsDescription" xml:space="preserve">
+    <value>Diagnostika se nanaša na postopek zaznavanja, prikaza in/ali shranjevanja informacij o neobičajnem delovanju stroja/motorja v okviru elektronskega krmilnega modula (ECM). Vsaka diagnoza je predstavljena s petimi podatkovnimi elementi: z diagnostično stopnjo, s poročanjem modula ID (MID) o diagnostiki, z diagnostičnim identifikatorjem (ali identifikatorjem komponente, CID), s kazalnikom načina napake (FMI) in diagnostičnim časovnim žigom.</value>
+  </data>
+  <data name="NewAccountSupportEmailBody" xml:space="preserve">
+    <value>Ustvarjen je bil nov račun {0} za VisionLink. &lt;BR&gt;Podrobnosti računa: &lt;BR&gt;Primarni stik: {1}&lt;BR&gt;Elektronski naslov: {2}&lt;BR&gt; BSS ID: {3} &lt;BR&gt;Povezava za aktivacijo: {4}</value>
+  </data>
+  <data name="notEnoughPolygonPoints" xml:space="preserve">
+    <value>Meje poligona morajo imeti najmanj 3 točke.</value>
+  </data>
+  <data name="SavCreationEmailHeader" xml:space="preserve">
+    <value>Ustvarjen je bil pregled sredstev v skupni rabi za ogled naslednjih sredstev v vašem računu VisionLink. Stik za nadaljnje informacije: {0} v organizaciji {1}</value>
+  </data>
+  <data name="about" xml:space="preserve">
+    <value>Vizitka</value>
+  </data>
+  <data name="account" xml:space="preserve">
+    <value>Račun</value>
+  </data>
+  <data name="SpeedingAlertEmailBody" xml:space="preserve">
+    <value>Ime računa: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Omejitev hitrosti sredstva: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Maksimalna hitrost: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Čas konca prekoračitve hitrosti: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Trajanje: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {12}</value>
+  </data>
+  <data name="EngineIdleDailyAlertEmailBody" xml:space="preserve">
+    <value>Ime računa: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Od datuma: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Do datuma: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Trajanje: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Prag: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Mesto: {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {14}</value>
+  </data>
+  <data name="PowerModeAlertEmailBody" xml:space="preserve">
+    <value>Ime računa: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Način delovanja nastavljen na: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Trajanje: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {11}</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Opis ECM: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Št. osi/pnevmatike: {8}/{9}&lt;BR&gt;&amp;#xD;&amp;#xA;Tlak v pnevmatiki (psi): {13}&lt;BR&gt;&amp;#xD;&amp;#xA;Temperatura pnevmatike (&amp;#xb0;C): {14}&lt;BR&gt;&amp;#xD;&amp;#xA;Status tipala: {15}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {16}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} načrtovan za {9} h.&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;{8} načrtovan po {9} miljah.&lt;BR&gt;&amp;#xD;&amp;#xA;Števec razdalje: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {6}</value>
+  </data>
+  <data name="ZoneAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija:{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {9}</value>
+  </data>
+  <data name="RadioMachineSecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Ime računa: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Način zagona: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {9}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;{5}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {9}</value>
+  </data>
+  <data name="FluidAnalysisAlertBody" xml:space="preserve">
+    <value>Ime računa: {7}&lt;BR&gt;  Prednost rezultata: {0}&lt;BR&gt;  ID sredstva: {1}&lt;BR&gt;  Ser. št.: {2}&lt;BR&gt;  Proizvajalec sredstva: {8}&lt;BR&gt;  Model sredstva: {9}&lt;BR&gt;  Vrsta opozorila: {3}&lt;BR&gt;  Naslov opozorila: {4}&lt;BR&gt;  Laboratorijska št. in izvor: {5}&lt;BR&gt;  Datum odvzema vzorca: {6}</value>
+  </data>
+  <data name="AlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {7}&lt;BR&gt;&amp;#xD;&amp;#xA; ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA; Proizvajalec sredstva: {8}&lt;BR&gt;&amp;#xD;&amp;#xA; Model sredstva: {9}&lt;BR&gt;&amp;#xD;&amp;#xA; Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA; Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA; Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA; Lokacija: {5}&lt;BR&gt;&amp;#xD;&amp;#xA; Delovišče: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {10}</value>
+  </data>
+  <data name="SecurityStatusAlertEmailBody" xml:space="preserve">
+    <value>Ime računa: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Začetni način: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Sprožilec varnosti: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {10}</value>
+  </data>
+  <data name="FuelLossAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Sprememba v nivoju goriva: -{7} %&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {11}</value>
+  </data>
+  <data name="LoadDistanceAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Razdalja nalaganja: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {11}</value>
+  </data>
+  <data name="FaultAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {9}&lt;BR&gt;&amp;#xD;&amp;#xA; ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA; Proizvajalec sredstva: {10}&lt;BR&gt;&amp;#xD;&amp;#xA; Model sredstva: {11}&lt;BR&gt;&amp;#xD;&amp;#xA; Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA; Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Koda napake: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Opis napake: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Resnost: {12}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {8}&lt;BR&gt;&amp;#xD;&amp;#xA;Števec ur: {13}</value>
+  </data>
+  <data name="SwitchAlertMessageBody" xml:space="preserve">
+    <value>Ime računa: {9}&lt;BR&gt;&amp;#xD;&amp;#xA;ID sredstva: {0}&lt;BR&gt;&amp;#xD;&amp;#xA;Ser. št.: {1}&lt;BR&gt;&amp;#xD;&amp;#xA;Proizvajalec sredstva: {10}&lt;BR&gt;&amp;#xD;&amp;#xA;Model sredstva: {11}&lt;BR&gt;&amp;#xD;&amp;#xA;Vrsta opozorila: {2}&lt;BR&gt;&amp;#xD;&amp;#xA;Naslov opozorila: {3}&lt;BR&gt;&amp;#xD;&amp;#xA;Opis stikala: {4}&lt;BR&gt;&amp;#xD;&amp;#xA;Stanje stikala: {5}&lt;BR&gt;&amp;#xD;&amp;#xA;Datum: {6}&lt;BR&gt;&amp;#xD;&amp;#xA;Lokacija: {7}&lt;BR&gt;&amp;#xD;&amp;#xA;Delovišče: {8}</value>
+  </data>
+  <data name="accountType" xml:space="preserve">
+    <value>Vrsta računa</value>
+  </data>
+  <data name="FluidAnalysisAlertSMS" xml:space="preserve">
+    <value>Račun: {3}  Nujnost rezultata: {0} - Laboratorijska št.: {1} - Vir: {2}</value>
+  </data>
+  <data name="acreAbbreviation" xml:space="preserve">
+    <value>Jutra</value>
+  </data>
+  <data name="FluidActionRequiredPriority" xml:space="preserve">
+    <value>Potrebno je ukrepanje</value>
+  </data>
+  <data name="actionTaken" xml:space="preserve">
+    <value>Opravljen ukrep</value>
+  </data>
+  <data name="actualEndDateTime" xml:space="preserve">
+    <value>Dejanski datum zaključka</value>
+  </data>
+  <data name="actualStartDateTime" xml:space="preserve">
+    <value>Dejanski datum začetka</value>
+  </data>
+  <data name="aemp" xml:space="preserve">
+    <value>AEMP</value>
+  </data>
+  <data name="aempRequestAccess" xml:space="preserve">
+    <value>AEMP: Zahteva po dostopu</value>
+  </data>
+  <data name="AlertCounts" xml:space="preserve">
+    <value>Števec opozoril</value>
+  </data>
+  <data name="AlertDetails" xml:space="preserve">
+    <value>Podrobnosti opozorila</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Vrsta opozorila</value>
+  </data>
+  <data name="Alerts" xml:space="preserve">
+    <value>Opozorila</value>
+  </data>
+  <data name="alignment" xml:space="preserve">
+    <value>Usklajevanje</value>
+  </data>
+  <data name="AM" xml:space="preserve">
+    <value>(dop.)</value>
+  </data>
+  <data name="eventDataDescription" xml:space="preserve">
+    <value>Dogodek se nanaša na odkrivanje vnaprej določenega, stanja izven dosega ali nenormalnega stanja znotraj stroja, motorja ali sistema, ki ga nadzira. Vsak dogodek je predstavljen s štirimi podatkovnimi elementi: stopnjo dogodka, identifikacijo modula (MID), ki poroča o dogodku, z identifikatorjem dogodka in časovnim žigom dogodka.</value>
+  </data>
+  <data name="apiDocumentation" xml:space="preserve">
+    <value>Dokumentacija programskega vmesnika</value>
+  </data>
+  <data name="appliedFilter" xml:space="preserve">
+    <value>Uporabljeni filter</value>
+  </data>
+  <data name="area" xml:space="preserve">
+    <value>Območje</value>
+  </data>
+  <data name="asset" xml:space="preserve">
+    <value>Sredstvo</value>
+  </data>
+  <data name="ExclusionZoneAlertDescription" xml:space="preserve">
+    <value>Vstop sredstva: {0}</value>
+  </data>
+  <data name="SiteEntryAlertDescription" xml:space="preserve">
+    <value>Vstop sredstva: {0}</value>
+  </data>
+  <data name="InclusionZoneAlertDescription" xml:space="preserve">
+    <value>Izstop sredstva: {0}</value>
+  </data>
+  <data name="SiteExitAlertDescription" xml:space="preserve">
+    <value>Izstop sredstva: {0}</value>
+  </data>
+  <data name="assetFuelBurn" xml:space="preserve">
+    <value>Poraba goriva sredstva</value>
+  </data>
+  <data name="assetFuelReport" xml:space="preserve">
+    <value>Poročilo o gorivu sredstva</value>
+  </data>
+  <data name="AssetFuelSingleAsset" xml:space="preserve">
+    <value>Poročilo o gorivu posameznega sredstva</value>
+  </data>
+  <data name="NotReportingAlertDescription" xml:space="preserve">
+    <value>Sredstvo ni poročalo od {0}</value>
+  </data>
+  <data name="AssetHealth" xml:space="preserve">
+    <value>Poročilo o zdravju sredstva</value>
+  </data>
+  <data name="AssetHistory" xml:space="preserve">
+    <value>Poročilo o zgodovini sredstva</value>
+  </data>
+  <data name="assetHistoryReport" xml:space="preserve">
+    <value>Poročilo o zgodovini sredstva</value>
+  </data>
+  <data name="assetID" xml:space="preserve">
+    <value>ID sredstva</value>
+  </data>
+  <data name="assetIdSnVin" xml:space="preserve">
+    <value>ID sredstva/serijska št./VIN</value>
+  </data>
+  <data name="stateMileageReportTitle" xml:space="preserve">
+    <value>Poročilo o prevoženi poti sredstev po državah/provincah</value>
+  </data>
+  <data name="AssetOff" xml:space="preserve">
+    <value>Izklop sredstva</value>
+  </data>
+  <data name="AssetOn" xml:space="preserve">
+    <value>Vklop sredstva</value>
+  </data>
+  <data name="assetOperation" xml:space="preserve">
+    <value>Delovanje sredstva</value>
+  </data>
+  <data name="AssetSecurityLastActivityReport" xml:space="preserve">
+    <value>Varnost sredstev – Poročilo o najnovejši dejavnosti</value>
+  </data>
+  <data name="AssetSecurityUserActivityReport" xml:space="preserve">
+    <value>Varnost sredstev – Poročilo o dejavnosti uporabnikov</value>
+  </data>
+  <data name="AssetSpeedingReport" xml:space="preserve">
+    <value>Poročilo o prekoračitvi hitrosti sredstva</value>
+  </data>
+  <data name="assetType" xml:space="preserve">
+    <value>Vrsta sredstva</value>
+  </data>
+  <data name="assetUsageReport" xml:space="preserve">
+    <value>Poročilo o uporabi sredstva</value>
+  </data>
+  <data name="AssetUsageSingleAsset" xml:space="preserve">
+    <value>Poročilo o uporabi posameznega sredstva</value>
+  </data>
+  <data name="AssetUsageSummaryReport" xml:space="preserve">
+    <value>Povzetek poročila o uporabi sredstva</value>
+  </data>
+  <data name="assetUtilization" xml:space="preserve">
+    <value>Izkoriščenost sredstva</value>
+  </data>
+  <data name="assetUtilizationReport" xml:space="preserve">
+    <value>Poročilo o izkoriščenosti sredstva</value>
+  </data>
+  <data name="assets" xml:space="preserve">
+    <value>Sredstva</value>
+  </data>
+  <data name="attachmentUsage" xml:space="preserve">
+    <value>Uporaba priključka</value>
+  </data>
+  <data name="autoMapReset" xml:space="preserve">
+    <value>Samodejno + ponastavitev zemljevida</value>
+  </data>
+  <data name="autoIdle" xml:space="preserve">
+    <value>Samodejna nedejavnost</value>
+  </data>
+  <data name="automatic" xml:space="preserve">
+    <value>Samodejno</value>
+  </data>
+  <data name="average" xml:space="preserve">
+    <value>Povprečno</value>
+  </data>
+  <data name="averageFuelBurnRateForAssetsInReport" xml:space="preserve">
+    <value>Stopnja povprečne porabe goriva sredstev v poročilu</value>
+  </data>
+  <data name="averagedSitetoSwitch" xml:space="preserve">
+    <value>Povprečeno, z delovišča na stikalo</value>
+  </data>
+  <data name="avg" xml:space="preserve">
+    <value>Povpr.</value>
+  </data>
+  <data name="AwaitingFirstReport" xml:space="preserve">
+    <value>Čakanje na prvo poročilo</value>
+  </data>
+  <data name="axleTireNo" xml:space="preserve">
+    <value>Os/pnevmatika št.</value>
+  </data>
+  <data name="azimuth" xml:space="preserve">
+    <value>Azimut</value>
+  </data>
+  <data name="BackFilledLoadCount" xml:space="preserve">
+    <value>Števec nalaganj za zasip izkopa</value>
+  </data>
+  <data name="backhoe" xml:space="preserve">
+    <value>Kopalna žlica</value>
+  </data>
+  <data name="BackhoeLoaderOperation" xml:space="preserve">
+    <value>Poročilo o delovanju bagra s kopalno žlico</value>
+  </data>
+  <data name="backhoeOperation" xml:space="preserve">
+    <value>Delovanje kopalne žlice</value>
+  </data>
+  <data name="bar" xml:space="preserve">
+    <value>BAR</value>
+  </data>
+  <data name="baseSurface" xml:space="preserve">
+    <value>Osnovna površina</value>
+  </data>
+  <data name="bladeOnGround" xml:space="preserve">
+    <value>Stopalo na tleh</value>
+  </data>
+  <data name="boostPressure" xml:space="preserve">
+    <value>Boost Pressure</value>
+  </data>
+  <data name="boostPressureHeader" xml:space="preserve">
+    <value>Boost Pressure Report</value>
+  </data>
+  <data name="boostTemperature" xml:space="preserve">
+    <value>Boost Temperature</value>
+  </data>
+  <data name="boostTemperatureHeader" xml:space="preserve">
+    <value>Boost Temperature Report</value>
+  </data>
+  <data name="bottomCyclesPerHour" xml:space="preserve">
+    <value>Spodaj {0} - cikli/uro (skupaj)</value>
+  </data>
+  <data name="bottomPayloadPerCycle" xml:space="preserve">
+    <value>Spodaj {0} - tovor/cikel (skupaj)</value>
+  </data>
+  <data name="bottomPayloadPerHour" xml:space="preserve">
+    <value>Spodaj {0} - tovor/uro (skupaj)</value>
+  </data>
+  <data name="geolocationNotSupported" xml:space="preserve">
+    <value>Brskalnik ne najde lokacije.</value>
+  </data>
+  <data name="bulking" xml:space="preserve">
+    <value>Razsipanje</value>
+  </data>
+  <data name="burnRate" xml:space="preserve">
+    <value>Stopnja porabe</value>
+  </data>
+  <data name="celsiusAbbrev" xml:space="preserve">
+    <value>C</value>
+  </data>
+  <data name="cancel" xml:space="preserve">
+    <value>Preklic</value>
+  </data>
+  <data name="catDataFeeds" xml:space="preserve">
+    <value>Viri podatkov CAT</value>
+  </data>
+  <data name="catDataTopicsRequestAccess" xml:space="preserve">
+    <value>Teme podatkov CAT: zahteva po dostopu</value>
+  </data>
+  <data name="centreLine" xml:space="preserve">
+    <value>Središčnica</value>
+  </data>
+  <data name="catDataFeedFormDescription" xml:space="preserve">
+    <value>Označite vse teme programskega vmesnika, ki vas zanimajo, in kliknite »Zahtevana elektronska pošta«. V enem tednu boste prejeli elektronsko pošto z vsemi informacijami za dostop do želenih tem.</value>
+  </data>
+  <data name="claim" xml:space="preserve">
+    <value>Zahteva</value>
+  </data>
+  <data name="ClickHere" xml:space="preserve">
+    <value>Kliknite tukaj</value>
+  </data>
+  <data name="clientBuildNumber" xml:space="preserve">
+    <value>Številka graditve odjemalca</value>
+  </data>
+  <data name="close" xml:space="preserve">
+    <value>Zapri</value>
+  </data>
+  <data name="cmv" xml:space="preserve">
+    <value>CMV</value>
+  </data>
+  <data name="cmvChange" xml:space="preserve">
+    <value>Sprememba CMV</value>
+  </data>
+  <data name="cmvChangeReport" xml:space="preserve">
+    <value>Poročilo o spremembi CMV</value>
+  </data>
+  <data name="cmvSummary" xml:space="preserve">
+    <value>Povzetek CMV</value>
+  </data>
+  <data name="cmvSummaryReport" xml:space="preserve">
+    <value>Povzetek poročila o CMV</value>
+  </data>
+  <data name="coarse" xml:space="preserve">
+    <value>Grobo</value>
+  </data>
+  <data name="code" xml:space="preserve">
+    <value>Koda</value>
+  </data>
+  <data name="codeSamples" xml:space="preserve">
+    <value>Primeri kod</value>
+  </data>
+  <data name="compacted" xml:space="preserve">
+    <value>Zbito</value>
+  </data>
+  <data name="compaction" xml:space="preserve">
+    <value>Zbijanje</value>
+  </data>
+  <data name="company" xml:space="preserve">
+    <value>Podjetje</value>
+  </data>
+  <data name="complete" xml:space="preserve">
+    <value>Popolno</value>
+  </data>
+  <data name="completeLayer" xml:space="preserve">
+    <value>Dokončana plast</value>
+  </data>
+  <data name="completeService" xml:space="preserve">
+    <value>Opravljanje servisa</value>
+  </data>
+  <data name="Configured" xml:space="preserve">
+    <value>Konfigurirano</value>
+  </data>
+  <data name="confirmed" xml:space="preserve">
+    <value>Potrjeno</value>
+  </data>
+  <data name="couldNotConvertDataModelBoundaryToGrid" xml:space="preserve">
+    <value>Napaka koordinatnega sistema pri pretvorbi mejnih točk podatkovnega modela.</value>
+  </data>
+  <data name="emptyCoordinateSystem" xml:space="preserve">
+    <value>Koordinatni sistem je prazen</value>
+  </data>
+  <data name="dcToIRecIncompleteCS" xml:space="preserve">
+    <value>Koordinatni sistem je nepopoln (ni v celoti določen) (DCToIRecord converter)</value>
+  </data>
+  <data name="virtualSiteSolutionsAllRightsReserved" xml:space="preserve">
+    <value>Avtorske pravice 2014 VirtualSite Solutions LLC. Vse pravice pridržane.</value>
+  </data>
+  <data name="couldNotConvertCSDFile" xml:space="preserve">
+    <value>Datoteke z definicijo koordinatnega sistema ni bilo mogoče pretvoriti</value>
+  </data>
+  <data name="coverage" xml:space="preserve">
+    <value>Pokrivanje</value>
+  </data>
+  <data name="createdUser" xml:space="preserve">
+    <value>Ustvaril</value>
+  </data>
+  <data name="cubicYard" xml:space="preserve">
+    <value>kubični jard</value>
+  </data>
+  <data name="currentFilterSettings" xml:space="preserve">
+    <value>Trenutne nastavitve filtrov</value>
+  </data>
+  <data name="dcToIRecScaleOnlyProj" xml:space="preserve">
+    <value>Trenutna projekcija mora biti v merilu (DCToIRecord converter)</value>
+  </data>
+  <data name="customerInfo" xml:space="preserve">
+    <value>Informacije o stranki</value>
+  </data>
+  <data name="customerName" xml:space="preserve">
+    <value>Ime stranke</value>
+  </data>
+  <data name="customerNumber" xml:space="preserve">
+    <value>Številka stranke</value>
+  </data>
+  <data name="cut" xml:space="preserve">
+    <value>Izkop</value>
+  </data>
+  <data name="cutFillReport" xml:space="preserve">
+    <value>Poročilo o izkopu in polnitvi</value>
+  </data>
+  <data name="cutfill" xml:space="preserve">
+    <value>Izkop/polnitev</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Poročilo o času cikla</value>
+  </data>
+  <data name="cycleTimeReport" xml:space="preserve">
+    <value>Poročilo o času cikla</value>
+  </data>
+  <data name="cycles" xml:space="preserve">
+    <value>Cikli</value>
+  </data>
+  <data name="cyclesPerHour" xml:space="preserve">
+    <value>Cikli/uro</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Dnevno</value>
+  </data>
+  <data name="dailyIdleMessage" xml:space="preserve">
+    <value>Dnevni čas nedejavnosti presega {0} {1}</value>
+  </data>
+  <data name="dataOccurredOutsideOfDateRange" xml:space="preserve">
+    <value>Podatki so se pojavili izven datumskega območja</value>
+  </data>
+  <data name="dataOccurredOutsideOfDay" xml:space="preserve">
+    <value>Podatki so se pojavili izven dnevnega obdobja</value>
+  </data>
+  <data name="dataType" xml:space="preserve">
+    <value>Vrsta podatkov</value>
+  </data>
+  <data name="date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="dateCreated" xml:space="preserve">
+    <value>Datum nastanka</value>
+  </data>
+  <data name="dateLastReported" xml:space="preserve">
+    <value>Datum zadnjega poročila</value>
+  </data>
+  <data name="dateModuleAccessProvided" xml:space="preserve">
+    <value>Datum zagotovitve dostopa do modula</value>
+  </data>
+  <data name="dateRange" xml:space="preserve">
+    <value>Časovni razpon</value>
+  </data>
+  <data name="dateTime" xml:space="preserve">
+    <value>Datum/čas</value>
+  </data>
+  <data name="dcn" xml:space="preserve">
+    <value>DCN</value>
+  </data>
+  <data name="dealerCode" xml:space="preserve">
+    <value>Koda trgovca</value>
+  </data>
+  <data name="dealerName" xml:space="preserve">
+    <value>Ime prodajalca</value>
+  </data>
+  <data name="UserAccountsReportEmailBody" xml:space="preserve">
+    <value>Spoštovani skrbnik programa VisionLink,&lt;br/&gt;&lt;br/&gt;Da bi vam pomagali zagotoviti boljše upravljanje dostopa do vašega računa, vam pošiljamo poročilo o vseh vaših uporabnikih programa VisionLink, da lahko pregledate in po potrebi posodobite svoj račun. Prijavite se v program VisionLink in vnesite morebitne spremembe uporabniških računov.&lt;br/&gt;&lt;br/&gt; Kliknite spodnjo povezavo, da prenesete poročilo&lt;br/&gt;  {0} &lt;br/&gt;&lt;br/&gt;  Z lepimi pozdravi,&lt;br/&gt;&lt;br/&gt;Ekipa VisionLink</value>
+  </data>
+  <data name="ApiUserEmailBody" xml:space="preserve">
+    <value>Spoštovani {0} {1},&lt;br&gt;&lt;br&gt; Dobrodošli v storitvah programskega vmesnika za VisionLink®. Kliknite spodnjo povezavo, da nastavite svoje geslo za storitve programskega vmesnika. Ta povezava bo aktivna 30 dni. Če spodnja povezava ne deluje, kopirajte naslov povezave in ga prilepite v novo okno brskalnika.&lt;br&gt;&lt;br&gt;{2}&lt;br&gt;&lt;br&gt;Vaše uporabniško ime za programski vmesnik za VisionLink je {3}.&lt;br&gt;Dostopate lahko do naslednjih storitev programskega vmesnika:&lt;br&gt;  {4} &lt;br&gt;&lt;br&gt;Opomba: Če niste zahtevali novega uporabniškega računa za programski vmesnik ali posodobitev svojega računa, se obrnite na skrbnika.</value>
+  </data>
+  <data name="VerifyUserEmailBody" xml:space="preserve">
+    <value>Spoštovani {0} {1},&lt;br&gt;&lt;br&gt; Dobrodošli v programu VisionLink®. Za potrditev novega ali posodobljenega uporabniškega računa kliknite spodnjo povezavo. Ta povezava bo aktivna 30 dni. Če spodnja povezava ne deluje, kopirajte naslov povezave in ga prilepite v novo okno brskalnika.&lt;br&gt;&lt;br&gt; {2}&lt;br&gt;&lt;/br&gt;Vaše uporabniško ime za VisionLink je {3}, ime računa pa je {4}. Novi uporabniki programa VisionLink bodo po potrditvi pozvani, da nastavijo svoje geslo.&lt;br&gt;&lt;br&gt; Opombe: Če niste zahtevali novega uporabniškega računa za programski vmesnik ali posodobitev svojega računa, se obrnite na skrbnika.</value>
+  </data>
+  <data name="engineStartStopDescription" xml:space="preserve">
+    <value>Sporoča seznam časov zagona in ustavitve za stroj in ključ MSS za identifikacijo upravljavca; oddaja se dnevno ob času zagona poročila ali ob katerem koli drugem času, če vgrajeni medpomnilnik doseže svojo zmogljivost.</value>
+  </data>
+  <data name="loadCountsDescription" xml:space="preserve">
+    <value>Podaja vse pomembne informacije o števcih tovora na podlagi monitoringa tovora in ciklov. To vključuje zemljepisno širino/dolžino, meje zemljepisnega območja, datum/čas, ID sredstva in razdaljo, prepotovano za dogodke nalaganja in odlaganja tovora.</value>
+  </data>
+  <data name="digitalSwitchStatusDescription" xml:space="preserve">
+    <value>Sporoča vse pomembne informacije o načinu napajanja in statusu digitalnega stikala (vklop/izklop) na modulu naprave. Sporoča posebne informacije o statusu ECM (elektronski krmilni modul). Če je kateri koli od bajtov, ki jih določa, nastavljen na »Da«, to pomeni, da je v času od zadnjega poročila o statusu tega bajta prišlo do določenega stanja, lahko v sporočilu o statusu ali v poročilu o SMU.</value>
+  </data>
+  <data name="fenceAlertDescription" xml:space="preserve">
+    <value>Sporoča vse pomembne informacije o dejavnosti časovnega nadzora izdelka in opozorilih, ki jih generira modul naprave. Sporoča posebne informacije o statusu ECM (elektronski krmilni modul). Če je kateri koli od bajtov, ki jih določa, nastavljen na »Da«, to pomeni, da je v času od zadnjega poročila o statusu tega bajta prišlo do določenega stanja, lahko v sporočilu o statusu ali v poročilu o SMU.</value>
+  </data>
+  <data name="fuelDescription" xml:space="preserve">
+    <value>Sporoča porabo goriva modula naprave glede na potrošnjo ali nivo. Podatki o gorivu se sporočajo kot del sporočila o stanju, ki vsebuje porabo goriva in/ali odstotek preostalega goriva v opremi.</value>
+  </data>
+  <data name="engineParametersDescription" xml:space="preserve">
+    <value>Sporoča pomembne informacije o motorju, kot sta čas prostega teka in poraba goriva v prostem teku za modul naprave.</value>
+  </data>
+  <data name="smuLocationDescription" xml:space="preserve">
+    <value>Sporoča podatke o uporabi opreme po urah od trenutka, ko je bila naprava vklopljena ali ko je bila nazadnje ponastavljena, skupaj z zemljepisno širino in dolžino stroja, na katerega je naprava nameščena. Podatke proizvede ECM (elektronski krmilni modul) za spremljanje uporabe opreme. ECM spremlja čas, ko motor deluje, in posreduje podatke o zemljepisni širini in dolžini stroja, na katerega je naprava nameščena.</value>
+  </data>
+  <data name="derate" xml:space="preserve">
+    <value>Zmanjšaj moč</value>
+  </data>
+  <data name="Derated" xml:space="preserve">
+    <value>Zmanjšana moč</value>
+  </data>
+  <data name="description" xml:space="preserve">
+    <value>Opis</value>
+  </data>
+  <data name="design" xml:space="preserve">
+    <value>Zasnova</value>
+  </data>
+  <data name="desiredApiTopic" xml:space="preserve">
+    <value>Želena tema programskega vmesnika</value>
+  </data>
+  <data name="desiredDataFeed" xml:space="preserve">
+    <value>Želeni vir podatkov</value>
+  </data>
+  <data name="destination" xml:space="preserve">
+    <value>Destinacija</value>
+  </data>
+  <data name="detailedAssetCycleTimeReport" xml:space="preserve">
+    <value>Podrobno poročilo o času cikla sredstva</value>
+  </data>
+  <data name="detailedAssetLoadCountReport" xml:space="preserve">
+    <value>Podrobno poročilo o števcu nalaganj sredstva</value>
+  </data>
+  <data name="device" xml:space="preserve">
+    <value>Naprava</value>
+  </data>
+  <data name="deviceID" xml:space="preserve">
+    <value>ID naprave</value>
+  </data>
+  <data name="deviceType" xml:space="preserve">
+    <value>Vrsta naprave</value>
+  </data>
+  <data name="diagnostic" xml:space="preserve">
+    <value>Diagnostika</value>
+  </data>
+  <data name="DiagnosticEvents" xml:space="preserve">
+    <value>Diagnostika – napaka</value>
+  </data>
+  <data name="diagnosticsData" xml:space="preserve">
+    <value>Podatki diagnostike</value>
+  </data>
+  <data name="digitalSwitchStatus" xml:space="preserve">
+    <value>Status digitalnega stikala</value>
+  </data>
+  <data name="direction" xml:space="preserve">
+    <value>Usmeritev</value>
+  </data>
+  <data name="directions" xml:space="preserve">
+    <value>Navodila za pot</value>
+  </data>
+  <data name="disable" xml:space="preserve">
+    <value>Onemogoči</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Onemogočeno</value>
+  </data>
+  <data name="distanceCategory" xml:space="preserve">
+    <value>Kategorija razdalje</value>
+  </data>
+  <data name="distanceDriven" xml:space="preserve">
+    <value>Prevožena razdalja</value>
+  </data>
+  <data name="distanceTravelled" xml:space="preserve">
+    <value>Opravljena razdalja</value>
+  </data>
+  <data name="doNotShowAgain" xml:space="preserve">
+    <value>Tega obvestila ne prikaži več</value>
+  </data>
+  <data name="firstEpochBladePositionDoesNotLieWithinProjectBoundary" xml:space="preserve">
+    <value>Ne leži znotraj prostorskih meja projekta</value>
+  </data>
+  <data name="dozer" xml:space="preserve">
+    <value>Buldožer</value>
+  </data>
+  <data name="DueAt" xml:space="preserve">
+    <value>Načrtovano pri</value>
+  </data>
+  <data name="dueIn" xml:space="preserve">
+    <value>Načrtovano čez</value>
+  </data>
+  <data name="DueOn" xml:space="preserve">
+    <value>Načrtovano za</value>
+  </data>
+  <data name="dumpEvent" xml:space="preserve">
+    <value>Dogodek odlaganja</value>
+  </data>
+  <data name="dumpLocation" xml:space="preserve">
+    <value>Lokacija odlaganja</value>
+  </data>
+  <data name="dumpTime" xml:space="preserve">
+    <value>Čas odlaganja</value>
+  </data>
+  <data name="dumpToDumpDistance" xml:space="preserve">
+    <value>Razdalja med mestoma odlaganja</value>
+  </data>
+  <data name="duration" xml:space="preserve">
+    <value>Trajanje</value>
+  </data>
+  <data name="earliest" xml:space="preserve">
+    <value>Najzgodnejši</value>
+  </data>
+  <data name="easting" xml:space="preserve">
+    <value>Premik po koordinati x</value>
+  </data>
+  <data name="efficiency" xml:space="preserve">
+    <value>Učinkovitost</value>
+  </data>
+  <data name="elevation" xml:space="preserve">
+    <value>Dvig</value>
+  </data>
+  <data name="elevationReport" xml:space="preserve">
+    <value>Poročilo o dvigu</value>
+  </data>
+  <data name="elevationType" xml:space="preserve">
+    <value>Vrsta dviga</value>
+  </data>
+  <data name="email" xml:space="preserve">
+    <value>E-pošta</value>
+  </data>
+  <data name="emailRequest" xml:space="preserve">
+    <value>Zahtevano elektronsko sporočilo</value>
+  </data>
+  <data name="endDate" xml:space="preserve">
+    <value>Datum zaključka</value>
+  </data>
+  <data name="endDateSMU" xml:space="preserve">
+    <value>Števec ur datuma zaključka</value>
+  </data>
+  <data name="endDateLocation" xml:space="preserve">
+    <value>Lokacija datuma zaključka</value>
+  </data>
+  <data name="endDateMustBeHigher" xml:space="preserve">
+    <value>Datum konca ne sme biti pred datumom začetka</value>
+  </data>
+  <data name="endHourMeter" xml:space="preserve">
+    <value>Števec ur, zaključek</value>
+  </data>
+  <data name="endTime" xml:space="preserve">
+    <value>Čas zaključka</value>
+  </data>
+  <data name="GensetCoolingDown" xml:space="preserve">
+    <value>Ohlajanje motorja</value>
+  </data>
+  <data name="engineCoolantTemperature" xml:space="preserve">
+    <value>Temperatura hladilnega sredstva motorja</value>
+  </data>
+  <data name="coolantTemperatureHeader" xml:space="preserve">
+    <value>Poročilo o temperaturi hladilnega sredstva motorja</value>
+  </data>
+  <data name="EngineIdle" xml:space="preserve">
+    <value>Poročilo o nedejavnosti motorja</value>
+  </data>
+  <data name="engineLubeOilTemperature" xml:space="preserve">
+    <value>Temperatura olja za mazanje motorja</value>
+  </data>
+  <data name="lubeOilTemperatureHeader" xml:space="preserve">
+    <value>Poročilo o temperaturi za mazanje olja motorja</value>
+  </data>
+  <data name="EngineOff" xml:space="preserve">
+    <value>Izklop motorja</value>
+  </data>
+  <data name="engineOilLevelIndication" xml:space="preserve">
+    <value>Engine Oil Level Indicator</value>
+  </data>
+  <data name="engineOilLevelPercent" xml:space="preserve">
+    <value>Engine Oil Level Indicator %</value>
+  </data>
+  <data name="engineOilLevelIndicatorHeader" xml:space="preserve">
+    <value>Engine Oil Level Indicator Report</value>
+  </data>
+  <data name="engineOilPressure" xml:space="preserve">
+    <value>Tlak motornega olja</value>
+  </data>
+  <data name="oilPressureHeader" xml:space="preserve">
+    <value>Poročilo o tlaku motornega olja</value>
+  </data>
+  <data name="EngineOn" xml:space="preserve">
+    <value>Vklop motorja</value>
+  </data>
+  <data name="engineParameters" xml:space="preserve">
+    <value>Parametri motorja</value>
+  </data>
+  <data name="GensetRunning" xml:space="preserve">
+    <value>Delovanje motorja</value>
+  </data>
+  <data name="eventTypeEngineStart" xml:space="preserve">
+    <value>Zagon motorja</value>
+  </data>
+  <data name="engineStartStopTime" xml:space="preserve">
+    <value>Čas zagona/zaustavitve motorja</value>
+  </data>
+  <data name="engineStatus" xml:space="preserve">
+    <value>Status motorja</value>
+  </data>
+  <data name="eventTypeEngineStop" xml:space="preserve">
+    <value>Zaustavitev motorja</value>
+  </data>
+  <data name="GensetEngineStopped" xml:space="preserve">
+    <value>Motor je ustavljen</value>
+  </data>
+  <data name="GensetEngineStopping" xml:space="preserve">
+    <value>Motor se zaustavlja</value>
+  </data>
+  <data name="displayName" xml:space="preserve">
+    <value>Slovenščina</value>
+  </data>
+  <data name="equalsPassTarget" xml:space="preserve">
+    <value>Ustreza cilju prehoda</value>
+  </data>
+  <data name="event" xml:space="preserve">
+    <value>Dogodek</value>
+  </data>
+  <data name="eventCount" xml:space="preserve">
+    <value>Število dogodkov</value>
+  </data>
+  <data name="eventData" xml:space="preserve">
+    <value>Podatki o dogodku</value>
+  </data>
+  <data name="eventDescription" xml:space="preserve">
+    <value>Opis dogodka</value>
+  </data>
+  <data name="FaultCodes" xml:space="preserve">
+    <value>Dogodek – napaka</value>
+  </data>
+  <data name="eventType" xml:space="preserve">
+    <value>Vrsta dogodka</value>
+  </data>
+  <data name="excavator" xml:space="preserve">
+    <value>Bager</value>
+  </data>
+  <data name="ExcavatorUsageReport" xml:space="preserve">
+    <value>Poročilo o uporabi bagra</value>
+  </data>
+  <data name="exception" xml:space="preserve">
+    <value>Prišlo je do izjeme</value>
+  </data>
+  <data name="ExclusionZone" xml:space="preserve">
+    <value>Izključitveno območje</value>
+  </data>
+  <data name="expectedRuntime" xml:space="preserve">
+    <value>Predvideni čas delovanja</value>
+  </data>
+  <data name="ExpiryDate" xml:space="preserve">
+    <value>Datum poteka</value>
+  </data>
+  <data name="fahrenheitAbbrev" xml:space="preserve">
+    <value>F</value>
+  </data>
+  <data name="failedOnRequestProfile" xml:space="preserve">
+    <value>Ni uspelo ob zahtevi po profilu</value>
+  </data>
+  <data name="failedOnRequestColourGraduatedProfile" xml:space="preserve">
+    <value>Ni uspelo ob zahtevi po profilu z barvnimi odtenki</value>
+  </data>
+  <data name="submissionBaseConnectionFailure" xml:space="preserve">
+    <value>Vzpostavitev povezave s strežnikom produkcijskih podatkov ni uspela.</value>
+  </data>
+  <data name="failedToConvertClientWGSCoords" xml:space="preserve">
+    <value>Pretvorba koordinat odjemalca WGS84 ni uspela</value>
+  </data>
+  <data name="dcToIRecFailedToCreateAZIParamsObject" xml:space="preserve">
+    <value>Ustvarjanje objekta parametrov IAZI ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedCreateCSIB" xml:space="preserve">
+    <value>Ustvarjanje CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToCreateDCToIRecordConverter" xml:space="preserve">
+    <value>Ustvarjanje pretvornika DCToIRecord ni uspelo</value>
+  </data>
+  <data name="failedToGetCSSettings" xml:space="preserve">
+    <value>Pridobivanje nastavitev koordinatnega sistema ni uspelo</value>
+  </data>
+  <data name="dcToIRecFailedToGetGeoidInfo" xml:space="preserve">
+    <value>Pridobivanje informacij za geoid ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateConstGeoid" xml:space="preserve">
+    <value>Ustvarjanje konstantnega ločevalnega geoida CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateDatumGrid" xml:space="preserve">
+    <value>Ustvarjanje datoteke z datumsko mrežo CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateEllipsoid" xml:space="preserve">
+    <value>Ustvarjanje elipsoida CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateGridGeoid" xml:space="preserve">
+    <value>Ustvarjanje geoida mreže CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMolodenskyDatum" xml:space="preserve">
+    <value>Ustvarjanje datuma CSIB Molodensky ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateMultiRegressionDatum" xml:space="preserve">
+    <value>Ustvarjanje datuma z več parametri vračanja CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateSevenParamsDatum" xml:space="preserve">
+    <value>Ustvarjanje datuma s sedmimi parametri CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateWGS84Datum" xml:space="preserve">
+    <value>Ustvarjanje datuma CSIB WGS84 ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneBasedSite" xml:space="preserve">
+    <value>Ustvarjanje delovišča na podlagi območja CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToCreateZoneGroup" xml:space="preserve">
+    <value>Ustvarjanje skupine območja CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToLoadCSIB" xml:space="preserve">
+    <value>Nalaganje CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToNotifyCSChange" xml:space="preserve">
+    <value>Obveščanje o spremembi koordinatnega sistema ni uspelo</value>
+  </data>
+  <data name="failedToObtainCoordinateSystemInterlock" xml:space="preserve">
+    <value>Pridobivanje medsebojne povezave koordinatnega sistema ni uspelo</value>
+  </data>
+  <data name="dcToIRecFailedToOpenCalibrationReader" xml:space="preserve">
+    <value>Odpiranje bralnika kalibracije ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToPerformCoordinateConversion" xml:space="preserve">
+    <value>Pretvorba koordinat ni uspela.</value>
+  </data>
+  <data name="dcToIRecFailedToReadCSIB" xml:space="preserve">
+    <value>Branje CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadInCSIB" xml:space="preserve">
+    <value>Branje v CSIB ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToReadLineworkBoundaryFile" xml:space="preserve">
+    <value>Branje datoteke s črtnimi slikami mej ni uspelo.</value>
+  </data>
+  <data name="dcToIRecFailedToReadZone" xml:space="preserve">
+    <value>Branje območja ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToReadZoneBasedSite" xml:space="preserve">
+    <value>Branje lokacije na podlagi območja ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="submissionResultConnectionFailure" xml:space="preserve">
+    <value>Prejemanje podatkov iz strežnika produkcijskih podatkov ni uspelo.</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemHorizontalAdjustmentFile" xml:space="preserve">
+    <value>Zahteva po datoteki vodoravne prilagoditve koordinatnega sistema ni uspela</value>
+  </data>
+  <data name="failedOnRequestCoordinateSystemProjectionFile" xml:space="preserve">
+    <value>Zahteva po datoteki projekcije koordinatnega sistema ni uspela</value>
+  </data>
+  <data name="failedToRequestDatamodelStatistics" xml:space="preserve">
+    <value>Zahteva po statistiki podatkovnega modela ni uspela</value>
+  </data>
+  <data name="failedToRequestFileFromTCC" xml:space="preserve">
+    <value>Zahteva po datoteki iz TCC ni uspela.</value>
+  </data>
+  <data name="failedToRequestSubgridExistenceMap" xml:space="preserve">
+    <value>Zahteva po zemljevidu pomožne mreže ni uspela</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneInfo" xml:space="preserve">
+    <value>Nastavitev podatkov območja ni uspela (DCToIRecord converter)</value>
+  </data>
+  <data name="failedToWriteCSDStream" xml:space="preserve">
+    <value>Zapis toka definicije koordinatnega sistema ni uspel</value>
+  </data>
+  <data name="dcToIRecFailedToWriteCSIB" xml:space="preserve">
+    <value>Zapis CSIB ni uspel (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteDatum" xml:space="preserve">
+    <value>Zapis datuma ni uspel (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToWriteGeoid" xml:space="preserve">
+    <value>Zapis geoida ni uspel (DCToIRecord converter)</value>
+  </data>
+  <data name="faultCode" xml:space="preserve">
+    <value>Koda napake</value>
+  </data>
+  <data name="faultCodeDiagnostic" xml:space="preserve">
+    <value>Koda napake – diagnostika</value>
+  </data>
+  <data name="faultCodeEvent" xml:space="preserve">
+    <value>Koda napake – dogodek</value>
+  </data>
+  <data name="faultCodeDate" xml:space="preserve">
+    <value>Koda napake – datum</value>
+  </data>
+  <data name="faultCodeHourMeter" xml:space="preserve">
+    <value>Koda napake – števec ur</value>
+  </data>
+  <data name="faultCodeLocation" xml:space="preserve">
+    <value>Koda napake – lokacija</value>
+  </data>
+  <data name="faultCodeOdometer" xml:space="preserve">
+    <value>Koda napake – števec prevožene poti</value>
+  </data>
+  <data name="faultCodeReport" xml:space="preserve">
+    <value>Koda napake – poročilo</value>
+  </data>
+  <data name="assetHealthSummary" xml:space="preserve">
+    <value>Koda napake – povzetek poročila</value>
+  </data>
+  <data name="faultCodesLabel" xml:space="preserve">
+    <value>Kode napak</value>
+  </data>
+  <data name="faultCodeCounts" xml:space="preserve">
+    <value>Števci napak</value>
+  </data>
+  <data name="faultCodeDetails" xml:space="preserve">
+    <value>Podrobnosti napak</value>
+  </data>
+  <data name="tagFileReaderCorruptedTAGFileData" xml:space="preserve">
+    <value>Datoteka vsebuje okvarjene podatke.</value>
+  </data>
+  <data name="noGridEpochsFoundInTAGFile" xml:space="preserve">
+    <value>Datoteka vsebuje neveljavne produkcijske podatke.</value>
+  </data>
+  <data name="submissionVerbConnectionFailure" xml:space="preserve">
+    <value>Oddaja datoteke ni uspela.</value>
+  </data>
+  <data name="fill" xml:space="preserve">
+    <value>Nasutje</value>
+  </data>
+  <data name="locationAppSummary" xml:space="preserve">
+    <value>Poišči zadnjo znano lokacijo sredstev</value>
+  </data>
+  <data name="fine" xml:space="preserve">
+    <value>Natančno</value>
+  </data>
+  <data name="firmwareVersion" xml:space="preserve">
+    <value>Različica strojne programske opreme</value>
+  </data>
+  <data name="first" xml:space="preserve">
+    <value>Prvi</value>
+  </data>
+  <data name="firstname" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="verifyEmailBodyFirstTimeUser" xml:space="preserve">
+    <value>Novi uporabniki: Prijavite se v svoj račun VisionLink; uporabite naslednje poverilnice.&lt;/br&gt;Uporabniško ime:{0}&lt;/br&gt;Geslo:{1}&lt;/br&gt;Ob prijavi boste pozvani, da spremenite svoje geslo.&lt;/br&gt;&lt;/br&gt;</value>
+  </data>
+  <data name="FleetEventCountReport" xml:space="preserve">
+    <value>Poročilo števca dogodkov voznega parka</value>
+  </data>
+  <data name="fleetFuelReport" xml:space="preserve">
+    <value>Poročilo o stanju goriva vozil</value>
+  </data>
+  <data name="FleetStatus" xml:space="preserve">
+    <value>Poročilo o stanju voznega parka</value>
+  </data>
+  <data name="fleetStatusReport" xml:space="preserve">
+    <value>Poročilo o stanju voznega parka</value>
+  </data>
+  <data name="fleetSummary" xml:space="preserve">
+    <value>Povzetek voznega parka</value>
+  </data>
+  <data name="fleetSummaryCustomReport" xml:space="preserve">
+    <value>Prilagojeno poročilo s povzetkom voznega parka</value>
+  </data>
+  <data name="FleetUsage" xml:space="preserve">
+    <value>Poročilo o uporabi voznega parka</value>
+  </data>
+  <data name="fleetUsageReport" xml:space="preserve">
+    <value>Poročilo o uporabi</value>
+  </data>
+  <data name="FleetUtilization" xml:space="preserve">
+    <value>Poročilo o izkoriščenosti voznega parka</value>
+  </data>
+  <data name="FluidAnalysis" xml:space="preserve">
+    <value>Analiza tekočine</value>
+  </data>
+  <data name="fluidAnalysisReport" xml:space="preserve">
+    <value>Poročilo o analizi tekočine</value>
+  </data>
+  <data name="forward" xml:space="preserve">
+    <value>Naprej</value>
+  </data>
+  <data name="feetAbbrev" xml:space="preserve">
+    <value>ft</value>
+  </data>
+  <data name="fuel" xml:space="preserve">
+    <value>Gorivo</value>
+  </data>
+  <data name="fuelPercentRemaining" xml:space="preserve">
+    <value>Preostanek goriva v %</value>
+  </data>
+  <data name="fuelBurnPieChartTitle" xml:space="preserve">
+    <value>Poraba goriva</value>
+  </data>
+  <data name="fuelBurned" xml:space="preserve">
+    <value>Porabljeno gorivo</value>
+  </data>
+  <data name="fuelBurnedByAsset" xml:space="preserve">
+    <value>Količina goriva, ki ga je sredstvo porabilo</value>
+  </data>
+  <data name="fuelBurnedByAssetsTopTen" xml:space="preserve">
+    <value>Porabljeno gorivo po sredstvih: prvih 10</value>
+  </data>
+  <data name="fuelConsumedIdle" xml:space="preserve">
+    <value>Porabljeno gorivo (prosti tek)</value>
+  </data>
+  <data name="fuelConsumedTotal" xml:space="preserve">
+    <value>Porabljeno gorivo (skupaj)</value>
+  </data>
+  <data name="fuelInformation" xml:space="preserve">
+    <value>Podatki o gorivu</value>
+  </data>
+  <data name="fuelLevel" xml:space="preserve">
+    <value>Raven goriva</value>
+  </data>
+  <data name="fuelLevelIndicator" xml:space="preserve">
+    <value>Kazalnik ravni goriva</value>
+  </data>
+  <data name="fuelLevelPercent" xml:space="preserve">
+    <value>Kazalnik ravni goriva %</value>
+  </data>
+  <data name="levelIndicatorHeader" xml:space="preserve">
+    <value>Poročilo o kazalniku ravni goriva</value>
+  </data>
+  <data name="FuelLoss" xml:space="preserve">
+    <value>Izguba goriva</value>
+  </data>
+  <data name="FuelLossAlertDescription" xml:space="preserve">
+    <value>Izguba goriva {0} %</value>
+  </data>
+  <data name="fuelPercentageRemaining" xml:space="preserve">
+    <value>Odstotek preostalega goriva</value>
+  </data>
+  <data name="fuelRemaining" xml:space="preserve">
+    <value>Preostanek goriva</value>
+  </data>
+  <data name="fuelUtilizationTopic" xml:space="preserve">
+    <value>Izkoristek goriva</value>
+  </data>
+  <data name="FuelUtilization" xml:space="preserve">
+    <value>Poročilo o izkoristku goriva</value>
+  </data>
+  <data name="fuelUtilizationReport" xml:space="preserve">
+    <value>Poročilo o izkoristku goriva</value>
+  </data>
+  <data name="FullSiteURL" xml:space="preserve">
+    <value>Celotna stran</value>
+  </data>
+  <data name="gal" xml:space="preserve">
+    <value>gal</value>
+  </data>
+  <data name="galhr" xml:space="preserve">
+    <value>gal/h</value>
+  </data>
+  <data name="gallonsBarChartXAxisLabel" xml:space="preserve">
+    <value>Galone</value>
+  </data>
+  <data name="gallonshr" xml:space="preserve">
+    <value>Galone/uro</value>
+  </data>
+  <data name="gallonsBurned" xml:space="preserve">
+    <value>Porabljene galone</value>
+  </data>
+  <data name="geoFenceAlert" xml:space="preserve">
+    <value>Opozorilo za zemljepisno območje</value>
+  </data>
+  <data name="gpsAccuracy" xml:space="preserve">
+    <value>Natančnost GPS</value>
+  </data>
+  <data name="GPSAntennaDisconnectedTimerExpired" xml:space="preserve">
+    <value>Antena GPS je odklopljena</value>
+  </data>
+  <data name="GPSGSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Izguba signala GPS/GSM</value>
+  </data>
+  <data name="GridReport" xml:space="preserve">
+    <value>Mrežno poročilo</value>
+  </data>
+  <data name="gridSize" xml:space="preserve">
+    <value>Velikost mreže</value>
+  </data>
+  <data name="group" xml:space="preserve">
+    <value>Skupina</value>
+  </data>
+  <data name="groups" xml:space="preserve">
+    <value>Skupine</value>
+  </data>
+  <data name="GSMLossofSignalTimerExpired" xml:space="preserve">
+    <value>Izguba signala GSM</value>
+  </data>
+  <data name="hectareAbbreviation" xml:space="preserve">
+    <value>Ha</value>
+  </data>
+  <data name="hardwareDataError" xml:space="preserve">
+    <value>Napaka v podatkih strojne opreme</value>
+  </data>
+  <data name="ForgotPasswordEmailBody" xml:space="preserve">
+    <value>Pozdravljeni {0},&lt;BR /&gt;&lt;BR /&gt;Vaše uporabniško ime za VisionLink je {1}.&lt;BR /&gt;&lt;BR /&gt;Če želite ponastaviti geslo, kliknite spodnjo povezavo (ali kopirajte in prilepite naslov URL v novem oknu):&lt;BR /&gt;&lt;BR /&gt; {2}&lt;BR /&gt;&lt;BR /&gt; Za vašo varnost bo ta povezava aktivna 24 ur in le za eno uspešno ponastavitev gesla.   &lt;BR /&gt;&lt;BR /&gt;Če ponastavitve gesla niste zahtevali, je verjetno drug uporabnik po pomoti vnesel vaš e-poštni naslov ali uporabniško ime med poskusom ponastavitve gesla. V tem primeru zanemarite to sporočilo. &lt;BR /&gt;&lt;BR /&gt;Pozdrav,&lt;BR /&gt;skupina za podporo VisionLink</value>
+  </data>
+  <data name="NewAccountRegEmailBody" xml:space="preserve">
+    <value>Pozdravljeni {0}&lt;BR&gt;&lt;BR&gt; S tem elektronskim sporočilom vas obveščamo, da je bil ustvarjen račun VisionLink z imenom {1}&lt;BR&gt;&lt;BR&gt;Svoj račun lahko aktivirate tako, da na strani za registracijo računov sistema VisionLink ustvarite svoje uporabniško ime in geslo. Te poverilnice lahko nato uporabite pri dostopanju do svojega računa z uporabo spletne aplikacije VisionLink.&lt;BR&gt;&lt;BR&gt;Če kliknete spodnjo povezavo, boste preusmerjeni na stran za registracijo računov VisionLink:&lt;BR&gt;{2}&lt;BR&gt;&lt;BR&gt;Po aktivaciji računa bo zgornja povezava prenehala delovati. Vendar pa lahko po opravljeni registraciji ustvarite dodatne prijave znotraj spletne aplikacije VisionLink.&lt;BR&gt;&lt;BR&gt;Po aktivaciji svojega računa lahko do spletne aplikacije VisionLink dostopate preko naslednje povezave:&lt;BR&gt;{3}</value>
+  </data>
+  <data name="OnDemandEmailBody" xml:space="preserve">
+    <value>Pozdravljeni,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Za prenos poročila &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; kliknite spodnjo povezavo. Opomba: To elektronsko sporočilo ste prejeli kot prejemnik s seznama prejemnikov za to poročilo. Ta povezava bo aktivna 30 dni. Za vsa vprašanja se obrnite na svojega skrbnika sistema VisionLink.</value>
+  </data>
+  <data name="ScheduleReportEmailBodyWithoutUnsubscribe" xml:space="preserve">
+    <value>Pozdravljeni,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Za prenos poročila kliknite spodnjo povezavo &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; Opomba: To e-pošto ste prejeli kot prejemnik iz seznama prejemnikov za to načrtovano poročilo. Ta povezava bo aktivna 30 dni. V primeru vprašanj se obrnite na svojega skrbnika sistema VisionLink administrator.&lt;BR /&gt;&lt;BR /&gt;*** Načrtovana dnevna, tedenska in mesečna poročila o stanju voznega parka, servisih in souporabi sredstev vsebujejo najnovejše informacije v trenutku nastanka.</value>
+  </data>
+  <data name="ScheduleReportEmailBody" xml:space="preserve">
+    <value>Pozdravljeni,&lt;BR /&gt;&lt;BR /&gt;{0}&lt;BR /&gt;&lt;BR /&gt; Za prenos poročila &lt;BR /&gt;{1}&lt;BR /&gt;&lt;BR /&gt; kliknite spodnjo povezavo. Opomba: To e-pošto ste prejeli kot prejemnik s seznama prejemnikov za to poročilo. Ta povezava bo aktivna 30 dni. Za vsa vprašanja se obrnite na svojega skrbnika sistema VisionLink.&lt;BR /&gt;&lt;BR /&gt;Če v bodoče ne želite prejemati tega poročila, kliknite {2}.</value>
+  </data>
+  <data name="HH" xml:space="preserve">
+    <value>HH</value>
+  </data>
+  <data name="high" xml:space="preserve">
+    <value>Huda</value>
+  </data>
+  <data name="highest" xml:space="preserve">
+    <value>Najvišji</value>
+  </data>
+  <data name="home" xml:space="preserve">
+    <value>Začetna stran</value>
+  </data>
+  <data name="hourMeter" xml:space="preserve">
+    <value>Števec ur</value>
+  </data>
+  <data name="hours" xml:space="preserve">
+    <value>Ure</value>
+  </data>
+  <data name="hoursOfUse" xml:space="preserve">
+    <value>Ure uporabe</value>
+  </data>
+  <data name="hoursLocation" xml:space="preserve">
+    <value>Ure/lokacija</value>
+  </data>
+  <data name="hr" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="hrs" xml:space="preserve">
+    <value>h</value>
+  </data>
+  <data name="hybrid" xml:space="preserve">
+    <value>Hibrid</value>
+  </data>
+  <data name="hydraulicOilTemperature" xml:space="preserve">
+    <value>Temperatura hidravličnega olja</value>
+  </data>
+  <data name="hydraulicTemperatureHeader" xml:space="preserve">
+    <value>Poročilo o temperaturi hidravličnega olja</value>
+  </data>
+  <data name="Idle" xml:space="preserve">
+    <value>Prosti tek</value>
+  </data>
+  <data name="idleEventsMessage" xml:space="preserve">
+    <value>Dogodki nedejavnosti, daljši od {0} {1}</value>
+  </data>
+  <data name="idleFuelBurned" xml:space="preserve">
+    <value>Poraba v prostem teku</value>
+  </data>
+  <data name="idleHourMeter" xml:space="preserve">
+    <value>Števec ur prostega teka</value>
+  </data>
+  <data name="idleHours" xml:space="preserve">
+    <value>Ure prostega teka</value>
+  </data>
+  <data name="idleTime" xml:space="preserve">
+    <value>Čas nedejavnosti</value>
+  </data>
+  <data name="idleTimeOut" xml:space="preserve">
+    <value>Prekinitev prostega teka</value>
+  </data>
+  <data name="idling" xml:space="preserve">
+    <value>V prostem teku</value>
+  </data>
+  <data name="idlingFuelBurned" xml:space="preserve">
+    <value>Med nedejavnostjo porabljeno gorivo</value>
+  </data>
+  <data name="IgnitionOff" xml:space="preserve">
+    <value>Izklop vžiga</value>
+  </data>
+  <data name="IgnitionOn" xml:space="preserve">
+    <value>Vklop vžiga</value>
+  </data>
+  <data name="ignitionStatus" xml:space="preserve">
+    <value>Status vžiga</value>
+  </data>
+  <data name="inProgress" xml:space="preserve">
+    <value>Poteka</value>
+  </data>
+  <data name="inactiveNoRuntime" xml:space="preserve">
+    <value>Neaktivno – brez časa delovanja</value>
+  </data>
+  <data name="includeSupercededLifts" xml:space="preserve">
+    <value>Vključi zamenjane plasti</value>
+  </data>
+  <data name="InclusionZone" xml:space="preserve">
+    <value>Vključitveno območje</value>
+  </data>
+  <data name="incomplete" xml:space="preserve">
+    <value>Nepopolno</value>
+  </data>
+  <data name="incorrectUsernameOrPassword" xml:space="preserve">
+    <value>Neveljavno uporabniško ime ali geslo</value>
+  </data>
+  <data name="incorrectWorkingTime" xml:space="preserve">
+    <value>Vrednosti za izračun časa opravljanja dela niso pravilne.</value>
+  </data>
+  <data name="dcToIRecInifiniteAdjustmentSlopeValue" xml:space="preserve">
+    <value>Neskončna vrednost prilagoditve nagiba (DCToIRecord converter)</value>
+  </data>
+  <data name="insufficientDataForCalculation" xml:space="preserve">
+    <value>Ni dovolj podatkov za izračun</value>
+  </data>
+  <data name="singleDayCalloutNegativeValue" xml:space="preserve">
+    <value>Natančnost števca časa delovanja ne zadostuje za veljaven izračun</value>
+  </data>
+  <data name="dateRangeCalloutNegativeValue" xml:space="preserve">
+    <value>Natančnost števca časa delovanja ne zadostuje za veljaven izračun v datumskem obdobju</value>
+  </data>
+  <data name="introduction" xml:space="preserve">
+    <value>Predstavitev</value>
+  </data>
+  <data name="invalidCoordinateRange" xml:space="preserve">
+    <value>Neveljaven obseg koordinat</value>
+  </data>
+  <data name="suppliedDataModelBoundaryContainsInsufficeintVertices" xml:space="preserve">
+    <value>Neveljavne meje podatkovnega modela</value>
+  </data>
+  <data name="dcToIRecInvalidEllipsoid" xml:space="preserve">
+    <value>Neveljaven elipsoid (DCToIRecord converter)</value>
+  </data>
+  <data name="InValidReportRequest" xml:space="preserve">
+    <value>Neveljavna zahteva za poročilo v programu Excel</value>
+  </data>
+  <data name="InvalidSeedPosition" xml:space="preserve">
+    <value>Neveljaven začetni položaj LLH/NE v datoteki oznak</value>
+  </data>
+  <data name="InvalidMSSKey" xml:space="preserve">
+    <value>Neveljaven ključ MSS</value>
+  </data>
+  <data name="invalidResponseCode" xml:space="preserve">
+    <value>Neveljavna odzivna koda</value>
+  </data>
+  <data name="invalidSubscriptions" xml:space="preserve">
+    <value>Neveljavna naročniška razmerja</value>
+  </data>
+  <data name="invalidTagFile" xml:space="preserve">
+    <value>Neveljavna datoteka oznak</value>
+  </data>
+  <data name="invalidValueDetected" xml:space="preserve">
+    <value>Zaznana je neveljavna vrednost</value>
+  </data>
+  <data name="singleDayCalloutSpike" xml:space="preserve">
+    <value>Zaznana je neveljavna vrednost</value>
+  </data>
+  <data name="dateRangeCalloutSpike" xml:space="preserve">
+    <value>Zaznana je neveljavna vrednost v datumskem obdobju</value>
+  </data>
+  <data name="kilometers" xml:space="preserve">
+    <value>Kilometri</value>
+  </data>
+  <data name="km" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kmL" xml:space="preserve">
+    <value>km/l</value>
+  </data>
+  <data name="kms" xml:space="preserve">
+    <value>km</value>
+  </data>
+  <data name="kpa" xml:space="preserve">
+    <value>kPa</value>
+  </data>
+  <data name="kph" xml:space="preserve">
+    <value>km/h</value>
+  </data>
+  <data name="leftAbbrev" xml:space="preserve">
+    <value>L</value>
+  </data>
+  <data name="ltr" xml:space="preserve">
+    <value>l</value>
+  </data>
+  <data name="ltrhr" xml:space="preserve">
+    <value>l/h</value>
+  </data>
+  <data name="FluidAnalysisAlertDescription" xml:space="preserve">
+    <value>Laboratorijska št.: {0}, oddelek: {1}, resnost:</value>
+  </data>
+  <data name="labNumber" xml:space="preserve">
+    <value>Laboratorijska številka</value>
+  </data>
+  <data name="language" xml:space="preserve">
+    <value>Jezik</value>
+  </data>
+  <data name="last" xml:space="preserve">
+    <value>Zadnji</value>
+  </data>
+  <data name="lastKnownLocation" xml:space="preserve">
+    <value>Zadnja znana lokacija</value>
+  </data>
+  <data name="lastKnownStatus" xml:space="preserve">
+    <value>Zadnji znani status</value>
+  </data>
+  <data name="lastReportedStatus" xml:space="preserve">
+    <value>Zadnji znani status</value>
+  </data>
+  <data name="lastLogin" xml:space="preserve">
+    <value>Zadnja prijava</value>
+  </data>
+  <data name="lastLoginDate" xml:space="preserve">
+    <value>Datum zadnje prijave</value>
+  </data>
+  <data name="lastloginUTC" xml:space="preserve">
+    <value>Čas zadnje prijave (UTC)</value>
+  </data>
+  <data name="lastname" xml:space="preserve">
+    <value>Priimek</value>
+  </data>
+  <data name="lastReported" xml:space="preserve">
+    <value>Zadnje poročilo</value>
+  </data>
+  <data name="lastReportedLocation" xml:space="preserve">
+    <value>Zadnja sporočena lokacija</value>
+  </data>
+  <data name="lastReportedTime" xml:space="preserve">
+    <value>Čas zadnjega poročila</value>
+  </data>
+  <data name="lastUpdated" xml:space="preserve">
+    <value>Zadnja posodobitev</value>
+  </data>
+  <data name="lastNDays" xml:space="preserve">
+    <value>Zadnjih {0} dni</value>
+  </data>
+  <data name="latitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Šir.</value>
+  </data>
+  <data name="latest" xml:space="preserve">
+    <value>Najnovejši</value>
+  </data>
+  <data name="latestUserActivity" xml:space="preserve">
+    <value>Najnovejša dejavnost uporabnikov</value>
+  </data>
+  <data name="LaunchVLApp" xml:space="preserve">
+    <value>Zagon programov VisionLink</value>
+  </data>
+  <data name="leaseOwnership" xml:space="preserve">
+    <value>Lastnik zakupa</value>
+  </data>
+  <data name="passesLessthan" xml:space="preserve">
+    <value>Manj kot {0} prehodov</value>
+  </data>
+  <data name="lessThanNPercent" xml:space="preserve">
+    <value>Manj kot {0} %</value>
+  </data>
+  <data name="level0" xml:space="preserve">
+    <value>Raven 0</value>
+  </data>
+  <data name="level1" xml:space="preserve">
+    <value>Raven 1</value>
+  </data>
+  <data name="level2" xml:space="preserve">
+    <value>Raven 2</value>
+  </data>
+  <data name="level3" xml:space="preserve">
+    <value>Raven 3</value>
+  </data>
+  <data name="lifetimeFuel" xml:space="preserve">
+    <value>Gorivo v življenjski dobi</value>
+  </data>
+  <data name="lifetimeFuelMeter" xml:space="preserve">
+    <value>Števec porabe goriva v življenjski dobi</value>
+  </data>
+  <data name="lifetimeIdleFuelMeter" xml:space="preserve">
+    <value>Števec porabe goriva v prostem teku v življenjski dobi</value>
+  </data>
+  <data name="layerNumber" xml:space="preserve">
+    <value>Plast</value>
+  </data>
+  <data name="lift" xml:space="preserve">
+    <value>Plast</value>
+  </data>
+  <data name="InValidLink" xml:space="preserve">
+    <value>Povezava je potekla.</value>
+  </data>
+  <data name="litersBarChartXAxisLabel" xml:space="preserve">
+    <value>Litri</value>
+  </data>
+  <data name="litershr" xml:space="preserve">
+    <value>Litri/uro</value>
+  </data>
+  <data name="litersBurned" xml:space="preserve">
+    <value>Porabljeni litri</value>
+  </data>
+  <data name="loadAndCycleMonitoring" xml:space="preserve">
+    <value>Nadzor tovora in ciklov</value>
+  </data>
+  <data name="LoadCount" xml:space="preserve">
+    <value>Poročilo o številu nalaganj</value>
+  </data>
+  <data name="loadCountReport" xml:space="preserve">
+    <value>Poročilo o številu nalaganj</value>
+  </data>
+  <data name="loadCounts" xml:space="preserve">
+    <value>Števci nalaganj</value>
+  </data>
+  <data name="loadCountsAndCycleTimes" xml:space="preserve">
+    <value>Števci nalaganj in časi ciklov</value>
+  </data>
+  <data name="LoadDistance" xml:space="preserve">
+    <value>Razdalja nalaganja</value>
+  </data>
+  <data name="LoadDistanceAlertDescription" xml:space="preserve">
+    <value>Razdalja nalaganja {0}</value>
+  </data>
+  <data name="loadEvent" xml:space="preserve">
+    <value>Dogodek nalaganja</value>
+  </data>
+  <data name="loadLocation" xml:space="preserve">
+    <value>Lokacija nalaganja</value>
+  </data>
+  <data name="loadQuality" xml:space="preserve">
+    <value>Kakovost nalaganj</value>
+  </data>
+  <data name="loadTime" xml:space="preserve">
+    <value>Čas nalaganja</value>
+  </data>
+  <data name="loadToDumpDistance" xml:space="preserve">
+    <value>Razdalja med nalaganjem in odlaganjem</value>
+  </data>
+  <data name="loadToLoadDistance" xml:space="preserve">
+    <value>Razdalja med nalaganji</value>
+  </data>
+  <data name="assetLoadedLoading" xml:space="preserve">
+    <value>Sredstvo, uporabljeno za nalaganje:</value>
+  </data>
+  <data name="loader" xml:space="preserve">
+    <value>Nakladalnik</value>
+  </data>
+  <data name="loaderOperation" xml:space="preserve">
+    <value>Delovanje nakladalnika</value>
+  </data>
+  <data name="loads" xml:space="preserve">
+    <value>Nalaganja</value>
+  </data>
+  <data name="locate" xml:space="preserve">
+    <value>Lociranje</value>
+  </data>
+  <data name="location" xml:space="preserve">
+    <value>Lokacija</value>
+  </data>
+  <data name="geolocationPositionUnavailable" xml:space="preserve">
+    <value>Lokacija ni na voljo.</value>
+  </data>
+  <data name="login" xml:space="preserve">
+    <value>Prijava</value>
+  </data>
+  <data name="loginCreationDate" xml:space="preserve">
+    <value>Datum ustvarjanja prijave</value>
+  </data>
+  <data name="loginfailed" xml:space="preserve">
+    <value>Prijava ni uspela.</value>
+  </data>
+  <data name="logout" xml:space="preserve">
+    <value>Odjava</value>
+  </data>
+  <data name="longitudeAbbreviatedLabel" xml:space="preserve">
+    <value>Dolž.</value>
+  </data>
+  <data name="low" xml:space="preserve">
+    <value>Manjša</value>
+  </data>
+  <data name="LowSensorBattery" xml:space="preserve">
+    <value>Stanje akumulatorja je nizko</value>
+  </data>
+  <data name="LowFuel" xml:space="preserve">
+    <value>Nizek nivo goriva</value>
+  </data>
+  <data name="lowest" xml:space="preserve">
+    <value>Najnižji</value>
+  </data>
+  <data name="metersAbbrev" xml:space="preserve">
+    <value>m</value>
+  </data>
+  <data name="m3" xml:space="preserve">
+    <value>m3</value>
+  </data>
+  <data name="meterUpdateSummary" xml:space="preserve">
+    <value>Ure stroja</value>
+  </data>
+  <data name="machineIdleEvent" xml:space="preserve">
+    <value>Nedejaven stroj</value>
+  </data>
+  <data name="machineName" xml:space="preserve">
+    <value>Ime stroja</value>
+  </data>
+  <data name="make" xml:space="preserve">
+    <value>Proizvajalec</value>
+  </data>
+  <data name="makeModel" xml:space="preserve">
+    <value>Proizvajalec/model</value>
+  </data>
+  <data name="manual" xml:space="preserve">
+    <value>Ročno</value>
+  </data>
+  <data name="map" xml:space="preserve">
+    <value>Zemljevid</value>
+  </data>
+  <data name="mapReset" xml:space="preserve">
+    <value>Ponastavitev zemljevida</value>
+  </data>
+  <data name="mappingType" xml:space="preserve">
+    <value>Vrsta izrisa na zemljevidu</value>
+  </data>
+  <data name="markCompleted" xml:space="preserve">
+    <value>Označi kot zaključeno</value>
+  </data>
+  <data name="material" xml:space="preserve">
+    <value>Material</value>
+  </data>
+  <data name="max" xml:space="preserve">
+    <value>Maks.</value>
+  </data>
+  <data name="maxSpeed" xml:space="preserve">
+    <value>Maks. hitrost</value>
+  </data>
+  <data name="maxRecordsReached" xml:space="preserve">
+    <value>Doseženo maks. število zapisov</value>
+  </data>
+  <data name="maximumTemperature" xml:space="preserve">
+    <value>Maksimalna temperatura</value>
+  </data>
+  <data name="deviceTypeMCHYPHEN3" xml:space="preserve">
+    <value>MC-3</value>
+  </data>
+  <data name="mdp" xml:space="preserve">
+    <value>MDP</value>
+  </data>
+  <data name="mdpSummary" xml:space="preserve">
+    <value>Povzetek MDP</value>
+  </data>
+  <data name="mdpSummaryReport" xml:space="preserve">
+    <value>Povzetek poročila o MDP</value>
+  </data>
+  <data name="medium" xml:space="preserve">
+    <value>Zmerna</value>
+  </data>
+  <data name="meter" xml:space="preserve">
+    <value>Števec</value>
+  </data>
+  <data name="meterReading" xml:space="preserve">
+    <value>Odčitek števca</value>
+  </data>
+  <data name="meterUpdate" xml:space="preserve">
+    <value>Posodobitev števca</value>
+  </data>
+  <data name="meterUpdateSent" xml:space="preserve">
+    <value>Posodobitev števca poslana</value>
+  </data>
+  <data name="mi" xml:space="preserve">
+    <value>mil</value>
+  </data>
+  <data name="mileGal" xml:space="preserve">
+    <value>milj/gal</value>
+  </data>
+  <data name="mileage" xml:space="preserve">
+    <value>Kilometrina</value>
+  </data>
+  <data name="miles" xml:space="preserve">
+    <value>milje</value>
+  </data>
+  <data name="min" xml:space="preserve">
+    <value>Min.</value>
+  </data>
+  <data name="minute" xml:space="preserve">
+    <value>min</value>
+  </data>
+  <data name="minimumTemperature" xml:space="preserve">
+    <value>Minimalna temperatura</value>
+  </data>
+  <data name="Missed" xml:space="preserve">
+    <value>Zamujeno</value>
+  </data>
+  <data name="missingMeterValueDetected" xml:space="preserve">
+    <value>Zaznana je manjkajoča vrednost števca</value>
+  </data>
+  <data name="singleDayCalloutMissingMeterValue" xml:space="preserve">
+    <value>Zaznana je manjkajoča vrednost števca</value>
+  </data>
+  <data name="dateRangeCalloutMissingMeterValue" xml:space="preserve">
+    <value>Zaznana je manjkajoča vrednost števca v datumskem obdobju</value>
+  </data>
+  <data name="MM" xml:space="preserve">
+    <value>MM</value>
+  </data>
+  <data name="model" xml:space="preserve">
+    <value>Model</value>
+  </data>
+  <data name="modelYear" xml:space="preserve">
+    <value>Leto modela</value>
+  </data>
+  <data name="module" xml:space="preserve">
+    <value>Modul</value>
+  </data>
+  <data name="moduleAccessProvidedBy" xml:space="preserve">
+    <value>Dostop do modula omogočila oseba</value>
+  </data>
+  <data name="FluidMonitorPriority" xml:space="preserve">
+    <value>Spremljajte</value>
+  </data>
+  <data name="monitoredCycleDetailsReport" xml:space="preserve">
+    <value>Podrobno poročilo o nadzorovanem ciklu</value>
+  </data>
+  <data name="monitoredLoadCountDetailsReport" xml:space="preserve">
+    <value>Podrobno poročilo o nadzorovanem števcu nalaganj</value>
+  </data>
+  <data name="monitoredSiteDetailsReport" xml:space="preserve">
+    <value>Podrobno poročilo o nadzorovani lokaciji delovišča</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Mesečno</value>
+  </data>
+  <data name="more" xml:space="preserve">
+    <value>Več</value>
+  </data>
+  <data name="moreThan" xml:space="preserve">
+    <value>Več kot</value>
+  </data>
+  <data name="passesMorethan" xml:space="preserve">
+    <value>Več kot {0} prehodov</value>
+  </data>
+  <data name="top10MostFrequentlyOccurringFaults" xml:space="preserve">
+    <value>Najpogostejše kode napak (prvih 10)</value>
+  </data>
+  <data name="MovementWithAssetOff" xml:space="preserve">
+    <value>Premikanje pri izklopljenem sredstvu</value>
+  </data>
+  <data name="MovementWithAssetOn" xml:space="preserve">
+    <value>Premikanje pri vklopljenem sredstvu</value>
+  </data>
+  <data name="movingStatus" xml:space="preserve">
+    <value>Status premikanja</value>
+  </data>
+  <data name="mph" xml:space="preserve">
+    <value>mph</value>
+  </data>
+  <data name="deviceTypeMTHYPHEN10" xml:space="preserve">
+    <value>MT-10</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENElectricEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Electric Engine</value>
+  </data>
+  <data name="deviceTypeMTGModularGatewayHYPHENMotorEngine" xml:space="preserve">
+    <value>MTG Modular Gateway-Motor Engine</value>
+  </data>
+  <data name="MulitpleProjects" xml:space="preserve">
+    <value>Več projektov je najdenih</value>
+  </data>
+  <data name="multipleSelections" xml:space="preserve">
+    <value>Več izbir</value>
+  </data>
+  <data name="notApplicable" xml:space="preserve">
+    <value>Ni upoštevno</value>
+  </data>
+  <data name="NA" xml:space="preserve">
+    <value>Ni upoštevno</value>
+  </data>
+  <data name="name" xml:space="preserve">
+    <value>Ime</value>
+  </data>
+  <data name="nearbyAssets" xml:space="preserve">
+    <value>Sredstva v bližini</value>
+  </data>
+  <data name="nearbyAssetsByProductFamily" xml:space="preserve">
+    <value>Bližnja družina izdelkov</value>
+  </data>
+  <data name="NewAccountSupportEmailSubject" xml:space="preserve">
+    <value>Podatki o registraciji novega računa</value>
+  </data>
+  <data name="nextService" xml:space="preserve">
+    <value>Naslednji servis</value>
+  </data>
+  <data name="FluidNoActionPriority" xml:space="preserve">
+    <value>Ukrepanje ni potrebno</value>
+  </data>
+  <data name="noBoundariesInLineworkFile" xml:space="preserve">
+    <value>V datoteki s črtnimi slikami niso bile najdene meje</value>
+  </data>
+  <data name="noChange" xml:space="preserve">
+    <value>Brez sprememb</value>
+  </data>
+  <data name="noComment" xml:space="preserve">
+    <value>Brez komentarja</value>
+  </data>
+  <data name="noConnectionToServer" xml:space="preserve">
+    <value>Povezava s strežnikom ni vzpostavljena</value>
+  </data>
+  <data name="noData" xml:space="preserve">
+    <value>Ni podatkov</value>
+  </data>
+  <data name="noDumpFound" xml:space="preserve">
+    <value>Nobeno odlaganje ni bilo najdeno</value>
+  </data>
+  <data name="noDumpSwitch" xml:space="preserve">
+    <value>Noben dogodek stikala odlaganja ni bil zaznan</value>
+  </data>
+  <data name="NoEndDate" xml:space="preserve">
+    <value>Ni datuma zaključka</value>
+  </data>
+  <data name="noFilter" xml:space="preserve">
+    <value>Brez filtra</value>
+  </data>
+  <data name="NoIntervals" xml:space="preserve">
+    <value>Ni intervalov</value>
+  </data>
+  <data name="noItemsFound" xml:space="preserve">
+    <value>Predmeti niso bili najdeni</value>
+  </data>
+  <data name="noLoadFound" xml:space="preserve">
+    <value>Nobeno nalaganje ni bilo najdeno</value>
+  </data>
+  <data name="noLoadSwitch" xml:space="preserve">
+    <value>Noben dogodek stikala nalaganja ni bil zaznan</value>
+  </data>
+  <data name="NoMatchingProjectArea" xml:space="preserve">
+    <value>Nobeno ujemajoče se področje projekta ni na voljo</value>
+  </data>
+  <data name="NoMatchingProjectDate" xml:space="preserve">
+    <value>Noben ujemajoči se datum/čas projekta ni na voljo</value>
+  </data>
+  <data name="NoPending" xml:space="preserve">
+    <value>Ni v čakanju</value>
+  </data>
+  <data name="noResultReturned" xml:space="preserve">
+    <value>Rezultati niso bili vrnjeni</value>
+  </data>
+  <data name="noResults" xml:space="preserve">
+    <value>Ni rezultatov</value>
+  </data>
+  <data name="noStopMovmentInValidSite" xml:space="preserve">
+    <value>Nobena zaustavitev premikanja ni bila zaznana v veljavni vrsti delovišča</value>
+  </data>
+  <data name="noStopMovement" xml:space="preserve">
+    <value>Noben dogodek zaustavitve premikanja ni bil zaznan</value>
+  </data>
+  <data name="noSuchDataModel" xml:space="preserve">
+    <value>Ni takšnega podatkovnega modela</value>
+  </data>
+  <data name="NoValidCellPassesInTagfile" xml:space="preserve">
+    <value>Noben veljaven prehod celic ni bil najden v datoteki(-ah) oznak</value>
+  </data>
+  <data name="InvalidPosition" xml:space="preserve">
+    <value>V datoteki oznak ni nobenega veljavnega položaja</value>
+  </data>
+  <data name="NotReporting" xml:space="preserve">
+    <value>Brez poročanja</value>
+  </data>
+  <data name="devicetypenodevice" xml:space="preserve">
+    <value>BREZ</value>
+  </data>
+  <data name="none" xml:space="preserve">
+    <value>Brez</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Običajno</value>
+  </data>
+  <data name="NormalOperation" xml:space="preserve">
+    <value>Običajno delovanje</value>
+  </data>
+  <data name="northing" xml:space="preserve">
+    <value>Premik koordinate v smeri y</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Ni na voljo</value>
+  </data>
+  <data name="NotPending" xml:space="preserve">
+    <value>Ni v čakanju</value>
+  </data>
+  <data name="GensetNotReadyToRun" xml:space="preserve">
+    <value>Ni pripravljen na delovanje</value>
+  </data>
+  <data name="notVerified" xml:space="preserve">
+    <value>Ni preverjeno</value>
+  </data>
+  <data name="dcToIRecNotWGS84Ellipsoid" xml:space="preserve">
+    <value>Ni elipsoid WGS84 (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecNotWGS84EllipsoidSameAsProj" xml:space="preserve">
+    <value>Ni elipsoid WGS84 v zapisu datuma (DCToIRecord converter)</value>
+  </data>
+  <data name="NotReportingforExcelReport" xml:space="preserve">
+    <value>Ne-poročanje</value>
+  </data>
+  <data name="SavEmailFooter" xml:space="preserve">
+    <value>To je vljudnostno elektronsko obvestilo. Na ta seznam za obveščanje ste bili vpisani, ker ste skrbnik svojega računa v sistemu VisionLink.</value>
+  </data>
+  <data name="notes" xml:space="preserve">
+    <value>Opombe</value>
+  </data>
+  <data name="occurrenceCount" xml:space="preserve">
+    <value>Števec pojavitev</value>
+  </data>
+  <data name="odometer" xml:space="preserve">
+    <value>Števec prevožene poti</value>
+  </data>
+  <data name="off" xml:space="preserve">
+    <value>Izklop</value>
+  </data>
+  <data name="offset" xml:space="preserve">
+    <value>Odmik</value>
+  </data>
+  <data name="offsetFromBench" xml:space="preserve">
+    <value>Odmik od referenčne višine</value>
+  </data>
+  <data name="offsetFromDesign" xml:space="preserve">
+    <value>Odmik od zasnove</value>
+  </data>
+  <data name="offsetFromProfile" xml:space="preserve">
+    <value>Odmik od profila</value>
+  </data>
+  <data name="ok" xml:space="preserve">
+    <value>V redu</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value>Vklop</value>
+  </data>
+  <data name="onGrade" xml:space="preserve">
+    <value>Neposredno na tleh</value>
+  </data>
+  <data name="onMachineDesign" xml:space="preserve">
+    <value>Zasnova na stroju</value>
+  </data>
+  <data name="OnBoardServiceToolCommand" xml:space="preserve">
+    <value>Ukaz za vgrajeno servisno orodje</value>
+  </data>
+  <data name="InvalidOnGroundFlag" xml:space="preserve">
+    <value>oznaka na_tleh ni nastavljena ali je neveljavna v datoteki z oznakami</value>
+  </data>
+  <data name="OpenAlerts" xml:space="preserve">
+    <value>Odprta opozorila</value>
+  </data>
+  <data name="operationModeBreakup" xml:space="preserve">
+    <value>Prekinitev načina delovanja</value>
+  </data>
+  <data name="operatorID" xml:space="preserve">
+    <value>ID upravljavca</value>
+  </data>
+  <data name="operatorName" xml:space="preserve">
+    <value>Ime upravljavca</value>
+  </data>
+  <data name="origin" xml:space="preserve">
+    <value>Izhodišče</value>
+  </data>
+  <data name="OTACommand" xml:space="preserve">
+    <value>Ukaz za prenos preko zraka</value>
+  </data>
+  <data name="other" xml:space="preserve">
+    <value>Drugo</value>
+  </data>
+  <data name="overCompacted" xml:space="preserve">
+    <value>Preveč zbito</value>
+  </data>
+  <data name="overcompactedLayer" xml:space="preserve">
+    <value>Preveč zbita plast</value>
+  </data>
+  <data name="maxLevel" xml:space="preserve">
+    <value>Presega maks. raven</value>
+  </data>
+  <data name="overPassTarget" xml:space="preserve">
+    <value>Presega cilj prehoda</value>
+  </data>
+  <data name="OverPressure" xml:space="preserve">
+    <value>Čezmeren tlak</value>
+  </data>
+  <data name="OverTemperature" xml:space="preserve">
+    <value>Čezmerna temperatura</value>
+  </data>
+  <data name="Overdue" xml:space="preserve">
+    <value>V zamudi</value>
+  </data>
+  <data name="serviceDueSummary" xml:space="preserve">
+    <value>Zamujeni in skorajšnji servis</value>
+  </data>
+  <data name="OverdueBy" xml:space="preserve">
+    <value>V zamudi za</value>
+  </data>
+  <data name="pMode" xml:space="preserve">
+    <value>Zmogljivi način</value>
+  </data>
+  <data name="pageXofY" xml:space="preserve">
+    <value>Stran &amp;[Page] od &amp;[Pages]</value>
+  </data>
+  <data name="MachineParametersReport" xml:space="preserve">
+    <value>Parametrično poročilo</value>
+  </data>
+  <data name="passCount" xml:space="preserve">
+    <value>Števec prehodov</value>
+  </data>
+  <data name="passCountDetail" xml:space="preserve">
+    <value>Podrobnosti števca prehodov</value>
+  </data>
+  <data name="passCountDetailReport" xml:space="preserve">
+    <value>Podrobno poročilo števca prehodov</value>
+  </data>
+  <data name="passCountSummary" xml:space="preserve">
+    <value>Povzetek števca prehodov</value>
+  </data>
+  <data name="passCountSummaryReport" xml:space="preserve">
+    <value>Povzetek poročila števca prehodov</value>
+  </data>
+  <data name="password" xml:space="preserve">
+    <value>Geslo</value>
+  </data>
+  <data name="payload" xml:space="preserve">
+    <value>Tovor</value>
+  </data>
+  <data name="PayloadReport" xml:space="preserve">
+    <value>Poročilo o tovoru</value>
+  </data>
+  <data name="payloadPerCycle" xml:space="preserve">
+    <value>Tovor/cikel</value>
+  </data>
+  <data name="payloadPerFuel" xml:space="preserve">
+    <value>Tovor/gorivo</value>
+  </data>
+  <data name="payloadPerHour" xml:space="preserve">
+    <value>Tovor/ura</value>
+  </data>
+  <data name="chartWorkSheetTitle" xml:space="preserve">
+    <value>Graf tovora</value>
+  </data>
+  <data name="dataWorkSheetTitle" xml:space="preserve">
+    <value>Podatki o tovoru</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>V čakanju</value>
+  </data>
+  <data name="performance" xml:space="preserve">
+    <value>Zmogljivost</value>
+  </data>
+  <data name="performedBy" xml:space="preserve">
+    <value>Opravil</value>
+  </data>
+  <data name="phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="deviceTypePL420" xml:space="preserve">
+    <value>PL420</value>
+  </data>
+  <data name="deviceTypePL431" xml:space="preserve">
+    <value>PL431</value>
+  </data>
+  <data name="deviceTypeMTS521" xml:space="preserve">
+    <value>PL521</value>
+  </data>
+  <data name="deviceTypeMTS522" xml:space="preserve">
+    <value>PL522</value>
+  </data>
+  <data name="deviceTypePLE641PLUSPL631" xml:space="preserve">
+    <value>PLE641+PL631</value>
+  </data>
+  <data name="changeDatesOrBoundary" xml:space="preserve">
+    <value>Spremenite datume projekta ali meje projekta.</value>
+  </data>
+  <data name="cookiesRequired" xml:space="preserve">
+    <value>Omogočite piškotke v tem brskalniku.</value>
+  </data>
+  <data name="javascriptRequired" xml:space="preserve">
+    <value>Omogočite javascript in piškotke v tem brskalniku.</value>
+  </data>
+  <data name="enterYourPassword" xml:space="preserve">
+    <value>Vnesite svoje geslo.</value>
+  </data>
+  <data name="enterYourUsername" xml:space="preserve">
+    <value>Vnesite svoje uporabniško ime.</value>
+  </data>
+  <data name="pleaseInstallBlackBerryMaps" xml:space="preserve">
+    <value>Namestite zemljevide BlackBerry Maps.</value>
+  </data>
+  <data name="excelRowLimitReached" xml:space="preserve">
+    <value>Vrnjeni podatki presegajo zgornjo mejo števila vrstic v programu Excel, zato niso vključeni v poročilo.</value>
+  </data>
+  <data name="selectService" xml:space="preserve">
+    <value>Pred pošiljanjem zahteve izberite storitev.</value>
+  </data>
+  <data name="PM" xml:space="preserve">
+    <value>(pop.)</value>
+  </data>
+  <data name="PowerLoss" xml:space="preserve">
+    <value>Izpad glavnega napajanja</value>
+  </data>
+  <data name="PowerMode" xml:space="preserve">
+    <value>Način delovanja</value>
+  </data>
+  <data name="pressure" xml:space="preserve">
+    <value>Tlak</value>
+  </data>
+  <data name="probProcessing" xml:space="preserve">
+    <value>Med obdelavo je prišlo do težave.</value>
+  </data>
+  <data name="productFamily" xml:space="preserve">
+    <value>Družina izdelkov</value>
+  </data>
+  <data name="project" xml:space="preserve">
+    <value>Projekt</value>
+  </data>
+  <data name="overlappingProject" xml:space="preserve">
+    <value>Projekti se ne smejo prekrivati tako časovno (čas začetka in čas zaključka) kot prostorsko (meje projekta). </value>
+  </data>
+  <data name="proofingRun" xml:space="preserve">
+    <value>Preizkusno delovanje</value>
+  </data>
+  <data name="proximityLoads" xml:space="preserve">
+    <value>Predvidena števila nalaganj</value>
+  </data>
+  <data name="proximitytoSwitch" xml:space="preserve">
+    <value>V bližini stikala</value>
+  </data>
+  <data name="psi" xml:space="preserve">
+    <value>PSI</value>
+  </data>
+  <data name="purchaseDate" xml:space="preserve">
+    <value>Datum nakupa</value>
+  </data>
+  <data name="rightAbbrev" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="raw" xml:space="preserve">
+    <value>Neobdelani podatki</value>
+  </data>
+  <data name="reconciled" xml:space="preserve">
+    <value>Usklajeno</value>
+  </data>
+  <data name="ReconciledLoadDumpEvent" xml:space="preserve">
+    <value>Usklajen dogodek nalaganja/odlaganja</value>
+  </data>
+  <data name="recordedBy" xml:space="preserve">
+    <value>Zabeležil</value>
+  </data>
+  <data name="registeredDealer" xml:space="preserve">
+    <value>Registrirani zastopnik</value>
+  </data>
+  <data name="release" xml:space="preserve">
+    <value>Sprostitev</value>
+  </data>
+  <data name="rememberMe" xml:space="preserve">
+    <value>Zapomni si me</value>
+  </data>
+  <data name="reportDateRange" xml:space="preserve">
+    <value>Časovno obdobje poročila</value>
+  </data>
+  <data name="reportGeneratedDate" xml:space="preserve">
+    <value>Datum izdelave poročila</value>
+  </data>
+  <data name="reportType" xml:space="preserve">
+    <value>Vrsta poročila</value>
+  </data>
+  <data name="reportedTime" xml:space="preserve">
+    <value>Čas poročanja</value>
+  </data>
+  <data name="requestAccess" xml:space="preserve">
+    <value>Zahteva po dostopu</value>
+  </data>
+  <data name="requestCanceled" xml:space="preserve">
+    <value>Zahteva preklicana</value>
+  </data>
+  <data name="requestSentSuccessfully" xml:space="preserve">
+    <value>Zahteva po dostopu je bila uspešno poslana.</value>
+  </data>
+  <data name="abortedDueToPipelineTimeout" xml:space="preserve">
+    <value>Zahteva je bila prekinjena zaradi izteka časovne omejitve cevovoda</value>
+  </data>
+  <data name="requestHasBeenCancelled" xml:space="preserve">
+    <value>Zahteva je bila preklicana</value>
+  </data>
+  <data name="resolved" xml:space="preserve">
+    <value>Rešen</value>
+  </data>
+  <data name="retry" xml:space="preserve">
+    <value>Ponovni poskus</value>
+  </data>
+  <data name="reverse" xml:space="preserve">
+    <value>Vzvratno</value>
+  </data>
+  <data name="roadDesign" xml:space="preserve">
+    <value>Zasnova ceste</value>
+  </data>
+  <data name="RPM" xml:space="preserve">
+    <value>vrt./min</value>
+  </data>
+  <data name="running" xml:space="preserve">
+    <value>Delovanje</value>
+  </data>
+  <data name="runningTotal" xml:space="preserve">
+    <value>Delovanje (skupaj)</value>
+  </data>
+  <data name="runningBurnRate" xml:space="preserve">
+    <value>Stopnja porabe med delovanjem</value>
+  </data>
+  <data name="runningFuelBurned" xml:space="preserve">
+    <value>Med delovanjem porabljeno gorivo</value>
+  </data>
+  <data name="runningUtil" xml:space="preserve">
+    <value>Izkoristek delovanja</value>
+  </data>
+  <data name="runtime" xml:space="preserve">
+    <value>Čas delovanja</value>
+  </data>
+  <data name="runTimePercentage" xml:space="preserve">
+    <value>Runtime Percentage</value>
+  </data>
+  <data name="sn" xml:space="preserve">
+    <value>Ser. št.</value>
+  </data>
+  <data name="sampleDate" xml:space="preserve">
+    <value>Datum odvzema vzorca</value>
+  </data>
+  <data name="satellite" xml:space="preserve">
+    <value>Satelit</value>
+  </data>
+  <data name="requestScheduleFailure" xml:space="preserve">
+    <value>Napaka urnika</value>
+  </data>
+  <data name="requestScheduleLoadTooHigh" xml:space="preserve">
+    <value>Obremenitev urnika je prevelika</value>
+  </data>
+  <data name="requestScheduleTimeout" xml:space="preserve">
+    <value>Časovna omejitev urnika je potekla</value>
+  </data>
+  <data name="schemaExamples" xml:space="preserve">
+    <value>Primeri shem</value>
+  </data>
+  <data name="scraper" xml:space="preserve">
+    <value>Skreper</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Iskanje</value>
+  </data>
+  <data name="sec" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="secondPoint" xml:space="preserve">
+    <value>Druga točka</value>
+  </data>
+  <data name="TamperSecurityStatus" xml:space="preserve">
+    <value>Status varnosti</value>
+  </data>
+  <data name="selectAsset" xml:space="preserve">
+    <value>Izbira sredstva</value>
+  </data>
+  <data name="selectAssets" xml:space="preserve">
+    <value>Izbira sredstva</value>
+  </data>
+  <data name="selectDateRange" xml:space="preserve">
+    <value>Izberi časovno obdobje</value>
+  </data>
+  <data name="selectFuelPercentRemaining" xml:space="preserve">
+    <value>Izberite preostanek goriva v %</value>
+  </data>
+  <data name="selectGroup" xml:space="preserve">
+    <value>Izbira skupine</value>
+  </data>
+  <data name="selectProductFamily" xml:space="preserve">
+    <value>Izbira družine izdelkov</value>
+  </data>
+  <data name="selectSite" xml:space="preserve">
+    <value>Izbira delovišča</value>
+  </data>
+  <data name="selectedDesign" xml:space="preserve">
+    <value>Izbrana zasnova</value>
+  </data>
+  <data name="selectionLimitReached" xml:space="preserve">
+    <value>Omejitev izbora je dosežena</value>
+  </data>
+  <data name="send" xml:space="preserve">
+    <value>Pošlji</value>
+  </data>
+  <data name="sensor" xml:space="preserve">
+    <value>Tipalo</value>
+  </data>
+  <data name="serialNumber" xml:space="preserve">
+    <value>Serijska številka</value>
+  </data>
+  <data name="serverBuildNumber" xml:space="preserve">
+    <value>Številka graditve strežnika</value>
+  </data>
+  <data name="service" xml:space="preserve">
+    <value>Servis</value>
+  </data>
+  <data name="serviceDate" xml:space="preserve">
+    <value>Datum servisa</value>
+  </data>
+  <data name="ServiceDue" xml:space="preserve">
+    <value>Čas je za servis</value>
+  </data>
+  <data name="ServiceDueMileageBased" xml:space="preserve">
+    <value>Čas je za servis (na osnovi kilometrine)</value>
+  </data>
+  <data name="serviceDueReport" xml:space="preserve">
+    <value>Poročilo o načrtovanem servisu</value>
+  </data>
+  <data name="MaintenanceHistoryReport" xml:space="preserve">
+    <value>Poročilo o zgodovini servisov</value>
+  </data>
+  <data name="serviceInterval" xml:space="preserve">
+    <value>Servisni interval</value>
+  </data>
+  <data name="serviceIntervalCompleted" xml:space="preserve">
+    <value>Servisni interval zaključen</value>
+  </data>
+  <data name="serviceIntervals" xml:space="preserve">
+    <value>Servisni intervali</value>
+  </data>
+  <data name="serviceNotes" xml:space="preserve">
+    <value>Opombe o servisu</value>
+  </data>
+  <data name="serviceStopped" xml:space="preserve">
+    <value>Servis ustavljen</value>
+  </data>
+  <data name="servicesOffered" xml:space="preserve">
+    <value>Ponudba storitev</value>
+  </data>
+  <data name="sessionExpired" xml:space="preserve">
+    <value>Seja je potekla zaradi neaktivnosti ali podvojene prijave.</value>
+  </data>
+  <data name="severity" xml:space="preserve">
+    <value>Resnost</value>
+  </data>
+  <data name="SavTerminationHeaderForBss" xml:space="preserve">
+    <value>Pregled sredstev v skupni rabi za naslednja sredstva je bil prekinjen zaradi izvedenih skrbniških funkcij v trgovini Trimble. Za nadaljnje podrobnosti se obrnite na skrbnika organizacije {0}.</value>
+  </data>
+  <data name="SavTerminationHeaderForWizard" xml:space="preserve">
+    <value>Pregled skupne rabe sredstev za naslednja sredstva je bil prekinjen, ker je avtor odstranil ta pogled ali ker je pogled potekel.</value>
+  </data>
+  <data name="SavNotificationHeader" xml:space="preserve">
+    <value>Pregled skupne rabe sredstev za naslednja sredstva se izteče {0}.</value>
+  </data>
+  <data name="SharedAssetViewReport" xml:space="preserve">
+    <value>Poročilo o pregledu skupne rabe sredstev</value>
+  </data>
+  <data name="sharedToOrganization" xml:space="preserve">
+    <value>Organizacija, kateri je omogočena souporaba</value>
+  </data>
+  <data name="shrinkage" xml:space="preserve">
+    <value>Zoženje</value>
+  </data>
+  <data name="SimCardRemovedTimerExpired" xml:space="preserve">
+    <value>Kartica SIM je odstranjena</value>
+  </data>
+  <data name="site" xml:space="preserve">
+    <value>Delovišče</value>
+  </data>
+  <data name="siteBoundary" xml:space="preserve">
+    <value>Meje lokacije</value>
+  </data>
+  <data name="SiteEntry" xml:space="preserve">
+    <value>Vstop na delovišče</value>
+  </data>
+  <data name="siteAlertsWarning" xml:space="preserve">
+    <value>Dogodki vstopov na delovišče in zapuščanja delovišča so izpeljani iz lokacij, prejetih s stroja. Ti dogodki lahko zamujajo ali morda manjkajo, odvisno od tega, kdaj stroj sporoči lokacijo.</value>
+  </data>
+  <data name="SiteEntryOrExit" xml:space="preserve">
+    <value>Vstop na delovišče ali zapuščanje delovišča</value>
+  </data>
+  <data name="siteEntryOutsideReportDateRange" xml:space="preserve">
+    <value>Vstop na delovišče je izven časovnega obdobja poročila</value>
+  </data>
+  <data name="SiteExit" xml:space="preserve">
+    <value>Zapuščanje delovišča</value>
+  </data>
+  <data name="siteExitOutsideReportDateRange" xml:space="preserve">
+    <value>Zapuščanje delovišča je izven časovnega obdobja poročila</value>
+  </data>
+  <data name="siteName" xml:space="preserve">
+    <value>Ime delovišča</value>
+  </data>
+  <data name="SiteRuntime" xml:space="preserve">
+    <value>Poročilo o času delovanja na delovišču</value>
+  </data>
+  <data name="siteRuntimeReport" xml:space="preserve">
+    <value>Poročilo o času delovanja na delovišču</value>
+  </data>
+  <data name="sitetoSite" xml:space="preserve">
+    <value>Z delovišča na delovišče</value>
+  </data>
+  <data name="sites" xml:space="preserve">
+    <value>Delovišča</value>
+  </data>
+  <data name="toManyPoints" xml:space="preserve">
+    <value>Delovišča lahko vsebujejo največ 50 točk.</value>
+  </data>
+  <data name="skipped" xml:space="preserve">
+    <value>Izpuščeno</value>
+  </data>
+  <data name="smuLocation" xml:space="preserve">
+    <value>Lokacija SMU</value>
+  </data>
+  <data name="deviceTypeSNM451" xml:space="preserve">
+    <value>SNM451</value>
+  </data>
+  <data name="errorMessage" xml:space="preserve">
+    <value>Pri obdelavi vaše zahteve je prišlo do težav. Poskusite ponovno.</value>
+  </data>
+  <data name="source" xml:space="preserve">
+    <value>Izvor</value>
+  </data>
+  <data name="Speeding" xml:space="preserve">
+    <value>Pospeševanje</value>
+  </data>
+  <data name="sqft" xml:space="preserve">
+    <value>kv. čevlji</value>
+  </data>
+  <data name="sqm" xml:space="preserve">
+    <value>kv. m</value>
+  </data>
+  <data name="SS" xml:space="preserve">
+    <value>SS</value>
+  </data>
+  <data name="standardMode" xml:space="preserve">
+    <value>Standardni način</value>
+  </data>
+  <data name="start" xml:space="preserve">
+    <value>Zagon</value>
+  </data>
+  <data name="startDate" xml:space="preserve">
+    <value>Datum zagona</value>
+  </data>
+  <data name="startHourMeter" xml:space="preserve">
+    <value>Števec ur, začetek</value>
+  </data>
+  <data name="startLocation" xml:space="preserve">
+    <value>Lokacija zagona</value>
+  </data>
+  <data name="startMode" xml:space="preserve">
+    <value>Način zagona</value>
+  </data>
+  <data name="startSpeedDateTime" xml:space="preserve">
+    <value>Datum in ura začetka prekoračitve hitrosti</value>
+  </data>
+  <data name="startSpeedLocation" xml:space="preserve">
+    <value>Lokacija začetka prekoračitve hitrosti</value>
+  </data>
+  <data name="startTime" xml:space="preserve">
+    <value>Čas zagona</value>
+  </data>
+  <data name="StateMileageReport" xml:space="preserve">
+    <value>Prevožena pot v ZDA in Kanadi</value>
+  </data>
+  <data name="stateProvince" xml:space="preserve">
+    <value>Država/provinca</value>
+  </data>
+  <data name="state" xml:space="preserve">
+    <value>Po državi</value>
+  </data>
+  <data name="station" xml:space="preserve">
+    <value>Postaja</value>
+  </data>
+  <data name="StationOffset" xml:space="preserve">
+    <value>Poročilo o zamiku postaje</value>
+  </data>
+  <data name="stationOffsetReport" xml:space="preserve">
+    <value>Poročilo o zamiku postaje</value>
+  </data>
+  <data name="status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="stn" xml:space="preserve">
+    <value>Pos.</value>
+  </data>
+  <data name="stop" xml:space="preserve">
+    <value>Ustavi</value>
+  </data>
+  <data name="stopLocation" xml:space="preserve">
+    <value>Lokacija konca prekoračitve hitrosti</value>
+  </data>
+  <data name="stopSpeedDateTime" xml:space="preserve">
+    <value>Datum in ura konca prekoračitve hitrosti</value>
+  </data>
+  <data name="success" xml:space="preserve">
+    <value>Uspeh</value>
+  </data>
+  <data name="suggestUsingTargetOverride" xml:space="preserve">
+    <value>Preglagaj uporabo nastavitev za razveljavitev cilja.</value>
+  </data>
+  <data name="SummaryData" xml:space="preserve">
+    <value>Povzetek podatkov</value>
+  </data>
+  <data name="summaryOfLoadsByHaulDistance" xml:space="preserve">
+    <value>Povzetek nalaganj glede na razdaljo prevoza</value>
+  </data>
+  <data name="summaryVolumes" xml:space="preserve">
+    <value>Povzetek količin</value>
+  </data>
+  <data name="summaryVolumesReport" xml:space="preserve">
+    <value>Povzetek poročila o količinah</value>
+  </data>
+  <data name="surplusDeficitVolume" xml:space="preserve">
+    <value>Presežna/nezadostna prostornina</value>
+  </data>
+  <data name="Switch" xml:space="preserve">
+    <value>Stikalo</value>
+  </data>
+  <data name="switchClosed" xml:space="preserve">
+    <value>Stikalo zaprto</value>
+  </data>
+  <data name="switchName" xml:space="preserve">
+    <value>Ime stikala</value>
+  </data>
+  <data name="switchOn" xml:space="preserve">
+    <value>Stikalo vklopljeno</value>
+  </data>
+  <data name="switchOpen" xml:space="preserve">
+    <value>Stikalo odprto</value>
+  </data>
+  <data name="switchtoSiteorSitetoSwitch" xml:space="preserve">
+    <value>S stikala na delovišče ali z delovišča na stikalo</value>
+  </data>
+  <data name="switchtoSwitch" xml:space="preserve">
+    <value>S stikala na stikalo</value>
+  </data>
+  <data name="tagfileLiftNumber" xml:space="preserve">
+    <value>Številka plasti iz datoteke oznak</value>
+  </data>
+  <data name="tamperResistance" xml:space="preserve">
+    <value>Odpornost proti nepooblaščenim posegom</value>
+  </data>
+  <data name="TamperResolvedConnectiontoOffBoard" xml:space="preserve">
+    <value>Nepooblaščen poseg rešen</value>
+  </data>
+  <data name="TamperUninstalled" xml:space="preserve">
+    <value>Nepooblaščen poseg odstranjen</value>
+  </data>
+  <data name="deviceTypeTAP66" xml:space="preserve">
+    <value>TAP66</value>
+  </data>
+  <data name="target" xml:space="preserve">
+    <value>Cilj</value>
+  </data>
+  <data name="targetCMV" xml:space="preserve">
+    <value>Ciljni CMV</value>
+  </data>
+  <data name="targetCMVRange" xml:space="preserve">
+    <value>Ciljni obseg CMV</value>
+  </data>
+  <data name="targetMDP" xml:space="preserve">
+    <value>Ciljni MDP</value>
+  </data>
+  <data name="targetMDPRange" xml:space="preserve">
+    <value>Ciljni obseg MDP</value>
+  </data>
+  <data name="targetPassCount" xml:space="preserve">
+    <value>Ciljni števec prehodov</value>
+  </data>
+  <data name="temperature" xml:space="preserve">
+    <value>Temperatura</value>
+  </data>
+  <data name="temperatureReport" xml:space="preserve">
+    <value>Poročilo o temperaturi</value>
+  </data>
+  <data name="terrain" xml:space="preserve">
+    <value>Teren</value>
+  </data>
+  <data name="aempInformation" xml:space="preserve">
+    <value>Informacije AEMP omogočajo uporabniku dostop do posnetka podatkov voznega parka za analizo trendov na visoki ravni in introspekcijo podatkov.</value>
+  </data>
+  <data name="assetUtilizationDescription" xml:space="preserve">
+    <value>Programski vmesnik za izkoriščenost sredstev vrne podatke o izkoriščenosti sredstev (kot je čas nedejavnosti, čas opravljanja dela itd.) za vsako posamezno sredstvo v voznem parku, ki podpira izkoriščanje. Za pridobivanje podatkov morajo imeti vsa sredstva veljaven servisni načrt za dano obdobje.</value>
+  </data>
+  <data name="assetsDescription" xml:space="preserve">
+    <value>Programski vmesnik za sredstva je seznam vseh sredstev v vašem voznem parku. Ta programski vmesnik daje podrobnejše informacije o vsakem posameznem sredstvu (t.j. družina izdelkov, leto izdelave, vrsta naprave in serijska številka itd.).</value>
+  </data>
+  <data name="dcToIRecDatumFailedToLoad" xml:space="preserve">
+    <value>Datum CSIB, ko nalaganje ni uspelo (DCToIRecord converter)</value>
+  </data>
+  <data name="fleetSummaryDescription" xml:space="preserve">
+    <value>Podatki povzetka voznega parka omogočajo pogled na trenutno stanje voznega parka na visoki ravni. Vsebujejo informacije, kot so SMULoc, število milj, status poročanja, lokacija itd., za vsako sredstvo v voznem parku.</value>
+  </data>
+  <data name="unsubscribedAssets" xml:space="preserve">
+    <value>Naslednja sredstva nimajo podpore za to poročilo za izbrani časovni okvir. Podatki iz povzetka kod napak so na voljo le za naprave PL321 and 522/523 z aktivnim servisnim načrtom Cat® Health.</value>
+  </data>
+  <data name="noReportDataAssets" xml:space="preserve">
+    <value>Naslednja sredstva niso prispevala podatkov v to poročilo</value>
+  </data>
+  <data name="reportDataAssets" xml:space="preserve">
+    <value>Naslednja sredstva so prispevala podatke v tem poročilu</value>
+  </data>
+  <data name="noDataAssets" xml:space="preserve">
+    <value>Naslednja sredstva nimajo podatkov</value>
+  </data>
+  <data name="noDataSites" xml:space="preserve">
+    <value>Naslednja delovišča nimajo podatkov</value>
+  </data>
+  <data name="fuelUtilizationDescription" xml:space="preserve">
+    <value>Programski vmesnik za izkoriščenost goriva vrne podatke o izkoriščenosti goriva (kot je poraba goriva med nedejavnostjo in med opravljanjem dela itd.) za vsako posamezno sredstvo v voznem parku, ki podpira izkoriščanje. Za pridobivanje podatkov morajo imeti vsa sredstva veljavni servisni načrt za dano obdobje.</value>
+  </data>
+  <data name="invalidUser003" xml:space="preserve">
+    <value>Vneseno geslo ni veljavno.\nVaš račun je zaklenjen. Poskusite znova čez 30 minut.</value>
+  </data>
+  <data name="invalidUser001" xml:space="preserve">
+    <value>Vneseno uporabniško ime ali geslo je neveljavno.</value>
+  </data>
+  <data name="erroneousFuel" xml:space="preserve">
+    <value>{0} sporoča nepredvideno porabo goriva za to časovno obdobje.</value>
+  </data>
+  <data name="erroneousIdleTime" xml:space="preserve">
+    <value>{0} sporoča nepredvideni čas nedejavnosti za to časovno obdobje.</value>
+  </data>
+  <data name="erroneousRuntime" xml:space="preserve">
+    <value>{0} sporoča nepredvideni čas delovanja za to časovno obdobje.</value>
+  </data>
+  <data name="erroneousWorkingTime" xml:space="preserve">
+    <value>{0} sporoča nepredvideni čas opravljanja dela za to časovno obdobje.</value>
+  </data>
+  <data name="issueSendingEmail" xml:space="preserve">
+    <value>Pri pošiljanju e-pošte je prišlo do težav. Obrnite se na skrbnika.</value>
+  </data>
+  <data name="InvalidUserAccess" xml:space="preserve">
+    <value>Ta račun ni konfiguriran za dostop z odjemalcem VisionLink. Uporabite drugo prijavo ali pa se obrnite na podporo.</value>
+  </data>
+  <data name="assetOperationDescription" xml:space="preserve">
+    <value>Ta končna točka je odgovorna za zagotavljanje informacij o delovanju sredstev, kot sta čas opravljanja dela in čas nedejavnosti, kadar se opredelitve dela uporabljajo za izračun podatkov o uporabi. Za pridobivanje podatkov morajo imeti vsa sredstva veljaven servisni načrt za dano obdobje.</value>
+  </data>
+  <data name="requiredField" xml:space="preserve">
+    <value>To polje je obvezno.</value>
+  </data>
+  <data name="incompleteLoadError" xml:space="preserve">
+    <value>Nalaganje je nepopolno – napaka v podatkih strojne opreme</value>
+  </data>
+  <data name="incompleteLoadNoDump" xml:space="preserve">
+    <value>Nalaganje je nepopolno – čas odlaganja ni naveden</value>
+  </data>
+  <data name="incompleteLoadNoLoad" xml:space="preserve">
+    <value>Nalaganje je nepopolno – čas nalaganja ni najden</value>
+  </data>
+  <data name="incompleteLoad" xml:space="preserve">
+    <value>To je nepopolno poročilo števca nalaganj</value>
+  </data>
+  <data name="TrimbleOperationsReportDescription" xml:space="preserve">
+    <value>This report provides the list of users and their details, who fall under the category of Corporate.</value>
+  </data>
+  <data name="InActiveSchedule" xml:space="preserve">
+    <value>To načrtovano poročilo je neveljavno. Za urejanje tega poročila se obrnite na svojega skrbnika sistema VisionLink.</value>
+  </data>
+  <data name="time" xml:space="preserve">
+    <value>Čas</value>
+  </data>
+  <data name="geolocationTimeout" xml:space="preserve">
+    <value>Čas za pridobivanje lokacije je potekel.</value>
+  </data>
+  <data name="timedOut" xml:space="preserve">
+    <value>Časovna omejitev je potekla</value>
+  </data>
+  <data name="TireMonitoring" xml:space="preserve">
+    <value>Nadzor pnevmatik</value>
+  </data>
+  <data name="title" xml:space="preserve">
+    <value>Naslov</value>
+  </data>
+  <data name="deviceTypeTM3000" xml:space="preserve">
+    <value>TM3000</value>
+  </data>
+  <data name="today" xml:space="preserve">
+    <value>Danes</value>
+  </data>
+  <data name="ton" xml:space="preserve">
+    <value>Tona (am.)</value>
+  </data>
+  <data name="tonne" xml:space="preserve">
+    <value>Tona</value>
+  </data>
+  <data name="tooThickLayer" xml:space="preserve">
+    <value>Predebela plast</value>
+  </data>
+  <data name="topSurface" xml:space="preserve">
+    <value>Vrhnja površina</value>
+  </data>
+  <data name="topCyclesPerHour" xml:space="preserve">
+    <value>Top {0} – cikli/h (skupaj)</value>
+  </data>
+  <data name="topPayloadPerCycle" xml:space="preserve">
+    <value>Top {0} – tovor/cikel (skupaj)</value>
+  </data>
+  <data name="topPayloadPerHour" xml:space="preserve">
+    <value>Top {0} – tovor/h (skupaj)</value>
+  </data>
+  <data name="total" xml:space="preserve">
+    <value>Skupaj</value>
+  </data>
+  <data name="totalAreaCovered" xml:space="preserve">
+    <value>Skupaj pokrito območje</value>
+  </data>
+  <data name="totalCutVolume" xml:space="preserve">
+    <value>Skupna prostornina izkopa</value>
+  </data>
+  <data name="totalDistance" xml:space="preserve">
+    <value>Skupna razdalja</value>
+  </data>
+  <data name="totalFillVolume" xml:space="preserve">
+    <value>Skupna prostornina nasutja</value>
+  </data>
+  <data name="totalFuel" xml:space="preserve">
+    <value>Skupaj gorivo</value>
+  </data>
+  <data name="totalHoursByAsset" xml:space="preserve">
+    <value>Skupaj ur na sredstvo</value>
+  </data>
+  <data name="totalIdleEvents" xml:space="preserve">
+    <value>Skupaj dogodki nedejavnosti</value>
+  </data>
+  <data name="totalIdleTime" xml:space="preserve">
+    <value>Skupni čas nedejavnosti</value>
+  </data>
+  <data name="totalLoads" xml:space="preserve">
+    <value>Skupaj nalaganj</value>
+  </data>
+  <data name="totalMachineCovPlan" xml:space="preserve">
+    <value>Celotno območje načrtovanega pokrivanja stroja</value>
+  </data>
+  <data name="totalRuntime" xml:space="preserve">
+    <value>Skupni čas delovanja</value>
+  </data>
+  <data name="totalTime" xml:space="preserve">
+    <value>Skupni čas</value>
+  </data>
+  <data name="totalVolume" xml:space="preserve">
+    <value>Prostornina skupaj</value>
+  </data>
+  <data name="totals" xml:space="preserve">
+    <value>Vsote</value>
+  </data>
+  <data name="trackMapping" xml:space="preserve">
+    <value>Izris poti na zemljevidu</value>
+  </data>
+  <data name="transmissionOilTemperature" xml:space="preserve">
+    <value>Transmission Oil Temperature</value>
+  </data>
+  <data name="transmissionOilTemperatureHeader" xml:space="preserve">
+    <value>Transmission Oil Temperature Report</value>
+  </data>
+  <data name="travel" xml:space="preserve">
+    <value>Potovanje</value>
+  </data>
+  <data name="truck" xml:space="preserve">
+    <value>Tovornjak</value>
+  </data>
+  <data name="type" xml:space="preserve">
+    <value>Vrsta</value>
+  </data>
+  <data name="ucid" xml:space="preserve">
+    <value>UCID</value>
+  </data>
+  <data name="invalidSessionID" xml:space="preserve">
+    <value>Preverjanje veljavnosti ni mogoče z danim ID seje. Prijavite se.</value>
+  </data>
+  <data name="dcToIRecFailedToCreateCSIBObject" xml:space="preserve">
+    <value>Ni mogoče ustvariti objekta ICSIB (DCToIRecord converter)</value>
+  </data>
+  <data name="unableToDetermineDataModel" xml:space="preserve">
+    <value>Ni mogoče določiti podatkovnega modela.</value>
+  </data>
+  <data name="unableToDetermineMachine" xml:space="preserve">
+    <value>Ni mogoče določiti stroja.</value>
+  </data>
+  <data name="UnableToDetermineProjectID" xml:space="preserve">
+    <value>Ni mogoče določiti ID projekta</value>
+  </data>
+  <data name="dcToIRecFailedToGetZoneParams" xml:space="preserve">
+    <value>Ni mogoče pridobiti parametrov območja (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecFailedToSetZoneParams" xml:space="preserve">
+    <value>Ni mogoče nastaviti parametrov območja (DCToIRecord converter)</value>
+  </data>
+  <data name="underCompacted" xml:space="preserve">
+    <value>Premalo zbito</value>
+  </data>
+  <data name="undercompactedLayer" xml:space="preserve">
+    <value>Premalo zbita plast</value>
+  </data>
+  <data name="minLevel" xml:space="preserve">
+    <value>Pod min. ravnjo</value>
+  </data>
+  <data name="underPassTarget" xml:space="preserve">
+    <value>Pod ciljem prehoda</value>
+  </data>
+  <data name="UnderPressure" xml:space="preserve">
+    <value>Pod tlakom</value>
+  </data>
+  <data name="unexpectedError" xml:space="preserve">
+    <value>Nepričakovana napaka</value>
+  </data>
+  <data name="erroneousFuelExcluded" xml:space="preserve">
+    <value>Nepričakovana poraba goriva, ki jo sporoča {0}, je bila iz tega izračuna izključena.</value>
+  </data>
+  <data name="erroneousFuelOrIdleTimeExcluded" xml:space="preserve">
+    <value>Nepričakovana čas nedejavnosti in/ali poraba goriva, ki ju sporoča {0}, sta iz tega izračuna izključena.</value>
+  </data>
+  <data name="erroneousIdleTimeExcluded" xml:space="preserve">
+    <value>Nepričakovani čas nedejavnosti, ki ga sporoča {0}, je bil iz tega izračuna izključen.</value>
+  </data>
+  <data name="erroneousFuelOrRuntimeExcluded" xml:space="preserve">
+    <value>Nepričakovana čas delovanja in/ali poraba goriva, ki ju sporoča {0}, sta iz tega izračuna izključena.</value>
+  </data>
+  <data name="erroneousRuntimeExcluded" xml:space="preserve">
+    <value>Nepričakovani čas delovanja, ki ga sporoča {0}, je bil iz tega izračuna izključen.</value>
+  </data>
+  <data name="erroneousFuelOrWorkingTimeExcluded" xml:space="preserve">
+    <value>Nepričakovana čas opravljanja dela in/ali poraba goriva, ki ju sporoča {0}, sta iz tega izračuna izključena.</value>
+  </data>
+  <data name="erroneousWorkingOrRuntimeExcluded" xml:space="preserve">
+    <value>Nepričakovana čas opravljanja dela ali čas delovanja, ki ju sporoča {0}, sta iz tega izračuna izključena.</value>
+  </data>
+  <data name="erroneousWorkingTimeExcluded" xml:space="preserve">
+    <value>Nepričakovani čas opravljanja dela, ki ga sporoča {0}, je bil iz tega izračuna izključen.</value>
+  </data>
+  <data name="universalCustomer" xml:space="preserve">
+    <value>Univerzalna stranka</value>
+  </data>
+  <data name="unknown" xml:space="preserve">
+    <value>Neznano</value>
+  </data>
+  <data name="dcToIRecUnknownCSType" xml:space="preserve">
+    <value>Neznana vrsta koordinatnega sistema (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnknownDatumModel" xml:space="preserve">
+    <value>Neznana prilagoditev datuma je bila zaznana in zanemarjena (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownError" xml:space="preserve">
+    <value>Prišlo je do neznane napake</value>
+  </data>
+  <data name="geolocationUnknownError" xml:space="preserve">
+    <value>Med pridobivanjem lokacije je prišlo do neznane napake.</value>
+  </data>
+  <data name="dcToIRecUnknownGeoidModel" xml:space="preserve">
+    <value>Neznan model geoid je bil zaznan in zanemarjen (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownMachine" xml:space="preserve">
+    <value>Neznan stroj</value>
+  </data>
+  <data name="dcToIRecUnknownProjType" xml:space="preserve">
+    <value>Neznana vrsta projekcije (DCToIRecord converter)</value>
+  </data>
+  <data name="unknownTagfileError" xml:space="preserve">
+    <value>Neznana napaka v datoteki oznak</value>
+  </data>
+  <data name="Unsubscribe" xml:space="preserve">
+    <value>Odjavite</value>
+  </data>
+  <data name="UnsubscribeConfirmation" xml:space="preserve">
+    <value>Potrdilo o odjavi</value>
+  </data>
+  <data name="unsupportedCSDFileType" xml:space="preserve">
+    <value>Nepodprta vrsta datoteke z definicijo koordinatnega sistema</value>
+  </data>
+  <data name="dcToIRecUnsupportedDatum" xml:space="preserve">
+    <value>Nepodprt datum (DCToIRecord converter)</value>
+  </data>
+  <data name="unsupportedDisplayType" xml:space="preserve">
+    <value>Nepodprta vrsta prikaza</value>
+  </data>
+  <data name="unsupportedFilterAttribute" xml:space="preserve">
+    <value>Nepodprt atribut filtra</value>
+  </data>
+  <data name="dcToIRecUnsupportedGeoid" xml:space="preserve">
+    <value>Nepodprt geoid (DCToIRecord converter)</value>
+  </data>
+  <data name="dcToIRecUnsupportedZoneOrientation" xml:space="preserve">
+    <value>Nepodprta usmeritev območja (DCToIRecord converter)</value>
+  </data>
+  <data name="Upcoming" xml:space="preserve">
+    <value>Skorajšnji</value>
+  </data>
+  <data name="update" xml:space="preserve">
+    <value>Posodobi</value>
+  </data>
+  <data name="updateMeter" xml:space="preserve">
+    <value>Posodobi števec</value>
+  </data>
+  <data name="usage" xml:space="preserve">
+    <value>Uporaba</value>
+  </data>
+  <data name="useCurrentSelection" xml:space="preserve">
+    <value>Uporabi trenutni izbor</value>
+  </data>
+  <data name="userAccountsReportHeader" xml:space="preserve">
+    <value>Poročilo o uporabniških računih</value>
+  </data>
+  <data name="userActivity" xml:space="preserve">
+    <value>Dejavnost uporabnikov</value>
+  </data>
+  <data name="userDefinedPolygon" xml:space="preserve">
+    <value>Uporabniško določeni poligon</value>
+  </data>
+  <data name="geolocationPermissionDenied" xml:space="preserve">
+    <value>Uporabnik je zavrnil uporabo lokacije.</value>
+  </data>
+  <data name="InvalidUser" xml:space="preserve">
+    <value>Uporabnik ne obstaja. Obrnite se na svojega skrbnika.</value>
+  </data>
+  <data name="UserPrivilegesReport" xml:space="preserve">
+    <value>Poročilo o pravicah uporabnikov</value>
+  </data>
+  <data name="userType" xml:space="preserve">
+    <value>Vrsta uporabnika</value>
+  </data>
+  <data name="username" xml:space="preserve">
+    <value>Uporabniško ime</value>
+  </data>
+  <data name="invalidUsernameOrPassword" xml:space="preserve">
+    <value>Neveljavno uporabniško ime ali geslo. Poskusite ponovno.</value>
+  </data>
+  <data name="utilizationCalloutsExistInData" xml:space="preserve">
+    <value>Komentarji o uporabi obstajajo v podatkih</value>
+  </data>
+  <data name="utilizationHours" xml:space="preserve">
+    <value>Ure uporabe</value>
+  </data>
+  <data name="ValidMSSKey" xml:space="preserve">
+    <value>Veljaven ključ MSS</value>
+  </data>
+  <data name="dateRangeCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Vrednost vsebuje podatke, ki so se pojavili izven izbranega časovnega obdobja</value>
+  </data>
+  <data name="singleDayCalloutMultipleDayDelta" xml:space="preserve">
+    <value>Vrednost vsebuje podatke, ki so se pojavili izven določenega dneva</value>
+  </data>
+  <data name="mustBeUnformattedInteger" xml:space="preserve">
+    <value>Vrednost mora biti predstavljena kot celoštevilčna vrednost brez vejic ali decimalk.</value>
+  </data>
+  <data name="varies" xml:space="preserve">
+    <value>Spremenljivo</value>
+  </data>
+  <data name="emailVerified" xml:space="preserve">
+    <value>Stanje preverjenosti</value>
+  </data>
+  <data name="verified" xml:space="preserve">
+    <value>Preverjeno</value>
+  </data>
+  <data name="vibeState" xml:space="preserve">
+    <value>Stanje vibracije</value>
+  </data>
+  <data name="fuelLevelSummary" xml:space="preserve">
+    <value>Ogled sredstev, ki potrebujejo točenje goriva</value>
+  </data>
+  <data name="faultCodesSummary" xml:space="preserve">
+    <value>Ogled kod napak za sredstva</value>
+  </data>
+  <data name="utilizationHoursSummary" xml:space="preserve">
+    <value>Ogled ur uporabe</value>
+  </data>
+  <data name="AlertsSummary" xml:space="preserve">
+    <value>Ogled odprtih opozoril za sredstvo</value>
+  </data>
+  <data name="fuelBurnSummary" xml:space="preserve">
+    <value>Ogled nedavne porabe goriva za sredstva</value>
+  </data>
+  <data name="vin" xml:space="preserve">
+    <value>VIN</value>
+  </data>
+  <data name="VisionLinkOperationsReport" xml:space="preserve">
+    <value>VisionLink – Poročilo o operacijah</value>
+  </data>
+  <data name="EngineIdleDailyAlertMessageBodySMS" xml:space="preserve">
+    <value>Račun za opozorila programa VisionLink: {0} Dnevne ure nedejavnosti {1} za {2}/{3} za {4} Števec ur {5}</value>
+  </data>
+  <data name="SpeedingAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo programa VisionLink – račun: {0} {1}, maks. hitrost: {2} mph {3}/{4}. Ura konca prekoračitve hitrosti {5}</value>
+  </data>
+  <data name="SwitchAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo programa VisionLink Račun: {4} Podatki o stikalu za {0}/{1} pri {2} {3}</value>
+  </data>
+  <data name="AlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo VisionLink  Račun: {4}  {0} za {1}/{2} ob {3} Števec ur: {5}</value>
+  </data>
+  <data name="SecurityStatusAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo VisionLink  Račun: {4}  {0} za {1}/{2} ob {3} Števec ur: {5}</value>
+  </data>
+  <data name="ProjectMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo VisionLink  Račun: {5}  {0} za {1}/{2} ob {3}  {4} Števec ur: {6}</value>
+  </data>
+  <data name="FaultAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo VisionLink  Račun: {5}  {0} za {1}/{2} ob {3}  {4} Resnost: {7} Števec ur: {6}</value>
+  </data>
+  <data name="ServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo VisionLink  Račun: {5}  {0} za {1}/{2}. {3} načrtovan ob {4} h. Števec ur: {6}</value>
+  </data>
+  <data name="MileageServiceDueAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo VisionLink Račun: {5} {0} za {1}/{2}. {3} načrtovan za {4} milj.</value>
+  </data>
+  <data name="AlertSubject" xml:space="preserve">
+    <value>Opozorilo VisionLink {0} za ID: {1} ser. št.: {2}</value>
+  </data>
+  <data name="ApiUserEmailSubject" xml:space="preserve">
+    <value>Pomoč pri dostopu do programskega vmesnika VisionLink</value>
+  </data>
+  <data name="visionLinkApiDocumentation" xml:space="preserve">
+    <value>Dokumentacija programskega vmesnika za VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopics" xml:space="preserve">
+    <value>Teme programskega vmesnika za VisionLink</value>
+  </data>
+  <data name="visionLinkApiTopicsRequestAccess" xml:space="preserve">
+    <value>Teme programskega vmesnika za VisionLink: zahteva po dostopu</value>
+  </data>
+  <data name="visionLinkAPIDatafeedDocumentation" xml:space="preserve">
+    <value>Programski vmesnik za VisionLink: dokumentacija vira podatkov</value>
+  </data>
+  <data name="VLApp" xml:space="preserve">
+    <value>Programi VisionLink</value>
+  </data>
+  <data name="FluidAnalysisAlertSubject" xml:space="preserve">
+    <value>Rezultat analize tekočin VisionLink za ID: {0} Ser. št.: {1}</value>
+  </data>
+  <data name="locationUnknownFeatureDisabled" xml:space="preserve">
+    <value>VisionLink ni določil vaše lokacije. Ta možnost je onemogočena. Poskusite znova kasneje.</value>
+  </data>
+  <data name="SavTerminationSubject" xml:space="preserve">
+    <value>Obvestilo VisionLink – Pregled skupne rabe sredstev prekinjen</value>
+  </data>
+  <data name="ForgotPasswordEmailSubject" xml:space="preserve">
+    <value>Pomoč pri geslu za VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopicsDescription" xml:space="preserve">
+    <value>Programski vmesniki, pripravljeni za VisionLink, omogočajo uporabo podatkov, povezanih s sistemom VisionLink, v obliki podatkovnega vira, zasnovanega za preprost dostop do orodij drugih proizvajalcev. Programske vmesnike, pripravljene za VisionLink, običajno uporabljajo trgovci, stranke in sistemski inženirji, ki želijo vključiti podatke, povezane s sistemom VisionLink, v svoje ERP, računovodske ali druge sisteme drugih proizvajalcev. Za več informacij o programskih vmesnikih, pripravljenih za VisionLink, glejte &lt;a href="/Docs/{0}/VisionLink VL-Ready User Guide.pdf" class="contentLink" target="_blank"&gt;VL Ready User Guide&lt;/a&gt;.</value>
+  </data>
+  <data name="SavCreationSubject" xml:space="preserve">
+    <value>Pregled sredstev v skupni rabi v sistemu VisionLink ustvaril {0}</value>
+  </data>
+  <data name="SavNotificationSubject" xml:space="preserve">
+    <value>Obvestilo o poteku pregleda sredstev v skupni rabi v sistemu VisionLink</value>
+  </data>
+  <data name="TireMonitoringAlertMessageBodySMS" xml:space="preserve">
+    <value>Opozorilo nadzora pnevmatik v sistemu VisionLink  Račun: {0} {1}/{2} pri {3} Števec ur: {4}</value>
+  </data>
+  <data name="UserAccountReportTitle" xml:space="preserve">
+    <value>Poročilo o uporabnikih programa VisionLink</value>
+  </data>
+  <data name="UserAccountsReport" xml:space="preserve">
+    <value>VisionLink User Account Report</value>
+  </data>
+  <data name="VerifyUserEmailSubject" xml:space="preserve">
+    <value>Preverjanje veljavnosti uporabniških računov VisionLink</value>
+  </data>
+  <data name="vlReadyAPITopics" xml:space="preserve">
+    <value>Teme programskih vmesnikov, pripravljenih za VisionLink</value>
+  </data>
+  <data name="vlmobileClient" xml:space="preserve">
+    <value>Mobilni odjemalec VL</value>
+  </data>
+  <data name="volume" xml:space="preserve">
+    <value>Prostornina</value>
+  </data>
+  <data name="VolumesAndCompaction" xml:space="preserve">
+    <value>Prostornine in stiskanje</value>
+  </data>
+  <data name="warningTargetDataSometimesAbsent" xml:space="preserve">
+    <value>Opozorilo! Ciljni podatki občasno manjkajo.</value>
+  </data>
+  <data name="Weekly" xml:space="preserve">
+    <value>Tedensko</value>
+  </data>
+  <data name="firstTimeLogin" xml:space="preserve">
+    <value>Dobrodošli v programu VisionLink. Če želite spremeniti svoje geslo, se prijavite na naslovu www.myvisionlink.com.</value>
+  </data>
+  <data name="NewAccountEmailSubject" xml:space="preserve">
+    <value>Dobrodošli v programu VisionLink. Registrirajte svoj račun</value>
+  </data>
+  <data name="wheelTracking" xml:space="preserve">
+    <value>Nastavitev koles</value>
+  </data>
+  <data name="withinLevels" xml:space="preserve">
+    <value>Znotraj ravni</value>
+  </data>
+  <data name="workInProgress" xml:space="preserve">
+    <value>Delo v izvajanju</value>
+  </data>
+  <data name="working" xml:space="preserve">
+    <value>Opravljanje dela</value>
+  </data>
+  <data name="workingFuelBurned" xml:space="preserve">
+    <value>Poraba goriva med opravljanjem dela</value>
+  </data>
+  <data name="workingHours" xml:space="preserve">
+    <value>Delovne ure</value>
+  </data>
+  <data name="workingStatus" xml:space="preserve">
+    <value>Delovni status</value>
+  </data>
+  <data name="workingTime" xml:space="preserve">
+    <value>Delovni čas</value>
+  </data>
+  <data name="workingUtil" xml:space="preserve">
+    <value>Izkoriščenost opravljanja dela</value>
+  </data>
+  <data name="AlreadyUnsubscribe" xml:space="preserve">
+    <value>To poročilo ste že odpovedali.</value>
+  </data>
+  <data name="UnsubscribeConfirmationMessage" xml:space="preserve">
+    <value>Zahtevali ste odpoved prejemanja načrtovanega poročila »{0}«. Za potrditev kliknite »V redu«. Če ne storite ničesar, vaš elektronski naslov ne bo odjavljen.</value>
+  </data>
+  <data name="accountLocked" xml:space="preserve">
+    <value>Vaš račun je zaklenjen. Poskusite znova čez 30 minut.</value>
+  </data>
+  <data name="invalidUser002" xml:space="preserve">
+    <value>Vaš račun je zaklenjen. Poskusite znova čez 30 minut.</value>
+  </data>
+  <data name="UnsubscribeSuccessMessage" xml:space="preserve">
+    <value>Uspešno ste odjavili prejemanje poročila '{0}' na svoj elektronski naslov.</value>
+  </data>
+  <data name="passwordExpired" xml:space="preserve">
+    <value>Veljavnost gesla je potekla. Prijavite se na naslovu www.myvisionlink.com, da ga spremenite.</value>
+  </data>
+  <data name="selectionLimitReachedMessage" xml:space="preserve">
+    <value>Vaš izbor je presegel omejitev sistema. Ta izbor bo omejen na {0} sredstev.</value>
+  </data>
+  <data name="Zone" xml:space="preserve">
+    <value>Območje</value>
+  </data>
+  <data name="zoneExclusive" xml:space="preserve">
+    <value>Območje izključitve</value>
+  </data>
+  <data name="zoneInclusive" xml:space="preserve">
+    <value>Območje vključitve</value>
+  </data>
+  <data name="exceedsMaximumValue" xml:space="preserve">
+    <value>{0} presega največjo vrednost</value>
+  </data>
+  <data name="requiredFieldWithName" xml:space="preserve">
+    <value>{0} je obvezno polje.</value>
+  </data>
+  <data name="mustBeNumber" xml:space="preserve">
+    <value>{0} mora biti številka.</value>
+  </data>
+  <data name="mustBeValidDate" xml:space="preserve">
+    <value>{0} mora biti veljaven datum.</value>
+  </data>
+  <data name="mustBeBetweenXandY" xml:space="preserve">
+    <value>{0} mora biti med {1} in {2}.</value>
+  </data>
+  <data name="mustBeLessThanXCharacters" xml:space="preserve">
+    <value>{0} mora imeti manj kot {1} znakov.</value>
+  </data>
+  <data name="mustNotBeInTheFuture" xml:space="preserve">
+    <value>{0} ne sme biti v prihodnosti.</value>
+  </data>
+  <data name="ServiceDueAlertDescription" xml:space="preserve">
+    <value>Servis {0} načrtovan ob</value>
+  </data>
+</root>

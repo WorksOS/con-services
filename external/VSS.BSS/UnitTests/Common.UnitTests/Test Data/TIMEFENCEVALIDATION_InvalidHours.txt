@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<fence:timeFenceConfig xmlns:fence="http://www.cat.com/em/feed/v5/Fence" xmlns:feed="http://www.cat.com/em/feed/v5/CommonFeed" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v5/Fence  https://emfeed.rd.cat.com/EMFeedFiles/schema/v5/Fence.xsd">
+   <nextBuffer>
+      <url>https://emfeed.rd.cat.com/EMFeedService/v5/fence/nighthawk/time/dealer/TD00/all/10023</url>
+      <moreData>true</moreData>
+   </nextBuffer>
+   <timeFences>
+      <timeFence>
+         <header>
+            <id>-1</id>
+            <changeHistory>
+               <userId>emuat_catadmin1</userId>
+               <date>2008-02-05 18:50:20</date>
+            </changeHistory>
+            <equipment>
+               <serialNumber>TEST6789</serialNumber>
+               <make>CAT</make>
+            </equipment>
+            <sequenceNumber>2</sequenceNumber>
+            <active>Y</active>
+            <description>unit test time fence</description>
+            <acknowledged>Y</acknowledged>
+            <effectivity>
+               <begin>0000</begin>
+               <end>2200</end>
+            </effectivity>
+            <type>T</type>
+         </header>
+         <allowed>
+            <sun>Y</sun>
+            <mon>Y</mon>
+            <tue>Y</tue>
+            <wed>Y</wed>
+            <thu>Y</thu>
+            <fri>Y</fri>
+            <sat>Y</sat>
+         </allowed>
+      </timeFence>
+   </timeFences>
+</fence:timeFenceConfig>

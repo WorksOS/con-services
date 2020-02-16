@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event:topic xmlns:event="http://www.cat.com/em/feed/v4/Event" xmlns:feed="http://www.cat.com/em/feed/v4/Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cat.com/em/feed/v4/Event https://emfeed.rd.cat.com/EMFeedFiles/schema/v4/Event.xsd">
+   
+<nextBuffer>
+   <url>https://emfeed.cat.com/EMFeedService/v4/feed/nighthawk/EVENT/13535441</url>
+   <moreData>true</moreData>
+</nextBuffer>
+<message>
+ <header>
+  <messageId>13523893</messageId> 
+  <masterMsgId>22932657</masterMsgId> 
+  <equipment>
+  <serialNumber>A6G01496</serialNumber> 
+  <make>CAT</make> 
+  <model>966H</model> 
+  <nickname>637045</nickname> 
+  </equipment>
+  <moduleCode>DQ0200008534Q1</moduleCode> 
+  <moduleTime>2009-06-24 04:06:02</moduleTime> 
+  <receivedTime>2009-06-24 04:29:08</receivedTime> 
+  </header>
+  <numberOfEvents>1</numberOfEvents> 
+  <eventBlock>
+  <event>
+  <level>2</level> 
+  <mid info="https://emfeed.cat.com/EMFeedService/v4/mid/122">122</mid> 
+  <eid info="https://emfeed.cat.com/EMFeedService/v4/eid/CDL/2133">
+  <identifier>2133</identifier> 
+  </eid>
+  <occurances>1</occurances> 
+  <timestamp>2009-06-24 04:05:02</timestamp> 
+  </event>
+  </eventBlock>
+  </message>
+</event:topic>
+

@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<equipmentManager:equipmentSubscriptions
+	xmlns:equipmentManager="http://www.cat.com/EMService/v1/EquipmentManager" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.cat.com/EMService/v1/EquipmentManager EquipmentManager.xsd ">
+	<nextBuffer>
+		<url></url>
+		<moreData>false</moreData>
+	</nextBuffer>
+	<equipment>
+		<serialNumber>TEST0001</serialNumber>
+		<make>CAT</make>
+		<subscriptions>
+		  <subscription>
+				<dealerCode>TD00</dealerCode>
+				<ownerId>-1234567</ownerId>
+				<level>DLR</level>
+				<type>AW</type>
+				<startDate>2001-12-31T12:00:00</startDate>
+				<endDate>2008-12-31T12:00:00</endDate>
+			</subscription>
+		  <subscription>
+				<dealerCode>TD00</dealerCode>
+				<ownerId>-1234567</ownerId>
+				<level>DLR</level>
+				<type>AW</type>
+				<startDate>2008-12-31T12:00:00</startDate>
+			</subscription>
+			<subscription>
+				<dealerCode>TD00</dealerCode>
+				<ownerId>-1234567</ownerId>
+				<level>DLR</level>
+				<type>MW</type>
+				<startDate>2001-12-31T12:00:00</startDate>
+				<endDate>2008-12-31T12:00:00</endDate>
+			</subscription>
+			<subscription>
+				<dealerCode>TD00</dealerCode>
+				<ownerId>-1234567</ownerId>
+				<level>DLR</level>
+				<type>MW</type>
+				<startDate>2008-12-31T12:00:00</startDate>
+			</subscription>					
+		</subscriptions>
+	</equipment>		
+</equipmentManager:equipmentSubscriptions>

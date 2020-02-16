@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfInboundDeviceEvent xmlns:i="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://www.nighthawk.com/nighthawk/data/rptevent/2009/03">
+  <InboundDeviceEvent i:type="InboundDeviceEventPosition">
+    <Address i:nil="true" />
+    <Asset>
+      <AssetID>2866</AssetID>
+      <CustomerID>233</CustomerID>
+    </Asset>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>0IBDJ231513M1</ExtDeviceID>
+    </Device>
+    <EventTypeID>1</EventTypeID>
+    <EventUTC>2009-09-26T05:35:00</EventUTC>
+    <ExtDriverID i:nil="true" />
+    <ExternalCorrelationID>30803980</ExternalCorrelationID>
+    <ExternalMessageID>23592919</ExternalMessageID>
+    <ExternalSourceID>1</ExternalSourceID>
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>33.473705</Latitude>
+      <Longitude>-81.982056</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-09-26T05:45:14</ReceivedUTC>
+    <Site i:nil="true" />
+    <TriggerType i:nil="true" />
+  </InboundDeviceEvent>
+  <InboundDeviceEvent i:type="InboundDeviceEventUtilization">
+    <Address i:nil="true" />
+    <Asset>
+      <AssetID>2866</AssetID>
+      <CustomerID>233</CustomerID>
+    </Asset>
+    <Device>
+      <DeviceID i:nil="true" />
+      <DeviceTypeID>9</DeviceTypeID>
+      <ExtDeviceID>0IBDJ231513M1</ExtDeviceID>
+    </Device>
+    <EventTypeID>73</EventTypeID>
+    <EventUTC>2009-09-26T05:35:00</EventUTC>
+    <ExtDriverID i:nil="true" />
+    <ExternalCorrelationID>30803980</ExternalCorrelationID>
+    <ExternalMessageID>23592919</ExternalMessageID>
+    <ExternalSourceID>1</ExternalSourceID>
+    <Position>
+      <ElevationFeet i:nil="true" />
+      <Heading i:nil="true" />
+      <Latitude>33.473705</Latitude>
+      <Longitude>-81.982056</Longitude>
+      <Mileage i:nil="true" />
+      <SpeedMph i:nil="true" />
+    </Position>
+    <ReceivedUTC>2009-09-26T05:45:14</ReceivedUTC>
+    <Site i:nil="true" />
+    <TriggerType i:nil="true" />
+    <IsOn>true</IsOn>
+    <MaxSpeed i:nil="true" />
+    <RuntimeSeconds>15026400</RuntimeSeconds>
+    <RuntimeType>WorkingIdleCum</RuntimeType>
+    <Sensor>
+      <Description i:nil="true" />
+      <SensorIsOn i:nil="true" />
+      <SensorName i:nil="true" />
+      <SensorNumber i:nil="true" />
+    </Sensor>
+    <StartStopUTC i:nil="true" />
+  </InboundDeviceEvent>
+</ArrayOfInboundDeviceEvent>
