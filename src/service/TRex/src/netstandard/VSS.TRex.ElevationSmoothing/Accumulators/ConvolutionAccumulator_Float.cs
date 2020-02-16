@@ -9,51 +9,46 @@
   public class ConvolutionAccumulator_Float : ConvolutionAccumulator<float>
   {
     public int NumNonNullValues;
-    protected float sum;
+    private float _sum;
+    private bool _sumIsNull;
 
     public ConvolutionAccumulator_Float(float nullValue)
     {
       NullValue = nullValue;
+      Clear();
     }
 
-    public override void Accumulate(float value)
-    {
-      if (value != NullValue)
-      {
-        sum += value;
-        NumNonNullValues++;
-      }
-      else
-      {
-        sum += ConvolutionSourceValue;
-      }
-    }
+    public override void Accumulate(float value) => Accumulate(value, 1.0);
 
     public override void Accumulate(float value, double coefficient)
     {
       if (value != NullValue)
       {
-        sum += (float)(value * coefficient);
+        _sum = _sumIsNull ? (float)(value * coefficient) : _sum + (float)(value * coefficient);
         NumNonNullValues++;
       }
       else
       {
-        sum += (float)(ConvolutionSourceValue * coefficient);
+        if (!_convolutionSourceValueIsNull)
+        {
+          _sum = _sumIsNull ? (float) (_convolutionSourceValue * coefficient) : _sum + (float) (_convolutionSourceValue * coefficient);
+        }
       }
+
+      _sumIsNull = false;
     }
 
     public override void Clear()
     {
       NumNonNullValues = 0;
-      sum = 0.0f;
-      ConvolutionSourceValue = 0.0f;
+      _sum = NullValue;
+      _sumIsNull = true;
+      _convolutionSourceValue = NullValue;
+      _convolutionSourceValueIsNull = true;
     }
 
-    public override bool ConvolutionSourceValueIsNull() => ConvolutionSourceValue == NullValue;
+    public override bool ConvolutionSourceValueIsNull() => _convolutionSourceValue == NullValue;
 
-    public override float Result()
-    {
-      return NumNonNullValues > 0 ? sum  : NullValue;
-    }
+    public override float Result() => _sum;
   }
 }

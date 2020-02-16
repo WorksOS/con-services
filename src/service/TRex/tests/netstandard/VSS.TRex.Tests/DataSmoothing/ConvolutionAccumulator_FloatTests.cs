@@ -56,6 +56,19 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     }
 
     [Fact]
+    public void Accumulate_NullValue_WithCoefficient()
+    {
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      {
+        ConvolutionSourceValue = 123.0f
+      };
+
+      accum.Accumulate(CellPassConsts.NullHeight, 1.0);
+      accum.Result().Should().Be(123.0f);
+      accum.NumNonNullValues.Should().Be(0);
+    }
+
+    [Fact]
     public void Clear()
     {
       var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
@@ -69,7 +82,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
 
       accum.Result().Should().Be(CellPassConsts.NullHeight);
       accum.NumNonNullValues.Should().Be(0);
-      accum.ConvolutionSourceValue.Should().Be(0);
+      accum.ConvolutionSourceValue.Should().Be(CellPassConsts.NullHeight);
     }
 
     [Fact]
