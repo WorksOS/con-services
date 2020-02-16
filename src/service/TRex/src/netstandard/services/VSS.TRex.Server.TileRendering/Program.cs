@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
@@ -41,7 +40,6 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Server.TileRendering
 {
@@ -69,12 +67,12 @@ namespace VSS.TRex.Server.TileRendering
       }
     }
 
-    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
+    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key, bool updateNullValues)
     {
       switch (key)
       {
         case DisplayMode.Height :
-          return new ElevationArraySmoother(null, new ConvolutionTools<float>(), 3); 
+          return new ElevationArraySmoother(null, new ConvolutionTools<float>(), 3, updateNullValues); 
         default: 
           return null;
       } 
@@ -130,7 +128,7 @@ namespace VSS.TRex.Server.TileRendering
           .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
-        .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+        .Add(x => x.AddSingleton<Func<DisplayMode, bool, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
 
         .Complete();
     }

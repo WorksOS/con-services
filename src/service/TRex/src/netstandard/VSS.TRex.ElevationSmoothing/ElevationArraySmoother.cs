@@ -8,10 +8,10 @@ namespace VSS.TRex.ElevationSmoothing
   public class ElevationArraySmoother : ArrayDataSmoother<float>
   {
     public ElevationArraySmoother(float[,] source,
-      IConvolutionTools<float> convolutionTools, int contextSize)
+      IConvolutionTools<float> convolutionTools, int contextSize, bool updateNullValues)
       : base(source, convolutionTools, contextSize,
         new ConvolutionAccumulator_Float(CellPassConsts.NullHeight),
-        (accum, cSize) => new MeanFilter<float>(accum, cSize))
+        (accum, cSize) => new MeanFilter<float>(accum, cSize, updateNullValues))
     {
     }
   }

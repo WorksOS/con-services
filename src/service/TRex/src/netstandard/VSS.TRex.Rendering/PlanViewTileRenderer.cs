@@ -171,7 +171,7 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
 
       // Provide data smoothing support to the displayer for the rendering operation being performed
-      (Displayer as IProductionPVMConsistentDisplayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode);
+      (Displayer as IProductionPVMConsistentDisplayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, bool, IDataSmoother>>()(mode, false);
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts

@@ -12,7 +12,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void Creation_Base()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new FilterConvolver<float>(accumulator, new double[3, 3]);
+      var filter = new FilterConvolver<float>(accumulator, new double[3, 3], false);
       filter.Should().NotBeNull();
     }
 
@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void Creation_Base_FailWithFilterDimensionMisMatch()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      Action act = () => _ = new FilterConvolver<float>(accumulator, new double[3, 4]);
+      Action act = () => _ = new FilterConvolver<float>(accumulator, new double[3, 4], false);
       act.Should().Throw<ArgumentException>().WithMessage("Major dimension (3) and minor dimension (4) of filterMatrix must be the same");
     }
 
@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void Creation_Mean1()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new MeanFilter<float>(accumulator, new double[3, 3]);
+      var filter = new MeanFilter<float>(accumulator, new double[3, 3], false);
       filter.Should().NotBeNull();
     }
 
@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void Creation_Mean2()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new MeanFilter<float>(accumulator, 3);
+      var filter = new MeanFilter<float>(accumulator, 3, false);
       filter.Should().NotBeNull();
     }
 
@@ -44,7 +44,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void Creation_WeightedMean()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0);
+      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0, false);
       filter.Should().NotBeNull();
     }
 
@@ -52,7 +52,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void Creation_WeightedMean_FailWithContextSizeOutOfRange()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      Action act = () => _ = new WeightedMeanFilter<float>(accumulator, 100, 2.0);
+      Action act = () => _ = new WeightedMeanFilter<float>(accumulator, 100, 2.0, false);
       act.Should().Throw<ArgumentException>().WithMessage("Context size of 100 is out of range: 3..11");
     }
 
@@ -60,7 +60,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     public void Creation_WeightedMean_CenterWeightCorrect()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0);
+      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0, false);
       filter.Should().NotBeNull();
 
       filter.FilterMatrix[1, 1].Should().Be(2 / 10.0d);
