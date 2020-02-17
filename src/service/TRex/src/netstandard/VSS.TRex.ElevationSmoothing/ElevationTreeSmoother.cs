@@ -9,10 +9,10 @@ namespace VSS.TRex.ElevationSmoothing
   public class ElevationTreeSmoother : TreeDataSmoother<float>
   {
     public ElevationTreeSmoother(GenericSubGridTree<float, GenericLeafSubGrid<float>> source,
-      IConvolutionTools<float> convolutionTools, int contextSize, bool updateNullValues)
+      IConvolutionTools<float> convolutionTools, int contextSize, bool updateNullValues, bool infillNullValuesOnly)
       : base(source, convolutionTools, contextSize, 
         new ConvolutionAccumulator_Float(CellPassConsts.NullHeight),
-        (accum, cSize) => new MeanFilter<float>(accum, cSize, updateNullValues))
+        (accum, cSize) => new MeanFilter<float>(accum, cSize, updateNullValues, infillNullValuesOnly))
     {
     }
   }

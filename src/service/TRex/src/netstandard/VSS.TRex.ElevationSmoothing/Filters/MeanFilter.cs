@@ -27,11 +27,11 @@ namespace VSS.TRex.ElevationSmoothing
       return result;
     }
 
-    public MeanFilter(IConvolutionAccumulator<T> accumulator, int contextSize, bool updateNullValues) : base(accumulator, CreateFilter(contextSize, 1), updateNullValues)
+    public MeanFilter(IConvolutionAccumulator<T> accumulator, int contextSize, bool updateNullValues, bool infillNullValuesOnly) : base(accumulator, CreateFilter(contextSize, 1), updateNullValues, infillNullValuesOnly)
     {
     }
 
-    public MeanFilter(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, bool updateNullValues) : base(accumulator, filterMatrix, updateNullValues)
+    public MeanFilter(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, bool updateNullValues, bool infillNullValuesOnly) : base(accumulator, filterMatrix, updateNullValues, infillNullValuesOnly)
     {
     }
   }

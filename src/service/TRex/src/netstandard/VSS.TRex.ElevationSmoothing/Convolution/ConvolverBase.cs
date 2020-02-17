@@ -14,6 +14,9 @@ namespace VSS.TRex.ElevationSmoothing
     protected bool _updateNullValues;
     public bool UpdateNullValues => _updateNullValues;
 
+    protected bool _infillNullValuesOnly;
+    public bool InfillNullValuesOnly => _infillNullValuesOnly;
+
     protected Func<int, int, T> GetValue;
     protected Action<int, int, T> SetValue;
 
@@ -42,10 +45,11 @@ namespace VSS.TRex.ElevationSmoothing
       _accumulator = accumulator;
     }
 
-    protected ConvolverBase(IConvolutionAccumulator<T> accumulator, int contextSize, bool updateNullValues) : this(accumulator)
+    protected ConvolverBase(IConvolutionAccumulator<T> accumulator, int contextSize, bool updateNullValues, bool infillNullValuesOnly) : this(accumulator)
     {
       ContextSize = contextSize;
       _updateNullValues = updateNullValues;
+      _infillNullValuesOnly = infillNullValuesOnly;
     }
 
 

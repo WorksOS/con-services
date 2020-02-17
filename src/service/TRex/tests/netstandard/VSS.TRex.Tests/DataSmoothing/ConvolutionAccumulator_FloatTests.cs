@@ -99,16 +99,17 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     [InlineData(5)]
     public void NullInfillResult_BelowConcensus(int contextSize)
     {
+      const float accumValue = 100.0f;
       var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
       {
         ConvolutionSourceValue = CellPassConsts.NullHeight
       };
 
-      var concensusFraction = (int)Math.Truncate((2f / 3f) * (contextSize * contextSize));
+      var concensusFraction = (int)Math.Truncate(0.5 * (contextSize * contextSize));
 
       for (var i = 0; i < concensusFraction; i++)
       {
-        accum.Accumulate(100.0f, 1.0 / (contextSize * contextSize));
+        accum.Accumulate(accumValue, 1.0);
       }
 
       accum.NullInfillResult(contextSize).Should().Be(CellPassConsts.NullHeight);
@@ -134,7 +135,8 @@ namespace VSS.TRex.Tests.ElevationSmoothing
         accum.Accumulate(accumValue, 1.0);
       }
 
-      var expectedInfillResult = ((float)contextSizeSquare / accum.NumNonNullValues) * ((concensusFraction + 1) * accumValue); 
+      var expectedInfillResult = (float)(contextSizeSquare / (concensusFraction + 1)) * ((concensusFraction + 1) * accumValue);
+
       accum.NullInfillResult(contextSize).Should().Be(expectedInfillResult);
     }
   }

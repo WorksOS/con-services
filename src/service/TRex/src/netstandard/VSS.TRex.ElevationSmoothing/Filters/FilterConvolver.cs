@@ -11,9 +11,10 @@ namespace VSS.TRex.ElevationSmoothing
   {
     public readonly double[,] FilterMatrix;
 
-    public FilterConvolver(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, bool updateNullValues) : base(accumulator)
+    public FilterConvolver(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, bool updateNullValues, bool infillNullValuesOnly) : base(accumulator)
     {
-      _updateNullValues = updateNullValues;
+      _infillNullValuesOnly = infillNullValuesOnly;
+      _updateNullValues = updateNullValues || infillNullValuesOnly;
 
       FilterMatrix = filterMatrix;
 
@@ -40,8 +41,11 @@ namespace VSS.TRex.ElevationSmoothing
 
       var convolutionSourceValueIsNull = _accumulator.ConvolutionSourceValueIsNull();
 
-      if (!_updateNullValues && convolutionSourceValueIsNull)
+      if (!_updateNullValues && convolutionSourceValueIsNull ||
+          _infillNullValuesOnly && !convolutionSourceValueIsNull)
       {
+        // There is no change to be done to this cell...
+        SetValue(i, j, _accumulator.ConvolutionSourceValue);
         return;
       }
 

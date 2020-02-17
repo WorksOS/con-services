@@ -55,11 +55,11 @@
     {
       const float minimumConsensusFraction = 0.5f;
       var contextSquare = contextSize * contextSize;
-      var concensusFraction = (float)NumNonNullValues / contextSquare;
+      var concensusFraction = (float)NumNonNullValues/ contextSquare;
 
       if (concensusFraction > minimumConsensusFraction)
       {
-        return (1/ concensusFraction) * _sum;
+        return ((float)contextSquare / NumNonNullValues) * _sum;
       }
 
       return NullValue;
