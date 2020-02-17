@@ -47,8 +47,8 @@ namespace VSS.TRex.Rendering.Displayers
     /// <param name="originY"></param>
     /// <returns></returns>
     public IPVMTaskAccumulator GetPVMTaskAccumulator(int cellsWidth, int cellsHeight,
-      double worldX, double worldY,
-      double originX, double originY)
+      double originX, double originY, double worldX, double worldY
+      )
     {
       _taskAccumulator = new PVMTaskAccumulator<TC, TS>(cellsWidth, cellsHeight, worldX, worldY, originX, originY);
       return _taskAccumulator;
@@ -65,8 +65,11 @@ namespace VSS.TRex.Rendering.Displayers
     /// <param name="valueCellSizeY"></param>
     private void CalculateDisplayParameters(double valueCellSizeX, double valueCellSizeY)
     {
-      var stepsPerPixelX = MapView.XPixelSize / valueCellSizeX;
-      var stepsPerPixelY = MapView.YPixelSize / valueCellSizeY;
+      cellSizeX = MapView.XPixelSize;
+      cellSizeY = MapView.YPixelSize;
+
+      var stepsPerPixelX = cellSizeX / valueCellSizeX;
+      var stepsPerPixelY = cellSizeY / valueCellSizeY;
 
       stepX = Math.Min(MAX_STEP_SIZE, Math.Max(1, (int)Math.Truncate(stepsPerPixelX)));
       stepY = Math.Min(MAX_STEP_SIZE, Math.Max(1, (int)Math.Truncate(stepsPerPixelY)));

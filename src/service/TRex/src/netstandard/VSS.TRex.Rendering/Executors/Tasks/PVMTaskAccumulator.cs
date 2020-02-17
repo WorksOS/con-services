@@ -127,24 +127,31 @@ namespace VSS.TRex.Rendering.Executors.Tasks
       {
         var valueStoreY = (int) Math.Floor((currentNorth - OriginY) / valueStoreCellSizeY);
 
-        temp = subGridWorldOriginX / _stepXIncrement;
-        var currentEast = (Math.Truncate(temp) * _stepXIncrement) - _stepXIncrementOverTwo;
-        var eastCol = (int) Math.Floor((currentEast - subGridWorldOriginX) / _sourceCellSize);
-
-        while (eastCol < 0)
+        if (valueStoreY >= 0 && valueStoreY < ValueStore.GetLength(1))
         {
-          eastCol += _stepX;
-          currentEast += _stepXIncrement;
-        }
+          temp = subGridWorldOriginX / _stepXIncrement;
+          var currentEast = (Math.Truncate(temp) * _stepXIncrement) - _stepXIncrementOverTwo;
+          var eastCol = (int) Math.Floor((currentEast - subGridWorldOriginX) / _sourceCellSize);
 
-        while (eastCol < SubGridTreeConsts.SubGridTreeDimension)
-        {
-          // Transcribe the value at [east_col, north_row] in the subgrid in to the matching location in the value store
-          var valueStoreX = (int) Math.Floor((currentEast - OriginX) / valueStoreCellSizeX);
-          ValueStore[valueStoreX, valueStoreY] = cells[eastCol, northRow];
+          while (eastCol < 0)
+          {
+            eastCol += _stepX;
+            currentEast += _stepXIncrement;
+          }
 
-          currentEast += _stepXIncrement;
-          eastCol += _stepX;
+          while (eastCol < SubGridTreeConsts.SubGridTreeDimension)
+          {
+            // Transcribe the value at [east_col, north_row] in the subgrid in to the matching location in the value store
+            var valueStoreX = (int) Math.Floor((currentEast - OriginX) / valueStoreCellSizeX);
+
+            if (valueStoreX >= 0 && valueStoreX < ValueStore.GetLength(0))
+            {
+              ValueStore[valueStoreX, valueStoreY] = cells[eastCol, northRow];
+            }
+
+            currentEast += _stepXIncrement;
+            eastCol += _stepX;
+          }
         }
 
         currentNorth += _stepYIncrement;

@@ -183,14 +183,14 @@ namespace VSS.TRex.Rendering
       // The acumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
       // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
       // of cells to the mapview grid of pixels
+
+      // TODO: The extent fed to the accumulator need to be extended to reflect the need for additional cells around the perimeter
+  // TODO: to support the needs of convoled smoothing of the aggregated data
       ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
-        (int)Math.Round(processor.OverrideSpatialExtents.SizeX / Displayer.MapView.XPixelSize),
-        (int)Math.Round(processor.OverrideSpatialExtents.SizeY / Displayer.MapView.YPixelSize),
-        processor.OverrideSpatialExtents.MinX,
-        processor.OverrideSpatialExtents.MaxX,
-        processor.OverrideSpatialExtents.SizeX,
-        processor.OverrideSpatialExtents.SizeY
-        );
+        Displayer.MapView.ClipWidth + 1, Displayer.MapView.ClipHeight + 1,
+        Displayer.MapView.OriginX, Displayer.MapView.OriginY,
+        Displayer.MapView.WidthX, Displayer.MapView.WidthY
+      );
 
       // Displayer.ICOptions  = ICOptions;
 
