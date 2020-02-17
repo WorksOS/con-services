@@ -45,13 +45,14 @@ namespace VSS.TRex.DataSmoothing
       _accumulator = accumulator;
     }
 
+    /*
     protected ConvolverBase(IConvolutionAccumulator<T> accumulator, int contextSize, bool updateNullValues, bool infillNullValuesOnly) : this(accumulator)
     {
       ContextSize = contextSize;
       _updateNullValues = updateNullValues;
       _infillNullValuesOnly = infillNullValuesOnly;
     }
-
+    */
 
     public abstract void ConvolveElement(int i, int j);
 
