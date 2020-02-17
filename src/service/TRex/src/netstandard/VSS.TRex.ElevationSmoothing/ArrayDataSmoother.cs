@@ -23,6 +23,11 @@ namespace VSS.TRex.DataSmoothing
       _convolverFactory = convolverFactory;
     }
 
+    public int AdditionalBorderSize
+    {
+      get => _contextSize / 2;
+    }
+
     public TV[,] Smooth(TV[,] source)
     {
       var dest = new TV[source.GetLength(0), source.GetLength(1)];

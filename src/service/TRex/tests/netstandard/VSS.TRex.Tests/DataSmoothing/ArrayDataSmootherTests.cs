@@ -18,6 +18,7 @@ namespace VSS.TRex.Tests.DataSmoothing
         (acc, size) => new FilterConvolver<float>(accum, filter, false, false));
 
       smoother.Should().NotBeNull();
+      smoother.AdditionalBorderSize.Should().Be(3 / 2);
     }
 
     [Fact]

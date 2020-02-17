@@ -25,6 +25,8 @@ namespace VSS.TRex.DataSmoothing
       _convolverFactory = convolverFactory;
     }
 
+    public int AdditionalBorderSize => _contextSize / 2;
+
     public GenericSubGridTree<TV, GenericLeafSubGrid<TV>> Smooth(GenericSubGridTree<TV, GenericLeafSubGrid<TV>> source)
     {
 
