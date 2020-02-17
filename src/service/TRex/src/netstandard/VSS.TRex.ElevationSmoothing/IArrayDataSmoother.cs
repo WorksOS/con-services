@@ -2,6 +2,6 @@
 {
   public interface IArrayDataSmoother<TV> : IDataSmoother
   {
-    TV[,] Smooth();
+    TV[,] Smooth(TV[,] source);
   }
 }

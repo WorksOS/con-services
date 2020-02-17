@@ -10,12 +10,11 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Creation()
     {
-      var sourceArray = new float[10, 10];
       var tools = new ConvolutionTools<float>();
       var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
       var filter = new double[3, 3];
 
-      var smoother = new ArrayDataSmoother<float>(sourceArray, tools, 3, accum,
+      var smoother = new ArrayDataSmoother<float>(tools, 3, accum,
         (acc, size) => new FilterConvolver<float>(accum, filter, false, false));
 
       smoother.Should().NotBeNull();
@@ -49,10 +48,10 @@ namespace VSS.TRex.Tests.DataSmoothing
         }
       };
 
-      var smoother = new ArrayDataSmoother<float>(sourceArray, tools, 3, accum,
+      var smoother = new ArrayDataSmoother<float>(tools, 3, accum,
         (accum, size) => new FilterConvolver<float>(accum, filter, false, false));
 
-      var result = smoother.Smooth();
+      var result = smoother.Smooth(sourceArray);
 
       result.Should().BeEquivalentTo(sourceArray);
     }

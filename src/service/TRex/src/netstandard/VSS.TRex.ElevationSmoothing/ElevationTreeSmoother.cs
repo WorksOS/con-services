@@ -1,5 +1,4 @@
-﻿using VSS.TRex.SubGridTrees;
-using VSS.TRex.Types.CellPasses;
+﻿using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.DataSmoothing
 {
@@ -8,9 +7,9 @@ namespace VSS.TRex.DataSmoothing
   /// </summary>
   public class ElevationTreeSmoother : TreeDataSmoother<float>
   {
-    public ElevationTreeSmoother(GenericSubGridTree<float, GenericLeafSubGrid<float>> source,
+    public ElevationTreeSmoother(
       IConvolutionTools<float> convolutionTools, int contextSize, bool updateNullValues, bool infillNullValuesOnly)
-      : base(source, convolutionTools, contextSize, 
+      : base(convolutionTools, contextSize, 
         new ConvolutionAccumulator_Float(CellPassConsts.NullHeight),
         (accum, cSize) => new MeanFilter<float>(accum, cSize, updateNullValues, infillNullValuesOnly))
     {

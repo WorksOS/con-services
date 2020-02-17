@@ -97,7 +97,8 @@ namespace VSS.TRex.Rendering.Displayers
 
       if (ValueStore == null)
       {
-        throw new ArgumentException("Task accumulator value store is not available");
+        // There is no data to render, return success
+        return true;
       }
 
       CalculateDisplayParameters(_taskAccumulator.valueStoreCellSizeX, _taskAccumulator.valueStoreCellSizeX);
@@ -105,7 +106,7 @@ namespace VSS.TRex.Rendering.Displayers
       // If there is a defined elevation smoother for ths rendering context then use it to modify the data assembled
       // for the tile to be rendered and replace the value store with the result of the smooth operation;
 
-      ValueStore = (DataSmoother as IArrayDataSmoother<TC>)?.Smooth() ?? ValueStore;
+      ValueStore = (DataSmoother as IArrayDataSmoother<TC>)?.Smooth(ValueStore) ?? ValueStore;
 
       // Draw the cells in the grid in stripes, starting from the southern most
       // row in the grid and progressing from the western end to the eastern end

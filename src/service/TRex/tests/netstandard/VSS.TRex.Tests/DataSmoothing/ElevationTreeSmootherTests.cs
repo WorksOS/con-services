@@ -11,10 +11,9 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Creation()
     {
-      var source = new GenericSubGridTree<float, GenericLeafSubGrid<float>>();
       var tools = new ConvolutionTools<float>();
 
-      var smoother = new ElevationTreeSmoother(source, tools, 3, false, false);
+      var smoother = new ElevationTreeSmoother(tools, 3, false, false);
 
       smoother.Should().NotBeNull();
     }
@@ -29,9 +28,9 @@ namespace VSS.TRex.Tests.DataSmoothing
       sourceSubGrid.Should().NotBeNull();
 
       var tools = new ConvolutionTools<float>();
-      var smoother = new ElevationTreeSmoother(source, tools, 3, false, false);
+      var smoother = new ElevationTreeSmoother(tools, 3, false, false);
 
-      var result = smoother.Smooth();
+      var result = smoother.Smooth(source);
 
       var resultSubGrid = result.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       resultSubGrid.Should().NotBeNull();

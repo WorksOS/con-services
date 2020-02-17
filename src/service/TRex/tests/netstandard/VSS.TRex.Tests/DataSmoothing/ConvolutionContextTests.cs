@@ -11,8 +11,6 @@ namespace VSS.TRex.Tests.DataSmoothing
 {
   public class ConvolutionContextTests
   {
-    private ConvolutionSubGridContext<GenericLeafSubGrid_Float, float> NewSmootherContext() => new ConvolutionSubGridContext<GenericLeafSubGrid_Float, float>();
-
     private GenericSubGridTree<float, GenericLeafSubGrid_Float> ConstructSingleSubGridElevationSubGridTreeAtOrigin(float elevation)
     {
       var tree = new GenericSubGridTree<float, GenericLeafSubGrid_Float>();

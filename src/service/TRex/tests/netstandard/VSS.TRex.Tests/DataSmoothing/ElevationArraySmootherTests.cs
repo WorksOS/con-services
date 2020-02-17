@@ -9,10 +9,9 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Creation()
     {
-      var source = new float[10, 10];
       var tools = new ConvolutionTools<float>();
 
-      var smoother = new ElevationArraySmoother(source, tools, 3, false, false);
+      var smoother = new ElevationArraySmoother(tools, 3, false, false);
       smoother.Should().NotBeNull();
     }
 
@@ -29,9 +28,9 @@ namespace VSS.TRex.Tests.DataSmoothing
       }
 
       var tools = new ConvolutionTools<float>();
-      var smoother = new ElevationArraySmoother(source, tools, 3, false, false);
+      var smoother = new ElevationArraySmoother(tools, 3, false, false);
 
-      var result = smoother.Smooth();
+      var result = smoother.Smooth(source);
 
       result.Should().BeEquivalentTo(source);
     }

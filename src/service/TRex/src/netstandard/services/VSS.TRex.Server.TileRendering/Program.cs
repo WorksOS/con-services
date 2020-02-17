@@ -72,7 +72,7 @@ namespace VSS.TRex.Server.TileRendering
       switch (key)
       {
         case DisplayMode.Height :
-          return new ElevationArraySmoother(null, new ConvolutionTools<float>(), 3, updateNullValues, infillNullValuesOnly); 
+          return new ElevationArraySmoother(new ConvolutionTools<float>(), 3, updateNullValues, infillNullValuesOnly); 
         default: 
           return null;
       } 

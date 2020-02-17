@@ -12,13 +12,11 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Creation()
     {
-      var source = new GenericSubGridTree<float, GenericLeafSubGrid<float>>();
-
       var tools = new ConvolutionTools<float>();
       var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
       var filter = new double[3, 3];
 
-      var smoother = new TreeDataSmoother<float>(source, tools, 3, accum,
+      var smoother = new TreeDataSmoother<float>(tools, 3, accum,
         (acc, size) => new FilterConvolver<float>(accum, filter, false, false));
 
       smoother.Should().NotBeNull();
@@ -48,10 +46,10 @@ namespace VSS.TRex.Tests.DataSmoothing
         }
       };
 
-      var smoother = new TreeDataSmoother<float>(source, tools, 3, accum,
+      var smoother = new TreeDataSmoother<float>(tools, 3, accum,
         (accum, size) => new FilterConvolver<float>(accum, filter, false, false));
 
-      var result = smoother.Smooth();
+      var result = smoother.Smooth(source);
 
       var resultSubGrid = result.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       resultSubGrid.Should().NotBeNull();
