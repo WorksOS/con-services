@@ -2,24 +2,19 @@
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Types.CellPasses;
 using Xunit;
 
 namespace VSS.TRex.Tests.DataSmoothing
 {
-  public class TreeDataSmootherTests
+  public class ElevationTreeSmootherTests
   {
     [Fact]
     public void Creation()
     {
       var source = new GenericSubGridTree<float, GenericLeafSubGrid<float>>();
-
       var tools = new ConvolutionTools<float>();
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new double[3, 3];
 
-      var smoother = new TreeDataSmoother<float>(source, tools, 3, accum,
-        (acc, size) => new FilterConvolver<float>(accum, filter, false, false));
+      var smoother = new ElevationTreeSmoother(source, tools, 3, false, false);
 
       smoother.Should().NotBeNull();
     }
@@ -28,28 +23,13 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void Smooth()
     {
       const float elevation = 10.0f;
-      const double oneNinth = 1d / 9d;
 
       var source = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(elevation);
       var sourceSubGrid = source.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       sourceSubGrid.Should().NotBeNull();
 
       var tools = new ConvolutionTools<float>();
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new double[3, 3] {
-        {
-          oneNinth, oneNinth, oneNinth
-        },
-        {
-          oneNinth, oneNinth, oneNinth
-        },
-        {
-          oneNinth, oneNinth, oneNinth
-        }
-      };
-
-      var smoother = new TreeDataSmoother<float>(source, tools, 3, accum,
-        (accum, size) => new FilterConvolver<float>(accum, filter, false, false));
+      var smoother = new ElevationTreeSmoother(source, tools, 3, false, false);
 
       var result = smoother.Smooth();
 

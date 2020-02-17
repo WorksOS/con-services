@@ -14,33 +14,6 @@ namespace VSS.TRex.Tests.DataSmoothing
 {
   public class ConvolutionToolsTests
   {
-    private GenericLeafSubGrid_Float ConstructElevationSubGrid(float elevation)
-    {
-      var subGrid = new GenericLeafSubGrid_Float
-      {
-        Level = SubGridTreeConsts.SubGridTreeLevels
-      };
-      subGrid.ForEach((x, y) => subGrid.Items[x, y] = elevation);
-
-      return subGrid;
-    }
-
-    private void ConstructElevationSubGrid(GenericLeafSubGrid_Float subGrid, float elevation)
-    {
-      subGrid.ForEach((x, y) => subGrid.Items[x, y] = elevation);
-    }
-
-    private GenericSubGridTree<float, GenericLeafSubGrid_Float> ConstructSingleSubGridElevationSubGridTreeAtOrigin(float elevation)
-    {
-      var tree = new GenericSubGridTree<float, GenericLeafSubGrid_Float>();
-
-      var subGrid = tree.ConstructPathToCell(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset,
-        SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid_Float;
-      ConstructElevationSubGrid(subGrid, elevation);
-
-      return tree;
-    }
-
     [Fact]
     public void Creation()
     {
@@ -66,11 +39,11 @@ namespace VSS.TRex.Tests.DataSmoothing
     {
       const float ELEVATION = 10.0f;
 
-      var tree = ConstructSingleSubGridElevationSubGridTreeAtOrigin(ELEVATION);
-      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid_Float;
+      var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(ELEVATION);
+      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       subGrid.Should().NotBeNull();
 
-      var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
+      var result = DataSmoothingTestUtilities.ConstructElevationSubGrid(CellPassConsts.NullHeight);
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
@@ -114,14 +87,14 @@ namespace VSS.TRex.Tests.DataSmoothing
           SubGridTreeConsts.DefaultIndexOriginOffset + map.Item1 * SubGridTreeConsts.SubGridTreeDimension, 
           SubGridTreeConsts.DefaultIndexOriginOffset + map.Item2 * SubGridTreeConsts.SubGridTreeDimension,
           SubGridPathConstructionType.CreateLeaf) as GenericLeafSubGrid_Float;
-        ConstructElevationSubGrid(subGrid, ELEVATION);
+        DataSmoothingTestUtilities.ConstructElevationSubGrid(subGrid, ELEVATION);
 
         subGrids.Add(subGrid);
       }
 
       foreach (var subGrid in subGrids)
       {
-        var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
+        var result = DataSmoothingTestUtilities.ConstructElevationSubGrid(CellPassConsts.NullHeight);
         result.Should().NotBeNull();
 
         var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
@@ -145,13 +118,13 @@ namespace VSS.TRex.Tests.DataSmoothing
     [InlineData(3, 10.0f, (2 / 3f) * 10.0f, (1 / 9f) * 10.0f, (1 / 9f) * 10.0f, true)]
     public void SingleSubGrid_SingleSpikeELevation_OriginOfSubGrid(int contextSize, float elevation, float elevationResult1, float elevationResult2, float elevationResult3, bool updateNullValues)
     {
-      var tree = ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);
-      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid_Float;
+      var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);
+      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       subGrid.Should().NotBeNull();
 
       subGrid.Items[0, 0] = elevation;
 
-      var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
+      var result = DataSmoothingTestUtilities.ConstructElevationSubGrid(CellPassConsts.NullHeight);
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
@@ -180,13 +153,13 @@ namespace VSS.TRex.Tests.DataSmoothing
     [InlineData(5, 10.0f, 10.0f / 25.0f)]
     public void SingleSubGrid_SingleSpikeELevation_CenterOfSubGrid(int contextSize, float elevation, float elevationResult)
     {
-      var tree = ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);
-      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid_Float;
+      var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);
+      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       subGrid.Should().NotBeNull();
 
       subGrid.Items[15, 15] = elevation;
 
-      var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
+      var result = DataSmoothingTestUtilities.ConstructElevationSubGrid(CellPassConsts.NullHeight);
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
@@ -220,13 +193,13 @@ namespace VSS.TRex.Tests.DataSmoothing
     [InlineData(5, 100)]
     public void SingleSubGrid_SingleNullELevation_CenterOfSubGrid_NullInfillOnly(int contextSize, float elevation)
     {
-      var tree = ConstructSingleSubGridElevationSubGridTreeAtOrigin(elevation);
-      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid_Float;
+      var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(elevation);
+      var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
       subGrid.Should().NotBeNull();
 
       subGrid.Items[15, 15] = CellPassConsts.NullHeight;
 
-      var result = ConstructElevationSubGrid(CellPassConsts.NullHeight);
+      var result = DataSmoothingTestUtilities.ConstructElevationSubGrid(CellPassConsts.NullHeight);
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
