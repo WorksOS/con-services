@@ -184,14 +184,28 @@ namespace VSS.TRex.Rendering
       // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
       // of cells to the mapview grid of pixels
 
-      // TODO: The extent fed to the accumulator need to be extended to reflect the need for additional cells around the perimeter
-  // TODO: to support the needs of convoled smoothing of the aggregated data
-      ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
-        Displayer.MapView.ClipWidth + 1, Displayer.MapView.ClipHeight + 1,
-        Displayer.MapView.OriginX, Displayer.MapView.OriginY,
-        Displayer.MapView.WidthX, Displayer.MapView.WidthY
-      );
+      var smoother = (Displayer as IProductionPVMConsistentDisplayer)?.DataSmoother;
 
+      if (smoother != null)
+      {
+        ((IPVMRenderingTask) processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer) Displayer).GetPVMTaskAccumulator(
+          Displayer.MapView.ClipWidth + 1 + 2 * smoother.AdditionalBorderSize, 
+          Displayer.MapView.ClipHeight + 1 + 2 * smoother.AdditionalBorderSize,
+          Displayer.MapView.OriginX - smoother.AdditionalBorderSize * Displayer.MapView.XPixelSize, 
+          Displayer.MapView.OriginY - smoother.AdditionalBorderSize * Displayer.MapView.YPixelSize,
+          Displayer.MapView.WidthX + smoother.AdditionalBorderSize * Displayer.MapView.XPixelSize, 
+          Displayer.MapView.WidthY + smoother.AdditionalBorderSize * Displayer.MapView.YPixelSize
+        );
+      }
+      else
+      {
+        ((IPVMRenderingTask) processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer) Displayer).GetPVMTaskAccumulator(
+          Displayer.MapView.ClipWidth + 1, Displayer.MapView.ClipHeight + 1,
+          Displayer.MapView.OriginX, Displayer.MapView.OriginY,
+          Displayer.MapView.WidthX, Displayer.MapView.WidthY
+        );
+      }
+    
       // Displayer.ICOptions  = ICOptions;
 
       // Se the skip-step area control cell selection parameters for this tile render
