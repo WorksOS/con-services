@@ -2,7 +2,7 @@
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   public struct ConvolutionSubGridContext<T, TV> where T : GenericLeafSubGrid<TV>
   {

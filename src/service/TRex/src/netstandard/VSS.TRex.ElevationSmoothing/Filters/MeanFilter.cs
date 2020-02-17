@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   public class MeanFilter<T> : FilterConvolver<T>
   {

@@ -1,7 +1,7 @@
 ﻿using VSS.TRex.SubGridTrees;
 using VSS.TRex.Types.CellPasses;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   /// <summary>
   /// Implements the capability to take a sub grid tree containing queried elevation data and apply algorithmic smoothing to the data

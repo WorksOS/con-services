@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.ElevationSmoothing
+﻿namespace VSS.TRex.DataSmoothing
 {
   /// <summary>
   /// Provides a type specific accumulator behaviour for floats (eg: elevation values).

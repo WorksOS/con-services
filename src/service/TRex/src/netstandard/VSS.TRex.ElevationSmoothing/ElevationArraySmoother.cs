@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.Types.CellPasses;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   /// <summary>
   /// Implements the capability to take a 2D array containing queried elevation data and apply algorithmic smoothing to the data

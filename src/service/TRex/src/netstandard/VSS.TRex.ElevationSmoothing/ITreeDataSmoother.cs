@@ -1,6 +1,6 @@
 ﻿using VSS.TRex.SubGridTrees;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   public interface ITreeDataSmoother<TV> : IDataSmoother
   {

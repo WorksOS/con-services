@@ -1,4 +1,4 @@
-﻿using VSS.TRex.ElevationSmoothing;
+﻿using VSS.TRex.DataSmoothing;
 using VSS.TRex.Rendering.Executors.Tasks;
 
 namespace VSS.TRex.Rendering.Displayers

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   /// <summary>
   /// Defines the basic convolution activity of iterating over a square context applying an averaging function over the

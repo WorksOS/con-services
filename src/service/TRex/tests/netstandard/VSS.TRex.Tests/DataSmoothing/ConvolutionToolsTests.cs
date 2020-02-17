@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using VSS.TRex.ElevationSmoothing;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -10,7 +10,7 @@ using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Types.CellPasses;
 using Xunit;
 
-namespace VSS.TRex.Tests.ElevationSmoothing
+namespace VSS.TRex.Tests.DataSmoothing
 {
   public class ConvolutionToolsTests
   {
@@ -62,7 +62,7 @@ namespace VSS.TRex.Tests.ElevationSmoothing
     [Theory]
     [InlineData(3)]
     [InlineData(5)]
-    public void SingleSubGrid_AtOrigin_ContextOf3(int contextSize)
+    public void SingleSubGrid_AtOrigin(int contextSize)
     {
       const float ELEVATION = 10.0f;
 
@@ -237,6 +237,48 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       result.Items[15, 15].Should().Be(elevation);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => result.Items[x, y].Should().Be(elevation));
+    }
+
+    [Theory]
+    [InlineData(3, 1, 1)]
+    [InlineData(3, 10, 1)]
+    [InlineData(3, 1, 10)]
+    [InlineData(3, 100, 50)]
+    [InlineData(3, 50, 100)]
+    [InlineData(5, 100, 100)]
+    public void ArrayConvolver(int contextSize, int width, int height)
+    {
+      const float ELEVATION = 10.0f;
+
+      var sourceArray = new float[width, height];
+      for (var i = 0; i < sourceArray.GetLength(0); i++)
+      {
+        for (var j = 0; j < sourceArray.GetLength(1); j++)
+        {
+          sourceArray[i, j] = 100.0f;
+        }
+      }
+
+      var destArray = new float[width, height];
+
+      var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var filter = new MeanFilter<float>(accumulator, contextSize, false, false);
+      var smoother = new ConvolutionTools<float>();
+      smoother.Convolve(sourceArray, destArray, filter);
+
+      // All cell values should remain mostly unchanged due to non-null values around perimeter of array in smoothing context
+      // Check all acquired values in the single subgrid are the same elevation, except for the perimeter values which 
+      // will be 2/3 * Elevation due to null values. Some corner vales will have 0.44444 * ElEVATION for same reason
+      for (var x = 0; x < destArray.GetLength(0); x++)
+      {
+        for (var y = 0; y < destArray.GetLength(1); y++)
+        {
+          var ok = Math.Abs(destArray[x, y] = ELEVATION) < 0.0001 ||
+                   Math.Abs(destArray[x, y] = (2 / 3) * ELEVATION) < 0.0001 ||
+                   Math.Abs(destArray[x, y] = 0.44444f * ELEVATION) < 0.0001;
+          ok.Should().BeTrue();
+        }
+      }
     }
   }
 }

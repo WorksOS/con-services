@@ -2,7 +2,7 @@
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   public class ConvolutionTools<T> : ConvolutionToolsBase<T>
   {
@@ -34,12 +34,22 @@ namespace VSS.TRex.ElevationSmoothing
       var majorDimDest = dest.GetLength(0);
       var minorDimDest = dest.GetLength(1);
 
+      var nullValue = convolver.Accumulator.NullValue;
+
       if (majorDimSource != majorDimDest || minorDimSource != minorDimDest)
       {
         throw new ArgumentException("Dimensions of source and destination data are not the same");
       }
-      
-      convolver.Convolve(majorDimSource, minorDimSource, (x, y) => source[x, y], (x, y, v) => dest[x, y] = v);
+
+      convolver.Convolve(majorDimSource, minorDimSource, 
+        (x, y) =>
+        {
+          if (x < 0 || y < 0 || x >= majorDimSource || y >= minorDimSource)
+            return nullValue;
+
+          return source[x, y];
+        }, 
+        (x, y, v) => dest[x, y] = v);
     }
   }
 }

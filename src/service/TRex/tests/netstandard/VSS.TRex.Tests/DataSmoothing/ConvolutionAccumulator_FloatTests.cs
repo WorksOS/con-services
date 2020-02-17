@@ -1,10 +1,10 @@
 ﻿using System;
 using FluentAssertions;
-using VSS.TRex.ElevationSmoothing;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Types.CellPasses;
 using Xunit;
 
-namespace VSS.TRex.Tests.ElevationSmoothing
+namespace VSS.TRex.Tests.DataSmoothing
 {
   public class ConvolutionAccumulator_FloatTests
   {

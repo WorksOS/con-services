@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using VSS.TRex.ElevationSmoothing;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -7,7 +7,7 @@ using VSS.TRex.SubGridTrees.Types;
 using VSS.TRex.Types.CellPasses;
 using Xunit;
 
-namespace VSS.TRex.Tests.ElevationSmoothing
+namespace VSS.TRex.Tests.DataSmoothing
 {
   public class ConvolutionContextTests
   {

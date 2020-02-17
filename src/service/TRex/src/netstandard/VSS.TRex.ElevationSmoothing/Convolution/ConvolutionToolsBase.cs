@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.TRex.SubGridTrees;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   public class ConvolutionToolsBase<T> : IConvolutionTools<T>
   {

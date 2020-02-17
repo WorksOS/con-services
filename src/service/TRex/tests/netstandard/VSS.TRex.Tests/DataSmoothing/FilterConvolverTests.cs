@@ -1,10 +1,10 @@
 ﻿using System;
 using FluentAssertions;
-using VSS.TRex.ElevationSmoothing;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Types.CellPasses;
 using Xunit;
 
-namespace VSS.TRex.Tests.ElevationSmoothing
+namespace VSS.TRex.Tests.DataSmoothing
 {
   public class FilterConvolverTests
   {
@@ -14,14 +14,29 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
       var filter = new FilterConvolver<float>(accumulator, new double[3, 3], false, false);
       filter.Should().NotBeNull();
+
+      filter.InfillNullValuesOnly.Should().BeFalse();
+      filter.UpdateNullValues.Should().BeFalse();
+
+      filter = new FilterConvolver<float>(accumulator, new double[3, 3], true, true);
+      filter.InfillNullValuesOnly.Should().BeTrue();
+      filter.UpdateNullValues.Should().BeTrue();
     }
 
     [Fact]
-    public void Creation_Base_FailWithFilterDimensionMisMatch()
+    public void Creation_FailWithFilterDimensionMisMatch()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
       Action act = () => _ = new FilterConvolver<float>(accumulator, new double[3, 4], false, false);
       act.Should().Throw<ArgumentException>().WithMessage("Major dimension (3) and minor dimension (4) of filterMatrix must be the same");
+    }
+
+    [Fact]
+    public void Creation_FailWithInvalidFilterDimension()
+    {
+      var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      Action act = () => _ = new FilterConvolver<float>(accumulator, new double[4, 4], false, false);
+      act.Should().Throw<ArgumentException>().WithMessage("Context size must be positive odd number greater than 1");
     }
 
     [Fact]
@@ -64,6 +79,15 @@ namespace VSS.TRex.Tests.ElevationSmoothing
       filter.Should().NotBeNull();
 
       filter.FilterMatrix[1, 1].Should().Be(2 / 10.0d);
+    }
+
+    [Fact]
+    public void ContextSize()
+    {
+      var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0, false, false);
+      filter.Should().NotBeNull();
+      filter.ContextSize.Should().Be(3);
     }
   }
 }

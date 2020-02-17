@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.ElevationSmoothing
+﻿namespace VSS.TRex.DataSmoothing
 {
   public class WeightedMeanFilter<T> : MeanFilter<T>
   {

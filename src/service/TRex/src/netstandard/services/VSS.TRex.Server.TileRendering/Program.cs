@@ -16,7 +16,7 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
-using VSS.TRex.ElevationSmoothing;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;

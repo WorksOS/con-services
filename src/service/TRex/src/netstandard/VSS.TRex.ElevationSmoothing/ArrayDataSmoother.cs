@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   /// <summary>
   /// Implements the capability to take a sub grid tree containing queried elevation data and apply algorithmic smoothing to the data
@@ -18,13 +18,8 @@ namespace VSS.TRex.ElevationSmoothing
       IConvolutionAccumulator<TV> accumulator,
       Func<IConvolutionAccumulator<TV>, int, IConvolver<TV>> convolverFactory)
     {
-      if (_convolutionTools == null)
-      {
-        throw new ArgumentException("ConvolutionTools is null", nameof(convolutionTools));
-      }
-
       _source = source;
-      _convolutionTools = convolutionTools;
+      _convolutionTools = convolutionTools ?? throw new ArgumentException("ConvolutionTools is null", nameof(convolutionTools));
       _contextSize = contextSize;
       _accumulator = accumulator;
       _convolverFactory = convolverFactory;

@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.TRex.ElevationSmoothing;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SubGridTrees.Client;

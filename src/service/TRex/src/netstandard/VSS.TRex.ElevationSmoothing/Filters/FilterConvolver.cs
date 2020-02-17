@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.TRex.ElevationSmoothing
+namespace VSS.TRex.DataSmoothing
 {
   /// <summary>
   /// Implements a classical base convoler that accepts a filter matrix and applies it to the data set

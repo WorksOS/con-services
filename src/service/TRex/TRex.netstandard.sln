@@ -295,7 +295,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{87C64384-5D61-4CF2-AF45-F0E808FFB1CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ElevationSmoothing", "src\netstandard\VSS.TRex.ElevationSmoothing\VSS.TRex.ElevationSmoothing.csproj", "{32124D46-D0B2-41DB-96E2-F3122DF79401}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DataSmoothing", "src\netstandard\VSS.TRex.ElevationSmoothing\VSS.TRex.DataSmoothing.csproj", "{32124D46-D0B2-41DB-96E2-F3122DF79401}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
