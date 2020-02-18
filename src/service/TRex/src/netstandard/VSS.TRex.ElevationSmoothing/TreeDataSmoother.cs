@@ -10,14 +10,14 @@ namespace VSS.TRex.DataSmoothing
   public class TreeDataSmoother<TV> : ITreeDataSmoother<TV>
   {
     private readonly IConvolutionTools<TV> _convolutionTools;
-    private readonly int _contextSize;
+    private readonly ConvolutionMaskSize _contextSize;
     private readonly IConvolutionAccumulator<TV> _accumulator;
-    private readonly Func<IConvolutionAccumulator<TV>, int, IConvolver<TV>> _convolverFactory;
+    private readonly Func<IConvolutionAccumulator<TV>, ConvolutionMaskSize, IConvolver<TV>> _convolverFactory;
 
     public TreeDataSmoother(
-      IConvolutionTools<TV> convolutionTools, int contextSize,
+      IConvolutionTools<TV> convolutionTools, ConvolutionMaskSize contextSize,
       IConvolutionAccumulator<TV> accumulator,
-      Func<IConvolutionAccumulator<TV>, int, IConvolver<TV>> convolverFactory)
+      Func<IConvolutionAccumulator<TV>, ConvolutionMaskSize, IConvolver<TV>> convolverFactory)
     {
       _convolutionTools = convolutionTools ?? throw new ArgumentException("ConvolutionTools is null", nameof(convolutionTools));
       _contextSize = contextSize;
@@ -25,7 +25,7 @@ namespace VSS.TRex.DataSmoothing
       _convolverFactory = convolverFactory;
     }
 
-    public int AdditionalBorderSize => _contextSize / 2;
+    public int AdditionalBorderSize => (int)_contextSize / 2;
 
     public GenericSubGridTree<TV, GenericLeafSubGrid<TV>> Smooth(GenericSubGridTree<TV, GenericLeafSubGrid<TV>> source)
     {
