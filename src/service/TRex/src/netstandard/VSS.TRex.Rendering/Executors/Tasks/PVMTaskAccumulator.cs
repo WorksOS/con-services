@@ -12,12 +12,12 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// <summary>
     /// The cell size of the cells contained in the accumulated sub grids
     /// </summary>
-    private double _sourceCellSize;
+    private readonly double _sourceCellSize;
 
     /// <summary>
     /// The X and Y dimensions of the cells in the value accumulator array
     /// </summary>
-    public double valueStoreCellSizeX, valueStoreCellSizeY;
+    private double _valueStoreCellSizeX, _valueStoreCellSizeY;
 
     /// <summary>
     /// The number of cells wide and high in the accumulator array
@@ -50,9 +50,6 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
     private void CalculateAccumulatorParameters()
     {
-      valueStoreCellSizeX = WorldX / _cellsWidth;
-      valueStoreCellSizeY = WorldY / _cellsHeight;
-
       var stepsPerPixelX = (WorldX / _cellsWidth) / _sourceCellSize;
       var stepsPerPixelY = (WorldY / _cellsHeight) / _sourceCellSize;
 
@@ -69,22 +66,29 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// <summary>
     /// Constructor that instantiates intermediary value storage for the PVM rendering task
     /// </summary>
+    /// <param name="valueStoreCellSizeX">The world X dimension size of cells in the value store</param>
+    /// <param name="valueStoreCellSizeY">The world X dimension size of cells in the value store</param>
     /// <param name="cellsWidth">The number of cells 'wide' (x ordinate) in the set of cell values requested</param>
     /// <param name="cellsHeight">The number of cells 'high' (y ordinate) in the set of cell values requested</param>
     /// <param name="worldX">The world coordinate width (X axis) of the value store</param>
     /// <param name="worldY">The world coordinate width (X axis) of the value store</param>
     /// <param name="originX">The default north oriented world X coordinate or the _valueStore origin</param>
     /// <param name="originY">The default north oriented world Y coordinate or the _valueStore origin</param>
-    public PVMTaskAccumulator(int cellsWidth, int cellsHeight,
+    /// <param name="sourceCellSize">The (square) size of the underlying cells in the site model that is the source of rendered data</param>
+    public PVMTaskAccumulator(double valueStoreCellSizeX, double valueStoreCellSizeY, int cellsWidth, int cellsHeight,
       double worldX, double worldY,
-      double originX, double originY)
+      double originX, double originY,
+      double sourceCellSize)
     {
+      _valueStoreCellSizeX = valueStoreCellSizeX;
+      _valueStoreCellSizeY = valueStoreCellSizeY;
       _cellsWidth = cellsWidth;
       _cellsHeight = cellsHeight;
       OriginX = originX;
       OriginY = originY;
       WorldX = worldX;
       WorldY = worldY;
+      _sourceCellSize = sourceCellSize;
     }
 
     /// <summary>
@@ -104,7 +108,6 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
       if (ValueStore == null)
       {
-        _sourceCellSize = subGrid.CellSize;
         CalculateAccumulatorParameters();
         InitialiseValueStore(subGrid.NullCell());
       }
@@ -123,11 +126,10 @@ namespace VSS.TRex.Rendering.Executors.Tasks
         currentNorth += _stepYIncrement;
       }
 
+      var valueStoreY = (int)Math.Floor((currentNorth - OriginY) / _valueStoreCellSizeY);
       while (northRow < SubGridTreeConsts.SubGridTreeDimension)
       {
-        var valueStoreY = (int) Math.Floor((currentNorth - OriginY) / valueStoreCellSizeY);
-
-        if (valueStoreY >= 0 && valueStoreY < ValueStore.GetLength(1))
+        if (valueStoreY >= 0 && valueStoreY < _cellsHeight)
         {
           temp = subGridWorldOriginX / _stepXIncrement;
           var currentEast = (Math.Truncate(temp) * _stepXIncrement) - _stepXIncrementOverTwo;
@@ -139,23 +141,25 @@ namespace VSS.TRex.Rendering.Executors.Tasks
             currentEast += _stepXIncrement;
           }
 
+          var valueStoreX = (int)Math.Floor((currentEast - OriginX) / _valueStoreCellSizeX);
+
           while (eastCol < SubGridTreeConsts.SubGridTreeDimension)
           {
             // Transcribe the value at [east_col, north_row] in the subgrid in to the matching location in the value store
-            var valueStoreX = (int) Math.Floor((currentEast - OriginX) / valueStoreCellSizeX);
-
-            if (valueStoreX >= 0 && valueStoreX < ValueStore.GetLength(0))
+            if (valueStoreX >= 0 && valueStoreX < _cellsWidth)
             {
               ValueStore[valueStoreX, valueStoreY] = cells[eastCol, northRow];
             }
 
             currentEast += _stepXIncrement;
             eastCol += _stepX;
+            valueStoreX++;
           }
         }
 
         currentNorth += _stepYIncrement;
         northRow += _stepY;
+        valueStoreY++;
       }
 
       return true;

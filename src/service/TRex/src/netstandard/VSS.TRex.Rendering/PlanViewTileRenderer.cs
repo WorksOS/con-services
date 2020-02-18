@@ -186,26 +186,27 @@ namespace VSS.TRex.Rendering
 
       var smoother = (Displayer as IProductionPVMConsistentDisplayer)?.DataSmoother;
 
-      if (smoother != null)
-      {
-        ((IPVMRenderingTask) processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer) Displayer).GetPVMTaskAccumulator(
-          Displayer.MapView.ClipWidth + 1 + 2 * smoother.AdditionalBorderSize, 
-          Displayer.MapView.ClipHeight + 1 + 2 * smoother.AdditionalBorderSize,
-          Displayer.MapView.OriginX - smoother.AdditionalBorderSize * Displayer.MapView.XPixelSize, 
-          Displayer.MapView.OriginY - smoother.AdditionalBorderSize * Displayer.MapView.YPixelSize,
-          Displayer.MapView.WidthX + smoother.AdditionalBorderSize * Displayer.MapView.XPixelSize, 
-          Displayer.MapView.WidthY + smoother.AdditionalBorderSize * Displayer.MapView.YPixelSize
-        );
-      }
-      else
-      {
-        ((IPVMRenderingTask) processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer) Displayer).GetPVMTaskAccumulator(
-          Displayer.MapView.ClipWidth + 1, Displayer.MapView.ClipHeight + 1,
-          Displayer.MapView.OriginX, Displayer.MapView.OriginY,
-          Displayer.MapView.WidthX, Displayer.MapView.WidthY
-        );
-      }
-    
+      var valueStoreCellSizeX = Displayer.MapView.XPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.XPixelSize : processor.SiteModel.CellSize;
+      var valueStoreCellSizeY = Displayer.MapView.YPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.YPixelSize : processor.SiteModel.CellSize;
+
+      var mapViewCellsX = (int)Math.Truncate(Displayer.MapView.WidthX / valueStoreCellSizeX) + 1;
+      var mapViewCellsY = (int)Math.Truncate(Displayer.MapView.WidthY / valueStoreCellSizeY) + 1;
+
+      var borderAdjustmentCells = 2 * smoother?.AdditionalBorderSize ?? 0;
+      var extentAdjumentSizeX = smoother?.AdditionalBorderSize * valueStoreCellSizeX ?? 0;
+      var extentAdjumentSizeY = smoother?.AdditionalBorderSize * valueStoreCellSizeY ?? 0;
+
+      ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
+        valueStoreCellSizeX, valueStoreCellSizeY,
+        mapViewCellsX + borderAdjustmentCells,
+        mapViewCellsY + borderAdjustmentCells,
+        Displayer.MapView.OriginX - extentAdjumentSizeX,
+        Displayer.MapView.OriginY - extentAdjumentSizeY,
+        Displayer.MapView.WidthX + extentAdjumentSizeX,
+        Displayer.MapView.WidthY + extentAdjumentSizeY,
+        processor.SiteModel.CellSize
+      );
+
       // Displayer.ICOptions  = ICOptions;
 
       // Se the skip-step area control cell selection parameters for this tile render
@@ -223,7 +224,7 @@ namespace VSS.TRex.Rendering
       {
         // Render the collection of data in the aggregator
         (Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
-  
+
         PerformAnyRequiredDebugLevelDisplay();
 
         if (_debugDrawDiagonalCrossOnRenderedTilesDefault)
@@ -247,22 +248,22 @@ namespace VSS.TRex.Rendering
     /// origin, its real world coordinate width and height and the number of pixels for the width and height
     /// of the resulting rendered tile.
     /// </summary>
-    /// <param name="AOriginX"></param>
-    /// <param name="AOriginY"></param>
-    /// <param name="AWidth"></param>
-    /// <param name="AHeight"></param>
-    /// <param name="ANPixelsX"></param>
-    /// <param name="ANPixelsY"></param>
-    public void SetBounds(double AOriginX, double AOriginY,
-      double AWidth, double AHeight,
-      ushort ANPixelsX, ushort ANPixelsY)
+    /// <param name="originX"></param>
+    /// <param name="originY"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="nPixelsX"></param>
+    /// <param name="nPixelsY"></param>
+    public void SetBounds(double originX, double originY,
+      double width, double height,
+      ushort nPixelsX, ushort nPixelsY)
     {
-      OriginX = AOriginX;
-      OriginY = AOriginY;
-      Width = AWidth;
-      Height = AHeight;
-      NPixelsX = ANPixelsX;
-      NPixelsY = ANPixelsY;
+      OriginX = originX;
+      OriginY = originY;
+      Width = width;
+      Height = height;
+      NPixelsX = nPixelsX;
+      NPixelsY = nPixelsY;
     }
 
     #region IDisposable Support
@@ -286,20 +287,9 @@ namespace VSS.TRex.Rendering
       }
     }
 
-    //  override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~PlanViewTileRenderer()
-    // {
-    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-    //   Dispose(false);
-    // }
-
-    // This code added to correctly implement the disposable pattern.
     public void Dispose()
     {
-      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
       Dispose(true);
-      // uncomment the following line if the finalizer is overridden above.
-      // GC.SuppressFinalize(this);
     }
     #endregion
   }

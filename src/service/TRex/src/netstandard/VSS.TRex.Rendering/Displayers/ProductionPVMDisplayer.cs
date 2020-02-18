@@ -6,21 +6,15 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public abstract class ProductionPVMDisplayer: IDisposable
   {
-    protected const int MAX_STEP_SIZE = 10000;
-
     public MapSurface MapView;
 
     // Various quantities useful when displaying grid data
-    protected int stepX;
-    protected int stepY;
-
     protected double stepXIncrement;
     protected double stepYIncrement;
     protected double stepXIncrementOverTwo;
     protected double stepYIncrementOverTwo;
 
     // Various quantities useful when iterating across cells and drawing them
-
     protected int north_row, east_col;
     protected double currentNorth;
     protected double currentEast;
@@ -123,55 +117,61 @@ namespace VSS.TRex.Rendering.Displayers
     /// <returns></returns>
     protected virtual bool SupportsCellStripRendering() => true;
 
-    protected void DoSkipIterate(double worldOriginY, double worldOriginX, int dimensionX, int dimensionY)
+    /// <summary>
+    /// Performs skip iteration across a region of a single 2D array of values
+    /// </summary>
+    /// <param name="worldOriginX"></param>
+    /// <param name="worldOriginY"></param>
+    /// <param name="worldWidth"></param>
+    /// <param name="worldHeight"></param>
+    /// <param name="originX"></param>
+    /// <param name="originY"></param>
+    /// <param name="limitX"></param>
+    /// <param name="limitY"></param>
+
+    protected void DoIterate(double worldOriginX, double worldOriginY, double worldWidth, double worldHeight, int originX, int originY, int limitX, int limitY)
     {
       var drawCellStrips = SupportsCellStripRendering();
 
-      // Skip-Iterate through the cells drawing them in strips
+      cellSizeX = worldWidth / (limitX - originX + 1);
+      cellSizeY = worldHeight / (limitY - originY + 1);
 
-      var temp = worldOriginY / stepYIncrement;
-      currentNorth = (Math.Truncate(temp) * stepYIncrement) - stepYIncrementOverTwo;
-      north_row = (int)Math.Floor((currentNorth - worldOriginY) / cellSizeY);
+      stepXIncrement = cellSizeX;
+      stepXIncrementOverTwo = cellSizeX / 2;
 
-      while (north_row < 0)
+      stepYIncrement = cellSizeY;
+      stepYIncrementOverTwo = cellSizeY / 2;
+
+      north_row = originY;
+      currentNorth = worldOriginY;
+
+      for (var y = originY; y <= limitY; y++)
       {
-        north_row += stepY;
-        currentNorth += stepYIncrement;
-      }
-
-      while (north_row < dimensionY)
-      {
-        temp = worldOriginX / stepXIncrement;
-        currentEast = (Math.Truncate(temp) * stepXIncrement) - stepXIncrementOverTwo;
-        east_col = (int)Math.Floor((currentEast - worldOriginX) / cellSizeX);
-
-        while (east_col < 0)
-        {
-          east_col += stepX;
-          currentEast += stepXIncrement;
-        }
+        currentEast = worldOriginX;
 
         if (drawCellStrips)
           DoStartRowScan();
 
-        while (east_col < dimensionX)
+        east_col = originX;
+        for (var x = originX; x <= limitX; x++)
         {
           if (drawCellStrips)
             DoAccumulateStrip();
           else
             DoRenderCell();
 
-          currentEast += stepXIncrement;
-          east_col += stepX;
+          currentEast += cellSizeX;
+          east_col++;
         }
 
         if (drawCellStrips)
           DoEndRowScan();
 
-        currentNorth += stepYIncrement;
-        north_row += stepY;
+        currentNorth += cellSizeY;
+        north_row++;
       }
     }
+
     #region IDisposable Support
     private bool _disposedValue; // To detect redundant calls
 

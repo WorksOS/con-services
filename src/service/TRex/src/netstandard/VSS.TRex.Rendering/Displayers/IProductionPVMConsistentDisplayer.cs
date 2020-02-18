@@ -5,9 +5,11 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public interface IProductionPVMConsistentDisplayer
   {
-    IPVMTaskAccumulator GetPVMTaskAccumulator(int cellsWidth, int cellsHeight,
+    IPVMTaskAccumulator GetPVMTaskAccumulator(double valueStoreCellSizeX, double valueStoreCellSizeY,
+      int cellsWidth, int cellsHeight,
       double worldX, double worldY,
-      double originX, double originY);
+      double originX, double originY,
+      double sourceCellSize);
 
     bool PerformConsistentRender();
 
