@@ -56,7 +56,7 @@ namespace VSS.TRex.Tests.Rendering
     public void AllCellsAssignment_AtOrigin()
     {
       var accum = new PVMTaskAccumulator<float, ClientHeightLeafSubGrid>(
-        1, 1, SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension,
+        SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension,
         SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize, 
         0, 0, SubGridTreeConsts.DefaultCellSize);
       var subGrid = NewClientSubGrid();
@@ -69,7 +69,8 @@ namespace VSS.TRex.Tests.Rendering
     [Fact]
     public void SkippedCellsAssignment_AtOrigin()
     {
-      var accum = new PVMTaskAccumulator<float, ClientHeightLeafSubGrid>(1, 1, SubGridTreeConsts.SubGridTreeDimension / 2, SubGridTreeConsts.SubGridTreeDimension / 2,
+      var accum = new PVMTaskAccumulator<float, ClientHeightLeafSubGrid>(SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultCellSize, 
+        SubGridTreeConsts.SubGridTreeDimension / 2, SubGridTreeConsts.SubGridTreeDimension / 2,
         SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.SubGridTreeDimension * SubGridTreeConsts.DefaultCellSize,
         0, 0, SubGridTreeConsts.DefaultCellSize);
       var subGrid = NewClientSubGrid();
