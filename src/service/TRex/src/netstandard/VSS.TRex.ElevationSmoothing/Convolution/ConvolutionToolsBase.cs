@@ -7,7 +7,7 @@ namespace VSS.TRex.DataSmoothing
   {
     public virtual void Convolve(GenericLeafSubGrid<T> leaf, GenericLeafSubGrid<T> smoothedLeaf, IConvolver<T> convolver)
     {
-      throw new NotImplementedException("Convolve(GenericLeafSubGrid<T> leaf, ...) not implemented in this convolution tools class");
+      throw new NotImplementedException($"Convolve({nameof(GenericLeafSubGrid<T>)} leaf, ...) not implemented in this convolution tools class");
     }
 
     public virtual void Convolve(T[,] source, T[,] dest, IConvolver<T> convolver)

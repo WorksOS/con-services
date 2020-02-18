@@ -8,14 +8,14 @@ namespace VSS.TRex.DataSmoothing
   public class ArrayDataSmoother<TV> : IArrayDataSmoother<TV>
   {
     private readonly IConvolutionTools<TV> _convolutionTools;
-    private readonly int _contextSize;
+    private readonly ConvolutionMaskSize _contextSize;
     private readonly IConvolutionAccumulator<TV> _accumulator;
-    private readonly Func<IConvolutionAccumulator<TV>, int, IConvolver<TV>> _convolverFactory;
+    private readonly Func<IConvolutionAccumulator<TV>, ConvolutionMaskSize, IConvolver<TV>> _convolverFactory;
 
     public ArrayDataSmoother(
-      IConvolutionTools<TV> convolutionTools, int contextSize,
+      IConvolutionTools<TV> convolutionTools, ConvolutionMaskSize contextSize,
       IConvolutionAccumulator<TV> accumulator,
-      Func<IConvolutionAccumulator<TV>, int, IConvolver<TV>> convolverFactory)
+      Func<IConvolutionAccumulator<TV>, ConvolutionMaskSize, IConvolver<TV>> convolverFactory)
     {
       _convolutionTools = convolutionTools ?? throw new ArgumentException("ConvolutionTools is null", nameof(convolutionTools));
       _contextSize = contextSize;
@@ -25,7 +25,7 @@ namespace VSS.TRex.DataSmoothing
 
     public int AdditionalBorderSize
     {
-      get => _contextSize / 2;
+      get => (int)_contextSize / 2;
     }
 
     public TV[,] Smooth(TV[,] source)

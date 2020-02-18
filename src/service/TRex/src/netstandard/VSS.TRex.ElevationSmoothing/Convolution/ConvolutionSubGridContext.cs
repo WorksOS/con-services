@@ -6,8 +6,8 @@ namespace VSS.TRex.DataSmoothing
 {
   public struct ConvolutionSubGridContext<T, TV> where T : GenericLeafSubGrid<TV>
   {
-    private const int ContextSize = 3; // Sub grids
-    private const int CenterIndex = ContextSize / 2;
+    private const int SubGridContextSize = 3;
+    private const int CenterIndex = SubGridContextSize / 2;
 
     public T[,] LeafContext;
     public readonly TV NullValue;
@@ -21,7 +21,7 @@ namespace VSS.TRex.DataSmoothing
     {
       NullValue = nullValue;
 
-      LeafContext = new T[ContextSize, ContextSize];
+      LeafContext = new T[SubGridContextSize, SubGridContextSize];
 
       LeafContext[CenterIndex, CenterIndex] = leaf;
 

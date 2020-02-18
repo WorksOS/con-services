@@ -3,7 +3,7 @@
 namespace VSS.TRex.DataSmoothing
 {
   /// <summary>
-  /// Implements a classical base convoler that accepts a filter matrix and applies it to the data set
+  /// Implements a classical base convolver that accepts a filter matrix and applies it to the data set
   /// to be convoled.
   /// </summary>
   /// <typeparam name="T"></typeparam>

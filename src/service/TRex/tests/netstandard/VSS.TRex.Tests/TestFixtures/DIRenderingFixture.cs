@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.TestFixtures
       switch (key)
       {
         case DisplayMode.Height:
-          return new ElevationArraySmoother(new ConvolutionTools<float>(), 3, updateNullValues, infillNullValuesOnly);
+          return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, updateNullValues, infillNullValuesOnly);
         default:
           return null;
       }
