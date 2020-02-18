@@ -12,17 +12,17 @@ namespace VSS.TRex.Rendering.Executors.Tasks
     /// <summary>
     /// The cell size of the cells contained in the accumulated sub grids
     /// </summary>
-    private readonly double _sourceCellSize;
+    public readonly double SourceCellSize;
 
     /// <summary>
     /// The X and Y dimensions of the cells in the value accumulator array
     /// </summary>
-    private double _valueStoreCellSizeX, _valueStoreCellSizeY;
+    public readonly double ValueStoreCellSizeX, ValueStoreCellSizeY;
 
     /// <summary>
     /// The number of cells wide and high in the accumulator array
     /// </summary>
-    private readonly int _cellsWidth, _cellsHeight;
+    public readonly int CellsWidth, CellsHeight;
 
     public readonly double WorldX;
     public readonly double WorldY;
@@ -35,13 +35,13 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
     private void InitialiseValueStore(TC nullCellValue)
     {
-      ValueStore = new TC[_cellsWidth, _cellsHeight];
+      ValueStore = new TC[CellsWidth, CellsHeight];
 
       // Initialise value store to the supplied null values to ensure colour choosing from the palette is
       // correct for values that are not populated from inbound subgrids
-      for (var i = 0; i < _cellsWidth; i++)
+      for (var i = 0; i < CellsWidth; i++)
       {
-        for (var j = 0; j < _cellsHeight; j++)
+        for (var j = 0; j < CellsHeight; j++)
         {
           ValueStore[i, j] = nullCellValue;
         }
@@ -50,14 +50,14 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
     private void CalculateAccumulatorParameters()
     {
-      var stepsPerPixelX = (WorldX / _cellsWidth) / _sourceCellSize;
-      var stepsPerPixelY = (WorldY / _cellsHeight) / _sourceCellSize;
+      var stepsPerPixelX = ValueStoreCellSizeX / SourceCellSize;
+      var stepsPerPixelY = ValueStoreCellSizeY / SourceCellSize;
 
       _stepX = Math.Max(1, (int)Math.Truncate(stepsPerPixelX));
       _stepY = Math.Max(1, (int)Math.Truncate(stepsPerPixelY));
 
-      _stepXIncrement = _stepX * _sourceCellSize;
-      _stepYIncrement = _stepY * _sourceCellSize;
+      _stepXIncrement = _stepX * SourceCellSize;
+      _stepYIncrement = _stepY * SourceCellSize;
 
       _stepXIncrementOverTwo = _stepXIncrement / 2;
       _stepYIncrementOverTwo = _stepYIncrement / 2;
@@ -80,15 +80,15 @@ namespace VSS.TRex.Rendering.Executors.Tasks
       double originX, double originY,
       double sourceCellSize)
     {
-      _valueStoreCellSizeX = valueStoreCellSizeX;
-      _valueStoreCellSizeY = valueStoreCellSizeY;
-      _cellsWidth = cellsWidth;
-      _cellsHeight = cellsHeight;
+      ValueStoreCellSizeX = valueStoreCellSizeX;
+      ValueStoreCellSizeY = valueStoreCellSizeY;
+      CellsWidth = cellsWidth;
+      CellsHeight = cellsHeight;
       OriginX = originX;
       OriginY = originY;
       WorldX = worldX;
       WorldY = worldY;
-      _sourceCellSize = sourceCellSize;
+      SourceCellSize = sourceCellSize;
     }
 
     /// <summary>
@@ -119,21 +119,21 @@ namespace VSS.TRex.Rendering.Executors.Tasks
 
       var temp = subGridWorldOriginY / _stepYIncrement;
       var currentNorth = (Math.Truncate(temp) * _stepYIncrement) - _stepYIncrementOverTwo;
-      var northRow = (int) Math.Floor((currentNorth - subGridWorldOriginY) / _sourceCellSize);
+      var northRow = (int) Math.Floor((currentNorth - subGridWorldOriginY) / SourceCellSize);
       while (northRow < 0)
       {
         northRow += _stepY;
         currentNorth += _stepYIncrement;
       }
 
-      var valueStoreY = (int)Math.Floor((currentNorth - OriginY) / _valueStoreCellSizeY);
+      var valueStoreY = (int)Math.Floor((currentNorth - OriginY) / ValueStoreCellSizeY);
       while (northRow < SubGridTreeConsts.SubGridTreeDimension)
       {
-        if (valueStoreY >= 0 && valueStoreY < _cellsHeight)
+        if (valueStoreY >= 0 && valueStoreY < CellsHeight)
         {
           temp = subGridWorldOriginX / _stepXIncrement;
           var currentEast = (Math.Truncate(temp) * _stepXIncrement) - _stepXIncrementOverTwo;
-          var eastCol = (int) Math.Floor((currentEast - subGridWorldOriginX) / _sourceCellSize);
+          var eastCol = (int) Math.Floor((currentEast - subGridWorldOriginX) / SourceCellSize);
 
           while (eastCol < 0)
           {
@@ -141,12 +141,12 @@ namespace VSS.TRex.Rendering.Executors.Tasks
             currentEast += _stepXIncrement;
           }
 
-          var valueStoreX = (int)Math.Floor((currentEast - OriginX) / _valueStoreCellSizeX);
+          var valueStoreX = (int)Math.Floor((currentEast - OriginX) / ValueStoreCellSizeX);
 
           while (eastCol < SubGridTreeConsts.SubGridTreeDimension)
           {
             // Transcribe the value at [east_col, north_row] in the subgrid in to the matching location in the value store
-            if (valueStoreX >= 0 && valueStoreX < _cellsWidth)
+            if (valueStoreX >= 0 && valueStoreX < CellsWidth)
             {
               ValueStore[valueStoreX, valueStoreY] = cells[eastCol, northRow];
             }

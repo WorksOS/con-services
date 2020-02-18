@@ -97,10 +97,11 @@ namespace VSS.TRex.Rendering.Displayers
 
       var insetSize = DataSmoother?.AdditionalBorderSize ?? 0;
 
-      DoIterate(_taskAccumulator.OriginX, _taskAccumulator.OriginY,
+      DoIterate(_taskAccumulator.ValueStoreCellSizeX, _taskAccumulator.ValueStoreCellSizeY,
+        _taskAccumulator.OriginX, _taskAccumulator.OriginY,
         _taskAccumulator.WorldX, _taskAccumulator.WorldY,
         insetSize, insetSize,
-        ValueStore.GetLength(0) - insetSize - 1, ValueStore.GetLength(1) - insetSize - 1);
+        ValueStore.GetLength(0) - insetSize, ValueStore.GetLength(1) - insetSize);
 
       return true;
     }

@@ -118,8 +118,10 @@ namespace VSS.TRex.Rendering.Displayers
     protected virtual bool SupportsCellStripRendering() => true;
 
     /// <summary>
-    /// Performs skip iteration across a region of a single 2D array of values
+    /// Performs iteration across a region of a single 2D array of values
     /// </summary>
+    /// <param name="valueStoreCellSizeY"></param>
+    /// <param name="valueStoreCellSizeX"></param>
     /// <param name="worldOriginX"></param>
     /// <param name="worldOriginY"></param>
     /// <param name="worldWidth"></param>
@@ -128,13 +130,12 @@ namespace VSS.TRex.Rendering.Displayers
     /// <param name="originY"></param>
     /// <param name="limitX"></param>
     /// <param name="limitY"></param>
-
-    protected void DoIterate(double worldOriginX, double worldOriginY, double worldWidth, double worldHeight, int originX, int originY, int limitX, int limitY)
+    protected void DoIterate(double valueStoreCellSizeX, double valueStoreCellSizeY, double worldOriginX, double worldOriginY, double worldWidth, double worldHeight, int originX, int originY, int limitX, int limitY)
     {
       var drawCellStrips = SupportsCellStripRendering();
 
-      cellSizeX = worldWidth / (limitX - originX + 1);
-      cellSizeY = worldHeight / (limitY - originY + 1);
+      cellSizeX = valueStoreCellSizeX; //worldWidth / (limitX - originX + 1);
+      cellSizeY = valueStoreCellSizeY; //worldHeight / (limitY - originY + 1);
 
       stepXIncrement = cellSizeX;
       stepXIncrementOverTwo = cellSizeX / 2;
