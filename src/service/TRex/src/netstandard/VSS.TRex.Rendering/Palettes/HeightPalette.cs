@@ -3,13 +3,14 @@ using System.Drawing;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
+using VSS.TRex.Types.CellPasses;
 
 namespace VSS.TRex.Rendering.Palettes
 {
   public class HeightPalette : PaletteBase
   {
     private const byte VERSION_NUMBER = 1;
-    private Color UndefinedColor = Color.Black;
+    private readonly Color UndefinedColor = Color.Black;
 
     private double MinElevation;
     private double MaxElevation;
@@ -60,17 +61,20 @@ namespace VSS.TRex.Rendering.Palettes
       ElevationPerBand = (MaxElevation - MinElevation) / (ElevationPalette.Length - 1);
     }
 
-    public new Color ChooseColour(double value)
+    /// <summary>
+    /// Choose the appropriate colour from the palette given the cell height, expressed as a float value.
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public new Color ChooseColour(float value)
     {
-      var color = UndefinedColor;
-
-      if (value != Consts.NullDouble)
+      if (value != CellPassConsts.NullHeight)
       {
-        int index = (int)Math.Floor((value - MinElevation) / ElevationPerBand);
-        color = Range.InRange(index, 0, ElevationPalette.Length - 1) ? ElevationPalette[index] : UndefinedColor;
+        var index = (int)Math.Floor((value - MinElevation) / ElevationPerBand);
+        return Range.InRange(index, 0, ElevationPalette.Length - 1) ? ElevationPalette[index] : UndefinedColor;
       }
 
-      return color;
+      return UndefinedColor;
     }
 
     /// <summary>

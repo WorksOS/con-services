@@ -24,11 +24,32 @@ namespace VSS.TRex.Rendering.Palettes
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
+    public Draw.Color ChooseColour(float value)
+    {
+      var color = Draw.Color.Empty;
+
+      for (var i = PaletteTransitions.Length - 1; i >= 0; i--)
+      {
+        if (value >= PaletteTransitions[i].Value)
+        {
+          color = PaletteTransitions[i].Color;
+          break;
+        }
+      }
+
+      return color;
+    }
+
+    /// <summary>
+    /// Logic to choose a colour from the set of transitions depending on the value. Slow but simple for the POC...
+    /// </summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
     public Draw.Color ChooseColour(double value)
     {
       var color = Draw.Color.Empty;
 
-      for (int i = PaletteTransitions.Length - 1; i >= 0; i--)
+      for (var i = PaletteTransitions.Length - 1; i >= 0; i--)
       {
         if (value >= PaletteTransitions[i].Value)
         {
@@ -73,7 +94,7 @@ namespace VSS.TRex.Rendering.Palettes
 
         PaletteTransitions = new Transition[numberOfTransitions];
 
-        for (int i = 0; i < PaletteTransitions.Length; i++)
+        for (var i = 0; i < PaletteTransitions.Length; i++)
           PaletteTransitions[i].FromBinary(reader);
       }
     }
