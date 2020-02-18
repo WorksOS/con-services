@@ -53,6 +53,10 @@ namespace VSS.TRex.Webtools.Controllers
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModelUid);
       var displayMode = (DisplayMode) mode;
 
+      var filters = displayMode == DisplayMode.CutFill || displayMode == DisplayMode.VolumeCoverage
+        ? new FilterSet(new CombinedFilter(), new CombinedFilter())
+        : new FilterSet(new CombinedFilter());
+
       var response = await request.ExecuteAsync(new TileRenderRequestArgument(
         siteModelUid,
         displayMode,
@@ -61,7 +65,7 @@ namespace VSS.TRex.Webtools.Controllers
         true,
         pixelsX,
         pixelsY,
-        new FilterSet(new CombinedFilter(), new CombinedFilter()),
+        filters,
         new DesignOffset(cutFillDesignUid ?? Guid.Empty, offset ?? 0.0)
       )) as TileRenderResponse_Core2;
 
