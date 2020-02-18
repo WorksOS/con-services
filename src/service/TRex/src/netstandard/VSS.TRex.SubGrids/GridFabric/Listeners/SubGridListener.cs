@@ -52,10 +52,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     {
       using (var MS = new MemoryStream(message.Bytes))
       {
-        using (BinaryReader reader = new BinaryReader(MS, Encoding.UTF8, true))
+        using (var reader = new BinaryReader(MS, Encoding.UTF8, true))
         {
           // Read the number of sub grid present in the stream
-          int responseCount = reader.ReadInt32();
+          var responseCount = reader.ReadInt32();
 
           // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
           // to the called context (it may clone the passed in client grid if desired)
@@ -63,12 +63,12 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 
           try
           {
-            for (int i = 0; i < responseCount; i++)
+            for (var i = 0; i < responseCount; i++)
             {
-              int subGridCount = reader.ReadInt32();
+              var subGridCount = reader.ReadInt32();
               clientGrids[i] = new IClientLeafSubGrid[subGridCount];
 
-              for (int j = 0; j < subGridCount; j++)
+              for (var j = 0; j < subGridCount; j++)
               {
                 clientGrids[i][j] = ClientLeafSubGridFactory.GetSubGrid(TRexTask.GridDataType);
 
@@ -88,9 +88,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
             {
               lock (TRexTask)
               {
-                for (int i = 0; i < responseCount; i++)
+                for (var i = 0; i < responseCount; i++)
                 {
-                  int thisResponseCount = ++responseCounter;
+                  var thisResponseCount = ++responseCounter;
 
                   if (TRexTask.TransferResponse(clientGrids[i]))
                   {

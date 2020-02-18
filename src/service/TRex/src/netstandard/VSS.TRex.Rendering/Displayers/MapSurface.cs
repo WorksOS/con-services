@@ -807,8 +807,6 @@ double BorderSize)
 
         public void DrawNonRotatedRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
-            //int px1, py1, px2, py2;
-
             try
             {
                 int px1 = (int)Math.Truncate((x - OriginX) * DQMScaleX);
@@ -846,8 +844,6 @@ double BorderSize)
 
         public void DrawRect(double x, double y, double w, double h, bool Fill, Color PenColor)
         {
-            // const double Epsilon = 0;
-
             try
             {
                 if (!Rotating)
