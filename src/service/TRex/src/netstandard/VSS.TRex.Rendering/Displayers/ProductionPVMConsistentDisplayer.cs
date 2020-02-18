@@ -62,7 +62,7 @@ namespace VSS.TRex.Rendering.Displayers
 
     public IDataSmoother DataSmoother { get; set; }
 
- /// <summary>
+    /// <summary>
     /// Performs a 'consistent' render across a 2D array of collated values from queried sub grids.
     /// Effectively this treats the passed array as if it were a subgrid of that size and renders it as
     /// such against the MapView.
@@ -101,7 +101,7 @@ namespace VSS.TRex.Rendering.Displayers
         _taskAccumulator.OriginX, _taskAccumulator.OriginY,
         _taskAccumulator.WorldX, _taskAccumulator.WorldY,
         insetSize, insetSize,
-        ValueStore.GetLength(0) - insetSize, ValueStore.GetLength(1) - insetSize);
+        ValueStore.GetLength(0) - insetSize - 1, ValueStore.GetLength(1) - insetSize - 1);
 
       return true;
     }
