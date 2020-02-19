@@ -95,17 +95,19 @@ namespace VSS.TRex.Tests.DataSmoothing
     }
 
     [Theory]
-    [InlineData(3)]
-    [InlineData(5)]
-    public void NullInfillResult_BelowConcensus(int contextSize)
+    [InlineData(ConvolutionMaskSize.Mask3X3)]
+    [InlineData(ConvolutionMaskSize.Mask5X5)]
+    public void NullInfillResult_BelowConcensus(ConvolutionMaskSize contextSize)
     {
       const float accumValue = 100.0f;
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3)
+      var contextSizeAsInt = (int) contextSize;
+
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize)
       {
         ConvolutionSourceValue = CellPassConsts.NullHeight
       };
 
-      var concensusFraction = (int)Math.Truncate(0.5 * (contextSize * contextSize));
+      var concensusFraction = (int)Math.Truncate(0.5 * (contextSizeAsInt * contextSizeAsInt));
 
       for (var i = 0; i < concensusFraction; i++)
       {
@@ -116,18 +118,19 @@ namespace VSS.TRex.Tests.DataSmoothing
     }
 
     [Theory]
-    [InlineData(3)]
-    [InlineData(5)]
-    public void NullInfillResult_AboveConcensus(int contextSize)
+    [InlineData(ConvolutionMaskSize.Mask3X3)]
+    [InlineData(ConvolutionMaskSize.Mask5X5)]
+    public void NullInfillResult_AboveConcensus(ConvolutionMaskSize contextSize)
     {
       const float accumValue = 100.0f;
+      var contextSizeAsInt = (int)contextSize;
 
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3)
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize)
       {
         ConvolutionSourceValue = CellPassConsts.NullHeight
       };
 
-      float contextSizeSquare = contextSize * contextSize;
+      float contextSizeSquare = contextSizeAsInt * contextSizeAsInt;
       var concensusFraction = (int)Math.Truncate(0.5f * contextSizeSquare);
 
       for (var i = 0; i < concensusFraction + 1; i++)

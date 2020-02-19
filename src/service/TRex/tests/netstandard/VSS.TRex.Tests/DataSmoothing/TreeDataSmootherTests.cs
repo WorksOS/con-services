@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       var filter = new double[3, 3];
 
       var smoother = new TreeDataSmoother<float>(tools, ConvolutionMaskSize.Mask3X3, accum,
-        (acc, size) => new FilterConvolver<float>(accum, filter, false, false));
+        (acc, size) => new FilterConvolver<float>(accum, filter, NullInfillMode.NoInfill));
 
       smoother.Should().NotBeNull();
       smoother.AdditionalBorderSize.Should().Be(3 / 2);
@@ -48,7 +48,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       };
 
       var smoother = new TreeDataSmoother<float>(tools, ConvolutionMaskSize.Mask3X3, accum,
-        (accum, size) => new FilterConvolver<float>(accum, filter, false, false));
+        (accum, size) => new FilterConvolver<float>(accum, filter, NullInfillMode.NoInfill));
 
       var result = smoother.Smooth(source);
 

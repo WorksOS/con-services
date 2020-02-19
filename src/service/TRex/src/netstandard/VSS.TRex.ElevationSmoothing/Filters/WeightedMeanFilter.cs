@@ -3,9 +3,8 @@
   public class WeightedMeanFilter<T> : MeanFilter<T>
   {
     public WeightedMeanFilter(IConvolutionAccumulator<T> accumulator,
-      ConvolutionMaskSize contextSize, double centerWeight, 
-      bool updateNullValues, bool infillNullValuesOnly) 
-      : base(accumulator, CreateFilter(contextSize, centerWeight), updateNullValues, infillNullValuesOnly)
+      ConvolutionMaskSize contextSize, double centerWeight, NullInfillMode nullInfillMode) 
+      : base(accumulator, CreateFilter(contextSize, centerWeight), nullInfillMode)
     {
     }
   }

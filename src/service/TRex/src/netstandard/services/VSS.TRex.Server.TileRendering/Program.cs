@@ -67,12 +67,12 @@ namespace VSS.TRex.Server.TileRendering
       }
     }
 
-    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key, bool updateNullValues, bool infillNullValuesOnly)
+    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key, NullInfillMode nullInfillMode)
     {
       switch (key)
       {
         case DisplayMode.Height :
-          return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, updateNullValues, infillNullValuesOnly); 
+          return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, nullInfillMode); 
         default: 
           return null;
       } 
@@ -128,7 +128,7 @@ namespace VSS.TRex.Server.TileRendering
           .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
-        .Add(x => x.AddSingleton<Func<DisplayMode, bool, bool, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+        .Add(x => x.AddSingleton<Func<DisplayMode, NullInfillMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
 
         .Complete();
     }

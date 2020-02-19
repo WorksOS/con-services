@@ -13,7 +13,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     {
       var tools = new ConvolutionTools<float>();
 
-      var smoother = new ElevationTreeSmoother(tools, ConvolutionMaskSize.Mask3X3, false, false);
+      var smoother = new ElevationTreeSmoother(tools, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill);
 
       smoother.Should().NotBeNull();
     }
@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       sourceSubGrid.Should().NotBeNull();
 
       var tools = new ConvolutionTools<float>();
-      var smoother = new ElevationTreeSmoother(tools, ConvolutionMaskSize.Mask3X3, false, false);
+      var smoother = new ElevationTreeSmoother(tools, ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill);
 
       var result = smoother.Smooth(source);
 

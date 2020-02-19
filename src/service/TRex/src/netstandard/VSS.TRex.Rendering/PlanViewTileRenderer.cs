@@ -119,10 +119,6 @@ namespace VSS.TRex.Rendering
       */
     }
 
-    //      property WorkingPalette : TICDisplayPaletteBase read GetWorkingPalette write SetWorkingPalette;
-    //      property DisplayPalettes : TICDisplayPalettes read FDisplayPalettes write FDisplayPalettes;
-    //      property ICOptions : TSVOICOptions read FICOptions write FICOptions;
-
     /// <summary>
     /// Perform rendering activities to produce a bitmap tile
     /// </summary>
@@ -172,7 +168,7 @@ namespace VSS.TRex.Rendering
 
       // Provide data smoothing support to the displayer for the rendering operation being performed
       (Displayer as IProductionPVMConsistentDisplayer).DataSmoother 
-        = DIContext.Obtain<Func<DisplayMode, bool, bool, IDataSmoother>>()(mode, false, false);
+        = DIContext.Obtain<Func<DisplayMode, NullInfillMode, IDataSmoother>>()(mode, NullInfillMode.NoInfill);
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
@@ -267,11 +263,11 @@ namespace VSS.TRex.Rendering
     }
 
     #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
+    private bool _disposedValue; // To detect redundant calls
 
     protected virtual void Dispose(bool disposing)
     {
-      if (!disposedValue)
+      if (!_disposedValue)
       {
         if (disposing)
         {
@@ -283,7 +279,7 @@ namespace VSS.TRex.Rendering
           }
         }
 
-        disposedValue = true;
+        _disposedValue = true;
       }
     }
 

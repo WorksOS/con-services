@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void FilterConvolverAssertsDimensionsMatch()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3);
-      var filter = new FilterConvolver<float>(accumulator, new double[3, 3], false, false);
+      var filter = new FilterConvolver<float>(accumulator, new double[3, 3], NullInfillMode.NoInfill);
       var smoother = new ConvolutionTools<float>();
 
       Action act = () => smoother.Convolve(new float[3, 3], new float[4, 4], filter);
@@ -47,7 +47,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize);
-      var filter = new MeanFilter<float>(accumulator, contextSize, false, false);
+      var filter = new MeanFilter<float>(accumulator, contextSize, NullInfillMode.NoInfill);
       var smoother = new ConvolutionTools<float>();
       smoother.Convolve(subGrid, result, filter);
 
@@ -98,7 +98,7 @@ namespace VSS.TRex.Tests.DataSmoothing
         result.Should().NotBeNull();
 
         var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize);
-        var filter = new MeanFilter<float>(accumulator, contextSize, false, false);
+        var filter = new MeanFilter<float>(accumulator, contextSize, NullInfillMode.NoInfill);
         var smoother = new ConvolutionTools<float>();
         smoother.Convolve(subGrid, result, filter);
 
@@ -114,9 +114,9 @@ namespace VSS.TRex.Tests.DataSmoothing
     }
 
     [Theory]
-    [InlineData(ConvolutionMaskSize.Mask3X3, 10.0f, (2/3f) * 10.0f, (1 /9f) * 10.0f, (1/9f) * 10.0f, false)]
-    [InlineData(ConvolutionMaskSize.Mask3X3, 10.0f, (2 / 3f) * 10.0f, (1 / 9f) * 10.0f, (1 / 9f) * 10.0f, true)]
-    public void SingleSubGrid_SingleSpikeELevation_OriginOfSubGrid(ConvolutionMaskSize contextSize, float elevation, float elevationResult1, float elevationResult2, float elevationResult3, bool updateNullValues)
+    [InlineData(ConvolutionMaskSize.Mask3X3, 10.0f, (2/3f) * 10.0f, (1 /9f) * 10.0f, (1/9f) * 10.0f, NullInfillMode.NoInfill)]
+    [InlineData(ConvolutionMaskSize.Mask3X3, 10.0f, (2 / 3f) * 10.0f, (1 / 9f) * 10.0f, (1 / 9f) * 10.0f, NullInfillMode.InfillNullValues)]
+    public void SingleSubGrid_SingleSpikeELevation_OriginOfSubGrid(ConvolutionMaskSize contextSize, float elevation, float elevationResult1, float elevationResult2, float elevationResult3, NullInfillMode nullInfillMode)
     {
       var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);
       var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
@@ -128,7 +128,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize);
-      var filter = new MeanFilter<float>(accumulator, contextSize, updateNullValues, false);
+      var filter = new MeanFilter<float>(accumulator, contextSize, nullInfillMode);
       var smoother = new ConvolutionTools<float>();
       smoother.Convolve(subGrid, result, filter);
 
@@ -163,7 +163,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize);
-      var filter = new MeanFilter<float>(accumulator, contextSize, false, false);
+      var filter = new MeanFilter<float>(accumulator, contextSize, NullInfillMode.NoInfill);
       var smoother = new ConvolutionTools<float>();
       smoother.Convolve(subGrid, result, filter);
 
@@ -203,7 +203,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       result.Should().NotBeNull();
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize);
-      var filter = new MeanFilter<float>(accumulator, contextSize, true, true);
+      var filter = new MeanFilter<float>(accumulator, contextSize, NullInfillMode.InfillNullValuesOnly);
       var smoother = new ConvolutionTools<float>();
       smoother.Convolve(subGrid, result, filter);
 
@@ -235,7 +235,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       var destArray = new float[width, height];
 
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize);
-      var filter = new MeanFilter<float>(accumulator, contextSize, false, false);
+      var filter = new MeanFilter<float>(accumulator, contextSize, NullInfillMode.NoInfill);
       var smoother = new ConvolutionTools<float>();
       smoother.Convolve(sourceArray, destArray, filter);
 

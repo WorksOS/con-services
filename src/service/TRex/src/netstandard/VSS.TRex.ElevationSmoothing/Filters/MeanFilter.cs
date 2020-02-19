@@ -29,11 +29,11 @@ namespace VSS.TRex.DataSmoothing
       return result;
     }
 
-    public MeanFilter(IConvolutionAccumulator<T> accumulator, ConvolutionMaskSize contextSize, bool updateNullValues, bool infillNullValuesOnly) : base(accumulator, CreateFilter(contextSize, 1), updateNullValues, infillNullValuesOnly)
+    public MeanFilter(IConvolutionAccumulator<T> accumulator, ConvolutionMaskSize contextSize, NullInfillMode nullInfillMode) : base(accumulator, CreateFilter(contextSize, 1), nullInfillMode)
     {
     }
 
-    public MeanFilter(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, bool updateNullValues, bool infillNullValuesOnly) : base(accumulator, filterMatrix, updateNullValues, infillNullValuesOnly)
+    public MeanFilter(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, NullInfillMode nullInfillMode) : base(accumulator, filterMatrix, nullInfillMode)
     {
     }
   }

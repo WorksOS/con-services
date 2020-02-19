@@ -8,10 +8,10 @@ namespace VSS.TRex.DataSmoothing
   public class ElevationTreeSmoother : TreeDataSmoother<float>
   {
     public ElevationTreeSmoother(
-      IConvolutionTools<float> convolutionTools, ConvolutionMaskSize contextSize, bool updateNullValues, bool infillNullValuesOnly)
+      IConvolutionTools<float> convolutionTools, ConvolutionMaskSize contextSize, NullInfillMode nullInfillMode)
       : base(convolutionTools, contextSize, 
         new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize),
-        (accum, cSize) => new MeanFilter<float>(accum, cSize, updateNullValues, infillNullValuesOnly))
+        (accum, cSize) => new MeanFilter<float>(accum, cSize, nullInfillMode))
     {
     }
   }

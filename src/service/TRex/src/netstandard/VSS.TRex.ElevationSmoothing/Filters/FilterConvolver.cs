@@ -11,10 +11,10 @@ namespace VSS.TRex.DataSmoothing
   {
     public readonly double[,] FilterMatrix;
 
-    public FilterConvolver(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, bool updateNullValues, bool infillNullValuesOnly) : base(accumulator)
+    public FilterConvolver(IConvolutionAccumulator<T> accumulator, double[,] filterMatrix, NullInfillMode nullInfillMode) : base(accumulator)
     {
-      _infillNullValuesOnly = infillNullValuesOnly;
-      _updateNullValues = updateNullValues || infillNullValuesOnly;
+      _infillNullValuesOnly = nullInfillMode == NullInfillMode.InfillNullValuesOnly;
+      _updateNullValues = nullInfillMode == NullInfillMode.InfillNullValuesOnly || _infillNullValuesOnly;
 
       FilterMatrix = filterMatrix;
 
