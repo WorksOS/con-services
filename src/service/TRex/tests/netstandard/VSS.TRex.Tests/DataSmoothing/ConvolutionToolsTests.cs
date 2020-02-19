@@ -33,9 +33,9 @@ namespace VSS.TRex.Tests.DataSmoothing
     }
 
     [Theory]
-    [InlineData(3)]
-    [InlineData(5)]
-    public void SingleSubGrid_AtOrigin(int contextSize)
+    [InlineData(ConvolutionMaskSize.Mask3X3)]
+    [InlineData(ConvolutionMaskSize.Mask5X5)]
+    public void SingleSubGrid_AtOrigin(ConvolutionMaskSize contextSize)
     {
       const float ELEVATION = 10.0f;
 
@@ -64,9 +64,9 @@ namespace VSS.TRex.Tests.DataSmoothing
     }
 
     [Theory]
-    [InlineData(3)]
-    [InlineData(5)]
-    public void MultipleSubGrids_AtOrigin(int contextSize)
+    [InlineData(ConvolutionMaskSize.Mask3X3)]
+    [InlineData(ConvolutionMaskSize.Mask5X5)]
+    public void MultipleSubGrids_AtOrigin(ConvolutionMaskSize contextSize)
     {
       const float ELEVATION = 10.0f;
 
@@ -114,9 +114,9 @@ namespace VSS.TRex.Tests.DataSmoothing
     }
 
     [Theory]
-    [InlineData(3, 10.0f, (2/3f) * 10.0f, (1 /9f) * 10.0f, (1/9f) * 10.0f, false)]
-    [InlineData(3, 10.0f, (2 / 3f) * 10.0f, (1 / 9f) * 10.0f, (1 / 9f) * 10.0f, true)]
-    public void SingleSubGrid_SingleSpikeELevation_OriginOfSubGrid(int contextSize, float elevation, float elevationResult1, float elevationResult2, float elevationResult3, bool updateNullValues)
+    [InlineData(ConvolutionMaskSize.Mask3X3, 10.0f, (2/3f) * 10.0f, (1 /9f) * 10.0f, (1/9f) * 10.0f, false)]
+    [InlineData(ConvolutionMaskSize.Mask3X3, 10.0f, (2 / 3f) * 10.0f, (1 / 9f) * 10.0f, (1 / 9f) * 10.0f, true)]
+    public void SingleSubGrid_SingleSpikeELevation_OriginOfSubGrid(ConvolutionMaskSize contextSize, float elevation, float elevationResult1, float elevationResult2, float elevationResult3, bool updateNullValues)
     {
       var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);
       var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
@@ -142,16 +142,16 @@ namespace VSS.TRex.Tests.DataSmoothing
       {
         for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
-          if (!(i <= contextSize / 2 && j <= contextSize / 2))
+          if (!(i <= (int)contextSize / 2 && j <= (int)contextSize / 2))
             result.Items[i, j].Should().Be(0.0f);
         }
       }
     }
 
     [Theory]
-    [InlineData(3, 10.0f, 10.0f / 9.0f)]
-    [InlineData(5, 10.0f, 10.0f / 25.0f)]
-    public void SingleSubGrid_SingleSpikeELevation_CenterOfSubGrid(int contextSize, float elevation, float elevationResult)
+    [InlineData(ConvolutionMaskSize.Mask3X3, 10.0f, 10.0f / 9.0f)]
+    [InlineData(ConvolutionMaskSize.Mask5X5, 10.0f, 10.0f / 25.0f)]
+    public void SingleSubGrid_SingleSpikeELevation_CenterOfSubGrid(ConvolutionMaskSize contextSize, float elevation, float elevationResult)
     {
       var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(0.0f);
       var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
@@ -182,16 +182,16 @@ namespace VSS.TRex.Tests.DataSmoothing
       {
         for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
-          if (!(i >= 15 - contextSize / 2 && i <= 15 + contextSize / 2 && j >= 15 - contextSize / 2 && j <= 15 + contextSize / 2))
+          if (!(i >= 15 - (int)contextSize / 2 && i <= 15 + (int)contextSize / 2 && j >= 15 - (int)contextSize / 2 && j <= 15 + (int)contextSize / 2))
             result.Items[i, j].Should().Be(0.0f);
         }
       }
     }
 
     [Theory]
-    [InlineData(3, 100)]
-    [InlineData(5, 100)]
-    public void SingleSubGrid_SingleNullELevation_CenterOfSubGrid_NullInfillOnly(int contextSize, float elevation)
+    [InlineData(ConvolutionMaskSize.Mask3X3, 100)]
+    [InlineData(ConvolutionMaskSize.Mask5X5, 100)]
+    public void SingleSubGrid_SingleNullELevation_CenterOfSubGrid_NullInfillOnly(ConvolutionMaskSize contextSize, float elevation)
     {
       var tree = DataSmoothingTestUtilities.ConstructSingleSubGridElevationSubGridTreeAtOrigin(elevation);
       var subGrid = tree.LocateSubGridContaining(SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.SubGridTreeLevels) as GenericLeafSubGrid<float>;
@@ -213,13 +213,13 @@ namespace VSS.TRex.Tests.DataSmoothing
     }
 
     [Theory]
-    [InlineData(3, 1, 1)]
-    [InlineData(3, 10, 1)]
-    [InlineData(3, 1, 10)]
-    [InlineData(3, 100, 50)]
-    [InlineData(3, 50, 100)]
-    [InlineData(5, 100, 100)]
-    public void ArrayConvolver(int contextSize, int width, int height)
+    [InlineData(ConvolutionMaskSize.Mask3X3, 1, 1)]
+    [InlineData(ConvolutionMaskSize.Mask3X3, 10, 1)]
+    [InlineData(ConvolutionMaskSize.Mask3X3, 1, 10)]
+    [InlineData(ConvolutionMaskSize.Mask3X3, 100, 50)]
+    [InlineData(ConvolutionMaskSize.Mask3X3, 50, 100)]
+    [InlineData(ConvolutionMaskSize.Mask5X5, 100, 100)]
+    public void ArrayConvolver(ConvolutionMaskSize contextSize, int width, int height)
     {
       const float ELEVATION = 10.0f;
 

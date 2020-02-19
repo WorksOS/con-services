@@ -51,7 +51,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void Creation_Mean2()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new MeanFilter<float>(accumulator, 3, false, false);
+      var filter = new MeanFilter<float>(accumulator, ConvolutionMaskSize.Mask3X3, false, false);
       filter.Should().NotBeNull();
     }
 
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void Creation_WeightedMean()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0, false, false);
+      var filter = new WeightedMeanFilter<float>(accumulator, ConvolutionMaskSize.Mask3X3, 2.0, false, false);
       filter.Should().NotBeNull();
     }
 
@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void Creation_WeightedMean_FailWithContextSizeOutOfRange()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      Action act = () => _ = new WeightedMeanFilter<float>(accumulator, 100, 2.0, false, false);
+      Action act = () => _ = new WeightedMeanFilter<float>(accumulator, (ConvolutionMaskSize)100, 2.0, false, false);
       act.Should().Throw<ArgumentException>().WithMessage("Context size of 100 is out of range: 3..11");
     }
 
@@ -75,7 +75,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void Creation_WeightedMean_CenterWeightCorrect()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0, false, false);
+      var filter = new WeightedMeanFilter<float>(accumulator, ConvolutionMaskSize.Mask3X3, 2.0, false, false);
       filter.Should().NotBeNull();
 
       filter.FilterMatrix[1, 1].Should().Be(2 / 10.0d);
@@ -85,7 +85,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void ContextSize()
     {
       var accumulator = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
-      var filter = new WeightedMeanFilter<float>(accumulator, 3, 2.0, false, false);
+      var filter = new WeightedMeanFilter<float>(accumulator, ConvolutionMaskSize.Mask3X3, 2.0, false, false);
       filter.Should().NotBeNull();
       filter.ContextSize.Should().Be(3);
     }
