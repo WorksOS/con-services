@@ -143,7 +143,6 @@ namespace VSS.TRex.SubGrids
     /// Performs primary filtered iteration over cell passes in the cell being processed to determine the cell pass
     /// to be selected.
     /// </summary>
-    /// 
     private void ProcessCellPasses()
     {
       _haveFilteredPass = false;
@@ -206,7 +205,6 @@ namespace VSS.TRex.SubGrids
           }
           else
           {
-
             // check for min elevation mode
             var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
             var machine = _siteModel.Machines[internalMachineIndex];
@@ -223,7 +221,6 @@ namespace VSS.TRex.SubGrids
               }
               else if (_currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
                 _tempPass = _currentPass; // take if lowest pass
-   
             }
             else
             {
@@ -244,7 +241,6 @@ namespace VSS.TRex.SubGrids
     /// Special version of ProcessCellPasses when using a PasscountRange Filter. Performs primary filtered iteration over cell passes in the cell being processed to determine the cell pass
     /// to be selected.
     /// </summary>
-    /// 
     private void ProcessCellPassesPasscountRange()
     {
       _haveFilteredPass = false;
