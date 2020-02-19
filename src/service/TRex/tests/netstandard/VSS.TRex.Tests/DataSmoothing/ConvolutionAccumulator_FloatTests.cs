@@ -11,7 +11,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Creation()
     {
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3);
 
       accum.Should().NotBeNull();
       accum.NullValue.Should().Be(CellPassConsts.NullHeight);
@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Accumulate_NoCoefficient()
     {
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3);
       accum.Accumulate(123.0f);
       accum.Result().Should().Be(123.0f);
       accum.NumNonNullValues.Should().Be(1);
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Accumulate_WithCoefficient()
     {
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3)
       {
         ConvolutionSourceValue = 123.0f
       };
@@ -59,7 +59,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Accumulate_NullValue_WithCoefficient()
     {
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3)
       {
         ConvolutionSourceValue = 123.0f
       };
@@ -72,7 +72,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Clear()
     {
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3)
       {
         ConvolutionSourceValue = 123.0f
       };
@@ -89,7 +89,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     [Fact]
     public void Result()
     {
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3);
       accum.Accumulate(123.0f, 1.0);
       accum.Result().Should().Be(123.0f);
     }
@@ -100,7 +100,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void NullInfillResult_BelowConcensus(int contextSize)
     {
       const float accumValue = 100.0f;
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3)
       {
         ConvolutionSourceValue = CellPassConsts.NullHeight
       };
@@ -112,7 +112,7 @@ namespace VSS.TRex.Tests.DataSmoothing
         accum.Accumulate(accumValue, 1.0);
       }
 
-      accum.NullInfillResult(contextSize).Should().Be(CellPassConsts.NullHeight);
+      accum.NullInfillResult().Should().Be(CellPassConsts.NullHeight);
     }
 
     [Theory]
@@ -122,7 +122,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     {
       const float accumValue = 100.0f;
 
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight)
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3)
       {
         ConvolutionSourceValue = CellPassConsts.NullHeight
       };
@@ -135,9 +135,9 @@ namespace VSS.TRex.Tests.DataSmoothing
         accum.Accumulate(accumValue, 1.0);
       }
 
-      var expectedInfillResult = (float)(contextSizeSquare / (concensusFraction + 1)) * ((concensusFraction + 1) * accumValue);
+      var expectedInfillResult = (contextSizeSquare / (concensusFraction + 1)) * ((concensusFraction + 1) * accumValue);
 
-      accum.NullInfillResult(contextSize).Should().Be(expectedInfillResult);
+      accum.NullInfillResult().Should().Be(expectedInfillResult);
     }
   }
 }
