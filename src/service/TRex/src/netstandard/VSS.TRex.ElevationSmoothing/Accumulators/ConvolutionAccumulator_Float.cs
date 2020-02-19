@@ -29,6 +29,7 @@
       if (value != NullValue)
       {
         _sum = _sumIsNull ? (float)(value * coefficient) : _sum + (float)(value * coefficient);
+        _sumIsNull = false;
         NumNonNullValues++;
       }
       else
@@ -36,10 +37,9 @@
         if (!_convolutionSourceValueIsNull)
         {
           _sum = _sumIsNull ? (float) (_convolutionSourceValue * coefficient) : _sum + (float) (_convolutionSourceValue * coefficient);
+          _sumIsNull = false;
         }
       }
-
-      _sumIsNull = false;
     }
 
     public override void Clear()
