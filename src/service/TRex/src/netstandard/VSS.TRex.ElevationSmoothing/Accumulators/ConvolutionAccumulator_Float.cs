@@ -2,9 +2,9 @@
 {
   /// <summary>
   /// Provides a type specific accumulator behaviour for floats (eg: elevation values).
-  /// This used a convolutionfilter with coefficients that sum to 1. Each value is multiplied by the supplied
+  /// This used a convolution filter with coefficients that sum to 1. Each value is multiplied by the supplied
   /// coefficient. If the value being considered is null then the value of te cell being convolved (at the
-  /// senter of the convolutiokn filter) is multiplied by the supplied filter coeffient and added to sum.
+  /// center of the convolution filter) is multiplied by the supplied filter coefficient and added to sum.
   /// </summary>
   public class ConvolutionAccumulator_Float : ConvolutionAccumulator<float>
   {
@@ -19,7 +19,8 @@
       NullValue = nullValue;
       _contextSize = contextSize;
       _contextSizeSquare = (int)_contextSize * (int)_contextSize;
-      Clear();
+
+      ClearState();
     }
 
     public override void Accumulate(float value) => Accumulate(value, 1.0);
@@ -42,13 +43,18 @@
       }
     }
 
-    public override void Clear()
+    public void ClearState()
     {
       NumNonNullValues = 0;
       _sum = NullValue;
       _sumIsNull = true;
       _convolutionSourceValue = NullValue;
       _convolutionSourceValueIsNull = true;
+    }
+
+    public override void Clear()
+    {
+      ClearState();
     }
 
     public override bool ConvolutionSourceValueIsNull() => _convolutionSourceValue == NullValue;
