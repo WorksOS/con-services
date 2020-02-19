@@ -74,6 +74,7 @@ namespace VSS.TRex.SubGrids
     private bool _haveFilteredPass;
     private FilteredPassData _currentPass;
     private FilteredPassData _tempPass;
+    bool _firstPassMinElev = false;
 
     private ISubGridCellLatestPassDataWrapper _globalLatestCells;
     private bool _useLastPassGrid; // Assume we can't use last pass data
@@ -142,102 +143,19 @@ namespace VSS.TRex.SubGrids
     /// Performs primary filtered iteration over cell passes in the cell being processed to determine the cell pass
     /// to be selected.
     /// </summary>
+    /// 
     private void ProcessCellPasses()
     {
-      bool haveHalfPass = false;
       _haveFilteredPass = false;
-      bool takePass;
-      int passRangeCount = 0;
-      bool firstFilteredCellPass = true;
-      int passes = 0;
-      // get total passes if passcount range filter in use
-      if (_filter.AttributeFilter.HasPassCountRangeFilter)
-      {
-        while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
-          passes ++;
-        _cellPassIterator.Initialise(); // reset
-      };
 
       while (_cellPassIterator.MayHaveMoreFilterableCellPasses() &&
              _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
       {
 
-        // Determine if we can use this pass
-        if (_filter.AttributeFilter.HasPassCountRangeFilter)
-        {
-          if (_currentPass.FilteredPass.HalfPass)
-          {
-            if (!haveHalfPass)
-              ++passRangeCount; // increase count for first half pass
-            haveHalfPass = !haveHalfPass;
-          }
-          else
-            ++passRangeCount; // increase count for first full pass
-
-         if (_cellPassIterator.SegmentIterator.IterationDirection == IterationDirection.Forwards)
-            takePass = (Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax));
-          else
-            takePass = (Range.InRange(passes - passRangeCount+1, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax));
-
-          if (!takePass)
-            continue;
-        }
-
         FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
 
         if (_filter.AttributeFilter.FilterPass(ref _currentPass, _filterAnnex))
         {
-          // -->###US79098###
-          if (firstFilteredCellPass) 
-          {
-            // if the first filtered pass returned by GetNextCellPass was recorded by an Excavator machine
-            // with the minimum elevation mapping mode selected then scan all cell passes until one is encountered
-            // which fails that test. The filtered cell pass is then set to be the cell pass with the lowest 
-            // measured elevation of that set of cell passes
-            var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
-            var machine = _siteModel.Machines[internalMachineIndex];
-            var machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
-            var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_currentPass.FilteredPass.Time, out _, ElevationMappingMode.LatestElevation);
-            var minimumElevationMappingModeAtCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
-
-            if (machineIsAnExcavator && minimumElevationMappingModeAtCellPassTime)
-            {
-              // TODO: Assumption validation: Once this workflow is entered the only expected output is the cell pass with the lowest elevation per the selection rules below.
-
-              CellPass _nextCurrentPass = CellPass.CLEARED_CELL_PASS;
-              CellPass _lowestPass = _currentPass.FilteredPass;
-
-              while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _nextCurrentPass))
-              {
-                var nextInternalMachineIndex = _nextCurrentPass.InternalSiteModelMachineIndex;
-                var nextMachine = _siteModel.Machines[nextInternalMachineIndex];
-                var nextMachineIsAnExcavator = nextMachine.MachineType == MachineType.Excavator;
-                var nextMappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_nextCurrentPass.Time, out _, ElevationMappingMode.LatestElevation);
-                var nextMinimumElevationMappingModeAtCellPassTime = nextMappingMode == ElevationMappingMode.MinimumElevation;
-
-                if (nextMachineIsAnExcavator && nextMinimumElevationMappingModeAtCellPassTime)
-                {
-                  // Still an excavator machine, check if this pass is lower than the lowest.
-                  if (_nextCurrentPass.Height < _lowestPass.Height)
-                  {
-                    if (_filter.AttributeFilter.FilterPass(ref _nextCurrentPass, _filterAnnex))
-                      _lowestPass = _nextCurrentPass;
-                  }
-                }
-                else
-                {
-                  // This cell pass was made by a new machine not meeting the filter, or minimum elevation mapping mode.
-                  // This terminates search for lowest pass; Return the lowest elevation cell pass encountered in the search.
-                  break;
-                }
-              }
-
-              _currentPass.FilteredPass = _lowestPass;
-              FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
-              _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
-            }
-          }
-
 
           if (_filter.AttributeFilter.HasElevationTypeFilter)
             _assignmentContext.FilteredValue.PassCount = 1;
@@ -254,6 +172,13 @@ namespace VSS.TRex.SubGrids
             if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
               _tempPass = _currentPass;
             _haveFilteredPass = true;
+          }
+          else if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.First)
+          {
+            _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+            _haveFilteredPass = true;
+            _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+            break;
           }
           else if (_gridDataType == GridDataType.Temperature || _gridDataType == GridDataType.TemperatureDetail)
           {
@@ -281,17 +206,400 @@ namespace VSS.TRex.SubGrids
           }
           else
           {
-            // All criteria have been met for acceptance of this pass
-            _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
-            _haveFilteredPass = true;
-            _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
-            break;
+
+            // check for min elevation mode
+            var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
+            var machine = _siteModel.Machines[internalMachineIndex];
+            var machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+            var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_currentPass.FilteredPass.Time, out _, ElevationMappingMode.LatestElevation);
+            var minimumElevationMappingModeAtCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
+            if (machineIsAnExcavator && minimumElevationMappingModeAtCellPassTime)
+            {
+              if (!_firstPassMinElev)
+              {
+                _firstPassMinElev = true;
+                _haveFilteredPass = true;
+                _tempPass = _currentPass;
+              }
+              else if (_currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
+                _tempPass = _currentPass; // take if lowest pass
+   
+            }
+            else
+            {
+              // All criteria have been met for acceptance of this pass
+              _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+              _haveFilteredPass = true;
+              _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+              break;
+            }
           }
 
-          firstFilteredCellPass = false;
         }
       }
     }
+
+
+    /// <summary>
+    /// Special version of ProcessCellPasses when using a PasscountRange Filter. Performs primary filtered iteration over cell passes in the cell being processed to determine the cell pass
+    /// to be selected.
+    /// </summary>
+    /// 
+    private void ProcessCellPassesPasscountRange()
+    {
+      _haveFilteredPass = false;
+      bool haveHalfPass = false;
+      int passRangeCount = 0;
+      int idxPtr;
+      int arrayLength = 1000;
+      FilteredPassData[] filteredPassDataArray = new FilteredPassData[arrayLength];
+      bool[] filteredPassBoolArray = new bool[arrayLength];
+      int passes = 0;
+      int validPasses = 0;
+      bool minElevCheckRequired = false;
+      _firstPassMinElev = false;
+
+      while (_cellPassIterator.MayHaveMoreFilterableCellPasses() &&
+             _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
+      {
+
+        FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
+
+        if (_filter.AttributeFilter.FilterPass(ref _currentPass, _filterAnnex))
+        {
+
+          if (_gridDataType == GridDataType.Temperature || _gridDataType == GridDataType.TemperatureDetail)
+          {
+            // make sure we have a valid temperature pass
+            var _materialTemperature = _currentPass.FilteredPass.MaterialTemperature;
+            if (_materialTemperature != CellPassConsts.NullMaterialTemperatureValue)
+            {
+              if (_filter.AttributeFilter.HasTemperatureRangeFilter)
+                if (Range.InRange(_materialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax))
+                {
+                  _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+                  _haveFilteredPass = true;
+                  _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+                }
+            }
+            else
+            {
+              _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+              _haveFilteredPass = true;
+              _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+            }
+          }
+          else
+          {
+            _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+            _haveFilteredPass = true;
+            _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+          }
+        }
+
+        // Add valid pass to list for passcount range filter
+        if (_haveFilteredPass)
+        {
+          filteredPassDataArray[passes] = _currentPass;
+          passes++;
+          if (passes == arrayLength - 1)
+          {
+            arrayLength = arrayLength + 500;
+            Array.Resize(ref filteredPassDataArray, arrayLength);
+            Array.Resize(ref filteredPassBoolArray, arrayLength);
+          }
+          _haveFilteredPass = false; // reset
+        }
+      } // end while more passes
+
+
+      _haveFilteredPass = false; // reset for next test
+
+      // For passcountrange filtering we must walk from earliest to latest
+      // setup idxPtr to walk forward in time
+      if (_cellPassIterator.SegmentIterator.IterationDirection == IterationDirection.Forwards)
+        idxPtr = 0;
+      else
+        idxPtr = passes - 1; // last entry is earliest
+
+      if (passes > 0)
+      {
+        for (int i = 0; i < passes; i++)
+        {
+          if (i > 0)
+            if (_cellPassIterator.SegmentIterator.IterationDirection == IterationDirection.Forwards)
+              idxPtr++;
+            else
+              idxPtr--;
+
+          _currentPass = filteredPassDataArray[idxPtr];
+
+          if (_currentPass.FilteredPass.HalfPass)
+            {
+              if (haveHalfPass)
+                 passRangeCount++; // increase count on second half pass encounted
+              else
+                {
+                  haveHalfPass = !haveHalfPass;
+                  continue; // wont be using first half pass
+                }
+                haveHalfPass = !haveHalfPass;
+             }
+           else
+             passRangeCount++; // increase count for a full pass
+
+           if (Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax))
+           {
+             filteredPassBoolArray[idxPtr] = true; // tagged for minElev check
+             if (_filter.AttributeFilter.HasElevationTypeFilter)
+                _assignmentContext.FilteredValue.PassCount = 1;
+             else
+               {
+                 validPasses++;
+                 _assignmentContext.FilteredValue.PassCount = validPasses;
+               }
+
+             if ((_filter.AttributeFilter.HasElevationMappingModeFilter && _filter.AttributeFilter.ElevationMappingMode == ElevationMappingMode.MinimumElevation)
+              || (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
+               {
+                 if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
+                    _tempPass = _currentPass;
+                  _haveFilteredPass = true;
+                }
+              else if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Highest)
+                {
+                  if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
+                    _tempPass = _currentPass;
+                  _haveFilteredPass = true;
+                }
+              else
+                { 
+                  // are we only interested in first pass
+                  if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.First)
+                  {
+                    _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+                    _haveFilteredPass = true;
+                    _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+                    break; // we are out of here
+                  }
+
+                  if (!minElevCheckRequired)
+                    minElevCheckRequired = true; // means we need to do an extra check below for minElevation on choosen last pass
+                  if (!_haveFilteredPass)
+                    _haveFilteredPass = true;
+                  _tempPass = _currentPass; // good pass. Last one assigned will be latest
+                }
+
+           } // end in range
+
+          if (passRangeCount == _filter.AttributeFilter.PassCountRangeMax)
+            break; // we are out of here
+
+        } // end pass loop
+
+
+        if (minElevCheckRequired)
+        {
+          // If minElevCheckRequired we now have a known list of good passes to determine the lowest pass
+          // Rule states we walk in direction of CellPassIterator and return lowest pass while mode is minElev
+          // Walk through list that was constructed by CellPassIterator direction to get lowest pass
+          _haveFilteredPass = false;
+          for (int i = 0; i < passes; i++)
+          {
+            if (!filteredPassBoolArray[i])
+              continue;
+            _currentPass = filteredPassDataArray[i];
+
+            // check for min elevation mode
+            var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
+            var machine = _siteModel.Machines[internalMachineIndex];
+            var machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+            var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_currentPass.FilteredPass.Time, out _, ElevationMappingMode.LatestElevation);
+            var minimumElevationMappingModeAtCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
+            if (machineIsAnExcavator && minimumElevationMappingModeAtCellPassTime)
+            {
+              if (!_firstPassMinElev)
+              {
+                _firstPassMinElev = true; // take first pass in list as lowest to begin with
+                _tempPass = _currentPass;
+              }
+              else if (!_haveFilteredPass || (_currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height))
+                _tempPass = _currentPass;
+              if (!_haveFilteredPass)
+                _haveFilteredPass = true;
+            }
+            else
+            {
+              if (_firstPassMinElev && _haveFilteredPass ) // take last know lowest pass
+                break;
+              _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+              _haveFilteredPass = true;
+              _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+              break; // we have the pass we need
+            }
+
+          } // end passes
+        } // end min check required
+      } // end passes > 0
+    }
+
+
+
+
+    /*
+
+
+  private void ProcessCellPasses()
+  {
+    bool haveHalfPass = false;
+    _haveFilteredPass = false;
+    bool takePass;
+    int passRangeCount = 0;
+    bool firstFilteredCellPass = true;
+    int passes = 0;
+    // get total passes if passcount range filter in use
+    if (_filter.AttributeFilter.HasPassCountRangeFilter)
+    {
+      while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
+        passes ++;
+      _cellPassIterator.Initialise(); // reset
+    };
+
+    while (_cellPassIterator.MayHaveMoreFilterableCellPasses() &&
+           _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
+    {
+
+      // Determine if we can use this pass
+      if (_filter.AttributeFilter.HasPassCountRangeFilter)
+      {
+        if (_currentPass.FilteredPass.HalfPass)
+        {
+          if (!haveHalfPass)
+            ++passRangeCount; // increase count for first half pass
+          haveHalfPass = !haveHalfPass;
+        }
+        else
+          ++passRangeCount; // increase count for first full pass
+
+       if (_cellPassIterator.SegmentIterator.IterationDirection == IterationDirection.Forwards)
+          takePass = (Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax));
+        else
+          takePass = (Range.InRange(passes - passRangeCount+1, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax));
+
+        if (!takePass)
+          continue;
+      }
+
+      FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
+
+      if (_filter.AttributeFilter.FilterPass(ref _currentPass, _filterAnnex))
+      {
+        // -->###US79098###
+        if (firstFilteredCellPass) 
+        {
+          // if the first filtered pass returned by GetNextCellPass was recorded by an Excavator machine
+          // with the minimum elevation mapping mode selected then scan all cell passes until one is encountered
+          // which fails that test. The filtered cell pass is then set to be the cell pass with the lowest 
+          // measured elevation of that set of cell passes
+          var internalMachineIndex = _currentPass.FilteredPass.InternalSiteModelMachineIndex;
+          var machine = _siteModel.Machines[internalMachineIndex];
+          var machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+          var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_currentPass.FilteredPass.Time, out _, ElevationMappingMode.LatestElevation);
+          var minimumElevationMappingModeAtCellPassTime = mappingMode == ElevationMappingMode.MinimumElevation;
+
+          if (machineIsAnExcavator && minimumElevationMappingModeAtCellPassTime)
+          {
+            // TODO: Assumption validation: Once this workflow is entered the only expected output is the cell pass with the lowest elevation per the selection rules below.
+
+            CellPass _nextCurrentPass = CellPass.CLEARED_CELL_PASS;
+            CellPass _lowestPass = _currentPass.FilteredPass;
+
+            while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _nextCurrentPass))
+            {
+              var nextInternalMachineIndex = _nextCurrentPass.InternalSiteModelMachineIndex;
+              var nextMachine = _siteModel.Machines[nextInternalMachineIndex];
+              var nextMachineIsAnExcavator = nextMachine.MachineType == MachineType.Excavator;
+              var nextMappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.GetValueAtDate(_nextCurrentPass.Time, out _, ElevationMappingMode.LatestElevation);
+              var nextMinimumElevationMappingModeAtCellPassTime = nextMappingMode == ElevationMappingMode.MinimumElevation;
+
+              if (nextMachineIsAnExcavator && nextMinimumElevationMappingModeAtCellPassTime)
+              {
+                // Still an excavator machine, check if this pass is lower than the lowest.
+                if (_nextCurrentPass.Height < _lowestPass.Height)
+                {
+                  if (_filter.AttributeFilter.FilterPass(ref _nextCurrentPass, _filterAnnex))
+                    _lowestPass = _nextCurrentPass;
+                }
+              }
+              else
+              {
+                // This cell pass was made by a new machine not meeting the filter, or minimum elevation mapping mode.
+                // This terminates search for lowest pass; Return the lowest elevation cell pass encountered in the search.
+                break;
+              }
+            }
+
+            _currentPass.FilteredPass = _lowestPass;
+            FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex], _populationControl, ref _currentPass);
+            _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+          }
+        }
+
+
+        if (_filter.AttributeFilter.HasElevationTypeFilter)
+          _assignmentContext.FilteredValue.PassCount = 1;
+
+        // Track cell passes against lowest/highest elevation criteria
+        if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Lowest)
+        {
+          if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
+            _tempPass = _currentPass;
+          _haveFilteredPass = true;
+        }
+        else if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Highest)
+        {
+          if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
+            _tempPass = _currentPass;
+          _haveFilteredPass = true;
+        }
+        else if (_gridDataType == GridDataType.Temperature || _gridDataType == GridDataType.TemperatureDetail)
+        {
+          var _materialTemperature = _currentPass.FilteredPass.MaterialTemperature;
+          if (_materialTemperature != CellPassConsts.NullMaterialTemperatureValue)
+          {
+            if (_filter.AttributeFilter.HasTemperatureRangeFilter)
+            {
+              if (Range.InRange(_materialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax))
+              {
+                _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+                _haveFilteredPass = true;
+                _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+                break;
+              }
+            }
+            else
+            {
+              _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+              _haveFilteredPass = true;
+              _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+              break;
+            }
+          }
+        }
+        else
+        {
+          // All criteria have been met for acceptance of this pass
+          _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+          _haveFilteredPass = true;
+          _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+          break;
+        }
+
+        firstFilteredCellPass = false;
+      }
+    }
+  }
+  */
 
     /// <summary>
     /// Performs extraction of specific attributes from a GlobalLatestCells structure depending on the type of
@@ -545,11 +853,15 @@ namespace VSS.TRex.SubGrids
               _cellPassIterator.SetIteratorElevationRange(_filterAnnex.ElevationRangeBottomElevationForCell, _filterAnnex.ElevationRangeTopElevationForCell);
 
             _cellPassIterator.Initialise();
-            ProcessCellPasses();
+
+            if (_filter.AttributeFilter.HasPassCountRangeFilter)
+              ProcessCellPassesPasscountRange();
+            else
+              ProcessCellPasses();
 
             if (_haveFilteredPass &&
-                (_filter.AttributeFilter.HasElevationTypeFilter &&
-                 (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest)))
+                (_firstPassMinElev || _filter.AttributeFilter.HasElevationTypeFilter &&
+                (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest)))
             {
               _assignmentContext.FilteredValue.FilteredPassData = _tempPass;
               _assignmentContext.FilteredValue.PassCount = -1;
