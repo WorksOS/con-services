@@ -26,7 +26,7 @@ namespace VSS.TRex.DataSmoothing
         throw new ArgumentException($"Major dimension ({majorDim}) and minor dimension ({minorDim}) of filterMatrix must be the same");
       }
 
-      ContextSize = majorDim;
+      ContextSize = (ConvolutionMaskSize)majorDim;
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ namespace VSS.TRex.DataSmoothing
 
       if (_updateNullValues && convolutionSourceValueIsNull)
       {
-        SetValue(i, j, _accumulator.NullInfillResult(_contextSize));
+        SetValue(i, j, _accumulator.NullInfillResult());
       }
       else
       {

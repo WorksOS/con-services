@@ -13,7 +13,7 @@ namespace VSS.TRex.Tests.DataSmoothing
     public void Creation()
     {
       var tools = new ConvolutionTools<float>();
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3);
       var filter = new double[3, 3];
 
       var smoother = new TreeDataSmoother<float>(tools, ConvolutionMaskSize.Mask3X3, accum,
@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.DataSmoothing
       sourceSubGrid.Should().NotBeNull();
 
       var tools = new ConvolutionTools<float>();
-      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight);
+      var accum = new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, ConvolutionMaskSize.Mask3X3);
       var filter = new double[3, 3] {
         {
           oneNinth, oneNinth, oneNinth

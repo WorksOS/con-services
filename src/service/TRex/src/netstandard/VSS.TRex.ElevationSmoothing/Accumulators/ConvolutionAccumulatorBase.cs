@@ -20,7 +20,7 @@
     public abstract void Accumulate(T value);
     public abstract void Accumulate(T value, double coefficient);
     public abstract T Result();
-    public abstract T NullInfillResult(int contextSize);
+    public abstract T NullInfillResult();
     public abstract void Clear();
 
     public abstract bool ConvolutionSourceValueIsNull();

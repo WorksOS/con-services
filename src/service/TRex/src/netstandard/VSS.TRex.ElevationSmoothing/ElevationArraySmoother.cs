@@ -10,7 +10,7 @@ namespace VSS.TRex.DataSmoothing
     public ElevationArraySmoother(
       IConvolutionTools<float> convolutionTools, ConvolutionMaskSize contextSize, bool updateNullValues, bool infillNullValuesOnly)
       : base(convolutionTools, contextSize,
-        new ConvolutionAccumulator_Float(CellPassConsts.NullHeight),
+        new ConvolutionAccumulator_Float(CellPassConsts.NullHeight, contextSize),
         (accum, cSize) => new MeanFilter<float>(accum, cSize, updateNullValues, infillNullValuesOnly))
     {
     }

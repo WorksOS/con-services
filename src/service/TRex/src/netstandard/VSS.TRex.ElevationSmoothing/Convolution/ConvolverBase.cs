@@ -8,7 +8,7 @@ namespace VSS.TRex.DataSmoothing
   /// </summary>
   public abstract class ConvolverBase<T> : IConvolver<T>
   {
-    protected int _contextSize;
+    protected ConvolutionMaskSize _contextSize;
     protected int _contextOffset;
 
     protected bool _updateNullValues;
@@ -24,19 +24,19 @@ namespace VSS.TRex.DataSmoothing
     protected readonly IConvolutionAccumulator<T> _accumulator;
     public IConvolutionAccumulator<T> Accumulator { get => _accumulator; }
 
-    public int ContextSize
+    public ConvolutionMaskSize ContextSize
     {
       get => _contextSize;
       set
       {
         _contextSize = value;
 
-        if (value <= 1 || value % 2 != 1)
+        if ((int)value <= 1 || (int)value % 2 != 1)
         {
           throw new ArgumentException("Context size must be positive odd number greater than 1");
         }
 
-        _contextOffset = _contextSize / 2;
+        _contextOffset = (int)_contextSize / 2;
       }
     }
 

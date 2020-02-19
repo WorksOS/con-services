@@ -4,7 +4,7 @@ namespace VSS.TRex.DataSmoothing
 {
   public interface IConvolver<T>
   {
-    int ContextSize { get; }
+    ConvolutionMaskSize ContextSize { get; }
 
     /// <summary>
     /// Determines if null values in the source data should be overwritten via convolution of the surrounding values

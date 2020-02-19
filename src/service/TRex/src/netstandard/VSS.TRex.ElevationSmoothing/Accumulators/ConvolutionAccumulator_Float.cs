@@ -11,10 +11,14 @@
     public int NumNonNullValues;
     private float _sum;
     private bool _sumIsNull;
+    private readonly ConvolutionMaskSize _contextSize;
+    private readonly float _contextSizeSquare;
 
-    public ConvolutionAccumulator_Float(float nullValue)
+    public ConvolutionAccumulator_Float(float nullValue, ConvolutionMaskSize contextSize)
     {
       NullValue = nullValue;
+      _contextSize = contextSize;
+      _contextSizeSquare = (int)_contextSize * (int)_contextSize;
       Clear();
     }
 
@@ -51,15 +55,14 @@
 
     public override float Result() => _sum;
 
-    public override float NullInfillResult(int contextSize)
+    public override float NullInfillResult()
     {
       const float minimumConsensusFraction = 0.5f;
-      var contextSquare = contextSize * contextSize;
-      var concensusFraction = (float)NumNonNullValues/ contextSquare;
+      var concensusFraction = NumNonNullValues / _contextSizeSquare;
 
       if (concensusFraction > minimumConsensusFraction)
       {
-        return ((float)contextSquare / NumNonNullValues) * _sum;
+        return (_contextSizeSquare / NumNonNullValues) * _sum;
       }
 
       return NullValue;
