@@ -64,7 +64,7 @@ namespace VSS.TRex.Tests.SubGridTrees
             // A subgrid one level above a leaf subgrid covers sqr(SubGridTreeConsts.SubGridTreeDimension) cells in each dimension (X & Y)
             Assert.Equal((int)nodeSubgrid.AxialCellCoverageByThisSubGrid(), SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
 
-            // A child subgrid of this parent shoudl ahve an axial coverage of SubGridTreeConsts.SubGridTreeDimension cells in each dimension (X & Y)
+            // A child subgrid of this parent should ahve an axial coverage of SubGridTreeConsts.SubGridTreeDimension cells in each dimension (X & Y)
             // (as there are SubGridTreeConsts.SubGridTreeDimension children cells in the X and Y dimensions
             Assert.Equal(nodeSubgrid.AxialCellCoverageByChildSubGrid(), SubGridTreeConsts.SubGridTreeDimension);
         }

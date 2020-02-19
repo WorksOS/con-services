@@ -5,6 +5,7 @@ using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Rendering.Displayers;
@@ -118,10 +119,6 @@ namespace VSS.TRex.Rendering
       */
     }
 
-    //      property WorkingPalette : TICDisplayPaletteBase read GetWorkingPalette write SetWorkingPalette;
-    //      property DisplayPalettes : TICDisplayPalettes read FDisplayPalettes write FDisplayPalettes;
-    //      property ICOptions : TSVOICOptions read FICOptions write FICOptions;
-
     /// <summary>
     /// Perform rendering activities to produce a bitmap tile
     /// </summary>
@@ -169,6 +166,10 @@ namespace VSS.TRex.Rendering
       else
         Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
 
+      // Provide data smoothing support to the displayer for the rendering operation being performed
+      (Displayer as IProductionPVMConsistentDisplayer).DataSmoother 
+        = DIContext.Obtain<Func<DisplayMode, NullInfillMode, IDataSmoother>>()(mode, NullInfillMode.NoInfill);
+
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
       Displayer.MapView.SetRotation(-TileRotation /* + (Math.PI / 2) */);
@@ -178,14 +179,29 @@ namespace VSS.TRex.Rendering
       // The acumulator is instructed to created a context covering the OverrideSpatialExtents context from the processor (which
       // will represent the bounding extent of data required due to any tile rotation), and covered by a matching (possibly larger) grid 
       // of cells to the mapview grid of pixels
+
+      var smoother = (Displayer as IProductionPVMConsistentDisplayer)?.DataSmoother;
+
+      var valueStoreCellSizeX = Displayer.MapView.XPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.XPixelSize : processor.SiteModel.CellSize;
+      var valueStoreCellSizeY = Displayer.MapView.YPixelSize > processor.SiteModel.CellSize ? Displayer.MapView.YPixelSize : processor.SiteModel.CellSize;
+
+      var mapViewCellsX = (int)Math.Truncate(Displayer.MapView.WidthX / valueStoreCellSizeX) + 1;
+      var mapViewCellsY = (int)Math.Truncate(Displayer.MapView.WidthY / valueStoreCellSizeY) + 1;
+
+      var borderAdjustmentCells = 2 * smoother?.AdditionalBorderSize ?? 0;
+      var extentAdjumentSizeX = smoother?.AdditionalBorderSize * valueStoreCellSizeX ?? 0;
+      var extentAdjumentSizeY = smoother?.AdditionalBorderSize * valueStoreCellSizeY ?? 0;
+
       ((IPVMRenderingTask)processor.Task).Accumulator = ((IProductionPVMConsistentDisplayer)Displayer).GetPVMTaskAccumulator(
-        (int)Math.Round(processor.OverrideSpatialExtents.SizeX / Displayer.MapView.XPixelSize),
-        (int)Math.Round(processor.OverrideSpatialExtents.SizeY / Displayer.MapView.YPixelSize),
-        processor.OverrideSpatialExtents.MinX,
-        processor.OverrideSpatialExtents.MaxX,
-        processor.OverrideSpatialExtents.SizeX,
-        processor.OverrideSpatialExtents.SizeY
-        );
+        valueStoreCellSizeX, valueStoreCellSizeY,
+        mapViewCellsX + borderAdjustmentCells,
+        mapViewCellsY + borderAdjustmentCells,
+        Displayer.MapView.OriginX - extentAdjumentSizeX,
+        Displayer.MapView.OriginY - extentAdjumentSizeY,
+        Displayer.MapView.WidthX + extentAdjumentSizeX,
+        Displayer.MapView.WidthY + extentAdjumentSizeY,
+        processor.SiteModel.CellSize
+      );
 
       // Displayer.ICOptions  = ICOptions;
 
@@ -202,11 +218,9 @@ namespace VSS.TRex.Rendering
 
       if (processor.Response.ResultStatus == RequestErrorStatus.OK)
       {
-        // Render the collection of sub grids collected in the rendering task
-        // Todo: Implement call to renderer functionality
-        //throw new NotImplementedException();
-        (((IPVMRenderingTask) processor.Task).TileRenderer.Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
-  
+        // Render the collection of data in the aggregator
+        (Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
+
         PerformAnyRequiredDebugLevelDisplay();
 
         if (_debugDrawDiagonalCrossOnRenderedTilesDefault)
@@ -230,30 +244,30 @@ namespace VSS.TRex.Rendering
     /// origin, its real world coordinate width and height and the number of pixels for the width and height
     /// of the resulting rendered tile.
     /// </summary>
-    /// <param name="AOriginX"></param>
-    /// <param name="AOriginY"></param>
-    /// <param name="AWidth"></param>
-    /// <param name="AHeight"></param>
-    /// <param name="ANPixelsX"></param>
-    /// <param name="ANPixelsY"></param>
-    public void SetBounds(double AOriginX, double AOriginY,
-      double AWidth, double AHeight,
-      ushort ANPixelsX, ushort ANPixelsY)
+    /// <param name="originX"></param>
+    /// <param name="originY"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="nPixelsX"></param>
+    /// <param name="nPixelsY"></param>
+    public void SetBounds(double originX, double originY,
+      double width, double height,
+      ushort nPixelsX, ushort nPixelsY)
     {
-      OriginX = AOriginX;
-      OriginY = AOriginY;
-      Width = AWidth;
-      Height = AHeight;
-      NPixelsX = ANPixelsX;
-      NPixelsY = ANPixelsY;
+      OriginX = originX;
+      OriginY = originY;
+      Width = width;
+      Height = height;
+      NPixelsX = nPixelsX;
+      NPixelsY = nPixelsY;
     }
 
     #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
+    private bool _disposedValue; // To detect redundant calls
 
     protected virtual void Dispose(bool disposing)
     {
-      if (!disposedValue)
+      if (!_disposedValue)
       {
         if (disposing)
         {
@@ -265,24 +279,13 @@ namespace VSS.TRex.Rendering
           }
         }
 
-        disposedValue = true;
+        _disposedValue = true;
       }
     }
 
-    //  override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-    // ~PlanViewTileRenderer()
-    // {
-    //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-    //   Dispose(false);
-    // }
-
-    // This code added to correctly implement the disposable pattern.
     public void Dispose()
     {
-      // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
       Dispose(true);
-      // uncomment the following line if the finalizer is overridden above.
-      // GC.SuppressFinalize(this);
     }
     #endregion
   }

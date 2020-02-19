@@ -6,6 +6,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.RequestHandlers;
 using VSS.TRex.Common;
@@ -15,6 +16,7 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -65,6 +67,17 @@ namespace VSS.TRex.Server.TileRendering
       }
     }
 
+    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key, NullInfillMode nullInfillMode)
+    {
+      switch (key)
+      {
+        case DisplayMode.Height :
+          return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, nullInfillMode); 
+        default: 
+          return null;
+      } 
+    }
+
     private static void DependencyInjection() 
     {
       DIBuilder
@@ -108,11 +121,15 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
         .Add(x => x.AddTransient<TRexTPaaSAuthenticatedRequestHandler>())
         .Add(x => x.AddTransient<TPaaSApplicationCredentialsRequestHandler>())
+
         .AddHttpClient<TPaaSClient>(client => client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token"))
           .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
         .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
           .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+
+        .Add(x => x.AddSingleton<Func<DisplayMode, NullInfillMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+
         .Complete();
     }
 
