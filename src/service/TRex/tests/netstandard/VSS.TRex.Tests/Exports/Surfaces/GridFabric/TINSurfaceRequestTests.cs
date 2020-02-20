@@ -32,21 +32,17 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
       SetupFixture();
     }
 
-    private static IDataSmoother SurfaceExportSmootherFactoryMethod(NullInfillMode nullInfillMode)
+    private static IDataSmoother SurfaceExportSmootherFactoryMethod(ConvolutionMaskSize convolutionMaskSize, NullInfillMode nullInfillMode)
     {
-      return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, nullInfillMode);
+      return new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode);
     }
 
     public new void SetupFixture()
     {
-      var igniteMock = new IgniteMock();
-
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<Func<NullInfillMode, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
+        .Add(x => x.AddSingleton<Func<ConvolutionMaskSize, NullInfillMode, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
         .Complete();
-
-      IgniteMock.ResetDynamicMockedIgniteContent();
     }
   }
 

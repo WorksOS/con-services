@@ -59,9 +59,9 @@ namespace VSS.TRex.Server.TINSurfaceExport
       }
     }
 
-    private static IDataSmoother SurfaceExportSmootherFactoryMethod(NullInfillMode nullInfillMode)
+    private static IDataSmoother SurfaceExportSmootherFactoryMethod(ConvolutionMaskSize maskSize, NullInfillMode nullInfillMode)
     {
-      return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, nullInfillMode);
+      return new ElevationArraySmoother(new ConvolutionTools<float>(), maskSize, nullInfillMode);
     }
 
     private static void DependencyInjection()
@@ -97,7 +97,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
 
       .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
-      .Add(x => x.AddSingleton<Func<NullInfillMode, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
+      .Add(x => x.AddSingleton<Func<ConvolutionMaskSize, NullInfillMode, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
 
       .Complete();
     }

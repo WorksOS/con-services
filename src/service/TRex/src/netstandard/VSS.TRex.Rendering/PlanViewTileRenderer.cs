@@ -58,7 +58,7 @@ namespace VSS.TRex.Rendering
     // function GetWorkingPalette: TICDisplayPaletteBase;
     // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
 
-    private static readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Consts.DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES);
+    private static readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Common.Consts.DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES);
 
     /// <summary>
     /// Default no-arg constructor
@@ -167,8 +167,17 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
 
       // Provide data smoothing support to the displayer for the rendering operation being performed
-      (Displayer as IProductionPVMConsistentDisplayer).DataSmoother 
-        = DIContext.Obtain<Func<DisplayMode, NullInfillMode, IDataSmoother>>()(mode, NullInfillMode.NoInfill);
+      var config = DIContext.Obtain<IConfigurationStore>();
+      var smoothingActive = config.GetValueBool("TILE_RENDERING_DATA_SMOOTHING_ACTIVE", DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_ACTIVE);
+
+      if (smoothingActive)
+      {
+        var convolutionMaskSize = (ConvolutionMaskSize)config.GetValueInt("TILE_RENDERING_SMOOTHING_MASK_SIZE", (int)DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE);
+        var nullInfillMode = (NullInfillMode)config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int)DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
+
+        (Displayer as IProductionPVMConsistentDisplayer).DataSmoother
+          = DIContext.Obtain<Func<DisplayMode, ConvolutionMaskSize, NullInfillMode, IDataSmoother>>()(mode, convolutionMaskSize, nullInfillMode); 
+      }
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts

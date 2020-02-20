@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Common;
@@ -173,17 +174,24 @@ namespace VSS.TRex.Exports.Surfaces.Executors
         }
 
         // Obtain the surface export data smoother and apply it to the tree of queried data before passing it to the decimation engine
+        var config = DIContext.Obtain<IConfigurationStore>();
+        var smoothingActive = config.GetValueBool("SURFACE_EXPORT_DATA_SMOOTHING_ACTIVE", DataSmoothing.Consts.SURFACE_EXPORT_DATA_SMOOTHING_ACTIVE);
 
-        var dataSmoother = DIContext.Obtain<Func<NullInfillMode, IDataSmoother>>()(NullInfillMode.InfillNullValues) as ITreeDataSmoother<float>;
-        datastore = dataSmoother?.Smooth(datastore) ?? datastore;
+        if (smoothingActive)
+        {
+          var convolutionMaskSize = (ConvolutionMaskSize)config.GetValueInt("SURFACE_EXPORT_DATA_SMOOTHING_MASK_SIZE", (int)DataSmoothing.Consts.SURFACE_EXPORT_DATA_SMOOTHING_MASK_SIZE);
+          var nullInfillMode = (NullInfillMode)config.GetValueInt("SURFACE_EXPORT_DATA_SMOOTHING_NULL_INFILL_MODE", (int)DataSmoothing.Consts.SURFACE_EXPORT_DATA_SMOOTHING_NULL_INFILL_MODE);
+          var dataSmoother = DIContext.Obtain<Func<ConvolutionMaskSize, NullInfillMode, IDataSmoother>>()(convolutionMaskSize, nullInfillMode) as ITreeDataSmoother<float>;
+          datastore = dataSmoother?.Smooth(datastore) ?? datastore;
+        }
 
         var extents = DataStoreExtents(datastore);
 
         // Make sure we don't export too large an area due to data way outside project extents
-        if (extents.Area > Consts.MaxExportAreaM2)
+        if (extents.Area > Common.Consts.MaxExportAreaM2)
         {
           // First try and use project boundary extents as our data boundary
-          var canExport = siteModel.SiteModelExtent.Area > 0 && siteModel.SiteModelExtent.Area < Consts.MaxExportAreaM2;
+          var canExport = siteModel.SiteModelExtent.Area > 0 && siteModel.SiteModelExtent.Area < Common.Consts.MaxExportAreaM2;
           if (canExport)
           {
             // still use min max height extents
