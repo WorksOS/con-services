@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
           - name: descheduler
-            image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:descheduler
+            image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:descheduler
             volumeMounts:
             - mountPath: /policy-dir
               name: policy-volume
