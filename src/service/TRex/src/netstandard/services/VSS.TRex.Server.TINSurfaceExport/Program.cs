@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -58,6 +59,11 @@ namespace VSS.TRex.Server.TINSurfaceExport
       }
     }
 
+    private static IDataSmoother SurfaceExportSmootherFactoryMethod(NullInfillMode nullInfillMode)
+    {
+      return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, nullInfillMode);
+    }
+
     private static void DependencyInjection()
     {
       DIBuilder.New()
@@ -90,6 +96,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
       .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+
+      .Add(x => x.AddSingleton<Func<NullInfillMode, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
 
       .Complete();
     }
