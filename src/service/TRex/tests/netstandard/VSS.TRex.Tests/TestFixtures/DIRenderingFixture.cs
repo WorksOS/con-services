@@ -10,12 +10,12 @@ namespace VSS.TRex.Tests.TestFixtures
 {
   public class DIRenderingFixture : DITAGFileAndSubGridRequestsWithIgniteFixture
   {
-    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key, ConvolutionMaskSize convolutionMaskSize, NullInfillMode nullInfillMode)
+    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
     {
       switch (key)
       {
         case DisplayMode.Height:
-          return new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode);
+          return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, NullInfillMode.NoInfill);
         default:
           return null;
       }
@@ -26,7 +26,7 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
-        .Add(x => x.AddSingleton<Func<DisplayMode, ConvolutionMaskSize, NullInfillMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+        .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
         .Complete();
     }
   }

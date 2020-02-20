@@ -175,8 +175,7 @@ namespace VSS.TRex.Rendering
         var convolutionMaskSize = (ConvolutionMaskSize)config.GetValueInt("TILE_RENDERING_SMOOTHING_MASK_SIZE", (int)DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE);
         var nullInfillMode = (NullInfillMode)config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int)DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
 
-        (Displayer as IProductionPVMConsistentDisplayer).DataSmoother
-          = DIContext.Obtain<Func<DisplayMode, ConvolutionMaskSize, NullInfillMode, IDataSmoother>>()(mode, convolutionMaskSize, nullInfillMode); 
+        (Displayer as IProductionPVMConsistentDisplayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode); 
       }
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
