@@ -6,7 +6,9 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
@@ -23,7 +25,32 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
 {
-  public class SurfaceExportProxy : DITAGFileAndSubGridRequestsWithIgniteFixture
+  public class SurfaceExportFixture : DITAGFileAndSubGridRequestsWithIgniteFixture
+  {
+    public SurfaceExportFixture()
+    {
+      SetupFixture();
+    }
+
+    private static IDataSmoother SurfaceExportSmootherFactoryMethod(NullInfillMode nullInfillMode)
+    {
+      return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, nullInfillMode);
+    }
+
+    public new void SetupFixture()
+    {
+      var igniteMock = new IgniteMock();
+
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton<Func<NullInfillMode, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
+        .Complete();
+
+      IgniteMock.ResetDynamicMockedIgniteContent();
+    }
+  }
+
+  public class SurfaceExportProxy : SurfaceExportFixture
   {
     public SurfaceExportProxy()
     {
