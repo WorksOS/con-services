@@ -96,7 +96,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
     }
 
     [Fact]
-    public async Task Request_SingleTAGFile_Smooth()
+    public async Task Request_SingleTAGFile_NoSmooth()
     {
       AddGridRouting();
 
@@ -114,8 +114,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
       var model = new TRex.Designs.TTM.TrimbleTINModel();
       model.Read(new BinaryReader(new MemoryStream(result.data)));
 
-      model.Vertices.Count.Should().Be(2768);
-      model.Triangles.Count.Should().Be(5011);
+      model.Vertices.Count.Should().Be(2449);
+      model.Triangles.Count.Should().Be(4400);
     }
   }
 }
