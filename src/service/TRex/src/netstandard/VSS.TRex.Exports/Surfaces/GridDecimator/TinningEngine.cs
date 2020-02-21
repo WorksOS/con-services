@@ -164,7 +164,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             coord2.X == coord3.X && coord2.Y == coord3.Y ||
             coord3.X == coord1.X && coord3.Y == coord1.Y)
         {
-          // TIN.SaveToFile($@"C:\Temp\TINStateBeforeCoordNonUniquenessException({DateTime.Now.Ticks}).ttm", false);
+          TIN.SaveToFile($@"C:\Temp\TINStateBeforeCoordNonUniquenessException({DateTime.Now.Ticks}).ttm", false);
 
           throw new TRexTINException($"Coordinates for new triangle are not unique {string.Concat(new object[] {coord1, coord2, coord3})}");
         }
@@ -751,18 +751,26 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// </summary>
     /// <param name="theCoord"></param>
     /// <param name="tri"></param>
-    /// <returns></returns>
-    public bool IncorporateCoordIntoTriangle(TriVertex theCoord, Triangle tri)
+    public void IncorporateCoordIntoTriangle(TriVertex theCoord, Triangle tri)
     {
       // Noisy logging - reinclude as necessary
       //Log.LogDebug($"Incorporating vertex {theCoord} into triangle {tri}");
+
+      /* Handy debug code...
+      // If the coord being added is equivalent to any of the vertices of the trianlge being added into then there is nothing more to do here
+      if (theCoord.X == tri.Vertices[0].X && theCoord.Y == tri.Vertices[0].Y ||
+          theCoord.X == tri.Vertices[1].X && theCoord.Y == tri.Vertices[1].Y ||
+          theCoord.X == tri.Vertices[2].X && theCoord.Y == tri.Vertices[2].Y)
+      {
+         TIN.SaveToFile($@"C:\Temp\TINStateIncorporateCoordIntoTriangleExitWithMatchingVertex({DateTime.Now.Ticks}).ttm", false);
+         return;
+      }
+      */
 
       AddCoordToModel(theCoord, tri);
 
       if (succLastTriangle != null)
         throw new TRexTINException("Not all created triangles used.");
-
-      return true;
     }
 
     /// <summary>
