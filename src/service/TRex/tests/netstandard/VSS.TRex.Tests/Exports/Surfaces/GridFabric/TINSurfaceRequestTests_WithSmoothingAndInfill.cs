@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
 
     private static IDataSmoother SurfaceExportSmootherFactoryMethod()
     {
-      return null;
+      return new ElevationTreeSmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValues);
     }
 
     public new void SetupFixture()
