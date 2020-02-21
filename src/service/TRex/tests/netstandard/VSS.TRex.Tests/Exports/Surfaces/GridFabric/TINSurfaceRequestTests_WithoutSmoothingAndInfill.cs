@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
 
     private static IDataSmoother SurfaceExportSmootherFactoryMethod()
     {
-      return null;
+      return new ElevationTreeSmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, NullInfillMode.InfillNullValues);
     }
 
     public new void SetupFixture()
@@ -96,7 +96,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
     }
 
     [Fact]
-    public async Task Request_SingleTAGFile_SmoothWithInfill()
+    public async Task Request_SingleTAGFile_Smooth()
     {
       AddGridRouting();
 
