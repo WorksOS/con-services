@@ -548,6 +548,12 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       // Noisy logging - reinclude as necessary
       // Log.LogDebug($"Setting IsUSed[{sx},{sy}] to true");
 
+      if (IsUsed[sx, sy])
+      {
+        // Nothing to do - the grid scanner has selected an existing vertex as the optimal vertex to include
+        return;
+      }
+      
       IsUsed[sx, sy] = true;
 
       // Add the new position as a vertex into the model and add that new vertex to the mesh
