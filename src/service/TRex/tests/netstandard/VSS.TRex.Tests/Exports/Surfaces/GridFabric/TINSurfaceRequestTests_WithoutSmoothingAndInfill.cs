@@ -101,11 +101,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
       AddGridRouting();
 
       var tagFiles = new[] {Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),};
-
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
-
       var request = new TINSurfaceRequest();
-
       var result = await request.ExecuteAsync(new TINSurfaceRequestArgument {ProjectID = siteModel.ID, Filters = new FilterSet(new CombinedFilter()), Tolerance = 0});
 
       result.Should().NotBeNull();
