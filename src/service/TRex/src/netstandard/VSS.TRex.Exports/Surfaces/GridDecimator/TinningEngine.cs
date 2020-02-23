@@ -164,7 +164,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
             coord2.X == coord3.X && coord2.Y == coord3.Y ||
             coord3.X == coord1.X && coord3.Y == coord1.Y)
         {
-          TIN.SaveToFile($@"C:\Temp\TINStateBeforeCoordNonUniquenessException({DateTime.Now.Ticks}).ttm", false);
+          // TIN.SaveToFile($@"C:\Temp\TINStateBeforeCoordNonUniquenessException({DateTime.Now.Ticks}).ttm", false);
 
           throw new TRexTINException($"Coordinates for new triangle are not unique {string.Concat(new object[] {coord1, coord2, coord3})}");
         }
