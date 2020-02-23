@@ -39,24 +39,20 @@ namespace VSS.TRex.Server.TINSurfaceExport
   {
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorPipelineStyle.DefaultProgressive:
-          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
-        default:
-          return null;
-      }
+        PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        _ => null
+      };
     }
 
     private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorTaskStyle.SurfaceExport:
-          return new SurfaceTask();
-        default:
-          return null;
-      }
+        PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
+        _ => null
+      };
     }
 
     private static IDataSmoother SurfaceExportSmootherFactoryMethod(DataSmootherOperation operation)
