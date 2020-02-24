@@ -25,7 +25,7 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .Continue()
         .Add(x => x.AddSingleton<IRenderingFactory>(new RenderingFactory()))
-        .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+        .Add(x => x.AddSingleton<Func<DisplayMode, NullInfillMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
         .Complete();
     }
   }
