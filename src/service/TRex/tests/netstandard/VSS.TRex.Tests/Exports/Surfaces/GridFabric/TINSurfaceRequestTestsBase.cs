@@ -24,7 +24,7 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
-      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
     }
   }
 }
