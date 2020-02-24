@@ -45,7 +45,7 @@ namespace VSS.TRex.Server.TileRendering
 {
   class Program
   {
-    private ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    static private ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       return key switch
       {
@@ -54,7 +54,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    private ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    static private ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       return key switch
       {
@@ -63,7 +63,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    private IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
+    static private IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
     {
       var config = DIContext.Obtain<IConfigurationStore>();
 
@@ -85,7 +85,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    private void DependencyInjection() 
+    static private void DependencyInjection() 
     {
       DIBuilder
         .New()
@@ -141,7 +141,7 @@ namespace VSS.TRex.Server.TileRendering
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    private void EnsureAssemblyDependenciesAreLoaded()
+    static private void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -174,7 +174,7 @@ namespace VSS.TRex.Server.TileRendering
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    private void DoServiceInitialisation()
+    static private void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
@@ -185,7 +185,7 @@ namespace VSS.TRex.Server.TileRendering
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));
     }
 
-    async Task<int> Main(string[] args)
+    static async Task<int> Main(string[] args)
     {
       try
       {
