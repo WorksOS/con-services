@@ -80,6 +80,7 @@ namespace VSS.TRex.Server.TileRendering
       return key switch
       {
         DisplayMode.Height => new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode),
+        DisplayMode.CutFill => new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode),
         _ => null
       };
     }

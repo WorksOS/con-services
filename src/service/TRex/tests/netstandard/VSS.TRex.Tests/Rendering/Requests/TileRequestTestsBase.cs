@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using System.IO.Enumeration;
 using System.Linq;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Enums;
