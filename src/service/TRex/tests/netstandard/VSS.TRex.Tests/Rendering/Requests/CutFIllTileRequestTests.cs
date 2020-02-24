@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.DataSmoothing;
