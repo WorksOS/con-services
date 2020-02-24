@@ -3,7 +3,7 @@
   /// <summary>
   /// A basic float based sub grid tree.
   /// </summary>
-  public class GenericSubGridTree_Float : GenericSubGridTree<float, GenericLeafSubGrid_Float>
+  public class GenericSubGridTree_Float : GenericSubGridTree<float, GenericLeafSubGrid<float>>
   {
     /// <summary>
     /// Generic sub grid tree constructor. Accepts standard cell size and number of levels

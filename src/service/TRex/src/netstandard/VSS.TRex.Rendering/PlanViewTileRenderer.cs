@@ -2,7 +2,6 @@
 using System.Drawing;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
 using VSS.TRex.DataSmoothing;
@@ -58,7 +57,7 @@ namespace VSS.TRex.Rendering
     // function GetWorkingPalette: TICDisplayPaletteBase;
     // procedure SetWorkingPalette(const Value: TICDisplayPaletteBase);
 
-    private static readonly bool _debugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Consts.DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES);
+    private static readonly bool DebugDrawDiagonalCrossOnRenderedTilesDefault = DIContext.Obtain<IConfigurationStore>().GetValueBool("DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES", Common.Consts.DEBUG_DRAWDIAGONALCROSS_ONRENDEREDTILES);
 
     /// <summary>
     /// Default no-arg constructor
@@ -167,8 +166,7 @@ namespace VSS.TRex.Rendering
         Displayer.MapView.SetWorldBounds(OriginX, OriginY, OriginX + WorldTileWidth, OriginY + WorldTileHeight, 0);
 
       // Provide data smoothing support to the displayer for the rendering operation being performed
-      (Displayer as IProductionPVMConsistentDisplayer).DataSmoother 
-        = DIContext.Obtain<Func<DisplayMode, NullInfillMode, IDataSmoother>>()(mode, NullInfillMode.NoInfill);
+      ((IProductionPVMConsistentDisplayer) Displayer).DataSmoother = DIContext.Obtain<Func<DisplayMode, IDataSmoother>>()(mode); 
 
       // Set the rotation of the displayer rendering surface to match the tile rotation due to the project calibration rotation
       // TODO - Understand why the (+ PI/2) rotation is not needed when rendering in C# bitmap contexts
@@ -223,7 +221,7 @@ namespace VSS.TRex.Rendering
 
         PerformAnyRequiredDebugLevelDisplay();
 
-        if (_debugDrawDiagonalCrossOnRenderedTilesDefault)
+        if (DebugDrawDiagonalCrossOnRenderedTilesDefault)
         {
           // Draw diagonal cross and top left corner indicators
           Displayer.MapView.DrawLine(Displayer.MapView.OriginX, Displayer.MapView.OriginY, Displayer.MapView.LimitX, Displayer.MapView.LimitY, Color.Red);

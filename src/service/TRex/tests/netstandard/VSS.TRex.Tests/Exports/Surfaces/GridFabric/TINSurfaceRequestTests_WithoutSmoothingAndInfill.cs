@@ -96,16 +96,13 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
     }
 
     [Fact]
-    public async Task Request_SingleTAGFile_Smooth()
+    public async Task Request_SingleTAGFile_NoSmooth()
     {
       AddGridRouting();
 
       var tagFiles = new[] {Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),};
-
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
-
       var request = new TINSurfaceRequest();
-
       var result = await request.ExecuteAsync(new TINSurfaceRequestArgument {ProjectID = siteModel.ID, Filters = new FilterSet(new CombinedFilter()), Tolerance = 0});
 
       result.Should().NotBeNull();
@@ -114,8 +111,8 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
       var model = new TRex.Designs.TTM.TrimbleTINModel();
       model.Read(new BinaryReader(new MemoryStream(result.data)));
 
-      model.Vertices.Count.Should().Be(2768);
-      model.Triangles.Count.Should().Be(5011);
+      model.Vertices.Count.Should().Be(2449);
+      model.Triangles.Count.Should().Be(4400);
     }
   }
 }
