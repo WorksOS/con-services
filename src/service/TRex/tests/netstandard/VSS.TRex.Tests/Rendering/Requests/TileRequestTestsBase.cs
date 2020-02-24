@@ -99,26 +99,26 @@ namespace VSS.TRex.Tests.Rendering.Requests
         ((TileRenderResponse_Core2)response).TileBitmapData.Should().NotBeNull();
 
         // Convert the response into a bitmap
-        var bmp = System.Drawing.Image.FromStream(new MemoryStream(((TileRenderResponse_Core2) response).TileBitmapData)) as Bitmap;
+        var bmp = Image.FromStream(new MemoryStream(((TileRenderResponse_Core2) response).TileBitmapData)) as Bitmap;
         bmp.Should().NotBeNull();
         bmp.Height.Should().Be(256);
         bmp.Width.Should().Be(256);
 
-        if (fileName != "")
+        if (!string.IsNullOrEmpty(fileName))
         {
           bmp.Save(fileName);
         }
 
-        if (compareToFile != "")
+        if (!string.IsNullOrEmpty(compareToFile))
         {
-          var goodBmp = System.Drawing.Image.FromStream(new FileStream(compareToFile, FileMode.Open, FileAccess.Read, FileShare.Read)) as Bitmap;
+          var goodBmp = Image.FromStream(new FileStream(compareToFile, FileMode.Open, FileAccess.Read, FileShare.Read)) as Bitmap;
           goodBmp.Height.Should().Be(bmp.Height);
           goodBmp.Width.Should().Be(bmp.Width);
           goodBmp.Size.Should().Be(bmp.Size);
 
-          for (int i = 0; i <= bmp.Width - 1; i++)
+          for (var i = 0; i <= bmp.Width - 1; i++)
           {
-            for (int j = 0; j < bmp.Height - 1; j++)
+            for (var j = 0; j < bmp.Height - 1; j++)
             {
               goodBmp.GetPixel(i, j).Should().Be(bmp.GetPixel(i, j));
             }
