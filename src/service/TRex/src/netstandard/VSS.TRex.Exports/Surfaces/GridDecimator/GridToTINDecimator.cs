@@ -42,7 +42,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// FDataStore is a reference to a client data store that contains the
     /// grid if point information we are creating the TIN surface from
     /// </summary>
-    private GenericSubGridTree<float, GenericLeafSubGrid_Float> DataStore { get; }
+    private GenericSubGridTree<float, GenericLeafSubGrid<float>> DataStore { get; }
 
     /// <summary>
     /// Tolerance represents the maximum acceptable difference between the height
@@ -225,7 +225,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     protected void GetHeightForTriangleScan(int x, int y, bool spotElevationOnly, int numElevationsToScan, double[] elevations)
     {
       int TestX, TestY;
-      GenericLeafSubGrid_Float CacheSubgrid;
+      GenericLeafSubGrid<float> CacheSubgrid;
       int CacheSubgridIndex = 0;
 
       void GetCacheElevationMap()
@@ -234,7 +234,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
           CacheSubgrid = CachedElevationSubgrids[CacheSubgridIndex].SubGrid;
         else
         {
-          CacheSubgrid = (GenericLeafSubGrid_Float) DataStore.LocateSubGridContaining(TestX, TestY);
+          CacheSubgrid = (GenericLeafSubGrid<float>) DataStore.LocateSubGridContaining(TestX, TestY);
           CachedElevationSubgrids[CacheSubgridIndex].SubGrid = CacheSubgrid;
           CachedElevationSubgrids[CacheSubgridIndex].TriangleScanInvocationNumber = TriangleScanInvocationNumber;
         }
@@ -248,7 +248,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
       // Get the initial ExistenceBitMask from the bitmask cache
       if (spotElevationOnly)
-        CacheSubgrid = (GenericLeafSubGrid_Float)DataStore.LocateSubGridContaining(TestX, TestY);
+        CacheSubgrid = (GenericLeafSubGrid<float>)DataStore.LocateSubGridContaining(TestX, TestY);
       else
       {
         CacheSubgridIndex = TestX / SubGridTreeConsts.SubGridTreeDimension - Elevations_MinXTriangleScanRange / SubGridTreeConsts.SubGridTreeDimension;
@@ -548,6 +548,12 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
       // Noisy logging - reinclude as necessary
       // Log.LogDebug($"Setting IsUSed[{sx},{sy}] to true");
 
+      if (IsUsed[sx, sy])
+      {
+        // Nothing to do - the grid scanner has selected an existing vertex as the optimal vertex to include
+        return;
+      }
+      
       IsUsed[sx, sy] = true;
 
       // Add the new position as a vertex into the model and add that new vertex to the mesh
@@ -584,7 +590,7 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
 
     public void Refresh() => CreateDecimationState();
 
-    public GridToTINDecimator(GenericSubGridTree<float, GenericLeafSubGrid_Float> dataStore)
+    public GridToTINDecimator(GenericSubGridTree<float, GenericLeafSubGrid<float>> dataStore)
     {
       DataStore = dataStore ?? throw new TRexTINException("No data store provided to decimator");
 

@@ -8,6 +8,7 @@ using VSS.ConfigurationStore;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -38,21 +39,43 @@ namespace VSS.TRex.Server.TINSurfaceExport
   {
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorPipelineStyle.DefaultProgressive:
-          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
-        default:
-          return null;
-      }
+        PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        _ => null
+      };
     }
 
     private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorTaskStyle.SurfaceExport:
-          return new SurfaceTask();
+        PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
+        _ => null
+      };
+    }
+
+    private static IDataSmoother SurfaceExportSmootherFactoryMethod(DataSmootherOperation operation)
+    {
+      var config = DIContext.Obtain<IConfigurationStore>();
+
+      switch (operation)
+      {
+        case DataSmootherOperation.SurfaceExport:
+        {
+          var smoothingActive = config.GetValueBool("SURFACE_EXPORT_DATA_SMOOTHING_ACTIVE", DataSmoothing.Consts.SURFACE_EXPORT_DATA_SMOOTHING_ACTIVE);
+
+          if (!smoothingActive)
+          {
+            return null;
+          }
+
+          var convolutionMaskSize = (ConvolutionMaskSize) config.GetValueInt("SURFACE_EXPORT_DATA_SMOOTHING_MASK_SIZE", (int) DataSmoothing.Consts.SURFACE_EXPORT_DATA_SMOOTHING_MASK_SIZE);
+          var nullInfillMode = (NullInfillMode) config.GetValueInt("SURFACE_EXPORT_DATA_SMOOTHING_NULL_INFILL_MODE", (int) DataSmoothing.Consts.SURFACE_EXPORT_DATA_SMOOTHING_NULL_INFILL_MODE);
+
+          return new ElevationTreeSmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode);
+        }
+
         default:
           return null;
       }
@@ -90,6 +113,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
       .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
+
+      .Add(x => x.AddSingleton<Func<DataSmootherOperation, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
 
       .Complete();
     }

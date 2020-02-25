@@ -47,35 +47,41 @@ namespace VSS.TRex.Server.TileRendering
   {
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorPipelineStyle.DefaultProgressive:
-          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
-        default:
-          return null;
-      }
+        PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        _ => null
+      };
     }
 
     private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorTaskStyle.PVMRendering:
-          return new PVMRenderingTask();
-        default:
-          return null;
-      }
+        PipelineProcessorTaskStyle.PVMRendering => new PVMRenderingTask(),
+        _ => null
+      };
     }
 
-    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key, NullInfillMode nullInfillMode)
+    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
     {
-      switch (key)
+      var config = DIContext.Obtain<IConfigurationStore>();
+
+      var smoothingActive = config.GetValueBool("TILE_RENDERING_DATA_SMOOTHING_ACTIVE", DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_ACTIVE);
+
+      if (!smoothingActive)
       {
-        case DisplayMode.Height :
-          return new ElevationArraySmoother(new ConvolutionTools<float>(), ConvolutionMaskSize.Mask3X3, nullInfillMode); 
-        default: 
-          return null;
-      } 
+        return null;
+      }
+
+      var convolutionMaskSize = (ConvolutionMaskSize) config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE", (int) DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE);
+      var nullInfillMode = (NullInfillMode) config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int) DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
+
+      return key switch
+      {
+        DisplayMode.Height => new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode),
+        _ => null
+      };
     }
 
     private static void DependencyInjection() 
@@ -128,7 +134,7 @@ namespace VSS.TRex.Server.TileRendering
           .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
 
-        .Add(x => x.AddSingleton<Func<DisplayMode, NullInfillMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+        .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
 
         .Complete();
     }
