@@ -57,11 +57,11 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             return;
           }
 
-          Guid projectID = Guid.Empty;
+          Guid projectId;
           string folderPath;
           try
           {
-            projectID = Guid.Parse(args[0]);
+            projectId = Guid.Parse(args[0]);
             folderPath = args[1];
           }
           catch
@@ -71,7 +71,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             return;
           }
 
-          if (projectID == Guid.Empty)
+          if (projectId == Guid.Empty)
           {
             return;
           }
@@ -89,7 +89,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
           try
           {
-            processor.ProcessSortedTAGFilesInFolder(projectID, folderPath);
+            processor.ProcessSortedTAGFilesInFolder(projectId, folderPath);
           }
           catch (Exception e)
           {
