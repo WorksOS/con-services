@@ -58,18 +58,18 @@ node ('jenkinsslave-pod') {
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    def container = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
-	def containerDb = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.db-${params.VSTS_BUILD_NUMBER}"
-    def testContainer = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.tests-${params.VSTS_BUILD_NUMBER}"
+    def container = "300213723870.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
+	def containerDb = "300213723870.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.db-${params.VSTS_BUILD_NUMBER}"
+    def testContainer = "300213723870.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}.tests-${params.VSTS_BUILD_NUMBER}"
 
 	def elbContainer = container
 	def elbContainerDb = containerDb
     def elbTestContainer = testContainer
 
-    def ecrRepository = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
-	def ecrRepositoryDb = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db"
+    def ecrRepository = "300213723870.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
+	def ecrRepositoryDb = "300213723870.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db"
     def finalImage = "${ecrRepository}:${versionNumber}"
-	def dbFinalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
+	def dbFinalImage = "300213723870.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	def servicePath = params.SERVICE_PATH
 	def buildDB = params.BUILD_DB
 	def runTests = params.RUN_ACCTEST
