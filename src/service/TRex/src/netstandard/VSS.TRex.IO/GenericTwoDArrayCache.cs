@@ -104,7 +104,7 @@ namespace VSS.TRex.IO
     {
       lock (_cache)
       {
-        for (int i = 0; i < _cacheCount; i++)
+        for (var i = 0; i < _cacheCount; i++)
           _cache[i] = null;
 
         _cacheCount = 0;
