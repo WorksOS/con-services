@@ -22,7 +22,7 @@ spec:
         name: landfillservice-testing
 
   - name: masterdataconsumercustomer
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     envFrom:
     - configMapRef:
         name: landfillservice-testing
@@ -32,7 +32,7 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.ICustomerEvent"
 
   - name: masterdataconsumerproject
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     tty: true
@@ -46,7 +46,7 @@ spec:
       value: "VSS-MasterData-Project-Only"
       
   - name: masterdataconsumergeofence
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     envFrom:
     - configMapRef:
         name: landfillservice-testing
@@ -56,7 +56,7 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.IGeofenceEvent"
 
   - name: masterdataconsumersubscription
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     envFrom:
     - configMapRef:
         name: landfillservice-testing
@@ -66,7 +66,7 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.ISubscriptionEvent"
 
   - name: masterdataschema
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     tty: true
     envFrom:
     - configMapRef:
@@ -76,7 +76,7 @@ spec:
       value: "1"
      
   - name: projectonlyschema
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     envFrom:
     - configMapRef:
         name: landfillservice-testing
@@ -113,7 +113,7 @@ spec:
         name: landfillservice-testing
 
   - name: mockapi-container
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     ports:
     - containerPort: 5001
     livenessProbe:

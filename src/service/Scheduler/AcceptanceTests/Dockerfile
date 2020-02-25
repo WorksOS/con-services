@@ -1,4 +1,4 @@
-FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk
+FROM 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk
 COPY . /app
 WORKDIR /app
 

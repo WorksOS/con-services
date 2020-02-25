@@ -18,7 +18,7 @@ spec:
     spec:
       initContainers:
       - name: init-schedulerdb
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi-db:{{ .Values.image.tag }}
+        image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi-db:{{ .Values.image.tag }}
         tty: true
         envFrom:
         - configMapRef:
@@ -28,7 +28,7 @@ spec:
         - secretRef:
             name: {{ .Values.globalConfig }}-secret            
       containers:
-      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi:{{ .Values.image.tag }}
+      - image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-scheduler-webapi:{{ .Values.image.tag }}
         name: {{ $name }}     
         livenessProbe:
           httpGet:

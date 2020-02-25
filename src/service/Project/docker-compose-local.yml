@@ -11,13 +11,13 @@ services:
     depends_on:
       - schema
   mockprojectwebapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
     env_file:
       - docker-compose-local.env
     ports:
       - "5001:5001"
   masterdataconsumercustomer:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -30,7 +30,7 @@ services:
       - schema
       - kafka
   masterdataconsumerproject:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -44,7 +44,7 @@ services:
       - projectonlyschema
       - kafka
   masterdataconsumergeofence:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -57,7 +57,7 @@ services:
       - schema
       - kafka
   masterdataconsumersubscription:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -77,13 +77,13 @@ services:
       - db
       - masterdataschema
   masterdataschema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     env_file:
       - docker-compose-local.env
     depends_on:
       - db
   projectonlyschema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     env_file:
       - docker-compose-local.env
     environment:

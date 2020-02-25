@@ -1,4 +1,4 @@
-FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk as builder
+FROM 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-sdk as builder
 ARG SERVICE_PATH
 
 COPY . /build/
@@ -6,7 +6,7 @@ WORKDIR /build
 
 RUN dotnet publish /nowarn:1591 ./$SERVICE_PATH/Service/VSS.Productivity3D.Push/VSS.Productivity3D.Push.csproj -o /build/artifacts/Push --framework netcoreapp2.1 --runtime linux-x64
 
-FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-runtime
+FROM 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \

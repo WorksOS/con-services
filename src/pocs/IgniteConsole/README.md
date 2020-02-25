@@ -15,13 +15,13 @@ See https://apacheignite-tools.readme.io/docs/kubernetes-installation for full d
 The ignite supplied images are broken for the backend and agent build and deploy using following commands (from this directory). Dont forget to login to ecr:
 
 ```
-docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-webagent -f .\Dockerfile.webagent .
+docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-webagent -f .\Dockerfile.webagent .
 
-docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-webagent
+docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-webagent
 
-docker build 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-backend -f .\Dockerfile.backend .
+docker build 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-backend -f .\Dockerfile.backend .
 
-docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-backend
+docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-backend
 
 ```
 

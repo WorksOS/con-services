@@ -1,7 +1,7 @@
 version: '2'
 services:
   webapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest
     env_file:
      - docker-compose-dev.env
     volumes:
@@ -11,7 +11,7 @@ services:
     ports:
       - 7001:80
   masterdataconsumercustomer:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
@@ -23,7 +23,7 @@ services:
     depends_on:
       - schema    
   masterdataconsumerproject:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
@@ -35,7 +35,7 @@ services:
     depends_on:
       - schema     
   masterdataconsumersubscription:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
@@ -45,7 +45,7 @@ services:
     volumes:
       - ./artifacts/logs:/app/logs
   masterdataconsumerasset:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
@@ -57,7 +57,7 @@ services:
     depends_on:
       - schema
   masterdataconsumerdevice:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     env_file:
      - docker-compose-dev.env
     environment:
@@ -69,7 +69,7 @@ services:
     depends_on:
       - schema
   schema:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db
     env_file:
      - docker-compose-dev.env
     

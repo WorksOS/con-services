@@ -11,7 +11,7 @@ services:
     depends_on:
       - mockprojectwebapi
   mockprojectwebapi:
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest
     env_file:
       - docker-compose-local.env
     ports:
