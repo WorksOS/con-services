@@ -26,10 +26,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // the snippet processor is ready to shutdown.
         //      FShutdownReadyEvent : TSimpleEvent;
 
-        private int PendingFilesToBeProcessedCount;
+        private int _pendingFilesToBeProcessedCount;
 
-        private int OutstandingCellPasses;
-        private long TotalCellPassesProcessed;
+        private int _outstandingCellPasses;
+        private long _totalCellPassesProcessed;
 
         //      FNumberOfTasksBeingProcessed : Integer;
         //      FRemainingNumberOfTasksBeingProcessed : Integer;
@@ -52,7 +52,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                          int aggregatedCellPassCount,
                                          IProductionEventLists aggregatedMachineEvents)
         {
-            AggregatedDataIntegratorTask NewTask = new AggregatedDataIntegratorTask
+            var NewTask = new AggregatedDataIntegratorTask
             {
                 IntermediaryTargetSiteModel = transientSiteModel,
                 PersistedTargetSiteModelID = persistentSiteModelID,
@@ -64,11 +64,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             };
 
             IncrementOutstandingCellPasses(aggregatedCellPassCount);
-            System.Threading.Interlocked.Add(ref TotalCellPassesProcessed, aggregatedCellPassCount);
+            System.Threading.Interlocked.Add(ref _totalCellPassesProcessed, aggregatedCellPassCount);
 
             TasksToProcess.Enqueue(NewTask);
 
-            System.Threading.Interlocked.Increment(ref PendingFilesToBeProcessedCount);
+            System.Threading.Interlocked.Increment(ref _pendingFilesToBeProcessedCount);
 
             // FProcessEvent.SetEvent;
         }
@@ -88,15 +88,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                   out long totalCellPassesProcessed,
                                   out int pendingFilesToBeProcessed)
         {
-            outstandingCellPasses = OutstandingCellPasses;
-            totalCellPassesProcessed = TotalCellPassesProcessed;
-            pendingFilesToBeProcessed = PendingFilesToBeProcessedCount;
+            outstandingCellPasses = _outstandingCellPasses;
+            totalCellPassesProcessed = _totalCellPassesProcessed;
+            pendingFilesToBeProcessed = _pendingFilesToBeProcessedCount;
         }
 
         // CanAcceptMoreAggregatedCellPasses keeps track of whether the buffer of cell
         // passes currently pending integration into the database can accept more cell passes
         public bool CanAcceptMoreAggregatedCellPasses => true;
 
-        public void IncrementOutstandingCellPasses(int Increment) => System.Threading.Interlocked.Add(ref OutstandingCellPasses, Increment);
+        public void IncrementOutstandingCellPasses(int Increment) => System.Threading.Interlocked.Add(ref _outstandingCellPasses, Increment);
     }
 }

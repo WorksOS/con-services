@@ -127,21 +127,21 @@ namespace VSS.TRex.TAGFiles.Executors
     }
     */
 
-    public static ProcessTAGFileResponse Execute(Guid ProjectID, Guid AssetID, IEnumerable<ProcessTAGFileRequestFileItem> TAGFiles)
+    public static ProcessTAGFileResponse Execute(Guid projectId, Guid assetId, IEnumerable<ProcessTAGFileRequestFileItem> tagFiles)
     {
-      var _TAGFiles = TAGFiles.ToArray(); // Enumerate collection just once
+      var _TAGFiles = tagFiles.ToArray(); // Enumerate collection just once
 
       if (_TAGFiles.Length == 0)
         return null;
 
-      Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {_TAGFiles.Count()} TAG files into project {ProjectID}, asset {AssetID}");
+      Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {_TAGFiles.Count()} TAG files into project {projectId}, asset {assetId}");
 
       var response = new ProcessTAGFileResponse();
 
       // Create the machinery responsible for tracking tasks and integrating them into the database
       var integrator = new AggregatedDataIntegrator();
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, ProjectID);
-      var ProcessedTasks = new List<AggregatedDataIntegratorTask>();
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, projectId);
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       // Note: This creates these elements within the project itself, not just class instances...
@@ -154,7 +154,7 @@ namespace VSS.TRex.TAGFiles.Executors
       // into the primary persistent model.
       // TODO: Failure of a single TAG file may result in contamination of the results of previous processed TAG files required exclusion of the TAG file in question and reprocessing of the list
 
-      Log.LogInformation($"#Progress# Initiating task based conversion of TAG files into project {ProjectID}");
+      Log.LogInformation($"#Progress# Initiating task based conversion of TAG files into project {projectId}");
 
       using (var commonConverter = new TAGFileConverter())
       {
@@ -174,31 +174,31 @@ namespace VSS.TRex.TAGFiles.Executors
               Log.LogInformation(
                 $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs");
             }
-            catch (Exception E)
+            catch (Exception e)
             {
               response.Results.Add(new ProcessTAGFileResponseItem
               {
-                FileName = tagFile.FileName, Success = false, Exception = E.ToString()
+                FileName = tagFile.FileName, Success = false, Exception = e.ToString()
               });
             }
           }
         }
 
-        commonConverter.SiteModel.ID = ProjectID;
-        commonConverter.Machine.ID = AssetID;
+        commonConverter.SiteModel.ID = projectId;
+        commonConverter.Machine.ID = assetId;
         commonConverter.Machine.IsJohnDoeMachine = _TAGFiles[0].IsJohnDoe;
      
-        integrator.AddTaskToProcessList(commonConverter.SiteModel, ProjectID,
-          commonConverter.Machine, AssetID,
+        integrator.AddTaskToProcessList(commonConverter.SiteModel, projectId,
+          commonConverter.Machine, assetId,
           commonConverter.SiteModelGridAggregator,
           commonConverter.ProcessedCellPassCount,
           commonConverter.MachineTargetValueChangesAggregator);
       }
 
-      worker.ProcessTask(ProcessedTasks, _TAGFiles.Length);
+      worker.ProcessTask(processedTasks, _TAGFiles.Length);
       worker.CompleteTaskProcessing();
 
-      Log.LogInformation($"#Progress# Completed task based conversion of TAG files into project {ProjectID}");
+      Log.LogInformation($"#Progress# Completed task based conversion of TAG files into project {projectId}");
 
       return response;
     }
