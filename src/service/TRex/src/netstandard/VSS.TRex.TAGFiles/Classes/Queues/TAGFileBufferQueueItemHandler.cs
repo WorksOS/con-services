@@ -89,7 +89,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                 catch (KeyNotFoundException e)
                                 {
                                     // Odd, but let's be graceful and attempt to process the remainder in the package
-                                    Log.LogError(e, $"Error, exception occurred while attempting to retrieve TAG file for key {x} from the TAG file buffer queue cache");
+                                    Log.LogError($"Error, KeyNotFoundException exception occurred while attempting to retrieve TAG file for key {x} from the TAG file buffer queue cache");
                                     return null;
                                 }
                                 catch (Exception e)
@@ -206,7 +206,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     catch (KeyNotFoundException e)
                     {
                         // Odd, but let's be graceful and attempt to process the remainder in the package
-                        Log.LogError(e, $"Error, exception occurred while attempting to retrieve TAG file for key {x} from the TAG file buffer queue cache");
+                        Log.LogError($"Error, KeyNotFoundException exception occurred while attempting to retrieve TAG file for key {x} from the TAG file buffer queue cache");
                         return null;
                     }
                     catch (Exception e)

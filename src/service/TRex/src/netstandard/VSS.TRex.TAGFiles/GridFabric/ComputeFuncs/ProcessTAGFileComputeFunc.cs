@@ -34,7 +34,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"{nameof(ProcessTAGFileComputeFunc)}.{nameof(Invoke)} failed with exception");
+        Log.LogError(e, $"{nameof(ProcessTAGFileComputeFunc)}.{nameof(Invoke)} failed with exception: {e.Message}, stack trace: {e.StackTrace}");
 
         return new ProcessTAGFileResponse {Results = arg.TAGFiles.Select(x => new ProcessTAGFileResponseItem
         {
