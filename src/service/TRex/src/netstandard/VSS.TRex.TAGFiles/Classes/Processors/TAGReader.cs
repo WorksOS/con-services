@@ -60,12 +60,13 @@ namespace VSS.TRex.TAGFiles.Classes.Processors
       if (nybblePosition < 0 || nybblePosition / 2 > StreamSizeInNybbles)
         throw new IndexOutOfRangeException($"NybblePosition {nybblePosition} in file is out of range (size = {StreamSizeInNybbles})");
 
-      var nybbleIndex = nybblePosition++ % 2;
+      if (nybblePosition++ % 2 == 0)
+      {
+        nybble = (byte) stream.ReadByte();
+        return (byte)(nybble >> BITS_PER_NYBBLE);
+      }
 
-      if (nybbleIndex == 0)
-        nybble = (byte)stream.ReadByte();
-
-      return (byte) (nybbleIndex == 0 ? (nybble >> BITS_PER_NYBBLE) & 0xf : nybble & 0xf);
+      return (byte)(nybble & 0xf);
     }
 
     /// <summary>
