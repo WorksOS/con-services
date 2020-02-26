@@ -17,8 +17,6 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridSegmentCleaver>();
 
-    private static readonly int SubGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
-
     private static readonly int SubGridMaxSegmentCellPassesLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT", Consts.VLPDSUBGRID_MAXSEGMENTCELLPASSESLIMIT);
 
     private static readonly bool SegmentCleavingOperationsToLog = DIContext.Obtain<IConfigurationStore>().GetValueBool("SEGMENTCLEAVINGOOPERATIONS_TOLOG", Consts.SEGMENTCLEAVINGOOPERATIONS_TOLOG);
@@ -81,7 +79,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
           {
             if (segment.RequiresCleaving(out totalPassCount, out maximumPassCount))
               Log.LogWarning(
-                $"Cleave on segment ({cleavedTimeRangeStart}-{cleavedTimeRangeEnd}) of sub grid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {totalPassCount}/{SubGridSegmentPassCountLimit}, per cell = {maximumPassCount}/{SubGridMaxSegmentCellPassesLimit})");
+                $"Cleave on segment ({cleavedTimeRangeStart}-{cleavedTimeRangeEnd}) of sub grid {subGrid.Moniker()} failed to reduce cell pass count below maximums (max passes = {totalPassCount}/{subGridSegmentPassCountLimit}, per cell = {maximumPassCount}/{SubGridMaxSegmentCellPassesLimit})");
           }
         }
       } while (iterator.MoveToNextSubGridSegment());

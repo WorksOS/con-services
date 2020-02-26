@@ -116,7 +116,7 @@ namespace VSS.TRex.SubGridTrees.Server
       int subGridSegmentPassCountLimit = 0)
     {
       const int cleaveSegmentPassCountDeadBand = 100;
-        
+     
       if (!cleavingSegment.HasAllPasses)
       {
         Log.LogError($"Cannot cleave a sub grid ({_owner.Moniker()}) without its cell passes");
@@ -141,7 +141,11 @@ namespace VSS.TRex.SubGridTrees.Server
         return false; // There is no need to cleave this segment
       }
 
-      var numRequiredClovenSegments = (totalPassCount - 1) / subGridSegmentPassCountLimit + 1;
+      // Don't resize to exactly the limit as this means cell passes added due to our of order processing will cause
+      // more extensive cleaving. Set it to two thirds of the limit that triggers cleaving
+      var subGridSegmentPassCountLimitWithHeadroom = (2 * subGridSegmentPassCountLimit) / 3;
+
+      var numRequiredClovenSegments = (totalPassCount - 1) / subGridSegmentPassCountLimitWithHeadroom + 1;
 
       // Determine the actual time range of the passes within the segment
       cleavingSegment.PassesData.CalculateTimeRange(out var coveredTimeRangeStart, out var coveredTimeRangeEnd);
