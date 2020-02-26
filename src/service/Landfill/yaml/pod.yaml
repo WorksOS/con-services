@@ -113,7 +113,7 @@ spec:
         name: landfillservice-testing
 
   - name: mockapi-container
-    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest-linux
+    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/ccss-mockproject-webapi:latest-linux
     ports:
     - containerPort: 5001
     livenessProbe:

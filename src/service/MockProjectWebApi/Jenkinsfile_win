@@ -38,8 +38,8 @@ node('Jenkins-Win2016-Raptor') {
         if (currentBuild.result=='SUCCESS') {
           //Rebuild Image, tag & push to AWS Docker Repo
           stage ('Build Images') {
-            bat "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
-            bat "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-mockproject-webapi:latest ./Artifacts/MockProjectWebApi"
+            bat "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/ccss-mockproject-webapi:${fullVersion}-${branchName} ./Artifacts/MockProjectWebApi"
+            bat "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/ccss-mockproject-webapi:latest ./Artifacts/MockProjectWebApi"
           }
 
           //Publish to AWS Repo
