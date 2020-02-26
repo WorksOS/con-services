@@ -176,6 +176,8 @@ namespace VSS.TRex.TAGFiles.Executors
             }
             catch (Exception e)
             {
+              Log.LogError(e, $"Processing of TAG file {tagFile.FileName} failed with exception {e.Message}");
+
               response.Results.Add(new ProcessTAGFileResponseItem
               {
                 FileName = tagFile.FileName, Success = false, Exception = e.ToString()
