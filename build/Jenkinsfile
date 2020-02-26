@@ -228,17 +228,8 @@ node ('jenkinsslave-pod') {
 
 						//Dump log from webapi to buildlog
 						containerLog 'service-container'
-					
-						//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
-						//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
-						//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
-						step([$class: 'TeamCollectResultsPostBuildAction', 
-							requestedResults: [
-								[includes: 'TestResults/UnitTests/**/*.xml', teamResultType: 'XUNIT'],
-								[includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA'],
-								[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']
-							]
-						])
+
+						archiveArtifacts artifacts: "TestResults/UnitTests/**/*.xml, TestResults/TestCoverage/*.xml, AcceptanceTests/tests/**/TestResults/*.xml", fingerprint: true
 					}
 				}		
 			}

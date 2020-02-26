@@ -1,0 +1,18 @@
+# We bind the role to the Jenkins service account. The role binding is created in the namespace
+# where the agents are supposed to run.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-testing-role-binding
+  namespace: testing
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: jenkins-testing-role
+subjects:
+- kind: ServiceAccount
+  name: jenkins
+  namespace: jenkins
+- kind: ServiceAccount
+  name: default
+  namespace: jenkins
