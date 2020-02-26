@@ -11,13 +11,14 @@ namespace VSS.TRex.IO
   {
     private readonly object _lock = new object();
 
-    public static readonly int[] DEFAULT_POOL_CACHE_SZIES =
+    public static readonly int[] DEFAULT_POOL_CACHE_SIZES =
     {
+      1, // Satisfied by the zero buffer item
       200, // 1
       200, // 2
       400, // 4 - This size experiences significant overflows reported in the logs, increased to 400 to compensate
       400, // 8 - This size experiences significant overflows reported in the logs, increased to 400 to compensate
-      800, // 16 - This size experiences significant overflows reported in the logs, increased to 400 to compensate
+      800, // 16 - This size experiences significant overflows reported in the logs, increased to 800 to compensate
       200, // 32
       200, // 64
       400, // 128 - This size experiences significant overflows reported in the logs, increased from 200 to 400 to compensate
@@ -35,14 +36,14 @@ namespace VSS.TRex.IO
       10, // 1024K
     };
 
-    public const int MAX_BUFFER_SIZE_CACHED = 1 << 20; // ~1 million items
+    public const int MAX_BUFFER_SIZE_CACHED = 1 << NumExponentialPoolsToProvide; // ~1 million items
 
     private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericArrayPoolCaches<T>>();
 
     /// <summary>
     /// The number of different power-of-2 sized buffer pools to rent buffers from
     /// </summary>
-    private const int NumExponentialPoolsToProvide = 21;
+    private const int NumExponentialPoolsToProvide = 20; // Up to ~1 million items
 
     /// <summary>
     /// A singleton empty buffer
@@ -59,17 +60,17 @@ namespace VSS.TRex.IO
     /// <summary>
     /// Counters for each of the power-of-two buffer pools
     /// </summary>
-    private readonly GenericArrayPoolStatistics[] _poolCounts = new GenericArrayPoolStatistics[NumExponentialPoolsToProvide];
+    private readonly GenericArrayPoolStatistics[] _poolCounts = new GenericArrayPoolStatistics[NumExponentialPoolsToProvide + 1];
 
     public GenericArrayPoolCaches()
     {
-      _pools = new T[NumExponentialPoolsToProvide][][];
+      _pools = new T[NumExponentialPoolsToProvide + 1][][];
       _poolsLength = _pools.Length;
 
       // Establish rentable buffers per the default sizing
       for (var i = 0; i < _pools.Length; i++)
       {
-        _pools[i] = new T[DEFAULT_POOL_CACHE_SZIES[i]][];
+        _pools[i] = new T[DEFAULT_POOL_CACHE_SIZES[i]][];
       }
 
       for (var i = 0; i < _poolsLength; i++)

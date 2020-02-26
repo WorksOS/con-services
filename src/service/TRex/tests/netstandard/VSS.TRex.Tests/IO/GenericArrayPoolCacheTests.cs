@@ -119,7 +119,7 @@ namespace VSS.TRex.Tests.IO
       var cache = new GenericArrayPoolCaches<byte>();
 
       // Fill a small pool with returned elements of the correct size
-      for (int i = 0; i < GenericArrayPoolCaches<byte>.DEFAULT_POOL_CACHE_SZIES[3]; i++)
+      for (int i = 0; i < GenericArrayPoolCaches<byte>.DEFAULT_POOL_CACHE_SIZES[3]; i++)
       {
         var b = new byte[8];
         cache.Return(ref b);
