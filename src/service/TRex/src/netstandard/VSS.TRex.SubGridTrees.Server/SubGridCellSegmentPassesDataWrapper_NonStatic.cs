@@ -270,13 +270,21 @@ namespace VSS.TRex.SubGridTrees.Server
 
               var countInCell = 0;
 
-              for (var passIndex = 0; passIndex < thePassCount; passIndex++)
+              // Implementation taking advantage of internal knowledge of TRexSpan
+              var elements = cell.Passes.Elements;
+              for (int passIndex = cell.Passes.Offset, limit = cell.Passes.OffsetPlusCount; passIndex < limit; passIndex++)
               {
-                var theTime = PassTime(i, j, passIndex);
-
-                if (theTime < searchTime)
+                if (elements[passIndex].Time < searchTime)
                   countInCell++;
               }
+
+              // Impleentation restricting itself to GetElement() API
+              // for (var passIndex = 0; passIndex < thePassCount; passIndex++)
+              // {
+              //   var theTime = PassTime(i, j, passIndex);
+              //   if (theTime < searchTime)
+              //     countInCell++;
+              // }
 
               totalPasses += countInCell;
 
