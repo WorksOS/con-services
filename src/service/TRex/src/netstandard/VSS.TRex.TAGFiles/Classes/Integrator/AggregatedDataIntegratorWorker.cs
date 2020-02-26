@@ -164,7 +164,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           processedTasks.Add(taskToProcess);
         }
 
-        Log.LogInformation($"Aggregation Task Process --> Integrating {processedTasks.Count} TAG files for machine {task.PersistedTargetMachineID} in project {task.PersistedTargetSiteModelID}");
+        Log.LogInformation($"Aggregation Task Process --> Integrating {processedTasks.Count} TAG file processing tasks for machine {task.PersistedTargetMachineID} in project {task.PersistedTargetSiteModelID}");
 
         // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
@@ -261,6 +261,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           // Need to locate or create a matching machine in the site model.
           machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(task.PersistedTargetMachineID, task.IntermediaryTargetMachine.IsJohnDoeMachine);
+
+          // Log.LogInformation($"Selecting machine: PersistedTargetMachineID={task.PersistedTargetMachineID}, IsJohnDoe?:{task.IntermediaryTargetMachine.IsJohnDoeMachine}, Result: {machineFromDatamodel}");
 
           if (machineFromDatamodel == null)
           {
@@ -374,7 +376,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             return false;
           }
 
-          Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {siteModelFromDatamodel.ID}, {sw2.Elapsed}");
+          Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {siteModelFromDatamodel.ID}, in elapsed time of {sw2.Elapsed}");
 
           TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(numTagFilesRepresented);
           TAGProcessingStatistics.IncrementTotalCellPassesAggregatedIntoModels(totalPassCountInAggregation);
@@ -474,7 +476,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       finally
       {
-        Log.LogInformation($"Aggregation Task Process --> Completed integrating {processedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes for PersistedMachine: {task?.PersistedTargetMachineID} FinalMachine: {task?.IntermediaryTargetMachine.ID} in project {task?.PersistedTargetSiteModelID} in {sw.Elapsed}");
+        Log.LogInformation($"Aggregation Task Process --> Completed integrating {processedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes for PersistedMachine: {task?.PersistedTargetMachineID} FinalMachine: {task?.IntermediaryTargetMachine.ID} in project {task?.PersistedTargetSiteModelID} in elapsed time of {sw.Elapsed}");
       }
 
       return true;
