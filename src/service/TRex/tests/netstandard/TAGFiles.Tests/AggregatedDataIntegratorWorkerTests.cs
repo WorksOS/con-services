@@ -20,6 +20,8 @@ namespace TAGFiles.Tests
 
   public class AggregatedDataIntegratorWorkerTests : IClassFixture<DITagFileFixture>
   {
+    private static readonly ILogger Log = VSS.TRex.Logging.Logger.CreateLogger<AggregatedDataIntegratorWorkerTests>();
+
     private ISiteModel BuildModel()
     {
       // Create the site model and machine etc to aggregate the processed TAG file into
@@ -191,13 +193,11 @@ namespace TAGFiles.Tests
     {
       Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag").Length.Should().Be(expectedFileCount);
 
-      ILogger Log = VSS.TRex.Logging.Logger.CreateLogger("Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet");
-
       Log.LogInformation($"Starting processing {numToTake} files from index {skipTo}.");
 
       // Convert TAG files using TAGFileConverters into mini-site models
       var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
-        .ToList().OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+        .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
 
       Log.LogInformation($"Completed constructing converters for {numToTake} files from index {skipTo}.");
 
