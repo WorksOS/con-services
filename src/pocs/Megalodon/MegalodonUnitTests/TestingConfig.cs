@@ -62,6 +62,16 @@ namespace MegalodonUnitTests
       throw new NotImplementedException();
     }
 
+    public DateTime? GetValueDateTime(string key)
+    {
+      throw new NotImplementedException();
+    }
+
+    public DateTime GetValueDateTime(string key, DateTime defaultValue)
+    {
+      throw new NotImplementedException();
+    }
+
     public double GetValueDouble(string v)
     {
       throw new NotImplementedException();

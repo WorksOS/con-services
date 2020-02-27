@@ -8,8 +8,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TagFiles.Common;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
+using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
+using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
 
 namespace MegalodonSvc
@@ -19,11 +23,11 @@ namespace MegalodonSvc
     private readonly ILogger<TagFileDispatchSvc> _log;
     private readonly ITPaaSApplicationAuthentication _authn;
     private readonly IConfigurationStore _config;
-    private readonly IProductivity3dV2ProxyCompaction _serviceProxy;
+    private readonly ITRexTagFileProxy _serviceProxy;
     private FileSystemWatcher fileSystemWatcher;
     private readonly string _path;
 
-    public TagFileDispatchSvc(ITPaaSApplicationAuthentication authn, ILoggerFactory logFactory, IConfigurationStore config, IProductivity3dV2ProxyCompaction serviceProxy)
+    public TagFileDispatchSvc(ITPaaSApplicationAuthentication authn, ILoggerFactory logFactory, IConfigurationStore config, ITRexTagFileProxy serviceProxy)
     {
       _log = logFactory.CreateLogger<TagFileDispatchSvc>();
       _authn = authn;
@@ -67,13 +71,17 @@ namespace MegalodonSvc
     }
 
 
-
-    private Task<TagFileDirectSubmissionResult> UploadFile(string filename)
+    private Task<ContractExecutionResult> UploadFile(string filename)
     {
       _log.LogInformation($"Uploading file {filename}");
+      var compactionTagFileRequest = new CompactionTagFileRequest
+      {
+        FileName = filename
+      };
+
       try
       {
-        return _serviceProxy.SendTagfileDirect(filename, _authn.CustomHeaders());
+        return TagFileHelper.SendTagFileToTRex(compactionTagFileRequest, _serviceProxy,_log, _authn.CustomHeaders());
       }
       catch (Exception e)
       {
