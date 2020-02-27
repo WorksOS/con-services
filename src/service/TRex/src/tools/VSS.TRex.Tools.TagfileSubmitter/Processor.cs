@@ -28,106 +28,105 @@ namespace VSS.TRex.Tools.TagfileSubmitter
     private static ILogger Log = Logging.Logger.CreateLogger<Program>();
 
     // Singleton request object for submitting TAG files. Creating these is relatively slow and support concurrent operations.
-    private SubmitTAGFileRequest submitTAGFileRequest;
-    private ProcessTAGFileRequest processTAGFileRequest;
+    private SubmitTAGFileRequest _submitTagFileRequest;
+    private ProcessTAGFileRequest _processTagFileRequest;
 
-    private int tAGFileCount = 0;
+    private int _tagFileCount;
 
     public Guid AssetOverride = Guid.Empty;
 
 
-    public Task SubmitSingleTAGFile(Guid projectID, Guid assetID, string fileName)
+    public Task SubmitSingleTAGFile(Guid projectId, Guid assetId, string fileName)
     {
-      submitTAGFileRequest = submitTAGFileRequest ?? new SubmitTAGFileRequest();
+      _submitTagFileRequest ??= new SubmitTAGFileRequest();
       SubmitTAGFileRequestArgument arg;
 
       using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
       {
-        byte[] bytes = new byte[fs.Length];
+        var bytes = new byte[fs.Length];
         fs.Read(bytes, 0, bytes.Length);
 
         arg = new SubmitTAGFileRequestArgument
         {
-          ProjectID = projectID,
-          AssetID = assetID,
+          ProjectID = projectId,
+          AssetID = assetId,
           TagFileContent = bytes,
           TAGFileName = Path.GetFileName(fileName)
         };
       }
 
-      Log.LogInformation($"Submitting TAG file #{++tAGFileCount}: {fileName}");
+      Log.LogInformation($"Submitting TAG file #{++_tagFileCount}: {fileName}");
 
-      return submitTAGFileRequest.ExecuteAsync(arg);
+      return _submitTagFileRequest.ExecuteAsync(arg);
     }
 
-    public Task ProcessSingleTAGFile(Guid projectID, string fileName)
+    public Task ProcessSingleTAGFile(Guid projectId, string fileName)
     {
       //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-      var machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
+      var machineId = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
 
-      processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
+      _processTagFileRequest ??= new ProcessTAGFileRequest();
       ProcessTAGFileRequestArgument arg;
 
       using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
       {
-        byte[] bytes = new byte[fs.Length];
+        var bytes = new byte[fs.Length];
         fs.Read(bytes, 0, bytes.Length);
 
         arg = new ProcessTAGFileRequestArgument
         {
-          ProjectID = projectID,
-          AssetUID = machineID,
+          ProjectID = projectId,
           TAGFiles = new List<ProcessTAGFileRequestFileItem>
           {
             new ProcessTAGFileRequestFileItem
             {
               FileName = Path.GetFileName(fileName),
                             TagFileContent = bytes,
+                            AssetId = machineId,
                             IsJohnDoe = false
             }
           }
         };
       }
 
-      return processTAGFileRequest.ExecuteAsync(arg);
+      return _processTagFileRequest.ExecuteAsync(arg);
     }
 
-    public Task ProcessTAGFiles(Guid projectID, string[] files)
+    public Task ProcessTAGFiles(Guid projectId, string[] files)
     {
       // Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-      var machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
+      var machineId = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
 
-      processTAGFileRequest = processTAGFileRequest ?? new ProcessTAGFileRequest();
+      _processTagFileRequest ??= new ProcessTAGFileRequest();
       var arg = new ProcessTAGFileRequestArgument
       {
-        ProjectID = projectID,
-        AssetUID = machineID,
+        ProjectID = projectId,
         TAGFiles = new List<ProcessTAGFileRequestFileItem>()
       };
 
-      foreach (string file in files)
+      foreach (var file in files)
       {
-        using (FileStream fs = new FileStream(file, FileMode.Open, FileAccess.Read))
+        using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read))
         {
-          byte[] bytes = new byte[fs.Length];
+          var bytes = new byte[fs.Length];
           fs.Read(bytes, 0, bytes.Length);
 
-          arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes, IsJohnDoe = false });
+          arg.TAGFiles.Add(new ProcessTAGFileRequestFileItem { FileName = Path.GetFileName(file), TagFileContent = bytes, AssetId = machineId, IsJohnDoe = false });
         }
       }
 
-      return processTAGFileRequest.ExecuteAsync(arg);
+      return _processTagFileRequest.ExecuteAsync(arg);
     }
 
-    public void SubmitTAGFiles(Guid projectID, List<string> files)
+    public void SubmitTAGFiles(Guid projectId, List<string> files)
     {
       //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-      var machineID = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
+      var machineId = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
 
       var taskList = new List<Task>();
 
-      foreach (string file in files)
-        taskList.Add(SubmitSingleTAGFile(projectID, machineID, file));
+      foreach (var file in files)
+        taskList.Add(SubmitSingleTAGFile(projectId, machineId, file));
 
       Task.WhenAll(taskList);
     }
@@ -142,56 +141,56 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       }
       else
       {
-        foreach (string f in Directory.GetDirectories(folder))
+        foreach (var f in Directory.GetDirectories(folder))
           CollectTAGFilesInFolder(f, fileNamesFromFolders);
 
         fileNamesFromFolders.Add(Directory.GetFiles(folder, "*.tag").ToList());
       }
     }
 
-    public void ProcessSortedTAGFilesInFolder(Guid projectID, string folder)
+    public void ProcessSortedTAGFilesInFolder(Guid projectId, string folder)
     {
       var fileNamesFromFolders = new List<List<string>>();
       CollectTAGFilesInFolder(folder, fileNamesFromFolders);
 
-      var combinedList = new List<string>();
-      fileNamesFromFolders.ForEach(x => combinedList.AddRange(x));
-      combinedList.Sort(new TAGFileNameComparer());
-      SubmitTAGFiles(projectID, combinedList);
+//      var combinedList = new List<string>();
+//      fileNamesFromFolders.ForEach(x => combinedList.AddRange(x));
+//      combinedList.Sort(new TAGFileNameComparer());
+//      SubmitTAGFiles(projectID, combinedList);
 
-//      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
-//      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectID, x));
+      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
+      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectId, x));
     }
 
-    public void ProcessTAGFilesInFolder(Guid projectID, string folder)
+    public void ProcessTAGFilesInFolder(Guid projectId, string folder)
     {
       // If it is a single file, just process it
       if (File.Exists(folder))
       {
         // ProcessTAGFiles(projectID, new string[] { folder });
-        SubmitTAGFiles(projectID, new List<string> { folder });
+        SubmitTAGFiles(projectId, new List<string> { folder });
       }
       else
       {
-        string[] folders = Directory.GetDirectories(folder);
-        foreach (string f in folders)
+        var folders = Directory.GetDirectories(folder);
+        foreach (var f in folders)
         {
-          ProcessTAGFilesInFolder(projectID, f);
+          ProcessTAGFilesInFolder(projectId, f);
         }
 
         // ProcessTAGFiles(projectID, Directory.GetFiles(folder, "*.tag"));
-        SubmitTAGFiles(projectID, Directory.GetFiles(folder, "*.tag").ToList());
+        SubmitTAGFiles(projectId, Directory.GetFiles(folder, "*.tag").ToList());
       }
     }
 
-    public void ProcessMachine333TAGFiles(Guid projectID)
+    public void ProcessMachine333TAGFiles(Guid projectId)
     {
-      ProcessSortedTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine333");
+      ProcessSortedTAGFilesInFolder(projectId, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine333");
     }
 
-    public void ProcessMachine10101TAGFiles(Guid projectID)
+    public void ProcessMachine10101TAGFiles(Guid projectId)
     {
-      ProcessSortedTAGFilesInFolder(projectID, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
+      ProcessSortedTAGFilesInFolder(projectId, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
     }
   }
 }

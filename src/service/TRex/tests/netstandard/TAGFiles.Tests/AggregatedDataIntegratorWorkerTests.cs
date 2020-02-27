@@ -57,8 +57,8 @@ namespace TAGFiles.Tests
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
 
-      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID,  converter.Machine, targetMachine.ID, 
-                                      converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID,  converter.Machines, 
+                                      converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachinesTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
@@ -91,8 +91,8 @@ namespace TAGFiles.Tests
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
 
-      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID, converter.Machine, converter.Machine.ID,
-        converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID, converter.Machines,
+        converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachinesTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
@@ -128,8 +128,8 @@ namespace TAGFiles.Tests
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
 
-      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID, converter.Machine, converter.Machine.ID,
-        converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachineTargetValueChangesAggregator);
+      integrator.AddTaskToProcessList(converter.SiteModel, targetSiteModel.ID, converter.Machines, 
+        converter.SiteModelGridAggregator, converter.ProcessedCellPassCount, converter.MachinesTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
@@ -164,10 +164,10 @@ namespace TAGFiles.Tests
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
 
-      integrator.AddTaskToProcessList(converter1.SiteModel, targetSiteModel.ID, converter1.Machine, targetMachine.ID, 
-        converter1.SiteModelGridAggregator, converter1.ProcessedCellPassCount, converter1.MachineTargetValueChangesAggregator);
-      integrator.AddTaskToProcessList(converter2.SiteModel, targetSiteModel.ID, converter2.Machine, targetMachine.ID, 
-        converter2.SiteModelGridAggregator, converter2.ProcessedCellPassCount, converter2.MachineTargetValueChangesAggregator);
+      integrator.AddTaskToProcessList(converter1.SiteModel, targetSiteModel.ID, converter1.Machines, 
+        converter1.SiteModelGridAggregator, converter1.ProcessedCellPassCount, converter1.MachinesTargetValueChangesAggregator);
+      integrator.AddTaskToProcessList(converter2.SiteModel, targetSiteModel.ID, converter2.Machines, 
+        converter2.SiteModelGridAggregator, converter2.ProcessedCellPassCount, converter2.MachinesTargetValueChangesAggregator);
 
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
@@ -215,8 +215,8 @@ namespace TAGFiles.Tests
           using (c)
           {
             c.Machine.ID = targetMachine.ID;
-            integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machine, targetMachine.ID,
-              c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachineTargetValueChangesAggregator);
+            integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,
+              c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
           }
         }
 

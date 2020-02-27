@@ -121,7 +121,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             var response = await request.ExecuteAsync(new ProcessTAGFileRequestArgument
                             {
                                 ProjectID = projectId,
-                                AssetUID = tagQueueItems[0].AssetID,
                                 TAGFiles = fileItems
                             });
 
@@ -244,7 +243,6 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     var response = await request.ExecuteAsync(new ProcessTAGFileRequestArgument
                     {
                         ProjectID = projectId,
-                        AssetUID = tagQueueItems[0].AssetID,
                         TAGFiles = fileItems
                     });
            

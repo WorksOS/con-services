@@ -30,7 +30,9 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
     {
       try
       {
-        return ProcessTAGFilesExecutor.Execute(arg.ProjectID, arg.AssetUID, arg.TAGFiles);
+        Log.LogInformation($"Processing {arg.TAGFiles.Count} tag files in project {arg.ProjectID}");
+
+        return ProcessTAGFilesExecutor.Execute(arg.ProjectID, arg.TAGFiles);
       }
       catch (Exception e)
       {

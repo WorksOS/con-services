@@ -41,7 +41,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       using (var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs);
+        converter.Execute(fs, Guid.NewGuid(), false);
       }
 
       return converter;
@@ -55,7 +55,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       using (var fs = new FileStream(fn, FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs);
+        converter.Execute(fs, Guid.NewGuid(), false);
       }
 
       return converter;
@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs);
+        converter.Execute(fs, Guid.NewGuid(), false);
       }
 
       return converter;

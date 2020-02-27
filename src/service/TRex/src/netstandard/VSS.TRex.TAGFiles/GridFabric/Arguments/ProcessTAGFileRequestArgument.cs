@@ -16,12 +16,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
     public Guid ProjectID { get; set; } = Guid.Empty;
 
     /// <summary>
-    /// ID of the asset to process the TAG files into
-    /// </summary>
-    // public long AssetUID { get; set; } = -1;
-    public Guid AssetUID { get; set; }
-
-    /// <summary>
     /// A dictionary mapping TAG file names to the content of each file
     /// </summary>
     public List<ProcessTAGFileRequestFileItem> TAGFiles { get; set; }
@@ -40,7 +34,6 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteGuid(ProjectID);
-      writer.WriteGuid(AssetUID);
 
       writer.WriteInt(TAGFiles?.Count ?? 0);
       if (TAGFiles != null)
@@ -57,12 +50,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
-      AssetUID = reader.ReadGuid() ?? Guid.Empty;
 
-      var numTAGFiles = reader.ReadInt();
-      TAGFiles = new List<ProcessTAGFileRequestFileItem>(numTAGFiles);
+      var numTagFiles = reader.ReadInt();
+      TAGFiles = new List<ProcessTAGFileRequestFileItem>(numTagFiles);
 
-      for (int i = 0; i < numTAGFiles; i++)
+      for (var i = 0; i < numTagFiles; i++)
         TAGFiles.Add(new ProcessTAGFileRequestFileItem(reader));
     }
   }
