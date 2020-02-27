@@ -10,8 +10,6 @@ using TagFiles.Common;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
-using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.WebApi.Common;
