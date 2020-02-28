@@ -43,16 +43,16 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile()
     {
+      var newMachineId = Guid.NewGuid();
+
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", newMachineId, false);
       var priorMachineName = "Test Machine";
       var testTAGFileMachineID = "CB54XW  JLM00885";
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = BuildModel();
-      var targetMachine = targetSiteModel.Machines.CreateNew(priorMachineName, "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-
-      converter.Machine.ID = targetMachine.ID;
+      var targetMachine = targetSiteModel.Machines.CreateNew(priorMachineName, "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
@@ -78,16 +78,15 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoe()
     {
+      var newMachineId = Guid.NewGuid();
+
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", newMachineId, true);
       var testTAGFileMachineID = "CB54XW  JLM00885";
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      ISiteModel targetSiteModel = BuildModel();
+      var targetSiteModel = BuildModel();
       
-      converter.Machine.ID = Guid.Empty;
-      converter.Machine.IsJohnDoeMachine = true;
-
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
 
@@ -113,17 +112,17 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFile_JohnDoeExists()
     {
+      var newMachineId1 = Guid.NewGuid();
+      var newMachineId2 = Guid.NewGuid();
+
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", newMachineId1, true);
       var testTAGFileMachineID = "CB54XW  JLM00885";
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = BuildModel();
-      targetSiteModel.Machines.CreateNew("SomeOtherJohnDoe", "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.NewGuid());
-      var targetJohnDoe = targetSiteModel.Machines.CreateNew(testTAGFileMachineID, "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, Guid.NewGuid());
-
-      converter.Machine.ID = Guid.Empty;
-      converter.Machine.IsJohnDoeMachine = true;
+      targetSiteModel.Machines.CreateNew("SomeOtherJohnDoe", "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, newMachineId1);
+      var targetJohnDoe = targetSiteModel.Machines.CreateNew(testTAGFileMachineID, "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, newMachineId2);
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
@@ -150,16 +149,18 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_SingleTAGFileTwice()
     {
+      var newMachineId = Guid.NewGuid();
+
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      var converter1 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
-      var converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter1 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", newMachineId, false);
+      var converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", newMachineId, false);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = BuildModel();
-      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
 
-      converter1.Machine.ID = targetMachine.ID;
-      converter2.Machine.ID = targetMachine.ID;
+   //   converter1.Machines[0].ID = targetMachine.ID;
+   //   converter2.Machines[0].ID = targetMachine.ID;
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();

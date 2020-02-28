@@ -104,6 +104,8 @@ namespace VSS.TRex.TAGFiles.Executors
           };
 
           MachinesTargetValueChangesAggregator = new MachinesProductionEventLists(SiteModel, 0);
+
+          Machines = new MachinesList();
         }
     
         /// <summary>
@@ -151,22 +153,17 @@ namespace VSS.TRex.TAGFiles.Executors
                 Processor?.Dispose();
 
                 // Locate the machine in the local set of machines, adding one if necessary
-                var machine = Machines.FirstOrDefault(x => x.ID == assetUid);
-                if (machine == null)
-                {
-                  machine = new Machine("", "", MachineType.Unknown, DeviceTypeEnum.MANUALDEVICE, assetUid, (short) Machines.Count, isJohnDoe);
-                  Machines.Add(machine);
-                }
+                Machine = Machines.Locate(assetUid, isJohnDoe) ?? Machines.CreateNew("", "", MachineType.Unknown, DeviceTypeEnum.MANUALDEVICE, isJohnDoe, assetUid);
 
                 // Locate the aggregator, adding one if necessary
-                var machineTargetValueChangesAggregator = MachinesTargetValueChangesAggregator[machine.InternalSiteModelMachineIndex] as ProductionEventLists;
+                var machineTargetValueChangesAggregator = MachinesTargetValueChangesAggregator[Machine.InternalSiteModelMachineIndex] as ProductionEventLists;
                 if (machineTargetValueChangesAggregator == null)
                 {
-                  machineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, machine.InternalSiteModelMachineIndex);
+                  machineTargetValueChangesAggregator = new ProductionEventLists(SiteModel, Machine.InternalSiteModelMachineIndex);
                   MachinesTargetValueChangesAggregator.Add(machineTargetValueChangesAggregator);
                 }
 
-                Processor = new TAGProcessor(SiteModel, machine, SiteModelGridAggregator, machineTargetValueChangesAggregator);
+                Processor = new TAGProcessor(SiteModel, Machine, SiteModelGridAggregator, machineTargetValueChangesAggregator);
                 var sink = new TAGValueSink(Processor);
                 using (var reader = new TAGReader(tagData))
                 {
