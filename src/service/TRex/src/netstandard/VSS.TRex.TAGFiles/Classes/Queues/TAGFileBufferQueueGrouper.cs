@@ -27,10 +27,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         private static readonly int MaxNumberOfTagFilesPerBucket = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);
 
         /// <summary>
-        /// GroupMap is a dictionary (keyed on project UID) of dictionaries (keyed on AssetUID) of
+        /// GroupMap is a dictionary (keyed on project UID) of
         /// TAG files to be processed for that projectUID/assetUID combination 
         /// </summary>
-        private readonly Dictionary<Guid, Dictionary<Guid, List<ITAGFileBufferQueueKey>>> _groupMap;
+        private readonly Dictionary<Guid, List<ITAGFileBufferQueueKey>> _groupMap;
 
         /// <summary>
         /// fullBuckets is a list of arrays of TAG files where each array is a collection of TAG files for a
@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         /// </summary>
         public TAGFileBufferQueueGrouper()
         {
-            _groupMap = new Dictionary<Guid, Dictionary<Guid, List<ITAGFileBufferQueueKey>>>();
+            _groupMap = new Dictionary<Guid, List<ITAGFileBufferQueueKey>>();
             _fullBuckets = new List<ITAGFileBufferQueueKey[]>();
         }
 
@@ -57,16 +57,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             lock (this)
             {
                 if (Log.IsTraceEnabled())
+                { 
                     Log.LogTrace($"Grouper adding TAG file {key.FileName} representing asset {key.AssetUID} within project {key.ProjectUID} into an appropriate group");
+                }
 
-                if (_groupMap.TryGetValue(key.ProjectUID, out var assetsDict))
+                if (_groupMap.TryGetValue(key.ProjectUID, out var keyList))
                 {
-                    if (!assetsDict.TryGetValue(key.AssetUID, out var keyList))
-                    {
-                        keyList = new List<ITAGFileBufferQueueKey>();
-                        assetsDict.Add(key.AssetUID, keyList);
-                    }
-
                     // Check if this bucket is full
                     if (keyList.Count >= MaxNumberOfTagFilesPerBucket)
                     {
@@ -78,7 +74,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 }
                 else
                 {
-                    _groupMap.Add(key.ProjectUID, new Dictionary<Guid, List<ITAGFileBufferQueueKey>> { { key.AssetUID, new List<ITAGFileBufferQueueKey> {key} } });
+                    _groupMap.Add(key.ProjectUID, new List<ITAGFileBufferQueueKey> { key } );
                 }
             }
         }
@@ -96,24 +92,30 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             if (_fullBuckets.Count > 0)
             {
                 foreach (var bucket in _fullBuckets)
+                { 
                     if (bucket.Any())
                     {
                         if (avoidProjects != null && avoidProjects.Any(x => x == bucket[0].ProjectUID))
+                        { 
                             continue;
+                        }
 
                         selectedProject = bucket[0].ProjectUID;
                         return true;
                     }
+                }
             }
 
             foreach (var projectId in _groupMap.Keys)
             {
                 // Check the project is not in the avoid list
                 if (avoidProjects != null && avoidProjects.Any(x => x == projectId))
+                { 
                     continue;
+                }
 
                 // Check the project has grouped TAG files for an asset
-                if (_groupMap[projectId].Keys.Count > 0)
+                if (_groupMap[projectId].Count > 0)
                 {
                     selectedProject = projectId;
                     return true;
@@ -125,7 +127,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         }
 
         /// <summary>
-        /// Returns a list of TAG files for a project and asset within the set of project/asset pairs 
+        /// Returns a list of TAG files for a project within the set of project pairs 
         /// maintained in the grouper. The caller may provide an 'avoid' list of projects which the grouper
         /// will ignore when locating a group of TAG files to return.
         /// The returned list of TAG file keys is then removed from the grouper. It is the responsibility
@@ -137,15 +139,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         {
             lock (this)
             {
-                // Choose an appropriate project and return the first set of asset grouped TAG files for it
+                // Choose an appropriate project and return the first set of grouped TAG files for it
                 if (!SelectProject(avoidProjects, out projectId))
+                {
                     return null;
+                }
 
-                var _projectID = projectId;
+                var localProjectId = projectId;
                 IEnumerable<ITAGFileBufferQueueKey> result;
 
                 // Determine if there is a full bucket for the requested project
-                var resultIndex = _fullBuckets.FindIndex(x => x[0].ProjectUID == _projectID);
+                var resultIndex = _fullBuckets.FindIndex(x => x[0].ProjectUID == localProjectId);
                 if (resultIndex >= 0)
                 {
                     result = _fullBuckets[resultIndex];
@@ -154,15 +158,17 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 else
                 {
                     // No full buckets - extract the first list of asset based TAG files from the grouper for the selected project
-                    result = _groupMap[projectId].Values.First();
-                    _groupMap[projectId].Remove(result.First().AssetUID);
+                    result = _groupMap[projectId];
+                    _groupMap.Remove(projectId);
                 }
 
                 if (result.Any())
                 {
                     // Add the project to the avoid list
                     if (Log.IsTraceEnabled())
-                      Log.LogTrace($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectId} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                    {
+                        Log.LogTrace($"Thread {Thread.CurrentThread.ManagedThreadId}: About to add project {projectId} to [{(!avoidProjects.Any() ? "Empty" : avoidProjects.Select(x => $"{x}").Aggregate((a, b) => $"{a} + {b}"))}]");
+                    }
 
                     avoidProjects.Add(projectId);
                 }
@@ -173,7 +179,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                 {
                     var count = 0;
                     foreach (var tagFile in result)
-                       Log.LogTrace($"Returned TAG file {count++} is {tagFile.FileName} representing asset {tagFile.AssetUID} within project {tagFile.ProjectUID}");
+                    {
+                        Log.LogTrace($"Returned TAG file {count++} is {tagFile.FileName} representing asset {tagFile.AssetUID} within project {tagFile.ProjectUID}");
+                    }
                 }
                 
                 return result;
