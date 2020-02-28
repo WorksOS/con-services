@@ -173,21 +173,16 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         IServerSubGridTree groupedAggregatedCellPasses;
         if (processedTasks.Count > 1)
         {
-          throw new NotImplementedException("Grouped sub grid tree aggregation not currently supported, and may not be needed...");
-          /*
           var subGridTreeIntegrator = new GroupedSubGridTreeIntegrator
           {
             Trees = processedTasks
               .Where(t => t.AggregatedCellPassCount > 0)
-              .Select(t => (t.AggregatedCellPasses,
-                t.AggregatedMachineEvents.StartEndRecordedDataEvents.FirstStateDate(),
-                t.AggregatedMachineEvents.StartEndRecordedDataEvents.LastStateDate()))
+              .Select(t => (t.AggregatedCellPasses, DateTime.MinValue, DateTime.MaxValue))
               .ToList()
           };
 
           // Assign the new grid into Task to represent the spatial aggregation of all of the tasks aggregated cell passes
           groupedAggregatedCellPasses = subGridTreeIntegrator.IntegrateSubGridTreeGroup();
-          */
         }
         else
         {
@@ -268,7 +263,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           foreach (var machineFromTask in task.IntermediaryTargetMachines)
           {
             // Need to locate or create a matching machine in the site model.
-            var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.IsJohnDoeMachine);
+            var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.Name, machineFromTask.IsJohnDoeMachine);
 
             // Log.LogInformation($"Selecting machine: PersistedTargetMachineID={task.PersistedTargetMachineID}, IsJohnDoe?:{task.IntermediaryTargetMachine.IsJohnDoeMachine}, Result: {machineFromDatamodel}");
 
@@ -310,7 +305,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Iterate over all the machine events collected in the task
         foreach (var machineFromTask in task.IntermediaryTargetMachines)
         {
-          var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.IsJohnDoeMachine);
+          var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.Name, machineFromTask.IsJohnDoeMachine);
           var siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
 
           eventIntegrator.IntegrateMachineEvents(task.AggregatedMachineEvents[machineFromTask.InternalSiteModelMachineIndex], 
@@ -355,7 +350,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // we have been given are with respect to the sub grid, we must transform them
           // into coordinates relevant to the dirty bitmap sub grid tree.
 
-          // Todo: Working model updtae map needs to independently track each machine
           _workingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
           {
             CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModelFromDatamodel.CellSize,
@@ -368,7 +362,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // Compute the vector of internal site model machine indexes between the intermediary site model constructed from the TAG files,
           // and the persistent site model the data us being processed into
           (short taskInternalMachineIndex, short datamodelInternalMachineIndex)[] internalMachineIndexMap = task.IntermediaryTargetMachines
-            .Select(taskMachine => (taskMachine.InternalSiteModelMachineIndex, siteModelFromDatamodel.Machines.Locate(taskMachine.ID).InternalSiteModelMachineIndex))
+            .Select(taskMachine => (taskMachine.InternalSiteModelMachineIndex, 
+                                    siteModelFromDatamodel.Machines.Locate(taskMachine.ID, taskMachine.Name, taskMachine.IsJohnDoeMachine).InternalSiteModelMachineIndex))
             .OrderBy(x => x.Item1)
             .ToArray();
 
