@@ -40,6 +40,17 @@ namespace VSS.TRex.Machines.Interfaces
     /// <returns></returns>
     IMachine Locate(Guid id);
 
+    /// <summary>
+    /// Finds a machine given a machine ID, the machine name and whether the machine is John Doe machine
+    /// If a machine matching the given ID is located it is returned, else if the machine is expected to be a John Doe a
+    /// machine is attempted to be located using a specific John Doe machine name approach
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="name"></param>
+    /// <param name="isJohnDoeMachine"></param>
+    /// <returns></returns>
+    IMachine Locate(Guid id, string name, bool isJohnDoeMachine);
+
     // LocateByMachineHardwareID locates the (first) machine in the machines
     // list that has a matching machine hardware ID to the <AID> parameter.
     IMachine LocateByMachineHardwareID(string hardwareID);
