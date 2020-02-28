@@ -120,13 +120,15 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     public void SubmitTAGFiles(Guid projectId, List<string> files)
     {
-      //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-      var machineId = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
-
+      // Assemble list of unique machines from the TAG file names
+      var machineGuids = files.Select(x => x.Split('-')[2]).Distinct().ToDictionary(k => k, v => Guid.NewGuid());
       var taskList = new List<Task>();
 
       foreach (var file in files)
+      {
+        var machineId = AssetOverride == Guid.Empty ? machineGuids[file.Split('-')[2]] : AssetOverride;
         taskList.Add(SubmitSingleTAGFile(projectId, machineId, file));
+      }
 
       Task.WhenAll(taskList);
     }
@@ -153,13 +155,13 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       var fileNamesFromFolders = new List<List<string>>();
       CollectTAGFilesInFolder(folder, fileNamesFromFolders);
 
-//      var combinedList = new List<string>();
-//      fileNamesFromFolders.ForEach(x => combinedList.AddRange(x));
-//      combinedList.Sort(new TAGFileNameComparer());
-//      SubmitTAGFiles(projectID, combinedList);
+      var combinedList = new List<string>();
+      fileNamesFromFolders.ForEach(x => combinedList.AddRange(x));
+      combinedList.Sort(new TAGFileNameComparer());
+      SubmitTAGFiles(projectId, combinedList);
 
-      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
-      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectId, x));
+//      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
+//      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectId, x));
     }
 
     public void ProcessTAGFilesInFolder(Guid projectId, string folder)
