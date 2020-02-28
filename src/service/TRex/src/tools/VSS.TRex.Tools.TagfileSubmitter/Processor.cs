@@ -55,15 +55,15 @@ namespace VSS.TRex.Tools.TagfileSubmitter
         };
       }
 
-      Log.LogInformation($"Submitting TAG file #{++_tagFileCount}: {fileName}");
+      Log.LogInformation($"Submitting TAG file #{++_tagFileCount}: {fileName} to asset {assetId}");
 
       return _submitTagFileRequest.ExecuteAsync(arg);
     }
 
-    public Task ProcessSingleTAGFile(Guid projectId, string fileName)
+    public Task ProcessSingleTAGFile(Guid projectId, string fileName, Guid assetId)
     {
       //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
-      var machineId = AssetOverride == Guid.Empty ? Guid.NewGuid() : AssetOverride;
+      var machineId = AssetOverride == Guid.Empty ? assetId : AssetOverride;
 
       _processTagFileRequest ??= new ProcessTAGFileRequest();
       ProcessTAGFileRequestArgument arg;
@@ -120,13 +120,15 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     public void SubmitTAGFiles(Guid projectId, List<string> files)
     {
-      // Assemble list of unique machines from the TAG file names
-      var machineGuids = files.Select(x => x.Split('-')[2]).Distinct().ToDictionary(k => k, v => Guid.NewGuid());
+      // Assemble list of unique machines from the TAG file names usign the hardware serial number to distinguish them
+      var machineGuids = files.Select(x => x.Split('-')[0]).Distinct().ToDictionary(k => k, v => Guid.NewGuid());
       var taskList = new List<Task>();
+
+      Log.LogInformation($"{machineGuids.Count} separate assets beign submitted");
 
       foreach (var file in files)
       {
-        var machineId = AssetOverride == Guid.Empty ? machineGuids[file.Split('-')[2]] : AssetOverride;
+        var machineId = AssetOverride == Guid.Empty ? machineGuids[file.Split('-')[0]] : AssetOverride;
         taskList.Add(SubmitSingleTAGFile(projectId, machineId, file));
       }
 

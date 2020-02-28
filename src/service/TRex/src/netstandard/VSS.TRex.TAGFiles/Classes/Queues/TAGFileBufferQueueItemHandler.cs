@@ -248,8 +248,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
            
                     ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
                     {
-                        ProjectUID = projectId,
-                        AssetUID = tagQueueItems[0].AssetID
+                        ProjectUID = projectId
                     };
            
                     // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
@@ -269,6 +268,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             }
            
                             removalKey.FileName = tagFileResponse.FileName;
+                            removalKey.AssetUID = tagFileResponse.AssetUid;
 
                             if (!_queueCache.Remove(removalKey))
                               Log.LogError($"Failed to remove TAG file {removalKey}");
