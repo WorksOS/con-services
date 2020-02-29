@@ -8,7 +8,7 @@ RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.
 RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.1
 
 
-FROM 276986344560.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.1-aspnetcore-runtime
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-2.1-aspnetcore-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \
