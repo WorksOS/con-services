@@ -173,10 +173,15 @@ namespace VSS.TRex.TAGFiles.Executors
               {
                 commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
 
-                response.Results.Add(new ProcessTAGFileResponseItem {FileName = tagFile.FileName, Success = commonConverter.ReadResult == TAGReadResult.NoError});
+                response.Results.Add(new ProcessTAGFileResponseItem
+                {
+                  FileName = tagFile.FileName, 
+                  AssetUid = tagFile.AssetId, 
+                  Success = commonConverter.ReadResult == TAGReadResult.NoError
+                });
 
                 Log.LogInformation(
-                  $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs");
+                  $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId}");
               }
               catch (Exception e)
               {

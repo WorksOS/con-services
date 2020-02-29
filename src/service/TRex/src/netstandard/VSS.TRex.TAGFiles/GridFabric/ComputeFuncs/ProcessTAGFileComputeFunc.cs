@@ -41,6 +41,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
         return new ProcessTAGFileResponse {Results = arg.TAGFiles.Select(x => new ProcessTAGFileResponseItem
         {
           FileName = x.FileName,
+          AssetUid = x.AssetId,
           Success = false,
           Exception = e.Message
         }).ToList()};
