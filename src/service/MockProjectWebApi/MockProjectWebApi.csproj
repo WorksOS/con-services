@@ -44,7 +44,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
-    <PackageReference Include="VSS.FlowJSHandler.netcore" Version="2.1.2" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0005" />
     <PackageReference Include="SixLabors.ImageSharp.drawing" Version="1.0.0-beta0005" />
@@ -210,7 +209,8 @@
     <ProjectReference Include="..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Models\VSS.Productivity3D.Scheduler.Models.csproj" />
     <ProjectReference Include="..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj" />
-  </ItemGroup>
+    <ProjectReference Include="..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
+ </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
