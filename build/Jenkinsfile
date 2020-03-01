@@ -58,24 +58,26 @@ node ('jenkinsslave-pod') {
                  .toUpperCase()
 			 
 	// We may need to rename the branch to conform to DNS name spec
+	// Prexfix ecr to make devops team happy but we don't need it in the job name etc.
+	def ecr_prefix = "rpd-ccss-"
 	def fullBranchName = env.BRANCH_NAME
     def branchName = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 //	def project_name = jobnameparts[0].toLowerCase()
 	def project_name = params.SERVICE_NAME
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    def container = "940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
-	def containerDb = "940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-jenkins-sandbox:${buildkey}.db-${params.VSTS_BUILD_NUMBER}"
-    def testContainer = "940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-jenkins-sandbox:${buildkey}.tests-${params.VSTS_BUILD_NUMBER}"
+    def container = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
+	def containerDb = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}jenkins-sandbox:${buildkey}.db-${params.VSTS_BUILD_NUMBER}"
+    def testContainer = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}jenkins-sandbox:${buildkey}.tests-${params.VSTS_BUILD_NUMBER}"
 
 	def elbContainer = container
 	def elbContainerDb = containerDb
     def elbTestContainer = testContainer
 
-    def ecrRepository = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}"
-	def ecrRepositoryDb = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db"
+    def ecrRepository = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}${project_name}"
+	def ecrRepositoryDb = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}${project_name}-db"
     def finalImage = "${ecrRepository}:${versionNumber}"
-	def dbFinalImage = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
+	def dbFinalImage = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}${project_name}-db:${versionNumber}"
 	def servicePath = params.SERVICE_PATH
 	def buildDB = params.BUILD_DB
 	def runTests = params.RUN_ACCTEST
