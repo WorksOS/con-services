@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
       - name: update-baseimages
-        image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:updateimages-dind 
+        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:updateimages-dind
         imagePullPolicy: Always
         securityContext:
           privileged: true

@@ -45,7 +45,7 @@ namespace VSS.TRex.Server.TileRendering
 {
   class Program
   {
-    private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    static private ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       return key switch
       {
@@ -54,7 +54,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    static private ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       return key switch
       {
@@ -63,7 +63,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
+    static private IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
     {
       var config = DIContext.Obtain<IConfigurationStore>();
 
@@ -80,11 +80,12 @@ namespace VSS.TRex.Server.TileRendering
       return key switch
       {
         DisplayMode.Height => new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode),
+        DisplayMode.CutFill => new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode),
         _ => null
       };
     }
 
-    private static void DependencyInjection() 
+    static private void DependencyInjection() 
     {
       DIBuilder
         .New()
@@ -140,7 +141,7 @@ namespace VSS.TRex.Server.TileRendering
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    private static void EnsureAssemblyDependenciesAreLoaded()
+    static private void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -173,7 +174,7 @@ namespace VSS.TRex.Server.TileRendering
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    private static void DoServiceInitialisation()
+    static private void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();

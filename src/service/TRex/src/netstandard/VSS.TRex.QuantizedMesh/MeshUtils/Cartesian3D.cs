@@ -171,6 +171,79 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
       }
     }
 
+    public static void ComputeSmoothShadingFull(int gridSize, ref Vector3[] vectorNormals, ref Vector3[] Faces)
+    {
+
+      var ptr = 0;
+
+      vectorNormals[ptr] = Normalize(Add(Faces[0], Faces[1]));
+
+      // start bottom row
+      for (var x = 1; x < gridSize; x++)
+      {
+        ptr = x * 2 - 1;
+        if (x == gridSize - 1)
+          vectorNormals[x] = Normalize(Faces[ptr - 1]); // one face
+        else
+          vectorNormals[x] = Normalize(Add(Add(Faces[ptr - 1], Faces[ptr + 2]), Faces[ptr + 1]));
+      }
+
+      // now the rest working up left to right
+      ptr = 0;
+      var idx = gridSize;
+      var idxStep = (gridSize - 1) * 2;
+      var idx3 = (gridSize - 1) * 2 - 2;
+      for (var y = 1; y < gridSize; y++)
+      {
+        if (y != gridSize - 1)
+          ptr += idxStep;
+        var yIdx = ptr;
+        var lastRow = 0;
+        var midRows = 0;
+        var step2 = 2;
+
+
+        for (var x = 0; x < gridSize; x++)
+        {
+          if (y == gridSize - 1) // last row
+          {
+            if (x == 0)
+              vectorNormals[idx] = Normalize(Faces[ptr + 1]);
+            else if (x == gridSize - 1)
+              vectorNormals[idx] = Normalize(Add(Faces[ptr + ((x - 1) * 2)], Faces[ptr + ((x - 1) * 2) + 1]));
+            else
+            {
+              vectorNormals[idx] = Normalize(Add(Add(Faces[yIdx + lastRow], Faces[yIdx + lastRow + 1]), Faces[yIdx + lastRow + 3]));
+              lastRow += 2;
+            }
+          }
+          else if (x == 0) // 3 faces
+          {
+            vectorNormals[idx] = Normalize(Add(Add(Faces[ptr], Faces[ptr + 1]), Faces[ptr - idxStep + 1]));
+          }
+          else if (x == gridSize - 1) // 3 faces last box in row
+          {
+            vectorNormals[idx] = Normalize(Add(Add(Faces[ptr - 1], Faces[ptr - 2]), Faces[ptr + idx3]));
+          }
+          else // 6 faces for middle section
+          {
+            //            vectorNormals[idx] = Normalize(Add(Add(Add(Faces[yIdx], Faces[yIdx + 3]), Faces[yIdx + 2]), Add(Add(Faces[yIdx - idxStep + midRows], Faces[yIdx - idxStep + 1 + midRows]), Faces[yIdx - idxStep + 3 + midRows])));
+            vectorNormals[idx] = Normalize(Add(Add(Add(Faces[yIdx], Faces[yIdx + 3]), Faces[yIdx + 2]),
+                                           Add(Add(Faces[yIdx - idxStep], Faces[yIdx - idxStep + 1]), Faces[yIdx - idxStep + 3])));
+            midRows++;
+            yIdx += 2;
+            step2++;
+
+          }
+          idx++;
+          //  ptr++;
+        }
+      }
+
+    }
+
+
+
     /// <summary>
     /// Returns correct sign if less than zero
     /// </summary>
@@ -251,7 +324,8 @@ namespace VSS.TRex.QuantizedMesh.MeshUtils
         Faces[i] = ComputeTriangleNormal(triangles[i].V1, triangles[i].V2, triangles[i].V3);
 
       // Here we can experiment with different methods of shading to get best results
-      ComputeSmoothShading(gridSize, ref vectorNormals, ref Faces);
+      //      ComputeSmoothShading(gridSize, ref vectorNormals, ref Faces);
+      ComputeSmoothShadingFull(gridSize, ref vectorNormals, ref Faces);
 
       // Pack vertex normals for QM tile
       var p = 0;

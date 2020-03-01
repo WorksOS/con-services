@@ -146,6 +146,7 @@ namespace VSS.TRex.SubGrids
     private void ProcessCellPasses()
     {
       _haveFilteredPass = false;
+      _firstPassMinElev = false;
 
       while (_cellPassIterator.MayHaveMoreFilterableCellPasses() &&
              _cellPassIterator.GetNextCellPass(ref _currentPass.FilteredPass))
