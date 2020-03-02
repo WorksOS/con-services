@@ -56,7 +56,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
         // If there was no connection obtained, attempt to create a new instance
         if (immutableTRexGrid == null)
         {
-          string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
+          var roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
           TRexNodeID = Guid.NewGuid().ToString();
 
@@ -95,7 +95,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
                 Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
                 MaxSize = 256 * 1024 * 1024,  // 256 Mb
-                PersistenceEnabled = false
+                PersistenceEnabled = true
               },
             },
 
@@ -112,7 +112,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
             }
           };
 
-          foreach (string roleName in roles)
+          foreach (var roleName in roles)
           {
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
           }

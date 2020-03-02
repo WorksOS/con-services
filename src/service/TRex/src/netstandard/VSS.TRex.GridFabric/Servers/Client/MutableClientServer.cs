@@ -95,21 +95,21 @@ namespace VSS.TRex.GridFabric.Servers.Client
                 Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
                 MaxSize = 256 * 1024 * 1024,  // 128 MB
-                PersistenceEnabled = false
+                PersistenceEnabled = true
               },
 
               // Establish a separate data region for the TAG file buffer queue
               DataRegionConfigurations = new List<DataRegionConfiguration>
-                            {
-                                new DataRegionConfiguration
-                                {
-                                    Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                                    InitialSize = 64 * 1024 * 1024,  // 64 MB
-                                    MaxSize = 65 * 1024 * 1024,  // 64 MB
+              {
+                  new DataRegionConfiguration
+                  {
+                      Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
+                      InitialSize = 64 * 1024 * 1024,  // 64 MB
+                      MaxSize = 65 * 1024 * 1024,  // 64 MB
 
-                                    PersistenceEnabled = false
-                                }
-                            }
+                      PersistenceEnabled = true
+                  }
+              }
             },
 
             // Set an Ignite metrics heartbeat of 10 seconds
