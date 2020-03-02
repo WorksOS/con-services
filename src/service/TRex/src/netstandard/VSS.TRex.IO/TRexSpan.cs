@@ -46,11 +46,11 @@ namespace VSS.TRex.IO
     public readonly int Capacity;
 
     /// <summary>
-    /// The reference to the slab allocated array that this span's elements are contained
+    /// The reference to the slab allocated array that this span's elements are contained in
     /// </summary>
     public T[] Elements;
 
-    /* Note: TR deliberately does not provide an indexer as it can contain structs which causes issues with
+    /* Note: TRex deliberately does not provide an indexer as it can contain structs which causes issues with
   return of copies of the struct. GetElement/SetElement semantics are provided to make this clear.
     public T this[int index]
     {

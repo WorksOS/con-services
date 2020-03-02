@@ -956,17 +956,17 @@ namespace VSS.TRex.SubGridTrees.Server
         throw new InvalidOperationException("Immutable cell pass segment.");
       }
 
-      public void GetSegmentElevationRange(out double MinElev, out double MaxElev)
+      public void GetSegmentElevationRange(out double minElev, out double maxElev)
       {
         if (EncodedFieldDescriptors.Height.AllValuesAreNull)
         {
-          MinElev = Consts.NullDouble;
-          MaxElev = Consts.NullDouble;
+          minElev = Consts.NullDouble;
+          maxElev = Consts.NullDouble;
         }
         else
         {
-          MinElev = EncodedFieldDescriptors.Height.MinValue / 1000.0d;
-          MaxElev = EncodedFieldDescriptors.Height.MaxValue / 1000.0d;
+          minElev = EncodedFieldDescriptors.Height.MinValue / 1000.0d;
+          maxElev = EncodedFieldDescriptors.Height.MaxValue / 1000.0d;
         }
       }
 

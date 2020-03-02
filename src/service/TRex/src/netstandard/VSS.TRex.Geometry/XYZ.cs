@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using VSS.TRex.Common;
 
 /*
@@ -111,6 +112,7 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="side"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int NextSide(int side) => (side + 1) % 3;
 
     /// <summary>
@@ -118,6 +120,7 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="side"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int PrevSide(int side) => (side + 2) % 3;
 
     /// <summary>
@@ -126,6 +129,7 @@ namespace VSS.TRex.Geometry
     /// <param name="V1"></param>
     /// <param name="V2"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator ==(XYZ V1, XYZ V2) => V1.Equals(V2);
 
     /// <summary>
@@ -134,6 +138,7 @@ namespace VSS.TRex.Geometry
     /// <param name="V1"></param>
     /// <param name="V2"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool operator !=(XYZ V1, XYZ V2) => !V1.Equals(V2);
 
     /// <summary>
@@ -142,6 +147,7 @@ namespace VSS.TRex.Geometry
     /// <param name="V1"></param>
     /// <param name="V0"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static XYZ operator -(XYZ V1, XYZ V0) => new XYZ(V1.X - V0.X, V1.Y - V0.Y, V1.Z - V0.Z);
 
     /// <summary>
@@ -150,6 +156,7 @@ namespace VSS.TRex.Geometry
     /// <param name="V1"></param>
     /// <param name="V0"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static XYZ operator +(XYZ V1, XYZ V0) => new XYZ(V1.X + V0.X, V1.Y + V0.Y, V1.Z + V0.Z);
 
     /// <summary>
@@ -158,6 +165,7 @@ namespace VSS.TRex.Geometry
     /// <param name="V"></param>
     /// <param name="factor"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static XYZ operator *(XYZ V, double factor) => new XYZ(V.X * factor, V.Y * factor, V.Z * factor);
 
     /// <summary>
@@ -173,6 +181,7 @@ namespace VSS.TRex.Geometry
     /// <param name="p1"></param>
     /// <param name="p2"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Get2DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2));
 
     /// <summary>
@@ -181,6 +190,7 @@ namespace VSS.TRex.Geometry
     /// <param name="p1"></param>
     /// <param name="p2"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Get3DLength(XYZ p1, XYZ p2) => Math.Sqrt(Math.Pow(p2.X - p1.X, 2) + Math.Pow(p2.Y - p1.Y, 2) + Math.Pow(p2.Z - p1.Z, 2));
 
     /// <summary>
@@ -190,6 +200,7 @@ namespace VSS.TRex.Geometry
     /// <param name="Pt1"></param>
     /// <param name="Pt2"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double DotProduct(XYZ Origin, XYZ Pt1, XYZ Pt2) => (Pt1.X - Origin.X) * (Pt2.X - Origin.X) + (Pt1.Y - Origin.Y) * (Pt2.Y - Origin.Y);
 
     /// <summary>
@@ -199,6 +210,7 @@ namespace VSS.TRex.Geometry
     /// <param name="Pt1"></param>
     /// <param name="Pt2"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double PerpDotProduct(XYZ Origin, XYZ Pt1, XYZ Pt2) => (Pt1.Y - Origin.Y) * (Pt2.X - Origin.X) - (Pt1.X - Origin.X) * (Pt2.Y - Origin.Y);
 
     /// <summary>
@@ -208,6 +220,7 @@ namespace VSS.TRex.Geometry
     /// <param name="Line2"></param>
     /// <param name="Pt"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PointOnRight(XYZ Line1, XYZ Line2, XYZ Pt) => PerpDotProduct(Line1, Line2, Pt) > 0;
 
     /// <summary>
@@ -217,6 +230,7 @@ namespace VSS.TRex.Geometry
     /// <param name="Line2"></param>
     /// <param name="Pt"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool PointOnOrOnRight(XYZ Line1, XYZ Line2, XYZ Pt) => PerpDotProduct(Line1, Line2, Pt) >= 0;
 
     /// <summary>
@@ -253,6 +267,7 @@ namespace VSS.TRex.Geometry
     /// </summary>
     /// <param name="V"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double VectorLength(XYZ V) => Math.Sqrt(V.X * V.X + V.Y * V.Y + V.Z * V.Z);
 
     /// <summary>
@@ -262,6 +277,7 @@ namespace VSS.TRex.Geometry
     /// <param name="P2"></param>
     /// <param name="P3"></param>
     /// <returns></returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double GetTriArea(XYZ P1, XYZ P2, XYZ P3) => VectorLength(CrossProduct(P1, P2, P3)) / 2;
 
 

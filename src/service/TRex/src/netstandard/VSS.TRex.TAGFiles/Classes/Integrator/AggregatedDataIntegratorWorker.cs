@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
@@ -32,29 +33,29 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <summary>
     /// A queue of the tasks this worker will process into the TRex data stores
     /// </summary>
-    private readonly ConcurrentQueue<AggregatedDataIntegratorTask> TasksToProcess;
+    private readonly ConcurrentQueue<AggregatedDataIntegratorTask> _tasksToProcess;
 
     /// <summary>
     /// A bitmask sub grid tree that tracks all sub grids modified by the tasks this worker has processed
     /// </summary>
-    private ISubGridTreeBitMask WorkingModelUpdateMap;
+    private ISubGridTreeBitMask _workingModelUpdateMap;
 
     /// <summary>
     /// The mutable grid storage proxy
     /// </summary>
-    private readonly IStorageProxy storageProxy_Mutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+    private readonly IStorageProxy _storageProxyMutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-    private static readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
+    private static readonly bool AdviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", Consts.ADVISEOTHERSERVICES_OFMODELCHANGES);
 
-    private static readonly int _defaultMaxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
+    private static readonly int DefaultMaxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
 
-    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = _defaultMaxMappedTagFilesToProcessPerAggregationEpoch;
+    public int MaxMappedTagFilesToProcessPerAggregationEpoch { get; set; } = DefaultMaxMappedTagFilesToProcessPerAggregationEpoch;
 
-    private Guid SiteModelID { get; set; }
+    private Guid SiteModelID { get; }
 
-    private AggregatedDataIntegratorWorker(Guid siteModelID)
+    private AggregatedDataIntegratorWorker(Guid siteModelId)
     {
-      SiteModelID = siteModelID;
+      SiteModelID = siteModelId;
     }
 
     /// <summary>
@@ -63,32 +64,33 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// within a single project
     /// </summary>
     /// <param name="tasksToProcess"></param>
-    /// <param name="siteModelID"></param>
+    /// <param name="siteModelId"></param>
     public AggregatedDataIntegratorWorker(ConcurrentQueue<AggregatedDataIntegratorTask> tasksToProcess,
-      Guid siteModelID) : this(siteModelID)
+      Guid siteModelId) : this(siteModelId)
     {
-      TasksToProcess = tasksToProcess;
+      _tasksToProcess = tasksToProcess;
     }
 
     /// <summary>
     /// Event that records a particular sub grid has been modified, identified by the address of a 
     /// cell within that sub grid
     /// </summary>
-    /// <param name="CellX"></param>
-    /// <param name="CellY"></param>
-    private void SubGridHasChanged(int CellX, int CellY)
+    /// <param name="cellX"></param>
+    /// <param name="cellY"></param>
+    private void SubGridHasChanged(int cellX, int cellY)
     {
-      WorkingModelUpdateMap.SetCell(CellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
-        CellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel, true);
+      _workingModelUpdateMap.SetCell(cellX >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+        cellY >> SubGridTreeConsts.SubGridIndexBitsPerLevel, true);
     }
 
     /// <summary>
     /// Processes all available tasks in the TasksToProcess list up to the maximum number the worker will accept 
     /// for any single epoch of processing TAG files.
     /// </summary>
-    /// <param name="ProcessedTasks"></param>
+    /// <param name="processedTasks"></param>
+    /// <param name="numTagFilesRepresented"></param>
     /// <returns></returns>
-    public bool ProcessTask(List<AggregatedDataIntegratorTask> ProcessedTasks, int numTAGFilesRepresented)
+    public bool ProcessTask(List<AggregatedDataIntegratorTask> processedTasks, int numTagFilesRepresented)
     {
       var eventIntegrator = new EventIntegrator();
       long totalPassCountInAggregation = 0;
@@ -104,45 +106,46 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         A task is only said to be completed when all integrations and resulting updates are
         persisted to disk.*/
 
-      ProcessedTasks.Clear();
+      processedTasks.Clear();
 
       // Set capacity to maximum expected size to prevent List resizing while assembling tasks
-      ProcessedTasks.Capacity = MaxMappedTagFilesToProcessPerAggregationEpoch;
+      processedTasks.Capacity = MaxMappedTagFilesToProcessPerAggregationEpoch;
 
-      AggregatedDataIntegratorTask Task = null;
+      AggregatedDataIntegratorTask task = null;
+      var sw = Stopwatch.StartNew();
       try
       {
-        if (!TasksToProcess.TryDequeue(out Task) || Task == null)
+        if (!_tasksToProcess.TryDequeue(out task) || task == null)
           return true; // There is nothing in the queue to work on so just return true
 
         Log.LogInformation("Aggregation Task Process: Clearing mutable storage proxy");
 
-        storageProxy_Mutable.Clear();
+        _storageProxyMutable.Clear();
 
         // Note: This request for the SiteModel specifically asks for the mutable grid SiteModel,
         // and also explicitly provides the transactional storage proxy being used for processing the
         // data from TAG files into the model
-        var SiteModelFromDM = DIContext.Obtain<ISiteModels>().GetSiteModel(Task.PersistedTargetSiteModelID, true);
+        var siteModelFromDatamodel = DIContext.Obtain<ISiteModels>().GetSiteModel(task.PersistedTargetSiteModelID, true);
 
-        if (SiteModelFromDM == null)
+        if (siteModelFromDatamodel == null)
         {
-          Log.LogError($"Unable to lock SiteModel {Task.PersistedTargetSiteModelID} from the data model file");
+          Log.LogError($"Unable to lock SiteModel {task.PersistedTargetSiteModelID} from the data model file");
           return false;
         }
 
-        SiteModelFromDM.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+        siteModelFromDatamodel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
-        Task.StartProcessingTime = Consts.MIN_DATETIME_AS_UTC;
+        task.StartProcessingTime = Consts.MIN_DATETIME_AS_UTC;
 
-        ProcessedTasks.Add(Task); // Seed task is always a part of the processed tasks
+        processedTasks.Add(task); // Seed task is always a part of the processed tasks
 
         // First check to see if this task has been catered to by previous task processing
-        bool AnyMachineEvents = Task.AggregatedMachineEvents != null;
-        bool AnyCellPasses = Task.AggregatedCellPasses != null;
+        var anyMachineEvents = task.AggregatedMachineEvents != null;
+        var anyCellPasses = task.AggregatedCellPasses != null;
 
-        if (!(AnyMachineEvents || AnyCellPasses))
+        if (!(anyMachineEvents || anyCellPasses))
         {
-          Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {Task.PersistedTargetSiteModelID}");
+          Log.LogWarning($"Suspicious task with no cell passes or machine events in site model {task.PersistedTargetSiteModelID}");
           return true;
         }
 
@@ -155,26 +158,26 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // list to allow the TAG file processors to prepare additional TAG files
         // while this set is being integrated into the model.                    
 
-        while (ProcessedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch &&
-               TasksToProcess.TryDequeue(out AggregatedDataIntegratorTask task))
+        while (processedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch &&
+               _tasksToProcess.TryDequeue(out var taskToProcess))
         {
-          ProcessedTasks.Add(task);
+          processedTasks.Add(taskToProcess);
         }
 
-        Log.LogInformation($"Aggregation Task Process --> Integrating {ProcessedTasks.Count} TAG files for machine {Task.PersistedTargetMachineID} in project {Task.PersistedTargetSiteModelID}");
+        Log.LogInformation($"Aggregation Task Process --> Integrating {processedTasks.Count} TAG file processing tasks for machine {task.PersistedTargetMachineID} in project {task.PersistedTargetSiteModelID}");
 
         // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
         // Use the grouped sub grid tree integrator to assemble a single aggregate tree from the set of trees in the processed tasks
 
-        Log.LogDebug($"Aggregation Task Process --> Integrate {ProcessedTasks.Count} cell pass trees");
+        Log.LogDebug($"Aggregation Task Process --> Integrate {processedTasks.Count} cell pass trees");
 
         IServerSubGridTree groupedAggregatedCellPasses;
-        if (ProcessedTasks.Count > 1)
+        if (processedTasks.Count > 1)
         {
           var subGridTreeIntegrator = new GroupedSubGridTreeIntegrator
           {
-            Trees = ProcessedTasks
+            Trees = processedTasks
               .Where(t => t.AggregatedCellPassCount > 0)
               .Select(t => (t.AggregatedCellPasses,
                 t.AggregatedMachineEvents.StartEndRecordedDataEvents.FirstStateDate(),
@@ -187,7 +190,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
         else
         {
-          groupedAggregatedCellPasses = Task.AggregatedCellPasses;
+          groupedAggregatedCellPasses = task.AggregatedCellPasses;
         }
 
         #if CELLDEBUG
@@ -208,9 +211,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Discard all the aggregated cell pass models for the tasks being processed as they have now been aggregated into
         // the model represented by groupedAggregatedCellPasses
 
-        ProcessedTasks.ForEach(x =>
+        processedTasks.ForEach(x =>
         {
-          if (x.AggregatedCellPasses != Task.AggregatedCellPasses)
+          if (x.AggregatedCellPasses != task.AggregatedCellPasses)
           {
             x.AggregatedCellPasses.Dispose();
             x.AggregatedCellPasses = null;
@@ -218,30 +221,30 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         });
 
         // Iterate through the tasks to integrate the machine events and perform other clean up operations
-        for (int I = 1; I < ProcessedTasks.Count; I++) // Zeroth item in the list is Task
+        for (var I = 1; I < processedTasks.Count; I++) // Zeroth item in the list is Task
         {
-          var processedTask = ProcessedTasks[I];
+          var processedTask = processedTasks[I];
 
           // 'Include' the extents etc of each site model being merged into 'task' into its extents and design change events
-          Task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
+          task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
 
           // Integrate the machine events
-          eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, Task.AggregatedMachineEvents, false, 
-            processedTask.IntermediaryTargetSiteModel, Task.IntermediaryTargetSiteModel);
+          eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, task.AggregatedMachineEvents, false, 
+            processedTask.IntermediaryTargetSiteModel, task.IntermediaryTargetSiteModel);
 
           //Update current DateTime with the latest one
-          if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
+          if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
           {
-            Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp = processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
-            Task.IntermediaryTargetMachine.LastKnownX = processedTask.IntermediaryTargetMachine.LastKnownX;
-            Task.IntermediaryTargetMachine.LastKnownY = processedTask.IntermediaryTargetMachine.LastKnownY;
+            task.IntermediaryTargetMachine.LastKnownPositionTimeStamp = processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
+            task.IntermediaryTargetMachine.LastKnownX = processedTask.IntermediaryTargetMachine.LastKnownX;
+            task.IntermediaryTargetMachine.LastKnownY = processedTask.IntermediaryTargetMachine.LastKnownY;
           }
 
-          if (Task.IntermediaryTargetMachine.MachineHardwareID == "")
-            Task.IntermediaryTargetMachine.MachineHardwareID = processedTask.IntermediaryTargetMachine.MachineHardwareID;
+          if (task.IntermediaryTargetMachine.MachineHardwareID == "")
+            task.IntermediaryTargetMachine.MachineHardwareID = processedTask.IntermediaryTargetMachine.MachineHardwareID;
 
-          if (Task.IntermediaryTargetMachine.MachineType == 0)
-            Task.IntermediaryTargetMachine.MachineType = processedTask.IntermediaryTargetMachine.MachineType;
+          if (task.IntermediaryTargetMachine.MachineType == 0)
+            task.IntermediaryTargetMachine.MachineType = processedTask.IntermediaryTargetMachine.MachineType;
         }
 
         // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
@@ -249,47 +252,49 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         Log.LogDebug("Aggregation Task Process --> Integrating aggregated cell passes into the live site model");
 
-        IMachine MachineFromDM;
-        IProductionEventLists SiteModelMachineTargetValues;
-        lock (SiteModelFromDM)
+        IMachine machineFromDatamodel;
+        IProductionEventLists siteModelMachineTargetValues;
+        lock (siteModelFromDatamodel)
         {
           // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
-          SiteModelFromDM.Include(Task.IntermediaryTargetSiteModel);
+          siteModelFromDatamodel.Include(task.IntermediaryTargetSiteModel);
 
           // Need to locate or create a matching machine in the site model.
-          MachineFromDM = SiteModelFromDM.Machines.Locate(Task.PersistedTargetMachineID, Task.IntermediaryTargetMachine.IsJohnDoeMachine);
+          machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(task.PersistedTargetMachineID, task.IntermediaryTargetMachine.IsJohnDoeMachine);
 
-          if (MachineFromDM == null)
+          // Log.LogInformation($"Selecting machine: PersistedTargetMachineID={task.PersistedTargetMachineID}, IsJohnDoe?:{task.IntermediaryTargetMachine.IsJohnDoeMachine}, Result: {machineFromDatamodel}");
+
+          if (machineFromDatamodel == null)
           {
-            MachineFromDM = SiteModelFromDM.Machines.CreateNew(Task.IntermediaryTargetMachine.Name,
-              Task.IntermediaryTargetMachine.MachineHardwareID,
-              Task.IntermediaryTargetMachine.MachineType,
-              Task.IntermediaryTargetMachine.DeviceType,
-              Task.IntermediaryTargetMachine.IsJohnDoeMachine,
-              Task.PersistedTargetMachineID);
-            Task.PersistedTargetMachineID = MachineFromDM.ID;
-            Task.IntermediaryTargetMachine.ID = MachineFromDM.ID;
-            Task.IntermediaryTargetMachine.InternalSiteModelMachineIndex = MachineFromDM.InternalSiteModelMachineIndex;
-            MachineFromDM.Assign(Task.IntermediaryTargetMachine);
+            machineFromDatamodel = siteModelFromDatamodel.Machines.CreateNew(task.IntermediaryTargetMachine.Name,
+              task.IntermediaryTargetMachine.MachineHardwareID,
+              task.IntermediaryTargetMachine.MachineType,
+              task.IntermediaryTargetMachine.DeviceType,
+              task.IntermediaryTargetMachine.IsJohnDoeMachine,
+              task.PersistedTargetMachineID);
+            task.PersistedTargetMachineID = machineFromDatamodel.ID;
+            task.IntermediaryTargetMachine.ID = machineFromDatamodel.ID;
+            task.IntermediaryTargetMachine.InternalSiteModelMachineIndex = machineFromDatamodel.InternalSiteModelMachineIndex;
+            machineFromDatamodel.Assign(task.IntermediaryTargetMachine);
           }
 
           // Update the internal name of the machine with the machine name from the TAG file
-          if (Task.IntermediaryTargetMachine.Name != "" && MachineFromDM.Name != Task.IntermediaryTargetMachine.Name)
-            MachineFromDM.Name = Task.IntermediaryTargetMachine.Name;
+          if (task.IntermediaryTargetMachine.Name != "" && machineFromDatamodel.Name != task.IntermediaryTargetMachine.Name)
+            machineFromDatamodel.Name = task.IntermediaryTargetMachine.Name;
 
           // Update the internal type of the machine with the machine type from the TAG file
           // if the existing internal machine type is zero then
-          if (Task.IntermediaryTargetMachine.MachineType != 0 && MachineFromDM.MachineType == 0)
-            MachineFromDM.MachineType = Task.IntermediaryTargetMachine.MachineType;
+          if (task.IntermediaryTargetMachine.MachineType != 0 && machineFromDatamodel.MachineType == 0)
+            machineFromDatamodel.MachineType = task.IntermediaryTargetMachine.MachineType;
 
           // If the machine target values can't be found then create them
-          SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
+          siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
 
-          if (SiteModelMachineTargetValues == null)
-            SiteModelFromDM.MachinesTargetValues.Add(new ProductionEventLists(SiteModelFromDM, MachineFromDM.InternalSiteModelMachineIndex));
+          if (siteModelMachineTargetValues == null)
+            siteModelFromDatamodel.MachinesTargetValues.Add(new ProductionEventLists(siteModelFromDatamodel, machineFromDatamodel.InternalSiteModelMachineIndex));
 
           // Check to see the machine target values were created correctly
-          SiteModelMachineTargetValues = SiteModelFromDM.MachinesTargetValues[MachineFromDM.InternalSiteModelMachineIndex];
+          siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
         }
 
         // ====== STAGE 3: INTEGRATE THE AGGREGATED EVENTS INTO THE PRIMARY LIVE DATABASE
@@ -299,23 +304,23 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         Log.LogDebug("Aggregation Task Process --> Integrating machine events into the live site model");
 
-        eventIntegrator.IntegrateMachineEvents(Task.AggregatedMachineEvents, SiteModelMachineTargetValues, true, Task.IntermediaryTargetSiteModel, SiteModelFromDM);
+        eventIntegrator.IntegrateMachineEvents(task.AggregatedMachineEvents, siteModelMachineTargetValues, true, task.IntermediaryTargetSiteModel, siteModelFromDatamodel);
 
         // Integrate the machine events into the main site model. This requires the
         // site model interlock as aspects of the site model state (machine) are being changed.
-        lock (SiteModelFromDM)
+        lock (siteModelFromDatamodel)
         {
-          if (SiteModelMachineTargetValues != null)
+          if (siteModelMachineTargetValues != null)
           {
             //Update machine last known value (events) from integrated model before saving
-            int Comparison = MachineFromDM.LastKnownPositionTimeStamp.CompareTo(Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp);
-            if (Comparison == -1)
+            var comparison = machineFromDatamodel.LastKnownPositionTimeStamp.CompareTo(task.IntermediaryTargetMachine.LastKnownPositionTimeStamp);
+            if (comparison == -1)
             {
-              MachineFromDM.LastKnownDesignName = SiteModelFromDM.SiteModelMachineDesigns[SiteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
-              MachineFromDM.LastKnownLayerId = SiteModelMachineTargetValues.LayerIDStateEvents.Count() > 0 ? SiteModelMachineTargetValues.LayerIDStateEvents.LastStateValue() : (ushort) 0;
-              MachineFromDM.LastKnownPositionTimeStamp = Task.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
-              MachineFromDM.LastKnownX = Task.IntermediaryTargetMachine.LastKnownX;
-              MachineFromDM.LastKnownY = Task.IntermediaryTargetMachine.LastKnownY;
+              machineFromDatamodel.LastKnownDesignName = siteModelFromDatamodel.SiteModelMachineDesigns[siteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
+              machineFromDatamodel.LastKnownLayerId = siteModelMachineTargetValues.LayerIDStateEvents.Count() > 0 ? siteModelMachineTargetValues.LayerIDStateEvents.LastStateValue() : (ushort) 0;
+              machineFromDatamodel.LastKnownPositionTimeStamp = task.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
+              machineFromDatamodel.LastKnownX = task.IntermediaryTargetMachine.LastKnownX;
+              machineFromDatamodel.LastKnownY = task.IntermediaryTargetMachine.LastKnownY;
             }
           }
           else
@@ -326,12 +331,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
 
         // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
-        SiteModelMachineTargetValues.SaveMachineEventsToPersistentStore(storageProxy_Mutable);
+        siteModelMachineTargetValues.SaveMachineEventsToPersistentStore(_storageProxyMutable);
 
         // ====== STAGE 4: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
         try
         {
-          Log.LogInformation($"Aggregation Task Process --> Labeling aggregated cell pass with correct machine ID for {SiteModelFromDM.ID}");
+          Log.LogInformation($"Aggregation Task Process --> Labeling aggregated cell pass with correct machine ID for {siteModelFromDatamodel.ID}");
 
           // This is a dirty map for the leaf sub grids and is stored as a bitmap grid
           // with one level fewer that the sub grid tree it is representing, and
@@ -339,10 +344,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // we have been given are with respect to the sub grid, we must transform them
           // into coordinates relevant to the dirty bitmap sub grid tree.
 
-          WorkingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
+          _workingModelUpdateMap = new SubGridTreeSubGridExistenceBitMask
           {
-            CellSize = SubGridTreeConsts.SubGridTreeDimension * SiteModelFromDM.CellSize,
-            ID = SiteModelFromDM.ID
+            CellSize = SubGridTreeConsts.SubGridTreeDimension * siteModelFromDatamodel.CellSize,
+            ID = siteModelFromDatamodel.ID
           };
 
           // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
@@ -353,7 +358,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
             foreach (var segment in serverLeaf.Cells.PassesData.Items)
             {
-              segment.PassesData.SetAllInternalMachineIDs(MachineFromDM.InternalSiteModelMachineIndex, out long modifiedPassCount);
+              segment.PassesData.SetAllInternalMachineIDs(machineFromDatamodel.InternalSiteModelMachineIndex, out var modifiedPassCount);
               totalPassCountInAggregation += modifiedPassCount;
             }
 
@@ -361,22 +366,23 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           });
 
           // ... then integrate them
-          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {numTAGFilesRepresented} TAG files (spanning {groupedAggregatedCellPasses?.CountLeafSubGridsInMemory()} sub grids) into primary data model for {SiteModelFromDM.ID} spanning {SiteModelFromDM.ExistenceMap.CountBits()} sub grids");
+          var sw2 = Stopwatch.StartNew();
+          Log.LogInformation($"Aggregation Task Process --> Integrating aggregated results for {totalPassCountInAggregation} cell passes from {numTagFilesRepresented} TAG files (spanning {groupedAggregatedCellPasses?.CountLeafSubGridsInMemory()} sub grids) into primary data model for {siteModelFromDatamodel.ID} spanning {siteModelFromDatamodel.ExistenceMap.CountBits()} sub grids");
 
-          var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, SiteModelFromDM, SiteModelFromDM.Grid, storageProxy_Mutable);
+          var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, siteModelFromDatamodel, siteModelFromDatamodel.Grid, _storageProxyMutable);
           if (!subGridIntegrator.IntegrateSubGridTree(SubGridTreeIntegrationMode.SaveToPersistentStore, SubGridHasChanged))
           {
             Log.LogError("Aggregation Task Process --> Aborting due to failure in integration process");
             return false;
           }
 
-          Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {SiteModelFromDM.ID}");
+          Log.LogInformation($"Aggregation Task Process --> Completed integrating aggregated results into primary data model for {siteModelFromDatamodel.ID}, in elapsed time of {sw2.Elapsed}");
 
-          TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(numTAGFilesRepresented);
+          TAGProcessingStatistics.IncrementTotalTAGFilesProcessedIntoModels(numTagFilesRepresented);
           TAGProcessingStatistics.IncrementTotalCellPassesAggregatedIntoModels(totalPassCountInAggregation);
 
           // Use the synchronous command to save the site model information to the persistent store into the deferred (asynchronous model)
-          SiteModelFromDM.SaveToPersistentStoreForTAGFileIngest(storageProxy_Mutable);
+          siteModelFromDatamodel.SaveToPersistentStoreForTAGFileIngest(_storageProxyMutable);
 
           // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
           // All operations within the transaction to integrate the changes into the live model have completed successfully.
@@ -384,17 +390,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
           var startTime = DateTime.UtcNow;
           Log.LogInformation("Starting storage proxy Commit()");
-          storageProxy_Mutable.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten);
+          _storageProxyMutable.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten);
           Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
           // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
-          Log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {SiteModelFromDM.ID}");
+          Log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {siteModelFromDatamodel.ID}");
           if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
           {
             // Stamp all the invalidated spatial streams with the project ID
             foreach (var key in subGridIntegrator.InvalidatedSpatialStreams)
             {
-              key.ProjectUID = SiteModelFromDM.ID;
+              key.ProjectUID = siteModelFromDatamodel.ID;
             }
 
             try
@@ -406,18 +412,18 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 throw new TRexTAGFileProcessingException("No registered segment retirement queue in DI context");
               }
 
-              var insertUTC = DateTime.UtcNow;
+              var insertUtc = DateTime.UtcNow;
 
               retirementQueue.Add(
                 new SegmentRetirementQueueKey
                 {
-                  ProjectUID = SiteModelFromDM.ID,
-                  InsertUTCAsLong = insertUTC.Ticks
+                  ProjectUID = siteModelFromDatamodel.ID,
+                  InsertUTCAsLong = insertUtc.Ticks
                 },
                 new SegmentRetirementQueueItem
                 {
-                  InsertUTCAsLong = insertUTC.Ticks,
-                  ProjectUID = SiteModelFromDM.ID,
+                  InsertUTCAsLong = insertUtc.Ticks,
+                  ProjectUID = siteModelFromDatamodel.ID,
                   SegmentKeys = subGridIntegrator.InvalidatedSpatialStreams.ToArray()
                 });
             }
@@ -432,18 +438,18 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             }
           }
 
-          if (_adviseOtherServicesOfDataModelChanges)
+          if (AdviseOtherServicesOfDataModelChanges)
           {
             // Notify the site model in all contents in the grid that it's attributes have changed
-            Log.LogInformation($"Aggregation Task Process --> Notifying site model attributes changed for {SiteModelFromDM.ID}");
+            Log.LogInformation($"Aggregation Task Process --> Notifying site model attributes changed for {siteModelFromDatamodel.ID}");
 
             // Notify the immutable grid listeners that attributes of this site model have changed.
             var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
             sender.ModelAttributesChanged
             (targetGrid: SiteModelNotificationEventGridMutability.NotifyImmutable,
-              siteModelID: SiteModelFromDM.ID,
+              siteModelID: siteModelFromDatamodel.ID,
               existenceMapChanged: true,
-              existenceMapChangeMask: WorkingModelUpdateMap,
+              existenceMapChangeMask: _workingModelUpdateMap,
               machinesChanged: true,
               machineTargetValuesChanged: true,
               machineDesignsModified: true,
@@ -451,26 +457,26 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           }
 
           // Update the metadata for the site model
-          Log.LogInformation($"Aggregation Task Process --> Updating site model metadata for {SiteModelFromDM.ID}");
+          Log.LogInformation($"Aggregation Task Process --> Updating site model metadata for {siteModelFromDatamodel.ID}");
           DIContext.Obtain<ISiteModelMetadataManager>().Update
-          (siteModelID: SiteModelFromDM.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: SiteModelFromDM.SiteModelExtent,
-            machineCount: SiteModelFromDM.Machines.Count);
+          (siteModelID: siteModelFromDatamodel.ID, lastModifiedDate: DateTime.UtcNow, siteModelExtent: siteModelFromDatamodel.SiteModelExtent,
+            machineCount: siteModelFromDatamodel.Machines.Count);
         }
         finally
         {
-          if (groupedAggregatedCellPasses != Task.AggregatedCellPasses)
+          if (groupedAggregatedCellPasses != task.AggregatedCellPasses)
           {
             groupedAggregatedCellPasses?.Dispose();
           }
 
-          Task.AggregatedCellPasses?.Dispose();
-          Task.AggregatedCellPasses = null;
-          WorkingModelUpdateMap = null;
+          task.AggregatedCellPasses?.Dispose();
+          task.AggregatedCellPasses = null;
+          _workingModelUpdateMap = null;
         }
       }
       finally
       {
-        Log.LogInformation($"Aggregation Task Process --> Completed integrating {ProcessedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes for PersistedMachine: {Task?.PersistedTargetMachineID} FinalMachine: {Task?.IntermediaryTargetMachine.ID} in project {Task?.PersistedTargetSiteModelID}");
+        Log.LogInformation($"Aggregation Task Process --> Completed integrating {processedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes for PersistedMachine: {task?.PersistedTargetMachineID} FinalMachine: {task?.IntermediaryTargetMachine.ID} in project {task?.PersistedTargetSiteModelID} in elapsed time of {sw.Elapsed}");
       }
 
       return true;

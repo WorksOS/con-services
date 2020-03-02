@@ -20,7 +20,7 @@ namespace VSS.TRex.SubGridTrees.Server
     private ISubGridCellPassesDataSegments _passesData = new SubGridCellPassesDataSegments();
     public ISubGridCellPassesDataSegments PassesData { get => _passesData; set => _passesData = value; }
 
-    private static readonly int _subGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
+    private static readonly int SubGridSegmentPassCountLimit = DIContext.Obtain<IConfigurationStore>().GetValueInt("VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT", Consts.VLPDSUBGRID_SEGMENTPASSCOUNTLIMIT);
 
     public void Clear()
     {
@@ -60,31 +60,31 @@ namespace VSS.TRex.SubGridTrees.Server
         return null;
       }
 
-      int Index = 0;
-      int DirectionIncrement = 0;
+      var index = 0;
+      var directionIncrement = 0;
 
       while (true)
       {
-        var testPass = _passesData[Index];
+        var testPass = _passesData[index];
 
         if (testPass.SegmentMatches(time))
         {
           return testPass;
         }
 
-        if (DirectionIncrement == 0)
+        if (directionIncrement == 0)
         {
-          DirectionIncrement = time < testPass.SegmentInfo.StartTime ? -1 : 1;
+          directionIncrement = time < testPass.SegmentInfo.StartTime ? -1 : 1;
 
-          Index += DirectionIncrement;
+          index += directionIncrement;
         }
 
-        if (!(Index >= 0 || Index <= passesCount - 1))
+        if (!(index >= 0 || index <= passesCount - 1))
         {
           return null;
         }
 
-        if (DirectionIncrement == 1)
+        if (directionIncrement == 1)
         {
           if (time < testPass.SegmentInfo.StartTime)
           {
@@ -107,15 +107,17 @@ namespace VSS.TRex.SubGridTrees.Server
     /// If the subGridSegmentPassCountLimit is zero then the default segment pass count
     /// limit specified in the configuration will be used.
     /// </summary>
-    /// <param name="CleavingSegment"></param>
-    /// <param name="PersistedClovenSegments"></param>
+    /// <param name="cleavingSegment"></param>
+    /// <param name="persistedClovenSegments"></param>
     /// <param name="subGridSegmentPassCountLimit"></param>
     /// <returns></returns>
-    public bool CleaveSegment(ISubGridCellPassesDataSegment CleavingSegment,
-      List<ISubGridSpatialAffinityKey> PersistedClovenSegments,
+    public bool CleaveSegment(ISubGridCellPassesDataSegment cleavingSegment,
+      List<ISubGridSpatialAffinityKey> persistedClovenSegments,
       int subGridSegmentPassCountLimit = 0)
     {
-      if (!CleavingSegment.HasAllPasses)
+      const int cleaveSegmentPassCountDeadBand = 100;
+     
+      if (!cleavingSegment.HasAllPasses)
       {
         Log.LogError($"Cannot cleave a sub grid ({_owner.Moniker()}) without its cell passes");
         return false;
@@ -123,105 +125,109 @@ namespace VSS.TRex.SubGridTrees.Server
 
       if (subGridSegmentPassCountLimit == 0)
       {
-        subGridSegmentPassCountLimit = _subGridSegmentPassCountLimit;
+        subGridSegmentPassCountLimit = SubGridSegmentPassCountLimit;
       }
 
       // Count up the number of cell passes in total in the segment
-      CleavingSegment.PassesData.CalculateTotalPasses(out int TotalPassCount, out int _, out int _);
+      cleavingSegment.PassesData.CalculateTotalPasses(out var totalPassCount, out var _, out var _);
 
 #if DEBUG
-      CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
+      cleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
 #endif
 
-      if (TotalPassCount <= subGridSegmentPassCountLimit)
+      if (totalPassCount <= subGridSegmentPassCountLimit)
       {
         Log.LogInformation("There is no need to cleave this segment as it's number of passes does not breach the limit");
         return false; // There is no need to cleave this segment
       }
 
-      int NumRequiredClovenSegments = (TotalPassCount - 1) / subGridSegmentPassCountLimit + 1;
+      // Don't resize to exactly the limit as this means cell passes added due to our of order processing will cause
+      // more extensive cleaving. Set it to two thirds of the limit that triggers cleaving
+      var subGridSegmentPassCountLimitWithHeadroom = (2 * subGridSegmentPassCountLimit) / 3;
+
+      var numRequiredClovenSegments = (totalPassCount - 1) / subGridSegmentPassCountLimitWithHeadroom + 1;
 
       // Determine the actual time range of the passes within the segment
-      CleavingSegment.PassesData.CalculateTimeRange(out var CoveredTimeRangeStart, out var CoveredTimeRangeEnd);
+      cleavingSegment.PassesData.CalculateTimeRange(out var coveredTimeRangeStart, out var coveredTimeRangeEnd);
 
-      if (CoveredTimeRangeStart >= CoveredTimeRangeEnd) // There's nothing to do
+      if (coveredTimeRangeStart >= coveredTimeRangeEnd) // There's nothing to do
       {
-        Log.LogWarning($"Segment cleaving resolved no time range to assign cloven cell passes to. No cleaving performed. TotalPassCount = {TotalPassCount}, CoveredTimeRangeStart = {CoveredTimeRangeStart}, CoveredTimeRangeEnd {CoveredTimeRangeEnd}, NumRequiredClovenSegments = {NumRequiredClovenSegments}");
+        Log.LogWarning($"Segment cleaving resolved no time range to assign cloven cell passes to. No cleaving performed. TotalPassCount = {totalPassCount}, CoveredTimeRangeStart = {coveredTimeRangeStart}, CoveredTimeRangeEnd {coveredTimeRangeEnd}, NumRequiredClovenSegments = {numRequiredClovenSegments}");
         return false;
       }
 
       // Preserve the allotted time range of the segment being cleaved
-      DateTime OldEndTime = CleavingSegment.SegmentInfo.EndTime;
+      var oldEndTime = cleavingSegment.SegmentInfo.EndTime;
 
       // Record the segment that was cleaved in the list of those that need to be removed
       // when the sub grid is next persisted (but only if it has previously been persisted
       // to disk). If not, it is only in memory and can represent one part of the set
       // of cloven segments waiting for persistence.
-      if (CleavingSegment.SegmentInfo.ExistsInPersistentStore)
-        PersistedClovenSegments.Add(CleavingSegment.SegmentInfo.AffinityKey(_owner.Parent.Owner.ID));
+      if (cleavingSegment.SegmentInfo.ExistsInPersistentStore)
+        persistedClovenSegments.Add(cleavingSegment.SegmentInfo.AffinityKey(_owner.Parent.Owner.ID));
 
-      // Look for the time that splits the segment. Stop when we are within 100 cell passes
+      // Look for the time that splits the segment. Stop when we are within CleaveSegmentPassCountDeadBand cell passes
       // of the exact time.
 
-      DateTime TestTimeRangeStart = CoveredTimeRangeStart;
-      DateTime TestTimeRangeEnd = CoveredTimeRangeEnd;
-      int PassesInFirstTimeRange;
-      DateTime TestTime;
+      var testTimeRangeStart = coveredTimeRangeStart;
+      var testTimeRangeEnd = coveredTimeRangeEnd;
+      int passesInFirstTimeRange;
+      DateTime testTime;
         
-      int desiredCallPassCount = TotalPassCount / NumRequiredClovenSegments;
+      var desiredCallPassCount = totalPassCount / numRequiredClovenSegments;
       do
       {
-        TestTime = TestTimeRangeStart + new TimeSpan((TestTimeRangeEnd.Ticks - TestTimeRangeStart.Ticks) / 2);
+        testTime = testTimeRangeStart + new TimeSpan((testTimeRangeEnd.Ticks - testTimeRangeStart.Ticks) / 2);
 
-        CleavingSegment.PassesData.CalculatePassesBeforeTime(TestTime, out PassesInFirstTimeRange, out int _);
+        cleavingSegment.PassesData.CalculatePassesBeforeTime(testTime, out passesInFirstTimeRange, out var _);
 
-        if (PassesInFirstTimeRange < desiredCallPassCount)
-          TestTimeRangeStart = TestTime;
+        if (passesInFirstTimeRange < desiredCallPassCount)
+          testTimeRangeStart = testTime;
         else
-          TestTimeRangeEnd = TestTime;
-      } while (Math.Abs(PassesInFirstTimeRange - desiredCallPassCount) > 100);
+          testTimeRangeEnd = testTime;
+      } while (Math.Abs(passesInFirstTimeRange - desiredCallPassCount) > cleaveSegmentPassCountDeadBand);
 
       // Create the new segment that will contain the overflow from the given segment
       // and copy the cell passes after the test time from the segment being cleaved
       // into the new segment
       //ISubGridCellSegmentPassesDataWrapper NewSegment = SubGridCellSegmentPassesDataWrapperFactory.Instance().NewWrapper(true, false);
-      ISubGridCellPassesDataSegment NewSegment = new SubGridCellPassesDataSegment
+      var newSegment = new SubGridCellPassesDataSegment
       {
-        Owner = CleavingSegment.Owner
+        Owner = cleavingSegment.Owner
       };
 
-      NewSegment.AllocateFullPassStacks();
-      NewSegment.PassesData.AdoptCellPassesFrom(CleavingSegment.PassesData, TestTime);
+      newSegment.AllocateFullPassStacks();
+      newSegment.PassesData.AdoptCellPassesFrom(cleavingSegment.PassesData, testTime);
 
-      // Modify the time range of Segment to match it's new time span and set up
+      // Modify the time range of segment to match it's new time span and set up
       // the segment info for the newly created segment
-      CleavingSegment.SegmentInfo.EndTime = TestTime;
+      cleavingSegment.SegmentInfo.EndTime = testTime;
 
       // Create a new segment info entry for the new segment and add it into the segment directory
       // so it fills the time space just created by modifying the end time of the
       // segment being cleaved
-      var NewSegmentInfo = new SubGridCellPassesDataSegmentInfo
+      var newSegmentInfo = new SubGridCellPassesDataSegmentInfo
       {
-        StartTime = TestTime,
-        EndTime = OldEndTime,
-        Segment = NewSegment
+        StartTime = testTime,
+        EndTime = oldEndTime,
+        Segment = newSegment
       };
 
-      NewSegment.SegmentInfo = NewSegmentInfo;
+      newSegment.SegmentInfo = newSegmentInfo;
 
       // Add the newly created segment info to the segment info list
       _owner.Directory.SegmentDirectory.Insert(
-        _owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo) + 1, NewSegmentInfo);
+        _owner.Directory.SegmentDirectory.IndexOf(cleavingSegment.SegmentInfo) + 1, newSegmentInfo);
 
       // Add the new created segment into the segment list for the sub grid
-      PassesData.Add(NewSegment);
+      PassesData.Add(newSegment);
 
       // Tidy up, marking both segments as dirty, and not existing in the persistent data store
-      CleavingSegment.Dirty = true;
-      CleavingSegment.SegmentInfo.ExistsInPersistentStore = false;
+      cleavingSegment.Dirty = true;
+      cleavingSegment.SegmentInfo.ExistsInPersistentStore = false;
 
-      NewSegment.Dirty = true;
-      NewSegment.SegmentInfo.ExistsInPersistentStore = false;
+      newSegment.Dirty = true;
+      newSegment.SegmentInfo.ExistsInPersistentStore = false;
 
       /*
        TODO: In TRex, this non-static information is only maintained in the mutable data grid, segment caching is not well defined for it yet
@@ -244,27 +250,30 @@ namespace VSS.TRex.SubGridTrees.Server
       // information for the segments
 
       // Determine the actual time range of the passes within the segment
-      CleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
-      if (CleavingSegment.RequiresCleaving(out _, out _))
+      cleavingSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
+      if (cleavingSegment.RequiresCleaving(out var totalPasses, out var maxPassCount))
         Log.LogDebug(
-          $"Info: After cleave first segment {_owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{CleavingSegment.SegmentInfo.EndTime}) of subgrid {_owner.Moniker()} failed to reduce cell pass count below maximums");
+          $"Info: After cleave first segment {_owner.Directory.SegmentDirectory.IndexOf(cleavingSegment.SegmentInfo)} ({cleavingSegment.SegmentInfo.StartTime}-{cleavingSegment.SegmentInfo.EndTime}) of subgrid {_owner.Moniker()} failed to reduce cell pass count below maximums. Total passes = {totalPasses}, max pass count = {maxPassCount}");
 
-      NewSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
-      if (NewSegment.RequiresCleaving(out _, out _))
-        Log.LogDebug(
-          $"Info: New cloven segment {_owner.Directory.SegmentDirectory.IndexOf(CleavingSegment.SegmentInfo)} ({CleavingSegment.SegmentInfo.StartTime}-{OldEndTime}) (resulting from cleave) of subgrid {_owner.Moniker()} failed to reduce cell pass count below maximums");
+      /* Note: newSegment will contain the set of cell passes that were moved out of cleavingSegment to ensure the size of that segment was below the limit.
+       newSegment itself may have additional necessary cleavings before being under the cap.
+       newSegment.VerifyComputedAndRecordedSegmentTimeRangeBounds();
+       if (newSegment.RequiresCleaving(out totalPasses, out maxPassCount))
+         Log.LogDebug(
+           $"Info: New cloven segment {_owner.Directory.SegmentDirectory.IndexOf(cleavingSegment.SegmentInfo)} ({cleavingSegment.SegmentInfo.StartTime}-{oldEndTime}) (resulting from cleave) of subgrid {_owner.Moniker()} failed to reduce cell pass count below maximums. Total passes = {totalPasses}, max pass count = {maxPassCount}");
+      */
 #endif
 
       return true;
     }
 
-    public bool MergeSegments(ISubGridCellPassesDataSegment MergeToSegment,
-      ISubGridCellPassesDataSegment MergeFromSegment)
+    public bool MergeSegments(ISubGridCellPassesDataSegment mergeToSegment,
+      ISubGridCellPassesDataSegment mergeFromSegment)
     {
       return false;
     }
 
-    public void RemoveSegment(ISubGridCellPassesDataSegment Segment)
+    public void RemoveSegment(ISubGridCellPassesDataSegment segment)
     {
     }
   }

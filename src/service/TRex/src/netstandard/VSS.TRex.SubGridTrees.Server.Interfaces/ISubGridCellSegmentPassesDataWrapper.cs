@@ -177,10 +177,10 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <summary>
         /// Calculate the total number of passes from all the cells present in this sub grid segment
         /// </summary>
-        /// <param name="TotalPasses"></param>
-        /// <param name="MinPassCount"></param>
-        /// <param name="MaxPassCount"></param>
-        void CalculateTotalPasses(out int TotalPasses, out int MinPassCount, out int MaxPassCount);
+        /// <param name="totalPasses"></param>
+        /// <param name="minPassCount"></param>
+        /// <param name="maxPassCount"></param>
+        void CalculateTotalPasses(out int totalPasses, out int minPassCount, out int maxPassCount);
 
         /// <summary>
         /// Calculates the time range covering all the cell passes within the given sub grid segment
@@ -231,9 +231,9 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// If the elevation range of the elevations stored in this segment is known then return it,
         /// return null min and max elevations otherwise.
         /// </summary>
-        /// <param name="MinElev"></param>
-        /// <param name="MaxElev"></param>
-        void GetSegmentElevationRange(out double MinElev, out double MaxElev);
+        /// <param name="minElev"></param>
+        /// <param name="maxElev"></param>
+        void GetSegmentElevationRange(out double minElev, out double maxElev);
 
         /// <summary>
         /// Does this segment have allocated pass data available

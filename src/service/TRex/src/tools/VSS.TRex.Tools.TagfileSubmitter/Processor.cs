@@ -154,9 +154,13 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       var fileNamesFromFolders = new List<List<string>>();
       CollectTAGFilesInFolder(folder, fileNamesFromFolders);
 
-      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
+      var combinedList = new List<string>();
+      fileNamesFromFolders.ForEach(x => combinedList.AddRange(x));
+      combinedList.Sort(new TAGFileNameComparer());
+      SubmitTAGFiles(projectID, combinedList);
 
-      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectID, x));
+//      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
+//      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectID, x));
     }
 
     public void ProcessTAGFilesInFolder(Guid projectID, string folder)

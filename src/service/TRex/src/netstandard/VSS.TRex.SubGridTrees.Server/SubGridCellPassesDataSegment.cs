@@ -274,9 +274,11 @@ namespace VSS.TRex.SubGridTrees.Server
     /// <returns></returns>
     public bool RequiresCleaving(out int TotalPasses, out int MaxPassCount)
     {
+      const int cleaveSegmentPassCountDeadBand = 100;
+
       PassesData.CalculateTotalPasses(out TotalPasses, out _, out MaxPassCount);
 
-      return TotalPasses > _subGridSegmentPassCountLimit ||
+      return TotalPasses > _subGridSegmentPassCountLimit + cleaveSegmentPassCountDeadBand ||
              MaxPassCount > _subGridMaxSegmentCellPassesLimit;
     }
 
