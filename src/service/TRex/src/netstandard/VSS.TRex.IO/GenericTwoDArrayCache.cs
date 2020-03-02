@@ -104,9 +104,7 @@ namespace VSS.TRex.IO
     {
       lock (_cache)
       {
-        for (var i = 0; i < _cacheCount; i++)
-          _cache[i] = null;
-
+        Array.Clear(_cache, 0, _cacheCount);
         _cacheCount = 0;
       }
     }
