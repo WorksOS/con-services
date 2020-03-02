@@ -22,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class TAGFileBufferQueueItemHandler : IDisposable
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger< TAGFileBufferQueueItemHandler>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueItemHandler>();
 
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do

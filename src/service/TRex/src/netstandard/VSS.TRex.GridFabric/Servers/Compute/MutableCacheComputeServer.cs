@@ -222,7 +222,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.KeepBinaryInStore = true;
 
-      // Replicate the maps across nodes
       cfg.CacheMode = CacheMode.Partitioned;
 
       cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
