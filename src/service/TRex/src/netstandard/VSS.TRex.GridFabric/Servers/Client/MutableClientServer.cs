@@ -104,8 +104,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
                   new DataRegionConfiguration
                   {
                       Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                      InitialSize = 64 * 1024 * 1024,  // 64 MB
-                      MaxSize = 65 * 1024 * 1024,  // 64 MB
+                      InitialSize = 64 * 1024 * 1024,  // 64 MB to start
+                      MaxSize = 64 * 1024 * 1024,  // 256 MB if needed
 
                       PersistenceEnabled = true
                   }
