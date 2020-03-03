@@ -84,6 +84,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 
+            /* Commented out as this is in the client of the service - will remove in due course...
+
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration
             {
@@ -96,8 +98,9 @@ namespace VSS.TRex.GridFabric.Servers.Client
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
                 MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB      
                 PersistenceEnabled = true
-              },
+              }
             },
+            */
 
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
@@ -118,7 +121,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
           }
 
 
-          bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+          bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out var isKubernetes);
           cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
 
           try

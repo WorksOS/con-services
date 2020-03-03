@@ -84,6 +84,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
 
+            /* Commented out as this is in the client of the service - will remove in due course...
+
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration()
             {
@@ -111,6 +113,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
                   }
               }
             },
+            */
 
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
