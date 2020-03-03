@@ -94,7 +94,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
               {
                 Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                MaxSize = 256 * 1024 * 1024,  // 256 Mb
+                MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB      
                 PersistenceEnabled = true
               },
             },

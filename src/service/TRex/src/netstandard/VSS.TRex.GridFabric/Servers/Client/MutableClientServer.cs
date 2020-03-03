@@ -94,7 +94,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
               {
                 Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                MaxSize = 256 * 1024 * 1024,  // 128 MB
+                MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB
                 PersistenceEnabled = true
               },
 
@@ -105,7 +105,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
                   {
                       Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
                       InitialSize = 64 * 1024 * 1024,  // 64 MB to start
-                      MaxSize = 64 * 1024 * 1024,  // 256 MB if needed
+                      MaxSize = 64 * 1024 * 1024,  
 
                       PersistenceEnabled = true
                   }
