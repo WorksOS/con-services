@@ -100,6 +100,15 @@ namespace VSS.TRex.TAGFiles.Executors
               IsJohnDoe = td.IsJohnDoe
             };
 
+            if (_queue == null)
+            {
+              response.Success = false;
+              response.Message = "SubmitTAGFileResponse. Processing queue not available";
+              response.Code = (int)TRexTagFileResultCode.TRexTagFileSubmissionQueueNotAvailable;
+
+              return response;
+            }
+
             if (_queue.Add(tagKey, tagItem)) // Add tag file to queue
             {
               response.Success = true;
