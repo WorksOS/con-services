@@ -17,7 +17,7 @@ namespace VSS.TRex.IO.Heartbeats
     {
       try
       {
-        if (!DIContext.Obtain<IConfigurationStore>().GetValueBool("HEARTBEAT_LOGGING_ENABLED_GenericTwoDArrayCacheRegisterHeartBeatLogger", false))
+        if (!DIContext.Obtain<IConfigurationStore>().GetValueBool("HEARTBEAT_LOGGING_ENABLED_GenericTwoDArrayCache", false))
         {
           return;
         }
