@@ -157,10 +157,7 @@ namespace TAGFiles.Tests
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = BuildModel();
-      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
-
-   //   converter1.Machines[0].ID = targetMachine.ID;
-   //   converter2.Machines[0].ID = targetMachine.ID;
+      targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
@@ -188,11 +185,11 @@ namespace TAGFiles.Tests
     [InlineData("Dimensions2018-CaseMachine", 164, 164, 30, 10, 2)] // Take the next 10
     [InlineData("Dimensions2018-CaseMachine", 164, 164, 0, 164, 9)] // Take the lot
     public void Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet(string tagFileCollectionFolder, 
-      int expectedFileCount, int maxTAGFilesPerAggregation, int skipTo, int numToTake, int expectedSubGridCount)
+      int expectedFileCount, int maxTagFilesPerAggregation, int skipTo, int numToTake, int expectedSubGridCount)
     {
-      Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag").Length.Should().Be(expectedFileCount);
+      Directory.GetFiles(Path.Combine("TestData", "TAGFiles", "Dimensions2018-CaseMachine"), "*.tag").Length.Should().Be(expectedFileCount);
 
-     // Log.LogInformation($"Starting processing {numToTake} files from index {skipTo}.");
+      // Log.LogInformation($"Starting processing {numToTake} files from index {skipTo}.");
 
       // Convert TAG files using TAGFileConverters into mini-site models
       var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
@@ -226,7 +223,7 @@ namespace TAGFiles.Tests
 
         var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
         {
-          MaxMappedTagFilesToProcessPerAggregationEpoch = maxTAGFilesPerAggregation
+          MaxMappedTagFilesToProcessPerAggregationEpoch = maxTagFilesPerAggregation
         };
 
     //    Log.LogInformation("Calling ProcessTask");
@@ -243,7 +240,7 @@ namespace TAGFiles.Tests
         targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
       }
 
-   //   Log.LogInformation($"Completed processing {numToTake} files.");
+    //   Log.LogInformation($"Completed processing {numToTake} files.");
     }
 
     [Fact]
@@ -278,10 +275,10 @@ namespace TAGFiles.Tests
       Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
       Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
 
-      sourceEventList.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out DateTime _, out int state);
+      sourceEventList.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out _, out var state);
       Assert.Equal(design4.Id, state);
 
-      sourceEventList.MachineDesignNameIDStateEvents.GetStateAtIndex(1, out DateTime _, out state);
+      sourceEventList.MachineDesignNameIDStateEvents.GetStateAtIndex(1, out _, out state);
       Assert.Equal(design2.Id, state);
     }
 
@@ -396,6 +393,63 @@ namespace TAGFiles.Tests
       // integration re-orders the event lists so cannot locate orig by []
       Assert.Equal(1, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName2").Id);
       Assert.Equal(2, targetSiteModel.SiteModelMachineDesigns.Locate("DesignName4").Id);
+    }
+
+    /// <summary>
+    /// Create a site model with a group of machines and ensure all machines are individually represented
+    /// </summary>
+    [Fact]
+    public void Test_AggregatedDataIntegratorWorker_ProcessTask_TAGFileSet_MultipleMachines()
+    {
+      // Convert TAG files using TAGFileConverters into mini-site models
+
+      using var targetSiteModel = BuildModel();
+
+      void Convert(string tagFileCollectionFolder,
+        int maxTagFilesPerAggregation, int skipTo, int numToTake, int expectedSubGridCount)
+      {
+        var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
+          .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+
+        converters.Length.Should().Be(numToTake);
+
+        var machineGuid = Guid.NewGuid();
+        var targetMachine = targetSiteModel.Machines.CreateNew($"Test Machine {machineGuid}", $"{machineGuid}", MachineType.Dozer,
+          DeviceTypeEnum.SNM940, false, machineGuid);
+
+        // Create the integrator and add the processed TAG file to its processing list
+        var integrator = new AggregatedDataIntegrator();
+
+        foreach (var c in converters)
+        {
+          using (c)
+          {
+            c.Machine.ID = targetMachine.ID;
+            integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,
+              c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
+          }
+        }
+
+        // Construct an integration worker and ask it to perform the integration
+        var processedTasks = new List<AggregatedDataIntegratorTask>();
+        var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID) {MaxMappedTagFilesToProcessPerAggregationEpoch = maxTagFilesPerAggregation};
+
+        worker.ProcessTask(processedTasks, converters.Length);
+        worker.CompleteTaskProcessing();
+
+        processedTasks.Count.Should().Be(numToTake);
+      }
+
+      Convert("Dimensions2018-CaseMachine", 164, 0, 10, 4);
+      Convert("Dimensions2018-CaseMachine", 164, 10, 10, 2);
+      Convert("Dimensions2018-CaseMachine", 164, 20, 10, 3);
+      Convert("Dimensions2018-CaseMachine", 164, 30, 10, 2);
+      Convert("Dimensions2018-CaseMachine", 164, 0, 164, 9);
+
+      targetSiteModel.Machines.Count.Should().Be(5);
+
+      // Check the set of TAG files created the expected number of sub grids
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(4);
     }
   }
 }
