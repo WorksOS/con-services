@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Amazon.S3.Transfer;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
@@ -435,7 +436,14 @@ namespace TAGFiles.Tests
         var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID) {MaxMappedTagFilesToProcessPerAggregationEpoch = maxTagFilesPerAggregation};
 
         worker.ProcessTask(processedTasks, converters.Length);
-        worker.CompleteTaskProcessing();
+
+        // Pretend all sub grids were saved... (calling CompleteTaskProcessing() will drop the site model)
+        targetSiteModel.Grid.ScanAllSubGrids(
+          subGrid =>
+          {
+            subGrid.AllChangesMigrated();
+            return true;
+          });
 
         processedTasks.Count.Should().Be(numToTake);
       }
@@ -446,10 +454,9 @@ namespace TAGFiles.Tests
       Convert("Dimensions2018-CaseMachine", 164, 30, 10, 2);
       Convert("Dimensions2018-CaseMachine", 164, 0, 164, 9);
 
+      // Check the set of TAG files created the expected number of sub grids and machines
       targetSiteModel.Machines.Count.Should().Be(5);
-
-      // Check the set of TAG files created the expected number of sub grids
-      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(4);
+      targetSiteModel.ExistenceMap.CountBits().Should().Be(9);
     }
   }
 }
