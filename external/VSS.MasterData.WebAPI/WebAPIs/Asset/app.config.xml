@@ -1,0 +1,22 @@
+﻿<configuration>
+  <ConnectionString>
+    <MasterData>server=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com;Port=3306;userid=vssMasterDataUsr;password=sQmwPCA6Qc2h;database=VSS-MasterData-Alpha;CharSet=utf8;</MasterData>
+  </ConnectionString>
+  <LegacyAssetBaseURI>https://alpha-www.myvisionlink.com/APIService/VLReady/Assets/single/</LegacyAssetBaseURI>
+  <LegacyAssetADBaseURI>https://alpha-api.myvisionlink.com/Assets/</LegacyAssetADBaseURI>
+  <KiewitAMPCustomerUID>E6E2F851-44C5-E311-AA77-00505688274D</KiewitAMPCustomerUID>
+  <AssetTopicNames>VSS.Interfaces.Events.MasterData.IAssetEvent-Alpha,VSS.Interfaces.Events.MasterData.IAssetEvent.V1-Alpha</AssetTopicNames>
+  <AssetOwnerTopicName>VSS.Interfaces.Events.MasterData.IAssetOwnerEvent.V1-Alpha,VSS.Interfaces.Events.MasterData.IAssetOwnerEvent.V2-Alpha</AssetOwnerTopicName>
+  <AssetEcmInfoTopicName>VSS.Interfaces.Events.MasterData.IAssetECMInfoEvent.V1-Alpha</AssetEcmInfoTopicName>
+  <RestProxyBaseUrl>http://vss-alphajson.maas.trimblepaas.com</RestProxyBaseUrl>
+  <!-- Producer settings -->
+  <ProducerBatchSize>1000</ProducerBatchSize>
+  <ProducerBatchDelay>100</ProducerBatchDelay>
+  <ProducerType>json</ProducerType>
+  <ProducerSettings>
+    <bootstrap.servers>kafka1.alpha.vssengg.com:9092,kafka2.alpha.vssengg.com:9092,kafka3.alpha.vssengg.com:9092,kafka4.alpha.vssengg.com:9092,kafka5.alpha.vssengg.com:9092,kafka6.alpha.vssengg.com:9092</bootstrap.servers>
+  </ProducerSettings>   
+  <CGIntegratorAppName>MasterDataManagement</CGIntegratorAppName>
+  <ServiceClientTriesMax>3 </ServiceClientTriesMax>
+  <SearchAndFilterSvcUri>net.tcp://searchandfilterservice-alpha.vssengg.com:8010/SearchAndFilter/v1.6</SearchAndFilterSvcUri>
+</configuration>

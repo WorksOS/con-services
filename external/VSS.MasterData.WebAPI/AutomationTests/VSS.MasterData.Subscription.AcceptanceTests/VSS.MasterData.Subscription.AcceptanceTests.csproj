@@ -1,0 +1,267 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E7CB1D06-D532-424C-9C34-283AD2A4DB56}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VSS.MasterData.Subscription.AcceptanceTests</RootNamespace>
+    <AssemblyName>VSS.MasterData.Subscription.AcceptanceTests</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.2.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.Core.3.3.25.3\lib\net45\AWSSDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="AWSSDK.S3, Version=3.3.0.0, Culture=neutral, PublicKeyToken=885c28607f98e604, processorArchitecture=MSIL">
+      <HintPath>..\packages\AWSSDK.S3.3.3.23.2\lib\net45\AWSSDK.S3.dll</HintPath>
+    </Reference>
+    <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Core.3.3.1\lib\net40\Common.Logging.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Common.Logging.Log4Net1213, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Common.Logging.Log4Net1213.3.3.1\lib\net40\Common.Logging.Log4Net1213.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HashLib, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\HashLib.2.0.1\lib\net40\HashLib.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.OpenJDK.Beans.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Jdbc, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.OpenJDK.Jdbc.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Management, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.OpenJDK.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.OpenJDK.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.OpenJDK.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Util, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.OpenJDK.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime, Version=7.3.4830.0, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\IKVM.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="javax.jms-api-2.0.1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\javax.jms-api-2.0.1.dll</HintPath>
+    </Reference>
+    <Reference Include="kafka-clients-1.1.0, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\kafka-clients-1.1.0.dll</HintPath>
+    </Reference>
+    <Reference Include="log4j-1.2.17, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\log4j-1.2.17.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="lz4-java-1.4, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\lz4-java-1.4.dll</HintPath>
+    </Reference>
+    <Reference Include="mail-1.4.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\mail-1.4.7.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="org.osgi.core-4.3.0, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\org.osgi.core-4.3.0.dll</HintPath>
+    </Reference>
+    <Reference Include="slf4j-api, Version=1.7.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\slf4j-api.dll</HintPath>
+    </Reference>
+    <Reference Include="slf4j-NetCommonLogging, Version=1.7.5.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\slf4j-NetCommonLogging.dll</HintPath>
+    </Reference>
+    <Reference Include="snappy-java-1.1.4, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Ikvm.Client.1.1.0\lib\net451\snappy-java-1.1.4.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TechTalk.SpecFlow, Version=2.2.0.0, Culture=neutral, PublicKeyToken=0778194805d6db41, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SpecFlow.2.2.0\lib\net45\TechTalk.SpecFlow.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VSS.Kafka.Clients.Ikvm, Version=1.0.38.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Clients.Ikvm.dll.1.0.38\lib\net451\VSS.Kafka.Clients.Ikvm.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Kafka.Clients.Interfaces, Version=1.0.38.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Clients.Ikvm.dll.1.0.38\lib\net451\VSS.Kafka.Clients.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Kafka.DotNetClient, Version=1.1.87.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.DotNetClient.1.1.87.0\lib\net451\VSS.Kafka.DotNetClient.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.Kafka.Factory, Version=1.1.75.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\VSS.Kafka.Factory.1.1.75.0\lib\net451\VSS.Kafka.Factory.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.KafkaRESTSupport, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\VSS.KafkaRESTSupport.dll</HintPath>
+    </Reference>
+    <Reference Include="VSS.KafkaWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Dependencies\VSS.KafkaWrapper.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Helpers\SubscriptionEventHandler.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\SubscriptionMessages.Designer.cs">
+      <DependentUpon>SubscriptionMessages.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Scenarios\SAVSubscription\SAVSubscription.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SAVSubscription.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\SAVSubscription\SAVSubscriptionSteps.cs" />
+    <Compile Include="Scenarios\SubscriptionService\SubscriptionListWebApi.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SubscriptionListWebApi.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\SubscriptionService\SubscriptionMasterDataConsumerService.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SubscriptionMasterDataConsumerService.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\SubscriptionService\SubscriptionService.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>SubscriptionService.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Scenarios\SubscriptionService\SubscriptionServiceSteps.cs" />
+    <Compile Include="Scenarios\SubscriptionService\SubscriptionServiceSupport.cs" />
+    <Compile Include="Utils\Config\KafkaServicesConfig.cs" />
+    <Compile Include="Utils\Config\SAVSubscriptionSqlQueries.cs" />
+    <Compile Include="Utils\Config\SubscriptionMySqlQueries.cs" />
+    <Compile Include="Utils\Config\SubscriptionServiceConfig.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\AssetSubscriptionServiceErrorResponseModel.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\DissociateProjectSubscriptionServiceErrorResponseModel.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\AssociateProjectSubscriptionServiceErrorResponseModel.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\CustomerSubscriptionServiceErrorResponseModel.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\ProjectSubscriptionServiceErrorResponseModel.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\SAVSubscriptionDBVAlidationModel.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\SubscriptionServiceReadResponseModel.cs" />
+    <Compile Include="Utils\Features\Classes\SubscriptionService\SubscriptionServiceRequestModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\SubscriptionMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SubscriptionMessages.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Scenarios\SAVSubscription\SAVSubscription.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>SAVSubscription.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\SubscriptionService\SubscriptionMasterDataConsumerService.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+    </None>
+    <None Include="Scenarios\SubscriptionService\SubscriptionListWebApi.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>SubscriptionListWebApi.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Scenarios\SubscriptionService\SubscriptionService.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>SubscriptionService.feature.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Dependencies\Dapper.dll" />
+    <Content Include="Dependencies\MySql.Data.dll" />
+    <Content Include="Dependencies\Newtonsoft.Json.dll" />
+    <Content Include="Dependencies\TechTalk.SpecFlow.dll" />
+    <Content Include="Dependencies\VSS.KafkaRESTSupport.dll" />
+    <Content Include="Dependencies\VSS.KafkaWrapper.dll" />
+    <Content Include="lib\KafkaNET.Library.dll" />
+    <Content Include="lib\ZooKeeperNet.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\TestAutomation\AutomationCore\AutomationCore.API.Framework\AutomationCore.API.Framework.csproj">
+      <Project>{af26f239-e452-41a1-b66c-d683eada57b2}</Project>
+      <Name>AutomationCore.API.Framework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TestAutomation\AutomationCore\AutomationCore.Shared\AutomationCore.Shared.csproj">
+      <Project>{76b938e7-8082-46e5-b761-5c2aaac4604a}</Project>
+      <Name>AutomationCore.Shared</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\packages\AWSSDK.S3.3.3.23.2\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

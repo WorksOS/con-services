@@ -1,0 +1,51 @@
+﻿namespace CommonModel.Enum
+{
+    public enum AssetSettingsFilters
+    {
+        All,
+        AssetId,
+        AssetSerialNumber,
+        DeviceType,
+        SubAccountCustomerUid,
+        AssetUID
+    }
+
+    public enum AssetSettingsSortColumns
+    {
+        AssetId,
+        AssetSerialNumber,
+        DeviceSerialNumber,
+        TargetStatus,
+        AssetModel,
+        AssetMakeCode,
+        MovingThresholdsDuration,
+        EventDiagnosticFilterInterval,
+        HighSeverityEvents,
+        DailyLocationReportingFrequency,
+        DailyReportingTime,
+        DiagnosticReportFrequency,
+        HourMeterFuelReport,
+        HoursMeter,
+		Odometer,
+        LowSeverityEvents,
+        MaintenanceModeDuration,
+        MediumSeverityEvents,
+        MovingOrStoppedThreshold,
+        MovingThresholdsRadius,
+        NextSentEventInHours,
+        ReportAssetStartStop,
+        SentUTC,
+        SMHOdometerConfig,
+        SpeedThreshold,
+        SpeedThresholdDuration,
+        SpeedThresholdEnabled,
+        StartTime,
+        Status,
+        ConfiguredSwitches,
+        GlobalGram,
+        WorkDefinition,
+        SecurityMode,
+        SecurityStatus, 
+        DeviceType
+    }
+}

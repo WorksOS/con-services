@@ -1,0 +1,166 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using log4net;
+using Newtonsoft.Json;
+using Infrastructure.Common.DeviceMessageConstructor.Attributes;
+using Infrastructure.Common.DeviceMessageConstructor.Interfaces;
+using CommonModel.DeviceSettings;
+using Infrastructure.Service.DeviceMessageConstructor.Interfaces;
+using VSS.MasterData.Device.Common.Models.Request.DeviceConfig;
+using VSS.MasterData.Device.Common.Models.Request.DeviceConfig.Switches;
+using VSS.VisionLink.Interfaces.Events.Commands.A5N2;
+using VSS.VisionLink.Interfaces.Events.Commands.Interfaces;
+using VSS.VisionLink.Interfaces.Events.Commands.Models;
+using VSS.VisionLink.Interfaces.Events.Commands.MTS;
+using VSS.VisionLink.Interfaces.Events.Commands.PL;
+using VSS.Device.MessageConstructor.Helpers;
+
+namespace Infrastructure.Service.DeviceMessageConstructor.Implementations
+{
+    [Group("Switches")]
+    public class SwitchesMessageEventBuilder : IGroupMessageEventBuilder
+    {
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly IDataPopulator _dataPopulator;
+        private readonly IDataValidator _validator;
+        private const string RequestMessageType = "DeviceConfigSwitchesRequest";
+
+        public SwitchesMessageEventBuilder(IDataPopulator dataPopulator, IDataValidator validator)
+        {
+            _dataPopulator = dataPopulator;
+            _validator = validator;
+        }
+
+        public IEnumerable<Tuple<IPLOutMessageEvent, DeviceDetails>> GetPlOutMessageEvent(DeviceConfigRequestBase requestBase, DeviceDetails deviceDetails)
+        {
+            var plOutMessages = new List<Tuple<IPLOutMessageEvent, DeviceDetails>>();
+            var digitalConfigDetails = new List<DigitalInputConfigDetails>();
+            Log.Info("Recieved Switches Message for Device " + deviceDetails.DeviceType);
+            var requestMessage = _dataPopulator.GetRequestModel<DeviceConfigSwitchesRequest>(requestBase);
+            if (requestMessage.SingleStateSwitches != null && requestMessage.SingleStateSwitches.Any())
+            {
+                foreach (var singleSwitch in requestMessage.SingleStateSwitches)
+                {
+                    var digitalInputConfigDetail = new DigitalInputConfigDetails();
+                    digitalInputConfigDetail.InputConfig = string.IsNullOrEmpty(singleSwitch.SwitchActiveState) ? (InputConfig?)null : _dataPopulator.GetEventEnumValue<InputConfig>(singleSwitch.SwitchActiveState);
+                    digitalInputConfigDetail.DigitalInputMonitoringCondition = string.IsNullOrEmpty(singleSwitch.MonitoredWhen) ? (DigitalInputMonitoringConditions?)null : _dataPopulator.GetEventEnumValue<DigitalInputMonitoringConditions>(singleSwitch.MonitoredWhen);
+                    digitalInputConfigDetail.Description = singleSwitch.SwitchName;
+                    digitalInputConfigDetail.InputDelayTime = new TimeSpan(0, 0, 0, 0, (int)Math.Round(singleSwitch.SwitchSensitivity * 1000));
+                    digitalConfigDetails.Add(digitalInputConfigDetail);
+                }
+                var plMessageEvent = _dataPopulator.ConstructPlEvent<SendDigitalInputConfig>(deviceDetails);
+                plMessageEvent.Config1 = digitalConfigDetails[0];
+                plMessageEvent.Config2 = digitalConfigDetails.Count >= 2 ? digitalConfigDetails[1] : null;
+                plMessageEvent.Config3 = digitalConfigDetails.Count >= 3 ? digitalConfigDetails[2] : null;
+                plMessageEvent.Config4 = digitalConfigDetails.Count >= 4 ? digitalConfigDetails[3] : null;
+                plOutMessages.Add(new Tuple<IPLOutMessageEvent, DeviceDetails>(plMessageEvent, deviceDetails));
+            }
+            Log.Info("Switches Message Event Construction for Device Type " + deviceDetails.DeviceType + " completed !!" + JsonConvert.SerializeObject(requestMessage));
+            return plOutMessages;
+        }
+
+        public IEnumerable<Tuple<IOutMessageEvent, DeviceDetails>> GetDataOutMessageEvent(DeviceConfigRequestBase requestBase, DeviceDetails deviceDetails)
+        {
+            var dataOutMessages = new List<Tuple<IOutMessageEvent, DeviceDetails>>();
+            Log.Info("Recieved Switches Message for Device " + deviceDetails.DeviceType);
+            var requestMessage = _dataPopulator.GetRequestModel<DeviceConfigSwitchesRequest>(requestBase);
+            if (requestMessage.SingleStateSwitches != null)
+            {
+                foreach (var singleSwitch in requestMessage.SingleStateSwitches)
+                {
+                    if (_validator.NullCheck(RequestMessageType, singleSwitch.SwitchActiveState, singleSwitch.MonitoredWhen))
+                    {
+                        var dataOutMessageEvent = _dataPopulator.ConstructDataOutEvent<DigitalSwitchConfigurationEvent>(deviceDetails);
+                        dataOutMessageEvent.DefaultState = _dataPopulator.GetEventEnumValue<SwitchState>(singleSwitch.SwitchActiveState);
+                        dataOutMessageEvent.MonitoredWhen = _dataPopulator.GetEventEnumValue<DigitalInputMonitoringConditions>(singleSwitch.MonitoredWhen);
+                        dataOutMessageEvent.Sensitivity = singleSwitch.SwitchSensitivity;
+                        dataOutMessageEvent.SwitchNumber = singleSwitch.SwitchNumber;
+                        dataOutMessageEvent.SwitchOnDescription = singleSwitch.SwitchName;
+                        var dvcDetails = ConstructorHelpers.GetDeviceConfigMsg(deviceDetails, singleSwitch.SwitchParameterName);
+                        dataOutMessages.Add(new Tuple<IOutMessageEvent, DeviceDetails>(dataOutMessageEvent, dvcDetails));
+                    }
+                }
+            }
+            if (requestMessage.DualStateSwitches != null)
+            {
+                foreach (var dualSwitch in requestMessage.DualStateSwitches)
+                {
+                    var dataOutMessageEvent = _dataPopulator.ConstructDataOutEvent<DiscreteInputConfigurationEvent>(deviceDetails);
+                    dataOutMessageEvent.Name = dualSwitch.SwitchName;
+                    dataOutMessageEvent.MonitoredWhen = string.IsNullOrEmpty(dualSwitch.MonitoredWhen) ? (DigitalInputMonitoringConditions?)null : _dataPopulator.GetEventEnumValue<DigitalInputMonitoringConditions>(dualSwitch.MonitoredWhen);
+                    dataOutMessageEvent.Sensitivity = dualSwitch.SwitchSensitivity;
+                    dataOutMessageEvent.SwitchNumber = dualSwitch.SwitchNumber;
+                    dataOutMessageEvent.OpenDescription = dualSwitch.SwitchOpen;
+                    dataOutMessageEvent.ClosedDescription = dualSwitch.SwitchClosed;
+                    dataOutMessageEvent.Enabled = dualSwitch.SwitchEnabled;
+                    var dvcDetails = ConstructorHelpers.GetDeviceConfigMsg(deviceDetails, dualSwitch.SwitchParameterName);
+                    dataOutMessages.Add(new Tuple<IOutMessageEvent, DeviceDetails>(dataOutMessageEvent, dvcDetails));
+                }
+            }
+            Log.Info("Switches Message Event Construction for Device Type " + deviceDetails.DeviceType + " completed !!" + JsonConvert.SerializeObject(requestMessage));
+            return dataOutMessages;
+        }
+
+        public IEnumerable<Tuple<IMTSOutMessageEvent, DeviceDetails>> GetMtsOutMessageEvent(DeviceConfigRequestBase requestBase, DeviceDetails deviceDetails)
+        {
+            var mtsOutMessages = new List<Tuple<IMTSOutMessageEvent, DeviceDetails>>();
+            var otaConfigDetails = new List<OtaConfigDetail>();
+            Log.Info("Recieved Switches Message for Device " + deviceDetails.DeviceType);
+            var requestMessage = _dataPopulator.GetRequestModel<DeviceConfigSwitchesRequest>(requestBase);
+            if (requestMessage.SingleStateSwitches != null && requestMessage.SingleStateSwitches.Any())
+            {
+                foreach (var singleSwitch in requestMessage.SingleStateSwitches)
+                {
+                    if (_validator.NullCheck(RequestMessageType, singleSwitch.SwitchActiveState))
+                    {
+                        var otaInputConfigDetail = new OtaConfigDetail();
+                        otaInputConfigDetail.InputConfig = _dataPopulator.GetEventEnumValue<InputConfigType>(singleSwitch.SwitchActiveState);
+                        otaInputConfigDetail.MonitoringCondition = string.IsNullOrEmpty(singleSwitch.MonitoredWhen) ? (DigitalInputMonitoringConditions?)null : _dataPopulator.GetEventEnumValue<DigitalInputMonitoringConditions>(singleSwitch.MonitoredWhen);
+                        otaInputConfigDetail.InputDesc = singleSwitch.SwitchName;
+                        otaInputConfigDetail.InputDelay = new TimeSpan(0, 0, 0, 0, (int)Math.Round(singleSwitch.SwitchSensitivity * 1000));
+                        otaConfigDetails.Add(otaInputConfigDetail);
+                    }
+                }
+                var mtsMessageEvent = _dataPopulator.ConstructMtsEvent<SendOtaConfigurationEvent>(deviceDetails);
+                mtsMessageEvent.Input1 = otaConfigDetails[0];
+                mtsMessageEvent.Input2 = otaConfigDetails.Count >= 2 ? otaConfigDetails[1] : null;
+                mtsMessageEvent.Input3 = otaConfigDetails.Count >= 3 ? otaConfigDetails[2] : null;
+<<<<<<< Updated upstream
+                mtsMessageEvent.Input4 = otaConfigDetails.Count == 4 ? otaConfigDetails[3] : null;
+                var dvcDetails = ConstructorHelpers.GetDeviceConfigMsg(deviceDetails, requestMessage.SingleStateSwitches.First().SwitchParameterName);
+=======
+                mtsMessageEvent.Input4 = otaConfigDetails.Count >= 4 ? otaConfigDetails[3] : null;
+                var dvcDetails = ConstructorHelpers.GetDeviceConfigMsg(deviceDetails, Guid.Parse(mtsMessageEvent.Context.MessageUid), new List<string>() { "SingleStateSwitches" });
+>>>>>>> Stashed changes
+                mtsOutMessages.Add(new Tuple<IMTSOutMessageEvent, DeviceDetails>(mtsMessageEvent, dvcDetails));
+            }
+            var sensorDetails = new List<SensorDetail>();
+            if (requestMessage.DualStateSwitches != null && requestMessage.DualStateSwitches.Any())
+            {
+                foreach (var dualSwitch in requestMessage.DualStateSwitches)
+                {
+                    var sensorDetail = new SensorDetail();
+                    sensorDetail.HasPosPolarity = false;
+                    sensorDetail.IgnReqired = false;
+                    sensorDetail.HystHalfSec = dualSwitch.SwitchSensitivity * 2;
+                    sensorDetail.Enabled = dualSwitch.SwitchEnabled;
+                    sensorDetails.Add(sensorDetail);
+                }
+                var mtsMessageEvent = _dataPopulator.ConstructMtsEvent<ConfigureSensorsEvent>(deviceDetails);
+                mtsMessageEvent.Sensor1 = sensorDetails[0];
+                mtsMessageEvent.Sensor2 = sensorDetails.Count >= 2 ? sensorDetails[1] : null;
+<<<<<<< Updated upstream
+                mtsMessageEvent.Sensor3 = sensorDetails.Count == 3 ? sensorDetails[2] : null;
+                var dvcDetails = ConstructorHelpers.GetDeviceConfigMsg(deviceDetails, requestMessage.DualStateSwitches.First().SwitchParameterName);
+=======
+                mtsMessageEvent.Sensor3 = sensorDetails.Count >= 3 ? sensorDetails[2] : null;
+                var dvcDetails = ConstructorHelpers.GetDeviceConfigMsg(deviceDetails, Guid.Parse(mtsMessageEvent.Context.MessageUid), new List<string>() { "DualStateSwitches" });
+>>>>>>> Stashed changes
+                mtsOutMessages.Add(new Tuple<IMTSOutMessageEvent, DeviceDetails>(mtsMessageEvent, dvcDetails));
+            }
+            Log.Info("Switches Message Event Construction for Device Type " + deviceDetails.DeviceType + " completed !!" + JsonConvert.SerializeObject(requestMessage));
+            return mtsOutMessages;
+        }
+    }
+}

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="..\..\Repositories\DeviceConfigRepository\DeviceConfigRepository.csproj" />
+    <ProjectReference Include="..\Infrastructure.Common.DeviceMessageConstructor\Infrastructure.Common.DeviceMessageConstructor.csproj" />
+    <ProjectReference Include="..\Infrastructure.Service.DeviceMessagePublisher\Infrastructure.Service.DeviceMessagePublisher.csproj" />
+  </ItemGroup>
+
+</Project>

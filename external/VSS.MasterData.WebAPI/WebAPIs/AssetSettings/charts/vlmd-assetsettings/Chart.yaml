@@ -1,0 +1,4 @@
+apiVersion: v1
+description: VSS MasterData AssetSettings API
+name: vlmd-assetsettings-__Branch__
+version: __MajorVersion__.__MinorVersion__.__BuildId__

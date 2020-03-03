@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration>
+	<RestProxyBaseUrl>http://vss-alphajson.maas.trimblepaas.com</RestProxyBaseUrl>
+	<EngineeringOperationsCustomerUid>C6EDE7C7-4496-11E9-8123-02BAF17BE4CB</EngineeringOperationsCustomerUid>
+	<ConnectionString>
+		<MasterData>
+			server=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com;Port=3306;userid=vssMasterDataUsr;password=sQmwPCA6Qc2h;database=VSS-MasterData-Alpha;
+		</MasterData>
+	</ConnectionString>
+	<AccountTopicName>VSS.Interfaces.Events.MasterData.IAccountCustomerEvent</AccountTopicName>
+	<CustomerTopicNames>VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.ICustomerEvent.V1</CustomerTopicNames>
+	<TopicSuffix>-Test</TopicSuffix>
+	<ProducerSettings>
+		<bootstrap.servers>kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+	</ProducerSettings>
+</configuration>

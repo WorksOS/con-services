@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<kafkaTopicNames>VSS.Interfaces.Events.MasterData.IDeviceEvent,VSS.Interfaces.Events.MasterData.IDeviceEvent.V1</kafkaTopicNames>
+	<kafkaTopicNamesV2>VSS.Interfaces.Events.MasterData.IDeviceEvent.V2</kafkaTopicNamesV2>
+	<AssetTopicNames>VSS.Interfaces.Events.MasterData.IAssetEvent-Alpha,VSS.Interfaces.Events.MasterData.IAssetEvent.V1-Alpha</AssetTopicNames>
+	<topicSuffix>-Alpha</topicSuffix>
+	<allowableMethodsToLogRequest>POST,PUT</allowableMethodsToLogRequest>
+	<KiewitAMPCustomerUID>E6E2F851-44C5-E311-AA77-00505688274D</KiewitAMPCustomerUID>
+	<ConnectionString>
+		<MasterData>
+			server=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com;Port=3306;userid=vssDevUsr;password=UdQmpPuc5vma;database=VSS-MasterData-Alpha;CharSet=utf8;
+		</MasterData>
+	</ConnectionString>
+	<ProducerSettings>
+		<bootstrap.servers>kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+	</ProducerSettings>
+</configuration>
