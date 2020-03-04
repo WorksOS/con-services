@@ -1,0 +1,56 @@
+﻿ Explain how you can switch between frames?
+typekey() and type()
+
+
+To switch between frames webdrivers [ driver.switchTo().frame() ] method takes one of the three possible arguments
+
+A number:  It selects the number by its (zero-based) index
+A number or ID: Select a frame by its name or ID
+Previously found WebElement: Using its previously located WebElement select a frame
+
+-----
+
+ Explain how you can login into any site if it’s showing any authentication popup for password and username?
+
+Pass the username and password with url
+
+Syntax-http://username:password@url
+ex- http://creyate:tom@www.gmail.com
+
+ -----
+ 
+ How will you find an element using Selenium?
+
+In Selenium every object or control in a web page is referred as an elements, there are different ways to find an element in a web page they are
+
+ID
+Name
+Tag
+Attribute
+CSS
+Linktext
+PartialLink Text
+Xpath etc
+
+----------------
+
+
+Mention what is the use of X-path?
+
+X-Path is used to find the WebElement in web pages. It is also useful in identifying the dynamic elements.
+
+Refer Complete Guide on XPath
+
+
+Explain how Selenium Grid works?
+
+Selenium Grid sent the tests to the hub. These tests are redirected to Selenium Webdriver, which launch the browser and run the test.  With entire test suite, it allows for running tests in parallel.
+
+
+ List out the technical challenges with Selenium? Technical challenges with Selenium are
+
+Selenium supports only web based applications
+It does not support the Bitmap comparison
+For any reporting related capabilities have to depend on third party tools
+No vendor support for tool compared to commercial tools like HP UFT
+As there is no object repository concept in Selenium, maintainability of objects becomes difficult

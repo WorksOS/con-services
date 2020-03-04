@@ -93,6 +93,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
       RequestingTRexNodeID = requestingTRexNodeId;
     }
 
+
     /// <summary>
     /// Compute normal map for lighting
     /// </summary>
@@ -105,33 +106,37 @@ namespace VSS.TRex.QuantizedMesh.Executors
       Vector3 v1;
       Vector3 v2;
       Vector3 v3;
-      // Build list of triangle faces
-      for (var y = 0; y < ElevData.GridSize - 1; y++)
+
+      // Build triangle list for normal computation later
+      for (int y = 0; y < ElevData.GridSize - 1; y++)
       {
-        for (var x = 0; x < ElevData.GridSize - 1; x++)
+        for (int x = 0; x < ElevData.GridSize - 1; x++)
         {
-          // Build triangle list for normal computation later
-          currY = StartNorthing + (y * GridIntervalY);
-          currX = StartEasting + (x * GridIntervalX);
-          var topIdx = i + ElevData.GridSize + 1;
+
+          v1 = ElevData.EcefPoints[i];
+          v2 = ElevData.EcefPoints[i + 1];
+          v3 = ElevData.EcefPoints[i + ElevData.GridSize + 1];
+          ElevData.Triangles[j] = new Triangle(v1, v2, v3);
+
           // Add two triangles per square
-          v1 = new Vector3(currX, currY, ElevData.ElevGrid[i]);// origin
-          v2 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, ElevData.ElevGrid[topIdx]); // one above and right
-          v3 = new Vector3(currX, currY + GridIntervalY, ElevData.ElevGrid[i + ElevData.GridSize]); // one above
-          ElevData.Triangles[j] = new Triangle(v1, v2, v3); 
-          v1 = new Vector3(currX, currY, ElevData.ElevGrid[i]); // origin
-          v2 = new Vector3(currX + GridIntervalX, currY, ElevData.ElevGrid[i + 1]); // next right
-          v3 = new Vector3(currX + GridIntervalX, currY + GridIntervalY, ElevData.ElevGrid[topIdx]); // one above and right
+          v1 = ElevData.EcefPoints[i + ElevData.GridSize + 1];
+          v2 = ElevData.EcefPoints[i + ElevData.GridSize];
+          v3 = ElevData.EcefPoints[i];
           ElevData.Triangles[j + 1] = new Triangle(v1, v2, v3);
-          j += 2;
+
           i++;
+          j += 2;
         }
+        i++;
       }
+
+      ElevData.HasData = true;
+      ElevData.HasLighting = true;
 
       // Compute normal map
       ElevData.VertexNormals = Cartesian3D.ComputeVertextNormals(ref ElevData.Triangles, ElevData.GridSize);
-
     }
+
 
     /// <summary>
     /// Convert 2 dimensional result array to a one dimensional DEM array for tilebuilder
@@ -441,11 +446,11 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       Azimuth = 0;
       StartNorthing = NEECoords[0].Y;
-      StartEasting  = NEECoords[0].X;
+      StartEasting = NEECoords[0].X;
 
-// Commented out for purposes of demo until relationship between TRex mediated skip/step selection and the quantised mesh tile vertex based selection are better understood
-  //    processor.Pipeline.AreaControlSet =
-   //     new AreaControlSet(false, GridIntervalX, GridIntervalY, StartEasting, StartNorthing, Azimuth);
+      // Commented out for purposes of demo until relationship between TRex mediated skip/step selection and the quantised mesh tile vertex based selection are better understood
+      //    processor.Pipeline.AreaControlSet =
+      //     new AreaControlSet(false, GridIntervalX, GridIntervalY, StartEasting, StartNorthing, Azimuth);
 
       if (!await processor.BuildAsync())
       {

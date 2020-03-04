@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>VSS.MasterData.WebAPI.KafkaModel</AssemblyName>
+    <RootNamespace>VSS.MasterData.WebAPI.KafkaModel</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CommonModels\CommonModel.csproj" />
+  </ItemGroup>
+
+</Project>

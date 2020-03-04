@@ -1,0 +1,34 @@
+# Common values for vlmd-assetsettings
+global:
+  componentName: "vlmd-assetsettings"
+  configmap:
+    s3path: s3://vss-ci-builds/VSS.MasterData.WebAPI/AssetSettings/__Branch__/__BuildId__/db_scripts
+
+  # Automatically have flyway perform the migration!
+  flyway:
+    enabled: false
+  image:
+    repository: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vlmd-assetsettings
+    tag: __Branch__-__BuildId__
+    pullPolicy: Always
+  ingress:
+    enabled: true
+    # Used to create an Ingress record.
+    # Release automation will dynamically create hosts and target.
+    hosts:
+      - __ENVIRONMENT__-vlmd-assetsettings.__DOMAIN__
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      external-dns.alpha.kubernetes.io/target: __ENDPOINT__
+    paths:
+      - /v1/assetsettings
+      - /v1/assetestimatedpayloadpercyclesettings
+      - /v1/assetfuelburnratesettings
+      - /v1/assetmileagesettings
+      - /v1/assetproductivitysettings
+      - /v1/assettargetsettings
+      - /v1/assetvolumepercyclesettings
+      - /v1/devicetypes
+      - /v1/workdefinition
+      - /healthz
+      - /swagger

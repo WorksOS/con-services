@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<RestProxyBaseUrl xdt:Transform="Replace">http://vss-prdjson.maas.trimblepaas.com</RestProxyBaseUrl>
+	<EngineeringOperationsCustomerUid xdt:Transform="Replace">B52721D0-514C-11E9-8103-060D7E00A6D1</EngineeringOperationsCustomerUid>
+	<ConnectionString>
+		<MasterData xdt:Transform="Replace">
+			server=vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com;Port=3306;userid=vssMasterDataUsr;password=ZuNyj7mcBo73;database=VSS-MasterData;
+		</MasterData>
+	</ConnectionString>
+	<ProducerSettings>
+		<bootstrap.servers xdt:Transform="Replace">
+			kafka1.services.myvisionlink.com:9092,kafka2.services.myvisionlink.com:9092,kafka3.services.myvisionlink.com:9092,kafka4.services.myvisionlink.com:9092,kafka5.services.myvisionlink.com:9092,kafka6.services.myvisionlink.com:9092"
+		</bootstrap.servers>
+	</ProducerSettings>
+	<AccountTopicName xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.IAccountCustomerEvent.V1</AccountTopicName>
+</configuration>
