@@ -16,7 +16,7 @@ IF (-not $?) {
 }
 
 Write-Host "Running Docker containers..." -ForegroundColor DarkGray
-docker run -d -p 5001:5001 940327799086.dkr.ecr.us-west-2.amazonaws.com/ccss-mockproject-webapi:latest-linux
+docker run -d -p 5001:5001 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-mock-webapi:latest-linux
 docker run -d -p 80:80 --env-file .\mocks.env 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tile-webapi:latest
 
 Set-Location $currentFolder

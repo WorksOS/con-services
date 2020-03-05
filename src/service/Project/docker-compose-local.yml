@@ -11,7 +11,7 @@ services:
     depends_on:
       - schema
   mockprojectwebapi:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/ccss-mockproject-webapi:latest-linux
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-mock-webapi:latest-linux
     env_file:
       - docker-compose-local.env
     ports:
