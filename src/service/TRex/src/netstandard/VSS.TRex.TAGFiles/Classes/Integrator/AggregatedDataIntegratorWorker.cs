@@ -44,9 +44,9 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// </summary>
     private readonly IStorageProxy _storageProxyMutable = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
 
-    private readonly bool _adviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES", Consts.ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES);
+    public bool AdviseOtherServicesOfDataModelChanges = DIContext.Obtain<IConfigurationStore>().GetValueBool("ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES", Consts.ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES);
 
-    private readonly int _maxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
+    public int MaxMappedTagFilesToProcessPerAggregationEpoch = DIContext.Obtain<IConfigurationStore>().GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
 
     private Guid SiteModelID { get; }
 
@@ -111,7 +111,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       // list to allow the TAG file processors to prepare additional TAG files
       // while this set is being integrated into the model.                    
 
-      while (processedTasks.Count < _maxMappedTagFilesToProcessPerAggregationEpoch &&
+      while (processedTasks.Count < MaxMappedTagFilesToProcessPerAggregationEpoch &&
              _tasksToProcess.TryDequeue(out var taskToProcess))
       {
         processedTasks.Add(taskToProcess);
@@ -346,7 +346,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
     /// <param name="siteModelFromDatamodel">The site model to perform the change notifications for</param>
     private void PerformSiteModelChangeNotifications(ISiteModel siteModelFromDatamodel)
     {
-      if (!_adviseOtherServicesOfDataModelChanges) 
+      if (!AdviseOtherServicesOfDataModelChanges) 
         return;
 
       // Notify the site model in all contents in the grid that it's attributes have changed
@@ -557,14 +557,16 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       processedTasks.Clear();
 
       // Set capacity to maximum expected size to prevent List resizing while assembling tasks
-      processedTasks.Capacity = _maxMappedTagFilesToProcessPerAggregationEpoch;
+      processedTasks.Capacity = MaxMappedTagFilesToProcessPerAggregationEpoch;
 
       AggregatedDataIntegratorTask task = null;
       var sw = Stopwatch.StartNew();
       try
       {
         if (!_tasksToProcess.TryDequeue(out task) || task == null)
+        {
           return true; // There is nothing in the queue to work on so just return true
+        }
 
         Log.LogInformation("Aggregation Task Process: Clearing mutable storage proxy");
 
@@ -599,12 +601,12 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
         // read from the datamodel file itself, then synchronously write it to the DataModel
 
+        CreateOrUpdateSiteModelMachines(siteModelFromDatamodel, task);
+
         if (!IntegrateMachineEventsIntoLiveSiteModel(siteModelFromDatamodel, task, eventIntegrator))
         {
           return false;
         }
-
-        CreateOrUpdateSiteModelMachines(siteModelFromDatamodel, task);
 
         // INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
         try

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Amazon.S3.Transfer;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.DI;
@@ -405,6 +404,7 @@ namespace TAGFiles.Tests
       // Convert TAG files using TAGFileConverters into mini-site models
 
       using var targetSiteModel = BuildModel();
+      var integrator = new AggregatedDataIntegrator();
 
       void Convert(string tagFileCollectionFolder,
         int maxTagFilesPerAggregation, int skipTo, int numToTake, int expectedSubGridCount)
@@ -418,9 +418,7 @@ namespace TAGFiles.Tests
         var targetMachine = targetSiteModel.Machines.CreateNew($"Test Machine {machineGuid}", $"{machineGuid}", MachineType.Dozer,
           DeviceTypeEnum.SNM940, false, machineGuid);
 
-        // Create the integrator and add the processed TAG file to its processing list
-        var integrator = new AggregatedDataIntegrator();
-
+        // Add the processed TAG files to the integrator's processing list
         foreach (var c in converters)
         {
           using (c)
@@ -430,33 +428,30 @@ namespace TAGFiles.Tests
               c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
           }
         }
-
-        // Construct an integration worker and ask it to perform the integration
-        var processedTasks = new List<AggregatedDataIntegratorTask>();
-        var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID) {MaxMappedTagFilesToProcessPerAggregationEpoch = maxTagFilesPerAggregation};
-
-        worker.ProcessTask(processedTasks, converters.Length);
-
-        // Pretend all sub grids were saved... (calling CompleteTaskProcessing() will drop the site model)
-        targetSiteModel.Grid.ScanAllSubGrids(
-          subGrid =>
-          {
-            subGrid.AllChangesMigrated();
-            return true;
-          });
-
-        processedTasks.Count.Should().Be(numToTake);
       }
 
       Convert("Dimensions2018-CaseMachine", 164, 0, 10, 4);
       Convert("Dimensions2018-CaseMachine", 164, 10, 10, 2);
       Convert("Dimensions2018-CaseMachine", 164, 20, 10, 3);
       Convert("Dimensions2018-CaseMachine", 164, 30, 10, 2);
-      Convert("Dimensions2018-CaseMachine", 164, 0, 164, 9);
+
+      // Construct an integration worker and ask it to perform the integration
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
+
+      worker.ProcessTask(processedTasks, 40);
+
+      // Pretend all sub grids were saved... (calling CompleteTaskProcessing() will drop the site model)
+      targetSiteModel.Grid.ScanAllSubGrids(
+        subGrid =>
+        {
+          subGrid.AllChangesMigrated();
+          return true;
+        });
 
       // Check the set of TAG files created the expected number of sub grids and machines
-      targetSiteModel.Machines.Count.Should().Be(5);
-      targetSiteModel.ExistenceMap.CountBits().Should().Be(9);
+      targetSiteModel.Machines.Count.Should().Be(4);
+      targetSiteModel.ExistenceMap.CountBits().Should().Be(4);
     }
   }
 }
