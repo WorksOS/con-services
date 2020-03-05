@@ -113,8 +113,8 @@ namespace VSS.TRex.Common
     /// Controls notification of site model changes made in the persistent to interested listeners
     /// such as cluster processing nodes in the immutable grid
     /// </summary>
-    public const bool ADVISEOTHERSERVICES_OFMODELCHANGES = true;       // override with: ADVISEOTHERSERVICES_OFMODELCHANGES
-    
+    public const bool ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES = true;       // override with: ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES
+
     /// <summary>
     /// Maximum number of TAG files to processing through the aggregation/integration pipeline
     /// as a single work unit
