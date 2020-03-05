@@ -100,8 +100,10 @@ namespace VSS.TRex.Machines
 
     public void Assign(IMachine source)
     {
-      ID = source.ID;
-      InternalSiteModelMachineIndex = source.InternalSiteModelMachineIndex;
+      // Once a machine is created it's internal and external IDs are immutable
+      // ID = source.ID;
+      // InternalSiteModelMachineIndex = source.InternalSiteModelMachineIndex;
+
       Name = source.Name;
       MachineHardwareID = source.MachineHardwareID;
       CompactionSensorType = source.CompactionSensorType;

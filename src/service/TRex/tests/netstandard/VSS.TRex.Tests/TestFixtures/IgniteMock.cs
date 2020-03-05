@@ -216,7 +216,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the site model machine change maps and any other cache using this signature
       AddMockedCacheToIgniteMock<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>();
 
-      // Create the mocked cache for the change map buffer queue that sites between the tag file ingest pipeline and the machien change maps processor
+      // Create the mocked cache for the change map buffer queue that sites between the tag file ingest pipeline and the machine change maps processor
       AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>();
     }
 

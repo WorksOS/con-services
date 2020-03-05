@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using VSS.TRex.IO.Helpers;
 
 namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
@@ -119,11 +120,9 @@ namespace VSS.TRex.TAGFiles.Classes.ValueMatcher
         /// </summary>
         /// <param name="dateTime"></param>
         /// <param name="defaultValue"></param>
-        /// <returns></returns>
-        public T GetValueAtDateTime(DateTime dateTime, T defaultValue)
-        {
-          return GetValueAtDateTime(dateTime, out T value) ? value : defaultValue;
-        }
+        /// <returns></returns
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValueAtDateTime(DateTime dateTime, T defaultValue) => GetValueAtDateTime(dateTime, out T value) ? value : defaultValue;
 
     public void Dispose()
     {

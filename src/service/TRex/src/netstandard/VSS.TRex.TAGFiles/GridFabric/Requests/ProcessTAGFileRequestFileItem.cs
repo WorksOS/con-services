@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Binary;
+﻿using System;
+using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Interfaces;
 
@@ -15,6 +16,8 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         public string FileName { get; set; }
 
         public byte[] TagFileContent { get; set; }
+
+        public Guid AssetId { get; set; }
 
         public bool IsJohnDoe { get; set; }
 
@@ -38,6 +41,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
         writer.WriteString(FileName);
+        writer.WriteGuid(AssetId);
         writer.WriteBoolean(IsJohnDoe);
         writer.WriteByteArray(TagFileContent);
       }
@@ -47,6 +51,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Arguments
         VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
         FileName = reader.ReadString();
+        AssetId = reader.ReadGuid() ?? Guid.Empty;
         IsJohnDoe = reader.ReadBoolean();
         TagFileContent = reader.ReadByteArray();
       }

@@ -30,15 +30,18 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
     {
       try
       {
-        return ProcessTAGFilesExecutor.Execute(arg.ProjectID, arg.AssetUID, arg.TAGFiles);
+        Log.LogInformation($"Processing {arg.TAGFiles.Count} tag files in project {arg.ProjectID}");
+
+        return ProcessTAGFilesExecutor.Execute(arg.ProjectID, arg.TAGFiles);
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"{nameof(ProcessTAGFileComputeFunc)}.{nameof(Invoke)} failed with exception: {e.Message}, stack trace: {e.StackTrace}");
+        Log.LogError(e, $"{nameof(ProcessTAGFileComputeFunc)}.{nameof(Invoke)} failed with exception:");
 
         return new ProcessTAGFileResponse {Results = arg.TAGFiles.Select(x => new ProcessTAGFileResponseItem
         {
           FileName = x.FileName,
+          AssetUid = x.AssetId,
           Success = false,
           Exception = e.Message
         }).ToList()};

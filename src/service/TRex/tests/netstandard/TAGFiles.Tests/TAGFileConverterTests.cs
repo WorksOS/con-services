@@ -16,12 +16,12 @@ namespace TAGFiles.Tests
     [Fact()]
     public void Test_TAGFileConverter_Creation()
     {
-      TAGFileConverter converter = new TAGFileConverter();
+      var converter = new TAGFileConverter();
 
-      Assert.True(converter.Machine != null &&
+      Assert.True(converter.Machines != null &&
                   converter.SiteModel != null &&
                   converter.SiteModelGridAggregator != null &&
-                  converter.MachineTargetValueChangesAggregator != null &&
+                  converter.MachinesTargetValueChangesAggregator != null &&
                   converter.ReadResult == TAGReadResult.NoError &&
                   converter.ProcessedCellPassCount == 0 &&
                   converter.ProcessedEpochCount == 0,
@@ -31,10 +31,10 @@ namespace TAGFiles.Tests
     [Fact()]
     public void Test_TAGFileConverter_Execute_SingleFileOnce()
     {
-      TAGFileConverter converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var converter = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false);
 
-      Assert.True(converter.Machine != null, "converter.Machine == null");
-      Assert.True(converter.MachineTargetValueChangesAggregator != null,
+      Assert.True(converter.Machines != null, "converter.Machines == null");
+      Assert.True(converter.MachinesTargetValueChangesAggregator[0] != null,
         "converter.MachineTargetValueChangesAggregator");
       Assert.True(converter.ReadResult == TAGReadResult.NoError,
         $"converter.ReadResult == TAGReadResult.NoError [= {converter.ReadResult}");
@@ -47,8 +47,10 @@ namespace TAGFiles.Tests
     [Fact()]
     public void Test_TAGFileConverter_Execute_SingleFileTwice()
     {
-      TAGFileConverter converter1 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
-      TAGFileConverter converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag");
+      var newMachineId = Guid.NewGuid();
+
+      var converter1 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", newMachineId, false);
+      var converter2 = DITagFileFixture.ReadTAGFile("TestTAGFile.tag", newMachineId, false);
 
       converter1.ReadResult.Should().Be(TAGReadResult.NoError);
       converter2.ReadResult.Should().Be(TAGReadResult.NoError);
@@ -65,7 +67,7 @@ namespace TAGFiles.Tests
     [InlineData(10)]
     public async Task Test_TAGFileConverter_Execute_SingleFileMultipleTimesConcurrently(int instanceCount)
     {
-      var result = await Enumerable.Range(1, instanceCount).Select(x => Task.Factory.Run(() => DITagFileFixture.ReadTAGFile("TestTAGFile.tag"))).WhenAll();
+      var result = await Enumerable.Range(1, instanceCount).Select(x => Task.Factory.Run(() => DITagFileFixture.ReadTAGFile("TestTAGFile.tag", Guid.NewGuid(), false))).WhenAll();
 
       result.Length.Should().Be(instanceCount);
 
@@ -77,10 +79,10 @@ namespace TAGFiles.Tests
     [Fact]
     public void Test_TAGFileConverter_OnGroundState()
     {
-      TAGFileConverter converter = DITagFileFixture.ReadTAGFile("Dimensions2018-CaseMachine", "2652J085SW--CASE CX160C--121101215100.tag");
+      var converter = DITagFileFixture.ReadTAGFile("Dimensions2018-CaseMachine", "2652J085SW--CASE CX160C--121101215100.tag");
       converter.Processor.OnGroundFlagSet.Should().Be(true);
 
-      DateTime theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Utc);
+      var theTime = new DateTime(2012, 11, 1, 20, 53, 23, 841, DateTimeKind.Utc);
       converter.Processor.OnGrounds.GetValueAtDateTime(theTime, OnGroundState.No).Should().Be(OnGroundState.YesMachineSoftware);
     }
 
@@ -91,7 +93,7 @@ namespace TAGFiles.Tests
     [Fact()]
     public void Test_TAGFileConverter_Execute_SinkError()
     {
-      TAGFileConverter converter = DITagFileFixture.ReadTAGFile("DimensionsSinkError.tag");
+      var converter = DITagFileFixture.ReadTAGFile("DimensionsSinkError.tag", Guid.NewGuid(), false);
 
       converter.ReadResult.Should().Be(TAGReadResult.SinkFinishingFailure);
       converter.ProcessedCellPassCount.Should().Be(52);

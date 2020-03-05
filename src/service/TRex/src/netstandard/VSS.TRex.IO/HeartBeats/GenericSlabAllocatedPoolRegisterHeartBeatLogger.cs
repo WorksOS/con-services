@@ -17,7 +17,7 @@ namespace VSS.TRex.IO.Heartbeats
     {
       try
       {
-        if (!DIContext.Obtain<IConfigurationStore>().GetValueBool("HEARTBEAT_LOGGING_ENABLED_GenericSlabAllocatedPoolRegisterHeartBeatLogger", false))
+        if (!DIContext.Obtain<IConfigurationStore>().GetValueBool("HEARTBEAT_LOGGING_ENABLED_GenericSlabAllocatedPool", false))
         {
           return;
         }

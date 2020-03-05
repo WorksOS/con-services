@@ -132,14 +132,14 @@ namespace VSS.TRex.TAGFiles.Executors
     }
     */
 
-    public static ProcessTAGFileResponse Execute(Guid projectId, Guid assetId, IEnumerable<ProcessTAGFileRequestFileItem> tagFiles)
+    public static ProcessTAGFileResponse Execute(Guid projectId, IEnumerable<ProcessTAGFileRequestFileItem> tagFiles)
     {
-      var _TAGFiles = tagFiles.ToArray(); // Enumerate collection just once
+      var _tagFiles = tagFiles.ToArray(); // Enumerate collection just once
 
-      if (_TAGFiles.Length == 0)
+      if (_tagFiles.Length == 0)
         return null;
 
-      Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {_TAGFiles.Count()} TAG files into project {projectId}, asset {assetId}");
+      Log.LogInformation($"ProcessTAGFileResponse.Execute. Processing {_tagFiles.Count()} TAG files into project {projectId}");
 
       var response = new ProcessTAGFileResponse();
 
@@ -165,18 +165,23 @@ namespace VSS.TRex.TAGFiles.Executors
       {
         using (var commonConverter = new TAGFileConverter())
         {
-          foreach (var tagFile in _TAGFiles)
+          foreach (var tagFile in _tagFiles)
           {
             using (var fs = new MemoryStream(tagFile.TagFileContent))
             {
               try
               {
-                commonConverter.Execute(fs);
+                commonConverter.Execute(fs, tagFile.AssetId, tagFile.IsJohnDoe);
 
-                response.Results.Add(new ProcessTAGFileResponseItem {FileName = tagFile.FileName, Success = commonConverter.ReadResult == TAGReadResult.NoError});
+                response.Results.Add(new ProcessTAGFileResponseItem
+                {
+                  FileName = tagFile.FileName, 
+                  AssetUid = tagFile.AssetId, 
+                  Success = commonConverter.ReadResult == TAGReadResult.NoError
+                });
 
                 Log.LogInformation(
-                  $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs");
+                  $"#Progress# [CommonConverter] TAG file {tagFile.FileName} generated {commonConverter.ProcessedCellPassCount} cell passes from {commonConverter.ProcessedEpochCount} epochs for asset {tagFile.AssetId}");
               }
               catch (Exception e)
               {
@@ -188,17 +193,15 @@ namespace VSS.TRex.TAGFiles.Executors
           }
 
           commonConverter.SiteModel.ID = projectId;
-          commonConverter.Machine.ID = assetId;
-          commonConverter.Machine.IsJohnDoeMachine = _TAGFiles[0].IsJohnDoe;
 
           integrator.AddTaskToProcessList(commonConverter.SiteModel, projectId,
-            commonConverter.Machine, assetId,
+            commonConverter.Machines,
             commonConverter.SiteModelGridAggregator,
             commonConverter.ProcessedCellPassCount,
-            commonConverter.MachineTargetValueChangesAggregator);
+            commonConverter.MachinesTargetValueChangesAggregator);
         }
 
-        worker.ProcessTask(processedTasks, _TAGFiles.Length);
+        worker.ProcessTask(processedTasks, _tagFiles.Length);
       }
       finally
       {

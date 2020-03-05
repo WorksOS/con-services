@@ -45,19 +45,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Each task added to the process list represents a tag file that has been
         // processed
         public void AddTaskToProcessList(ISiteModel transientSiteModel,
-                                         Guid persistentSiteModelID,
-                                         IMachine transientMachine,
-                                         Guid persistentMachineID,
+                                         Guid persistentSiteModelId,
+                                         IMachinesList transientMachines,
                                          IServerSubGridTree aggregatedCellPasses,
                                          int aggregatedCellPassCount,
-                                         IProductionEventLists aggregatedMachineEvents)
+                                         IMachinesProductionEventLists aggregatedMachineEvents)
         {
-            var NewTask = new AggregatedDataIntegratorTask
+            var newTask = new AggregatedDataIntegratorTask
             {
                 IntermediaryTargetSiteModel = transientSiteModel,
-                PersistedTargetSiteModelID = persistentSiteModelID,
-                IntermediaryTargetMachine = transientMachine,
-                PersistedTargetMachineID = persistentMachineID,
+                PersistedTargetSiteModelID = persistentSiteModelId,
+                IntermediaryTargetMachines = transientMachines,
                 AggregatedCellPasses = aggregatedCellPasses,
                 AggregatedMachineEvents = aggregatedMachineEvents,
                 AggregatedCellPassCount = aggregatedCellPassCount
@@ -66,7 +64,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
             IncrementOutstandingCellPasses(aggregatedCellPassCount);
             System.Threading.Interlocked.Add(ref _totalCellPassesProcessed, aggregatedCellPassCount);
 
-            TasksToProcess.Enqueue(NewTask);
+            TasksToProcess.Enqueue(newTask);
 
             System.Threading.Interlocked.Increment(ref _pendingFilesToBeProcessedCount);
 
@@ -97,6 +95,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // passes currently pending integration into the database can accept more cell passes
         public bool CanAcceptMoreAggregatedCellPasses => true;
 
-        public void IncrementOutstandingCellPasses(int Increment) => System.Threading.Interlocked.Add(ref _outstandingCellPasses, Increment);
+        public void IncrementOutstandingCellPasses(int increment) => System.Threading.Interlocked.Add(ref _outstandingCellPasses, increment);
     }
 }

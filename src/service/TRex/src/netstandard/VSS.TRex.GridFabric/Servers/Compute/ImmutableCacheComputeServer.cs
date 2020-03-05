@@ -127,7 +127,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       return cfg;
     }
 
-
     /// <summary>
     /// Configures ignite for use locally i.e on developers pc
     /// </summary>
@@ -159,7 +158,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       };
       return cfg;
     }
-
 
     public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
     {
@@ -268,9 +266,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       // Add the immutable Spatial & NonSpatial caches
 
-      var CacheCfg = new CacheConfiguration();
-      ConfigureNonSpatialImmutableCache(CacheCfg);
-      NonSpatialImmutableCache = InstantiateNonSpatialTRexCacheReference(CacheCfg);
+      var cacheCfg = new CacheConfiguration();
+      ConfigureNonSpatialImmutableCache(cacheCfg);
+      NonSpatialImmutableCache = InstantiateNonSpatialTRexCacheReference(cacheCfg);
 
       //CacheCfg = new CacheConfiguration();
       var spatialCacheConfiguration = immutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.ImmutableSpatialCacheName()));

@@ -84,6 +84,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
 
+            /* Commented out as this is in the client of the service - will remove in due course...
+
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration()
             {
@@ -94,23 +96,24 @@ namespace VSS.TRex.GridFabric.Servers.Client
               {
                 Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                MaxSize = 256 * 1024 * 1024,  // 128 MB
-                PersistenceEnabled = false
+                MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB
+                PersistenceEnabled = true
               },
 
               // Establish a separate data region for the TAG file buffer queue
               DataRegionConfigurations = new List<DataRegionConfiguration>
-                            {
-                                new DataRegionConfiguration
-                                {
-                                    Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                                    InitialSize = 128 * 1024 * 1024,  // 128 MB
-                                    MaxSize = 256 * 1024 * 1024,  // 128 MB
+              {
+                  new DataRegionConfiguration
+                  {
+                      Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
+                      InitialSize = 64 * 1024 * 1024,  // 64 MB to start
+                      MaxSize = 64 * 1024 * 1024,  
 
-                                    PersistenceEnabled = false
-                                }
-                            }
+                      PersistenceEnabled = true
+                  }
+              }
             },
+            */
 
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),

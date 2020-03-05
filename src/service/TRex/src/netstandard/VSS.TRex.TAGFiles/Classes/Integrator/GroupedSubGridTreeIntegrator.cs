@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       */
 
-      // Iterate oer all sub grids in the composite existence map constructed a grouped sub grid from the combined models and
+      // Iterate over all sub grids in the composite existence map constructed a grouped sub grid from the combined models and
       // adding it to the result sub grid tree
       // Create the server sub grid tree to contain the result
 

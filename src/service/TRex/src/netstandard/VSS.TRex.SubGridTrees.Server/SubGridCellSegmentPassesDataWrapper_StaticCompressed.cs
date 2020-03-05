@@ -956,6 +956,11 @@ namespace VSS.TRex.SubGridTrees.Server
         throw new InvalidOperationException("Immutable cell pass segment.");
       }
 
+      public void SetAllInternalMachineIDs((short taskInternalMachineIndex, short datamodelInternalMachineIndex)[] internalMachineIndexMap, out long numModifiedPasses)
+      {
+        throw new InvalidOperationException("Immutable cell pass segment.");
+      }
+
       public void GetSegmentElevationRange(out double minElev, out double maxElev)
       {
         if (EncodedFieldDescriptors.Height.AllValuesAreNull)

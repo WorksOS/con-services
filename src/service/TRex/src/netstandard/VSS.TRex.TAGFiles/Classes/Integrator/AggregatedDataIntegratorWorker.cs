@@ -9,9 +9,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
-using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
@@ -164,7 +162,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           processedTasks.Add(taskToProcess);
         }
 
-        Log.LogInformation($"Aggregation Task Process --> Integrating {processedTasks.Count} TAG file processing tasks for machine {task.PersistedTargetMachineID} in project {task.PersistedTargetSiteModelID}");
+        Log.LogInformation($"Aggregation Task Process --> Integrating {processedTasks.Count} TAG file processing tasks for project {task.PersistedTargetSiteModelID}");
 
         // ====== STAGE 2: AGGREGATE ALL EVENTS AND CELL PASSES FROM ALL TAG FILES INTO THE FIRST ONE IN THE LIST
 
@@ -179,9 +177,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           {
             Trees = processedTasks
               .Where(t => t.AggregatedCellPassCount > 0)
-              .Select(t => (t.AggregatedCellPasses,
-                t.AggregatedMachineEvents.StartEndRecordedDataEvents.FirstStateDate(),
-                t.AggregatedMachineEvents.StartEndRecordedDataEvents.LastStateDate()))
+              .Select(t => (t.AggregatedCellPasses, DateTime.MinValue, DateTime.MaxValue))
               .ToList()
           };
 
@@ -228,23 +224,29 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           // 'Include' the extents etc of each site model being merged into 'task' into its extents and design change events
           task.IntermediaryTargetSiteModel.Include(processedTask.IntermediaryTargetSiteModel);
 
-          // Integrate the machine events
-          eventIntegrator.IntegrateMachineEvents(processedTask.AggregatedMachineEvents, task.AggregatedMachineEvents, false, 
-            processedTask.IntermediaryTargetSiteModel, task.IntermediaryTargetSiteModel);
-
-          //Update current DateTime with the latest one
-          if (processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp.CompareTo(task.IntermediaryTargetMachine.LastKnownPositionTimeStamp) == -1)
+          // Iterate over all the machine events collected in the task
+          foreach (var machine in processedTask.IntermediaryTargetMachines)
           {
-            task.IntermediaryTargetMachine.LastKnownPositionTimeStamp = processedTask.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
-            task.IntermediaryTargetMachine.LastKnownX = processedTask.IntermediaryTargetMachine.LastKnownX;
-            task.IntermediaryTargetMachine.LastKnownY = processedTask.IntermediaryTargetMachine.LastKnownY;
+            // Integrate the machine events
+            eventIntegrator.IntegrateMachineEvents
+             (processedTask.AggregatedMachineEvents[machine.InternalSiteModelMachineIndex], 
+              task.AggregatedMachineEvents[machine.InternalSiteModelMachineIndex], false,
+              processedTask.IntermediaryTargetSiteModel, task.IntermediaryTargetSiteModel);
+
+            //Update current DateTime with the latest one
+            if (machine.LastKnownPositionTimeStamp.CompareTo(machine.LastKnownPositionTimeStamp) == -1)
+            {
+              machine.LastKnownPositionTimeStamp = machine.LastKnownPositionTimeStamp;
+              machine.LastKnownX = machine.LastKnownX;
+              machine.LastKnownY = machine.LastKnownY;
+            }
+
+            if (machine.MachineHardwareID == "")
+              machine.MachineHardwareID = machine.MachineHardwareID;
+
+            if (machine.MachineType == 0)
+              machine.MachineType = machine.MachineType;
           }
-
-          if (task.IntermediaryTargetMachine.MachineHardwareID == "")
-            task.IntermediaryTargetMachine.MachineHardwareID = processedTask.IntermediaryTargetMachine.MachineHardwareID;
-
-          if (task.IntermediaryTargetMachine.MachineType == 0)
-            task.IntermediaryTargetMachine.MachineType = processedTask.IntermediaryTargetMachine.MachineType;
         }
 
         // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
@@ -252,49 +254,45 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         Log.LogDebug("Aggregation Task Process --> Integrating aggregated cell passes into the live site model");
 
-        IMachine machineFromDatamodel;
-        IProductionEventLists siteModelMachineTargetValues;
         lock (siteModelFromDatamodel)
         {
           // 'Include' the extents etc of the 'task' each site model being merged into the persistent database
           siteModelFromDatamodel.Include(task.IntermediaryTargetSiteModel);
 
-          // Need to locate or create a matching machine in the site model.
-          machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(task.PersistedTargetMachineID, task.IntermediaryTargetMachine.IsJohnDoeMachine);
-
-          // Log.LogInformation($"Selecting machine: PersistedTargetMachineID={task.PersistedTargetMachineID}, IsJohnDoe?:{task.IntermediaryTargetMachine.IsJohnDoeMachine}, Result: {machineFromDatamodel}");
-
-          if (machineFromDatamodel == null)
+          // Iterate over all the machine events collected in the task
+          foreach (var machineFromTask in task.IntermediaryTargetMachines)
           {
-            machineFromDatamodel = siteModelFromDatamodel.Machines.CreateNew(task.IntermediaryTargetMachine.Name,
-              task.IntermediaryTargetMachine.MachineHardwareID,
-              task.IntermediaryTargetMachine.MachineType,
-              task.IntermediaryTargetMachine.DeviceType,
-              task.IntermediaryTargetMachine.IsJohnDoeMachine,
-              task.PersistedTargetMachineID);
-            task.PersistedTargetMachineID = machineFromDatamodel.ID;
-            task.IntermediaryTargetMachine.ID = machineFromDatamodel.ID;
-            task.IntermediaryTargetMachine.InternalSiteModelMachineIndex = machineFromDatamodel.InternalSiteModelMachineIndex;
-            machineFromDatamodel.Assign(task.IntermediaryTargetMachine);
+            // Need to locate or create a matching machine in the site model.
+            var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.Name, machineFromTask.IsJohnDoeMachine);
+
+            // Log.LogInformation($"Selecting machine: PersistedTargetMachineID={task.PersistedTargetMachineID}, IsJohnDoe?:{task.IntermediaryTargetMachine.IsJohnDoeMachine}, Result: {machineFromDatamodel}");
+
+            if (machineFromDatamodel == null)
+            {
+              machineFromDatamodel = siteModelFromDatamodel.Machines.CreateNew(machineFromTask.Name,
+                machineFromTask.MachineHardwareID,
+                machineFromTask.MachineType,
+                machineFromTask.DeviceType,
+                machineFromTask.IsJohnDoeMachine,
+                machineFromTask.ID);
+              machineFromDatamodel.Assign(machineFromTask);
+            }
+
+            // Update the internal name of the machine with the machine name from the TAG file
+            if (machineFromTask.Name != "" && machineFromDatamodel.Name != machineFromTask.Name)
+              machineFromDatamodel.Name = machineFromTask.Name;
+
+            // Update the internal type of the machine with the machine type from the TAG file
+            // if the existing internal machine type is zero then
+            if (machineFromTask.MachineType != 0 && machineFromDatamodel.MachineType == 0)
+              machineFromDatamodel.MachineType = machineFromTask.MachineType;
+
+            // If the machine target values can't be found then create them
+            var siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
+
+            if (siteModelMachineTargetValues == null)
+              siteModelFromDatamodel.MachinesTargetValues.Add(new ProductionEventLists(siteModelFromDatamodel, machineFromDatamodel.InternalSiteModelMachineIndex));
           }
-
-          // Update the internal name of the machine with the machine name from the TAG file
-          if (task.IntermediaryTargetMachine.Name != "" && machineFromDatamodel.Name != task.IntermediaryTargetMachine.Name)
-            machineFromDatamodel.Name = task.IntermediaryTargetMachine.Name;
-
-          // Update the internal type of the machine with the machine type from the TAG file
-          // if the existing internal machine type is zero then
-          if (task.IntermediaryTargetMachine.MachineType != 0 && machineFromDatamodel.MachineType == 0)
-            machineFromDatamodel.MachineType = task.IntermediaryTargetMachine.MachineType;
-
-          // If the machine target values can't be found then create them
-          siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
-
-          if (siteModelMachineTargetValues == null)
-            siteModelFromDatamodel.MachinesTargetValues.Add(new ProductionEventLists(siteModelFromDatamodel, machineFromDatamodel.InternalSiteModelMachineIndex));
-
-          // Check to see the machine target values were created correctly
-          siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
         }
 
         // ====== STAGE 3: INTEGRATE THE AGGREGATED EVENTS INTO THE PRIMARY LIVE DATABASE
@@ -304,34 +302,42 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
         Log.LogDebug("Aggregation Task Process --> Integrating machine events into the live site model");
 
-        eventIntegrator.IntegrateMachineEvents(task.AggregatedMachineEvents, siteModelMachineTargetValues, true, task.IntermediaryTargetSiteModel, siteModelFromDatamodel);
-
-        // Integrate the machine events into the main site model. This requires the
-        // site model interlock as aspects of the site model state (machine) are being changed.
-        lock (siteModelFromDatamodel)
+        // Iterate over all the machine events collected in the task
+        foreach (var machineFromTask in task.IntermediaryTargetMachines)
         {
-          if (siteModelMachineTargetValues != null)
+          var machineFromDatamodel = siteModelFromDatamodel.Machines.Locate(machineFromTask.ID, machineFromTask.Name, machineFromTask.IsJohnDoeMachine);
+          var siteModelMachineTargetValues = siteModelFromDatamodel.MachinesTargetValues[machineFromDatamodel.InternalSiteModelMachineIndex];
+
+          eventIntegrator.IntegrateMachineEvents(task.AggregatedMachineEvents[machineFromTask.InternalSiteModelMachineIndex], 
+            siteModelMachineTargetValues, true, task.IntermediaryTargetSiteModel, siteModelFromDatamodel);
+
+          // Integrate the machine events into the main site model. This requires the
+          // site model interlock as aspects of the site model state (machine) are being changed.
+          lock (siteModelFromDatamodel)
           {
-            //Update machine last known value (events) from integrated model before saving
-            var comparison = machineFromDatamodel.LastKnownPositionTimeStamp.CompareTo(task.IntermediaryTargetMachine.LastKnownPositionTimeStamp);
-            if (comparison == -1)
+            if (siteModelMachineTargetValues != null)
             {
-              machineFromDatamodel.LastKnownDesignName = siteModelFromDatamodel.SiteModelMachineDesigns[siteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
-              machineFromDatamodel.LastKnownLayerId = siteModelMachineTargetValues.LayerIDStateEvents.Count() > 0 ? siteModelMachineTargetValues.LayerIDStateEvents.LastStateValue() : (ushort) 0;
-              machineFromDatamodel.LastKnownPositionTimeStamp = task.IntermediaryTargetMachine.LastKnownPositionTimeStamp;
-              machineFromDatamodel.LastKnownX = task.IntermediaryTargetMachine.LastKnownX;
-              machineFromDatamodel.LastKnownY = task.IntermediaryTargetMachine.LastKnownY;
+              //Update machine last known value (events) from integrated model before saving
+              var comparison = machineFromDatamodel.LastKnownPositionTimeStamp.CompareTo(machineFromDatamodel.LastKnownPositionTimeStamp);
+              if (comparison == -1)
+              {
+                machineFromDatamodel.LastKnownDesignName = siteModelFromDatamodel.SiteModelMachineDesigns[siteModelMachineTargetValues.MachineDesignNameIDStateEvents.LastStateValue()].Name;
+                machineFromDatamodel.LastKnownLayerId = siteModelMachineTargetValues.LayerIDStateEvents.Count() > 0 ? siteModelMachineTargetValues.LayerIDStateEvents.LastStateValue() : (ushort)0;
+                machineFromDatamodel.LastKnownPositionTimeStamp = machineFromDatamodel.LastKnownPositionTimeStamp;
+                machineFromDatamodel.LastKnownX = machineFromDatamodel.LastKnownX;
+                machineFromDatamodel.LastKnownY = machineFromDatamodel.LastKnownY;
+              }
+            }
+            else
+            {
+              Log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
+              return false;
             }
           }
-          else
-          {
-            Log.LogError("SiteModelMachineTargetValues not located in aggregate machine events integrator");
-            return false;
-          }
-        }
 
-        // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
-        siteModelMachineTargetValues.SaveMachineEventsToPersistentStore(_storageProxyMutable);
+          // Use the synchronous command to save the machine events to the persistent store into the deferred (asynchronous model)
+          siteModelMachineTargetValues.SaveMachineEventsToPersistentStore(_storageProxyMutable);
+        }
 
         // ====== STAGE 4: INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
         try
@@ -351,14 +357,34 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           };
 
           // Integrate the cell pass data into the main site model and commit each sub grid as it is updated
-          // ... first relabel the passes with the machine ID as it is set to null in the swathing engine
+          // ... first relabel the passes with the machine IDs from the persistent datamodel
+
+          // Compute the vector of internal site model machine indexes between the intermediary site model constructed from the TAG files,
+          // and the persistent site model the data us being processed into
+          (short taskInternalMachineIndex, short datamodelInternalMachineIndex)[] internalMachineIndexMap = task.IntermediaryTargetMachines
+            .Select(taskMachine => (taskMachine.InternalSiteModelMachineIndex, 
+                                    siteModelFromDatamodel.Machines.Locate(taskMachine.ID, taskMachine.Name, taskMachine.IsJohnDoeMachine).InternalSiteModelMachineIndex))
+            .OrderBy(x => x.Item1)
+            .ToArray();
+
+          // Make sure the internal indexes are all there
+          for (var i = 0; i < internalMachineIndexMap.Length; i++)
+          {
+            if (internalMachineIndexMap[i].taskInternalMachineIndex != i)
+            {
+              throw new TRexException("Internal index map not in expected order, or elements are missing");
+            }
+          }
+
+          // Iterate across all passes generated from the processed TAG files and modify the internal indexes in those passes ot match
+          // the internal indexes of the matching machines in the persistent site model
           groupedAggregatedCellPasses?.ScanAllSubGrids(leaf =>
           {
             var serverLeaf = (ServerSubGridTreeLeaf) leaf;
 
             foreach (var segment in serverLeaf.Cells.PassesData.Items)
             {
-              segment.PassesData.SetAllInternalMachineIDs(machineFromDatamodel.InternalSiteModelMachineIndex, out var modifiedPassCount);
+              segment.PassesData.SetAllInternalMachineIDs(internalMachineIndexMap, out var modifiedPassCount);
               totalPassCountInAggregation += modifiedPassCount;
             }
 
@@ -393,7 +419,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           _storageProxyMutable.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten);
           Log.LogInformation($"Completed storage proxy Commit(), duration = {DateTime.UtcNow - startTime}, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written");
 
-          // Advise the segment retirement manager of any segments/sub grids that needs to be retired as as result of this integration
+          // Advise the segment retirement manager of any segments/sub grids that need to be retired as as result of this integration
           Log.LogInformation($"Aggregation Task Process --> Updating segment retirement queue for {siteModelFromDatamodel.ID}");
           if (subGridIntegrator.InvalidatedSpatialStreams.Count > 0)
           {
@@ -476,12 +502,17 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
       }
       finally
       {
-        Log.LogInformation($"Aggregation Task Process --> Completed integrating {processedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes for PersistedMachine: {task?.PersistedTargetMachineID} FinalMachine: {task?.IntermediaryTargetMachine.ID} in project {task?.PersistedTargetSiteModelID} in elapsed time of {sw.Elapsed}");
+        Log.LogInformation($"Aggregation Task Process --> Completed integrating {processedTasks.Count} TAG files and {totalPassCountInAggregation} cell passes in project {task?.PersistedTargetSiteModelID} in elapsed time of {sw.Elapsed}");
       }
 
       return true;
     }
 
+    /// <summary>
+    /// Performs clean up operations required at the end of processing a collection of TAG files.
+    /// Clean up operations include:
+    /// - Removal of all cached site model content created during processing of TAG files
+    /// </summary>
     public void CompleteTaskProcessing()
     {
       Log.LogInformation($"Aggregation Task Process --> Dropping cached content for site model {SiteModelID}");

@@ -325,6 +325,27 @@ namespace VSS.TRex.SubGridTrees.Server
         cellPasses.Elements[cellPasses.Offset + passNumber].InternalSiteModelMachineIndex = internalMachineID;
       }
 
+      public void SetAllInternalMachineIDs((short taskInternalMachineIndex, short datamodelInternalMachineIndex)[] internalMachineIndexMap, out long numModifiedPasses)
+      {
+        numModifiedPasses = 0;
+
+        for (var x = 0; x < SubGridTreeConsts.SubGridTreeDimension; x++)
+        {
+          for (var y = 0; y < SubGridTreeConsts.SubGridTreeDimension; y++)
+          {
+            var cellPasses = _passData[x, y].Passes;
+            var elements = cellPasses.Elements;
+
+            for (int i = cellPasses.Offset, limit = cellPasses.OffsetPlusCount; i < limit; i++)
+            {
+              elements[i].InternalSiteModelMachineIndex = internalMachineIndexMap[elements[i].InternalSiteModelMachineIndex].datamodelInternalMachineIndex;
+            }
+
+            numModifiedPasses += cellPasses.Count;
+          }
+        }
+      }
+
       /// <summary>
       /// Sets the internal machine ID for all cell passes within the segment to the provided ID.
       /// </summary>

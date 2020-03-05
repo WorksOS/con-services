@@ -88,8 +88,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
                     new DataRegionConfiguration
                     {
                         Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                        InitialSize = 128 * 1024 * 1024,  // 128 MB
-                        MaxSize = 256 * 1024 * 1024,  // 128 MB
+                        InitialSize = 64 * 1024 * 1024,  // 64 MB to start
+                        MaxSize = 64 * 1024 * 1024,  
 
                         PersistenceEnabled = true
                     }
@@ -222,7 +222,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.KeepBinaryInStore = true;
 
-      // Replicate the maps across nodes
       cfg.CacheMode = CacheMode.Partitioned;
 
       cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();

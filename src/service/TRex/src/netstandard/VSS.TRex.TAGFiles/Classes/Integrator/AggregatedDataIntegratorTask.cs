@@ -24,11 +24,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // This instance of a machine is, however, a transient one constructed for
         // for purpose of processing the individual TAG file and is not the
         // persisted instance, or a reference to it.
-        public IMachine IntermediaryTargetMachine { get; set; }
-        public Guid PersistedTargetMachineID { get; set; }
+        public IMachinesList IntermediaryTargetMachines { get; set; }
 
         public IServerSubGridTree AggregatedCellPasses { get; set; }
-        public IProductionEventLists AggregatedMachineEvents { get; set; }
+        public IMachinesProductionEventLists AggregatedMachineEvents { get; set; }
 
         public int AggregatedCellPassCount { get; set; } 
 

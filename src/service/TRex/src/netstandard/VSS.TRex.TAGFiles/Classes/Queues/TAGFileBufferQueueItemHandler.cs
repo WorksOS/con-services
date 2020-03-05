@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core;
@@ -23,7 +22,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
 {
     public class TAGFileBufferQueueItemHandler : IDisposable
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<TAGFileBufferQueueItemHandler>();
 
         /// <summary>
         /// The interval between epochs where the service checks to see if there is anything to do
@@ -106,7 +105,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                 {
                                     FileName = x.FileName,
                                     TagFileContent = x.Content,
-                                    IsJohnDoe = x.IsJohnDoe
+                                    IsJohnDoe = x.IsJohnDoe,
+                                    AssetId = x.AssetID
                                 }).ToList();
                         }
                         catch (Exception e)
@@ -121,12 +121,10 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             var response = await request.ExecuteAsync(new ProcessTAGFileRequestArgument
                             {
                                 ProjectID = projectId,
-                                AssetUID = tagQueueItems[0].AssetID,
                                 TAGFiles = fileItems
                             });
 
                             removalKey.ProjectUID = projectId;
-                            removalKey.AssetUID = tagQueueItems[0].AssetID;
 
                             // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
                             foreach (var tagFileResponse in response.Results)
@@ -146,6 +144,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     }
 
                                     removalKey.FileName = tagFileResponse.FileName;
+                                    removalKey.AssetUID = tagFileResponse.AssetUid;
 
                                     if (!_queueCache.Remove(removalKey))
                                     {
@@ -153,7 +152,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                                     }
                                     else
                                     {
-                                        Log.LogError($"Successfully to removes TAG file {removalKey}");
+                                        Log.LogError($"Successfully removed TAG file {removalKey}");
                                     }
                                 }
                                 catch (Exception e)
@@ -223,7 +222,8 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     {
                         FileName = x.FileName,
                         TagFileContent = x.Content,
-                        IsJohnDoe = x.IsJohnDoe
+                        IsJohnDoe = x.IsJohnDoe,
+                        AssetId = x.AssetID
                     })
                     .OrderBy(x => x.FileName, TagFileNameComparer)
                     .ToList();
@@ -244,14 +244,12 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                     var response = await request.ExecuteAsync(new ProcessTAGFileRequestArgument
                     {
                         ProjectID = projectId,
-                        AssetUID = tagQueueItems[0].AssetID,
                         TAGFiles = fileItems
                     });
            
                     ITAGFileBufferQueueKey removalKey = new TAGFileBufferQueueKey
                     {
-                        ProjectUID = projectId,
-                        AssetUID = tagQueueItems[0].AssetID
+                        ProjectUID = projectId
                     };
            
                     // -> Remove the set of processed TAG files from the buffer queue cache (depending on processing status?...)
@@ -271,6 +269,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
                             }
            
                             removalKey.FileName = tagFileResponse.FileName;
+                            removalKey.AssetUID = tagFileResponse.AssetUid;
 
                             if (!_queueCache.Remove(removalKey))
                               Log.LogError($"Failed to remove TAG file {removalKey}");

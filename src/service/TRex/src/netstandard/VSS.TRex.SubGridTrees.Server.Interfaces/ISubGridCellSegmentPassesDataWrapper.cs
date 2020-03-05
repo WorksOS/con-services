@@ -227,6 +227,8 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         /// <param name="numModifiedPasses"></param>
         void SetAllInternalMachineIDs(short internalMachineIndex, out long numModifiedPasses);
 
+        void SetAllInternalMachineIDs((short taskInternalMachineIndex, short datamodelInternalMachineIndex)[] internalMachineIndexMap, out long numModifiedPasses);
+
         /// <summary>
         /// If the elevation range of the elevations stored in this segment is known then return it,
         /// return null min and max elevations otherwise.
