@@ -26,7 +26,6 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="Polly" Version="6.0.1" />
-    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.58" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +36,7 @@
     <ProjectReference Include="..\..\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj" />
     <ProjectReference Include="..\..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj" />
     <ProjectReference Include="..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
+    <ProjectReference Include="..\..\VSS.Authentication\VSS.Authentication.JWT\VSS.Authentication.JWT.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

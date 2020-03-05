@@ -1,0 +1,26 @@
+# Common values for vlmd-customer
+global:
+  componentName: "vlmd-customer"
+  configmap:
+    s3path: s3://vss-ci-builds/VSS.MasterData.WebAPI/Customer/__Branch__/__BuildId__/db_scripts
+
+  # Automatically have flyway perform the migration!
+  flyway:
+    enabled: false
+  image:
+    repository: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vlmd-customer
+    tag: __Branch__-__BuildId__
+    pullPolicy: Always
+  ingress:
+    enabled: true
+    # Used to create an Ingress record.
+    # Release automation will dynamically create hosts and target.
+    hosts:
+      - __ENVIRONMENT__-vlmd-customer__DOMAIN__
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      external-dns.alpha.kubernetes.io/target: __ENDPOINT__
+    paths:
+      - /v1
+      - /healthz
+      - /swagger

@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<AssemblyName>VSS.MasterData.WebAPI.CustomerRepository</AssemblyName>
+		<RootNamespace>VSS.MasterData.WebAPI.CustomerRepository</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\DataAccess\Transactions\Transactions.csproj" />
+		<ProjectReference Include="..\..\Interfaces\Interfaces.csproj" />
+		<ProjectReference Include="..\..\Models\ClientModel\ClientModel.csproj" />
+		<ProjectReference Include="..\..\Models\DbModel\DbModel.csproj" />
+	</ItemGroup>
+
+</Project>

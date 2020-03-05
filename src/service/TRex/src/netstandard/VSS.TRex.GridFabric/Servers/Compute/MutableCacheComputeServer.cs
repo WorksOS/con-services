@@ -88,8 +88,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
                     new DataRegionConfiguration
                     {
                         Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                        InitialSize = 128 * 1024 * 1024,  // 128 MB
-                        MaxSize = 256 * 1024 * 1024,  // 128 MB
+                        InitialSize = 256 * 1024 * 1024,  // 128 MB to start
+                        MaxSize = 256 * 1024 * 1024,  
 
                         PersistenceEnabled = true
                     }
@@ -222,7 +222,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.KeepBinaryInStore = true;
 
-      // Replicate the maps across nodes
       cfg.CacheMode = CacheMode.Partitioned;
 
       cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
@@ -280,16 +279,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
       NonSpatialMutableCache = InstantiateNonSpatialTRexCacheReference(nonSpatialCacheConfiguration);
 
-      //CacheCfg = new CacheConfiguration();
-      //ConfigureMutableSpatialCache(CacheCfg);
-      //SpatialMutableCache = InstantiateSpatialCacheReference(CacheCfg);
-      var spatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableSpatialCacheName()));
+      var spatialCacheConfiguration = new CacheConfiguration();
+      ConfigureMutableSpatialCache(spatialCacheConfiguration);
       SpatialMutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
 
-      //CacheCfg = new CacheConfiguration();
-      //ConfigureTAGFileBufferQueueCache(CacheCfg);
-      //InstantiateTAGFileBufferQueueCacheReference(CacheCfg);
-      var tagCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.TAGFileBufferQueueCacheName()));
+      var tagCacheConfiguration = new CacheConfiguration();
+      ConfigureTAGFileBufferQueueCache(tagCacheConfiguration);
       InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
 
       InstantiateSiteModelsCacheReference();

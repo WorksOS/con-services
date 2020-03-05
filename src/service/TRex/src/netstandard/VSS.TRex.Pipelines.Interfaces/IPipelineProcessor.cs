@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using VSS.TRex.Common.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
@@ -8,7 +9,7 @@ using VSS.TRex.Types;
 
 namespace VSS.TRex.Pipelines.Interfaces
 {
-  public interface IPipelineProcessor
+  public interface IPipelineProcessor : IDisposable
   {
     /// <summary>
     /// Reference to the site model involved in the request

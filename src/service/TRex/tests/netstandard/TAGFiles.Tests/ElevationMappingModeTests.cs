@@ -1,8 +1,6 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Events;
-using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -21,13 +19,13 @@ namespace TAGFiles.Tests
     public void ElevationMappingModeTests_Import_ElevationMappingMode(string folder, string fileName, int count, ElevationMappingMode state)
     {
       // Convert a TAG file using a TAGFileConverter into a mini-site model
-      TAGFileConverter converter = DITagFileFixture.ReadTAGFile(folder, fileName);
+      var converter = DITagFileFixture.ReadTAGFile(folder, fileName);
 
       // Check the list is as expected, has one element and extract it
-      converter.MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.EventListType.Should().Be(ProductionEventType.ElevationMappingModeStateChange);
-      converter.MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.Count().Should().Be(count);
-      var eventDate = converter.MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.LastStateDate();
-      var eventValue = converter.MachineTargetValueChangesAggregator.ElevationMappingModeStateEvents.LastStateValue();
+      converter.MachinesTargetValueChangesAggregator[0].ElevationMappingModeStateEvents.EventListType.Should().Be(ProductionEventType.ElevationMappingModeStateChange);
+      converter.MachinesTargetValueChangesAggregator[0].ElevationMappingModeStateEvents.Count().Should().Be(count);
+      var eventDate = converter.MachinesTargetValueChangesAggregator[0].ElevationMappingModeStateEvents.LastStateDate();
+      var eventValue = converter.MachinesTargetValueChangesAggregator[0].ElevationMappingModeStateEvents.LastStateValue();
 
       // Check date of event falls within the date range of the TAG file.
       eventDate.Should().BeOnOrAfter(converter.Processor.FirstDataTime);

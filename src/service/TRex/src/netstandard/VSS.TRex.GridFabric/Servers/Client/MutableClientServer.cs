@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
-using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
 using Microsoft.Extensions.Logging;
@@ -10,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.Common.Abstractions.Configuration;
@@ -31,7 +29,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
   /// </summary>
   public class MutableClientServer : IgniteServer, IMutableClientServer
   {
-    private static readonly ILogger Log = Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType.Name);
+    private static readonly ILogger Log = Logger.CreateLogger<MutableClientServer>();
 
     /// <summary>
     /// Constructor that creates a new server instance with a single role
@@ -57,7 +55,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
         // If there was no connection obtained, attempt to create a new instance
         if (mutableTRexGrid == null)
         {
-          string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
+          var roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
           TRexNodeID = Guid.NewGuid().ToString();
 
@@ -84,6 +82,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
 
+            /* Commented out as this is in the client of the service - will remove in due course...
+
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration()
             {
@@ -94,23 +94,24 @@ namespace VSS.TRex.GridFabric.Servers.Client
               {
                 Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                MaxSize = 256 * 1024 * 1024,  // 128 MB
-                PersistenceEnabled = false
+                MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB
+                PersistenceEnabled = true
               },
 
               // Establish a separate data region for the TAG file buffer queue
               DataRegionConfigurations = new List<DataRegionConfiguration>
-                            {
-                                new DataRegionConfiguration
-                                {
-                                    Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                                    InitialSize = 128 * 1024 * 1024,  // 128 MB
-                                    MaxSize = 256 * 1024 * 1024,  // 128 MB
+              {
+                  new DataRegionConfiguration
+                  {
+                      Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
+                      InitialSize = 256 * 1024 * 1024,  // 256 MB to start
+                      MaxSize = 256 * 1024 * 1024,  
 
-                                    PersistenceEnabled = false
-                                }
-                            }
+                      PersistenceEnabled = true
+                  }
+              }
             },
+            */
 
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
@@ -125,12 +126,12 @@ namespace VSS.TRex.GridFabric.Servers.Client
             }
           };
 
-          foreach (string roleName in roles)
+          foreach (var roleName in roles)
           {
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
           }
 
-          bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+          bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out var isKubernetes);
           cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
 
           try
@@ -170,18 +171,18 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
 
       // Enforce using only the LocalHost interface
-      cfg.DiscoverySpi = new TcpDiscoverySpi()
+      cfg.DiscoverySpi = new TcpDiscoverySpi
       {
         LocalAddress = "127.0.0.1",
         LocalPort = 48500,
 
-        IpFinder = new TcpDiscoveryStaticIpFinder()
+        IpFinder = new TcpDiscoveryStaticIpFinder
         {
           Endpoints = new[] { "127.0.0.1:48500..48502" }
         }
       };
 
-      cfg.CommunicationSpi = new TcpCommunicationSpi()
+      cfg.CommunicationSpi = new TcpCommunicationSpi
       {
         LocalAddress = "127.0.0.1",
         LocalPort = 48100,

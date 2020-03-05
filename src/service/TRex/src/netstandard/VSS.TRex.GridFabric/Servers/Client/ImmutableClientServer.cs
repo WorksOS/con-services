@@ -2,7 +2,6 @@
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
-using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
 using Microsoft.Extensions.Logging;
@@ -56,7 +55,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
         // If there was no connection obtained, attempt to create a new instance
         if (immutableTRexGrid == null)
         {
-          string roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
+          var roleNames = roles.Aggregate("|", (s1, s2) => s1 + s2 + "|");
 
           TRexNodeID = Guid.NewGuid().ToString();
 
@@ -84,6 +83,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("ImmutableClientServer")),
 
+            /* Commented out as this is in the client of the service - will remove in due course...
+
             // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
             DataStorageConfiguration = new DataStorageConfiguration
             {
@@ -94,10 +95,11 @@ namespace VSS.TRex.GridFabric.Servers.Client
               {
                 Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
                 InitialSize = 128 * 1024 * 1024,  // 128 MB
-                MaxSize = 256 * 1024 * 1024,  // 256 Mb
-                PersistenceEnabled = false
-              },
+                MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB      
+                PersistenceEnabled = true
+              }
             },
+            */
 
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
@@ -112,13 +114,13 @@ namespace VSS.TRex.GridFabric.Servers.Client
             }
           };
 
-          foreach (string roleName in roles)
+          foreach (var roleName in roles)
           {
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
           }
 
 
-          bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+          bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out var isKubernetes);
           cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
 
           try

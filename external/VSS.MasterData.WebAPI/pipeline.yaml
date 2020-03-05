@@ -1,0 +1,23 @@
+resources:
+  repositories:
+    - repository: k8s
+      type: git
+      name: VSS/k8s
+trigger:
+  branches:
+    include:
+    - '*'
+variables:
+  MAJOR_VERSION: 1
+  MINOR_VERSION: 0
+  PATCH: $[counter(variables['MAJOR_VERSION'], 100)]
+  BRANCH: $(Build.SourceBranchName)
+jobs:
+- template: build-helpers/templates/build.yaml@k8s
+  parameters:
+    pathToComponent: $(pathtocomponent)
+    component: $(component)
+    ecrRepoName: $(ecrRepoName)
+    componentType: $(componentType)
+    db_scripts: $(component)/db_scripts
+    repo: VSS.MasterData.WebAPI

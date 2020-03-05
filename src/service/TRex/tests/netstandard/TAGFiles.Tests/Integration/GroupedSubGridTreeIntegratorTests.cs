@@ -30,7 +30,7 @@ namespace TAGFiles.Tests.Integration
 
       // Convert TAG files using TAGFileConverters into mini-site models
       var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
-        .ToList().OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
+        .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
 
       converters.Length.Should().Be(numToTake);
 
@@ -39,8 +39,8 @@ namespace TAGFiles.Tests.Integration
       {
         Trees = converters
           .Select(c => (c.SiteModelGridAggregator, 
-                        c.MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.FirstStateDate(),
-                        c.MachineTargetValueChangesAggregator.StartEndRecordedDataEvents.LastStateDate()))
+                        c.MachinesTargetValueChangesAggregator[0].StartEndRecordedDataEvents.FirstStateDate(),
+                        c.MachinesTargetValueChangesAggregator[0].StartEndRecordedDataEvents.LastStateDate()))
           .ToList()
       };
 

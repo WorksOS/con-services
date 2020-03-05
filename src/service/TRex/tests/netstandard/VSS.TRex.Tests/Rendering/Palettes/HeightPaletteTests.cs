@@ -8,8 +8,8 @@ namespace VSS.TRex.Tests.Rendering.Palettes
 {
   public class HeightPaletteTests
   {
-    private const double MIN_ELEVATION = 100.0;
-    private const double MAX_ELEVATION = 500.0;
+    private const float MIN_ELEVATION = 100.0f;
+    private const float MAX_ELEVATION = 500.0f;
 
     [Fact]
     public void Test_HeightPalette_Creation()
@@ -70,8 +70,8 @@ namespace VSS.TRex.Tests.Rendering.Palettes
     [Fact]
     public void Test_HeightPalette_ChooseColour()
     {
-      const double START_ELEVATION = 110.0;
-      const double ELEVATION_INCREMENT = 13.33333333333333;
+      const float START_ELEVATION = 110.0f;
+      const float ELEVATION_INCREMENT = 13.33333333333333f;
       
       var palette = new HeightPalette(MIN_ELEVATION, MAX_ELEVATION);
 

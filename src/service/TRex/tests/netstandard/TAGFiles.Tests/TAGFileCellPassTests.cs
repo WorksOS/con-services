@@ -58,27 +58,27 @@ namespace TAGFiles.Tests
     [InlineData("TestTAGFile3.tag", 16525, 16525)]
     public void Test_TAGFileCellPassGeneration_CapturesCellPassCreation(string fileName, int cellPassCount, int lineCount)
     {
-      var Lines = new List<string>();
+      var lines = new List<string>();
 
       // Setup the mutation hook to capture cell pass generation
-      ICell_NonStatic_MutationHook Hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
+      var hook = DIContext.Obtain<ICell_NonStatic_MutationHook>();
 
-      Hook.SetActions(new CellPassWriter(x => Lines.Add(x)));
+      hook.SetActions(new CellPassWriter(x => lines.Add(x)));
       try
       {
-        var converter = DITagFileFixture.ReadTAGFile(fileName);
+        var converter = DITagFileFixture.ReadTAGFile(fileName, Guid.NewGuid(), false);
         converter.ProcessedCellPassCount.Should().Be(cellPassCount);
       }
       finally
       {
-        Hook.ClearActions();
+        hook.ClearActions();
       }
 
-      Lines.Count.Should().Be(lineCount);
+      lines.Count.Should().Be(lineCount);
 
       // Temporarily save the file to capture it
       var fn = Path.Combine(Path.GetTempPath(), fileName + ".MutationLog.txt");
-      File.WriteAllLines(fn, Lines);
+      File.WriteAllLines(fn, lines);
     }
 
     [Theory(Skip="Run locally - mutation logs not currently source controlled due to size")]

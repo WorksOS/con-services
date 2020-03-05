@@ -156,7 +156,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         tagFilePresScan.Execute(stream);
 
       if (tagFilePresScan.ReadResult != TAGReadResult.NoError)
-        return new ContractExecutionResult((int)TRexTagFileResultCode.TrexTagFileReaderError, tagFilePresScan.ReadResult.ToString());
+        return new ContractExecutionResult((int)TRexTagFileResultCode.TRexTagFileReaderError, tagFilePresScan.ReadResult.ToString());
 
       // TAG file contents are OK so proceed
       if (!tfaServiceEnabled) // allows us to bypass a TFA service

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
-using VSS.TRex.CoordinateSystems.Executors;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Factories;
 using VSS.TRex.Designs.Interfaces;
@@ -51,39 +50,27 @@ namespace VSS.TRex.Tests.TestFixtures
 
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorPipelineStyle.DefaultAggregative:
-          return new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>();
-        case PipelineProcessorPipelineStyle.DefaultProgressive:
-          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
-        default:
-          return null;
-      }
+        PipelineProcessorPipelineStyle.DefaultAggregative => (ISubGridPipelineBase) new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        _ => null
+      };
     }
 
     private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorTaskStyle.AggregatedPipelined:
-          return new AggregatedPipelinedSubGridTask();
-        case PipelineProcessorTaskStyle.PatchExport:
-          return new PatchTask();
-        case PipelineProcessorTaskStyle.SurfaceExport:
-          return new SurfaceTask();
-        case PipelineProcessorTaskStyle.GriddedReport:
-          return new GriddedReportTask();
-        case PipelineProcessorTaskStyle.PVMRendering:
-          return new PVMRenderingTask();
-        case PipelineProcessorTaskStyle.CSVExport:
-          return new CSVExportTask();
-        case PipelineProcessorTaskStyle.QuantizedMesh:
-          return new QuantizedMeshTask();
-
-        default:
-          return null;
-      }
+        PipelineProcessorTaskStyle.AggregatedPipelined => (ITRexTask) new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.PatchExport => new PatchTask(),
+        PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
+        PipelineProcessorTaskStyle.GriddedReport => new GriddedReportTask(),
+        PipelineProcessorTaskStyle.PVMRendering => new PVMRenderingTask(),
+        PipelineProcessorTaskStyle.CSVExport => new CSVExportTask(),
+        PipelineProcessorTaskStyle.QuantizedMesh => new QuantizedMeshTask(),
+        _ => null
+      };
     }
 
     public new void SetupFixture()
@@ -334,7 +321,37 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       return ConstructSingleFlatTriangleSurveyedSurfaceOffsetFromOrigin(ref siteModel, elevation, asAtDate, 0, 0);
     }
-    
+
+    /// <summary>
+    /// Constructs a flat design surface comprising two triangles covering the exents of a provided sitemodel.
+    /// </summary>
+    /// <param name="siteModel"></param>
+    /// <param name="elevation"></param>
+    /// <returns></returns>
+    public static Guid ConstructFlatTTMDesignEncompassingSiteModel(ref ISiteModel siteModel, float elevation)
+    {
+      // Make a mutable TIN containing two as below and register it to the site model
+      var extent = siteModel.SiteModelExtent;
+      var tin = new TrimbleTINModel();
+      tin.Vertices.InitPointSearch(extent.MinX - 100, extent.MinY - 100, extent.MaxX + 100, extent.MaxX + 100, 6);
+
+      tin.Triangles.AddTriangle(
+        tin.Vertices.AddPoint(extent.MinX - 100, extent.MinY - 100, elevation),
+        tin.Vertices.AddPoint(extent.MinX - 100, extent.MaxY + 100, elevation),
+        tin.Vertices.AddPoint(extent.MaxX + 100, extent.MinY - 100, elevation));
+
+      tin.Triangles.AddTriangle(
+        tin.Vertices.AddPoint(extent.MinX - 100, extent.MaxY + 100, elevation),
+        tin.Vertices.AddPoint(extent.MaxX + 100, extent.MaxY + 100, elevation),
+        tin.Vertices.AddPoint(extent.MaxX + 100, extent.MinY - 100, elevation));
+
+      var tempFileName = Path.GetTempFileName() + ".ttm";
+      tin.SaveToFile(tempFileName, true);
+
+      return DITAGFileAndSubGridRequestsWithIgniteFixture.AddDesignToSiteModel(
+        ref siteModel, Path.GetDirectoryName(tempFileName), Path.GetFileName(tempFileName), true);
+    }
+
     public new void Dispose()
     {
       base.Dispose();

@@ -216,12 +216,12 @@ namespace VSS.TRex.Cells
               return;
             }
 
-            int ThisIndex = 0;
-            int SourceIndex = startIndex;
-            int IntegratedIndex = 0;
+            var thisIndex = 0;
+            var sourceIndex = startIndex;
+            var integratedIndex = 0;
 
-            int OriginalPassCount = PassCount;
-            int IntegratedPassCount = OriginalPassCount + (endIndex - startIndex + 1);
+            var originalPassCount = PassCount;
+            var integratedPassCount = originalPassCount + (endIndex - startIndex + 1);
 
             // Set the length to be the combined. While this may be more than needed if
             // there are passes in source that have identical times to the passes in
@@ -230,56 +230,59 @@ namespace VSS.TRex.Cells
             // will be cleaned up when the sub grid next exits the cache, or is integrated with
             // another aggregated sub grid from TAG file processing
             
-            var IntegratedPasses = GenericSlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(IntegratedPassCount);
+            var integratedPasses = GenericSlabAllocatedArrayPoolHelper<CellPass>.Caches().Rent(integratedPassCount);
           
             // Combine the two (sorted) lists of cell passes together to arrive at a single
             // integrated list of passes.
             do
             {
-                if (ThisIndex >= PassCount)
+                if (thisIndex >= PassCount)
                 {
-                  IntegratedPasses.Add(sourcePasses.Passes.GetElement(SourceIndex));
-                  SourceIndex++;
+                  integratedPasses.Add(sourcePasses.Passes.GetElement(sourceIndex));
+                  sourceIndex++;
                 }
-                else if (SourceIndex > endIndex)
+                else if (sourceIndex > endIndex)
                 {
-                  IntegratedPasses.Add(Passes.GetElement(ThisIndex));
-                  ThisIndex++;
+                  integratedPasses.Add(Passes.GetElement(thisIndex));
+                  thisIndex++;
                 }
                 else
                 {
-                  switch (Passes.GetElement(ThisIndex).Time.CompareTo(sourcePasses.Passes.GetElement(SourceIndex).Time))
+                  var thisElement = Passes.GetElement(thisIndex);
+                  var sourceElement = sourcePasses.Passes.GetElement(sourceIndex);
+
+                  switch (thisElement.Time.CompareTo(sourceElement.Time))
                     {
                         case -1:
                             {
-                                IntegratedPasses.Add(Passes.GetElement(ThisIndex));
-                                ThisIndex++;
+                                integratedPasses.Add(thisElement);
+                                thisIndex++;
                                 break;
                             }
                         case 0:
                             {
-                                if (!Passes.GetElement(ThisIndex).Equals(sourcePasses.Passes.GetElement(SourceIndex)))
+                                if (!thisElement.Equals(sourceElement))
                                     modifiedCount++;
 
-                                IntegratedPasses.Add(sourcePasses.Passes.GetElement(SourceIndex));
-                                SourceIndex++;
-                                ThisIndex++;
-                                IntegratedPassCount--;
+                                integratedPasses.Add(sourceElement);
+                                sourceIndex++;
+                                thisIndex++;
+                                integratedPassCount--;
                                 break;
                             }
                         case 1:
                             {
-                                IntegratedPasses.Add(sourcePasses.Passes.GetElement(SourceIndex));
-                                SourceIndex++;
+                                integratedPasses.Add(sourceElement);
+                                sourceIndex++;
                                 break;
                             }
                     }
                 }
 
-                IntegratedIndex++;
-            } while (IntegratedIndex <= IntegratedPassCount - 1);
+                integratedIndex++;
+            } while (integratedIndex <= integratedPassCount - 1);
 
-            IntegratedPasses.Count = IntegratedPassCount;
+            integratedPasses.Count = integratedPassCount;
 
             // Assign the integrated list of passes to this cell, replacing the previous list of passes.
             // Return the original cell pass span and replace it with the integrated one
@@ -287,9 +290,9 @@ namespace VSS.TRex.Cells
 
             // No need to mark Passes as being returned as it is immediately replace by IntegratedPasses below
             // Passes.MarkReturned();
-            Passes = IntegratedPasses;
+            Passes = integratedPasses;
 
-            addedCount = IntegratedPassCount - OriginalPassCount;
+            addedCount = integratedPassCount - originalPassCount;
 
 #if CELLDEBUG
             CheckPassesAreInCorrectTimeOrder("Cell passes are not in time order after integration");

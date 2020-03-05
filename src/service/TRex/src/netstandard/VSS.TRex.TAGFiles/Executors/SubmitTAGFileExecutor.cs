@@ -22,12 +22,12 @@ namespace VSS.TRex.TAGFiles.Executors
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-    private static readonly bool tagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
+    private static readonly bool TagFileArchiving = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TAGFILE_ARCHIVING", Consts.ENABLE_TAGFILE_ARCHIVING);
 
     /// <summary>
     /// Local static/singleton TAG file buffer queue reference to use when adding TAG files to the queue
     /// </summary>
-    private readonly ITAGFileBufferQueue queue = DIContext.Obtain<ITAGFileBufferQueue>();
+    private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<ITAGFileBufferQueue>();
 
     private bool OutputInformationalRequestLogging = false;
 
@@ -44,7 +44,7 @@ namespace VSS.TRex.TAGFiles.Executors
     public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
     {
       if (OutputInformationalRequestLogging)
-        Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}");
+        Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
       
       var response = new SubmitTAGFileResponse
       {
@@ -77,14 +77,14 @@ namespace VSS.TRex.TAGFiles.Executors
           if (result.Code == (int) TRexTagFileResultCode.Valid && td.projectId != null) // If OK add to process queue
           {
             // First archive the tag file
-            if (tagFileArchiving)
+            if (TagFileArchiving)
             {
               Log.LogInformation($"#Progress# SubmitTAGFileResponse. Archiving tag file:{tagFileName}, ProjectUID:{td.projectId}");
               TagFileRepository.ArchiveTagfile(td);
             }
             // switch from nullable to not nullable
-            Guid validProjectId = td.projectId ?? Guid.Empty;
-            Guid validAssetId = td.assetId ?? Guid.Empty;
+            var validProjectId = td.projectId ?? Guid.Empty;
+            var validAssetId = td.assetId ?? Guid.Empty;
 
             if (OutputInformationalRequestLogging)
               Log.LogInformation($"#Progress# SubmitTAGFileResponse. Submitting tag file to TagFileBufferQueue. ProjectUID:{validProjectId}, AssetUID:{validAssetId}, Tagfile:{tagFileName}, JohnDoe:{td.IsJohnDoe} ");
@@ -100,7 +100,16 @@ namespace VSS.TRex.TAGFiles.Executors
               IsJohnDoe = td.IsJohnDoe
             };
 
-            if (queue.Add(tagKey, tagItem)) // Add tag file to queue
+            if (_queue == null)
+            {
+              response.Success = false;
+              response.Message = "SubmitTAGFileResponse. Processing queue not available";
+              response.Code = (int)TRexTagFileResultCode.TRexTagFileSubmissionQueueNotAvailable;
+
+              return response;
+            }
+
+            if (_queue.Add(tagKey, tagItem)) // Add tag file to queue
             {
               response.Success = true;
               response.Message = "";

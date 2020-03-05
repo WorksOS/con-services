@@ -13,7 +13,8 @@ namespace VSS.TRex.SubGridTrees
   /// </summary>
   /// <typeparam name="T"></typeparam>
   /// <typeparam name="S"></typeparam>
-  public class GenericSubGridTree<T, S> : SubGridTree, IGenericSubGridTree<T, S> where S : IGenericLeafSubGrid<T>, ILeafSubGrid, new()
+  public class GenericSubGridTree<T, S> : SubGridTree, IGenericSubGridTree<T, S> 
+    where S : IGenericLeafSubGrid<T>, ILeafSubGrid, new()
   {
     /// <summary>
     /// Default indexer property to access the cells as a default property of the generic sub grid

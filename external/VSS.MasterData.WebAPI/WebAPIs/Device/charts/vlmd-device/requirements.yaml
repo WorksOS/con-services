@@ -1,0 +1,5 @@
+dependencies:
+  - name: vss-webapi-base
+    version: "1.0.38767"
+    repository: http://chartmuseum.k8s.vspengg.com
+    alias: vlmd-device

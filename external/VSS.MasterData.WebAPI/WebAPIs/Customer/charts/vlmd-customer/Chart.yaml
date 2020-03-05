@@ -1,0 +1,4 @@
+apiVersion: v1
+description: VSS MasterData Customer API
+name: vlmd-customer-__Branch__
+version: __MajorVersion__.__MinorVersion__.__BuildId__

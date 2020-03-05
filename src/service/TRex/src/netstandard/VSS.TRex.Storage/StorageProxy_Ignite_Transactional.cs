@@ -25,7 +25,7 @@ namespace VSS.TRex.Storage
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite_Transactional>();
 
-    private static readonly bool _useAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
+    private static readonly bool UseAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
       .GetValueBool("TREX_USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", true);
     /// <summary>
     /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
@@ -56,7 +56,7 @@ namespace VSS.TRex.Storage
       numUpdated = 0;
       numBytesWritten = 0;
 
-      if (_useAsyncTasksForStorageProxyIgniteTransactionalCommits)
+      if (UseAsyncTasksForStorageProxyIgniteTransactionalCommits)
       {
         var commitTasks = new List<Task<(int _numDeleted, int _numUpdated, long _numBytesWritten)>>
         {
@@ -64,7 +64,7 @@ namespace VSS.TRex.Storage
           {
             try
             {
-              spatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+              spatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
               return (_numDeleted, _numUpdated, _numBytesWritten);
             }
             catch
@@ -77,7 +77,7 @@ namespace VSS.TRex.Storage
           {
             try
             {
-              generalNonSpatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+              generalNonSpatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
               return (_numDeleted, _numUpdated, _numBytesWritten);
             }
             catch
@@ -90,7 +90,7 @@ namespace VSS.TRex.Storage
           {
             try
             {
-              siteModelCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+              siteModelCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
               return (_numDeleted, _numUpdated, _numBytesWritten);
             }
             catch
@@ -118,7 +118,7 @@ namespace VSS.TRex.Storage
       {
         try
         {
-          spatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+          spatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
           numDeleted += _numDeleted;
           numUpdated += _numUpdated;
           numBytesWritten += _numBytesWritten;
@@ -131,7 +131,7 @@ namespace VSS.TRex.Storage
 
         try
         {
-          generalNonSpatialCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+          generalNonSpatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
           numDeleted += _numDeleted;
           numUpdated += _numUpdated;
           numBytesWritten += _numBytesWritten;
@@ -144,7 +144,7 @@ namespace VSS.TRex.Storage
 
         try
         {
-          siteModelCache.Commit(out int _numDeleted, out int _numUpdated, out long _numBytesWritten);
+          siteModelCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
           numDeleted += _numDeleted;
           numUpdated += _numUpdated;
           numBytesWritten += _numBytesWritten;

@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>FakeTPaaSJWT</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <PackageId>FakeTPaaSJWT</PackageId>
+  </PropertyGroup>
+
+  <ItemGroup>
+      <ProjectReference Include="..\VSS.Authentication.JWT\VSS.Authentication.JWT.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -40,13 +40,24 @@ namespace VSS.TRex.Machines
     /// <returns></returns>
     private Guid UniqueJohnDoeID() => Guid.NewGuid();
 
-    public IMachine CreateNew(string name, string machineHardwareID,
+    /// <summary>
+    /// Creates a new machine and adds it to the internal list with a new internal machine index
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="machineHardwareID"></param>
+    /// <param name="machineType"></param>
+    /// <param name="deviceType"></param>
+    /// <param name="isJohnDoeMachine"></param>
+    /// <param name="machineID"></param>
+    /// <returns></returns>
+    public IMachine CreateNew(string name, 
+      string machineHardwareID,
       MachineType machineType,
       DeviceTypeEnum deviceType,
       bool isJohnDoeMachine,
       Guid machineID)
     {
-      IMachine ExistingMachine = isJohnDoeMachine ? Locate(name, true) : Locate(machineID, false);
+      var ExistingMachine = isJohnDoeMachine ? Locate(name, true) : Locate(machineID, false);
 
       if (ExistingMachine != null)
         return ExistingMachine;
@@ -58,9 +69,9 @@ namespace VSS.TRex.Machines
       // Determine the internal ID for the new machine.
       // Note: This assumes machines are never removed from a project
 
-      short internalMachineID = (short) Count;
+      var internalMachineID = (short) Count;
 
-      Machine Result = new Machine(name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine);
+      var Result = new Machine(name, machineHardwareID, machineType, deviceType, machineID, internalMachineID, isJohnDoeMachine);
 
       // Add it to the list
       Add(Result);
@@ -101,12 +112,23 @@ namespace VSS.TRex.Machines
     public IMachine Locate(Guid id, bool isJohnDoeMachine) => Find(x => x.IsJohnDoeMachine == isJohnDoeMachine && id == x.ID);
 
     /// <summary>
+    /// Finds a machine given a machine ID, the machine name and whether the machine is John Doe machine
+    /// If a machine matching the given ID is located it is returned, else if the machine is expected to be a John Doe a
+    /// machine is attempted to be located using a specific John Doe machine name approach
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="name"></param>
+    /// <param name="isJohnDoeMachine"></param>
+    /// <returns></returns>
+    public IMachine Locate(Guid id, string name, bool isJohnDoeMachine) => Locate(id, isJohnDoeMachine) ?? (isJohnDoeMachine ? Locate(name, true) : null);
+
+    /// <summary>
     /// Locate finds a machine given the ID of a machine in the list.
     /// It returns NIL if there is no matching machine
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public IMachine Locate(Guid id) => MachineIDMap.TryGetValue(id, out IMachine result) ? result : null;
+    public IMachine Locate(Guid id) => MachineIDMap.TryGetValue(id, out var result) ? result : null;
 
     // LocateByMachineHardwareID locates the (first) machine in the machines
     // list that has a matching machine hardware ID to the <AID> parameter.

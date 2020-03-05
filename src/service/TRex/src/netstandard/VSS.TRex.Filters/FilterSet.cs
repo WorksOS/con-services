@@ -103,7 +103,7 @@ namespace VSS.TRex.Filters
         throw new TRexException($"Invalid number of filters {filterCount} in deserialisation");
 
       Filters = new ICombinedFilter[filterCount];
-      for(int i = 0; i < Filters.Length; i++)
+      for(var i = 0; i < Filters.Length; i++)
         Filters[i] = reader.ReadBoolean() ? new CombinedFilter(reader) : null;
     }
   }

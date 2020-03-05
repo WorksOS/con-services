@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
+
+namespace JWT
+{
+    class ValidationProgram
+    {
+        static void Main(string[] args)
+        {
+            //JWT Token returned as part of /token api response from TID (code grant flow during login)
+            string id_token = "eyJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJhZG1pbkB0cmltYmxlLmNvbSIsImF6cCI6IjhoMWM2eDJUV3VFX3RsWjROWWhOTnZITlBId2EiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9yZWdpb24iOiJQaU1QZldLMUhiIiwiaWF0IjoxNDg2NzQzNDA2LCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9zdGF0ZW9ycHJvdmluY2UiOiJVUWxZUmswNlk0eE9JcCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2NpdHkiOiJDSkExMXU0MHlPcGlYMkhZIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvemlwY29kZSI6IlVRbFlSazA2WTR4T0lwIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvc3RyZWV0YWRkcmVzcyI6ImRmZGYiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9yb2xlIjoiWEc4TWgsZDFDaCxqaGYseGJtRmJSWSxUZXN0Um9sZTE0MzY3ODY5MjQzMzQsVlJYTm1LZnZtTCxobTRhajZqMHIsVXNlclByb3Zpc2lvbkFkbWluLGhrSTNUZmNjLFRlc3RSb2xlMTQ0NTkyNDg1OTg0NyxVc2VyVmlld0FkbWluLGFXcHJpSTB4VyxzTGpmWjVqV21KLHB1Ymxpc2hlcixvY3RvYmVyXzI3Lix3MllsUSxTdWJzY3JpYmVyLE1hbmFnZVJvbGUsYjVuS2EsYTJlaFBnQkZuWSxzMEhYN3hncEF5LGFkbWluLGcycjgyLGozMkNybXBjVk4sajlJZ1JBLERldm9wc0FkbWluLHpVZFIsb2N0XzI3LixZa0YzUzZKLFh3T0Z1MVdzLHlpcDVpODcsd3lPRER5dSxzYmw0OCx5b3BmcixhSVNJLHJ0czBlenIsWGl4OTR4OCxYVGVuYW50QWRtaW4seDVEMyxxTHM1LFIxTyxhd0VSLFpFczFZcHAsU3Vic2NyaXB0aW9uUHJvdmlzaW9uQWRtaW4seFg1ZmFTUmoiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hY2NvdW50dXNlcm5hbWUiOiJhZG1pbiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2lkZW50aXR5XC91bmxvY2tUaW1lIjoiMCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FjY291bnRuYW1lIjoidHJpbWJsZS5jb20iLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9sb2NhbGl0eSI6ImZDTUN1MWZEQk5hWHBzIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvcGFzc3dvcmRQb2xpY3kiOiJERUZBVUxUIiwiYXRfaGFzaCI6InR3dVRYU01QTW9nLXc3ZUtLYTBWcUEiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9maXJzdG5hbWUiOiJhZG1pbiIsImlzcyI6Imh0dHBzOlwvXC9pZGVudGl0eS1zdGcudHJpbWJsZS5jb20iLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9sYXN0bmFtZSI6ImFkbWluIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvdGVsZXBob25lIjoiODc1MzQ0MDc1NisxMiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3V1aWQiOiI3MjM3ODAzNy1hZjRjLTQ5MzctYTE3Ny0xMjdjZDMxODc1NDgiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9naXZlbm5hbWUiOiJhZG1pbiIsImF1dGhfdGltZSI6MTQ4NjcxODEzNCwiZXhwIjoxNDg2NzQ3MDA2LCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9pZGVudGl0eVwvZmFpbGVkTG9naW5BdHRlbXB0cyI6IjAiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9pZGVudGl0eVwvYWNjb3VudExvY2tlZCI6ImZhbHNlIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvbGFzdExvZ2luVGltZVN0YW1wIjoiMTQ4Njc0MzQwNjA0NiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2NvdW50cnkiOiJmblgyVyIsImF1ZCI6WyI4aDFjNngyVFd1RV90bFo0TlloTk52SE5QSHdhIl0sImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3N0YXR1cyI6ImV5SkNURTlEUzBWRUlqb2labUZzYzJVaUxDSlhRVWxVU1U1SFgwWlBVbDlGVFVGSlRGOVdSVkpKUmtsRFFWUkpUMDRpT2lKbVlXeHpaU0lzSWtKU1ZWUkZYMFpQVWtORlgweFBRMHRGUkNJNkltWmhiSE5sSWl3aVFVTlVTVlpGSWpvaWRISjFaU0o5IiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZW1haWxhZGRyZXNzIjoidHBhYXNfY29tcGxpYW5jZUB0cmltYmxlLmNvbSJ9.Ce24hAp5nPT_m6gEIgGzh5-cRwlIy8W68USN-G741uQmDcZf84ie2UflA7ixVm8TgrnA_uAC-ZrdfMlci6JJXD_s1dw0BeUa2zIZbHx1dFenwwmrQTXrwoYXj3DDrm2nr-DfXgBuPzuE0AmzUFJzvnRtWq_1mDXXkiDbo2doqc8";
+            
+            //JWT Token passed on to the backend api from APIM. This token seems to have padding and other characters which the .net library thinks is not inline with JWS spec.
+            string X_JWT_Assertion = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlltRTNNelE0TVRZNE5EVTJaRFptT0RkbU5UUm1OMlpsWVRrd01XRXpZbU5qTVRrek1ERXpaZz09In0=.eyJpc3MiOiJ3c28yLm9yZy9wcm9kdWN0cy9hbSIsImV4cCI6MTQ4Njc3MjA3NDE5MSwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9zdWJzY3JpYmVyIjoicHViLXZzc2FkbWluQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hcHBsaWNhdGlvbmlkIjoiNjYyIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hcHBsaWNhdGlvbm5hbWUiOiJNYXN0ZXJEYXRhTWFuYWdlbWVudCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvYXBwbGljYXRpb250aWVyIjoiVW5saW1pdGVkIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hcGljb250ZXh0IjoiL3QvdHJpbWJsZS5jb20vdnNzLWlxYS1hc3NldHNlcnZpY2UiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3ZlcnNpb24iOiIxLjAiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3RpZXIiOiJVbmxpbWl0ZWQiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2tleXR5cGUiOiJQUk9EVUNUSU9OIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy91c2VydHlwZSI6IkFQUExJQ0FUSU9OIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbmR1c2VyIjoicHViLXZzc2FkbWluQHRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9lbmR1c2VyVGVuYW50SWQiOiIxIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hY2NvdW50bmFtZSI6InRyaW1ibGUuY29tIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9hY2NvdW50dXNlcm5hbWUiOiJwdWItdnNzYWRtaW4iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2VtYWlsYWRkcmVzcyI6IkJob29iYWxhbl9QYWxhbml2ZWxAVHJpbWJsZS5jb20iLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2ZpcnN0bmFtZSI6IkJob29iYWxhbiIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvZ2l2ZW5uYW1lIjoiQmhvb2JhbGFuIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9pZGVudGl0eS9hY2NvdW50TG9ja2VkIjoiZmFsc2UiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL2lkZW50aXR5L2ZhaWxlZExvZ2luQXR0ZW1wdHMiOiIwIiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy9pZGVudGl0eS91bmxvY2tUaW1lIjoiMCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvbGFzdExvZ2luVGltZVN0YW1wIjoiMTQ4NjczMzU2NjgxNCIsImh0dHA6Ly93c28yLm9yZy9jbGFpbXMvbGFzdG5hbWUiOiJQYWxhbml2ZWwiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3JvbGUiOiJwdWJsaXNoZXIiLCJodHRwOi8vd3NvMi5vcmcvY2xhaW1zL3N0YXR1cyI6ImV5SkNURTlEUzBWRUlqb2labUZzYzJVaUxDSlhRVWxVU1U1SFgwWlBVbDlGVFVGSlRGOVdSVkpKUmtsRFFWUkpUMDRpT2lKbVlXeHpaU0lzSWtKU1ZWUkZYMFpQVWtORlgweFBRMHRGUkNJNkltWmhiSE5sSWl3aVFVTlVTVlpGSWpvaWRISjFaU0o5IiwiaHR0cDovL3dzbzIub3JnL2NsYWltcy91dWlkIjoiMzUzOGNlZTItNTdiZS00YzA5LTgwODYtNTkyZjBlMzRmYzEzIn0=.De+fBh9VlvBFTy+NCcd3qUCLEqQH4vO3iJy1SWTFOT7JhR+z8eVC+wM70nVZttsPpmKh8IbI2FICnAc6i25DxeLEsREtUOzkUffdAEaQXEEv6Up0JA1YlPkOMIl3g74e3XcRMuKizZ7m4cllpj2ooJqrrdc3OvIDV/fUWlHJ6MI=";
+
+            string tokenStr = X_JWT_Assertion;
+
+            //public key of trimble.com cert in tpaas staging.
+            //{ "keys": [ { "kty": "RSA", "n": "yrALPfXMsvjlY4d2QlmRV_K5IH4tQ2Kqn7B2BQPeVk2SKL72ZFQS1kD2P1SzQGIbkTI2qZ9O8o7AkA-yNdwiln3ZidxMmH5Cth68_Df2cwZjMnTV4xEFKuaEdtjMPCJH56vftjXrlu87A4gKyg3XIxMPmX34zjzBBX5WXEt4rLs", "e": "AQAB", "kid": "rsa1", "use": "sig" } ] }
+            string key = "yrALPfXMsvjlY4d2QlmRV_K5IH4tQ2Kqn7B2BQPeVk2SKL72ZFQS1kD2P1SzQGIbkTI2qZ9O8o7AkA-yNdwiln3ZidxMmH5Cth68_Df2cwZjMnTV4xEFKuaEdtjMPCJH56vftjXrlu87A4gKyg3XIxMPmX34zjzBBX5WXEt4rLs";
+
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            rsa.ImportParameters(
+              new RSAParameters()
+              {
+                  Modulus = FromBase64Url(key),
+                  Exponent = FromBase64Url("AQAB")
+              });
+
+            var validationParameters = new TokenValidationParameters
+            {
+                RequireExpirationTime = true,
+                RequireSignedTokens = true,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateLifetime = false,
+                IssuerSigningKey = new RsaSecurityKey(rsa)
+            };
+
+            try
+            {
+                SecurityToken validatedSecurityToken = null;
+                var handler = new JwtSecurityTokenHandler();
+                handler.ValidateToken(tokenStr, validationParameters, out validatedSecurityToken);
+                JwtSecurityToken validatedJwt = validatedSecurityToken as JwtSecurityToken;
+
+                Console.WriteLine("Subject:" + validatedJwt.Subject);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            Console.Read();
+        }
+
+
+        private static byte[] FromBase64Url(string base64Url)
+        {
+            string padded = base64Url.Length % 4 == 0
+                ? base64Url : base64Url + "====".Substring(base64Url.Length % 4);
+            string base64 = padded.Replace("_", "/")
+                                    .Replace("-", "+");
+            return Convert.FromBase64String(base64);
+        }
+    }
+}

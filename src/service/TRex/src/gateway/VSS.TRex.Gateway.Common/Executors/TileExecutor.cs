@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Models;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
@@ -53,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         ThrowRequestTypeCastException<TRexTileRequest>();
 
       BoundingWorldExtent3D extents = null;
-      bool hasGridCoords = false;
+      var hasGridCoords = false;
       if (request.BoundBoxLatLon != null)
       {
         extents = AutoMapperUtility.Automapper.Map<BoundingBox2DLatLon, BoundingWorldExtent3D>(request.BoundBoxLatLon);
@@ -76,7 +77,9 @@ namespace VSS.TRex.Gateway.Common.Executors
           hasGridCoords,
           request.Width, // PixelsX
           request.Height, // PixelsY
-          new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
+          request.Filter2 == null 
+            ? new FilterSet(ConvertFilter(request.Filter1, siteModel))
+            : new FilterSet(ConvertFilter(request.Filter1, siteModel), ConvertFilter(request.Filter2, siteModel)),
           new DesignOffset(request.DesignDescriptor?.FileUid ?? Guid.Empty, request.DesignDescriptor?.Offset ?? 0)
         )) as TileRenderResponse_Core2;
 

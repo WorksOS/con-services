@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--For more information on using transformations see the web.config examples at http://go.microsoft.com/fwlink/?LinkId=214134. -->
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<kafkaTopicNames xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.IDeviceEvent</kafkaTopicNames>
+	<kafkaTopicNamesV2 xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.IDeviceEvent-V2</kafkaTopicNamesV2>
+	<AssetTopicNames xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.IAssetEvent,VSS.Interfaces.Events.MasterData.IAssetEvent.V1</AssetTopicNames>
+	<topicSuffix xdt:Transform="Replace"></topicSuffix>
+	<KiewitAMPCustomerUID xdt:Transform="Replace">C3AF4554-05F9-E311-8D69-D067E5FD4637</KiewitAMPCustomerUID> 
+
+</configuration>

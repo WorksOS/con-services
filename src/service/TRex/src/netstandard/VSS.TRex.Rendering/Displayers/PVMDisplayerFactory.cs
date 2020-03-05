@@ -5,63 +5,44 @@ namespace VSS.TRex.Rendering.Displayers
 {
   public static class PVMDisplayerFactory
   {
-    public static PVMDisplayerBase GetDisplayer(DisplayMode mode /*, FICOptions*/)
+    public static ProductionPVMDisplayer GetDisplayer(DisplayMode mode /*, FICOptions*/)
     {
-      PVMDisplayerBase displayer = null;
-
       switch (mode)
       {
         case DisplayMode.Height:
-          displayer = new PVMDisplayer_Height();
-          break;
+          return new PVMDisplayer_Height();
         case DisplayMode.MachineSpeed:
-          displayer = new PVMDisplayer_MachineSpeed();
-          break;
+          return new PVMDisplayer_MachineSpeed();
         case DisplayMode.TargetSpeedSummary:
-          displayer = new PVMDisplayer_MachineSpeedSummary();
-          break;
+          return new PVMDisplayer_MachineSpeedSummary();
         case DisplayMode.CCV:
-          displayer = new PVMDisplayer_CMV();
-          break;
+          return new PVMDisplayer_CMV();
         case DisplayMode.CCVPercentSummary:
-          displayer = new PVMDisplayer_CMVSummary();
-          break;
+          return new PVMDisplayer_CMVSummary();
         case DisplayMode.CMVChange:
-          displayer = new PVMDisplayer_CMVPercentChange();
-          break;
+          return new PVMDisplayer_CMVPercentChange();
         case DisplayMode.MDP:
-          displayer = new PVMDisplayer_MDP();
-          break;
+          return new PVMDisplayer_MDP();
         case DisplayMode.MDPPercentSummary:
-          displayer = new PVMDisplayer_MDPSummary();
-          break;
+          return new PVMDisplayer_MDPSummary();
         case DisplayMode.PassCount:
-          displayer = new PVMDisplayer_PassCount();
-          break;
+          return new PVMDisplayer_PassCount();
         case DisplayMode.PassCountSummary:
-          displayer = new PVMDisplayer_PassCountSummary();
-          break;
+          return new PVMDisplayer_PassCountSummary();
         case DisplayMode.TemperatureDetail:
-          displayer = new PVMDisplayer_Temperature();
-          break;
+          return new PVMDisplayer_Temperature();
         case DisplayMode.TemperatureSummary:
-          displayer = new PVMDisplayer_TemperatureSummary();
-          break;
+          return new PVMDisplayer_TemperatureSummary();
         case DisplayMode.CutFill:
-          displayer = new PVMDisplayer_CutFill();
-          break;
+          return new PVMDisplayer_CutFill();
         case DisplayMode.CCA:
-          displayer = new PVMDisplayer_CCA();
-          break;
+          return new PVMDisplayer_CCA();
         case DisplayMode.CCASummary:
-          displayer = new PVMDisplayer_CCASummary();
-          break;
+          return new PVMDisplayer_CCASummary();
 
         default:
           throw new TRexException($"Unknown display mode to create a displayer for: {mode}");
       }
-
-      return displayer;
 
       // Complete legacy implementation is below
       /*

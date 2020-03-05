@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.0</TargetFramework>
+		<AssemblyName>VSS.MasterData.WebAPI.CustomerRepository.Tests</AssemblyName>
+		<RootNamespace>VSS.MasterData.WebAPI.CustomerRepository.Tests</RootNamespace>
+		<Authors>Titans</Authors>
+		<Company>VirtualSite Solutions</Company>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="CompareNETObjects" Version="4.62.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+		<PackageReference Include="xunit" Version="2.4.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+		<PackageReference Include="xunit.runner.console" Version="2.4.0" />
+		<PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+		<PackageReference Include="OpenCover" Version="4.6.519" />
+		<PackageReference Include="ReportGenerator" Version="3.1.2" />
+		<PackageReference Include="VSS.AutofacContrib.NSubstitute" Version="1.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\DataAccess\Transactions\Transactions.csproj" />
+	  <ProjectReference Include="..\..\Interfaces\Interfaces.csproj" />
+	  <ProjectReference Include="..\..\Repositories\CustomerRepository\CustomerRepository.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="appsettings.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

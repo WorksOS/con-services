@@ -6,6 +6,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Models.Enums;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.RequestHandlers;
 using VSS.TRex.Common;
@@ -15,6 +16,7 @@ using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -43,29 +45,47 @@ namespace VSS.TRex.Server.TileRendering
 {
   class Program
   {
-    private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    static private ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorPipelineStyle.DefaultProgressive:
-          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
-        default:
-          return null;
-      }
+        PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        _ => null
+      };
     }
 
-    private static Pipelines.Interfaces.Tasks.ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    static private ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorTaskStyle.PVMRendering:
-          return new PVMRenderingTask();
-        default:
-          return null;
-      }
+        PipelineProcessorTaskStyle.PVMRendering => new PVMRenderingTask(),
+        _ => null
+      };
     }
 
-    private static void DependencyInjection() 
+    static private IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
+    {
+      var config = DIContext.Obtain<IConfigurationStore>();
+
+      var smoothingActive = config.GetValueBool("TILE_RENDERING_DATA_SMOOTHING_ACTIVE", DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_ACTIVE);
+
+      if (!smoothingActive)
+      {
+        return null;
+      }
+
+      var convolutionMaskSize = (ConvolutionMaskSize) config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE", (int) DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE);
+      var nullInfillMode = (NullInfillMode) config.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", (int) DataSmoothing.Consts.TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE);
+
+      return key switch
+      {
+        DisplayMode.Height => new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode),
+        DisplayMode.CutFill => new ElevationArraySmoother(new ConvolutionTools<float>(), convolutionMaskSize, nullInfillMode),
+        _ => null
+      };
+    }
+
+    static private void DependencyInjection() 
     {
       DIBuilder
         .New()
@@ -108,16 +128,20 @@ namespace VSS.TRex.Server.TileRendering
         .Add(x => x.AddSingleton<ITPaasProxy, TPaasProxy>())
         .Add(x => x.AddTransient<TRexTPaaSAuthenticatedRequestHandler>())
         .Add(x => x.AddTransient<TPaaSApplicationCredentialsRequestHandler>())
+
         .AddHttpClient<TPaaSClient>(client => client.BaseAddress = new Uri("https://identity-stg.trimble.com/i/oauth2/token"))
           .AddHttpMessageHandler<TPaaSApplicationCredentialsRequestHandler>()
         .AddHttpClient<CoordinatesServiceClient>(client => client.BaseAddress = new Uri("https://api-stg.trimble.com/t/trimble.com/coordinates/1.0"))
           .AddHttpMessageHandler<TRexTPaaSAuthenticatedRequestHandler>()
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+
+        .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
+
         .Complete();
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    private static void EnsureAssemblyDependenciesAreLoaded()
+    static private void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -150,7 +174,7 @@ namespace VSS.TRex.Server.TileRendering
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    private static void DoServiceInitialisation()
+    static private void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();

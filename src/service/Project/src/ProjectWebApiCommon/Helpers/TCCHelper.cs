@@ -154,7 +154,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     /// <returns></returns>
     public static async Task<DirResult> GetFileInfoFromTccRepository(BusinessCenterFile sourceFile,
-      string fileSpaceId,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
       DirResult fileEntry = null;

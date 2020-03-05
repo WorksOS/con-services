@@ -1,0 +1,11 @@
+FROM microsoft/dotnet:1.1-sdk
+
+WORKDIR /dotnetapp
+
+COPY . .
+
+WORKDIR /dotnetapp/VSS.Authentication.JWT.GenerateFakeJWT
+RUN dotnet restore
+RUN dotnet publish -c Release -o out
+
+ENTRYPOINT ["dotnet", "bin/Release/netcoreapp1.1/FakeTPaaSJWT.dll"]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using VSS.TRex.Common;
 
 namespace VSS.TRex.Geometry
@@ -424,6 +425,7 @@ namespace VSS.TRex.Geometry
     /// <summary>
     /// Force an update of the min/max x/y values for the fence
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void UpdateExtents() => UpdateMaxMins();
 
     /// <summary>

@@ -126,8 +126,8 @@ namespace VSS.TRex.Tests.TestFixtures
       foreach (var c in converters)
       {
         c.Machine.ID = targetMachine.ID;
-        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machine, targetMachine.ID, 
-          c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachineTargetValueChangesAggregator);
+        integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,  
+          c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
       }
 
       // Construct an integration worker and ask it to perform the integration

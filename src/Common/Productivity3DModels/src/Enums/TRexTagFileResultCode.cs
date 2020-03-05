@@ -13,7 +13,8 @@
     TRexInvalidTagfile = 3,
     TfaException = 4,
     TRexQueueSubmissionError = 5,
-    TrexTagFileReaderError = 6,
+    TRexTagFileReaderError = 6,
+    TRexTagFileSubmissionQueueNotAvailable = 7,
 
     TFABadRequestInvalidLatitude = 3021,
     TFABadRequestInvalidLongitude = 3022,

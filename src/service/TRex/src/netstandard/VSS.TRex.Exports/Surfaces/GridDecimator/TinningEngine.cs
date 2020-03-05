@@ -751,18 +751,26 @@ namespace VSS.TRex.Exports.Surfaces.GridDecimator
     /// </summary>
     /// <param name="theCoord"></param>
     /// <param name="tri"></param>
-    /// <returns></returns>
-    public bool IncorporateCoordIntoTriangle(TriVertex theCoord, Triangle tri)
+    public void IncorporateCoordIntoTriangle(TriVertex theCoord, Triangle tri)
     {
       // Noisy logging - reinclude as necessary
       //Log.LogDebug($"Incorporating vertex {theCoord} into triangle {tri}");
+
+      /* Handy debug code...
+      // If the coord being added is equivalent to any of the vertices of the trianlge being added into then there is nothing more to do here
+      if (theCoord.X == tri.Vertices[0].X && theCoord.Y == tri.Vertices[0].Y ||
+          theCoord.X == tri.Vertices[1].X && theCoord.Y == tri.Vertices[1].Y ||
+          theCoord.X == tri.Vertices[2].X && theCoord.Y == tri.Vertices[2].Y)
+      {
+         TIN.SaveToFile($@"C:\Temp\TINStateIncorporateCoordIntoTriangleExitWithMatchingVertex({DateTime.Now.Ticks}).ttm", false);
+         return;
+      }
+      */
 
       AddCoordToModel(theCoord, tri);
 
       if (succLastTriangle != null)
         throw new TRexTINException("Not all created triangles used.");
-
-      return true;
     }
 
     /// <summary>

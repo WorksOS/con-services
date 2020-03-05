@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Pipelines.Tasks;
+using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core;
@@ -17,7 +18,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     /// <summary>
     /// The collection of sub grids being collected for a patch response
     /// </summary>
-    public List<GenericLeafSubGrid_Float> SurfaceSubgrids = new List<GenericLeafSubGrid_Float>();
+    public List<GenericLeafSubGrid<float>> SurfaceSubgrids = new List<GenericLeafSubGrid<float>>();
 
     public SurfaceTask()
     { }
@@ -30,7 +31,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
     public override bool TransferResponse(object response)
     {
       // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
-      bool result = false;
+      var result = false;
 
       if (base.TransferResponse(response))
       {
@@ -40,14 +41,14 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
         }
         else
         {
-          // Convert the ClientHeightLeafSubGrid into a GenericLeafSubGrid_Float...
+          // Convert the ClientHeightLeafSubGrid into a GenericLeafSubGrid<float>...
           foreach (var subGrid in subGridResponses)
           {
             if (subGrid != null)
             {
-              ClientHeightLeafSubGrid originSubGrid = (ClientHeightLeafSubGrid) subGrid;
+              var originSubGrid = (ClientHeightLeafSubGrid) subGrid;
 
-              GenericLeafSubGrid_Float leaf = new GenericLeafSubGrid_Float
+              var leaf = new GenericLeafSubGrid<float>
               {
                 OriginX = originSubGrid.OriginX,
                 OriginY = originSubGrid.OriginY,
@@ -64,6 +65,12 @@ namespace VSS.TRex.Exports.Surfaces.Executors.Tasks
       }
 
       return result;
+    }
+
+    public override void Dispose()
+    {
+      base.Dispose();
+      SurfaceSubgrids = null;
     }
   }
 }

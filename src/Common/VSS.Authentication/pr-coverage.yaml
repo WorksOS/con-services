@@ -1,0 +1,7 @@
+resources:
+  repositories:
+    - repository: k8s
+      type: git
+      name: VSS/k8s
+jobs:
+- template: build-helpers/templates/pr-coverage.yaml@k8s
