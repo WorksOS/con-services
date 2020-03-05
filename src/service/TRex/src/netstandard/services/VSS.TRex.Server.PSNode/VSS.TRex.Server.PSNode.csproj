@@ -174,8 +174,4 @@
     </None>
   </ItemGroup>
 
-  <Target Name="CopyFiles" AfterTargets="build" Condition="'$(SolutionDir)'!='*Undefined*'">
-    <Copy SourceFiles="$(SolutionDir)\build\ignite-corex.jar" DestinationFolder="$(USERPROFILE)\.nuget\packages\apache.ignite\2.7.5\libs" />
-  </Target>
-
 </Project>

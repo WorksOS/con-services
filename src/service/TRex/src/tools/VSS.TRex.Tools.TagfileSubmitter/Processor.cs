@@ -120,11 +120,11 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
     public void SubmitTAGFiles(Guid projectId, List<string> files)
     {
-      // Assemble list of unique machines from the TAG file names usign the hardware serial number to distinguish them
+      // Assemble list of unique machines from the TAG file names using the hardware serial number to distinguish them
       var machineGuids = files.Select(x => x.Split('-')[0]).Distinct().ToDictionary(k => k, v => Guid.NewGuid());
       var taskList = new List<Task>();
 
-      Log.LogInformation($"{machineGuids.Count} separate assets beign submitted");
+      Log.LogInformation($"{machineGuids.Count} separate assets being submitted");
 
       foreach (var file in files)
       {

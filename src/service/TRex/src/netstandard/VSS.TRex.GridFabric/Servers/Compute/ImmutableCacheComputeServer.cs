@@ -270,10 +270,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       ConfigureNonSpatialImmutableCache(cacheCfg);
       NonSpatialImmutableCache = InstantiateNonSpatialTRexCacheReference(cacheCfg);
 
-      //CacheCfg = new CacheConfiguration();
-      var spatialCacheConfiguration = immutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.ImmutableSpatialCacheName()));
-
-      //ConfigureImmutableSpatialCache(CacheCfg);
+      var spatialCacheConfiguration = new CacheConfiguration();
+      ConfigureImmutableSpatialCache(spatialCacheConfiguration);
       SpatialImmutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
 
       InstantiateSiteModelsCacheReference();
