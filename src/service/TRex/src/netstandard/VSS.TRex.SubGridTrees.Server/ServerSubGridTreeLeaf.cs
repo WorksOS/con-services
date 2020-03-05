@@ -269,9 +269,10 @@ namespace VSS.TRex.SubGridTrees.Server
 
             ValueFromLatestCellPass = false;
 
-            for (int I = (int)LastPassIndex; I >= 0; I--)
+            LastPassIndex += CellPasses.Passes.Offset;
+            for (int I = LastPassIndex, limit = CellPasses.Passes.Offset; I >= limit; I--)
             {
-                var pass = CellPasses.Passes.GetElement(I);
+                var pass = CellPasses.Passes.Elements[I];
 
                 switch (TypeToCheck)
                 {
@@ -533,7 +534,9 @@ namespace VSS.TRex.SubGridTrees.Server
             //Directory.DumpSegmentDirectoryToLog();
 
             if (!Dirty)
+            {
               throw new TRexSubGridTreeException($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
+            }
 
             var Iterator = new SubGridSegmentIterator(this, _directory, storageProxy)
             {
@@ -553,14 +556,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Locate the segment immediately previous to the first dirty segment in the list of segments
 
-            var _segmentDirectory = _directory.SegmentDirectory;
-            for (int I = 0, limit = _segmentDirectory.Count; I < limit; I++)
+            var segmentDirectory = _directory.SegmentDirectory;
+            for (int I = 0, limit = segmentDirectory.Count; I < limit; I++)
             {
-                if (_segmentDirectory[I].Segment != null && _segmentDirectory[I].Segment.Dirty)
+                if (segmentDirectory[I].Segment != null && segmentDirectory[I].Segment.Dirty)
                 {
                     if (I > 0)
                     {
-                        SeedSegmentInfo = _segmentDirectory[I - 1];
+                        SeedSegmentInfo = segmentDirectory[I - 1];
                     }
                     break;
                 }
@@ -600,6 +603,11 @@ namespace VSS.TRex.SubGridTrees.Server
             // The first MoveNext will locate the first segment in the directory marked as dirty
             while (Iterator.MoveNext())
             {
+                if (Iterator.CurrentSubGridSegment == null && !Iterator.CurrentSubGridSegment.Dirty)
+                {
+                    throw new TRexException($"Iterator returned non-dirty segment in ComputeLatestPassInformation for {Moniker()}");
+                }
+
                 NumProcessedSegments++;
 
                 CalculateLatestPassGridForSegment(Iterator.CurrentSubGridSegment, LastSegment);

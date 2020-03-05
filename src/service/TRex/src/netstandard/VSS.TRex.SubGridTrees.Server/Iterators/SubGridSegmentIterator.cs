@@ -26,7 +26,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         private ISubGridCellPassesDataSegment LocateNextSubGridSegmentInIteration()
         {
-            ISubGridCellPassesDataSegment Result = null;
+            ISubGridCellPassesDataSegment result = null;
 
             if (IterationState.SubGrid == null)
             {
@@ -36,11 +36,11 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
             while (IterationState.NextSegment())
             {
-                var SegmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
+                var segmentInfo = IterationState.Directory.SegmentDirectory[IterationState.Idx];
 
-                if (SegmentInfo.Segment != null)
+                if (segmentInfo.Segment != null)
                 {
-                    Result = SegmentInfo.Segment;
+                    result = segmentInfo.Segment;
                 }
                 else
                 {
@@ -53,35 +53,35 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                         // This additional check to determine if the segment is defined
                         // is necessary to check if an earlier thread through this code has
                         // already allocated the new segment
-                        if (SegmentInfo.Segment == null)
-                          IterationState.SubGrid.AllocateSegment(SegmentInfo);
+                        if (segmentInfo.Segment == null)
+                          IterationState.SubGrid.AllocateSegment(segmentInfo);
                    
-                        Result = SegmentInfo.Segment;
+                        result = segmentInfo.Segment;
                    
-                        if (Result == null)
+                        if (result == null)
                           throw new TRexSubGridProcessingException("IterationState.SubGrid.Cells.AllocateSegment failed to create a new segment");
                     }
                 }
 
-                if (Result != null)
+                if (result != null)
                 { 
-                    if (!Result.Dirty && ReturnDirtyOnly)
+                    if (!result.Dirty && ReturnDirtyOnly)
                     {
                         // The segment is not dirty, and the iterator has been instructed only to return
                         // dirty segments, so ignore this one
-                        Result = null;
+                        result = null;
                         continue;
                     }
                 
-                    if (!Result.Dirty && !ReturnCachedItemsOnly && 
-                        (RetrieveAllPasses && !Result.HasAllPasses || RetrieveLatestData && !Result.HasLatestData))
-                      {
+                    if (!result.Dirty && !ReturnCachedItemsOnly && 
+                        (RetrieveAllPasses && !result.HasAllPasses || RetrieveLatestData && !result.HasLatestData))
+                    {
                         if ((IterationState.SubGrid.Owner as IServerSubGridTree).LoadLeafSubGridSegment
                             (StorageProxy,
                              new SubGridCellAddress(IterationState.SubGrid.OriginX, IterationState.SubGrid.OriginY),
                              RetrieveLatestData, RetrieveAllPasses, // StorageClasses,
                              IterationState.SubGrid,
-                             Result))
+                             result))
                         {
                             /* TODO: no separate cache - it is in ignite
                             // The segment is now loaded and available for use and should be touched
@@ -108,18 +108,18 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 
                             // Segment failed to be loaded. Multiple messages will have been posted to the log.
                             // Move to the next item in the iteration
-                            Result = null; 
+                            result = null; 
                             continue;
                         }
                     }
                 }
 
-                if (Result != null) // We have a candidate to return as the next item in the iteration
+                if (result != null) // We have a candidate to return as the next item in the iteration
                 {                    
                     break;
                 }
             }
-            return Result;
+            return result;
         }
 
         // CurrentSubGridSegment is a reference to the current sub grid segment that the iterator is currently
@@ -159,12 +159,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public bool MarkReturnedSegmentsAsTouched { get; set; }
 
-        private int numberOfSegmentsScanned;
+        private int _numberOfSegmentsScanned;
 
         public int NumberOfSegmentsScanned
         {
-          get => numberOfSegmentsScanned;
-          set => numberOfSegmentsScanned = value;
+          get => _numberOfSegmentsScanned;
+          set => _numberOfSegmentsScanned = value;
         }
 
         public SubGridSegmentIterator(IServerLeafSubGrid subGrid, IStorageProxy storageProxy)
@@ -198,7 +198,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // MoveToFirstSubGridSegment moves to the first segment in the sub grid
         public bool MoveToFirstSubGridSegment()
         {
-            numberOfSegmentsScanned = 0;
+            _numberOfSegmentsScanned = 0;
 
             InitialiseIterator();
 
@@ -208,17 +208,17 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         // MoveToNextSubGridSegment moves to the next segment in the sub grid
         public bool MoveToNextSubGridSegment()
         {
-            var SubGridSegment = LocateNextSubGridSegmentInIteration();
+            var subGridSegment = LocateNextSubGridSegmentInIteration();
 
-            if (SubGridSegment == null) // We are at the end of the iteration
+            if (subGridSegment == null) // We are at the end of the iteration
             {
                 CurrentSubGridSegment = null;
                 return false;
             }
 
-            CurrentSubGridSegment = SubGridSegment;
+            CurrentSubGridSegment = subGridSegment;
 
-            numberOfSegmentsScanned++;
+            _numberOfSegmentsScanned++;
 
             return true;
         }
