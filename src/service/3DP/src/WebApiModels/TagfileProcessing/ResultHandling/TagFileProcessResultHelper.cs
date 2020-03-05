@@ -180,7 +180,7 @@ namespace VSS.Productivity3D.WebApi.Models.TagfileProcessing.ResultHandling
         }
 
         case TRexTagFileResultCode.TRexInvalidTagfile:
-        case TRexTagFileResultCode.TrexTagFileReaderError:
+        case TRexTagFileResultCode.TRexTagFileReaderError:
         {
           return (code: 5, message: "The TAG file was found to be corrupted on its pre-processing scan.",
             type: permanent,
