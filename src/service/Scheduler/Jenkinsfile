@@ -88,12 +88,12 @@ node('Ubuntu_Slave') {
 
         if (branch.contains("release")) {
             stage ('Build Release Images') {
-                sh "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest-release-${fullVersion} ./artifacts/VSS.Productivity3D.Scheduler.WebApi"
-                sh "docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest-release-${fullVersion}"
-                sh "docker rmi -f 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest-release-${fullVersion}"
-                sh "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion} ./database"
-                sh "docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion}"
-                sh "docker rmi -f 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion}"
+                sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest-release-${fullVersion} ./artifacts/VSS.Productivity3D.Scheduler.WebApi"
+                sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest-release-${fullVersion}"
+                sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest-release-${fullVersion}"
+                sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion} ./database"
+                sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion}"
+                sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest-release-${fullVersion}"
             }
 
             stage ('Tag repository') {
@@ -110,12 +110,12 @@ node('Ubuntu_Slave') {
 		else {
             if (branch.contains("Dev")) {
                 stage ('Build Development Images') {
-                    sh "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest ./artifacts/VSS.Productivity3D.Scheduler.WebApi"
-                    sh "docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi"
-                    sh "docker rmi -f 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest"
-                    sh "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest ./database"
-                    sh "docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db"
-                    sh "docker rmi -f 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest"
+                    sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest ./artifacts/VSS.Productivity3D.Scheduler.WebApi"
+                    sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi"
+                    sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-webapi:latest"
+                    sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest ./database"
+                    sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db"
+                    sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-scheduler-db:latest"
                 }
             }
         }

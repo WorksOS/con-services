@@ -88,9 +88,9 @@ node('Ubuntu_Slave') {
 
             if (branch.contains("release"))    {
                 stage ('Build Release Images') {
-                    sh "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion} ./artifacts/WebApi"
-                    sh "docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion}"
-                    sh "docker rmi -f 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion}"
+                    sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion} ./artifacts/WebApi"
+                    sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion}"
+                    sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest-release-${fullVersion}"
                 }           
         stage ('Tag repository') {
                 sh 'git rev-parse HEAD > GIT_COMMIT'
@@ -106,9 +106,9 @@ node('Ubuntu_Slave') {
             } else if (branch.contains("Dev")) {
 
                 stage ('Build Development Images') {       
-                    sh "docker build -t 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest ./artifacts/WebApi" 
-                    sh "docker push 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess"
-                    sh "docker rmi -f 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest"
+                    sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest ./artifacts/WebApi" 
+                    sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess"
+                    sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest"
                 }       
             }
         }

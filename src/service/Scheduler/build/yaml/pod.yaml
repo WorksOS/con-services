@@ -22,7 +22,7 @@ spec:
         name: schedulerservice-testing
 
   - name: mockapi-container
-    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/ccss-mockproject-webapi:latest-linux
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/ccss-mockproject-webapi:latest-linux
     imagePullPolicy: Always
     ports:
     - containerPort: 5001

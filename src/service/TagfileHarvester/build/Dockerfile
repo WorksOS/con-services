@@ -1,4 +1,4 @@
-FROM 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-sdk as builder
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-sdk as builder
 ARG SERVICE_PATH
 
 COPY . /build/
@@ -6,7 +6,7 @@ WORKDIR /build
 
 RUN dotnet publish ./$SERVICE_PATH/TagFileHarvester.netcore/TagFileHarvester.netcore.csproj -o /artifacts --framework netcoreapp2.0 --runtime linux-x64
 
-FROM 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-runtime
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-2.0-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \

@@ -16,7 +16,7 @@ spec:
         app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
     spec:
       containers:
-      - image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-3dpm-webapi:{{ .Values.image.tag }}
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-3dpm-webapi:{{ .Values.image.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}        
         livenessProbe:
           httpGet:

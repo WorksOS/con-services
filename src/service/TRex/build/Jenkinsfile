@@ -31,7 +31,7 @@ node ('jenkinsslave-pod') {
 
 
 	def buildContainerTag = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
-	def runtimeContainerTag = "300213723870.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+	def runtimeContainerTag = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 
 	def trexComponents = [
 		"ApplicationServer",

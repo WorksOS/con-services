@@ -1,6 +1,6 @@
 
 image:
-  repository: 300213723870.dkr.ecr.us-west-2.amazonaws.com/helm-vsts-agent
+  repository: 940327799086.dkr.ecr.us-west-2.amazonaws.com/helm-vsts-agent
   tag: merino
 
 resources:

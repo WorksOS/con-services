@@ -13,7 +13,7 @@ serviceName: productivity3d-service
 replicaCount: 1
 
 image:
-  repository: "300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-3dpm-webapi"
+  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-3dpm-webapi"
   tag: latest-linux
 
 resources:

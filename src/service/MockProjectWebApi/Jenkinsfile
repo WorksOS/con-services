@@ -25,9 +25,9 @@ node ('jenkinsslave-pod') {
 	def containerDb = "registry-docker-registry.jenkins:5000/${project_name}.db:${versionNumber}"
     def testContainer = "registry-docker-registry.jenkins:5000/${project_name}.tests:${versionNumber}"
 	//his is required for backwards compatibility
-    def finalImage = "300213723870.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
-	def legacyfinalImage = "300213723870.dkr.ecr.us-west-2.amazonaws.com/${project_name}:latest-linux"
-	def dbFinalImage = "300213723870.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
+    def finalImage = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+	def legacyfinalImage = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}:latest-linux"
+	def dbFinalImage = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}-db:${versionNumber}"
 	
     def vars = []
     def acceptance_testing_yaml

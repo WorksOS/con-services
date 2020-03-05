@@ -1,7 +1,7 @@
 version: '2'
 services:
   webapi:
-    image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-fileaccess:latest
     env_file:
      - docker-compose-dev.env
     ports:

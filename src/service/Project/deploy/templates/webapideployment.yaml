@@ -20,7 +20,7 @@ spec:
         component: {{ template "component.webapi" . }}
     spec:
       containers:
-      - image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:{{ .Values.image.tag }}
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:{{ .Values.image.tag }}
         name: {{ $name }}     
         livenessProbe:
           httpGet:

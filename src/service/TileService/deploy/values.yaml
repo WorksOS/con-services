@@ -13,7 +13,7 @@ serviceName: tile-service
 replicaCount: 1
 
 image:
-  repository: "300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-tile-webapi"
+  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tile-webapi"
   tag: latest
 
 resources:

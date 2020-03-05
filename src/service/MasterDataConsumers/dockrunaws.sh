@@ -6,8 +6,8 @@ docker rm $(docker ps -a -q)
 docker rmi $(docker images -q)
 
 sh '''eval '$(aws ecr get-login --region us-west-2 --profile vss-grant)' '''
-docker pull 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest
-docker pull 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
+docker pull 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-project-webapi:latest
+docker pull 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest
 
 docker volume create --name logs
 
@@ -25,7 +25,7 @@ docker run -i -t --detach --name vss-project-masterdataproject \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
 -e KAFKA_OFFSET='latest' \
 -e KAFKA_TOPICS='VSS.Interfaces.Events.MasterData.IProjectEvent' \
- 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash
+ 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash
 
 docker run -i -t --detach --name vss-project-masterdatacustomer \
 -v /ProjectMDM/app/logs:/app/logs \
@@ -41,7 +41,7 @@ docker run -i -t --detach --name vss-project-masterdatacustomer \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
 -e KAFKA_OFFSET='latest' \
 -e KAFKA_TOPICS='VSS.Interfaces.Events.MasterData.ICustomerEvent' \
- 300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash
+ 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash
 
 docker run -i -t --detach --name vss-project-masterdatageofence \
 -v /ProjectMDM/app/logs:/app/logs \
@@ -57,7 +57,7 @@ docker run -i -t --detach --name vss-project-masterdatageofence \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
 -e KAFKA_OFFSET='latest' \
 -e KAFKA_TOPICS='VSS.Interfaces.Events.MasterData.IGeofenceEvent' \
-300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash 
+940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash 
 
 docker run -i -t --detach --name vss-project-masterdatasubscription \
 -v /ProjectMDM/app/logs:/app/logs \
@@ -73,4 +73,4 @@ docker run -i -t --detach --name vss-project-masterdatasubscription \
 -e KAFKA_TOPIC_NAME_SUFFIX='-Dev' \
 -e KAFKA_OFFSET='latest' \
 -e KAFKA_TOPICS='VSS.Interfaces.Events.MasterData.ISubscriptionEvent' \
-300213723870.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash 
+940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-project-masterdataconsumer:latest /bin/bash 
