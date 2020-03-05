@@ -1,4 +1,4 @@
-FROM 3940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:jenkinsslave-core21
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:jenkinsslave-core21
 
 COPY . /app
 
