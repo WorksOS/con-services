@@ -241,7 +241,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
               machine.LastKnownY = machine.LastKnownY;
             }
 
-            if (machine.MachineHardwareID == "")
+            if (string.IsNullOrEmpty(machine.MachineHardwareID))
               machine.MachineHardwareID = machine.MachineHardwareID;
 
             if (machine.MachineType == 0)
