@@ -108,13 +108,8 @@ node ('jenkinsslave-pod') {
 						tools: [[$class: 'XUnitDotNetTestType', pattern: "TestResults/Unit/**/*.xml"]]])
 
 				cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: "TestResults/**/TestCoverage/**/*.xml", conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+				archiveArtifacts artifacts: "TestResults/UnitTests/**/*.xml, TestResults/TestCoverage/*.xml, AcceptanceTests/tests/**/TestResults/*.xml", fingerprint: true
 
-				step([$class: 'TeamCollectResultsPostBuildAction', 
-								requestedResults: [
-									[includes: "TestResults/Unit/**/*.xml", teamResultType: 'XUNIT'],
-									[includes: "TestResults/**/TestCoverage/**/*.xml", teamResultType: 'COBERTURA'],
-								]
-					])
 			}
 	}
 }
