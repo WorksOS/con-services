@@ -437,7 +437,10 @@ namespace TAGFiles.Tests
 
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
-      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID);
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
+      {
+        MaxMappedTagFilesToProcessPerAggregationEpoch = integrator.TasksToProcess.Count
+      };
 
       worker.ProcessTask(processedTasks, 40);
 
@@ -451,7 +454,7 @@ namespace TAGFiles.Tests
 
       // Check the set of TAG files created the expected number of sub grids and machines
       targetSiteModel.Machines.Count.Should().Be(4);
-      targetSiteModel.ExistenceMap.CountBits().Should().Be(4);
+      targetSiteModel.ExistenceMap.CountBits().Should().Be(5);
     }
   }
 }

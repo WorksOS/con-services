@@ -469,15 +469,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
 
     /// <summary>
     /// Commits all data prepared via aggregation and integration of a set of processed TAG files to the site model
-    /// persistent store
+    /// persistent store via the transactional data proxy
     /// </summary>
     /// <param name="siteModelFromDatamodel">The site model the changes are being committed to</param>
     /// <param name="invalidatedSpatialStreams">The streams of data in the persistent store that will be invalidated by updates to sub grids performed by the sub grid integrator</param>
     private void CommitAllChangesToPersistentStore(ISiteModel siteModelFromDatamodel,
       List<ISubGridSpatialAffinityKey> invalidatedSpatialStreams)
     {
-      // ====== Stage 5 : Commit all prepared data to the transactional storage proxy
-
       // All operations within the transaction to integrate the changes into the live model have completed successfully.
       // Now commit those changes as a block.
 
@@ -580,7 +578,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
 
         task.StartProcessingTime = Consts.MIN_DATETIME_AS_UTC;
-
         processedTasks.Add(task); // Seed task is always a part of the processed tasks
 
         // First check to see if this task has been catered to by previous task processing
@@ -594,13 +591,8 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         }
 
         AssembleGroupedTagFiles(processedTasks, task);
-
         var groupedAggregatedCellPasses = GroupSwathedSubGridTrees(processedTasks, task);
         var eventIntegrator = AggregateAllMachineEvents(processedTasks, task);
-
-        // Integrate the items present in the 'IntermediaryTargetSiteModel' into the real site model
-        // read from the datamodel file itself, then synchronously write it to the DataModel
-
         CreateOrUpdateSiteModelMachines(siteModelFromDatamodel, task);
 
         if (!IntegrateMachineEventsIntoLiveSiteModel(siteModelFromDatamodel, task, eventIntegrator))
@@ -608,7 +600,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           return false;
         }
 
-        // INTEGRATE THE AGGREGATED CELL PASSES INTO THE PRIMARY LIVE DATABASE
         try
         {
           var subGridIntegrator = new SubGridIntegrator(groupedAggregatedCellPasses, siteModelFromDatamodel, siteModelFromDatamodel.Grid, _storageProxyMutable);
@@ -619,7 +610,6 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
           }
 
           CommitAllChangesToPersistentStore(siteModelFromDatamodel, subGridIntegrator.InvalidatedSpatialStreams);
-
           PerformSiteModelChangeNotifications(siteModelFromDatamodel);
           UpdateSiteModelMetaData(siteModelFromDatamodel);
         }
