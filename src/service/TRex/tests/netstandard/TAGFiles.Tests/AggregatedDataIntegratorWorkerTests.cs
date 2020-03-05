@@ -200,47 +200,46 @@ namespace TAGFiles.Tests
       converters.Length.Should().Be(numToTake);
 
       // Create the site model and machine etc to aggregate the processed TAG file into
-      using (var targetSiteModel = BuildModel())
+      using var targetSiteModel = BuildModel();
+
+      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer,
+        DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+
+      // Create the integrator and add the processed TAG file to its processing list
+      var integrator = new AggregatedDataIntegrator();
+
+      foreach (var c in converters)
       {
-        var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer,
-          DeviceTypeEnum.SNM940, false, Guid.NewGuid());
-
-        // Create the integrator and add the processed TAG file to its processing list
-        var integrator = new AggregatedDataIntegrator();
-
-        foreach (var c in converters)
+        using (c)
         {
-          using (c)
-          {
-            c.Machine.ID = targetMachine.ID;
-            integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,
-              c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
-          }
+          c.Machine.ID = targetMachine.ID;
+          integrator.AddTaskToProcessList(c.SiteModel, targetSiteModel.ID, c.Machines,
+            c.SiteModelGridAggregator, c.ProcessedCellPassCount, c.MachinesTargetValueChangesAggregator);
         }
-
-        // Construct an integration worker and ask it to perform the integration
-        var processedTasks = new List<AggregatedDataIntegratorTask>();
-
-        var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
-        {
-          MaxMappedTagFilesToProcessPerAggregationEpoch = maxTagFilesPerAggregation
-        };
-
-    //    Log.LogInformation("Calling ProcessTask");
-
-        worker.ProcessTask(processedTasks, converters.Length);
-
-    //    Log.LogInformation("Calling CompleteTaskProcessing");
-
-        worker.CompleteTaskProcessing();
-
-        processedTasks.Count.Should().Be(numToTake);
-
-        // Check the set of TAG files created the expected number of sub grids
-        targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
       }
 
-    //   Log.LogInformation($"Completed processing {numToTake} files.");
+      // Construct an integration worker and ask it to perform the integration
+      var processedTasks = new List<AggregatedDataIntegratorTask>();
+
+      var worker = new AggregatedDataIntegratorWorker(integrator.TasksToProcess, targetSiteModel.ID)
+      {
+        MaxMappedTagFilesToProcessPerAggregationEpoch = maxTagFilesPerAggregation
+      };
+
+      //    Log.LogInformation("Calling ProcessTask");
+
+      worker.ProcessTask(processedTasks, converters.Length);
+
+      //    Log.LogInformation("Calling CompleteTaskProcessing");
+
+      worker.CompleteTaskProcessing();
+
+      processedTasks.Count.Should().Be(numToTake);
+
+      // Check the set of TAG files created the expected number of sub grids
+      targetSiteModel.Grid.CountLeafSubGridsInMemory().Should().Be(expectedSubGridCount);
+
+      //   Log.LogInformation($"Completed processing {numToTake} files.");
     }
 
     [Fact]
@@ -406,8 +405,7 @@ namespace TAGFiles.Tests
       using var targetSiteModel = BuildModel();
       var integrator = new AggregatedDataIntegrator();
 
-      void Convert(string tagFileCollectionFolder,
-        int maxTagFilesPerAggregation, int skipTo, int numToTake, int expectedSubGridCount)
+      void Convert(string tagFileCollectionFolder, int skipTo, int numToTake)
       {
         var converters = Directory.GetFiles(Path.Combine("TestData", "TAGFiles", tagFileCollectionFolder), "*.tag")
           .OrderBy(x => x).Skip(skipTo).Take(numToTake).Select(DITagFileFixture.ReadTAGFileFullPath).ToArray();
@@ -418,7 +416,7 @@ namespace TAGFiles.Tests
         var targetMachine = targetSiteModel.Machines.CreateNew($"Test Machine {machineGuid}", $"{machineGuid}", MachineType.Dozer,
           DeviceTypeEnum.SNM940, false, machineGuid);
 
-        // Add the processed TAG files to the integrator's processing list
+        // Add the processed TAG files to the integrator processing list
         foreach (var c in converters)
         {
           using (c)
@@ -430,10 +428,10 @@ namespace TAGFiles.Tests
         }
       }
 
-      Convert("Dimensions2018-CaseMachine", 164, 0, 10, 4);
-      Convert("Dimensions2018-CaseMachine", 164, 10, 10, 2);
-      Convert("Dimensions2018-CaseMachine", 164, 20, 10, 3);
-      Convert("Dimensions2018-CaseMachine", 164, 30, 10, 2);
+      Convert("Dimensions2018-CaseMachine", 0, 10);
+      Convert("Dimensions2018-CaseMachine", 10, 10);
+      Convert("Dimensions2018-CaseMachine", 20, 10);
+      Convert("Dimensions2018-CaseMachine", 30, 10);
 
       // Construct an integration worker and ask it to perform the integration
       var processedTasks = new List<AggregatedDataIntegratorTask>();
