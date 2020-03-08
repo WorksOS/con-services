@@ -53,7 +53,7 @@ namespace TAGFiles.Tests
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = BuildModel();
-      var targetMachine = targetSiteModel.Machines.CreateNew(priorMachineName, "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
+      var targetMachine = targetSiteModel.Machines.CreateNew(priorMachineName, string.Empty, MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
@@ -122,8 +122,8 @@ namespace TAGFiles.Tests
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = BuildModel();
-      targetSiteModel.Machines.CreateNew("SomeOtherJohnDoe", "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, newMachineId1);
-      var targetJohnDoe = targetSiteModel.Machines.CreateNew(testTAGFileMachineID, "", MachineType.Dozer, DeviceTypeEnum.SNM940, true, newMachineId2);
+      targetSiteModel.Machines.CreateNew("SomeOtherJohnDoe", string.Empty, MachineType.Dozer, DeviceTypeEnum.SNM940, true, newMachineId1);
+      var targetJohnDoe = targetSiteModel.Machines.CreateNew(testTAGFileMachineID, string.Empty, MachineType.Dozer, DeviceTypeEnum.SNM940, true, newMachineId2);
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
@@ -158,7 +158,7 @@ namespace TAGFiles.Tests
 
       // Create the site model and machine etc to aggregate the processed TAG file into
       var targetSiteModel = BuildModel();
-      targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
+      targetSiteModel.Machines.CreateNew("Test Machine", string.Empty, MachineType.Dozer, DeviceTypeEnum.SNM940, false, newMachineId);
 
       // Create the integrator and add the processed TAG file to its processing list
       var integrator = new AggregatedDataIntegrator();
@@ -203,7 +203,7 @@ namespace TAGFiles.Tests
       // Create the site model and machine etc to aggregate the processed TAG file into
       using (var targetSiteModel = BuildModel())
       {
-        var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", "", MachineType.Dozer,
+      var targetMachine = targetSiteModel.Machines.CreateNew("Test Machine", string.Empty, MachineType.Dozer,
           DeviceTypeEnum.SNM940, false, Guid.NewGuid());
 
         // Create the integrator and add the processed TAG file to its processing list

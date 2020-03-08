@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Common;
-using VSS.TRex.Storage.Models;
+﻿using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage.Caches
@@ -11,11 +10,11 @@ namespace VSS.TRex.Storage.Caches
     public static class TRexCaches
     {
         private const string kSpatialMutable = "Spatial-Mutable";
-        private const string kSpatialImmutable = "Spatial-Immutable";
+  //      private const string kSpatialImmutable = "Spatial-Immutable";
         private const string kSpatialImmutableCompressed = "Spatial-Immutable-Compressed";
 
         private const string kNonSpatialMutable = "NonSpatial-Mutable";
-        private const string kNonSpatialImmutable = "NonSpatial-Immutable";
+  //      private const string kNonSpatialImmutable = "NonSpatial-Immutable";
         private const string kNonSpatialImmutableCompressed = "NonSpatial-Immutable"; // Same as compressed as there is currently no distinction
 
         private const string kSiteModelMetadataCache = "SiteModelMetadataCache";
@@ -50,23 +49,23 @@ namespace VSS.TRex.Storage.Caches
         /// <returns></returns>
         public static string ImmutableNonSpatialCacheName() => kNonSpatialImmutableCompressed;
 
-        public static string SpatialCacheName(StorageMutability Mutability, FileSystemStreamType streamType)
+        public static string SpatialCacheName(StorageMutability mutability, FileSystemStreamType streamType)
         {
           if (streamType == FileSystemStreamType.ProductionDataXML)
-            return SiteModelsCacheName(Mutability);
+            return SiteModelsCacheName(mutability);
 
-           return Mutability == StorageMutability.Mutable ? MutableSpatialCacheName() : ImmutableSpatialCacheName();
+          return mutability == StorageMutability.Mutable ? MutableSpatialCacheName() : ImmutableSpatialCacheName();
         }
 
-        public static string NonSpatialCacheName(StorageMutability Mutability, FileSystemStreamType streamType)
+        public static string NonSpatialCacheName(StorageMutability mutability, FileSystemStreamType streamType)
         {
           if (streamType == FileSystemStreamType.ProductionDataXML)
-            return SiteModelsCacheName(Mutability);
+            return SiteModelsCacheName(mutability);
 
           if (streamType == FileSystemStreamType.SiteModelMachineElevationChangeMap)
             return SiteModelChangeMapsCacheName();
 
-          return Mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
+          return mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
         }
 
         /// <summary>
@@ -79,7 +78,7 @@ namespace VSS.TRex.Storage.Caches
         /// Returns the name of of the site models cache
         /// </summary>
         /// <returns></returns>
-        public static string SiteModelsCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Immutable ? kSiteModelsCacheImmutable : kSiteModelsCacheMutable;
+        public static string SiteModelsCacheName(StorageMutability mutability) => mutability == StorageMutability.Immutable ? kSiteModelsCacheImmutable : kSiteModelsCacheMutable;
         
         /// <summary>
         /// Returns the name of of the design topology existence maps

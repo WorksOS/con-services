@@ -188,9 +188,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       //cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
     }
 
     public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
@@ -211,9 +211,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.AffinityFunction = new MutableSpatialAffinityFunction();
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
     }
 
     public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
@@ -274,10 +274,10 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       // Add the mutable Spatial & NonSpatial caches
 
-      //CacheConfiguration CacheCfg = new CacheConfiguration();
-      //ConfigureNonSpatialMutableCache(CacheCfg);
+      //CacheConfiguration cacheCfg = new CacheConfiguration();
+      //ConfigureNonSpatialMutableCache(cacheCfg);
       var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
-      NonSpatialMutableCache = InstantiateNonSpatialTRexCacheReference(nonSpatialCacheConfiguration);
+      NonSpatialMutableCache = InstantiateNonSpatialCacheReference(nonSpatialCacheConfiguration);
 
       var spatialCacheConfiguration = new CacheConfiguration();
       ConfigureMutableSpatialCache(spatialCacheConfiguration);

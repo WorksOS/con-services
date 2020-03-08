@@ -182,14 +182,14 @@ namespace VSS.TRex.GridFabric.Servers.Client
       return cfg;
     }
 
-    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      return immutableTRexGrid.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg.Name);
+      return immutableTRexGrid.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg.Name);
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      return immutableTRexGrid.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg.Name);
+      return immutableTRexGrid.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg.Name);
     }
   }
 }
