@@ -41,24 +41,29 @@ namespace VSS.TRex.Storage
       {
         try
         {
-          spatialCache.Commit(out var numDeletedLocal, out var numUpdatedLocal, out var numBytesWrittenLocal);
+          var numDeletedLocal = 0;
+          var numUpdatedLocal = 0;
+          long numBytesWrittenLocal = 0;
+
+          committer?.Commit(out numDeletedLocal, out numUpdatedLocal, out numBytesWrittenLocal);
+
           return (numDeletedLocal, numUpdatedLocal, numBytesWrittenLocal);
         }
         catch (Exception e)
         {
-          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer.Name}");
+          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer?.Name}");
           throw;
         }
       }
 
       var commitTasks = new List<Task<(int numDeletedLocal, int numUpdatedLocal, long numBytesWrittenLocal)>>
-        {
-          Task.Factory.Run(() => LocalCommit(spatialCache)),
-          Task.Factory.Run(() => LocalCommit(generalNonSpatialCache)),
-          Task.Factory.Run(() => LocalCommit(siteModelCache)),
-          Task.Factory.Run(() => LocalCommit(spatialDataExistenceMapCache)),
-          Task.Factory.Run(() => LocalCommit(siteModelMachineCache))
-        };
+      {
+        Task.Factory.Run(() => LocalCommit(spatialCache)),
+        Task.Factory.Run(() => LocalCommit(generalNonSpatialCache)),
+        Task.Factory.Run(() => LocalCommit(siteModelCache)),
+        Task.Factory.Run(() => LocalCommit(spatialDataExistenceMapCache)),
+        Task.Factory.Run(() => LocalCommit(siteModelMachineCache))
+      };
 
       var commitResults = commitTasks.WhenAll();
       commitResults.Wait();
@@ -86,14 +91,19 @@ namespace VSS.TRex.Storage
       {
         try
         {
-          spatialCache.Commit(out var numDeletedInternal, out var numUpdatedInternal, out var numBytesWrittenInternal);
+          var numDeletedInternal = 0;
+          var numUpdatedInternal = 0;
+          long numBytesWrittenInternal = 0;
+
+          committer?.Commit(out numDeletedInternal, out numUpdatedInternal, out numBytesWrittenInternal);
+
           numDeletedLocal += numDeletedInternal;
           numUpdatedLocal += numUpdatedInternal;
           numBytesWrittenLocal += numBytesWrittenInternal;
         }
         catch (Exception e)
         {
-          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer.Name}");
+          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer?.Name}");
           throw;
         }
       }
@@ -135,11 +145,11 @@ namespace VSS.TRex.Storage
       {
         try
         {
-          committer.Clear();
+          committer?.Clear();
         }
         catch
         {
-          Log.LogError($"Exception thrown clearing changes for cache {committer.Name}");
+          Log.LogError($"Exception thrown clearing changes for cache {committer?.Name}");
           throw;
         }
       }

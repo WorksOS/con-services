@@ -20,10 +20,6 @@ namespace VSS.TRex.Storage.Interfaces
 
     void PutAll(IEnumerable<KeyValuePair<TK, TV>> values);
 
-    string Name { get; }
-
-    void Clear();
-
     ICacheLock Lock(TK key);
   }
 }
