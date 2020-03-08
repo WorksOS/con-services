@@ -40,7 +40,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
           config.Setup(c => c.GetValueInt("VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT", It.IsAny<int>())).Returns(Consts.VLPDPSNODE_CELL_PASS_AGGREGATOR_LIST_SIZE_INCREMENT_DEFAULT);
 
-          config.Setup(c => c.GetValueBool("ADVISEOTHERSERVICES_OFMODELCHANGES", It.IsAny<bool>())).Returns(true /*Consts.ADVISEOTHERSERVICES_OFMODELCHANGES*/);
+          config.Setup(c => c.GetValueBool("ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES", It.IsAny<bool>())).Returns(true /*Consts.ADVISE_OTHER_SERVICES_OF_MODEL_CHANGES*/);
 
           config.Setup(c => c.GetValueInt("MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH", It.IsAny<int>())).Returns(Consts.MAX_MAPPED_TAG_FILES_TO_PROCESS_PER_AGGREGATION_EPOCH);
           config.Setup(c => c.GetValueInt("MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH", It.IsAny<int>())).Returns(Consts.MAX_GROUPED_TAG_FILES_TO_PROCESS_PER_PROCESSING_EPOCH);

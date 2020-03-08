@@ -19,13 +19,13 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         /// <summary>
         /// The array of enumeration values represented by ProductionEventType
         /// </summary>
-        private static readonly int[] _productionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<int>().ToArray();
+        private static readonly int[] ProductionEventTypeValues = Enum.GetValues(typeof(ProductionEventType)).Cast<int>().ToArray();
 
-        private IProductionEventLists SourceLists;
-        private IProductionEventLists TargetLists;
-        private bool IntegratingIntoPersistentDataModel;
-        private ISiteModel SourceSiteModel;
-        private ISiteModel TargetSiteModel;
+        private IProductionEventLists _sourceLists;
+        private IProductionEventLists _targetLists;
+        private bool _integratingIntoPersistentDataModel;
+        private ISiteModel _sourceSiteModel;
+        private ISiteModel _targetSiteModel;
      
         public EventIntegrator()
         {
@@ -35,25 +35,25 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         IProductionEventLists targetLists,
         bool integratingIntoPersistentDataModel) : this()
       {
-        SourceLists = sourceLists;
-        TargetLists = targetLists;
-        IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
+        _sourceLists = sourceLists;
+        _targetLists = targetLists;
+        _integratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
       }
 
       private void IntegrateMachineDesignEventNames()
       {
         // ensure that 1 copy of the machineDesignName exists in the targetSiteModels List,
         //    and we reflect THAT Id in the source list
-        for (int I = 0; I < SourceLists.MachineDesignNameIDStateEvents.Count(); I++)
+        for (var I = 0; I < _sourceLists.MachineDesignNameIDStateEvents.Count(); I++)
         {
-          SourceLists.MachineDesignNameIDStateEvents.GetStateAtIndex(I, out DateTime dateTime, out int machineDesignId);
+          _sourceLists.MachineDesignNameIDStateEvents.GetStateAtIndex(I, out var dateTime, out var machineDesignId);
           if (machineDesignId > -1)
           {
-            var sourceMachineDesign = SourceSiteModel.SiteModelMachineDesigns.Locate(machineDesignId);
+            var sourceMachineDesign = _sourceSiteModel.SiteModelMachineDesigns.Locate(machineDesignId);
             if (sourceMachineDesign != null)
             {
-              var targetMachineDesign = TargetSiteModel.SiteModelMachineDesigns.CreateNew(sourceMachineDesign.Name);
-              SourceLists.MachineDesignNameIDStateEvents.SetStateAtIndex(I, targetMachineDesign.Id);
+              var targetMachineDesign = _targetSiteModel.SiteModelMachineDesigns.CreateNew(sourceMachineDesign.Name);
+              _sourceLists.MachineDesignNameIDStateEvents.SetStateAtIndex(I, targetMachineDesign.Id);
             }
           }
           else
@@ -75,7 +75,7 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                 source.Sort();
 
             target.CopyEventsFrom(source);
-            target.Collate(TargetLists);
+            target.Collate(_targetLists);
         }
 
         private void PerformListIntegration(IProductionEvents source, IProductionEvents target)
@@ -89,11 +89,11 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         ISiteModel sourceSiteModel,
         ISiteModel targetSiteModel)
       {
-        SourceLists = sourceLists;
-        TargetLists = targetLists;
-        IntegratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
-        SourceSiteModel = sourceSiteModel;
-        TargetSiteModel = targetSiteModel;
+        _sourceLists = sourceLists;
+        _targetLists = targetLists;
+        _integratingIntoPersistentDataModel = integratingIntoPersistentDataModel;
+        _sourceSiteModel = sourceSiteModel;
+        _targetSiteModel = targetSiteModel;
         IntegrateMachineEvents();
       }
 
@@ -104,34 +104,34 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         {
             IntegrateMachineDesignEventNames();
 
-            IProductionEvents SourceStartEndRecordedDataList = SourceLists.StartEndRecordedDataEvents;
+            IProductionEvents sourceStartEndRecordedDataList = _sourceLists.StartEndRecordedDataEvents;
 
             // Always integrate the machine recorded data start/stop events first, as collation
             // of the other events depends on collation of these events
-            PerformListIntegration(SourceStartEndRecordedDataList, TargetLists.StartEndRecordedDataEvents); 
+            PerformListIntegration(sourceStartEndRecordedDataList, _targetLists.StartEndRecordedDataEvents); 
 
-            var sourceEventLists = SourceLists.GetEventLists();
-            var targetEventLists = TargetLists.GetEventLists();
+            var sourceEventLists = _sourceLists.GetEventLists();
+            var targetEventLists = _targetLists.GetEventLists();
 
             // Integrate all remaining event lists and collate them wrt the machine start/stop recording events
-            foreach (var evt in _productionEventTypeValues)
+            foreach (var evt in ProductionEventTypeValues)
             {
-                IProductionEvents SourceList = sourceEventLists[(int)evt];
+                var sourceList = sourceEventLists[evt];
 
-                if (SourceList != null && SourceList != SourceStartEndRecordedDataList && SourceList.Count() > 0)
+                if (sourceList != null && sourceList != sourceStartEndRecordedDataList && sourceList.Count() > 0)
                 {
                     // The source event list is always an in-memory list. The target event list
                     // will be an in-memory list unless IntegratingIntoPersistentDataModel is true,
                     // in which case the source events are being integrated into the data model events
                     // list present in the persistent store.
 
-                    IProductionEvents TargetList = targetEventLists[(int)evt] ?? TargetLists.GetEventList(SourceList.EventListType);
+                    var targetList = targetEventLists[evt] ?? _targetLists.GetEventList(sourceList.EventListType);
 
-                    if (IntegratingIntoPersistentDataModel && TargetList == null)
+                    if (_integratingIntoPersistentDataModel && targetList == null)
                         Log.LogError($"Event list {evt} not available in IntegrateMachineEvents");
 
-                    if (TargetList != null)
-                        PerformListIntegration(SourceList, TargetList);
+                    if (targetList != null)
+                        PerformListIntegration(sourceList, targetList);
                 }
             }
         }
