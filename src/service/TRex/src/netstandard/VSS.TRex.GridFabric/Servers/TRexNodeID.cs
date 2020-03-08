@@ -16,7 +16,7 @@ namespace VSS.TRex.Servers
 
         public static string ThisNodeID(StorageMutability mutability)
         {
-            if (tRexNodeIDs[(int)mutability] == "")
+            if (string.IsNullOrEmpty(tRexNodeIDs[(int)mutability]))
             {
                 tRexNodeIDs[(int)mutability] = DIContext.Obtain<ITRexGridFactory>().Grid(mutability).GetCluster().GetLocalNode().GetAttribute<string>("TRexNodeId");
             }
