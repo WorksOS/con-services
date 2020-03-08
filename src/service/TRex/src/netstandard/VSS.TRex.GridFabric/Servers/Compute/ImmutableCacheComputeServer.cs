@@ -163,10 +163,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       base.ConfigureNonSpatialImmutableCache(cfg);
 
       cfg.Name = TRexCaches.ImmutableNonSpatialCacheName();
-      cfg.KeepBinaryInStore = false;
+      cfg.KeepBinaryInStore = true;
 
       // Non-spatial (event) data is replicated to all nodes for local access
       cfg.CacheMode = CacheMode.Replicated;
+
+      // TODO: No backups for now
       cfg.Backups = 0;
     }
 
@@ -183,7 +185,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       base.ConfigureImmutableSpatialCache(cfg);
 
       cfg.Name = TRexCaches.ImmutableSpatialCacheName();
-      cfg.KeepBinaryInStore = false;
+      cfg.KeepBinaryInStore = true;
+
+      // TODO: No backups for now
       cfg.Backups = 0;
 
       // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
@@ -196,6 +200,21 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
     {
       return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
+    }
+
+    private void InstantiateSiteModelExistenceMapsCacheReference()
+    {
+      immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
+      {
+        Name = TRexCaches.ProductionDataExistenceMapCacheName(StorageMutability.Immutable),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Replicated,
+
+        // TODO: No backups for now
+        Backups = 0,
+
+        DataRegionName = DataRegions.IMMUTABLE_SPATIAL_DATA_REGION
+      });
     }
 
     private void InstantiateSiteModelsCacheReference()
@@ -272,6 +291,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       var spatialCacheConfiguration = new CacheConfiguration();
       ConfigureImmutableSpatialCache(spatialCacheConfiguration);
       SpatialImmutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
+
+      InstantiateSiteModelExistenceMapsCacheReference();
 
       InstantiateSiteModelsCacheReference();
       InstantiateSiteModelMachinesChangeMapsCacheReference();

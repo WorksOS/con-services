@@ -21,6 +21,9 @@ namespace VSS.TRex.Storage.Caches
         private const string kSiteModelsCacheMutable = "SiteModelsCache-Mutable";
         private const string kSiteModelsCacheImmutable = "SiteModelsCache-Immutable";
 
+        private const string kProductionDataExistenceMapCacheImmutable = "ProductionDataExistenceMapCache-Immutable";
+        private const string kProductionDataExistenceMapCacheMutable = "ProductionDataExistenceMapCache-Mutable";
+
         private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
         private const string kSiteModelChangeMapsCacheName = "SiteModelChangeMapsCache";
 
@@ -80,6 +83,12 @@ namespace VSS.TRex.Storage.Caches
         /// <returns></returns>
         public static string SiteModelsCacheName(StorageMutability mutability) => mutability == StorageMutability.Immutable ? kSiteModelsCacheImmutable : kSiteModelsCacheMutable;
         
+        /// <summary>
+        /// Returns the name of of the production data existence maps cache
+        /// </summary>
+        /// <returns></returns>
+        public static string ProductionDataExistenceMapCacheName(StorageMutability mutability) => mutability == StorageMutability.Immutable ? kProductionDataExistenceMapCacheImmutable : kProductionDataExistenceMapCacheMutable;
+
         /// <summary>
         /// Returns the name of of the design topology existence maps
         /// </summary>

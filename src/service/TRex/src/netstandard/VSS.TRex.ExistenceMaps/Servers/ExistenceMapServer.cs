@@ -23,7 +23,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// Each existence map is stored in it's serialized byte stream from. It does not define the grid per se, but does
         /// define a cache that is used within the grid to stored existence maps
         /// </summary>
-        private readonly ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> DesignTopologyExistenceMapsCache;
+        private readonly ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> _designTopologyExistenceMapsCache;
 
         /// <summary>
         /// Default no-arg constructor that creates the Ignite cache within the server
@@ -32,9 +32,9 @@ namespace VSS.TRex.ExistenceMaps.Servers
         {
             var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable);
             
-            DesignTopologyExistenceMapsCache = ignite?.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
+            _designTopologyExistenceMapsCache = ignite?.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(ConfigureDesignTopologyExistenceMapsCache());
 
-            if (DesignTopologyExistenceMapsCache == null)
+            if (_designTopologyExistenceMapsCache == null)
                 throw new TRexException($"Failed to get or create Ignite cache {TRexCaches.DesignTopologyExistenceMapsCacheName()}, ignite reference is {ignite}");
         }
 
@@ -48,7 +48,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
                 Name = TRexCaches.DesignTopologyExistenceMapsCacheName(),
 
                 // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
-                KeepBinaryInStore = false,
+                KeepBinaryInStore = true,
 
                 // Replicate the maps across nodes
                 CacheMode = CacheMode.Replicated,
@@ -69,7 +69,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         {
             try
             {
-                return DesignTopologyExistenceMapsCache.Get(key);
+                return _designTopologyExistenceMapsCache.Get(key);
             }
             catch (KeyNotFoundException)
             {
@@ -85,7 +85,7 @@ namespace VSS.TRex.ExistenceMaps.Servers
         /// <param name="map"></param>
         public void SetExistenceMap(INonSpatialAffinityKey key, ISerialisedByteArrayWrapper map)
         {
-            DesignTopologyExistenceMapsCache.Put(key, map);
+            _designTopologyExistenceMapsCache.Put(key, map);
         }
     }
 }

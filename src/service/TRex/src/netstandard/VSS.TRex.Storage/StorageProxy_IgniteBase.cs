@@ -21,24 +21,19 @@ namespace VSS.TRex.Storage
     private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_IgniteBase>();
 
     private IMutabilityConverter _mutabilityConverter;
-    private IMutabilityConverter MutabilityConverter => _mutabilityConverter ?? (_mutabilityConverter = DIContext.Obtain<IMutabilityConverter>());
+    private IMutabilityConverter MutabilityConverter => _mutabilityConverter ??= DIContext.Obtain<IMutabilityConverter>();
 
     protected readonly IIgnite ignite;
 
     protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> generalNonSpatialCache;
     protected IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> spatialCache;
+    protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> spatialDataExistenceMapCache;
 
     public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache => spatialCache;
 
-
     protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> siteModelCache;
-
-    public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> SiteModelCache => siteModelCache;
-
-
     protected IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> siteModelMachineCache;
 
-    public IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> SiteModelMachineCache => siteModelMachineCache;
 
     /// <summary>
     /// Determines the correct cache to read/write particular types of information from/to
@@ -47,13 +42,12 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialCache(FileSystemStreamType streamType)
     {
-      switch (streamType)
+      return streamType switch
       {
-        case FileSystemStreamType.ProductionDataXML:
-          return siteModelCache;
-        default:
-          return generalNonSpatialCache;
-      }
+        FileSystemStreamType.ProductionDataXML => siteModelCache,
+        FileSystemStreamType.SubGridExistenceMap => spatialDataExistenceMapCache,
+        _ => generalNonSpatialCache
+      };
     }
 
     /// <summary>
@@ -66,13 +60,11 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> ProjectMachineCache(FileSystemStreamType streamType)
     {
-      switch (streamType)
+      return streamType switch
       {
-        case FileSystemStreamType.SiteModelMachineElevationChangeMap:
-          return siteModelMachineCache;
-        default:
-          return null;
-      }
+        FileSystemStreamType.SiteModelMachineElevationChangeMap => siteModelMachineCache,
+        _ => null
+      };
     }
 
     /// <summary>
@@ -80,7 +72,7 @@ namespace VSS.TRex.Storage
     /// </summary>
     public StorageMutability Mutability { get; set; }
 
-    public StorageProxy_IgniteBase(StorageMutability mutability)
+    protected StorageProxy_IgniteBase(StorageMutability mutability)
     {
       Mutability = mutability;
 
@@ -90,22 +82,22 @@ namespace VSS.TRex.Storage
     /// <summary>
     /// Computes the cache key name for a given data model and a given named stream within that datamodel
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="Name"></param>
+    /// <param name="dataModelId"></param>
+    /// <param name="name"></param>
     /// <returns></returns>
-    protected static INonSpatialAffinityKey ComputeNamedStreamCacheKey(Guid DataModelID, string Name) => new NonSpatialAffinityKey(DataModelID, Name);
+    protected static INonSpatialAffinityKey ComputeNamedStreamCacheKey(Guid dataModelId, string name) => new NonSpatialAffinityKey(dataModelId, name);
 
     /// <summary>
     /// Computes the cache key name for the given data model and a given spatial data stream within that datamodel
     /// </summary>
-    /// <param name="DataModelID"></param>
-    /// <param name="Name"></param>
-    /// <param name="SubgridX"></param>
-    /// <param name="SubgridY"></param>
+    /// <param name="dataModelId"></param>
+    /// <param name="name"></param>
+    /// <param name="subGridX"></param>
+    /// <param name="subGridY"></param>
     /// <returns></returns>
-    protected static string ComputeNamedStreamCacheKey(long DataModelID, string Name, uint SubgridX, uint SubgridY)
+    protected static string ComputeNamedStreamCacheKey(long dataModelId, string name, uint subGridX, uint subGridY)
     {
-      return $"{DataModelID}-{Name}-{SubgridX}-{SubgridY}";
+      return $"{dataModelId}-{name}-{subGridX}-{subGridY}";
     }
 
     /// <summary>
@@ -126,9 +118,9 @@ namespace VSS.TRex.Storage
         return false;
       }
 
-      using (var MS = new MemoryStream(mutableCache.Get(cacheKey).Bytes))
+      using (var ms = new MemoryStream(mutableCache.Get(cacheKey).Bytes))
       {
-        using (var mutableStream = MemoryStreamCompression.Decompress(MS))
+        using (var mutableStream = MemoryStreamCompression.Decompress(ms))
         {
           return PerformNonSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
         }
@@ -210,10 +202,8 @@ namespace VSS.TRex.Storage
         return;
       }
 
-      using (MemoryStream MS = new MemoryStream(mutableCache.Get(cacheKey).Bytes), mutableStream = MemoryStreamCompression.Decompress(MS))
-      {
-        PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
-      }
+      using MemoryStream ms = new MemoryStream(mutableCache.Get(cacheKey).Bytes), mutableStream = MemoryStreamCompression.Decompress(ms);
+      PerformSpatialImmutabilityConversion(mutableStream, immutableCache, cacheKey, streamType, null);
     }
 
     /// <summary>

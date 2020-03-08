@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Apache.Ignite.Core;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage
 {
@@ -33,18 +29,87 @@ namespace VSS.TRex.Storage
     /// <param name="mutability"></param>
     public StorageProxy_Ignite_Transactional(StorageMutability mutability) : base(mutability)
     {
-      EstablishCaches();
     }
 
-    /// <summary>
-    /// Creates transactional storage proxies to be used by the consuming client
-    /// </summary>
-    private void EstablishCaches()
+    private bool CommitAsync(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
-      spatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
-      generalNonSpatialCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
-      siteModelCache = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>()(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
+      numDeleted = 0;
+      numUpdated = 0;
+      numBytesWritten = 0;
+
+      (int, int, long) LocalCommit(IStorageProxyCacheCommit committer)
+      {
+        try
+        {
+          spatialCache.Commit(out var numDeletedLocal, out var numUpdatedLocal, out var numBytesWrittenLocal);
+          return (numDeletedLocal, numUpdatedLocal, numBytesWrittenLocal);
+        }
+        catch (Exception e)
+        {
+          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer.Name}");
+          throw;
+        }
+      }
+
+      var commitTasks = new List<Task<(int numDeletedLocal, int numUpdatedLocal, long numBytesWrittenLocal)>>
+        {
+          Task.Factory.Run(() => LocalCommit(spatialCache)),
+          Task.Factory.Run(() => LocalCommit(generalNonSpatialCache)),
+          Task.Factory.Run(() => LocalCommit(siteModelCache)),
+          Task.Factory.Run(() => LocalCommit(spatialDataExistenceMapCache)),
+          Task.Factory.Run(() => LocalCommit(siteModelMachineCache))
+        };
+
+      var commitResults = commitTasks.WhenAll();
+      commitResults.Wait();
+
+      if (commitResults.IsFaulted || commitTasks.Any(x => x.IsFaulted))
+        return false;
+
+      foreach (var (numDeletedLocal, numUpdatedLocal, numBytesWrittenLocal) in commitResults.Result)
+      {
+        numDeleted += numDeletedLocal;
+        numUpdated += numUpdatedLocal;
+        numBytesWritten += numBytesWrittenLocal;
+      }
+
+      return true;
     }
+
+    private bool CommitSync(out int numDeleted, out int numUpdated, out long numBytesWritten)
+    {
+      var numDeletedLocal = 0;
+      var numUpdatedLocal = 0;
+      long numBytesWrittenLocal = 0;
+
+      void LocalCommit(IStorageProxyCacheCommit committer)
+      {
+        try
+        {
+          spatialCache.Commit(out var numDeletedInternal, out var numUpdatedInternal, out var numBytesWrittenInternal);
+          numDeletedLocal += numDeletedInternal;
+          numUpdatedLocal += numUpdatedInternal;
+          numBytesWrittenLocal += numBytesWrittenInternal;
+        }
+        catch (Exception e)
+        {
+          Log.LogError(e, $"Exception thrown committing changes to Ignite for {committer.Name}");
+          throw;
+        }
+      }
+
+      LocalCommit(spatialCache);
+      LocalCommit(generalNonSpatialCache);
+      LocalCommit(siteModelCache);
+      LocalCommit(spatialDataExistenceMapCache);
+      LocalCommit(siteModelMachineCache);
+
+      numDeleted = numDeletedLocal;
+      numUpdated = numUpdatedLocal;
+      numBytesWritten = numBytesWrittenLocal;
+      return true;
+    }
+
 
     /// <summary>
     /// Commits all unsaved changes in the spatial and non-spatial stores. Each store is committed asynchronously.
@@ -52,111 +117,11 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public override bool Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
-      numDeleted = 0;
-      numUpdated = 0;
-      numBytesWritten = 0;
+      var commitOk = UseAsyncTasksForStorageProxyIgniteTransactionalCommits 
+        ? CommitAsync(out numDeleted, out numUpdated, out numBytesWritten) 
+        : CommitSync(out numDeleted, out numUpdated, out numBytesWritten);
 
-      if (UseAsyncTasksForStorageProxyIgniteTransactionalCommits)
-      {
-        var commitTasks = new List<Task<(int _numDeleted, int _numUpdated, long _numBytesWritten)>>
-        {
-          Task.Factory.Run(() =>
-          {
-            try
-            {
-              spatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
-              return (_numDeleted, _numUpdated, _numBytesWritten);
-            }
-            catch
-            {
-              Log.LogError("Exception thrown committing changes to Ignite for spatial cache");
-              throw;
-            }
-          }),
-          Task.Factory.Run(() =>
-          {
-            try
-            {
-              generalNonSpatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
-              return (_numDeleted, _numUpdated, _numBytesWritten);
-            }
-            catch
-            {
-              Log.LogError("Exception thrown committing changes to Ignite for general non spatial cache");
-              throw;
-            }
-          }),
-          Task.Factory.Run(() =>
-          {
-            try
-            {
-              siteModelCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
-              return (_numDeleted, _numUpdated, _numBytesWritten);
-            }
-            catch
-            {
-              Log.LogError("Exception thrown committing changes to Ignite for site model cache");
-              throw;
-            }
-          })
-        };
-
-        var commitResults = commitTasks.WhenAll();
-        commitResults.Wait();
-
-        if (commitResults.IsFaulted || commitTasks.Any(x => x.IsFaulted))
-          return false;
-
-        foreach (var (_numDeleted, _numUpdated, _numBytesWritten) in commitResults.Result)
-        {
-          numDeleted += _numDeleted;
-          numUpdated += _numUpdated;
-          numBytesWritten += _numBytesWritten;
-        }
-      }
-      else
-      {
-        try
-        {
-          spatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
-          numDeleted += _numDeleted;
-          numUpdated += _numUpdated;
-          numBytesWritten += _numBytesWritten;
-        }
-        catch (Exception e)
-        {
-          Log.LogError(e, "Exception thrown committing changes to Ignite for spatial cache");
-          throw;
-        }
-
-        try
-        {
-          generalNonSpatialCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
-          numDeleted += _numDeleted;
-          numUpdated += _numUpdated;
-          numBytesWritten += _numBytesWritten;
-        }
-        catch
-        {
-          Log.LogError("Exception thrown committing changes to Ignite for general non spatial cache");
-          throw;
-        }
-
-        try
-        {
-          siteModelCache.Commit(out var _numDeleted, out var _numUpdated, out var _numBytesWritten);
-          numDeleted += _numDeleted;
-          numUpdated += _numUpdated;
-          numBytesWritten += _numBytesWritten;
-        }
-        catch
-        {
-          Log.LogError("Exception thrown committing changes to Ignite for site model cache");
-          throw;
-        }
-      }
-
-      return ImmutableProxy?.Commit() ?? true;
+      return commitOk && (ImmutableProxy?.Commit() ?? true);
     }
 
     public override bool Commit() => Commit(out _, out _, out _);
@@ -166,36 +131,25 @@ namespace VSS.TRex.Storage
     /// </summary>
     public override void Clear()
     {
-      try
+      void LocalClear(IStorageProxyCacheCommit committer)
       {
-        spatialCache.Clear();
-      }
-      catch
-      {
-        Log.LogError("Exception thrown clearing changes for spatial cache");
-        throw;
-      }
-
-      try
-      {
-        generalNonSpatialCache.Clear();
-      }
-      catch
-      {
-        Log.LogError("Exception thrown clearing changes for general non spatial cache");
-        throw;
+        try
+        {
+          committer.Clear();
+        }
+        catch
+        {
+          Log.LogError($"Exception thrown clearing changes for cache {committer.Name}");
+          throw;
+        }
       }
 
-      try
-      {
-        siteModelCache.Clear();
-      }
-      catch
-      {
-        Log.LogError("Exception thrown clearing changes for site model cache");
-        throw;
-      }
-
+      LocalClear(SpatialCache);
+      LocalClear(generalNonSpatialCache);
+      LocalClear(siteModelCache);
+      LocalClear(spatialDataExistenceMapCache);
+      LocalClear(siteModelMachineCache);
+      
       ImmutableProxy?.Clear();
     }
   }
