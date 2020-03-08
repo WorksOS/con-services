@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.Common.Abstractions.Configuration;
@@ -83,7 +82,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         {
           Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
           InitialSize = 128 * 1024 * 1024,  // 128 MB
-          MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
+          MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB
+
           PersistenceEnabled = true
         }
       };
@@ -91,7 +91,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       Log.LogInformation($"cfg.DataStorageConfiguration.StoragePath={cfg.DataStorageConfiguration.StoragePath}");
       Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
       Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
-
 
       bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
@@ -171,12 +170,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.Backups = 0;
     }
 
-    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      Console.WriteLine($"CacheConfig is: {CacheCfg}");
+      Console.WriteLine($"CacheConfig is: {cacheCfg}");
       Console.WriteLine($"immutableTRexGrid is : {immutableTRexGrid}");
 
-      return immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
     }
 
     public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
@@ -194,9 +193,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.AffinityFunction = new ImmutableSpatialAffinityFunction();
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
     }
 
     private void InstantiateSiteModelsCacheReference()
@@ -268,7 +267,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       var cacheCfg = new CacheConfiguration();
       ConfigureNonSpatialImmutableCache(cacheCfg);
-      NonSpatialImmutableCache = InstantiateNonSpatialTRexCacheReference(cacheCfg);
+      NonSpatialImmutableCache = InstantiateNonSpatialCacheReference(cacheCfg);
 
       var spatialCacheConfiguration = new CacheConfiguration();
       ConfigureImmutableSpatialCache(spatialCacheConfiguration);
