@@ -8,7 +8,7 @@ namespace VSS.TRex.GridFabric.Affinity
   /// <summary>
   /// The affinity function used by TRex to spread spatial data amongst processing servers
   /// </summary>
-  public class ImmutableSpatialAffinityFunction : AffinityFunctionBase
+  public class SubGridBasedSpatialAffinityFunction : AffinityFunctionBase
   {
     /// <summary>
     /// Given a cache key, determine which partition the cache item should reside

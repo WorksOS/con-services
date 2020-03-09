@@ -53,8 +53,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       cfg.IgniteInstanceName = TRexGrids.MutableGridName();
 
-      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB);
-      cfg.JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB);
+      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB);
+      cfg.JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB);
 
       cfg.UserAttributes = new Dictionary<string, object>
       {
@@ -113,7 +113,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       // Set an Ignite metrics heartbeat of 10 seconds
       cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
 
-      cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE);
+      cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE);
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
 
@@ -200,7 +200,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.CacheMode = CacheMode.Partitioned;
 
       // Configure the function that maps sub grid data into the affinity map for the nodes in the grid
-      cfg.AffinityFunction = new MutableSpatialAffinityFunction();
+      cfg.AffinityFunction = new ProjectBasedSpatialAffinityFunction();
     }
 
     public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
@@ -233,8 +233,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         KeepBinaryInStore = true,
         CacheMode = CacheMode.Replicated,
 
-        // TODO: No backups for now
-        Backups = 0,
+        Backups = 0,  // No backups need as it is a replicated cache
 
         DataRegionName = DataRegions.MUTABLE_SPATIAL_DATA_REGION
       });
