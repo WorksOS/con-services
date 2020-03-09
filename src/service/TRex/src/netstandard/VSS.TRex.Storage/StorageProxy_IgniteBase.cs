@@ -25,15 +25,14 @@ namespace VSS.TRex.Storage
 
     protected readonly IIgnite ignite;
 
+    protected IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> spatialSubGridDirectoryCache;
+    protected IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> spatialSubGridSegmentCache;
+
     protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> generalNonSpatialCache;
-    protected IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> spatialCache;
     protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> spatialDataExistenceMapCache;
-
-    public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache => spatialCache;
-
     protected IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> siteModelCache;
-    protected IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> siteModelMachineCache;
 
+    protected IStorageProxyCache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> siteModelMachineCache;
 
     /// <summary>
     /// Determines the correct cache to read/write particular types of information from/to
@@ -47,6 +46,21 @@ namespace VSS.TRex.Storage
         FileSystemStreamType.ProductionDataXML => siteModelCache,
         FileSystemStreamType.SubGridExistenceMap => spatialDataExistenceMapCache,
         _ => generalNonSpatialCache
+      };
+    }
+
+    /// <summary>
+    /// Determines the correct cache to read/write particular types of information from/to
+    /// </summary>
+    /// <param name="streamType"></param>
+    /// <returns></returns>
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache(FileSystemStreamType streamType)
+    {
+      return streamType switch
+      {
+        FileSystemStreamType.SubGridDirectory => spatialSubGridDirectoryCache,
+        FileSystemStreamType.SubGridSegment => spatialSubGridSegmentCache,
+        _ => null
       };
     }
 

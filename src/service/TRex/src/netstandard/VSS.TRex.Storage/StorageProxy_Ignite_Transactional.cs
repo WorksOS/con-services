@@ -58,7 +58,8 @@ namespace VSS.TRex.Storage
 
       var commitTasks = new List<Task<(int numDeletedLocal, int numUpdatedLocal, long numBytesWrittenLocal)>>
       {
-        Task.Factory.Run(() => LocalCommit(spatialCache)),
+        Task.Factory.Run(() => LocalCommit(spatialSubGridDirectoryCache)),
+        Task.Factory.Run(() => LocalCommit(spatialSubGridSegmentCache)),
         Task.Factory.Run(() => LocalCommit(generalNonSpatialCache)),
         Task.Factory.Run(() => LocalCommit(siteModelCache)),
         Task.Factory.Run(() => LocalCommit(spatialDataExistenceMapCache)),
@@ -108,7 +109,8 @@ namespace VSS.TRex.Storage
         }
       }
 
-      LocalCommit(spatialCache);
+      LocalCommit(spatialSubGridDirectoryCache);
+      LocalCommit(spatialSubGridSegmentCache);
       LocalCommit(generalNonSpatialCache);
       LocalCommit(siteModelCache);
       LocalCommit(spatialDataExistenceMapCache);
@@ -154,7 +156,8 @@ namespace VSS.TRex.Storage
         }
       }
 
-      LocalClear(SpatialCache);
+      LocalClear(spatialSubGridDirectoryCache);
+      LocalClear(spatialSubGridSegmentCache);
       LocalClear(generalNonSpatialCache);
       LocalClear(siteModelCache);
       LocalClear(spatialDataExistenceMapCache);
