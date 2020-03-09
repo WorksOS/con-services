@@ -52,6 +52,6 @@ namespace VSS.TRex.Common
         /// <summary>
         /// The file system location in which to store Ignite persistent data
         /// </summary>
-        public static string PersistentCacheStoreLocation => DIContext.Obtain<IConfigurationStore>().GetValueString(PERSISTENT_CACHE_STORE_LOCATION, Path.Combine(Path.GetTempPath(), "TRexIgniteData"));
+        public static string PersistentCacheStoreLocation => DIContext.Obtain<IConfigurationStore>().GetValueString(PERSISTENT_CACHE_STORE_LOCATION, Path.Combine(Path.GetTempPath(), "TRexIgnitePersistentData"));
     }
 }
