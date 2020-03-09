@@ -18,7 +18,7 @@ namespace VSS.TRex.Common
 
         private static string PERSISTENT_CACHE_STORE_LOCATION = "PERSISTENT_CACHE_STORE_LOCATION";
 
-        private static TRexServerConfig instance;
+        private static TRexServerConfig _instance;
 
         /// <summary>
         /// Constructs a static instance of the configuration information supplied to the process on the command line
@@ -26,22 +26,22 @@ namespace VSS.TRex.Common
         /// <returns></returns>
         public static TRexServerConfig Instance()
         {
-            if (instance == null)
+            if (_instance != null) 
+              return _instance;
+
+            Log.LogInformation("Creating TRexServerConfig");
+
+            var args = Environment.CommandLine.Split(new [] { " " }, StringSplitOptions.RemoveEmptyEntries);
+
+            Log.LogInformation($"Number of process args provided: {args.Length}");
+            if (args.Length > 0)
             {
-                Log.LogInformation("Creating TRexServerConfig");
-
-                var args = Environment.CommandLine.Split(new [] { " " }, StringSplitOptions.RemoveEmptyEntries);
-
-                Log.LogInformation($"Number of process args provided: {args.Length}");
-                if (args.Length > 0)
-                {
-                    Log.LogInformation($"Process args: {args.Aggregate((s1, s2) => s1 + " " + s2 + "\n")}");
-                }
-
-                instance = new TRexServerConfig();
+              Log.LogInformation($"Process args: {args.Aggregate((s1, s2) => s1 + " " + s2 + "\n")}");
             }
 
-            return instance;
+            _instance = new TRexServerConfig();
+
+            return _instance;
         }
 
         private TRexServerConfig()
