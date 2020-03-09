@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.Common.Abstractions.Configuration;
@@ -58,9 +57,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB);
 
       cfg.UserAttributes = new Dictionary<string, object>
-            {
-                { "Owner", TRexGrids.MutableGridName() }
-            };
+      {
+        { "Owner", TRexGrids.MutableGridName() }
+      };
 
       // Configure the Ignite persistence layer to store our data
       // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
@@ -84,16 +83,16 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
         // Establish a separate data region for the TAG file buffer queue
         DataRegionConfigurations = new List<DataRegionConfiguration>
-                {
-                    new DataRegionConfiguration
-                    {
-                        Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                        InitialSize = 256 * 1024 * 1024,  // 128 MB to start
-                        MaxSize = 256 * 1024 * 1024,  
+        {
+          new DataRegionConfiguration
+          {
+            Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
+            InitialSize = 256 * 1024 * 1024,  // 128 MB to start
+            MaxSize = 256 * 1024 * 1024,  
 
-                        PersistenceEnabled = true
-                    }
-                }
+            PersistenceEnabled = true
+           }
+         }
       };
 
       cfg.CacheConfiguration = new List<CacheConfiguration>();
@@ -171,37 +170,30 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
     public override void ConfigureNonSpatialMutableCache(CacheConfiguration cfg)
     {
-      //base.ConfigureNonSpatialMutableCache(cfg);
+      base.ConfigureNonSpatialMutableCache(cfg);
 
-      //cfg.Name = TRexCaches.MutableNonSpatialCacheName();
-      ////            cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
-      //cfg.KeepBinaryInStore = false;
+      cfg.Name = TRexCaches.MutableNonSpatialCacheName();
+      cfg.KeepBinaryInStore = true;
+      cfg.CacheMode = CacheMode.Partitioned;
+      cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+      cfg.Backups = 0;
 
-      //// Non-spatial (event) data is replicated to all nodes for local access
-      //cfg.CacheMode = CacheMode.Partitioned;
-
-      //// Note: The AffinityFunction is longer supplied as the ProjectUID (Guid) member of the
-      //// NonSpatialAffinityKey struct is marked with the [AffinityKeyMapped] attribute. For Partitioned caches
-      //// this means the values are spread amongst the servers per the default
-      //cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
-
-      //cfg.Backups = 0;
+      // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
     }
 
-    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
     }
 
     public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
     {
-      //TODO This is handled by SPRING at the moment
-
       base.ConfigureMutableSpatialCache(cfg);
 
       cfg.Name = TRexCaches.MutableSpatialCacheName();
-      cfg.KeepBinaryInStore = false;
+      cfg.KeepBinaryInStore = true;
 
+      // TODO: No backups for now
       cfg.Backups = 0;
 
       // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
@@ -211,30 +203,41 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.AffinityFunction = new MutableSpatialAffinityFunction();
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
     {
-      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
     }
 
     public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
     {
       cfg.Name = TRexCaches.TAGFileBufferQueueCacheName();
-
       cfg.KeepBinaryInStore = true;
-
       cfg.CacheMode = CacheMode.Partitioned;
-
       cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+      cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
 
       // TODO: No backups for now
       cfg.Backups = 0;
-
-      cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
     }
 
-    public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration CacheCfg)
+    public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration cacheCfg)
     {
-      mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(CacheCfg);
+      mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(cacheCfg);
+    }
+
+    private void InstantiateSiteModelExistenceMapsCacheReference()
+    {
+      mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
+      {
+        Name = TRexCaches.ProductionDataExistenceMapCacheName(StorageMutability.Mutable),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Replicated,
+
+        // TODO: No backups for now
+        Backups = 0,
+
+        DataRegionName = DataRegions.MUTABLE_SPATIAL_DATA_REGION
+      });
     }
 
     private void InstantiateSiteModelsCacheReference()
@@ -274,10 +277,10 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       // Add the mutable Spatial & NonSpatial caches
 
-      //CacheConfiguration CacheCfg = new CacheConfiguration();
-      //ConfigureNonSpatialMutableCache(CacheCfg);
-      var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
-      NonSpatialMutableCache = InstantiateNonSpatialTRexCacheReference(nonSpatialCacheConfiguration);
+      var nonSpatialCacheConfiguration = new CacheConfiguration();
+      ConfigureNonSpatialMutableCache(nonSpatialCacheConfiguration);
+      //var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
+      NonSpatialMutableCache = InstantiateNonSpatialCacheReference(nonSpatialCacheConfiguration);
 
       var spatialCacheConfiguration = new CacheConfiguration();
       ConfigureMutableSpatialCache(spatialCacheConfiguration);
@@ -287,6 +290,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       ConfigureTAGFileBufferQueueCache(tagCacheConfiguration);
       InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
 
+      InstantiateSiteModelExistenceMapsCacheReference();
       InstantiateSiteModelsCacheReference();
 
       // Create the SiteModel MetaData Manager so later DI context references wont need to create the cache etc for it at an inappropriate time

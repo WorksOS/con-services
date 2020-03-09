@@ -69,7 +69,7 @@ namespace VSS.TRex.GridFabric.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference(CacheConfiguration cacheCfg);
 
         /// <summary>
         /// Base configuration for the mutable spatial cache
@@ -89,7 +89,7 @@ namespace VSS.TRex.GridFabric.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_SPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
+        public abstract ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg);
 
         // This code added to correctly implement the disposable pattern.
         public void Dispose()
