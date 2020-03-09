@@ -39,8 +39,7 @@ namespace VSS.TRex.SiteModels
         // Replicate the site model metadata across nodes
         CacheMode = CacheMode.Replicated,
 
-        // TODO: No backups for now
-        Backups = 0,
+        Backups = 0,  // No backups need as it is a replicated cache
 
         DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
       };

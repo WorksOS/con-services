@@ -14,14 +14,14 @@ namespace VSS.TRex.GridFabric.Servers
     /// </summary>
     public abstract class IgniteServer : IDisposable
     {
-        public const string TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = "TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE";
-        public const int DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
+        public const string IGNITE_PUBLIC_THREAD_POOL_SIZE = "IGNITE_PUBLIC_THREAD_POOL_SIZE";
+        public const int DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
 
-        public const string TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB = "TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB";
-        public const int DEFAULT_TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB = 1 * 1024;
+        public const string IGNITE_JVM_MAX_HEAP_SIZE_MB = "IGNITE_JVM_MAX_HEAP_SIZE_MB";
+        public const int DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB = 1 * 1024;
 
-        public const string TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB = "TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB";
-        public const int DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB = 512;
+        public const string IGNITE_JVM_INITIAL_HEAP_SIZE_MB = "IGNITE_JVM_INITIAL_HEAP_SIZE_MB";
+        public const int DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB = 512;
 
         /// <summary>
         /// The mutable Ignite grid reference maintained by this server instance

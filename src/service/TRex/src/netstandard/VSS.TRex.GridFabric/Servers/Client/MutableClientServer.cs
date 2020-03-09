@@ -72,8 +72,8 @@ namespace VSS.TRex.GridFabric.Servers.Client
               "-XX:+UseG1GC"
             },
 
-            JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB),
-            JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB),
+            JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB),
+            JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB),
 
               UserAttributes = new Dictionary<string, object>()
                         {
@@ -82,41 +82,10 @@ namespace VSS.TRex.GridFabric.Servers.Client
 
             Logger = new TRexIgniteLogger(Logger.CreateLogger("MutableClientServer")),
 
-            /* Commented out as this is in the client of the service - will remove in due course...
-
-            // Don't permit the Ignite node to use more than 1Gb RAM (handy when running locally...)
-            DataStorageConfiguration = new DataStorageConfiguration()
-            {
-              WalMode = WalMode.Fsync,
-              PageSize = DataRegions.DEFAULT_MUTABLE_DATA_REGION_PAGE_SIZE,
-
-              DefaultDataRegionConfiguration = new DataRegionConfiguration
-              {
-                Name = DataRegions.DEFAULT_MUTABLE_DATA_REGION_NAME,
-                InitialSize = 128 * 1024 * 1024,  // 128 MB
-                MaxSize = 2L * 1024 * 1024 * 1024,  // 2 GB
-                PersistenceEnabled = true
-              },
-
-              // Establish a separate data region for the TAG file buffer queue
-              DataRegionConfigurations = new List<DataRegionConfiguration>
-              {
-                  new DataRegionConfiguration
-                  {
-                      Name = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
-                      InitialSize = 256 * 1024 * 1024,  // 256 MB to start
-                      MaxSize = 256 * 1024 * 1024,  
-
-                      PersistenceEnabled = true
-                  }
-              }
-            },
-            */
-
             // Set an Ignite metrics heartbeat of 10 seconds
             MetricsLogFrequency = new TimeSpan(0, 0, 0, 10),
 
-            PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE),
+            PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE),
 
             PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled,
 

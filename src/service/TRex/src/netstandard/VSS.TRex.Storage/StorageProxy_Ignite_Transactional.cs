@@ -22,7 +22,7 @@ namespace VSS.TRex.Storage
     private static readonly ILogger Log = Logging.Logger.CreateLogger<StorageProxy_Ignite_Transactional>();
 
     private static readonly bool UseAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
-      .GetValueBool("TREX_USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", true);
+      .GetValueBool("USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", true);
     /// <summary>
     /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
     /// </summary>

@@ -703,7 +703,7 @@ Result = false;
 
 // Read its content from storage 
         var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName,
-          FileSystemStreamType.SubGridExistenceMap, out MemoryStream MS);
+          FileSystemStreamType.SubGridExistenceMap, out var MS);
 
         if (MS != null)
         {
