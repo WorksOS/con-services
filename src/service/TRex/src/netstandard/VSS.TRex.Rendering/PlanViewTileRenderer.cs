@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Models;
@@ -21,7 +22,7 @@ namespace VSS.TRex.Rendering
   /// </summary>
   public class PlanViewTileRenderer : IDisposable
   {
-    //private static readonly ILogger Log = Logging.Logger.CreateLogger<PlanViewTileRenderer>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<PlanViewTileRenderer>();
 
     public double OriginX;
     public double OriginY;
@@ -217,7 +218,7 @@ namespace VSS.TRex.Rendering
       if (processor.Response.ResultStatus == RequestErrorStatus.OK)
       {
         // Render the collection of data in the aggregator
-        (Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender();
+        (Displayer as IProductionPVMConsistentDisplayer)?.PerformConsistentRender(Log);
 
         PerformAnyRequiredDebugLevelDisplay();
 

@@ -299,6 +299,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.DataSmoothing", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Authentication.JWT", "..\..\Common\VSS.Authentication\VSS.Authentication.JWT\VSS.Authentication.JWT.csproj", "{84329534-96A4-4C4E-A35A-FE9502DD0344}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutOfMemoryReproducer", "src\reproducers\OutOfMemoryReproducer\OutOfMemoryReproducer.csproj", "{68C1C4AD-CA80-405F-B74A-75C174C2B751}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1371,6 +1373,14 @@ Global
 		{84329534-96A4-4C4E-A35A-FE9502DD0344}.Release|Any CPU.Build.0 = Release|Any CPU
 		{84329534-96A4-4C4E-A35A-FE9502DD0344}.Release|x64.ActiveCfg = Release|Any CPU
 		{84329534-96A4-4C4E-A35A-FE9502DD0344}.Release|x64.Build.0 = Release|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Debug|x64.Build.0 = Debug|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Release|x64.ActiveCfg = Release|Any CPU
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1517,6 +1527,7 @@ Global
 		{87C64384-5D61-4CF2-AF45-F0E808FFB1CF} = {6744917F-2721-41A6-AA92-4A1F37D80947}
 		{32124D46-D0B2-41DB-96E2-F3122DF79401} = {60739A56-DAB5-4BDD-B54E-1ACA0FF82092}
 		{84329534-96A4-4C4E-A35A-FE9502DD0344} = {5ABC6984-0C9C-4A5C-80B4-5B559AF79F2D}
+		{68C1C4AD-CA80-405F-B74A-75C174C2B751} = {9AAEFDCA-DA56-4830-8FF4-8840AF43C825}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2E7378F-4D70-4EA4-8A6C-A96934CBABD8}

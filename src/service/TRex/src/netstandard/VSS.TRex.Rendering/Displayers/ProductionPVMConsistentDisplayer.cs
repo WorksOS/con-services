@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes.Interfaces;
@@ -69,7 +71,7 @@ namespace VSS.TRex.Rendering.Displayers
     /// This function should be called just once to render the entire set of data for a tile
     /// </summary>
     /// <returns></returns>
-    public bool PerformConsistentRender()
+    public bool PerformConsistentRender(ILogger log)
     {
       if (_taskAccumulator == null)
       {
@@ -87,7 +89,12 @@ namespace VSS.TRex.Rendering.Displayers
       // If there is a defined elevation smoother for ths rendering context then use it to modify the data assembled
       // for the tile to be rendered and replace the value store with the result of the smooth operation;
 
-      ValueStore = (DataSmoother as IArrayDataSmoother<TC>)?.Smooth(ValueStore) ?? ValueStore;
+      if (DataSmoother is IArrayDataSmoother<TC> smoother)
+      {
+        var timer = Stopwatch.StartNew();
+        ValueStore = smoother.Smooth(ValueStore) ?? ValueStore;
+        log.LogInformation($"Smoother applied to {ValueStore.Length} elements in {timer.Elapsed}");
+      }
 
       // Draw the cells in the grid in stripes, starting from the southern most
       // row in the grid and progressing from the western end to the eastern end

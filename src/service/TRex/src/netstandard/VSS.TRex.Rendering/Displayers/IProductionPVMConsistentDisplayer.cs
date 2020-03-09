@@ -1,4 +1,5 @@
-﻿using VSS.TRex.DataSmoothing;
+﻿using Microsoft.Extensions.Logging;
+using VSS.TRex.DataSmoothing;
 using VSS.TRex.Rendering.Executors.Tasks;
 
 namespace VSS.TRex.Rendering.Displayers
@@ -11,7 +12,7 @@ namespace VSS.TRex.Rendering.Displayers
       double originX, double originY,
       double sourceCellSize);
 
-    bool PerformConsistentRender();
+    bool PerformConsistentRender(ILogger log);
 
     IDataSmoother DataSmoother { get; set; }
   }
