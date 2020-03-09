@@ -133,9 +133,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     /// <returns></returns>
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
-      //TODO this should not be here but will do for the moment
-      TRexServerConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
-
       cfg.SpringConfigUrl = @".\immutablePersistence.xml";
 
       // Enforce using only the LocalHost interface

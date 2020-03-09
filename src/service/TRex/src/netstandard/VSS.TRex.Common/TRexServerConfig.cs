@@ -2,6 +2,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using VSS.Common.Abstractions.Configuration;
+using VSS.TRex.DI;
 
 namespace VSS.TRex.Common
 {
@@ -13,6 +15,8 @@ namespace VSS.TRex.Common
     public class TRexServerConfig
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexServerConfig>();
+
+        private static string PERSISTENT_CACHE_STORE_LOCATION = "PERSISTENT_CACHE_STORE_LOCATION";
 
         private static TRexServerConfig instance;
 
@@ -26,7 +30,7 @@ namespace VSS.TRex.Common
             {
                 Log.LogInformation("Creating TRexServerConfig");
 
-                string[] args = Environment.CommandLine.Split(new [] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                var args = Environment.CommandLine.Split(new [] { " " }, StringSplitOptions.RemoveEmptyEntries);
 
                 Log.LogInformation($"Number of process args provided: {args.Length}");
                 if (args.Length > 0)
@@ -48,7 +52,6 @@ namespace VSS.TRex.Common
         /// <summary>
         /// The file system location in which to store Ignite persistent data
         /// </summary>
-        public static string PersistentCacheStoreLocation = Path.Combine("/persist", "TRexIgniteData");
-        //public static string PersistentCacheStoreLocation = "C:/temp/TRexIgniteData"; //Path.Combine(Path.GetTempPath(), "TRexIgniteData");
+        public static string PersistentCacheStoreLocation => DIContext.Obtain<IConfigurationStore>().GetValueString(PERSISTENT_CACHE_STORE_LOCATION, Path.Combine(Path.GetTempPath(), "TRexIgniteData"));
     }
 }
