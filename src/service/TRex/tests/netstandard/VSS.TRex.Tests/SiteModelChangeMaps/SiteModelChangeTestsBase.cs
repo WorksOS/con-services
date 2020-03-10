@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.SiteModelChangeMaps;
-using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.Storage.Caches;
@@ -29,7 +28,8 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
         // Add the singleton reference to the non-transacted site model change map cache
         .Add(x => x.AddSingleton<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>(
-          () => new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer())))
+          () => new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>
+            (DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer())))
 
         /////////////////////////////////////////////////////
         // Injected transacted storage proxy cache factories
@@ -37,7 +37,8 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
         // Add the singleton reference to the transacted site model change map cache
         .Add(x => x.AddSingleton<Func<IStorageProxyCacheTransacted<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>(
-          () => new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer())))
+          () => new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>
+            (DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer())))
 
         .Build()
         .Add(x => x.AddSingleton<ISiteModelChangeMapDeltaNotifier>(new SiteModelChangeMapDeltaNotifier()))

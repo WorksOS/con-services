@@ -69,7 +69,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
     private void PerformProcessEvent(SiteModelChangeBufferQueueKey key, SiteModelChangeBufferQueueItem value)
     {
-      var mockEvent = new Mock<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      var mockEvent = new Mock<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>();
       mockEvent.Setup(x => x.EventType).Returns(CacheEntryEventType.Created);
       mockEvent.Setup(x => x.Key).Returns(key);
       mockEvent.Setup(x => x.Value).Returns(value);

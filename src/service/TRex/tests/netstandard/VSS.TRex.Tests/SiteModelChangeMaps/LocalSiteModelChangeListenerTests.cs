@@ -36,13 +36,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
     [InlineData(CacheEntryEventType.Removed, false)]
     public void OnEvent_AcceptedEvent(CacheEntryEventType evtType, bool expectedToBeAccepted)
     {
-      var mockEvent = new Mock<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      var mockEvent = new Mock<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>();
       mockEvent.Setup(x => x.EventType).Returns(evtType);
 
       using (var handler = new SiteModelChangeProcessorItemHandler())
       {
         var listener = new LocalSiteModelChangeListener(handler);
-        listener.OnEvent(new List<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> {mockEvent.Object});
+        listener.OnEvent(new List<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> {mockEvent.Object});
 
         // the listener should have placed the event in to the handler
         handler.QueueCount.Should().Be(expectedToBeAccepted ? 1 : 0);

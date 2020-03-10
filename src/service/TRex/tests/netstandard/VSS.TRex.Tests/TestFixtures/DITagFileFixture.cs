@@ -13,7 +13,10 @@ using VSS.TRex.Events.Interfaces;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Factories;
+using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.SiteModelChangeMaps;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -115,7 +118,7 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .Continue()
 
-        // Add the factory to create a single storage proxy instance. This is 
+        // Add the factory to create a single storage proxy instance.
         .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => mutability == StorageMutability.Mutable ? mutableStorageProxy : immutableStorageProxy))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Build();

@@ -1,11 +1,11 @@
 ﻿using System;
-using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.NodeFilters;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
