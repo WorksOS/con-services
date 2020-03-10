@@ -93,14 +93,14 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
           return;
         }
 
-        var queueCache = _ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
+        var queueCache = _ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
 
         var handler = new SiteModelChangeProcessorItemHandler();
         var listener = new LocalSiteModelChangeListener(handler);
 
         // Obtain the query handle for the continuous query from the DI context, or if not available create it directly
-        var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>>();
-        IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> queryHandle = null;
+        var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>>();
+        IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> queryHandle = null;
 
         if (queryHandleFactory != null)
         {
@@ -110,8 +110,8 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
         if (queryHandle == null)
         {
           queryHandle = queueCache.QueryContinuous
-          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(listener) {Local = true},
-            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> {Local = true});
+          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener) {Local = true},
+            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> {Local = true});
         }
 
         // Construct the continuous query machinery

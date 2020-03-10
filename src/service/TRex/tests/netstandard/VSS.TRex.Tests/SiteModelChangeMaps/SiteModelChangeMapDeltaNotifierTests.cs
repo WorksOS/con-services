@@ -34,7 +34,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       var notifier = new SiteModelChangeMapDeltaNotifier();
 
       // The notifier uses the non-transacted storage proxy:
-      var proxy = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      var proxy = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
       proxy.Should().NotBeNull();
       proxy.Clear();
 
@@ -70,7 +70,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       var notifier = new SiteModelChangeMapDeltaNotifier();
 
       // The notifier uses the non-transacted storage proxy:
-      var proxy = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      var proxy = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
       proxy.Should().NotBeNull();
       proxy.Clear();
 
@@ -107,11 +107,11 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       // The notifier uses the non-transacted storage proxy:
-      var proxy = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      var proxy = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
       proxy.Should().NotBeNull();
  
       // Check the new item was placed into the cache
-      var testProxy = proxy as IStorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>;
+      var testProxy = proxy as IStorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>;
       testProxy.GetPendingTransactedWrites().Count.Should().Be(1);
       var cachedItem = testProxy.GetPendingTransactedWrites().Values.First(); 
 

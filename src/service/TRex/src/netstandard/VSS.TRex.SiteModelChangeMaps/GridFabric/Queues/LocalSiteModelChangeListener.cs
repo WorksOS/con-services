@@ -6,7 +6,7 @@ using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 
 namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
 {
-  public class LocalSiteModelChangeListener : ICacheEntryEventListener<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>
+  public class LocalSiteModelChangeListener : ICacheEntryEventListener<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<LocalSiteModelChangeListener>();
 
@@ -24,7 +24,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// Events include creation, modification and deletion of cache entries
     /// </summary>
     /// <param name="events"></param>
-    public void OnEvent(IEnumerable<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> events)
+    public void OnEvent(IEnumerable<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> events)
     {
       // Pass the item creation events to the handler for processing 
 

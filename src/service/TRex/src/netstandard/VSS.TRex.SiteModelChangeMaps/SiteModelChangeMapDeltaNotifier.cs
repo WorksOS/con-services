@@ -15,11 +15,11 @@ namespace VSS.TRex.SiteModelChangeMaps
   /// </summary>
   public class SiteModelChangeMapDeltaNotifier : ISiteModelChangeMapDeltaNotifier
   {
-    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> queueCache;
+    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> queueCache;
 
     public SiteModelChangeMapDeltaNotifier()
     {
-      queueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      queueCache = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
     }
 
     /// <summary>
