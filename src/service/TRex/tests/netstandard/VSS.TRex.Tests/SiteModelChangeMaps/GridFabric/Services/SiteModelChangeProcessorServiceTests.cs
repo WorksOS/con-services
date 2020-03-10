@@ -64,19 +64,19 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var projectGuid = siteModel.ID;
-      var insertUTC = DateTime.UtcNow;
+      var insertUtc = DateTime.UtcNow;
       var changeMap = new SubGridTreeSubGridExistenceBitMask
       {
         [SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset] = true
       };
 
       var mockCacheEntry = new Mock<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>();
-      var key = new SiteModelChangeBufferQueueKey(projectGuid, insertUTC);
+      var key = new SiteModelChangeBufferQueueKey(projectGuid, insertUtc);
       mockCacheEntry.Setup(x => x.Key).Returns(key);
       mockCacheEntry.Setup(x => x.Value).Returns(new SiteModelChangeBufferQueueItem
       {
         ProjectUID = projectGuid,
-        InsertUTC = insertUTC, 
+        InsertUTC = insertUtc, 
         Content = changeMap.ToBytes(),
         Origin = SiteModelChangeMapOrigin.Ingest,
         Operation = SiteModelChangeMapOperation.AddSpatialChanges

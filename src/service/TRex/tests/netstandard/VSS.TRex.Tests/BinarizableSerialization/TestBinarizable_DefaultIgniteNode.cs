@@ -11,14 +11,14 @@ namespace VSS.TRex.Tests.BinarizableSerialization
   public static class TestBinarizable_DefaultIgniteNode
   {
     private static IIgnite _ignite;
-    private static readonly object lockObj = new object();
+    private static readonly object LockObj = new object();
 
     public static IIgnite GetIgnite(bool force = false)
     {
       if (!force)
         throw new InvalidOperationException("Running Ignite nodes in unit tests is undesirable if possible...");
 
-      lock (lockObj)
+      lock (LockObj)
       {
         if (_ignite != null)
           return _ignite;

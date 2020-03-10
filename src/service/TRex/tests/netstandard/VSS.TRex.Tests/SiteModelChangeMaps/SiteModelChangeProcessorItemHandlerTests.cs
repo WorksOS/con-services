@@ -97,13 +97,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
     private void TestSiteModelAndChangeMap_Ingest(ISiteModel siteModel, ISubGridTreeBitMask changeMap, int finalBitCount)
     {
-      var insertTC = DateTime.UtcNow;
-      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertTC);
+      var insertUtc = DateTime.UtcNow;
+      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertUtc);
       var value = new SiteModelChangeBufferQueueItem
       {
         ProjectUID = siteModel.ID,
         MachineUid = siteModel.Machines.First().ID,
-        InsertUTC = insertTC,
+        InsertUTC = insertUtc,
         Operation = SiteModelChangeMapOperation.AddSpatialChanges,
         Origin = SiteModelChangeMapOrigin.Ingest,
         Content = changeMap.ToBytes()
@@ -156,13 +156,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
     private void TestSiteModelAndChangeMap_Query(ISiteModel siteModel, Guid machineUid, ISubGridTreeBitMask changeMap, int finalBitCount)
     {
-      var insertTC = DateTime.UtcNow;
-      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertTC);
+      var insertUtc = DateTime.UtcNow;
+      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertUtc);
       var value = new SiteModelChangeBufferQueueItem
       {
         ProjectUID = siteModel.ID,
         MachineUid = machineUid,
-        InsertUTC = insertTC,
+        InsertUTC = insertUtc,
         Operation = SiteModelChangeMapOperation.RemoveSpatialChanges,
         Origin = SiteModelChangeMapOrigin.Query,
         Content = changeMap.ToBytes()

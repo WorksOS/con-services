@@ -39,13 +39,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       proxy.Clear();
 
       var projectUid = Guid.NewGuid();
-      var insertUTC = DateTime.UtcNow;
+      var insertUtc = DateTime.UtcNow;
 
       // Ask the notifier to notify a new item
-      notifier.Notify(projectUid, insertUTC, new SubGridTreeSubGridExistenceBitMask(), origin, operation);
+      notifier.Notify(projectUid, insertUtc, new SubGridTreeSubGridExistenceBitMask(), origin, operation);
 
       // Check the new item was placed into the cache
-      var cachedItem = proxy.Get(new SiteModelChangeBufferQueueKey(projectUid, insertUTC));
+      var cachedItem = proxy.Get(new SiteModelChangeBufferQueueKey(projectUid, insertUtc));
       cachedItem.Should().NotBeNull();
       cachedItem.Operation.Should().Be(operation);
       cachedItem.Origin.Should().Be(origin);
@@ -74,13 +74,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       proxy.Should().NotBeNull();
       proxy.Clear();
 
-      var insertUTC = DateTime.UtcNow;
+      var insertUtc = DateTime.UtcNow;
 
       // Ask the notifier to notify a new item
-      notifier.Notify(siteModel.ID, insertUTC, siteModel.ExistenceMap, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
+      notifier.Notify(siteModel.ID, insertUtc, siteModel.ExistenceMap, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
 
       // Check the new item was placed into the cache
-      var cachedItem = proxy.Get(new SiteModelChangeBufferQueueKey(siteModel.ID, insertUTC));
+      var cachedItem = proxy.Get(new SiteModelChangeBufferQueueKey(siteModel.ID, insertUtc));
       cachedItem.Should().NotBeNull();
       cachedItem.ProjectUID.Should().Be(siteModel.ID);
       cachedItem.Operation.Should().Be(SiteModelChangeMapOperation.AddSpatialChanges);

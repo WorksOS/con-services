@@ -47,7 +47,7 @@ namespace VSS.TRex.TAGFiles.Models
       {
         writer.WriteInt(SegmentKeys.Length);
 
-        for (int i = 0; i < SegmentKeys.Length; i++)
+        for (var i = 0; i < SegmentKeys.Length; i++)
           ((IFromToBinary) SegmentKeys[i]).ToBinary(writer);
       }
     }
@@ -61,14 +61,14 @@ namespace VSS.TRex.TAGFiles.Models
 
       if (reader.ReadBoolean())
       {
-        int numKeys = reader.ReadInt();
+        var numKeys = reader.ReadInt();
         SegmentKeys = new ISubGridSpatialAffinityKey[numKeys];
 
-        var KeyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
+        var keyFactory = DIContext.Obtain<ISubGridSpatialAffinityKeyFactory>();
 
-        for (int i = 0; i < numKeys; i++)
+        for (var i = 0; i < numKeys; i++)
         {
-          SegmentKeys[i] = KeyFactory.NewInstance();
+          SegmentKeys[i] = keyFactory.NewInstance();
           ((IFromToBinary) SegmentKeys[i]).FromBinary(reader);
         }
       }

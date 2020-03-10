@@ -20,7 +20,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
       var transactedProxy = new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>
         (DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer());
 
-      var nontransactedProxy = new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>
+      var nonTransactedProxy = new StorageProxyCacheTransacted_TestHarness<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>
         (DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)?.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName()), new SiteModelChangeBufferQueueKeyEqualityComparer());
 
       DIBuilder
@@ -33,7 +33,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
         ////////////////////////////////////////////////////
 
         // Add the singleton reference to the non-transacted site model change map cache
-        .Add(x => x.AddSingleton<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>(() => nontransactedProxy))
+        .Add(x => x.AddSingleton<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>(() => nonTransactedProxy))
 
         /////////////////////////////////////////////////////
         // Injected transacted storage proxy cache factories
