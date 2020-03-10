@@ -38,7 +38,12 @@ namespace VSS.TRex.GridFabric.Affinity
 
       try
       {
-        Log.LogInformation("Assigning partitions");
+        var traceEnabled = Log.IsTraceEnabled();
+
+        if (traceEnabled)
+        {
+          Log.LogInformation("Assigning partitions");
+        }
 
         /* Debug code to dump the attributes assigned to nodes being looked at
         foreach (var node in context.CurrentTopologySnapshot)
@@ -58,8 +63,11 @@ namespace VSS.TRex.GridFabric.Affinity
               Log.LogInformation($"Attribute: {a.ToString()}");
           */
 
-          var traceEnabled = Log.IsTraceEnabled();
-          Log.LogInformation("Assigning partitions to nodes");
+          if (traceEnabled)
+          {
+            Log.LogInformation("Assigning partitions to nodes");
+          }
+
           for (var partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
           {
             result[partitionIndex].Add(nodes[NumPartitions % nodes.Count]);
