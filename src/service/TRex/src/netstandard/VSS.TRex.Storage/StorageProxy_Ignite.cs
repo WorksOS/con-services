@@ -45,10 +45,13 @@ namespace VSS.TRex.Storage
       var nonSpatialCacheFactory = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>>>();
       var machineCacheFactory = DIContext.Obtain<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCacheTransacted<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>>>();
 
-      spatialCache = spatialCacheFactory(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      spatialSubGridDirectoryCache = spatialCacheFactory(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
+      spatialSubGridSegmentCache = spatialCacheFactory(ignite, Mutability, FileSystemStreamType.SubGridSegment);
+
       generalNonSpatialCache = nonSpatialCacheFactory(ignite, Mutability, FileSystemStreamType.SubGridDirectory);
       spatialDataExistenceMapCache = nonSpatialCacheFactory(ignite, Mutability, FileSystemStreamType.SubGridExistenceMap);
       siteModelCache = nonSpatialCacheFactory(ignite, Mutability, FileSystemStreamType.ProductionDataXML);
+      
       siteModelMachineCache = machineCacheFactory(ignite, Mutability, FileSystemStreamType.SiteModelMachineElevationChangeMap);
     }
 
@@ -134,6 +137,7 @@ namespace VSS.TRex.Storage
 
         using (var compressedStream = MemoryStreamCompression.Compress(mutableStream))
         {
+          var spatialCache = SpatialCache(streamType);
           if (Log.IsTraceEnabled())
             Log.LogInformation($"Putting key:{cacheKey} in {spatialCache.Name}, size:{mutableStream.Length} -> {compressedStream.Length}, ratio:{(compressedStream.Length / (1.0 * mutableStream.Length)) * 100}%");
           spatialCache.Put(cacheKey, new SerialisedByteArrayWrapper(compressedStream.ToArray()));
@@ -144,7 +148,7 @@ namespace VSS.TRex.Storage
         {
           if (Mutability == StorageMutability.Mutable && ImmutableProxy != null)
           {
-            PerformSpatialImmutabilityConversion(mutableStream, ImmutableProxy.SpatialCache, cacheKey, streamType, source);
+            PerformSpatialImmutabilityConversion(mutableStream, ImmutableProxy.SpatialCache(streamType), cacheKey, streamType, source);
           }
         }
         catch (Exception e)
@@ -234,7 +238,7 @@ namespace VSS.TRex.Storage
 
         try
         {
-          using var ms = new MemoryStream(spatialCache.Get(cacheKey).Bytes);
+          using var ms = new MemoryStream(SpatialCache(streamType).Get(cacheKey).Bytes);
           stream = MemoryStreamCompression.Decompress(ms);
           stream.Position = 0;
         }

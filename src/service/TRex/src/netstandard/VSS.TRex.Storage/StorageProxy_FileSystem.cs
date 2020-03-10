@@ -17,7 +17,7 @@ namespace VSS.TRex.Storage
   public class StorageProxy_FileSystem : IStorageProxy
   {
     public IStorageProxyCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialCache(FileSystemStreamType streamType) => null; // Not implemented
-    public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache { get; } = null; // Not implemented
+    public IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialCache(FileSystemStreamType streamType) => null; // Not implemented
 
     public StorageMutability Mutability { get; set; } = StorageMutability.Immutable;
 

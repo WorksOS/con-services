@@ -141,9 +141,6 @@ namespace VSS.TRex.GridFabric.Servers.Client
     /// <returns></returns>
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
-      //TODO this should not be here but will do for the moment
-      TRexServerConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
-
       // Enforce using only the LocalHost interface
       cfg.DiscoverySpi = new TcpDiscoverySpi()
       {

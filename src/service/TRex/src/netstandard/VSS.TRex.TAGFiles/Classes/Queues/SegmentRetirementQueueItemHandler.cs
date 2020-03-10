@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Queues
 {
@@ -30,7 +31,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
       {
         var sw = Stopwatch.StartNew();
 
-        int count = 0;
+        var count = 0;
         storageProxy.Clear();
 
         // Process all entries in the retirees list, removing each in turn from the cache.
@@ -51,6 +52,9 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
           Log.LogError("Immutable proxy not available in provided storage proxy. Aborting");
           return false;
         }
+
+        var spatialSegmentCache = storageProxy.SpatialCache(FileSystemStreamType.SubGridSegment);
+        var spatialImmutableSegmentCache = storageProxy.ImmutableProxy.SpatialCache(FileSystemStreamType.SubGridSegment);
 
         foreach (var group in retirees)
         {
@@ -74,13 +78,13 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
             if (ReportDetailedSegmentRetirementActivityToLog)
               Log.LogInformation($"About to retire {key}");
 
-            if (!storageProxy.SpatialCache.Remove(key))
+            if (!spatialSegmentCache.Remove(key))
             {
               Log.LogError($"Mutable segment retirement cache removal for {key} returned false, aborting");
               return false;
             }
 
-            if (!storageProxy.ImmutableProxy.SpatialCache.Remove(key))
+            if (!spatialImmutableSegmentCache.Remove(key))
             {
               Log.LogError($"Immutable segment retirement cache removal for {key} returned false, aborting");
               return false;
@@ -93,7 +97,7 @@ namespace VSS.TRex.TAGFiles.Classes.Queues
         sw = Stopwatch.StartNew();        
 
         // Commit all the deletes for this retiree group
-        if (storageProxy.Commit(out int numDeleted, out int numUpdated, out long numBytesWritten))
+        if (storageProxy.Commit(out var numDeleted, out var numUpdated, out var numBytesWritten))
         {
           Log.LogInformation($"{count} retirees removed from queue cache, requiring {numDeleted} deletions, {numUpdated} updates with {numBytesWritten} bytes written in {sw.Elapsed}");
         }
