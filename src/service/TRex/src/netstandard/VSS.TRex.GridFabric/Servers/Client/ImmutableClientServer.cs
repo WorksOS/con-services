@@ -1,6 +1,4 @@
-﻿ using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Configuration;
+﻿using Apache.Ignite.Core;
 using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
@@ -159,16 +157,6 @@ namespace VSS.TRex.GridFabric.Servers.Client
         LocalPort = 47100,
       };
       return cfg;
-    }
-
-    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference(CacheConfiguration cacheCfg)
-    {
-      return immutableTRexGrid.GetCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg.Name);
-    }
-
-    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
-    {
-      return immutableTRexGrid.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg.Name);
     }
   }
 }
