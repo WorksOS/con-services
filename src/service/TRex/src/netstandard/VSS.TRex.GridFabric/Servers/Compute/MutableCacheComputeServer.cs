@@ -177,16 +177,26 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
     }
 
-    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference(CacheConfiguration cacheCfg)
+    public ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference()
     {
-      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
+      var cfg = new CacheConfiguration();
+      base.ConfigureNonSpatialMutableCache(cfg);
+
+      cfg.Name = TRexCaches.MutableNonSpatialCacheName();
+      cfg.KeepBinaryInStore = true;
+      cfg.CacheMode = CacheMode.Partitioned;
+      cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
+      cfg.Backups = 0;
+
+      return mutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cfg);
     }
 
-    public override void ConfigureMutableSpatialCache(CacheConfiguration cfg)
+    public ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialSubGridDirectoryCacheReference()
     {
+      var cfg = new CacheConfiguration();
       base.ConfigureMutableSpatialCache(cfg);
 
-      cfg.Name = TRexCaches.MutableSpatialCacheName();
+      cfg.Name = TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Mutable);
       cfg.KeepBinaryInStore = true;
 
       // TODO: No backups for now
@@ -197,28 +207,45 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       // Configure the function that maps sub grid data into the affinity map for the nodes in the grid
       cfg.AffinityFunction = new ProjectBasedSpatialAffinityFunction();
+
+      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cfg);
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration cacheCfg)
+    public ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialSubGridSegmentCacheReference()
     {
-      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cacheCfg);
-    }
+      var cfg = new CacheConfiguration();
+      base.ConfigureMutableSpatialCache(cfg);
 
-    public void ConfigureTAGFileBufferQueueCache(CacheConfiguration cfg)
-    {
-      cfg.Name = TRexCaches.TAGFileBufferQueueCacheName();
+      cfg.Name = TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Mutable);
       cfg.KeepBinaryInStore = true;
-      cfg.CacheMode = CacheMode.Partitioned;
-      cfg.AffinityFunction = new MutableNonSpatialAffinityFunction();
-      cfg.DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION;
 
       // TODO: No backups for now
       cfg.Backups = 0;
+
+      // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
+      cfg.CacheMode = CacheMode.Partitioned;
+
+      // Configure the function that maps sub grid data into the affinity map for the nodes in the grid
+      cfg.AffinityFunction = new ProjectBasedSpatialAffinityFunction();
+
+      return mutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cfg);
     }
 
-    public void InstantiateTAGFileBufferQueueCacheReference(CacheConfiguration cacheCfg)
+    public void InstantiateTAGFileBufferQueueCacheReference()
     {
-      mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(cacheCfg);
+      var cfg = new CacheConfiguration
+      {
+        Name = TRexCaches.TAGFileBufferQueueCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+        AffinityFunction = new MutableNonSpatialAffinityFunction(),
+        DataRegionName = DataRegions.TAG_FILE_BUFFER_QUEUE_DATA_REGION,
+
+        // TODO: No backups for now
+        Backups = 0
+      };
+
+      mutableTRexGrid.GetOrCreateCache<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>(cfg);
     }
 
     private void InstantiateSiteModelExistenceMapsCacheReference()
@@ -271,19 +298,12 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       DIContext.Obtain<IActivatePersistentGridServer>().WaitUntilGridActive(TRexGrids.MutableGridName());
 
       // Add the mutable Spatial & NonSpatial caches
+      InstantiateNonSpatialCacheReference();
 
-      var nonSpatialCacheConfiguration = new CacheConfiguration();
-      ConfigureNonSpatialMutableCache(nonSpatialCacheConfiguration);
-      //var nonSpatialCacheConfiguration = mutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.MutableNonSpatialCacheName()));
-      NonSpatialMutableCache = InstantiateNonSpatialCacheReference(nonSpatialCacheConfiguration);
+      InstantiateSpatialSubGridDirectoryCacheReference();
+      InstantiateSpatialSubGridSegmentCacheReference();
 
-      var spatialCacheConfiguration = new CacheConfiguration();
-      ConfigureMutableSpatialCache(spatialCacheConfiguration);
-      SpatialMutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
-
-      var tagCacheConfiguration = new CacheConfiguration();
-      ConfigureTAGFileBufferQueueCache(tagCacheConfiguration);
-      InstantiateTAGFileBufferQueueCacheReference(tagCacheConfiguration);
+      InstantiateTAGFileBufferQueueCacheReference();
 
       InstantiateSiteModelExistenceMapsCacheReference();
       InstantiateSiteModelsCacheReference();

@@ -16,6 +16,7 @@ using VSS.TRex.QuantizedMesh.Servers.Client;
 using VSS.TRex.Rendering.Servers.Client;
 using VSS.TRex.Reports.Servers.Client;
 using VSS.TRex.Storage.Caches;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Servers.Client;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Volumes.Servers.Client;
@@ -31,13 +32,18 @@ namespace VSS.TRex.Tests.Servers.Server
       var mockedConfigs = new List<CacheConfiguration>
       {
         new CacheConfiguration(TRexCaches.MutableNonSpatialCacheName()),
-        new CacheConfiguration(TRexCaches.MutableSpatialCacheName()),
+        new CacheConfiguration(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Mutable)),
+        new CacheConfiguration(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable)),
+        new CacheConfiguration(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Mutable)),
+        new CacheConfiguration(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Immutable)),
         new CacheConfiguration(TRexCaches.ImmutableNonSpatialCacheName()),
-        new CacheConfiguration(TRexCaches.ImmutableSpatialCacheName()),
         new CacheConfiguration(TRexCaches.SiteModelMetadataCacheName()),
         new CacheConfiguration(TRexCaches.DesignTopologyExistenceMapsCacheName()),
         new CacheConfiguration(TRexCaches.TAGFileBufferQueueCacheName()),
-        new CacheConfiguration(TRexCaches.SegmentRetirementQueueCacheName())
+        new CacheConfiguration(TRexCaches.SegmentRetirementQueueCacheName()),
+        new CacheConfiguration(TRexCaches.SiteModelChangeBufferQueueCacheName()),
+        new CacheConfiguration(TRexCaches.ProductionDataExistenceMapCacheName(StorageMutability.Mutable)),
+        new CacheConfiguration(TRexCaches.ProductionDataExistenceMapCacheName(StorageMutability.Mutable))
       };
 
       var igniteConfiguration = new IgniteConfiguration

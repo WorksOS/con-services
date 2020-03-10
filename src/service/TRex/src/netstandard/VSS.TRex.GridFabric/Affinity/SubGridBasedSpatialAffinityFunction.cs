@@ -23,12 +23,11 @@ namespace VSS.TRex.GridFabric.Affinity
       if (key is ISubGridSpatialAffinityKey value)
       {
         // Compute partition number against the sub grid location in the spatial affinity key
-        return (int) SubGridCellAddress.ToSpatialPartitionDescriptor(value.SubGridX, value.SubGridY);
+        return SubGridCellAddress.ToSpatialPartitionDescriptor(value.SubGridX, value.SubGridY);
       }
 
-      Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: {key}");
-      throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: {key}");
-
+      Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
+      throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
     }
   }
 }
