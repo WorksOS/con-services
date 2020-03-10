@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -87,6 +88,8 @@ namespace VSS.TRex.Tests.TestFixtures
           config.Setup(c => c.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_NULL_INFILL_MODE", It.IsAny<int>())).Returns((int)NullInfillMode.NoInfill);
           config.Setup(c => c.GetValueInt("TILE_RENDERING_DATA_SMOOTHING_MASK_SIZE", It.IsAny<int>())).Returns((int)ConvolutionMaskSize.Mask3X3);
 
+          var tempPersistencePathForTests = Path.GetTempPath();
+          config.Setup(c => c.GetValueString("PERSISTENT_CACHE_STORE_LOCATION", It.IsAny<string>())).Returns(tempPersistencePathForTests);
           return config;
         }))
         .Build()

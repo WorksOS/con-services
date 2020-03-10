@@ -122,7 +122,7 @@ namespace VSS.TRex.Tools.KeyScanner
 
     private void writeSiteModelChangeMapQueueKeys(string title, StreamWriter writer, ICache<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper> cache)
     {
-      int count = 0;
+      var count = 0;
 
       writer.WriteLine(title);
       writer.WriteLine("#####################");
@@ -183,10 +183,20 @@ namespace VSS.TRex.Tools.KeyScanner
                 writer.WriteLine($"Exception occurred: {E.Message}");
               }
 
-              Console.WriteLine($"----> Writing keys for {TRexCaches.ImmutableSpatialCacheName()}");
+              Console.WriteLine($"----> Writing keys for {TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable)}");
               try
               {
-                WriteKeysSpatial(TRexCaches.ImmutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.ImmutableSpatialCacheName()));
+                WriteKeysSpatial(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable)));
+              }
+              catch (Exception E)
+              {
+                writer.WriteLine($"Exception occurred: {E.Message}");
+              }
+
+              Console.WriteLine($"----> Writing keys for {TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Immutable)}");
+              try
+              {
+                WriteKeysSpatial(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Immutable), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Immutable)));
               }
               catch (Exception E)
               {
@@ -216,15 +226,26 @@ namespace VSS.TRex.Tools.KeyScanner
                 writer.WriteLine($"Exception occurred: {E.Message}");
               }
 
-              Console.WriteLine($"----> Writing keys for {TRexCaches.MutableSpatialCacheName()}");
+              Console.WriteLine($"----> Writing keys for {TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Mutable)}");
               try
               {
-                WriteKeysSpatial(TRexCaches.MutableSpatialCacheName(), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.MutableSpatialCacheName()));
+                WriteKeysSpatial(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Mutable), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Mutable)));
               }
               catch (Exception E)
               {
                 writer.WriteLine($"Exception occurred: {E.Message}");
               }
+
+              Console.WriteLine($"----> Writing keys for {TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Mutable)}");
+              try
+              {
+                WriteKeysSpatial(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Mutable), writer, ignite.GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Mutable)));
+              }
+              catch (Exception E)
+              {
+                writer.WriteLine($"Exception occurred: {E.Message}");
+              }
+
 
               Console.WriteLine($"----> Writing keys for {TRexCaches.TAGFileBufferQueueCacheName()}");
               try

@@ -21,7 +21,7 @@ namespace VSS.TRex.GridFabric.Affinity
         /// </summary>
         public ImmutableSpatialAffinityPartitionMap() :
             base(DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable)
-                .GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.ImmutableSpatialCacheName()))
+                .GetCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable)))
         {
         }
 
@@ -30,6 +30,6 @@ namespace VSS.TRex.GridFabric.Affinity
         /// </summary>
         /// <returns></returns>
         public static IImmutableSpatialAffinityPartitionMap Instance() 
-          => _instance ?? (_instance = DIContext.Obtain<IImmutableSpatialAffinityPartitionMap>() ?? new ImmutableSpatialAffinityPartitionMap());
+          => _instance ??= DIContext.Obtain<IImmutableSpatialAffinityPartitionMap>() ?? new ImmutableSpatialAffinityPartitionMap();
     }
 }
