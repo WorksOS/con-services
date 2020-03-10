@@ -23,11 +23,11 @@ namespace VSS.TRex.GridFabric.Affinity
       if (key is IProjectAffinity value)
       {
         // Compute partition number as the modulo NumPartitions result against the project iD in the spatial affinity key
-        return Math.Abs(GuidHashCode.Hash(value.ProjectUID)) % (int)NumPartitions;
+        return Math.Abs(GuidHashCode.Hash(value.ProjectUID)) % NumPartitions;
       }
 
-      Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: {key}");
-      throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: {key}");
+      Log.LogInformation($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
+      throw new ArgumentException($"Unknown key type to compute spatial affinity partition key for: [{key.GetType().FullName}] {key}");
     }
   }
 }
