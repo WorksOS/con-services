@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 
@@ -57,12 +58,16 @@ namespace VSS.TRex.GridFabric.Affinity
               Log.LogInformation($"Attribute: {a.ToString()}");
           */
 
+          var traceEnabled = Log.IsTraceEnabled();
           Log.LogInformation("Assigning partitions to nodes");
           for (var partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
           {
             result[partitionIndex].Add(nodes[NumPartitions % nodes.Count]);
 
-            Log.LogDebug($"--> Assigned node:{nodes[NumPartitions % nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
+            if (traceEnabled)
+            {
+              Log.LogTrace($"--> Assigned node:{nodes[NumPartitions % nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
+            }
           }
         }
       }
