@@ -82,6 +82,7 @@ namespace VSS.TRex.Server.DesignElevation
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
         typeof(VSS.TRex.SubGridTrees.Core.Utilities.SubGridUtilities),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
       };
 
       foreach (var asmType in AssemblyDependencies)

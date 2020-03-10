@@ -84,16 +84,16 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
 
         // Get the ignite grid and cache references
 
-        var _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
-                      Ignition.GetIgnite(TRexGrids.ImmutableGridName());
+        var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
+                     Ignition.GetIgnite(TRexGrids.ImmutableGridName());
 
-        if (_ignite == null)
+        if (ignite == null)
         {
           Log.LogError("Ignite reference in service is null - aborting service execution");
           return;
         }
 
-        var queueCache = _ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
+        var queueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
 
         var handler = new SiteModelChangeProcessorItemHandler();
         var listener = new LocalSiteModelChangeListener(handler);

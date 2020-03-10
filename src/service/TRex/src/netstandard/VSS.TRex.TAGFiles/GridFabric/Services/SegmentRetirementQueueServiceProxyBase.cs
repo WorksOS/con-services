@@ -41,10 +41,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         {
             NodeFilter = nodeFilter;
 
-            IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
+            var ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
 
             // Get an instance of IServices for the cluster group.
-            services = _ignite.GetServices();
+            services = ignite.GetServices();
         }
 
         /// <summary>
