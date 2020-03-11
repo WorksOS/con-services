@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "bamboo-agent.fullname" . }}
+  labels:
+    {{- include "bamboo-agent.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ .Chart.Name }}
+  selector:
+    matchLabels:
+      {{- include "bamboo-agent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "bamboo-agent.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "bamboo-agent.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          #image: busybox
+          #command: [ "sh", "-c", "sleep 1h" ]
+          image: "{{ .Values.image.repository }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["{{ .Values.serverUrl }}"]
+          env:
+          - name: SECURITY_TOKEN 
+            value: {{ .Values.token }}
+
+          volumeMounts:
+          - name: bamboo
+            mountPath: /home/bamboo/bamboo-agent-home
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: bamboo
+    spec:
+      accessModes: [ ReadWriteOnce ]
+      storageClassName: gp2
+      resources:
+        requests:
+          storage: {{ .Values.resources.disk | default "50Gi" | quote }}
