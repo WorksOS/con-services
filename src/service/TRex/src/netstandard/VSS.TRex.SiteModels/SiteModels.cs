@@ -136,6 +136,8 @@ namespace VSS.TRex.SiteModels
     /// <param name="message"></param>
     public void SiteModelAttributesHaveChanged(ISiteModelAttributesChangedEvent message)
     {
+      Log.LogInformation($"Entering attribute change notification processor for  project {message.SiteModelID}.");
+
       // Site models have immutable characteristics in TRex. Multiple requests may reference the same site model
       // concurrently, with no interlocks enforcing access serialization. Any attempt to replace or modify an already loaded
       // site model may cause issue with concurrent request accessing that site model.
@@ -164,31 +166,31 @@ namespace VSS.TRex.SiteModels
       {
         CachedModels.TryGetValue(message.SiteModelID, out siteModel);
 
-        if (siteModel == null)
-          return;
-
         // Note: The spatial data grid is highly conserved and never killed in a site model change notification.
         var originFlags =
-          SiteModelOriginConstructionFlags.PreserveGrid
-          | (!message.ExistenceMapModified ? SiteModelOriginConstructionFlags.PreserveExistenceMap : 0)
-          | (!message.CsibModified ? SiteModelOriginConstructionFlags.PreserveCsib : 0)
-          | (!message.DesignsModified ? SiteModelOriginConstructionFlags.PreserveDesigns : 0)
-          | (!message.SurveyedSurfacesModified ? SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces : 0)
-          | (!message.MachinesModified ? SiteModelOriginConstructionFlags.PreserveMachines : 0)
-          | (!message.MachineTargetValuesModified ? SiteModelOriginConstructionFlags.PreserveMachineTargetValues : 0)
-          | (!message.MachineDesignsModified ? SiteModelOriginConstructionFlags.PreserveMachineDesigns | SiteModelOriginConstructionFlags.PreserveSiteModelDesigns : 0)
-          | (!message.ProofingRunsModified ? SiteModelOriginConstructionFlags.PreserveProofingRuns : 0)
-          | (!message.AlignmentsModified ? SiteModelOriginConstructionFlags.PreserveAlignments : 0)
+            SiteModelOriginConstructionFlags.PreserveGrid
+            | (!message.ExistenceMapModified ? SiteModelOriginConstructionFlags.PreserveExistenceMap : 0)
+            | (!message.CsibModified ? SiteModelOriginConstructionFlags.PreserveCsib : 0)
+            | (!message.DesignsModified ? SiteModelOriginConstructionFlags.PreserveDesigns : 0)
+            | (!message.SurveyedSurfacesModified ? SiteModelOriginConstructionFlags.PreserveSurveyedSurfaces : 0)
+            | (!message.MachinesModified ? SiteModelOriginConstructionFlags.PreserveMachines : 0)
+            | (!message.MachineTargetValuesModified ? SiteModelOriginConstructionFlags.PreserveMachineTargetValues : 0)
+            | (!message.MachineDesignsModified ? SiteModelOriginConstructionFlags.PreserveMachineDesigns | SiteModelOriginConstructionFlags.PreserveSiteModelDesigns : 0)
+            | (!message.ProofingRunsModified ? SiteModelOriginConstructionFlags.PreserveProofingRuns : 0)
+            | (!message.AlignmentsModified ? SiteModelOriginConstructionFlags.PreserveAlignments : 0)
           ;
 
         Log.LogInformation($"Processing attribute change notification for site model {message.SiteModelID}. Preserved elements are {originFlags}");
 
-        // First create a new site model to replace the site model with, requesting certain elements of the existing site model
-        // to be preserved in the new site model instance.
-        siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(siteModel, originFlags);
+        if (siteModel != null)
+        {
+          // First create a new site model to replace the site model with, requesting certain elements of the existing site model
+          // to be preserved in the new site model instance.
+          siteModel = DIContext.Obtain<ISiteModelFactory>().NewSiteModel(siteModel, originFlags);
 
-        // Replace the site model reference in the cache with the new site model
-        CachedModels[message.SiteModelID] = siteModel;
+          // Replace the site model reference in the cache with the new site model
+          CachedModels[message.SiteModelID] = siteModel;
+        }
       }
 
       // If the notification contains an existence map change mask then all cached sub grid based elements that match the masked sub grids
@@ -200,31 +202,34 @@ namespace VSS.TRex.SiteModels
         ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
         mask.FromBytes(message.ExistenceMapChangeMask);
 
-        // Iterate over all leaf sub grids in the mask. For each get the matching node sub grid in siteModel.Grid, 
-        // and remove all sub grid references from that node sub grid matching the bits in the bit mask sub grid
-        mask.ScanAllSubGrids(leaf =>
+        if (siteModel != null)
         {
-          // Obtain the matching node sub grid in Grid
-          var node = siteModel.Grid.LocateClosestSubGridContaining
-            (leaf.OriginX << SubGridTreeConsts.SubGridIndexBitsPerLevel,
-             leaf.OriginY << SubGridTreeConsts.SubGridIndexBitsPerLevel,
-             leaf.Level);
-
-          // If there are sub grids present in Grid that match the sub grids identified by leaf
-          // remove the elements identified in leaf from the node sub grid.
-          if (node != null)
+          // Iterate over all leaf sub grids in the mask. For each get the matching node sub grid in siteModel.Grid, 
+          // and remove all sub grid references from that node sub grid matching the bits in the bit mask sub grid
+          mask.ScanAllSubGrids(leaf =>
           {
-            ((ISubGridTreeLeafBitmapSubGrid)leaf).ForEachSetBit((x, y) => node.SetSubGrid(x, y, null));
-          }
+            // Obtain the matching node sub grid in Grid
+            var node = siteModel.Grid.LocateClosestSubGridContaining
+            (leaf.OriginX << SubGridTreeConsts.SubGridIndexBitsPerLevel,
+              leaf.OriginY << SubGridTreeConsts.SubGridIndexBitsPerLevel,
+              leaf.Level);
 
-          return true; // Keep processing leaf sub grids
-        });
+            // If there are sub grids present in Grid that match the sub grids identified by leaf
+            // remove the elements identified in leaf from the node sub grid.
+            if (node != null)
+            {
+              ((ISubGridTreeLeafBitmapSubGrid) leaf).ForEachSetBit((x, y) => node.SetSubGrid(x, y, null));
+            }
+
+            return true; // Keep processing leaf sub grids
+          });
+        }
 
         // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
         DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToProductionDataIngest(message.SiteModelID, mask);
 
         // Advise any registered site model change map notifier of the changes
-        DIContext.Obtain<ISiteModelChangeMapDeltaNotifier>()?.Notify(siteModel.ID, DateTime.UtcNow, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
+        DIContext.Obtain<ISiteModelChangeMapDeltaNotifier>()?.Notify(message.SiteModelID, DateTime.UtcNow, mask, SiteModelChangeMapOrigin.Ingest, SiteModelChangeMapOperation.AddSpatialChanges);
       }
     }
 

@@ -49,6 +49,7 @@ namespace VSS.TRex.SiteModelChangeMaps
       _itemQueueCache = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
       _changeMapProxy = new SiteModelChangeMapProxy();
 
+      Log.LogInformation("Starting site model change processor item handler task");
       var _ = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
     }
 
@@ -146,6 +147,8 @@ namespace VSS.TRex.SiteModelChangeMaps
         // 2. Integrate new map
         // 3. Write record back to store
         // 4. Commit transaction
+
+        Log.LogInformation($"Processing an item: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
 
         switch (item.Operation)
         {
