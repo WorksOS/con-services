@@ -24,22 +24,22 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// <summary>
     /// Services interface for the cluster group projection
     /// </summary>
-    private readonly IServices services;
+    private readonly IServices _services;
 
     /// <summary>
     /// The proxy to the deployed service
     /// </summary>
-    private ISiteModelChangeProcessorService proxy;
+    private ISiteModelChangeProcessorService _proxy;
 
     /// <summary>
     /// No-arg constructor that instantiates the Ignite instance, cluster, service and proxy members
     /// </summary>
     public SiteModelChangeProcessorServiceProxy()
     {
-      var _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
+      var ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
       // Get an instance of IServices for the cluster group.
-      services = _ignite.GetServices();
+      _services = ignite.GetServices();
     }
 
     /// <summary>
@@ -51,11 +51,11 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       try
       {
         Log.LogInformation($"Cancelling deployed service {ServiceName}");
-        services.Cancel(ServiceName);
+        _services.Cancel(ServiceName);
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception thrown while attempting to cancel service");
+        Log.LogError(e, "Exception thrown while attempting to cancel service");
         throw;
       }
 
@@ -63,7 +63,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       {
         Log.LogInformation("Deploying new service");
 
-        services.Deploy(new ServiceConfiguration
+        _services.Deploy(new ServiceConfiguration
         {
           Name = ServiceName,
           Service = new SiteModelChangeProcessorService(),
@@ -72,20 +72,20 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
           NodeFilter = new SiteModelChangeProcessorRoleBasedNodeFilter()
         });
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception thrown while attempting to deploy service");
+        Log.LogError(e, "Exception thrown while attempting to deploy service");
         throw;
       }
 
       try
       {
         Log.LogInformation($"Obtaining service proxy for {ServiceName}");
-        proxy = services.GetServiceProxy<ISiteModelChangeProcessorService>(ServiceName);
+        _proxy = _services.GetServiceProxy<ISiteModelChangeProcessorService>(ServiceName);
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception thrown while attempting to get service proxy");
+        Log.LogError(e, "Exception thrown while attempting to get service proxy");
         throw;
       }
     }

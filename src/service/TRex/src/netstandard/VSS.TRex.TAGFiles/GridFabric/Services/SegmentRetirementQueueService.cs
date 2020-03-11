@@ -6,11 +6,11 @@ using System.Threading;
 using Apache.Ignite.Core;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.TAGFiles.Classes.Queues;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.GridFabric.Services;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
@@ -21,7 +21,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
   /// <summary>
   /// Service metaphor providing access and management control over designs stored for site models
   /// </summary>
-  public class SegmentRetirementQueueService : IService, ISegmentRetirementQueueService, IBinarizable, IFromToBinary
+  public class SegmentRetirementQueueService : BaseService, IService, ISegmentRetirementQueueService
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SegmentRetirementQueueService>();
 
@@ -149,15 +149,11 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
       waitHandle?.Set();
     }
 
-    public void WriteBinary(IBinaryWriter writer) => ToBinary(writer.GetRawWriter());
-
-    public void ReadBinary(IBinaryReader reader) => FromBinary(reader.GetRawReader());
-
     /// <summary>
     /// The service has no serialization requirements
     /// </summary>
     /// <param name="writer"></param>
-    public void ToBinary(IBinaryRawWriter writer)
+    public override void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
@@ -168,7 +164,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
     /// The service has no serialization requirements
     /// </summary>
     /// <param name="reader"></param>
-    public void FromBinary(IBinaryRawReader reader)
+    public override void FromBinary(IBinaryRawReader reader)
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 

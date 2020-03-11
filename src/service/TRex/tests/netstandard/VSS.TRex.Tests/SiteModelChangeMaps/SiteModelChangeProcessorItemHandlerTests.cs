@@ -69,7 +69,7 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
     private void PerformProcessEvent(SiteModelChangeBufferQueueKey key, SiteModelChangeBufferQueueItem value)
     {
-      var mockEvent = new Mock<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      var mockEvent = new Mock<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>();
       mockEvent.Setup(x => x.EventType).Returns(CacheEntryEventType.Created);
       mockEvent.Setup(x => x.Key).Returns(key);
       mockEvent.Setup(x => x.Value).Returns(value);
@@ -97,13 +97,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
     private void TestSiteModelAndChangeMap_Ingest(ISiteModel siteModel, ISubGridTreeBitMask changeMap, int finalBitCount)
     {
-      var insertTC = DateTime.UtcNow;
-      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertTC);
+      var insertUtc = DateTime.UtcNow;
+      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertUtc);
       var value = new SiteModelChangeBufferQueueItem
       {
         ProjectUID = siteModel.ID,
         MachineUid = siteModel.Machines.First().ID,
-        InsertUTC = insertTC,
+        InsertUTC = insertUtc,
         Operation = SiteModelChangeMapOperation.AddSpatialChanges,
         Origin = SiteModelChangeMapOrigin.Ingest,
         Content = changeMap.ToBytes()
@@ -156,13 +156,13 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps
 
     private void TestSiteModelAndChangeMap_Query(ISiteModel siteModel, Guid machineUid, ISubGridTreeBitMask changeMap, int finalBitCount)
     {
-      var insertTC = DateTime.UtcNow;
-      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertTC);
+      var insertUtc = DateTime.UtcNow;
+      var key = new SiteModelChangeBufferQueueKey(siteModel.ID, insertUtc);
       var value = new SiteModelChangeBufferQueueItem
       {
         ProjectUID = siteModel.ID,
         MachineUid = machineUid,
-        InsertUTC = insertTC,
+        InsertUTC = insertUtc,
         Operation = SiteModelChangeMapOperation.RemoveSpatialChanges,
         Origin = SiteModelChangeMapOrigin.Query,
         Content = changeMap.ToBytes()

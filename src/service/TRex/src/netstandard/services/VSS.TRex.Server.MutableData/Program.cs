@@ -116,11 +116,15 @@ namespace VSS.TRex.Server.MutableData
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.TAGFiles.Executors.SubmitTAGFileExecutor),
-        typeof(VSS.TRex.CoordinateSystems.CoordinateSystemResponse)
+        typeof(VSS.TRex.CoordinateSystems.CoordinateSystemResponse),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter)
       };
+
       foreach (var asmType in AssemblyDependencies)
-        if (asmType.Assembly == null)
+      {
+        if (asmType.FullName == "DummyTypeName")
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
+      }
     }
 
     /// <summary>

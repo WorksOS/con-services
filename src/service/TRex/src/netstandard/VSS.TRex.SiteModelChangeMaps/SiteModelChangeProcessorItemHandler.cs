@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
@@ -30,9 +29,9 @@ namespace VSS.TRex.SiteModelChangeMaps
 
     private readonly SiteModelChangeMapProxy _changeMapProxy;
 
-    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
+    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> _itemQueueCache;
 
-    private readonly ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> _queue;
+    private readonly ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> _queue;
 
     private readonly EventWaitHandle _waitHandle;
 
@@ -46,8 +45,8 @@ namespace VSS.TRex.SiteModelChangeMaps
       }
 
       _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-      _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-      _itemQueueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>();
+      _itemQueueCache = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
       _changeMapProxy = new SiteModelChangeMapProxy();
 
       var _ = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
@@ -66,7 +65,7 @@ namespace VSS.TRex.SiteModelChangeMaps
       Aborted = true;
     }
 
-    public void Add(ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> item)
+    public void Add(ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> item)
     {
       _queue.Enqueue(item);
       _waitHandle.Set();

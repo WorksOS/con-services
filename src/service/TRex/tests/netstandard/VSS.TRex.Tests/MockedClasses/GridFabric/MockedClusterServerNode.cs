@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Cluster;
 using System;
 using System.Collections.Generic;
+using Apache.Ignite.Core.Common;
 using VSS.TRex.GridFabric.Models.Servers;
 
 namespace VSS.TRex.Tests.MockedClasses.GridFabric
@@ -24,6 +25,7 @@ namespace VSS.TRex.Tests.MockedClasses.GridFabric
         public bool IsDaemon => false; //throw new NotImplementedException();
 
         public bool IsClient => _IsClient; //throw new NotImplementedException();
+        public IgniteProductVersion Version => new IgniteProductVersion(2, 8, 0, "", DateTime.Now, new byte[] { 0, 0, 0, 0});
 
         public object ConsistentId => GetHashCode();  //throw new NotImplementedException();
 

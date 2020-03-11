@@ -144,7 +144,8 @@ namespace VSS.TRex.Server.Reports
         typeof(ClientCMVLeafSubGrid),
         typeof(SubGridTrees.Core.Utilities.SubGridUtilities),
         typeof(SubGridTrees.Server.MutabilityConverter),
-        typeof(SurveyedSurface)
+        typeof(SurveyedSurface),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
       };
 
       foreach (var asmType in AssemblyDependencies)

@@ -112,6 +112,7 @@
       <Private>true</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\VSS.TRex.Reports\VSS.TRex.Reports.csproj" />
+    <ProjectReference Include="..\..\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj" />
     <ProjectReference Include="..\..\VSS.TRex.SiteModels.Interfaces\VSS.TRex.SiteModels.Interfaces.csproj">
       <Private>true</Private>
     </ProjectReference>

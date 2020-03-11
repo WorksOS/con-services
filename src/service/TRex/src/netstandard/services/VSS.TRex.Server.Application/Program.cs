@@ -154,12 +154,15 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.SubGridTrees.Server.MutabilityConverter),
         typeof(VSS.TRex.SurveyedSurfaces.SurveyedSurface),
         typeof(VSS.TRex.Volumes.CutFillVolume),
-        typeof(VSS.TRex.CellDatum.GridFabric.Responses.CellDatumResponse_ApplicationService)
+        typeof(VSS.TRex.CellDatum.GridFabric.Responses.CellDatumResponse_ApplicationService),
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.Services.SiteModelChangeProcessorService)
       };
 
       foreach (var asmType in AssemblyDependencies)
-        if (asmType.Assembly == null)
+      {
+        if (asmType.FullName == "DummyTypeName")
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
+      }
     }
 
     private static void DoServiceInitialisation()

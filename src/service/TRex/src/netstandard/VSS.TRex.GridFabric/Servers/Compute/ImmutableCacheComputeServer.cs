@@ -19,6 +19,7 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Logging;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
@@ -267,6 +268,31 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       });
     }
 
+    /// <summary>
+    /// Create the cache that holds the per project, per machine, change maps driven by TAG file ingest
+    /// Note: This machine based information is distinguished from that in the non-spatial cache in that
+    /// it is partitioned, rather than replicated.
+    /// </summary>
+    private void InstantiateSiteModelChangeBufferQueueCacheReference()
+    {
+      immutableTRexGrid.GetOrCreateCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelChangeBufferQueueCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+
+        // TODO: No backups for now
+        Backups = 0,
+        DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION,
+
+        // Configure the function that maps the change maps to nodes in the grid
+        // Note: This cache uses an affinity function that assigns data for a site model onto a single node.
+        // For the purposes of the immutable grid, it is helpful for a node to contain all change maps for a single
+        // site model as this simplifies the process of updating those change maps in response to messages from production data ingest 
+        AffinityFunction = new ProjectBasedSpatialAffinityFunction()
+      });
+    }
+
     public void StartTRexGridCacheNode()
     {
       Log.LogInformation("Creating new Ignite node");
@@ -299,6 +325,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       InstantiateSiteModelExistenceMapsCacheReference();
 
       InstantiateSiteModelsCacheReference();
+
+      InstantiateSiteModelChangeBufferQueueCacheReference();
       InstantiateSiteModelMachinesChangeMapsCacheReference();
     }
   }
