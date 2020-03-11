@@ -77,13 +77,13 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// </summary>
     private void ProcessChangeMapUpdateItems()
     {
-      try
+      // Cycle looking for new work to until aborted...
+      do
       {
-        Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
-
-        // Cycle looking for new work to until aborted...
-        do
+        try
         {
+          Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
+
           // Check to see if there is an item to be processed
           if (Active && _queue.TryDequeue(out var item))
           {
@@ -102,14 +102,14 @@ namespace VSS.TRex.SiteModelChangeMaps
           {
             _waitHandle.WaitOne();
           }
-        } while (!Aborted);
+        }
+        catch (Exception e)
+        {
+          Log.LogError(e, $"Exception thrown in {nameof(ProcessChangeMapUpdateItems)}");
+        }
+      } while (!Aborted);
 
-        Log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, $"Exception thrown in {nameof(ProcessChangeMapUpdateItems)}");
-      }
+      Log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
     }
 
     /// <summary>
@@ -170,7 +170,6 @@ namespace VSS.TRex.SiteModelChangeMaps
                   }
 
                   // Extract the change map from the item  
-                  //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
                   var updateMask = new SubGridTreeSubGridExistenceBitMask();
 
                   updateMask.FromBytes(item.Content);
@@ -200,7 +199,6 @@ namespace VSS.TRex.SiteModelChangeMaps
                 if (currentMask != null)
                 {
                   // Extract the change map from the item  
-                  //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
                   var updateMask = new SubGridTreeSubGridExistenceBitMask();
 
                   currentMask.SetOp_ANDNOT(updateMask);
