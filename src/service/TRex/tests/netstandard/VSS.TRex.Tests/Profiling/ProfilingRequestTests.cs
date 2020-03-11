@@ -19,6 +19,8 @@ using VSS.TRex.Profiling.GridFabric.Requests;
 using VSS.TRex.Profiling.GridFabric.Responses;
 using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -47,6 +49,7 @@ namespace VSS.TRex.Tests.Profiling
     {
       IgniteMock.AddClusterComputeGridRouting<ProfileRequestComputeFunc_ClusterCompute<ProfileCell>, ProfileRequestArgument_ClusterCompute, ProfileRequestResponse<ProfileCell>>();
       IgniteMock.AddClusterComputeGridRouting<ProfileRequestComputeFunc_ClusterCompute<SummaryVolumeProfileCell>, ProfileRequestArgument_ClusterCompute, ProfileRequestResponse<SummaryVolumeProfileCell>>();
+      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
     private void AddRoutings()
