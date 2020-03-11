@@ -28,8 +28,8 @@ namespace VSS.TRex.Pipelines
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
 
-    private IExistenceMaps existenceMaps;
-    private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
+    private IExistenceMaps _existenceMaps;
+    private IExistenceMaps GetExistenceMaps() => _existenceMaps ?? (_existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
     public Guid RequestDescriptor;
 
@@ -174,6 +174,7 @@ namespace VSS.TRex.Pipelines
       Filters = filters;
       CutFillDesign = cutFillDesign;
       Task = task;
+
       Pipeline = pipeline;
 
       RequestAnalyser = requestAnalyser;
@@ -191,6 +192,9 @@ namespace VSS.TRex.Pipelines
     /// <returns></returns>
     public async Task<bool> BuildAsync()
     {
+      // Ensure the task is initialised with the request descriptor
+      Task.RequestDescriptor = RequestDescriptor;
+
       // Introduce the task and the pipeline to each other
       Pipeline.PipelineTask = Task;
       Task.PipeLine = Pipeline;
@@ -235,27 +239,27 @@ namespace VSS.TRex.Pipelines
       if (RequireSurveyedSurfaceInformation)
       {
         // Obtain local reference to surveyed surfaces (lock free access)
-        var LocalSurveyedSurfaces = SiteModel.SurveyedSurfaces;
+        var localSurveyedSurfaces = SiteModel.SurveyedSurfaces;
 
-        if (LocalSurveyedSurfaces != null)
+        if (localSurveyedSurfaces != null)
         {
           // Construct two filtered surveyed surface lists to act as a rolling pair used as arguments
           // to the ProcessSurveyedSurfacesForFilter method
-          var FilterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
-          var FilteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+          var filterSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
+          var filteredSurveyedSurfaces = DIContext.Obtain<ISurveyedSurfaces>();
 
           SurveyedSurfacesExcludedViaTimeFiltering = Filters.Filters.Length > 0;
 
           foreach (var filter in Filters.Filters)
           {
-            if (!LocalSurveyedSurfaces.ProcessSurveyedSurfacesForFilter(DataModelID, filter,
-              FilteredSurveyedSurfaces, FilterSurveyedSurfaces, OverallExistenceMap))
+            if (!localSurveyedSurfaces.ProcessSurveyedSurfacesForFilter(DataModelID, filter,
+              filteredSurveyedSurfaces, filterSurveyedSurfaces, OverallExistenceMap))
             {
               Response.ResultStatus = RequestErrorStatus.FailedToRequestSubgridExistenceMap;
               return false;
             }
 
-            SurveyedSurfacesExcludedViaTimeFiltering &= FilterSurveyedSurfaces.Count == 0;
+            SurveyedSurfacesExcludedViaTimeFiltering &= filterSurveyedSurfaces.Count == 0;
           }
         }
       }
@@ -415,11 +419,11 @@ namespace VSS.TRex.Pipelines
     }
 
     #region IDisposable Support
-    private bool disposedValue; // To detect redundant calls
+    private bool _disposedValue; // To detect redundant calls
 
     protected virtual void Dispose(bool disposing)
     {
-      if (!disposedValue)
+      if (!_disposedValue)
       {
         if (disposing)
         {
@@ -431,7 +435,7 @@ namespace VSS.TRex.Pipelines
         RequestAnalyser = null;
         SiteModel = null;
 
-        disposedValue = true;
+        _disposedValue = true;
       }
     }
 

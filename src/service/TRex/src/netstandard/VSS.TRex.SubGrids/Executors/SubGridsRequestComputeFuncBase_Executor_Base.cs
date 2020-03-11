@@ -44,10 +44,10 @@ namespace VSS.TRex.SubGrids.Executors
     /// <summary>
     /// Local reference to the client sub grid factory
     /// </summary>
-    private IClientLeafSubGridFactory clientLeafSubGridFactory;
+    private IClientLeafSubGridFactory _clientLeafSubGridFactory;
 
     private IClientLeafSubGridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
+      => _clientLeafSubGridFactory ?? (_clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
     /// <summary>
     /// Mask is the internal sub grid bit mask tree created from the serialized mask contained in the 
@@ -356,7 +356,7 @@ namespace VSS.TRex.SubGrids.Executors
       var clientGrids = new IClientLeafSubGrid[addressCount][];
 
       // Execute a client grid request for each requester and create an array of the results
-      for (int i = 0; i < addressCount; i++)
+      for (var i = 0; i < addressCount; i++)
       {
         clientGridTasks[i] = requestors.Select(async x =>
         {
@@ -380,7 +380,7 @@ namespace VSS.TRex.SubGrids.Executors
       }
     }
 
-    private readonly List<Task> tasks = new List<Task>();
+    private readonly List<Task> _tasks = new List<Task>();
 
     /// <summary>
     /// Processes a bucket of sub grids by creating a task for it and adding it to the tasks list for the request
@@ -392,7 +392,7 @@ namespace VSS.TRex.SubGrids.Executors
       SubGridCellAddress[] addressListCopy = new SubGridCellAddress[addressCount];
       Array.Copy(addressList, addressListCopy, addressCount);
 
-      tasks.Add(PerformSubGridRequestList(addressListCopy, addressCount));
+      _tasks.Add(PerformSubGridRequestList(addressListCopy, addressCount));
     }
 
     /// <summary>
@@ -471,14 +471,14 @@ namespace VSS.TRex.SubGrids.Executors
 
       // Wait for all the sub-tasks to complete
 
-      Log.LogInformation($"Waiting for {tasks.Count} sub tasks to complete for sub grids request");
+      Log.LogInformation($"Waiting for {_tasks.Count} sub tasks to complete for sub grids request");
 
-      var summaryTask = Task.WhenAll(tasks);
+      var summaryTask = Task.WhenAll(_tasks);
       summaryTask.Wait();
 
       if (summaryTask.Status == TaskStatus.RanToCompletion)
       {
-        Log.LogInformation($"{tasks.Count} sub grid tasks completed, executing AcquireComputationResult()");
+        Log.LogInformation($"{_tasks.Count} sub grid tasks completed, executing AcquireComputationResult()");
         return AcquireComputationResult();
       }
 

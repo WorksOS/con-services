@@ -15,29 +15,30 @@ namespace VSS.TRex.GridFabric.Arguments
     private const byte VERSION_NUMBER = 1;
 
     /// <summary>
-    /// The request ID for the subgrid request
+    /// The request ID for the sub grid request
     /// </summary>
     public Guid RequestID = Guid.Empty;
 
     /// <summary>
-    /// The grid data type to extract from the processed subgrids
+    /// The grid data type to extract from the processed sub grids
     /// </summary>
     public GridDataType GridDataType { get; set; } = GridDataType.All;
 
     /// <summary>
-    /// The serialized contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for production data
+    /// The serialized contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all sub grids that need to be requested for production data
     /// </summary>
     public byte[] ProdDataMaskBytes { get; set; }
 
     /// <summary>
-    /// The serialized contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all subgrids that need to be requested for surveyed surface data ONLY
+    /// The serialized contents of the SubGridTreeSubGridExistenceBitMask that notes the address of all sub grids that need to be requested for surveyed surface data ONLY
     /// </summary>
     public byte[] SurveyedSurfaceOnlyMaskBytes { get; set; }
 
     /// <summary>
-    /// The name of the message topic that subgrid responses should be sent to
+    /// The name of the message topic that sub grid responses should be sent to
     /// </summary>
-    public string MessageTopic { get; set; } = string.Empty;
+    // Commented out for ICompute response implementation
+    // public string MessageTopic { get; set; } = string.Empty;
 
     /// <summary>
     /// Denotes whether results of these requests should include any surveyed surfaces in the site model
@@ -70,7 +71,7 @@ namespace VSS.TRex.GridFabric.Arguments
       writer.WriteByteArray(ProdDataMaskBytes);
       writer.WriteByteArray(SurveyedSurfaceOnlyMaskBytes);
 
-      writer.WriteString(MessageTopic);
+     // writer.WriteString(MessageTopic);
       writer.WriteBoolean(IncludeSurveyedSurfaceInformation);
 
       AreaControlSet.ToBinary(writer);
@@ -92,7 +93,7 @@ namespace VSS.TRex.GridFabric.Arguments
       ProdDataMaskBytes = reader.ReadByteArray();
       SurveyedSurfaceOnlyMaskBytes = reader.ReadByteArray();
 
-      MessageTopic = reader.ReadString();
+      //MessageTopic = reader.ReadString();
       IncludeSurveyedSurfaceInformation = reader.ReadBoolean();
 
       AreaControlSet = new AreaControlSet();

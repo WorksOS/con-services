@@ -1,14 +1,15 @@
-﻿using Apache.Ignite.Core.Messaging;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Nito.AsyncEx.Synchronous;
+using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 
@@ -24,6 +25,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     {
         private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRequestsProgressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
+        private readonly IPipelineListenerMapper _listenerMapper = DIContext.Obtain<IPipelineListenerMapper>();
+
         /// <summary>
         /// The listener to which the processing engine may send in-progress updates during processing of the overall sub grids request
         /// </summary>
@@ -32,7 +35,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         /// <summary>
         /// The MsgGroup into which the listener has been added
         /// </summary>
-        private IMessaging MsgGroup { get; set; }
+        // Commented out to support IComputeFunc based progressive responses
+        // private IMessaging MsgGroup { get; set; }
 
         /// <summary>
         /// Default no-arg constructor that delegates construction to the base class
@@ -47,30 +51,40 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         private void CreateSubGridListener()
         {
             // Create any required listener for periodic responses directly sent from the processing context to this context
-            if (!string.IsNullOrEmpty(arg.MessageTopic))
-            {
+            
+            // Commented out for ComputeFunc based implementation
+            //if (!string.IsNullOrEmpty(arg.MessageTopic))
+            //{
                 Listener = new SubGridListener(TRexTask);
 
                 StartListening();
-            }
+            //}
         }
 
         private void StartListening()
         {
+            DIContext.Obtain<IPipelineListenerMapper>().Add(TRexTask.RequestDescriptor, Listener);
+
+            /* Commented out to support IComputeFunc based progressive responses
             if (MsgGroup == null)
             {
                 // Create a messaging group the cluster can use to send messages back to and establish a local listener
                 MsgGroup = Compute.ClusterGroup.GetMessaging();
                 MsgGroup.LocalListen(Listener, arg.MessageTopic);
             }
+            */
         }
 
         private void StopListening()
         {
+            _listenerMapper.Remove(TRexTask.RequestDescriptor, Listener);
+
+            /* Commented out to support IComputeFunc based progressive responses
             // De-register the listener from the message group
             MsgGroup?.StopLocalListen(Listener, arg.MessageTopic);
             MsgGroup = null;
-
+            */
+            
             Listener = null;
         }
 
@@ -86,7 +100,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
           Log.LogInformation($"Surveyed Surface mask in argument to renderer contains {SurveyedSurfaceOnlyMask.CountBits()} sub grids");
 
           CreateSubGridListener();
-
         }
 
         /// <summary>
@@ -116,10 +129,10 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 Log.LogInformation($"TaskResult {taskResult?.Status}: SubGridRequests.Execute() for DM:{TRexTask.PipeLine.DataModelID} from node {TRexTask.TRexNodeID} for data type {TRexTask.GridDataType} took {sw.ElapsedMilliseconds}ms");
             }
 
-         // Send the appropriate response to the caller
-         return taskResult.Result?.Count > 0 
-           ? taskResult.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)) 
-           : null;
+            // Send the appropriate response to the caller
+            return taskResult.Result?.Count > 0 
+              ? taskResult.Result.Aggregate((first, second) => (TSubGridRequestsResponse) first.AggregateWith(second)) 
+              : null;
         }
 
         /// <summary>

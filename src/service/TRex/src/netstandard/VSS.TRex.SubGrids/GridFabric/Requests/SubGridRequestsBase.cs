@@ -2,7 +2,6 @@
 using System;
 using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
@@ -148,7 +147,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 ProdDataMaskBytes = ProdDataMask.ToBytes(),
                 SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceOnlyMask.ToBytes(),
                 Filters = Filters,
-                MessageTopic = $"SubGridRequest:{RequestID}",
+                OriginatingIgniteNodeId = Ignite.GetCluster().GetLocalNode().Id,
+                //MessageTopic = $"SubGridRequest:{RequestID}",
                 TRexNodeID = TRexNodeId,
                 ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet

@@ -59,7 +59,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 
           // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
           // to the called context (it may clone the passed in client grid if desired)
-          IClientLeafSubGrid[][] clientGrids = new IClientLeafSubGrid[responseCount][];
+          var clientGrids = new IClientLeafSubGrid[responseCount][];
 
           try
           {
