@@ -77,7 +77,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     {
       try
       {
-        Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} starting executing");
+        Log.LogInformation($"{context.Name} starting executing");
 
         Aborted = false;
         waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
@@ -95,6 +95,8 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
 
         var queueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
 
+        Log.LogInformation($"Obtained queue cache for SiteModelChangeBufferQueueKey: {queueCache}");
+
         var handler = new SiteModelChangeProcessorItemHandler();
         var listener = new LocalSiteModelChangeListener(handler);
 
@@ -104,14 +106,23 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
 
         if (queryHandleFactory != null)
         {
+          Log.LogInformation("Obtaining query handle from DI'd factory");
           queryHandle = queryHandleFactory(listener);
         }
 
         if (queryHandle == null)
         {
+          Log.LogInformation("Obtaining query handle from QueryContinuous() API");
+
           queryHandle = queueCache.QueryContinuous
-          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener) {Local = true},
-            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> {Local = true});
+          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener)
+            {
+              Local = true 
+            },
+            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> 
+            {
+              Local = true 
+            });
         }
 
         // Construct the continuous query machinery
@@ -140,7 +151,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       }
       finally
       {
-        Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} completed executing");
+        Log.LogInformation($"{context.Name} completed executing");
       }
     }
 
@@ -150,7 +161,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// <param name="context"></param>
     public void Cancel(IServiceContext context)
     {
-      Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} cancelling");
+      Log.LogInformation($"{context.Name} cancelling");
 
       Aborted = true;
       waitHandle?.Set();

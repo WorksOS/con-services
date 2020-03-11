@@ -26,6 +26,9 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// <param name="events"></param>
     public void OnEvent(IEnumerable<ICacheEntryEvent<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> events)
     {
+      if (OutputInformationalMessagesToLog)
+        Log.LogInformation($"Entering {nameof(LocalSiteModelChangeListener)}.OnEvents()");
+
       // Pass the item creation events to the handler for processing 
 
       foreach (var evt in events)

@@ -17,13 +17,13 @@ namespace VSS.TRex.Caching
   /// </summary>
   public class TRexSpatialMemoryCache : ITRexSpatialMemoryCache, IDisposable
   {
-    private static readonly ILogger log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<TRexSpatialMemoryCache>();
 
     private const int MAX_NUM_ELEMENTS = 1000000000;
 
-    private readonly int SpatialMemoryCacheInterEpochSleepTimeSeconds 
+    private readonly int _spatialMemoryCacheInterEpochSleepTimeSeconds 
       = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS", Consts.SPATIAL_MEMORY_CACHE_INTER_EPOCH_SLEEP_TIME_SECONDS);
-    private readonly int SpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds 
+    private readonly int _spatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds 
       = DIContext.Obtain<IConfigurationStore>().GetValueInt("SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS", Consts.SPATIAL_MEMORY_CACHE_INVALIDATED_CACHE_CONTEXT_REMOVAL_WAIT_TIME_SECONDS);
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace VSS.TRex.Caching
     /// Each context is identified by a string based fingerprint that encodes information such
     /// as project, grid data type requests & filter parameters etc
     /// </summary>
-    private readonly Dictionary<string, ITRexSpatialMemoryCacheContext> Contexts;
+    private readonly Dictionary<string, ITRexSpatialMemoryCacheContext> _contexts;
 
     /// <summary>
     /// A collection of cache context lists, one per project active in the system.
@@ -44,40 +44,40 @@ namespace VSS.TRex.Caching
     /// to a project for operations such as invalidation due to TAG file ingest and
     /// eviction of contexts that are empty or are otherwise subject to removal.
     /// </summary>
-    private readonly Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>> ProjectContexts;
+    private readonly Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>> _projectContexts;
 
     // ReSharper disable once InconsistentlySynchronizedField
-    public int ContextCount => Contexts.Count;
+    public int ContextCount => _contexts.Count;
 
     // ReSharper disable once InconsistentlySynchronizedField
-    public int ProjectCount => ProjectContexts.Count;
+    public int ProjectCount => _projectContexts.Count;
 
     /// <summary>
     /// The internal modifiable count of contexts that have been removed
     /// </summary>
-    private long contextRemovalCount;
+    private long _contextRemovalCount;
 
     /// <summary>
     /// THe exposed readonly property for the number of removed contexts
     /// </summary>
-    public long ContextRemovalCount => contextRemovalCount;
+    public long ContextRemovalCount => _contextRemovalCount;
 
     /// <summary>
     /// The maximum number of elements that may be contained in this cache
     /// </summary>
     public int MaxNumElements { get; }
 
-    private int currentNumElements;
-    public int CurrentNumElements => currentNumElements;
+    private int _currentNumElements;
+    public int CurrentNumElements => _currentNumElements;
 
-    private long currentSizeInBytes;
-    public long CurrentSizeInBytes => currentSizeInBytes;
+    private long _currentSizeInBytes;
+    public long CurrentSizeInBytes => _currentSizeInBytes;
 
     public int MruNonUpdateableSlotCount { get; }
 
     public long MaxSizeInBytes { get; }
 
-    private readonly TRexSpatialMemoryCacheContextRemover ContextRemover;
+    private readonly TRexSpatialMemoryCacheContextRemover _contextRemover;
 
     /// <summary>
     /// Creates a new spatial data cache containing at most maxNumElements items. Elements are stored in
@@ -104,10 +104,10 @@ namespace VSS.TRex.Caching
       MruNonUpdateableSlotCount = (int)Math.Truncate(maxNumElements * mruDeadBandFraction);
 
       MRUList = new TRexSpatialMemoryCacheStorage<ITRexMemoryCacheItem>(maxNumElements, MruNonUpdateableSlotCount);
-      Contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
-      ProjectContexts = new Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>>();
+      _contexts = new Dictionary<string, ITRexSpatialMemoryCacheContext>();
+      _projectContexts = new Dictionary<Guid, List<ITRexSpatialMemoryCacheContext>>();
 
-      ContextRemover = new TRexSpatialMemoryCacheContextRemover(this, SpatialMemoryCacheInterEpochSleepTimeSeconds, SpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds);
+      _contextRemover = new TRexSpatialMemoryCacheContextRemover(this, _spatialMemoryCacheInterEpochSleepTimeSeconds, _spatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds);
     }
 
     /// <summary>
@@ -120,9 +120,9 @@ namespace VSS.TRex.Caching
     /// <returns></returns>
     public ITRexSpatialMemoryCacheContext LocateOrCreateContext(Guid projectUid, string contextFingerPrint, TimeSpan cacheDuration)
     {
-      lock (Contexts)
+      lock (_contexts)
       {
-        if (Contexts.TryGetValue(contextFingerPrint, out var context))
+        if (_contexts.TryGetValue(contextFingerPrint, out var context))
         {
           if (context.MarkedForRemoval)
             context.Reanimate();
@@ -132,20 +132,20 @@ namespace VSS.TRex.Caching
 
         // Create the new context
         var newContext = new TRexSpatialMemoryCacheContext(this, MRUList, cacheDuration, contextFingerPrint, projectUid); 
-        Contexts.Add(contextFingerPrint, newContext);
+        _contexts.Add(contextFingerPrint, newContext);
 
-        lock (ProjectContexts)
+        lock (_projectContexts)
         {
           // Add a reference to this context into the project specific list of contexts
-          if (ProjectContexts.TryGetValue(projectUid, out var projectList))
+          if (_projectContexts.TryGetValue(projectUid, out var projectList))
             projectList.Add(newContext);
           else
-            ProjectContexts.Add(projectUid, new List<ITRexSpatialMemoryCacheContext> {newContext});
+            _projectContexts.Add(projectUid, new List<ITRexSpatialMemoryCacheContext> {newContext});
         }
 
         // Mark the newly created context for removal. This may seem counter intuitive, but covers the case
         // where a context is created but has no elements added to it, or subsequently removed
-        newContext.MarkForRemoval(DateTime.UtcNow.AddSeconds(SpatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds));
+        newContext.MarkForRemoval(DateTime.UtcNow.AddSeconds(_spatialMemoryCacheInvalidatedCacheContextRemovalWaitTimeSeconds));
 
         return newContext;
       }
@@ -175,7 +175,7 @@ namespace VSS.TRex.Caching
       if (context.MarkedForRemoval)
         context.Reanimate();
 
-      bool result = context.Add(element);
+      var result = context.Add(element);
 
       if (result)
       {
@@ -208,22 +208,22 @@ namespace VSS.TRex.Caching
     private void ItemAddedToContext(int sizeInBytes)
     {
       // Increment the number of elements in the cache
-      Interlocked.Increment(ref currentNumElements);
+      Interlocked.Increment(ref _currentNumElements);
 
       // Increment the memory usage in the cache
-      Interlocked.Add(ref currentSizeInBytes, sizeInBytes);
+      Interlocked.Add(ref _currentSizeInBytes, sizeInBytes);
     }
 
     public void ItemRemovedFromContext(int sizeInBytes)
     {
       // Decrement the memory usage in the cache
-      var number = Interlocked.Add(ref currentSizeInBytes, -sizeInBytes);
+      var number = Interlocked.Add(ref _currentSizeInBytes, -sizeInBytes);
 
       if (number < 0)
         throw new TRexException("CurrentSizeInBytes < 0! Consider using Cache.Add(context, item).");
 
       // Decrement the number of elements in the cache
-      Interlocked.Decrement(ref currentNumElements);
+      Interlocked.Decrement(ref _currentNumElements);
     }
 
     /// <summary>
@@ -249,9 +249,9 @@ namespace VSS.TRex.Caching
       List<ITRexSpatialMemoryCacheContext> projectContexts;
 
       // Obtain the list of contexts for this project
-      lock (Contexts)
+      lock (_contexts)
       {
-        if (ProjectContexts.TryGetValue(projectUid, out projectContexts))
+        if (_projectContexts.TryGetValue(projectUid, out projectContexts))
         {
           // Make a clone of this list to facilitate working through the evictions without holding
           // a long term lock on the global set of contexts
@@ -259,43 +259,43 @@ namespace VSS.TRex.Caching
         }
       }
 
-      int numInvalidatedSubGrids = 0;
-      int numScannedSubGrids = 0;
-      DateTime startTime = DateTime.UtcNow;
+      if (projectContexts == null || projectContexts.Count <= 0)
+        return;
 
-      if ((projectContexts?.Count ?? 0) > 0)
+      var numInvalidatedSubGrids = 0;
+      var numScannedSubGrids = 0;
+      var startTime = DateTime.UtcNow;
+
+      // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
+      // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
+      // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
+      foreach (var context in projectContexts)
       {
-        // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
-        // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
-        // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
-        foreach (var context in projectContexts)
+        lock (context)
         {
-          lock (context)
+          // Empty contexts are ignored
+          if (context.TokenCount > 0)
           {
-            // Empty contexts are ignored
-            if (context.TokenCount > 0)
+            // If the context in question is not sensitive to production data ingest then ignore it
+            if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) != 0)
             {
-              // If the context in question is not sensitive to production data ingest then ignore it
-              if ((context.Sensitivity & TRexSpatialMemoryCacheInvalidationSensitivity.ProductionDataIngest) != 0)
+              // Iterate across all elements in the mask:
+              // 1. Locate the cache entry
+              // 2. Mark it as dirty
+              mask.ScanAllSetBitsAsSubGridAddresses(origin =>
               {
-                // Iterate across all elements in the mask:
-                // 1. Locate the cache entry
-                // 2. Mark it as dirty
-                mask.ScanAllSetBitsAsSubGridAddresses(origin =>
-                {
-                  context.InvalidateSubGridNoLock(origin.X, origin.Y, out bool subGridPresentForInvalidation);
+                context.InvalidateSubGridNoLock(origin.X, origin.Y, out var subGridPresentForInvalidation);
 
-                  numScannedSubGrids++;
-                  if (subGridPresentForInvalidation)
-                    numInvalidatedSubGrids++;
-                });
-              }
+                numScannedSubGrids++;
+                if (subGridPresentForInvalidation)
+                  numInvalidatedSubGrids++;
+              });
             }
           }
         }
       }
 
-      log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts.Count} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
+      Log.LogInformation($"Invalidated {numInvalidatedSubGrids} out of {numScannedSubGrids} scanned sub grid from {projectContexts?.Count} contexts in {DateTime.UtcNow - startTime} [project {projectUid}]");
     }
 
     /// <summary>
@@ -305,19 +305,19 @@ namespace VSS.TRex.Caching
     /// <returns></returns>
     public void RemoveContextsMarkedForRemoval(int ageSeconds)
     {
-      int numRemoved = 0;
-      DateTime removalDateUtc = DateTime.UtcNow.AddSeconds(-ageSeconds);
-      DateTime startTime = DateTime.UtcNow;
+      var numRemoved = 0;
+      var removalDateUtc = DateTime.UtcNow.AddSeconds(-ageSeconds);
+      var startTime = DateTime.UtcNow;
       
-      lock (Contexts)
+      lock (_contexts)
       {
         // Construct a list of candidates to work through so there are not issues with modifying a collection being enumerated
-        var candidates = Contexts.Values.Where(x => x.MarkedForRemoval && x.MarkedForRemovalAtUtc <= removalDateUtc).ToList();
+        var candidates = _contexts.Values.Where(x => x.MarkedForRemoval && x.MarkedForRemovalAtUtc <= removalDateUtc).ToList();
         foreach (var context in candidates)
         {
           if (context.TokenCount != 0)
           {
-            log.LogError($"Context in project {context.ProjectUID} with fingerprint {context.FingerPrint} has tokens in it {context.TokenCount} and is set for removal. Resetting context state to normal.");
+            Log.LogError($"Context in project {context.ProjectUID} with fingerprint {context.FingerPrint} has tokens in it {context.TokenCount} and is set for removal. Resetting context state to normal.");
             context.Reanimate();
 
             continue;
@@ -325,22 +325,22 @@ namespace VSS.TRex.Caching
 
           // Remove the context:
           // 1. From the primary contexts dictionary
-          Contexts.Remove(context.FingerPrint);
+          _contexts.Remove(context.FingerPrint);
 
           // 2. From the project list of contexts
-          ProjectContexts[context.ProjectUID].Remove(context);
+          _projectContexts[context.ProjectUID].Remove(context);
 
           numRemoved++;
-          Interlocked.Increment(ref contextRemovalCount);
+          Interlocked.Increment(ref _contextRemovalCount);
         }
       }
 
-      log.LogInformation($"{numRemoved} contexts removed in {DateTime.UtcNow - startTime}");
+      Log.LogInformation($"{numRemoved} contexts removed in {DateTime.UtcNow - startTime}");
     }
 
     public void Dispose()
     {
-      ContextRemover.Dispose();
+      _contextRemover.Dispose();
     }
   }
 }
