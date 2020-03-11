@@ -116,6 +116,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
 
       .Add(x => x.AddSingleton<Func<DataSmootherOperation, IDataSmoother>>(provider => SurfaceExportSmootherFactoryMethod))
 
+      .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
       .Complete();
     }
 

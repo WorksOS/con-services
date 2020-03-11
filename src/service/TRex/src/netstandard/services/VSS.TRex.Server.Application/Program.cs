@@ -117,6 +117,8 @@ namespace VSS.TRex.Server.Application
         .Add(x => x.AddTransient<Func<ISiteModel, ISubGridTreeBitMask, IFilterSet, ICellLiftBuilder, ICellProfileAnalyzer<SummaryVolumeProfileCell>>>(
           factory => (siteModel, pDExistenceMap, filterSet, cellLiftBuilder) => null))
 
+        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
         .Complete();
     }
 
