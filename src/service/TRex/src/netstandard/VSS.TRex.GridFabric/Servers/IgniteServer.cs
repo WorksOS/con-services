@@ -21,6 +21,9 @@ namespace VSS.TRex.GridFabric.Servers
         public const string IGNITE_JVM_INITIAL_HEAP_SIZE_MB = "IGNITE_JVM_INITIAL_HEAP_SIZE_MB";
         public const int DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB = 512;
 
+        public const string PROGRESSIVE_REQUEST_CUSTOM_POOL_SIZE = "PROGRESSIVE_REQUEST_CUSTOM_POOL_SIZE";
+        public const int DEFAULT_PROGRESSIVE_REQUEST_CUSTOM_POOL_SIZE = 8;
+
         /// <summary>
         /// The mutable Ignite grid reference maintained by this server instance
         /// </summary>
