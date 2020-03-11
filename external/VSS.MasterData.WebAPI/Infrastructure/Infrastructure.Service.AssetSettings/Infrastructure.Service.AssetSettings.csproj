@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
+    <PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Repositories\AssetConfigRepository\AssetConfigRepository.csproj" />
+    <ProjectReference Include="..\..\Repositories\AssetConfigType\AssetConfigTypeRepository.csproj" />
+    <ProjectReference Include="..\..\Repositories\AssetSettingsRepository\AssetSettingsRepository.csproj" />
+    <ProjectReference Include="..\..\Repositories\AssetWeeklyConfigRepository\AssetWeeklyConfigRepository.csproj" />
+    <ProjectReference Include="..\..\Repositories\CustomerRepository\CustomerRepository.csproj" />
+    <ProjectReference Include="..\..\Repositories\ServiceTypeParameterRepository\ServiceTypeParameterRepository.csproj" />
+    <ProjectReference Include="..\..\Repositories\WorkDefinitionRepository\WorkDefinitionRepository.csproj" />
+    <ProjectReference Include="..\Infrastructure.Cache\Infrastructure.Cache.csproj" />
+    <ProjectReference Include="..\Infrastructure.Common\Infrastructure.Common.csproj" />
+  </ItemGroup>
+
+</Project>

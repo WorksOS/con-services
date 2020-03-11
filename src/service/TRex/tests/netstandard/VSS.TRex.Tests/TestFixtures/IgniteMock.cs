@@ -18,7 +18,6 @@ using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces.Events;
@@ -85,22 +84,22 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))
         .Callback((object message, object topic) =>
         {
-          messagingDictionary.TryGetValue(topic, out var listener);
-          if (listener is SubGridListener _listener)
-            _listener.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
+          messagingDictionary.TryGetValue(topic, out var lstnr);
+          if (lstnr is SubGridListener listener)
+            listener.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else
-            throw new TRexException($"Type of listener ({listener}) not SubGridListener as expected.");
+            throw new TRexException($"Type of listener ({lstnr}) not SubGridListener as expected.");
         });
 
       mockMessaging
         .Setup(x => x.SendOrdered(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<TimeSpan?>()))
         .Callback((object message, object topic, TimeSpan? timeSpan) =>
         {
-          messagingDictionary.TryGetValue(topic, out var listener);
-          if (listener is SubGridListener _listener1)
-            _listener1.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
-          else if (listener is SiteModelAttributesChangedEventListener _listener2)
-            _listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
+          messagingDictionary.TryGetValue(topic, out var lstnr);
+          if (lstnr is SubGridListener listener1)
+            listener1.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
+          else if (lstnr is SiteModelAttributesChangedEventListener listener2)
+            listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
           else
             throw new TRexException("Type of listener not SubGridListener or SiteModelAttributesChangedEventListener as expected.");
         });
@@ -201,9 +200,6 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the existence maps cache and any other cache using this signature
       AddMockedCacheToIgniteMock<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();
 
-      // Create the mocked cache for the site model change map queue cache and any other cache using this signature
-      AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>();
-
       // Create the mocked cache for the site model TAG file buffer queue cache and any other cache using this signature
       AddMockedCacheToIgniteMock<ITAGFileBufferQueueKey, TAGFileBufferQueueItem>();
 
@@ -216,8 +212,8 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the site model machine change maps and any other cache using this signature
       AddMockedCacheToIgniteMock<ISiteModelMachineAffinityKey, ISerialisedByteArrayWrapper>();
 
-      // Create the mocked cache for the change map buffer queue that sites between the tag file ingest pipeline and the machien change maps processor
-      AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>();
+      // Create the mocked cache for the change map buffer queue that sites between the tag file ingest pipeline and the machine change maps processor
+      AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>();
     }
 
     private static void TestIBinarizableSerializationForItem(object item)

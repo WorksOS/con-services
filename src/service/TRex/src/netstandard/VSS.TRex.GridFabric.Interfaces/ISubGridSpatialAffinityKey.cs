@@ -2,18 +2,13 @@
 
 namespace VSS.TRex.GridFabric.Interfaces
 {
-  public interface ISubGridSpatialAffinityKey
+  public interface ISubGridSpatialAffinityKey : IProjectAffinity
   {
     /// <summary>
     /// The version number of this spatial element when it is stored in the persistent layer, defined
     /// as the number of ticks in DateTime.UtcNow at the time it is written.
     /// </summary>
     long Version { get; set; }
-
-    /// <summary>
-    /// The GUID for the project the sub grid data belongs to.
-    /// </summary>
-    Guid ProjectUID { get; set; }
 
     /// <summary>
     /// The X ordinate cell address of the origin cell for the sub grid

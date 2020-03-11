@@ -64,36 +64,36 @@ namespace VSS.TRex.Tests.SiteModelChangeMaps.GridFabric.Services
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
 
       var projectGuid = siteModel.ID;
-      var insertUTC = DateTime.UtcNow;
+      var insertUtc = DateTime.UtcNow;
       var changeMap = new SubGridTreeSubGridExistenceBitMask
       {
         [SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset] = true
       };
 
-      var mockCacheEntry = new Mock<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-      var key = new SiteModelChangeBufferQueueKey(projectGuid, insertUTC);
+      var mockCacheEntry = new Mock<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>();
+      var key = new SiteModelChangeBufferQueueKey(projectGuid, insertUtc);
       mockCacheEntry.Setup(x => x.Key).Returns(key);
       mockCacheEntry.Setup(x => x.Value).Returns(new SiteModelChangeBufferQueueItem
       {
         ProjectUID = projectGuid,
-        InsertUTC = insertUTC, 
+        InsertUTC = insertUtc, 
         Content = changeMap.ToBytes(),
         Origin = SiteModelChangeMapOrigin.Ingest,
         Operation = SiteModelChangeMapOperation.AddSpatialChanges
       });
 
-      var queryResult = new List<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> {mockCacheEntry.Object};
+      var queryResult = new List<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> {mockCacheEntry.Object};
 
-      var mockQueryCursor = new Mock<IQueryCursor<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>();
+      var mockQueryCursor = new Mock<IQueryCursor<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>();
       mockQueryCursor.Setup(x => x.GetAll()).Returns(queryResult);
       mockQueryCursor.Setup(x => x.GetEnumerator()).Returns(queryResult.GetEnumerator());
 
-      var mockQueryHandle = new Mock<IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>();
+      var mockQueryHandle = new Mock<IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>();
       mockQueryHandle.Setup(x => x.GetInitialQueryCursor()).Returns(mockQueryCursor.Object);
 
       DIBuilder
         .Continue()
-        .Add(x => x.AddSingleton<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>>(listener => mockQueryHandle.Object))
+        .Add(x => x.AddSingleton<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>>(listener => mockQueryHandle.Object))
         .Complete();
 
       var service = new SiteModelChangeProcessorService();

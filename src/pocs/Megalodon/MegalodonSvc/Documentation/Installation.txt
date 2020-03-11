@@ -1,0 +1,24 @@
+﻿/*** Trimble Tagfile Service Installation ***
+
+appsettings.json keys
+
+  "TCIP": "127.0.0.1", Local ip address service is running
+  "Port": "1500", Port the socket will be opened
+  "TagFileIntervalSecs": "60", Interavl a tagfile will be written
+  "InstallFolder": "c:\\Trimble", where this service was installed. Change if different
+  "SendTagFilesDirect": true, tagfiles are moved from ToSend folder to one folder up and directly sent via FTP to VL
+   
+   The following are keys for sirect tagfile send
+  "productivity3d-service-public-v2": "https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0",
+  "TPAAS_OAUTH_URL": "https://identity-stg.trimble.com/i/oauth2",
+  "TPAAS_APP_TOKENKEYS": "MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh"
+
+Optional Keys
+
+"SeedLat": "-42.0"  if set to non zero overrides the seed latitude in tagfile
+"SeedLon": "174.0"  if set to non zero overrides the seed longitude in tagfile
+"SerialOverride": "123456" if set overrides the machine serial number
+"MachineName": "Vessel1" if set used when tagfile is not provided with a vessel id
+"ForceBOG": true if set always turns on BOG 
+*/
+

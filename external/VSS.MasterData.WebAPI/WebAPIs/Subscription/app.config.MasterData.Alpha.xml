@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!--For more information on using transformations see the web.config examples at http://go.microsoft.com/fwlink/?LinkId=214134. -->
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<SubscriptionKafkaTopicNames xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent</SubscriptionKafkaTopicNames>
+	<TopicSuffix xdt:Transform="Replace">-Alpha</TopicSuffix>
+	<ConnectionString>
+		<MasterData xdt:Transform="Replace">server=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com;Port=3306;userid=vssMasterDataUsr;password=sQmwPCA6Qc2h;database=VSS-MasterData-Alpha;CharSet=utf8;</MasterData>
+	</ConnectionString>
+	<ProducerSettings>
+		<bootstrap.servers xdt:Transform="Replace">kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+	</ProducerSettings>
+	<RestProxyBaseUrl xdt:Transform="Replace">http://vss-alphajson.maas.trimblepaas.com</RestProxyBaseUrl>
+</configuration>

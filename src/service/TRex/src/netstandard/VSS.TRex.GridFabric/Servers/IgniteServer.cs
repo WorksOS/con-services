@@ -1,10 +1,8 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Cache.Configuration;
 using System;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.GridFabric.Servers
@@ -14,14 +12,14 @@ namespace VSS.TRex.GridFabric.Servers
     /// </summary>
     public abstract class IgniteServer : IDisposable
     {
-        public const string TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = "TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE";
-        public const int DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
+        public const string IGNITE_PUBLIC_THREAD_POOL_SIZE = "IGNITE_PUBLIC_THREAD_POOL_SIZE";
+        public const int DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE = 500;
 
-        public const string TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB = "TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB";
-        public const int DEFAULT_TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB = 1 * 1024;
+        public const string IGNITE_JVM_MAX_HEAP_SIZE_MB = "IGNITE_JVM_MAX_HEAP_SIZE_MB";
+        public const int DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB = 1 * 1024;
 
-        public const string TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB = "TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB";
-        public const int DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB = 512;
+        public const string IGNITE_JVM_INITIAL_HEAP_SIZE_MB = "IGNITE_JVM_INITIAL_HEAP_SIZE_MB";
+        public const int DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB = 512;
 
         /// <summary>
         /// The mutable Ignite grid reference maintained by this server instance
@@ -32,11 +30,6 @@ namespace VSS.TRex.GridFabric.Servers
         /// The immutable Ignite grid reference maintained by this server instance
         /// </summary>
         protected IIgnite immutableTRexGrid = null;
-
-        protected static ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialMutableCache = null;
-        protected static ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> NonSpatialImmutableCache = null;
-        protected static ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialMutableCache = null;
-        protected static ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> SpatialImmutableCache = null;
 
         /// <summary>
         /// A unique identifier for this server that may be used by business logic executing on other nodes in the grid to locate it if needed for messaging
@@ -69,8 +62,6 @@ namespace VSS.TRex.GridFabric.Servers
             cfg.DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION;
         }
 
-        public abstract ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg);
-
         /// <summary>
         /// Base configuration for the mutable spatial cache
         /// </summary>
@@ -88,8 +79,6 @@ namespace VSS.TRex.GridFabric.Servers
         {
             cfg.DataRegionName = DataRegions.IMMUTABLE_SPATIAL_DATA_REGION;
         }
-
-        public abstract ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg);
 
         // This code added to correctly implement the disposable pattern.
         public void Dispose()

@@ -35,13 +35,13 @@ namespace VSS.TRex.Tests.TestFixtures
   {
     public static Guid NewSiteModelGuid => Guid.NewGuid();
 
-    public static TAGFileConverter ReadTAGFile(string fileName)
+    public static TAGFileConverter ReadTAGFile(string fileName, Guid assetUid, bool isJohnDoe)
     {
       var converter = new TAGFileConverter();
 
       using (var fs = new FileStream(Path.Combine("TestData", "TAGFiles", fileName), FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs);
+        converter.Execute(fs, assetUid, isJohnDoe);
       }
 
       return converter;
@@ -55,7 +55,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       using (var fs = new FileStream(fn, FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs);
+        converter.Execute(fs, Guid.NewGuid(), false);
       }
 
       return converter;
@@ -67,7 +67,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
       {
-        converter.Execute(fs);
+        converter.Execute(fs, Guid.NewGuid(), false);
       }
 
       return converter;
@@ -81,7 +81,7 @@ namespace VSS.TRex.Tests.TestFixtures
         // Add the factories for the storage proxy caches, both standard and transacted, for spatial and non spatial caches in TRex
 
         /////////////////////////////////////////////////////
-        /// Injected standard storage proxy cache factories
+        // Injected standard storage proxy cache factories
         /////////////////////////////////////////////////////
         
         .Add(x => x.AddSingleton<Func<IIgnite, StorageMutability, FileSystemStreamType, IStorageProxyCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>>>
@@ -115,7 +115,7 @@ namespace VSS.TRex.Tests.TestFixtures
       DIBuilder
         .Continue()
 
-        // Add the factory to create a single storage proxy instance. This is 
+        // Add the factory to create a single storage proxy instance.
         .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => mutability == StorageMutability.Mutable ? mutableStorageProxy : immutableStorageProxy))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Build();

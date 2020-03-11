@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM
@@ -78,18 +79,25 @@ namespace VSS.TRex.Designs.TTM
     }
     */
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsEdgeTriangle() => Neighbours[0] == null || Neighbours[1] == null || Neighbours[2] == null;
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsClockwise() => XYZ.PointOnRight(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public double Area() => XYZ.GetTriArea(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public double GetHeight(double X, double Y) => XYZ.GetTriangleHeight(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public XYZ Centroid() => XYZ.GetTriCentroid(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool PointInTriangle(double X, double Y) => XYZ.PointInTriangle(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);
-    
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool PointInTriangleInclusive(double X, double Y) => XYZ.PointInTriangleInclusive(Vertices[0].XYZ, Vertices[1].XYZ, Vertices[2].XYZ, X, Y);    
 
     /* Re-include if required, and add unit tests for them at that time.

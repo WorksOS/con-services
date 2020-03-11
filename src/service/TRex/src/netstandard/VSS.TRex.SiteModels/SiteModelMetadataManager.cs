@@ -34,13 +34,12 @@ namespace VSS.TRex.SiteModels
         Name = TRexCaches.SiteModelMetadataCacheName(),
 
         // cfg.CopyOnRead = false;   Leave as default as should have no effect with 2.1+ without on heap caching enabled
-        KeepBinaryInStore = false,
+        KeepBinaryInStore = true,
 
         // Replicate the site model metadata across nodes
         CacheMode = CacheMode.Replicated,
 
-        // TODO: No backups for now
-        Backups = 0,
+        Backups = 0,  // No backups need as it is a replicated cache
 
         DataRegionName = DataRegions.MUTABLE_NONSPATIAL_DATA_REGION
       };

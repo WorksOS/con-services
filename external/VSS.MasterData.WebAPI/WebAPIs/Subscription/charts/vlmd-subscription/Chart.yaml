@@ -1,0 +1,4 @@
+apiVersion: v1
+description: VSS MasterData Subscription API
+name: vlmd-subscription-__Branch__
+version: __MajorVersion__.__MinorVersion__.__BuildId__

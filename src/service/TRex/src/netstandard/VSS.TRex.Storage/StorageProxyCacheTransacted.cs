@@ -3,6 +3,7 @@ using System.Threading;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Transactions;
 using Microsoft.Extensions.Logging;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common.Extensions;
 using VSS.TRex.Storage.Interfaces;
 
@@ -51,7 +52,9 @@ namespace VSS.TRex.Storage
           lock (PendingTransactedWrites)
           {
             if (PendingTransactedWrites.TryGetValue(key, out var value))
+            {
               return value;
+            }
           }
 
           return base.Get(key);
@@ -65,10 +68,15 @@ namespace VSS.TRex.Storage
         /// <returns></returns>
         public override bool Remove(TK key)
         {
+          if (Log.IsTraceEnabled())
+          {
+            Log.LogTrace($"Removing item from pending transacted writes, cache = {Name}, key = {key}");
+          }
+
           // Remove any uncommitted writes for the deleted item from pending writes
           lock (PendingTransactedWrites)
           {
-              PendingTransactedWrites.Remove(key);
+            PendingTransactedWrites.Remove(key);
           }
 
           // Note the delete request in pending deletes
@@ -79,7 +87,7 @@ namespace VSS.TRex.Storage
           }
 
           if (pendingTransactedAddFailed && ReportPendingTransactedDeleteDuplicatesToLog)
-            Log.LogWarning($"Key {key} is already present in the set of transacted deletes for the cache [Remove]");
+            Log.LogWarning($"Key {key} is already present in the set of transacted deletes for cache {Name} [Remove]");
 
           return true;
         }
@@ -100,9 +108,14 @@ namespace VSS.TRex.Storage
         /// <param name="value"></param>
         public override void Put(TK key, TV value)
         {
+            if (Log.IsTraceEnabled())
+            {
+              Log.LogTrace($"Adding item (Put) to pending transacted writes, cache = {Name}, key = {key}");
+            }
+
             lock (PendingTransactedWrites)
             {
-              // If there is an existing pending write for the give key, then replace the
+              // If there is an existing pending write for the given key, then replace the
               // element in the dictionary with the new element
               PendingTransactedWrites.Remove(key);
 
@@ -110,8 +123,10 @@ namespace VSS.TRex.Storage
               PendingTransactedWrites.Add(key, value);
             }
 
-            if (value is byte[] bytes) 
+            if (value is byte[] bytes)
+            {
               IncrementBytesWritten(bytes.Length);
+            }
         }
 
         /// <summary>
@@ -163,11 +178,21 @@ namespace VSS.TRex.Storage
         {
           lock (PendingTransactedDeletes)
           {
+            if (Log.IsTraceEnabled())
+            {
+              Log.LogTrace($"Clearing {PendingTransactedDeletes.Count} deletes from transacted cache {Name}");
+            }
+
             PendingTransactedDeletes.Clear();
           }
 
           lock (PendingTransactedWrites)
           {
+            if (Log.IsTraceEnabled())
+            {
+              Log.LogTrace($"Clearing {PendingTransactedDeletes.Count} writes from transacted cache {Name}");
+            }
+
             PendingTransactedWrites.Clear();
           }
 

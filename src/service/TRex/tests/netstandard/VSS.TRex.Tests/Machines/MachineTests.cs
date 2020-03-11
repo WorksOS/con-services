@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity.UI.Pages.Internal.Account.Manage;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Machines;
@@ -111,9 +112,26 @@ namespace VSS.TRex.Tests.Machines
       var m = TestMachine();
 
       var m2 = new Machine();
-      m2.Assign(m); 
+      m2.Assign(m);
 
-      m.Should().BeEquivalentTo(m2);
+      m.ID.Should().NotBe(m2.ID);
+      m.InternalSiteModelMachineIndex.Should().NotBe(m2.InternalSiteModelMachineIndex);
+
+      m.Name.Should().Be(m2.Name);
+      m.MachineHardwareID.Should().Be(m2.MachineHardwareID);
+      m.CompactionSensorType.Should().Be(m2.CompactionSensorType);
+      // todo CompactionRMVJumpThreshold 
+      // todo UseMachineRMVThreshold 
+      // todo OverrideRMVJumpThreshold 
+      m.DeviceType.Should().Be(m2.DeviceType);
+      m.CompactionDataReported.Should().Be(m2.CompactionDataReported);
+      m.MachineType.Should().Be(m2.MachineType);
+      m.IsJohnDoeMachine.Should().Be(m2.IsJohnDoeMachine);
+      m.LastKnownX.Should().Be(m2.LastKnownX);
+      m.LastKnownY.Should().Be(m2.LastKnownY);
+      m.LastKnownLayerId.Should().Be(m2.LastKnownLayerId);
+      m.LastKnownDesignName.Should().Be(m2.LastKnownDesignName);
+      m.LastKnownPositionTimeStamp.Should().Be(m2.LastKnownPositionTimeStamp);
     }
 
     [Fact]

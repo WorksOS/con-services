@@ -32,7 +32,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.Responses
       var numResults = reader.ReadInt();
       Results = new List<ProcessTAGFileResponseItem>(numResults);
 
-      for (int i = 0; i < numResults; i++)
+      for (var i = 0; i < numResults; i++)
       {
         Results.Add(new ProcessTAGFileResponseItem(reader));
       }

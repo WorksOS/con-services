@@ -1,0 +1,4 @@
+apiVersion: v1
+description: VSS MasterData Preference API
+name: vlmd-preference-__Branch__
+version: __MajorVersion__.__MinorVersion__.__BuildId__

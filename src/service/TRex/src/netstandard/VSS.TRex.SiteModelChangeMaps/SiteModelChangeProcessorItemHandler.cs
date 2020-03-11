@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
@@ -7,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
@@ -30,9 +30,9 @@ namespace VSS.TRex.SiteModelChangeMaps
 
     private readonly SiteModelChangeMapProxy _changeMapProxy;
 
-    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> _itemQueueCache;
+    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> _itemQueueCache;
 
-    private readonly ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> _queue;
+    private readonly ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> _queue;
 
     private readonly EventWaitHandle _waitHandle;
 
@@ -46,10 +46,11 @@ namespace VSS.TRex.SiteModelChangeMaps
       }
 
       _waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-      _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
-      _itemQueueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      _queue = new ConcurrentQueue<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>();
+      _itemQueueCache = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
       _changeMapProxy = new SiteModelChangeMapProxy();
 
+      Log.LogInformation("Starting site model change processor item handler task");
       var _ = Task.Factory.StartNew(ProcessChangeMapUpdateItems, TaskCreationOptions.LongRunning);
     }
 
@@ -66,7 +67,7 @@ namespace VSS.TRex.SiteModelChangeMaps
       Aborted = true;
     }
 
-    public void Add(ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> item)
+    public void Add(ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> item)
     {
       _queue.Enqueue(item);
       _waitHandle.Set();
@@ -77,12 +78,12 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// </summary>
     private void ProcessChangeMapUpdateItems()
     {
-      try
-      {
-        Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
+      Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
 
-        // Cycle looking for new work to until aborted...
-        do
+      // Cycle looking for new work to until aborted...
+      do
+      {
+        try
         {
           // Check to see if there is an item to be processed
           if (Active && _queue.TryDequeue(out var item))
@@ -102,14 +103,14 @@ namespace VSS.TRex.SiteModelChangeMaps
           {
             _waitHandle.WaitOne();
           }
-        } while (!Aborted);
+        }
+        catch (Exception e)
+        {
+          Log.LogError(e, $"Exception thrown in {nameof(ProcessChangeMapUpdateItems)}");
+        }
+      } while (!Aborted);
 
-        Log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
-      }
-      catch (Exception e)
-      {
-        Log.LogError(e, $"Exception thrown in {nameof(ProcessChangeMapUpdateItems)}");
-      }
+      Log.LogInformation($"#Out# {nameof(ProcessChangeMapUpdateItems)} completed executing");
     }
 
     /// <summary>
@@ -148,6 +149,9 @@ namespace VSS.TRex.SiteModelChangeMaps
         // 3. Write record back to store
         // 4. Commit transaction
 
+        Log.LogInformation($"Processing an item: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
+        var sw = Stopwatch.StartNew();
+
         switch (item.Operation)
         {
           case SiteModelChangeMapOperation.AddSpatialChanges: // Add the two of them together...
@@ -168,7 +172,6 @@ namespace VSS.TRex.SiteModelChangeMaps
                   }
 
                   // Extract the change map from the item  
-                  //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
                   var updateMask = new SubGridTreeSubGridExistenceBitMask();
 
                   updateMask.FromBytes(item.Content);
@@ -198,7 +201,6 @@ namespace VSS.TRex.SiteModelChangeMaps
                 if (currentMask != null)
                 {
                   // Extract the change map from the item  
-                  //using (var updateMask = new SubGridTreeSubGridExistenceBitMask())
                   var updateMask = new SubGridTreeSubGridExistenceBitMask();
 
                   currentMask.SetOp_ANDNOT(updateMask);
@@ -218,6 +220,8 @@ namespace VSS.TRex.SiteModelChangeMaps
             Log.LogError($"Unknown operation encountered: {(int) item.Operation}");
             return false;
         }
+
+        Log.LogInformation($"Completed processing an item in {sw.Elapsed}: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
 
         return true;
       }

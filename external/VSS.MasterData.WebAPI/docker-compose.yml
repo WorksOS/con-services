@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  asset:
+    image: ${DOCKER_REGISTRY-}asset
+    build:
+      context: .
+      dockerfile: Asset/Dockerfile
+
+  device:
+    image: ${DOCKER_REGISTRY-}device
+    build:
+      context: .
+      dockerfile: Device/Dockerfile
+
+
+  preference:
+    image: ${DOCKER_REGISTRY-}preference
+    build:
+      context: .
+      dockerfile: Preference/Dockerfile
+
+
+  subscription:
+    image: ${DOCKER_REGISTRY-}subscription
+    build:
+      context: .
+      dockerfile: Subscription/Dockerfile
+
+
+  customer:
+    image: ${DOCKER_REGISTRY-}customer
+    build:
+      context: .
+      dockerfile: Customer/Dockerfile

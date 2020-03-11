@@ -1,0 +1,53 @@
+{
+	"Serilog": {
+		"Filter": [
+			{
+				"Name": "ByExcluding",
+				"Args": {
+					"expression": "EndsWith(RequestPath, '/healthz')"
+				}
+			},
+			{
+				"Name": "ByExcluding",
+				"Args": {
+					"expression": "EndsWith(RequestPath, '/swagger')"
+				}
+			}
+		],
+		"MinimumLevel": {
+			"Default": "Debug",
+			"Override": {
+				"Microsoft": "Information",
+				"System": "Warning"
+			}
+		},
+		"WriteTo": [
+			{
+				"Name": "Async",
+				"Args": {
+					"configure": [
+						{
+							"Name": "File",
+							"Args": {
+								"path": "C:/Logs/vlmd_assetsettings_api/vlmd_assetsettings_api-yyyy-MM-dd.log",
+								"rollingInterval": "Day",
+								"retainedFileCountLimit": 15,
+								"outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {MachineName} [{Application}] [{Level}] {ThreadId} - {Message}{NewLine}{Exception}"
+							}
+						},
+						{
+							"Name": "Console",
+							"Args": {
+								"outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {MachineName} [{Application}] [{Level}] {ThreadId} - {Message}{NewLine}{Exception}"
+							}
+						}
+					]
+				}
+			}
+		],
+		"Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ],
+		"Properties": {
+			"Application": "vlmd_assetsettings_api"
+		}
+	}
+}

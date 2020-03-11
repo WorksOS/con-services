@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.TAGFiles.GridFabric.Services
+﻿namespace VSS.TRex.TAGFiles.Models
 {
     public interface ITAGFileBufferQueueService
     {

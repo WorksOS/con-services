@@ -26,10 +26,10 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // the snippet processor is ready to shutdown.
         //      FShutdownReadyEvent : TSimpleEvent;
 
-        private int PendingFilesToBeProcessedCount;
+        private int _pendingFilesToBeProcessedCount;
 
-        private int OutstandingCellPasses;
-        private long TotalCellPassesProcessed;
+        private int _outstandingCellPasses;
+        private long _totalCellPassesProcessed;
 
         //      FNumberOfTasksBeingProcessed : Integer;
         //      FRemainingNumberOfTasksBeingProcessed : Integer;
@@ -45,30 +45,28 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
         // Each task added to the process list represents a tag file that has been
         // processed
         public void AddTaskToProcessList(ISiteModel transientSiteModel,
-                                         Guid persistentSiteModelID,
-                                         IMachine transientMachine,
-                                         Guid persistentMachineID,
+                                         Guid persistentSiteModelId,
+                                         IMachinesList transientMachines,
                                          IServerSubGridTree aggregatedCellPasses,
                                          int aggregatedCellPassCount,
-                                         IProductionEventLists aggregatedMachineEvents)
+                                         IMachinesProductionEventLists aggregatedMachineEvents)
         {
-            AggregatedDataIntegratorTask NewTask = new AggregatedDataIntegratorTask
+            var newTask = new AggregatedDataIntegratorTask
             {
                 IntermediaryTargetSiteModel = transientSiteModel,
-                PersistedTargetSiteModelID = persistentSiteModelID,
-                IntermediaryTargetMachine = transientMachine,
-                PersistedTargetMachineID = persistentMachineID,
+                PersistedTargetSiteModelID = persistentSiteModelId,
+                IntermediaryTargetMachines = transientMachines,
                 AggregatedCellPasses = aggregatedCellPasses,
                 AggregatedMachineEvents = aggregatedMachineEvents,
                 AggregatedCellPassCount = aggregatedCellPassCount
             };
 
             IncrementOutstandingCellPasses(aggregatedCellPassCount);
-            System.Threading.Interlocked.Add(ref TotalCellPassesProcessed, aggregatedCellPassCount);
+            System.Threading.Interlocked.Add(ref _totalCellPassesProcessed, aggregatedCellPassCount);
 
-            TasksToProcess.Enqueue(NewTask);
+            TasksToProcess.Enqueue(newTask);
 
-            System.Threading.Interlocked.Increment(ref PendingFilesToBeProcessedCount);
+            System.Threading.Interlocked.Increment(ref _pendingFilesToBeProcessedCount);
 
             // FProcessEvent.SetEvent;
         }
@@ -88,15 +86,15 @@ namespace VSS.TRex.TAGFiles.Classes.Integrator
                                   out long totalCellPassesProcessed,
                                   out int pendingFilesToBeProcessed)
         {
-            outstandingCellPasses = OutstandingCellPasses;
-            totalCellPassesProcessed = TotalCellPassesProcessed;
-            pendingFilesToBeProcessed = PendingFilesToBeProcessedCount;
+            outstandingCellPasses = _outstandingCellPasses;
+            totalCellPassesProcessed = _totalCellPassesProcessed;
+            pendingFilesToBeProcessed = _pendingFilesToBeProcessedCount;
         }
 
         // CanAcceptMoreAggregatedCellPasses keeps track of whether the buffer of cell
         // passes currently pending integration into the database can accept more cell passes
         public bool CanAcceptMoreAggregatedCellPasses => true;
 
-        public void IncrementOutstandingCellPasses(int Increment) => System.Threading.Interlocked.Add(ref OutstandingCellPasses, Increment);
+        public void IncrementOutstandingCellPasses(int increment) => System.Threading.Interlocked.Add(ref _outstandingCellPasses, increment);
     }
 }

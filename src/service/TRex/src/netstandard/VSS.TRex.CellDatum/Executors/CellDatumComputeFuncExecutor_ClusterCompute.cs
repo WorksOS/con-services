@@ -13,7 +13,6 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Affinity;
-using VSS.TRex.Profiling.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees;

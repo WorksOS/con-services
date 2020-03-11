@@ -266,7 +266,9 @@ namespace VSS.TRex.SubGridTrees.Server
         // committed to the persistent store. The reason for this is to remove this
         // compute intensive operation from the critical path in TAG file processing
         // (which is the only writer of this information in the Raptor system).
-        subGrid.ComputeLatestPassInformation(true, storageProxy);
+        // The computer is instructed to do a partial recompute, which will recompute
+        // all segments from the first segment marked as dirty.
+        subGrid.ComputeLatestPassInformation(false, storageProxy);
 
         if (_segmentCleavingOperationsToLog)
           Log.LogInformation($"SaveLeafSubGrid: {subGrid.Moniker()} ({subGrid.Cells.PassesData.Count} segments)");

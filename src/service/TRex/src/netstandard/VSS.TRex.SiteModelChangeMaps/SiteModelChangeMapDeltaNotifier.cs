@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModelChangeMaps.GridFabric.Queues;
 using VSS.TRex.SiteModelChangeMaps.Interfaces;
@@ -15,28 +16,32 @@ namespace VSS.TRex.SiteModelChangeMaps
   /// </summary>
   public class SiteModelChangeMapDeltaNotifier : ISiteModelChangeMapDeltaNotifier
   {
-    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> queueCache;
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModelChangeMapDeltaNotifier>();
+
+    private readonly IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> _queueCache;
 
     public SiteModelChangeMapDeltaNotifier()
     {
-      queueCache = DIContext.Obtain<IStorageProxyCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>();
+      _queueCache = DIContext.Obtain<Func<IStorageProxyCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>()();
     }
 
     /// <summary>
     /// Creates a change map buffer queue item and places it in to the cache for the service processor to collect
     /// </summary>
-    /// <param name="projectUID"></param>
-    /// <param name="insertUTC"></param>
+    /// <param name="projectUid"></param>
+    /// <param name="insertUtc"></param>
     /// <param name="changeMap"></param>
     /// <param name="origin"></param>
     /// <param name="operation"></param>
-    public void Notify(Guid projectUID, DateTime insertUTC, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation)
+    public void Notify(Guid projectUid, DateTime insertUtc, ISubGridTreeBitMask changeMap, SiteModelChangeMapOrigin origin, SiteModelChangeMapOperation operation)
     {
-      queueCache.Put(new SiteModelChangeBufferQueueKey(projectUID, insertUTC), 
+      Log.LogInformation($"Adding site model change map notification for project {projectUid}");
+
+      _queueCache.Put(new SiteModelChangeBufferQueueKey(projectUid, insertUtc), 
         new SiteModelChangeBufferQueueItem
         {
-          ProjectUID = projectUID,
-          InsertUTC = insertUTC,
+          ProjectUID = projectUid,
+          InsertUTC = insertUtc,
           Operation = operation,
           Origin = origin,
           Content = changeMap?.ToBytes()

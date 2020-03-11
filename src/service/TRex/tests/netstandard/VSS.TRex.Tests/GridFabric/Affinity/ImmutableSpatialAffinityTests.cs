@@ -13,14 +13,14 @@ namespace VSS.TRex.Tests.GridFabric.Affinity
     [Fact]
     public void Creation()
     {
-      var aff = new ImmutableSpatialAffinityFunction();
+      var aff = new SubGridBasedSpatialAffinityFunction();
       aff.Should().NotBeNull();
     }
 
     [Fact]
     public void CalculateSinglePartition_AtGridAbsoluteOrigin()
     {
-      var aff = new ImmutableSpatialAffinityFunction();
+      var aff = new SubGridBasedSpatialAffinityFunction();
 
       var partition = aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(), 0, 0));
       partition.Should().Be(0);
@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.GridFabric.Affinity
     [Fact]
     public void CalculateSinglePartition_AtGridFalseOrigin()
     {
-      var aff = new ImmutableSpatialAffinityFunction();
+      var aff = new SubGridBasedSpatialAffinityFunction();
 
       var partition = aff.GetPartition(new SubGridSpatialAffinityKey(0, Guid.NewGuid(), SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset));
       partition.Should().Be(0);
@@ -38,7 +38,7 @@ namespace VSS.TRex.Tests.GridFabric.Affinity
     [Fact]
     public void CalculatePartitions_32x32SubGridPatch_AtGridAbsoluteOrigin()
     {
-      var aff = new ImmutableSpatialAffinityFunction();
+      var aff = new SubGridBasedSpatialAffinityFunction();
 
       var partitions = new List<int>();
 

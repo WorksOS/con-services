@@ -269,9 +269,10 @@ namespace VSS.TRex.SubGridTrees.Server
 
             ValueFromLatestCellPass = false;
 
-            for (int I = (int)LastPassIndex; I >= 0; I--)
+            LastPassIndex += CellPasses.Passes.Offset;
+            for (int I = LastPassIndex, limit = CellPasses.Passes.Offset; I >= limit; I--)
             {
-                var pass = CellPasses.Passes.GetElement(I);
+                var pass = CellPasses.Passes.Elements[I];
 
                 switch (TypeToCheck)
                 {
@@ -533,7 +534,9 @@ namespace VSS.TRex.SubGridTrees.Server
             //Directory.DumpSegmentDirectoryToLog();
 
             if (!Dirty)
+            {
               throw new TRexSubGridTreeException($"Sub grid {Moniker()} not marked as dirty when computing latest pass information");
+            }
 
             var Iterator = new SubGridSegmentIterator(this, _directory, storageProxy)
             {
@@ -553,14 +556,14 @@ namespace VSS.TRex.SubGridTrees.Server
 
             // Locate the segment immediately previous to the first dirty segment in the list of segments
 
-            var _segmentDirectory = _directory.SegmentDirectory;
-            for (int I = 0, limit = _segmentDirectory.Count; I < limit; I++)
+            var segmentDirectory = _directory.SegmentDirectory;
+            for (int I = 0, limit = segmentDirectory.Count; I < limit; I++)
             {
-                if (_segmentDirectory[I].Segment != null && _segmentDirectory[I].Segment.Dirty)
+                if (segmentDirectory[I].Segment != null && segmentDirectory[I].Segment.Dirty)
                 {
                     if (I > 0)
                     {
-                        SeedSegmentInfo = _segmentDirectory[I - 1];
+                        SeedSegmentInfo = segmentDirectory[I - 1];
                     }
                     break;
                 }
@@ -600,6 +603,11 @@ namespace VSS.TRex.SubGridTrees.Server
             // The first MoveNext will locate the first segment in the directory marked as dirty
             while (Iterator.MoveNext())
             {
+                if (Iterator.CurrentSubGridSegment == null && !Iterator.CurrentSubGridSegment.Dirty)
+                {
+                    throw new TRexException($"Iterator returned non-dirty segment in ComputeLatestPassInformation for {Moniker()}");
+                }
+
                 NumProcessedSegments++;
 
                 CalculateLatestPassGridForSegment(Iterator.CurrentSubGridSegment, LastSegment);
@@ -789,82 +797,87 @@ namespace VSS.TRex.SubGridTrees.Server
             }
         }
 
-        public void Integrate(IServerLeafSubGrid Source,
-                              ISubGridSegmentIterator Iterator,
-                              bool IntegratingIntoIntermediaryGrid)
+        public void Integrate(IServerLeafSubGrid source,
+                              ISubGridSegmentIterator iterator,
+                              bool integratingIntoIntermediaryGrid)
         {
             //Log.LogInformation($"Integrating sub grid {Moniker()}, intermediary?:{IntegratingIntoIntermediaryGrid}");
 
-            if (Source == null)
+            if (source == null)
             {
               throw new TRexSubGridTreeException("Source sub grid not defined in ServerSubGridTreeLeaf.Integrate");
             }
 
-            if (Source.Cells.PassesData.Count == 0)
+            if (source.Cells.PassesData.Count == 0)
             {
                 // No cells added to this sub grid during processing
                 Log.LogCritical($"Empty sub grid {Moniker()} passed to Integrate");
                 return;
             }
 
-            if (Source.Cells.PassesData.Count != 1)
+            if (source.Cells.PassesData.Count != 1)
             {
-                Log.LogCritical($"Source integrated sub grids must have only one segment in Integrate ({Moniker()})");
+                Log.LogCritical($"source integrated sub grids must have only one segment in Integrate ({Moniker()})");
                 return;
             }
 
-            Iterator.SubGrid = this;
-            Iterator.Directory = _directory;
+            iterator.SubGrid = this;
+            iterator.Directory = _directory;
 
-            var SourceSegment = Source.Cells.PassesData[0];
+            var sourceSegment = source.Cells.PassesData[0];
 
-            UpdateStartEndTimeRange(Source.LeafStartTime);
-            UpdateStartEndTimeRange(Source.LeafEndTime);
+            UpdateStartEndTimeRange(source.LeafStartTime);
+            UpdateStartEndTimeRange(source.LeafEndTime);
 
-            for (int I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+            for (var I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
             {
-                for (int J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+                for (var J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
                 {
-                    // Perform the physical integration of the new cell passes into the target sub grid
-                    int StartIndex = 0;
-                    int localPassCount = SourceSegment.PassesData.PassCount(I, J);
+                    var sourceSegmentCell = sourceSegment.PassesData.ExtractCellPasses(I, J);
+                    var sourceSegmentCellPasses = sourceSegmentCell.Passes;
 
-                    if (localPassCount == 0)
-                        continue;
+                    if (sourceSegmentCellPasses.Count == 0)
+                      continue;
+
+                    // Perform the physical integration of the new cell passes into the target sub grid
+                    var sourceSegmentStartIndex = sourceSegmentCellPasses.Offset;
+                    var sourceSegmentFinalIndex = sourceSegmentCellPasses.OffsetPlusCount - 1;
+
+                    var sourceElements = sourceSegmentCellPasses.Elements;
 
                     // Restrict the iterator to examining only those segments that fall within the
                     // time range covered by the passes in the cell being processed.
-                    Iterator.SetTimeRange(SourceSegment.PassesData.PassTime(I, J, 0),
-                                          SourceSegment.PassesData.PassTime(I, J, localPassCount - 1));
+                    iterator.SetTimeRange(sourceElements[sourceSegmentStartIndex].Time,
+                                          sourceElements[sourceSegmentFinalIndex].Time);
 
                     // Now iterate over the time bounded segments in the database and integrate the new cell passes
-                    Iterator.InitialiseIterator();
-                    while (Iterator.MoveToNextSubGridSegment())
+                    iterator.InitialiseIterator();
+                    while (iterator.MoveToNextSubGridSegment())
                     {
-                        var Segment = Iterator.CurrentSubGridSegment;
+                        var segment = iterator.CurrentSubGridSegment;
 
-                        if (StartIndex < localPassCount && SourceSegment.PassesData.PassTime(I, J, StartIndex) >= Segment.SegmentInfo.EndTime)
+                        if (sourceSegmentStartIndex <= sourceSegmentFinalIndex && sourceElements[sourceSegmentStartIndex].Time >= segment.SegmentInfo.EndTime)
                             continue;
 
-                        int EndIndex = StartIndex;
-                        DateTime EndTime = Segment.SegmentInfo.EndTime;
-                        int PassCountMinusOne = localPassCount - 1;
+                        var endIndex = sourceSegmentStartIndex;
+                        var endTime = segment.SegmentInfo.EndTime;
 
-                        while (EndIndex < PassCountMinusOne && SourceSegment.PassesData.PassTime(I, J, EndIndex + 1) < EndTime)
-                            EndIndex++;
+                        while (endIndex < sourceSegmentFinalIndex && sourceElements[endIndex + 1].Time < endTime)
+                            endIndex++;
 
-                        Segment.PassesData.Integrate(I, J, SourceSegment.PassesData.ExtractCellPasses(I, J), StartIndex, EndIndex, 
-                          out int AddedCount, out int ModifiedCount);
+                        segment.PassesData.Integrate(I, J, sourceSegmentCell, 
+                          sourceSegmentStartIndex - sourceSegmentCellPasses.Offset, endIndex - sourceSegmentCellPasses.Offset, 
+                          out var addedCount, out var modifiedCount);
 
-                        if (AddedCount > 0 || ModifiedCount > 0)
-                            Segment.Dirty = true;
+                        if (addedCount > 0 || modifiedCount > 0)
+                            segment.Dirty = true;
 
-                        if (AddedCount != 0)
-                            Segment.PassesData.SegmentPassCount += AddedCount;
+                        if (addedCount != 0)
+                            segment.PassesData.SegmentPassCount += addedCount;
 
-                        StartIndex = EndIndex + 1;
+                        sourceSegmentStartIndex = endIndex + 1;
 
-                        if (StartIndex >= localPassCount)
+                        if (sourceSegmentStartIndex >= sourceSegmentFinalIndex)
                             break; // We are finished
                     }
                 }

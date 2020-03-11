@@ -84,7 +84,7 @@ namespace TAGFiles.Tests
 
       // Validate tagfile
       var result = await TagfileValidator.ValidSubmission(td).ConfigureAwait(false);
-      Assert.True(result.Code == (int) TRexTagFileResultCode.TrexTagFileReaderError, "Failed to return correct error code");
+      Assert.True(result.Code == (int) TRexTagFileResultCode.TRexTagFileReaderError, "Failed to return correct error code");
       Assert.Equal("InvalidValueTypeID", result.Message);
     }
 

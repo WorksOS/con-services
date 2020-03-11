@@ -77,41 +77,52 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     {
       try
       {
-        Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} starting executing");
+        Log.LogInformation($"{context.Name} starting executing");
 
         Aborted = false;
         waitHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         // Get the ignite grid and cache references
 
-        var _ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
-                      Ignition.GetIgnite(TRexGrids.ImmutableGridName());
+        var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
+                     Ignition.GetIgnite(TRexGrids.ImmutableGridName());
 
-        if (_ignite == null)
+        if (ignite == null)
         {
           Log.LogError("Ignite reference in service is null - aborting service execution");
           return;
         }
 
-        var queueCache = _ignite.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
+        var queueCache = ignite.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(TRexCaches.SiteModelChangeBufferQueueCacheName());
+
+        Log.LogInformation($"Obtained queue cache for SiteModelChangeBufferQueueKey: {queueCache}");
 
         var handler = new SiteModelChangeProcessorItemHandler();
         var listener = new LocalSiteModelChangeListener(handler);
 
         // Obtain the query handle for the continuous query from the DI context, or if not available create it directly
-        var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>>>>();
-        IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>> queryHandle = null;
+        var queryHandleFactory = DIContext.Obtain<Func<LocalSiteModelChangeListener, IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>>>>();
+        IContinuousQueryHandle<ICacheEntry<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>> queryHandle = null;
 
         if (queryHandleFactory != null)
         {
+          Log.LogInformation("Obtaining query handle from DI'd factory");
           queryHandle = queryHandleFactory(listener);
         }
 
         if (queryHandle == null)
         {
+          Log.LogInformation("Obtaining query handle from QueryContinuous() API");
+
           queryHandle = queueCache.QueryContinuous
-          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(listener) {Local = true},
-            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> {Local = true});
+          (qry: new ContinuousQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(listener)
+            {
+              Local = true 
+            },
+            initialQry: new ScanQuery<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> 
+            {
+              Local = true 
+            });
         }
 
         // Construct the continuous query machinery
@@ -140,7 +151,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
       }
       finally
       {
-        Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} completed executing");
+        Log.LogInformation($"{context.Name} completed executing");
       }
     }
 
@@ -150,7 +161,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
     /// <param name="context"></param>
     public void Cancel(IServiceContext context)
     {
-      Log.LogInformation($"{nameof(SiteModelChangeProcessorService)} {context.Name} cancelling");
+      Log.LogInformation($"{context.Name} cancelling");
 
       Aborted = true;
       waitHandle?.Set();

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--For more information on using transformations see the web.config examples at http://go.microsoft.com/fwlink/?LinkId=214134. -->
+<configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform">
+	<kafkaTopicNames xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.IDeviceEvent</kafkaTopicNames>
+	<kafkaTopicNamesV2 xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.IDeviceEvent-V2</kafkaTopicNamesV2>
+	<AssetTopicNames xdt:Transform="Replace">VSS.Interfaces.Events.MasterData.IAssetEvent-Alpha,VSS.Interfaces.Events.MasterData.IAssetEvent.V1-Alpha</AssetTopicNames>
+	<topicSuffix xdt:Transform="Replace">-Alpha</topicSuffix>
+	<ConnectionString>
+		<MasterData xdt:Transform="Replace">
+			server=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com;Port=3306;userid=vssDevUsr;password=UdQmpPuc5vma;database=VSS-MasterData-Alpha;CharSet=utf8;
+		</MasterData>
+	</ConnectionString>
+	<ProducerSettings xdt:Transform="Replace">
+		<bootstrap.servers>kafka1.alpha.vspengg.com:9092,kafka2.alpha.vspengg.com:9092,kafka3.alpha.vspengg.com:9092,kafka4.alpha.vspengg.com:9092,kafka5.alpha.vspengg.com:9092,kafka6.alpha.vspengg.com:9092</bootstrap.servers>
+	</ProducerSettings>
+</configuration>

@@ -1,6 +1,8 @@
 ﻿using VSS.TRex.TAGFiles.Classes.Integrator;
 using System;
 using VSS.TRex.Events;
+using VSS.TRex.Machines;
+using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees.Server;
@@ -14,14 +16,15 @@ namespace TAGFiles.Tests
         [Fact]
         public void Test_AggregatedDataIntegrator_AddTaskToProcessList()
         {
-            AggregatedDataIntegrator integrator = new AggregatedDataIntegrator();
+            var integrator = new AggregatedDataIntegrator();
 
             SiteModel siteModel = new SiteModel(/*"TestName", "TestDesc", */Guid.NewGuid(), 1.0);
-            VSS.TRex.Machines.Machine machine = new VSS.TRex.Machines.Machine("TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
+            IMachinesList machines = new MachinesList();
+            machines.Add(new Machine("TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false));
             ServerSubGridTree tree = new ServerSubGridTree(siteModel.ID, StorageMutability.Mutable);
-            ProductionEventLists events = new ProductionEventLists(siteModel, machine.InternalSiteModelMachineIndex);
+            MachinesProductionEventLists events = new MachinesProductionEventLists(siteModel, 1);
 
-            integrator.AddTaskToProcessList(siteModel, siteModel.ID, machine, machine.ID, tree, 0, events);
+            integrator.AddTaskToProcessList(siteModel, siteModel.ID, machines, tree, 0, events);
 
             Assert.Equal(1, integrator.CountOfTasksToProcess);
             Assert.True(integrator.CanAcceptMoreAggregatedCellPasses, "CanAcceptMoreAggregatedCellPasses is false");

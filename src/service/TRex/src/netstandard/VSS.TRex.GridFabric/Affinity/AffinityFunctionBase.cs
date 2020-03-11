@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
+using VSS.Serilog.Extensions;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
 
@@ -24,7 +24,7 @@ namespace VSS.TRex.GridFabric.Affinity
     /// <summary>
     /// Return the number of partitions to use for affinity. 
     /// </summary>
-    public int Partitions => (int)NumPartitions;
+    public int Partitions => NumPartitions;
     
     /// <summary>
     /// Determine how the nodes in the grid are to be assigned into the partitions configured in the cache
@@ -34,11 +34,16 @@ namespace VSS.TRex.GridFabric.Affinity
     public IEnumerable<IEnumerable<IClusterNode>> AssignPartitions(AffinityFunctionContext context)
     {
       // Create the (empty) list of node mappings for the affinity partition assignment
-      List<List<IClusterNode>> result = Enumerable.Range(0, (int)NumPartitions).Select(x => new List<IClusterNode>()).ToList();
+      var result = Enumerable.Range(0, NumPartitions).Select(x => new List<IClusterNode>()).ToList();
 
       try
       {
-        Log.LogInformation("Assigning partitions");
+        var traceEnabled = Log.IsTraceEnabled();
+
+        if (traceEnabled)
+        {
+          Log.LogInformation("Assigning partitions");
+        }
 
         /* Debug code to dump the attributes assigned to nodes being looked at
         foreach (var node in context.CurrentTopologySnapshot)
@@ -48,22 +53,29 @@ namespace VSS.TRex.GridFabric.Affinity
                 Log.LogInformation($"Attributes Pair: {pair.Key} -> {pair.Value}");
         } */
 
-        List<IClusterNode> Nodes = context.CurrentTopologySnapshot.ToList();
+        var nodes = context.CurrentTopologySnapshot.ToList();
 
         // Assign all nodes to affinity partitions. Spare nodes will be mapped as backups. 
-        if (Nodes.Count > 0)
+        if (nodes.Count > 0)
         {
           /* Debug code to dump the attributes assigned to nodes being looked at
           foreach (var a in Nodes.First().GetAttributes())
               Log.LogInformation($"Attribute: {a.ToString()}");
           */
 
-          Log.LogInformation("Assigning partitions to nodes");
-          for (int partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
+          if (traceEnabled)
           {
-            result[partitionIndex].Add(Nodes[(int)NumPartitions % Nodes.Count]);
+            Log.LogInformation("Assigning partitions to nodes");
+          }
 
-            Log.LogDebug($"--> Assigned node:{Nodes[(int)NumPartitions % Nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
+          for (var partitionIndex = 0; partitionIndex < NumPartitions; partitionIndex++)
+          {
+            result[partitionIndex].Add(nodes[NumPartitions % nodes.Count]);
+
+            if (traceEnabled)
+            {
+              Log.LogTrace($"--> Assigned node:{nodes[NumPartitions % nodes.Count].ConsistentId} nodes to partition {partitionIndex}");
+            }
           }
         }
       }

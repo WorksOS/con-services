@@ -177,7 +177,7 @@ namespace VSS.TRex.Tests.TestFixtures
       var designUid = Guid.NewGuid();
 
       // Create the design surface in the site model
-      var alignmentDesign = DIContext.Obtain<IDesignManager>().Add(siteModel.ID, new DesignDescriptor(designUid, filePath, fileName), masterAlignment.BoundingBox());
+      /*var alignmentDesign = */ DIContext.Obtain<IDesignManager>().Add(siteModel.ID, new DesignDescriptor(designUid, filePath, fileName), masterAlignment.BoundingBox());
 
       // get the newly updated site model with the design reference included
       siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(siteModel.ID);

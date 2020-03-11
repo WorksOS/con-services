@@ -1,5 +1,4 @@
-﻿using VSS.TRex.Common;
-using VSS.TRex.Storage.Models;
+﻿using VSS.TRex.Storage.Models;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Storage.Caches
@@ -10,35 +9,40 @@ namespace VSS.TRex.Storage.Caches
     /// </summary>
     public static class TRexCaches
     {
-        private const string kSpatialMutable = "Spatial-Mutable";
-        private const string kSpatialImmutable = "Spatial-Immutable";
-        private const string kSpatialImmutableCompressed = "Spatial-Immutable-Compressed";
+        private const string kSpatialSubGridDirectoryMutable = "Spatial-SubGridDirectory-Mutable";
+        private const string kSpatialSubGridDirectoryImmutable = "Spatial-SubGridDirectory-Immutable";
+
+        private const string kSpatialSubGridSegmentMutable = "Spatial-SubGridSegment-Mutable";
+        private const string kSpatialSubGridSegmentImmutable = "Spatial-SubGridSegment-Immutable";
 
         private const string kNonSpatialMutable = "NonSpatial-Mutable";
         private const string kNonSpatialImmutable = "NonSpatial-Immutable";
-        private const string kNonSpatialImmutableCompressed = "NonSpatial-Immutable"; // Same as compressed as there is currently no distinction
+  
+        private const string kSiteModelMetadataCache = "SiteModelMetadata";
+        private const string kSiteModelsCacheMutable = "SiteModels-Mutable";
+        private const string kSiteModelsCacheImmutable = "SiteModels-Immutable";
 
-        private const string kSiteModelMetadataCache = "SiteModelMetadataCache";
-        private const string kSiteModelsCacheMutable = "SiteModelsCache-Mutable";
-        private const string kSiteModelsCacheImmutable = "SiteModelsCache-Immutable";
+        private const string kProductionDataExistenceMapCacheImmutable = "ProductionDataExistenceMap-Immutable";
+        private const string kProductionDataExistenceMapCacheMutable = "ProductionDataExistenceMap-Mutable";
 
         private const string kDesignTopologyExistenceMaps = "DesignTopologyExistenceMaps";
-        private const string kSiteModelChangeMapsCacheName = "SiteModelChangeMapsCache";
+        private const string kSiteModelChangeMapsCacheName = "SiteModelChangeMaps";
 
         private const string kTAGFileBufferQueueCacheName = "TAGFileBufferQueue";
         private const string kSiteModelChangeBufferQueueName = "SiteModelChangeBufferQueue";
 
+        private const string kSegmentRetirementQueue = "SegmentRetirementQueue";
+
         /// <summary>
         /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
-        public static string MutableSpatialCacheName() => kSpatialMutable;
+        public static string SpatialSubGridDirectoryCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridDirectoryMutable : kSpatialSubGridDirectoryImmutable;
 
         /// <summary>
-        /// Returns the name of the spatial grid cache to use to store mutable cell and cell pass information
+        /// Returns the name of the spatial grid cache to use to locate cell and cell pass information
         /// </summary>
-        /// <returns></returns>
-        public static string ImmutableSpatialCacheName() => kSpatialImmutableCompressed;
-    
+        public static string SpatialSubGridSegmentCacheName(StorageMutability mutability) => mutability == StorageMutability.Mutable ? kSpatialSubGridSegmentImmutable : kSpatialSubGridSegmentMutable;
+
         /// <summary>
         /// Returns the name of the event grid cache to use to locate machine event and other non spatial information
         /// </summary>
@@ -48,25 +52,36 @@ namespace VSS.TRex.Storage.Caches
         /// Returns the name of the spatial grid cache to use to store immutable cell and cell pass information
         /// </summary>
         /// <returns></returns>
-        public static string ImmutableNonSpatialCacheName() => kNonSpatialImmutableCompressed;
+        public static string ImmutableNonSpatialCacheName() => kNonSpatialImmutable;
 
-        public static string SpatialCacheName(StorageMutability Mutability, FileSystemStreamType streamType)
+        public static string SpatialCacheName(StorageMutability mutability, FileSystemStreamType streamType)
         {
-          if (streamType == FileSystemStreamType.ProductionDataXML)
-            return SiteModelsCacheName(Mutability);
-
-           return Mutability == StorageMutability.Mutable ? MutableSpatialCacheName() : ImmutableSpatialCacheName();
+          switch (streamType)
+          {
+            case FileSystemStreamType.ProductionDataXML:
+              return SiteModelsCacheName(mutability);
+            case FileSystemStreamType.SubGridDirectory:
+              return SpatialSubGridDirectoryCacheName(mutability);
+            case FileSystemStreamType.SubGridSegment:
+              return SpatialSubGridSegmentCacheName(mutability);
+            case FileSystemStreamType.SubGridExistenceMap:
+              return ProductionDataExistenceMapCacheName(mutability);
+            default:
+              return string.Empty;
+          }
         }
 
-        public static string NonSpatialCacheName(StorageMutability Mutability, FileSystemStreamType streamType)
+        public static string NonSpatialCacheName(StorageMutability mutability, FileSystemStreamType streamType)
         {
-          if (streamType == FileSystemStreamType.ProductionDataXML)
-            return SiteModelsCacheName(Mutability);
-
-          if (streamType == FileSystemStreamType.SiteModelMachineElevationChangeMap)
-            return SiteModelChangeMapsCacheName();
-
-          return Mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
+          switch (streamType)
+          {
+            case FileSystemStreamType.ProductionDataXML:
+              return SiteModelsCacheName(mutability);
+            case FileSystemStreamType.SiteModelMachineElevationChangeMap:
+              return SiteModelChangeMapsCacheName();
+            default:
+              return mutability == StorageMutability.Mutable ? MutableNonSpatialCacheName() : ImmutableNonSpatialCacheName();
+          }
         }
 
         /// <summary>
@@ -79,8 +94,14 @@ namespace VSS.TRex.Storage.Caches
         /// Returns the name of of the site models cache
         /// </summary>
         /// <returns></returns>
-        public static string SiteModelsCacheName(StorageMutability Mutability) => Mutability == StorageMutability.Immutable ? kSiteModelsCacheImmutable : kSiteModelsCacheMutable;
+        public static string SiteModelsCacheName(StorageMutability mutability) => mutability == StorageMutability.Immutable ? kSiteModelsCacheImmutable : kSiteModelsCacheMutable;
         
+        /// <summary>
+        /// Returns the name of of the production data existence maps cache
+        /// </summary>
+        /// <returns></returns>
+        public static string ProductionDataExistenceMapCacheName(StorageMutability mutability) => mutability == StorageMutability.Immutable ? kProductionDataExistenceMapCacheImmutable : kProductionDataExistenceMapCacheMutable;
+
         /// <summary>
         /// Returns the name of of the design topology existence maps
         /// </summary>
@@ -104,7 +125,7 @@ namespace VSS.TRex.Storage.Caches
         /// Name of the cache holding the segments in the data model that need to be retired due to being
         /// replaced by small cloven segments as a result of TAG file processing
         /// </summary>
-        public static string SegmentRetirementQueueCacheName() => "SegmentRetirementQueue";
+        public static string SegmentRetirementQueueCacheName() => kSegmentRetirementQueue;
 
         /// <summary>
         /// Name of the cache holding queued & buffered TAG files awaiting processing

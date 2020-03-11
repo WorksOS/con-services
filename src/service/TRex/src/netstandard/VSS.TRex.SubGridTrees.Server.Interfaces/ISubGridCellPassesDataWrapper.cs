@@ -15,9 +15,9 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
       List<ISubGridSpatialAffinityKey> PersistedClovenSegments,
       int subGridSegmentPassCountLimit = 0);
 
-    bool MergeSegments(ISubGridCellPassesDataSegment MergeToSegment,
-      ISubGridCellPassesDataSegment MergeFromSegment);
+    bool MergeSegments(ISubGridCellPassesDataSegment mergeToSegment,
+      ISubGridCellPassesDataSegment mergeFromSegment);
 
-    void RemoveSegment(ISubGridCellPassesDataSegment Segment);
+    void RemoveSegment(ISubGridCellPassesDataSegment segment);
   }
 }

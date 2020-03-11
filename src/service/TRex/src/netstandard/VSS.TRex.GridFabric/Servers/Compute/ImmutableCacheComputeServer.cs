@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
 using VSS.Common.Abstractions.Configuration;
@@ -20,6 +19,7 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Logging;
+using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 
@@ -60,8 +60,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         "-XX:+UseG1GC"
       };
 
-      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_MAX_HEAP_SIZE_MB);
-      cfg.JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB);
+      cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB);
+      cfg.JvmInitialMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_INITIAL_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_INITIAL_HEAP_SIZE_MB);
 
       cfg.UserAttributes = new Dictionary<string, object>
             {
@@ -83,7 +83,8 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         {
           Name = DataRegions.DEFAULT_IMMUTABLE_DATA_REGION_NAME,
           InitialSize = 128 * 1024 * 1024,  // 128 MB
-          MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB                               
+          MaxSize = 1L * 1024 * 1024 * 1024,  // 1 GB
+
           PersistenceEnabled = true
         }
       };
@@ -92,8 +93,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       Log.LogInformation($"cfg.DataStorageConfiguration.WalArchivePath={cfg.DataStorageConfiguration.WalArchivePath}");
       Log.LogInformation($"cfg.DataStorageConfiguration.WalPath={cfg.DataStorageConfiguration.WalPath}");
 
-
-      bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out bool isKubernetes);
+      bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out var isKubernetes);
       cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);
       cfg.WorkDirectory = Path.Combine(TRexServerConfig.PersistentCacheStoreLocation, "Immutable");
 
@@ -102,7 +102,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       // Set an Ignite metrics heartbeat of 10 seconds
       cfg.MetricsLogFrequency = new TimeSpan(0, 0, 0, 10);
 
-      cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_TREX_IGNITE_PUBLIC_THREAD_POOL_SIZE);
+      cfg.PublicThreadPoolSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_PUBLIC_THREAD_POOL_SIZE, DEFAULT_IGNITE_PUBLIC_THREAD_POOL_SIZE);
 
       cfg.PeerAssemblyLoadingMode = PeerAssemblyLoadingMode.Disabled;
 
@@ -127,7 +127,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       return cfg;
     }
 
-
     /// <summary>
     /// Configures ignite for use locally i.e on developers pc
     /// </summary>
@@ -135,9 +134,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     /// <returns></returns>
     private IgniteConfiguration setLocalIgniteConfiguration(IgniteConfiguration cfg)
     {
-      //TODO this should not be here but will do for the moment
-      TRexServerConfig.PersistentCacheStoreLocation = Path.Combine(Path.GetTempPath(), "TRexIgniteData");
-
       cfg.SpringConfigUrl = @".\immutablePersistence.xml";
 
       // Enforce using only the LocalHost interface
@@ -160,45 +156,77 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       return cfg;
     }
 
-
-    public override void ConfigureNonSpatialImmutableCache(CacheConfiguration cfg)
+    public ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialCacheReference()
     {
+      var cfg = new CacheConfiguration();
       base.ConfigureNonSpatialImmutableCache(cfg);
 
       cfg.Name = TRexCaches.ImmutableNonSpatialCacheName();
-      cfg.KeepBinaryInStore = false;
+      cfg.KeepBinaryInStore = true;
 
       // Non-spatial (event) data is replicated to all nodes for local access
       cfg.CacheMode = CacheMode.Replicated;
-      cfg.Backups = 0;
-    }
 
-    public override ICache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateNonSpatialTRexCacheReference(CacheConfiguration CacheCfg)
-    {
-      Console.WriteLine($"CacheConfig is: {CacheCfg}");
+      cfg.Backups = 0;  // No backups need as it is a replicated cache
+
+      Console.WriteLine($"CacheConfig is: {cfg}");
       Console.WriteLine($"immutableTRexGrid is : {immutableTRexGrid}");
 
-      return immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      return immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(cfg);
     }
 
-    public override void ConfigureImmutableSpatialCache(CacheConfiguration cfg)
+    public ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialSubGridDirectoryCacheReference()
     {
+      var cfg = new CacheConfiguration();
       base.ConfigureImmutableSpatialCache(cfg);
 
-      cfg.Name = TRexCaches.ImmutableSpatialCacheName();
-      cfg.KeepBinaryInStore = false;
+      cfg.Name = TRexCaches.SpatialSubGridDirectoryCacheName(StorageMutability.Immutable);
+      cfg.KeepBinaryInStore = true;
+
+      // TODO: No backups for now
       cfg.Backups = 0;
 
       // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
       cfg.CacheMode = CacheMode.Partitioned;
 
       // Configure the function that maps sub grid data into the affinity map for the nodes in the grid
-      cfg.AffinityFunction = new ImmutableSpatialAffinityFunction();
+      cfg.AffinityFunction = new SubGridBasedSpatialAffinityFunction();
+
+      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cfg);
     }
 
-    public override ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialCacheReference(CacheConfiguration CacheCfg)
+    public ICache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper> InstantiateSpatialSubGridSegmentCacheReference()
     {
-      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(CacheCfg);
+      var cfg = new CacheConfiguration();
+      base.ConfigureImmutableSpatialCache(cfg);
+
+      cfg.Name = TRexCaches.SpatialSubGridSegmentCacheName(StorageMutability.Immutable);
+      cfg.KeepBinaryInStore = true;
+
+      // TODO: No backups for now
+      cfg.Backups = 0;
+
+      // Spatial data is partitioned among the server grid nodes according to spatial affinity mapping
+      cfg.CacheMode = CacheMode.Partitioned;
+
+      // Configure the function that maps sub grid data into the affinity map for the nodes in the grid
+      cfg.AffinityFunction = new SubGridBasedSpatialAffinityFunction();
+
+      return immutableTRexGrid.GetOrCreateCache<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>(cfg);
+    }
+
+    private void InstantiateSiteModelExistenceMapsCacheReference()
+    {
+      immutableTRexGrid.GetOrCreateCache<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>(new CacheConfiguration
+      {
+        Name = TRexCaches.ProductionDataExistenceMapCacheName(StorageMutability.Immutable),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Replicated,
+
+        Backups = 0,  // No backups need as it is a replicated cache
+
+        DataRegionName = DataRegions.IMMUTABLE_SPATIAL_DATA_REGION
+      });
     }
 
     private void InstantiateSiteModelsCacheReference()
@@ -209,8 +237,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         KeepBinaryInStore = true,
         CacheMode = CacheMode.Replicated,
 
-        // TODO: No backups for now
-        Backups = 0,
+        Backups = 0, // No backups need as it is a replicated cache
 
         DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION
       });
@@ -231,17 +258,41 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
         // TODO: No backups for now
         Backups = 0,
-
         DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION,
 
         // Configure the function that maps the change maps to nodes in the grid
-        // Note: This cache uses the mutable spatial affinity function that assigns data for 
-        // a site model onto a single node. For the purposes of the immutable grid, it is helpful
-        // to contain all change maps for a single site model as this simplifies the process of
-        // updating those change maps in response to messages from production data ingest 
-        // TODO: Make a particular Immutable version of this affinity function to improve naming consistency when we no longer require the Java affinity function implementations
-        AffinityFunction = new MutableSpatialAffinityFunction()
-    });
+        // Note: This cache uses an affinity function that assigns data for a site model onto a single node.
+        // For the purposes of the immutable grid, it is helpful for a node to contain all change maps for a single
+        // site model as this simplifies the process of updating those change maps in response to messages from production data ingest 
+        AffinityFunction = new ProjectBasedSpatialAffinityFunction(),
+
+        AtomicityMode = CacheAtomicityMode.Transactional
+      });
+    }
+
+    /// <summary>
+    /// Create the cache that holds the per project, per machine, change maps driven by TAG file ingest
+    /// Note: This machine based information is distinguished from that in the non-spatial cache in that
+    /// it is partitioned, rather than replicated.
+    /// </summary>
+    private void InstantiateSiteModelChangeBufferQueueCacheReference()
+    {
+      immutableTRexGrid.GetOrCreateCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(new CacheConfiguration
+      {
+        Name = TRexCaches.SiteModelChangeBufferQueueCacheName(),
+        KeepBinaryInStore = true,
+        CacheMode = CacheMode.Partitioned,
+
+        // TODO: No backups for now
+        Backups = 0,
+        DataRegionName = DataRegions.IMMUTABLE_NONSPATIAL_DATA_REGION,
+
+        // Configure the function that maps the change maps to nodes in the grid
+        // Note: This cache uses an affinity function that assigns data for a site model onto a single node.
+        // For the purposes of the immutable grid, it is helpful for a node to contain all change maps for a single
+        // site model as this simplifies the process of updating those change maps in response to messages from production data ingest 
+        AffinityFunction = new ProjectBasedSpatialAffinityFunction(),
+      });
     }
 
     public void StartTRexGridCacheNode()
@@ -268,17 +319,16 @@ namespace VSS.TRex.GridFabric.Servers.Compute
 
       // Add the immutable Spatial & NonSpatial caches
 
-      var CacheCfg = new CacheConfiguration();
-      ConfigureNonSpatialImmutableCache(CacheCfg);
-      NonSpatialImmutableCache = InstantiateNonSpatialTRexCacheReference(CacheCfg);
+      InstantiateNonSpatialCacheReference();
 
-      //CacheCfg = new CacheConfiguration();
-      var spatialCacheConfiguration = immutableTRexGrid.GetConfiguration().CacheConfiguration.First(x => x.Name.Equals(TRexCaches.ImmutableSpatialCacheName()));
+      InstantiateSpatialSubGridDirectoryCacheReference();
+      InstantiateSpatialSubGridSegmentCacheReference();
 
-      //ConfigureImmutableSpatialCache(CacheCfg);
-      SpatialImmutableCache = InstantiateSpatialCacheReference(spatialCacheConfiguration);
+      InstantiateSiteModelExistenceMapsCacheReference();
 
       InstantiateSiteModelsCacheReference();
+
+      InstantiateSiteModelChangeBufferQueueCacheReference();
       InstantiateSiteModelMachinesChangeMapsCacheReference();
     }
   }

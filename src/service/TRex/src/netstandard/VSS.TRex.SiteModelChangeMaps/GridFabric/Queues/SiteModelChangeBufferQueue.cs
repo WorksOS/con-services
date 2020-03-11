@@ -22,7 +22,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// The Ignite cache reference that holds the change maps. This cache is keyed on the project and machine IDs and uses the
     /// ProjectUID field in the queue item to control affinity placement of the change maps themselves.
     /// </summary>
-    private ICache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem> QueueCache;
+    private ICache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem> _queueCache;
 
     /// <summary>
     /// Creates or obtains a reference to an already created change map file buffer queue
@@ -32,10 +32,10 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
       var ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(StorageMutability.Immutable) ??
                    Ignition.GetIgnite(TRexGrids.ImmutableGridName());
 
-      QueueCache = ignite?.GetCache<ISiteModelChangeBufferQueueKey, SiteModelChangeBufferQueueItem>(
+      _queueCache = ignite?.GetCache<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>(
           TRexCaches.SiteModelChangeBufferQueueCacheName());
 
-      if (QueueCache == null)
+      if (_queueCache == null)
       {
         Log.LogInformation($"Failed to get Ignite cache {TRexCaches.SiteModelChangeBufferQueueCacheName()}");
         throw new TRexException("Ignite cache not available");
@@ -58,7 +58,7 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Queues
     /// <returns>If an element with this key already exists in the cache this method will false, true otherwise</returns>
     public bool Add(ISiteModelChangeBufferQueueKey key, SiteModelChangeBufferQueueItem value)
     {
-      return QueueCache.PutIfAbsent(key, value);
+      return _queueCache.PutIfAbsent(key, value);
     }
   }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
-using Apache.Ignite.Core;
 using Apache.Ignite.Core.Services;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.NodeFilters;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.TAGFiles.Models;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
@@ -41,10 +41,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
         {
             NodeFilter = nodeFilter;
 
-            IIgnite _ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
+            var ignite = DIContext.Obtain<ITRexGridFactory>().Grid(mutability);
 
             // Get an instance of IServices for the cluster group.
-            services = _ignite.GetServices();
+            services = ignite.GetServices();
         }
 
         /// <summary>
