@@ -8,7 +8,7 @@ rootDomain: eks.vspengg.com
 serviceAccountName: trex
 
 image:
-  repository: "276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-trex"
+  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-trex"
   tag: latest
 
 ingress:

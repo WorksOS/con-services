@@ -91,9 +91,9 @@ node('Ubuntu_Slave') {
             if (branch.contains("release"))
             {
                 stage ('Build Release Images') {
-                    sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion} ./artifacts/WebApi"
-                    sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
-                    sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
+                    sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion} ./artifacts/WebApi"
+                    sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
+                    sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest-release-${fullVersion}"
                 }
                 stage ('Tag repository') {
                 sh 'git rev-parse HEAD > GIT_COMMIT'
@@ -109,9 +109,9 @@ node('Ubuntu_Slave') {
             else
             {
             stage ('Build development Images') {           
-                sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest ./artifacts/WebApi"
-                sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
-                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
+                sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:latest ./artifacts/WebApi"
+                sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
+                sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi"
                 }
             }
         }

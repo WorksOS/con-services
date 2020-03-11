@@ -38,7 +38,7 @@ node ('jenkinsslave-pod') {
 	def jobnameparts = JOB_NAME.tokenize('/') as String[]
 	def project_name = jobnameparts[0].toLowerCase() 	
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
-    def container = "276986344560.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
+    def container = "940327799086.dkr.ecr.us-west-2.amazonaws.com/jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
 	def runUnitTests = params.RUN_UNITTESTS
 	def servicePath = params.SERVICE_PATH
 
@@ -108,13 +108,8 @@ node ('jenkinsslave-pod') {
 						tools: [[$class: 'XUnitDotNetTestType', pattern: "TestResults/Unit/**/*.xml"]]])
 
 				cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: "TestResults/**/TestCoverage/**/*.xml", conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+				archiveArtifacts artifacts: "TestResults/UnitTests/**/*.xml, TestResults/TestCoverage/*.xml, AcceptanceTests/tests/**/TestResults/*.xml", fingerprint: true
 
-				step([$class: 'TeamCollectResultsPostBuildAction', 
-								requestedResults: [
-									[includes: "TestResults/Unit/**/*.xml", teamResultType: 'XUNIT'],
-									[includes: "TestResults/**/TestCoverage/**/*.xml", teamResultType: 'COBERTURA'],
-								]
-					])
 			}
 	}
 }

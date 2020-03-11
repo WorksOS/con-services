@@ -22,7 +22,7 @@ spec:
         name: assetmgmt3d-testing
 
   - name: masterdataconsumerasset
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
     envFrom:
     - configMapRef:
         name: assetmgmt3d-testing
@@ -32,7 +32,7 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.IAssetEvent"
 
   - name: masterdataschema
-    image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
     tty: true
     envFrom:
     - configMapRef:

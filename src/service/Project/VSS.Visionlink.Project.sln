@@ -9,6 +9,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Project.WebApi", "src\ProjectWebApi\VSS.Project.WebApi.csproj", "{5CEF0F77-FDD0-4798-951F-8317529B4779}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Project.WebApi.Tests", "test\UnitTests\MasterDataProjectTests\VSS.Project.WebApi.Tests.csproj", "{4C0A1653-810A-4DC1-90D7-76BAD6F10058}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9} = {E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Project.WebApi.Common", "src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj", "{961836FE-F672-445C-8B18-A843995D634E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -120,6 +123,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Proxy", "Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj", "{C026E6F6-3BFE-4982-B158-6699DF749B3B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Repository", "Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj", "{65B66DEB-A8E9-4A01-93C3-66F4E234AA0B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Authentication.JWT", "..\..\Common\VSS.Authentication\VSS.Authentication.JWT\VSS.Authentication.JWT.csproj", "{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -299,6 +304,10 @@ Global
 		{65B66DEB-A8E9-4A01-93C3-66F4E234AA0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65B66DEB-A8E9-4A01-93C3-66F4E234AA0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65B66DEB-A8E9-4A01-93C3-66F4E234AA0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -356,6 +365,7 @@ Global
 		{44DB2111-EFA6-4E72-891C-D1C0D85D3CA0} = {F5DF4F64-258E-41AE-8857-D1296A9927B5}
 		{C026E6F6-3BFE-4982-B158-6699DF749B3B} = {F5DF4F64-258E-41AE-8857-D1296A9927B5}
 		{65B66DEB-A8E9-4A01-93C3-66F4E234AA0B} = {F5DF4F64-258E-41AE-8857-D1296A9927B5}
+		{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}

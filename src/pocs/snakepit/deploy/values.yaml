@@ -8,7 +8,7 @@ rootDomain: eks.vspengg.com
 replicaCount: 1
 
 image:
-  repository: "276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-landfill-snakepit"
+  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-landfill-snakepit"
   tag: latest
 
 resources:

@@ -30,7 +30,7 @@ spec:
                 - {{ $serviceName }}
             topologyKey: "kubernetes.io/hostname"    
       containers:
-      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:{{ .Values.image.tag }}
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-tagfileauth-webapi:{{ .Values.image.tag }}
         name: {{ $serviceName }}     
         livenessProbe:
           httpGet:

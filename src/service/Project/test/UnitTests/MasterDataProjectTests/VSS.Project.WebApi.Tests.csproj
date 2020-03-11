@@ -22,7 +22,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="OpenCover" Version="4.7.922" />
     <PackageReference Include="Moq" Version="4.10.1" />
-    <PackageReference Include="VSS.Authentication.JWT" Version="1.2.58" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">

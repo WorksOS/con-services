@@ -20,7 +20,7 @@ spec:
     spec:
       initContainers:
       - name: init-db
-        image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
         tty: true
         envFrom:
         - configMapRef:
@@ -30,7 +30,7 @@ spec:
         - secretRef:
             name: {{ .Values.globalConfig }}-secret
       containers:
-      - image: 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:{{ .Values.consumerImage.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.consumerImage.tag }}-consumer        
         resources:
 {{ toYaml .Values.resources | indent 12 }}

@@ -3,6 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "VSS.WebApi.Common.csproj", "{EF863311-4724-4676-8740-28C05824C842}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5BBBFEEB-3B47-4511-851C-511EFB6286C6} = {5BBBFEEB-3B47-4511-851C-511EFB6286C6}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{889C9145-6BD6-4718-98B9-5A32E34C1881}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,6 +21,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies", "..\..\MasterDataProxies\src\VSS.MasterData.Proxies.csproj", "{5BD1A2A2-7139-4A8E-8AE6-A34CBB7D4270}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery", "..\..\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj", "{52DD5DF4-C298-4E31-9295-B1B17336D56B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Authentication.JWT", "..\..\VSS.Authentication\VSS.Authentication.JWT\VSS.Authentication.JWT.csproj", "{5BBBFEEB-3B47-4511-851C-511EFB6286C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +46,10 @@ Global
 		{52DD5DF4-C298-4E31-9295-B1B17336D56B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52DD5DF4-C298-4E31-9295-B1B17336D56B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52DD5DF4-C298-4E31-9295-B1B17336D56B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BBBFEEB-3B47-4511-851C-511EFB6286C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BBBFEEB-3B47-4511-851C-511EFB6286C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BBBFEEB-3B47-4511-851C-511EFB6286C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BBBFEEB-3B47-4511-851C-511EFB6286C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,6 +59,7 @@ Global
 		{3E2F7743-F445-46F2-B4B7-9360BC08F9A9} = {A67089F6-E422-4D32-8803-E5B53324913B}
 		{5BD1A2A2-7139-4A8E-8AE6-A34CBB7D4270} = {A67089F6-E422-4D32-8803-E5B53324913B}
 		{52DD5DF4-C298-4E31-9295-B1B17336D56B} = {A67089F6-E422-4D32-8803-E5B53324913B}
+		{5BBBFEEB-3B47-4511-851C-511EFB6286C6} = {A67089F6-E422-4D32-8803-E5B53324913B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FDAC7813-E773-4500-9D9D-9FDA88876B45}

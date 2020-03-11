@@ -23,7 +23,7 @@ node ('jenkinsslave-pod') {
     def versionNumber = branchName + "-" + params.VSTS_BUILD_NUMBER
     def container = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
     def testContainer = "registry-docker-registry.jenkins:5000/${project_name}.tests:${versionNumber}"
-    def finalImage = "276986344560.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+    def finalImage = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
 	
     def vars = []
     def acceptance_testing_yaml
@@ -126,17 +126,6 @@ node ('jenkinsslave-pod') {
 
 					//Archive test logs
 					archiveArtifacts artifacts: 'testresults/*.*', fingerprint: true
-                    				
-					//http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
-					//Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
-					//Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
-					step([$class: 'TeamCollectResultsPostBuildAction', 
-						requestedResults: [
-							[includes: 'TestResults/UnitTests/**/*.xml', teamResultType: 'XUNIT'],
-							[includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA'],
-							[includes: 'AcceptanceTests/tests/**/TestResults/*.xml', teamResultType: 'XUNIT']
-						]
-					])
 				}
 			}		
 		}

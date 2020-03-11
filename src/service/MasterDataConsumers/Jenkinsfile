@@ -84,17 +84,17 @@ node('Ubuntu_Slave') {
         {
            stage 'Build Release Images'
 
-           sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion} ./artifacts/VSS.Productivity3D.Filter.WebApi"
+           sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion} ./artifacts/VSS.Productivity3D.Filter.WebApi"
 
-           sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
+           sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
 
-           sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
+           sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-release-${fullVersion}"
            
-               sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion} ./database"
+               sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion} ./database"
 
-           sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
+           sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
 
-           sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
+           sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest-release-${fullVersion}"
            
                    stage ('Tag repository') {
                 sh 'git rev-parse HEAD > GIT_COMMIT'
@@ -114,13 +114,13 @@ node('Ubuntu_Slave') {
             {
                 stage 'Build Development Images'
                
-                sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest ./artifacts/VSS.Productivity3D.Filter.WebApi"
-                sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi"
-                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest"
+                sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest ./artifacts/VSS.Productivity3D.Filter.WebApi"
+                sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi"
+                sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest"
                
-                sh "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest ./database"
-                sh "docker push 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db"
-                sh "docker rmi -f 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest"
+                sh "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest ./database"
+                sh "docker push 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db"
+                sh "docker rmi -f 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-db:latest"
             }
         }
     }
@@ -168,8 +168,8 @@ node ('Jenkins-Win2016-Raptor') {
        {
             stage 'Build Windows images'
             bat "PowerShell.exe -ExecutionPolicy Bypass -Command .\\build471.ps1"
-            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:${fullVersion}-${branchName}-win ./Artifacts/FilterWebApiNet47"
-            bat "docker build -t 276986344560.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-win ./Artifacts/FilterWebApiNet47"
+            bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:${fullVersion}-${branchName}-win ./Artifacts/FilterWebApiNet47"
+            bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-productivity3d-filter-webapi:latest-win ./Artifacts/FilterWebApiNet47"
      
             //Publish to AWS Repo
             stage 'Get ecr login, push image to Repo'
