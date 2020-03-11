@@ -264,7 +264,9 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         // Note: This cache uses an affinity function that assigns data for a site model onto a single node.
         // For the purposes of the immutable grid, it is helpful for a node to contain all change maps for a single
         // site model as this simplifies the process of updating those change maps in response to messages from production data ingest 
-        AffinityFunction = new ProjectBasedSpatialAffinityFunction()
+        AffinityFunction = new ProjectBasedSpatialAffinityFunction(),
+
+        AtomicityMode = CacheAtomicityMode.Transactional
       });
     }
 
@@ -290,8 +292,6 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         // For the purposes of the immutable grid, it is helpful for a node to contain all change maps for a single
         // site model as this simplifies the process of updating those change maps in response to messages from production data ingest 
         AffinityFunction = new ProjectBasedSpatialAffinityFunction(),
-
-        AtomicityMode = CacheAtomicityMode.Transactional
       });
     }
 

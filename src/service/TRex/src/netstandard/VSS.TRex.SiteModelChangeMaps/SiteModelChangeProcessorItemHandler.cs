@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
@@ -77,13 +78,13 @@ namespace VSS.TRex.SiteModelChangeMaps
     /// </summary>
     private void ProcessChangeMapUpdateItems()
     {
+      Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
+
       // Cycle looking for new work to until aborted...
       do
       {
         try
         {
-          Log.LogInformation($"#In# {nameof(ProcessChangeMapUpdateItems)} starting executing");
-
           // Check to see if there is an item to be processed
           if (Active && _queue.TryDequeue(out var item))
           {
@@ -149,6 +150,7 @@ namespace VSS.TRex.SiteModelChangeMaps
         // 4. Commit transaction
 
         Log.LogInformation($"Processing an item: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
+        var sw = Stopwatch.StartNew();
 
         switch (item.Operation)
         {
@@ -218,6 +220,8 @@ namespace VSS.TRex.SiteModelChangeMaps
             Log.LogError($"Unknown operation encountered: {(int) item.Operation}");
             return false;
         }
+
+        Log.LogInformation($"Completed processing an item in {sw.Elapsed}: {item.Operation}, project:{item.ProjectUID}, machine:{item.MachineUid}");
 
         return true;
       }
