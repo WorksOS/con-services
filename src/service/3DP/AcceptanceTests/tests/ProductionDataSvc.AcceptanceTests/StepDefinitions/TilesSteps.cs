@@ -13,15 +13,27 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the Raw PNG Tiles response should match ""(.*)"" result from the repository")]
     public void ThenTheRawPNGTilesResponseShouldMatchResultFromTheRepository(string responseName)
     {
-      var imageDifference = Convert.ToDouble(3) / 100;
+      var allowedImageDifference = Convert.ToDouble(3) / 100;
       var expectedTileData = PostRequestHandler.ResponseRepo[responseName].TileData;
       var actualTileData = PostRequestHandler.ByteContent;
-      var expFileName = "Expected_" + responseName + ".png";
-      var actFileName = "Actual_" + responseName + ".png";
+      var expFileName = string.Empty;
+      var actFileName = string.Empty;
 
-      var differencePercent = ImageUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      var differencePercent = ImageUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData);
 
-      Assert.True(Math.Abs(differencePercent) < imageDifference, "Actual Difference:" + differencePercent * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
+      if (Math.Abs(differencePercent) >= allowedImageDifference)
+      {
+        Console.WriteLine($"Image difference in {responseName} data:");
+        Console.WriteLine($"ACTUAL: {Convert.ToBase64String(actualTileData)}");
+        Console.WriteLine($"EXPECTED: {Convert.ToBase64String(expectedTileData)}");
+
+        expFileName = "Expected_" + responseName + ".png";
+        actFileName = "Actual_" + responseName + ".png";
+
+        ImageUtils.SaveImageFiles(expectedTileData, actualTileData, expFileName, actFileName);
+      }
+
+      Assert.True(Math.Abs(differencePercent) < allowedImageDifference, "Actual Difference:" + differencePercent * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }
   }
 }

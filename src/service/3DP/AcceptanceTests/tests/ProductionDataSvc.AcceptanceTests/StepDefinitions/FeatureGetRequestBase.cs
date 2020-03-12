@@ -154,15 +154,28 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
     [Then(@"the resulting image should match ""(.*)"" from the response repository within (\d+) percent")]
     public void ThenTheResultingImageShouldMatchFromTheResponseRepositoryWithinPercent(string responseName, int tolerance)
     {
-      var imageDifference = Convert.ToDouble(tolerance) / 100;
+      var allowedImageDifference = Convert.ToDouble(tolerance) / 100;
       var expectedTileData = (byte[])GetResponseHandler.ResponseRepo[responseName]["tileData"];
       var actualTileData = (byte[])GetResponseHandler.CurrentResponse["tileData"];
-      var expFileName = "Expected_" + responseName + ".jpg";
-      var actFileName = "Actual_" + responseName + ".jpg";
 
-      var differencePercent = ImageUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
+      var expFileName = string.Empty;
+      var actFileName = string.Empty;
 
-      Assert.True(Math.Abs(differencePercent) < imageDifference, "Actual Difference:" + differencePercent * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
+      var differencePercent = ImageUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData);
+
+      if (Math.Abs(differencePercent) >= allowedImageDifference)
+      {
+        Console.WriteLine($"Image difference in {responseName} data:");
+        Console.WriteLine($"ACTUAL: {Convert.ToBase64String(actualTileData)}");
+        Console.WriteLine($"EXPECTED: {Convert.ToBase64String(expectedTileData)}");
+
+        expFileName = "Expected_" + responseName + ".png";
+        actFileName = "Actual_" + responseName + ".png";
+
+        ImageUtils.SaveImageFiles(expectedTileData, actualTileData, expFileName, actFileName);
+      }
+
+      Assert.True(Math.Abs(differencePercent) < allowedImageDifference, "Actual Difference:" + differencePercent * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }
 
     protected void AssertObjectsAreEqual<T>(T expectedResult)
