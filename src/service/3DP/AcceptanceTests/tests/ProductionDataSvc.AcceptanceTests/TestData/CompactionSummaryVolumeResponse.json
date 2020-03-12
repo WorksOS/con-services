@@ -184,11 +184,11 @@
   },
   "PassCountRangeEarliestToLatest": {
     "volumeSummaryData": {
-      "netVolume": 293.5407854980474,
-      "totalVolume": 979.66056801757782,
-      "totalCutVolume": 636.60067675781261,
-      "totalFillVolume": 343.05989125976521,
-      "totalMachineCoveragePlanArea": 137012.47240000003,
+      "netVolume": 283.05944824,
+      "totalVolume": 972.92077637,
+      "totalCutVolume": 627.9901123,
+      "totalFillVolume": 344.93066406,
+      "totalMachineCoveragePlanArea": 137012.46875,
       "shrinkage": 0.0,
       "bulking": 0.0
     },
@@ -197,11 +197,11 @@
   },
   "PassCountRangeDesignToLatest": {
     "volumeSummaryData": {
-      "netVolume": 293.54078549804711,
-      "totalVolume": 979.66056801757736,
-      "totalCutVolume": 636.60067675781227,
-      "totalFillVolume": 343.05989125976515,
-      "totalMachineCoveragePlanArea": 137012.4724,
+      "netVolume": 283.05944824,
+      "totalVolume": 972.92077637,
+      "totalCutVolume": 627.9901123,
+      "totalFillVolume": 344.93066406,
+      "totalMachineCoveragePlanArea": 137012.46875,
       "shrinkage": 0.0,
       "bulking": 0.0
     },
