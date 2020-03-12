@@ -21,10 +21,7 @@ namespace VSS.TRex.SubGrids.Executors
     where TSubGridsRequestArgument : SubGridsRequestArgument
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Progressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
-
-    // Commented out for IComputeFunc request implementation of responses
-    // private IMessaging rmtMsg;
+   // private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Progressive<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
     private ISubGridProgressiveResponseRequest _responseRequest;
 
@@ -82,25 +79,6 @@ namespace VSS.TRex.SubGrids.Executors
       contextEstablishmentResponse = SubGridRequestsResponseResult.OK;
 
       _responseRequest = new SubGridProgressiveResponseRequest(localArg.OriginatingIgniteNodeId);
-
-    //var Ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
-     // var group = Ignite?.GetCluster().ForAttribute("TRexNodeId", tRexNodeIDAsString);
-
-     // if (group == null)
-     // {
-     //   contextEstablishmentResponse = SubGridRequestsResponseResult.NoIgniteGroupProjection;
-     //   return false;
-     // }
-
-      //Log.LogInformation($"Message group has {group.GetNodes().Count} members");
-
-      //rmtMsg = group.GetMessaging();
-
-      //if (rmtMsg == null)
-      //{
-      //  contextEstablishmentResponse = SubGridRequestsResponseResult.NoIgniteGroupProjection;
-      //  return false;
-      //}
 
       return true;
     }
