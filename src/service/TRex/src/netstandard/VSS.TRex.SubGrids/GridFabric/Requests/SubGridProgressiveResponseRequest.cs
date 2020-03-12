@@ -27,14 +27,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridProgressiveResponseRequest>();
 
     /// <summary>
-    /// The Ignite node ID of the originating request
-    /// </summary>
-    private Guid _nodeID;
-
-    /// <summary>
     /// The compute projection representing the Ignite node identified by _nodeId
     /// </summary>
-    private ICompute _compute;
+    private readonly ICompute _compute;
 
     /// <summary>
     /// Default no-arg constructor - used by unit tests
@@ -67,17 +62,17 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// <param name="nodeId">The internal Ignite identifier of the node origination the request for the sub grids being returned</param>
     public SubGridProgressiveResponseRequest(Guid nodeId)
     {
-      _nodeID = nodeId;
-
       // Immutable grid reference only
       var ignite = DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable);
 
       // Determine the single node the request needs to be sent to
       _compute = ignite
         .GetCluster()
-        .ForNodeIds(new List<Guid> {_nodeID})
+        .ForNodeIds(new List<Guid> {nodeId})
         .GetCompute()
         .WithExecutor(BaseIgniteClass.TRexProgressiveQueryCustomThreadPoolName);
+
+      // Log.LogDebug($"Creating SubGridProgressiveResponseRequest instance for node {nodeId} against compute cluster with {_compute.ClusterGroup.GetNodes().Count} nodes");
     }
   }
 }

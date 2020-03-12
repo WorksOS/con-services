@@ -34,10 +34,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <summary>
     /// Local reference to the client sub grid factory
     /// </summary>
-    private IClientLeafSubGridFactory clientLeafSubGridFactory;
-
-    private IClientLeafSubGridFactory ClientLeafSubGridFactory
-      => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
+    private IClientLeafSubGridFactory _clientLeafSubGridFactory;
 
     /// <summary>
     /// The reference to the TRexTask responsible for handling the returned sub grid information from the processing cluster
@@ -57,6 +54,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
           // Read the number of sub grid present in the stream
           var responseCount = reader.ReadInt32();
 
+          Log.LogDebug($"Sub grid listener processing a collection of {responseCount} sub grid results");
+
           // Create a single instance of the client grid. The approach here is that TransferResponse does not move ownership 
           // to the called context (it may clone the passed in client grid if desired)
           var clientGrids = new IClientLeafSubGrid[responseCount][];
@@ -70,7 +69,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
 
               for (var j = 0; j < subGridCount; j++)
               {
-                clientGrids[i][j] = ClientLeafSubGridFactory.GetSubGrid(TRexTask.GridDataType);
+                clientGrids[i][j] = _clientLeafSubGridFactory.GetSubGrid(TRexTask.GridDataType);
 
                 // Check if the returned sub grid is null
                 if (reader.ReadBoolean())
@@ -112,7 +111,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
           finally
           {
             // Return the client grid to the factory for recycling now its role is complete here... when using SimpleConcurrentBag
-            ClientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, responseCount);
+            _clientLeafSubGridFactory.ReturnClientSubGrids(clientGrids, responseCount);
           }
         }
       }
@@ -126,6 +125,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     /// <returns></returns>
     public bool Invoke(Guid nodeId, ISerialisedByteArrayWrapper message)
     {
+      // Todo: Check if there are more performant approaches for handing this off asynchronously
       Task.Run(() => ProcessResponse(message));
 
       return true;
@@ -141,6 +141,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Listeners
     public SubGridListener(ITRexTask tRexTask)
     {
       TRexTask = tRexTask;
+      _clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>();
     }
 
     /// <summary>
