@@ -33,12 +33,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         private SubGridListener Listener { get; set; }
 
         /// <summary>
-        /// The MsgGroup into which the listener has been added
-        /// </summary>
-        // Commented out to support IComputeFunc based progressive responses
-        // private IMessaging MsgGroup { get; set; }
-
-        /// <summary>
         /// Default no-arg constructor that delegates construction to the base class
         /// </summary>
         public SubGridRequestsProgressive()
@@ -46,45 +40,23 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         }
 
         /// <summary>
-        /// Creates the sub grid listener on the MessageTopic defined in the argument to be sent to the cache cluster
+        /// Creates the sub grid listener on the task defined in the argument to be sent to the cache cluster
         /// </summary>
         private void CreateSubGridListener()
         {
             // Create any required listener for periodic responses directly sent from the processing context to this context
-            
-            // Commented out for ComputeFunc based implementation
-            //if (!string.IsNullOrEmpty(arg.MessageTopic))
-            //{
-                Listener = new SubGridListener(TRexTask);
-
-                StartListening();
-            //}
+            Listener = new SubGridListener(TRexTask);
+            StartListening();
         }
 
         private void StartListening()
         {
-            DIContext.Obtain<IPipelineListenerMapper>().Add(TRexTask.RequestDescriptor, Listener);
-
-            /* Commented out to support IComputeFunc based progressive responses
-            if (MsgGroup == null)
-            {
-                // Create a messaging group the cluster can use to send messages back to and establish a local listener
-                MsgGroup = Compute.ClusterGroup.GetMessaging();
-                MsgGroup.LocalListen(Listener, arg.MessageTopic);
-            }
-            */
+            _listenerMapper.Add(TRexTask.RequestDescriptor, Listener);
         }
 
         private void StopListening()
         {
             _listenerMapper.Remove(TRexTask.RequestDescriptor, Listener);
-
-            /* Commented out to support IComputeFunc based progressive responses
-            // De-register the listener from the message group
-            MsgGroup?.StopLocalListen(Listener, arg.MessageTopic);
-            MsgGroup = null;
-            */
-            
             Listener = null;
         }
 

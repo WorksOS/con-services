@@ -2,13 +2,12 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.GridFabric.Arguments
 {
   /// <summary>
-  /// Contains all the parameters necessary to be sent for a generic subgrids request made to the compute cluster
+  /// Contains all the parameters necessary to be sent for a generic sub grids request made to the compute cluster
   /// </summary>
   public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument
   {
@@ -35,12 +34,6 @@ namespace VSS.TRex.GridFabric.Arguments
     public byte[] SurveyedSurfaceOnlyMaskBytes { get; set; }
 
     /// <summary>
-    /// The name of the message topic that sub grid responses should be sent to
-    /// </summary>
-    // Commented out for ICompute response implementation
-    // public string MessageTopic { get; set; } = string.Empty;
-
-    /// <summary>
     /// Denotes whether results of these requests should include any surveyed surfaces in the site model
     /// </summary>
     public bool IncludeSurveyedSurfaceInformation { get; set; }
@@ -56,7 +49,7 @@ namespace VSS.TRex.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -78,7 +71,7 @@ namespace VSS.TRex.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)

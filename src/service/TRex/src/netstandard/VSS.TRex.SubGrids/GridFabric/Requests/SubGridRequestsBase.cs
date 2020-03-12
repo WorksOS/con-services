@@ -148,7 +148,6 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 SurveyedSurfaceOnlyMaskBytes = SurveyedSurfaceOnlyMask.ToBytes(),
                 Filters = Filters,
                 OriginatingIgniteNodeId = Ignite.GetCluster().GetLocalNode().Id,
-                //MessageTopic = $"SubGridRequest:{RequestID}",
                 TRexNodeID = TRexNodeId,
                 ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet

@@ -54,16 +54,14 @@ namespace VSS.TRex.SubGrids.Executors
           }
         }
 
-        // ... and send it to the message topic in the compute func
-        // Log.InfoFormat("Sending result to {0} ({1} receivers) - First = {2}/{3}", 
-        //                localArg.MessageTopic, rmtMsg.ClusterGroup.GetNodes().Count, 
-        //                rmtMsg.ClusterGroup.GetNodes().Where(x => x.GetAttributes().Where(a => a.Key.StartsWith(ServerRoles.ROLE_ATTRIBUTE_NAME)).Count() > 0).Aggregate("|", (s1, s2) => s1 + s2 + "|"),
-        //                rmtMsg.ClusterGroup.GetNodes().First().GetAttribute<string>("TRexNodeId"));
-
-        // Commented out for IComputeFunc request implementation of responses
-        // rmtMsg.Send(new SerialisedByteArrayWrapper(MS.ToArray()), localArg.MessageTopic);
-
-        _responseRequest.Execute(new SubGridProgressiveResponseRequestComputeFuncArgument {NodeId = localArg.OriginatingIgniteNodeId, RequestDescriptor = localArg.RequestID, ExternalDescriptor = localArg.ExternalDescriptor, Payload = new SerialisedByteArrayWrapper(ms.ToArray())});
+        // ... and send it to the request
+        _responseRequest.Execute(new SubGridProgressiveResponseRequestComputeFuncArgument
+        {
+          NodeId = localArg.OriginatingIgniteNodeId, 
+          RequestDescriptor = localArg.RequestID, 
+          ExternalDescriptor = localArg.ExternalDescriptor, 
+          Payload = new SerialisedByteArrayWrapper(ms.ToArray())
+        });
       }
     }
 

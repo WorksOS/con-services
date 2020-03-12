@@ -32,7 +32,6 @@ namespace VSS.TRex.Tests.BinarizableSerialization
         ProdDataMaskBytes = new byte[]{ 1, 5, 3, 7 },
         SurveyedSurfaceOnlyMaskBytes = new byte[] { 0, 4, 1, 2 },
         OriginatingIgniteNodeId = Guid.NewGuid(),
-        //MessageTopic = "Who cares",
         IncludeSurveyedSurfaceInformation = true,
         AreaControlSet = new AreaControlSet(true, 12345, 6789, 3344, 5566, 44)
       };
