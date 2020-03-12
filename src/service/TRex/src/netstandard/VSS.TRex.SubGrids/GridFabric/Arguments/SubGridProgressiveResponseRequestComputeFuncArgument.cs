@@ -11,6 +11,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
   {
     private const byte VERSION_NUMBER = 1;
 
+    /// <summary>
+    /// The ID of the Ignite node origination the request the processed sub grids are destined for.
+    /// </summary>
     public Guid NodeId { get; set; } = Guid.Empty;
 
     /// <summary>
@@ -19,6 +22,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
     /// </summary>
     public Guid RequestDescriptor { get; set; } = Guid.Empty;
 
+    /// <summary>
+    /// The payload containing a set of processed sub grids
+    /// </summary>
     public ISerialisedByteArrayWrapper Payload { get; set; }
 
     public override void ToBinary(IBinaryRawWriter writer)
@@ -29,6 +35,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
 
       writer.WriteGuid(NodeId);
       writer.WriteGuid(RequestDescriptor);
+      writer.WriteBoolean(Payload.Bytes != null);
+      if (Payload.Bytes != null)
+      {
+        writer.WriteByteArray(Payload.Bytes);
+      }
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -39,6 +50,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
 
       NodeId = reader.ReadGuid() ?? Guid.Empty;
       RequestDescriptor = reader.ReadGuid() ?? Guid.Empty;
+
+      if (reader.ReadBoolean())
+      {
+        Payload = new SerialisedByteArrayWrapper(reader.ReadByteArray());
+      }
     }
   }
 }
