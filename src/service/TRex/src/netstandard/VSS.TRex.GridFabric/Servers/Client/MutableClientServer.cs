@@ -1,13 +1,10 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
@@ -17,7 +14,6 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Logging;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
 

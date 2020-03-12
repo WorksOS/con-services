@@ -28,8 +28,6 @@ namespace VSS.TRex.SubGrids.Executors
 
     private ISubGridProgressiveResponseRequest _responseRequest;
 
-    private string _tRexNodeIdAsString = string.Empty;
-
     /// <summary>
     /// Processes a sub grid result that consists of a client leaf sub grid for each of the filters in the request
     /// </summary>
@@ -107,19 +105,6 @@ namespace VSS.TRex.SubGrids.Executors
       //}
 
       return true;
-    }
-
-    /// <summary>
-    /// Capture elements from the argument relevant to progressive sub grid requests
-    /// </summary>
-    /// <param name="arg"></param>
-    public override void UnpackArgument(SubGridsRequestArgument arg)
-    {
-      base.UnpackArgument(arg);
-
-      _tRexNodeIdAsString = arg.TRexNodeID;
-
-      Log.LogInformation($"TRexNodeIDAsString is {_tRexNodeIdAsString} in UnpackArgument()");
     }
   }
 }

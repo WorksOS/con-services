@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Interfaces;
 
 namespace VSS.TRex.GridFabric.ComputeFuncs

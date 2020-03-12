@@ -1,12 +1,13 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
+using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.SubGrids.Interfaces;
 
 namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 {
-  public class SubGridProgressiveResponseRequestComputeFunc : IComputeFunc<ISubGridProgressiveResponseRequestComputeFuncArgument, bool>
+  public class SubGridProgressiveResponseRequestComputeFunc : BaseComputeFunc, IComputeFunc<ISubGridProgressiveResponseRequestComputeFuncArgument, bool>
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridProgressiveResponseRequestComputeFunc>();
 
