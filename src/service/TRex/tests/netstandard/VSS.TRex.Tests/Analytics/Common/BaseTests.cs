@@ -14,7 +14,6 @@ namespace VSS.TRex.Tests.Analytics.Common
     {
       IgniteMock.AddClusterComputeGridRouting<IComputeFunc<TArgument, TResponse>, TArgument, TResponse>();
       IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
-
     }
   }
 }

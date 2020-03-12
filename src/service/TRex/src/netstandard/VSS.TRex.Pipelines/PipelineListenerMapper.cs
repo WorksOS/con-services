@@ -13,7 +13,7 @@ namespace VSS.TRex.Pipelines
   /// </summary>
   public class PipelineListenerMapper : IPipelineListenerMapper
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridListener>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelineListenerMapper>();
 
     private readonly ConcurrentDictionary<Guid, IMessageListener<ISerialisedByteArrayWrapper>> _listenerMap;
 
