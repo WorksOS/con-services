@@ -4,7 +4,6 @@ using Apache.Ignite.Core.Messaging;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.GridFabric;
 using VSS.TRex.Pipelines.Interfaces;
-using VSS.TRex.SubGrids.GridFabric.Listeners;
 
 namespace VSS.TRex.Pipelines
 {
