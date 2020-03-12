@@ -36,8 +36,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
       writer.WriteGuid(NodeId);
       writer.WriteGuid(RequestDescriptor);
 
-      writer.WriteBoolean(Payload.Bytes != null);
-      if (Payload.Bytes != null)
+      writer.WriteBoolean(Payload?.Bytes != null);
+      if (Payload?.Bytes != null)
       {
         writer.WriteByteArray(Payload.Bytes);
       }
