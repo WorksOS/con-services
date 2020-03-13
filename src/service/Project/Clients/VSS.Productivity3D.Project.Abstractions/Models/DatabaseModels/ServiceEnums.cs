@@ -1,8 +1,11 @@
+﻿using System;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 {
-    public enum ServiceTypeEnum
+  [Obsolete("todoMaverick obsolete", false)]
+  public enum ServiceTypeEnum
     {
         Essentials = 1,
         ManualMaintenanceLog = 2,
@@ -27,14 +30,15 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
         OperatorIdManageOperators = 21
     }
 
+    [Obsolete("todoMaverick obsolete", false)]
     public static class Extensions
     {
         public static ProjectType MatchProjectType(this ServiceTypeEnum serviceType)
         {
             switch (serviceType)
             {
-                case ServiceTypeEnum.Landfill: return ProjectType.LandFill;
-                case ServiceTypeEnum.ProjectMonitoring: return ProjectType.ProjectMonitoring;
+                //case ServiceTypeEnum.Landfill: return ProjectType.LandFill;
+                //case ServiceTypeEnum.ProjectMonitoring: return ProjectType.ProjectMonitoring;
                 default: return ProjectType.Standard;
             }
         }
@@ -43,8 +47,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
         {
             switch (serviceType)
             {
-                case ProjectType.LandFill: return ServiceTypeEnum.Landfill;
-                case ProjectType.ProjectMonitoring: return ServiceTypeEnum.ProjectMonitoring;
+                //case ProjectType.LandFill: return ServiceTypeEnum.Landfill;
+                //case ProjectType.ProjectMonitoring: return ServiceTypeEnum.ProjectMonitoring;
                 default: return ServiceTypeEnum.ThreeDProjectMonitoring;
             }
         }

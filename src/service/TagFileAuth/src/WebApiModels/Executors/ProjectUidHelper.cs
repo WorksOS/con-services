@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
       else
       {
-        log.LogDebug($"{nameof(GetSNMAsset)}: Unable to locate SNM assetDevice for radioSerial: {radioSerial} and deviceType: {deviceType}");
+        log.LogDebug($"{nameof(GetSNMAsset)}: Unable to locate SNM assetDevice for serialNumber: {radioSerial} and deviceType: {deviceType}");
       }
 
       return (assetUid: assetUid, assetOwningCustomerUid: assetOwningCustomerUid, assetSubs: assetSubs);
@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
       else
       {
-        log.LogDebug($"{nameof(GetSNMAsset)}: Unable to locate SNM assetDevice for radioSerial: {serialNumber} and deviceType: {deviceType}");
+        log.LogDebug($"{nameof(GetSNMAsset)}: Unable to locate SNM assetDevice for serialNumber: {serialNumber} and deviceType: {deviceType}");
       }
 
       return (assetUid: assetUid, assetOwningCustomerUid: assetOwningCustomerUid, assetSubs: assetSubs);

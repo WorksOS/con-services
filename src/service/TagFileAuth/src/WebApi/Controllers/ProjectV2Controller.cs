@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// 
     /// EC and/or radio, location and possibly TCCOrgID are provided.
     /// 
-    /// Get the ProjectUid 
+    /// Get the ProjectTrn 
     ///     which belongs to the devices Customer and 
     ///     whose boundary the location is inside at the given date time. 
     ///     NOTE as of Sept 2019, VSS commercial model has not been determined,

@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 

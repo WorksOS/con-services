@@ -11,7 +11,7 @@
 
     //IEnumerable<Project> LoadProjects(string customerUid, DateTime validAtDate);
 
-    //AssetDeviceIds LoadAssetDevice(string radioSerial, string deviceType);
+    //AssetDeviceIds LoadAssetDevice(string serialNumber, string deviceType);
 
     //Customer LoadCustomer(string customerUid);
 

@@ -3,7 +3,7 @@
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling
 {
   /// <summary>
-  /// The result of a request to get the legacyAssetID for a radioSerial
+  /// The result of a request to get the legacyAssetID for a serialNumber
   /// </summary>
   public class GetAssetIdResult : ContractExecutionResultWithResult
   {

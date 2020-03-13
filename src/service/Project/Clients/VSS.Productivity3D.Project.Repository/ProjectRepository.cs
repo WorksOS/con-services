@@ -13,6 +13,7 @@ using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.MasterData.Repositories.Extensions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -270,7 +271,7 @@ namespace VSS.Productivity3D.Project.Repository
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC
               FROM Project
               WHERE ProjectUID = @ProjectUID
-                OR LegacyProjectId = @LegacyProjectID",
+                OR shortRaptorProjectId = @LegacyProjectID",
         new { project.ProjectUID, project.LegacyProjectID }
       )).FirstOrDefault();
 
@@ -919,7 +920,7 @@ namespace VSS.Productivity3D.Project.Repository
           "INSERT ImportedFile " +
           "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID) " +
           "  VALUES " +
-          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc, @Offset, @ParentUid)");
+          "    (@ProjectTrn, @ImportedFileUid, @ImportedFileId, @CustomerUid, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc, @Offset, @ParentUid)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         Log.LogDebug(
@@ -939,7 +940,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         const string update =
           @"UPDATE ImportedFile
-              SET fk_ProjectUID = @ProjectUid, 
+              SET fk_ProjectUID = @ProjectTrn, 
                 ImportedFileID = @ImportedFileId,
                 fk_CustomerUID = @CustomerUid,
                 fk_ImportedFileTypeID = @ImportedFileType,
@@ -1192,7 +1193,7 @@ namespace VSS.Productivity3D.Project.Repository
         @"INSERT ProjectSettings
                  (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
             VALUES
-              (@ProjectUid, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
+              (@ProjectTrn, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
             ON DUPLICATE KEY UPDATE
               LastActionedUTC =
                 IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
@@ -1562,7 +1563,7 @@ namespace VSS.Productivity3D.Project.Repository
     /// Gets the list of geofence UIDs for the customer, along with any potential projectUid association
     /// </summary>
     /// <param name="customerUid"></param>
-    /// <returns>List of geofences and potential ProjectUid</returns>
+    /// <returns>List of geofences and potential ProjectTrn</returns>
     public Task<IEnumerable<GeofenceWithAssociation>> GetCustomerGeofences(string customerUid)
     {
       return QueryWithAsyncPolicy<GeofenceWithAssociation>
@@ -1594,9 +1595,9 @@ namespace VSS.Productivity3D.Project.Repository
       ProjectSettingsType projectSettingsType)
     {
       return (await QueryWithAsyncPolicy<ProjectSettings>(@"SELECT 
-                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
+                fk_ProjectUID AS ProjectTrn, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
-              WHERE fk_ProjectUID = @ProjectUid
+              WHERE fk_ProjectUID = @ProjectTrn
                 AND UserID = @UserID
                 AND fk_ProjectSettingsTypeID = @ProjectSettingsType
               ORDER BY fk_ProjectUID, UserID, fk_ProjectSettingsTypeID",
@@ -1614,9 +1615,9 @@ namespace VSS.Productivity3D.Project.Repository
     {
       return QueryWithAsyncPolicy<ProjectSettings>
       (@"SELECT 
-                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
+                fk_ProjectUID AS ProjectTrn, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
-              WHERE fk_ProjectUID = @ProjectUid
+              WHERE fk_ProjectUID = @ProjectTrn
                 AND UserID = @UserID",
         new { ProjectUid = projectUid, UserID = userId }
       );
@@ -1635,7 +1636,7 @@ namespace VSS.Productivity3D.Project.Repository
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
             MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
           FROM ImportedFile
-            WHERE fk_ProjectUID = @ProjectUid
+            WHERE fk_ProjectUID = @ProjectTrn
               AND IsDeleted = 0",
         new { ProjectUid = projectUid }
       )).ToList();
@@ -1816,7 +1817,7 @@ namespace VSS.Productivity3D.Project.Repository
                           AND @StartDate <= p.EndDate
                           AND @EndDate >= p.StartDate
                           AND cp.fk_CustomerUID = @CustomerUID
-                          AND p.ProjectUid != @excludeProjectUid
+                          AND p.ProjectTrn != @excludeProjectUid
                           AND st_Intersects({polygonToCheck}, PolygonST) = 1";
 
       return (await QueryWithAsyncPolicy<ProjectDataModel>(select,

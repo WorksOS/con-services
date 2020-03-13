@@ -5,10 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Project.Repository;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Proxy;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
@@ -35,12 +33,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       // Add framework services.
       services
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-        .AddSingleton<IKafka, RdKafkaDriver>()
+        .AddTransient<IProjectProxy, ProjectV5Proxy>()
+        .AddTransient<IAccountProxy, AccountV5Proxy>()
+        .AddTransient<IDeviceProxy, DeviceV5Proxy>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
 
       services.AddOpenTracing(builder =>

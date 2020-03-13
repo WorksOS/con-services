@@ -227,7 +227,7 @@ namespace WebApiTests.Models
     [TestMethod]
     public void TagFileProcessingErrorV2Request_Validation_NotEnoughForCustomerIdentification()
     {
-      // Even if no customerUid can be determined e.g. from tccOrgId/AssetUid/ProjectUid
+      // Even if no customerUid can be determined e.g. from tccOrgId/AssetUid/ProjectTrn
       //      still write a notification.
       string tccOrgId = null;
       long? legacyAssetId = null;

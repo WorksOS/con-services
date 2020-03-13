@@ -46,7 +46,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
 
     /// <summary>
-    /// The radioSerial whose tag file has the error. 
+    /// The serialNumber whose tag file has the error. 
     /// </summary>
     [JsonProperty(PropertyName = "deviceSerialNumber", Required = Required.Default)]
     public string deviceSerialNumber { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
@@ -31,8 +32,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public string CustomerUID { get; set; }
 
-    // legacy CustomerID in Gen2 is a bigint. Unlike LegacyProjectID, this is passed around as a long. I don't know why.
-    public long LegacyCustomerID { get; set; }
+    // todoMaverick, what is this for?
+    //// legacy CustomerID in Gen2 is a bigint. Unlike LegacyProjectID, this is passed around as a long. I don't know why.
+    //public long LegacyCustomerID { get; set; }
 
     public string SubscriptionUID { get; set; }
     public DateTime? SubscriptionStartDate { get; set; }
@@ -64,7 +66,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
         && otherProject.StartDate == StartDate
         && otherProject.EndDate == EndDate
         && otherProject.CustomerUID == CustomerUID
-        && otherProject.LegacyCustomerID == LegacyCustomerID
+        // todoMaverick && otherProject.LegacyCustomerID == LegacyCustomerID
         && otherProject.SubscriptionUID == SubscriptionUID
         && otherProject.SubscriptionStartDate == SubscriptionStartDate
         && otherProject.SubscriptionEndDate == SubscriptionEndDate

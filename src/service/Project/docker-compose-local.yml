@@ -1,4 +1,4 @@
-version: "2"
+version: "2.1"
 services:
   webapi:
     build: ./artifacts/ProjectWebApi
@@ -121,13 +121,13 @@ services:
       - zookeeper
   accepttest:
     build:
-      context: ./AcceptanceTests/deploy
+      context: ./AcceptanceTests/Deploy
       args:
         - APP_BUILD_IMAGE=microsoft/dotnet:2.1-sdk
     env_file:
       - docker-compose-local.env
     volumes:
-      - ./AcceptanceTests/deploy/testresults:/app/testresults
+      - ./AcceptanceTests/Deploy/TestResults:/app/testresults
     depends_on:
       - webapi
       - masterdataconsumercustomer

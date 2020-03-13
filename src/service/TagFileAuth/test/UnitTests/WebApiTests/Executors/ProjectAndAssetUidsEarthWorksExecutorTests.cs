@@ -15,6 +15,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests.Executors
@@ -354,7 +355,7 @@ namespace WebApiTests.Executors
     private void ValidateResult(GetProjectAndAssetUidsEarthWorksResult result, string expectedProjectUid, string expectedAssetUid, string expectedCustomerUid, bool expectedHasValidSubscription, int expectedCode)
     {
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectTrn");
       Assert.AreEqual(expectedAssetUid, result.AssetUid, "executor returned incorrect AssetUid");
       Assert.AreEqual(expectedCustomerUid, result.CustomerUid, "executor returned incorrect CustomerUid");
       Assert.AreEqual(expectedHasValidSubscription, result.HasValidSub, "executor returned incorrect HasValidSub");

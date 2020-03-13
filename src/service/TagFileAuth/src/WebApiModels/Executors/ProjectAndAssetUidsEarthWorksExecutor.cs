@@ -10,6 +10,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -18,7 +19,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// The executor which tries to identify a project for the location,
   ///      for use by CTCT EarthWorks devices to obtain cutfill map from 3dp.
   /// The customer, for which projects are fair game, can be determined from
-  ///     1) SNM radioSerial
+  ///     1) SNM serialNumber
   ///     2) EC520 serialNumber
   ///     3) tccOrgId  
   /// The commercial model re servicePlans has not been established,
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     /// <summary>
     /// EarthWorks cut/fill doesn't necessarily REQUIRE a subscription, or of the type required for 3dp tagFiles
-    /// Must be able to identify one or other customer for a) radioSerial b) EM520 c) tccOrgUid
+    /// Must be able to identify one or other customer for a) serialNumber b) EM520 c) tccOrgUid
     /// </summary>
     private async Task<GetProjectAndAssetUidsEarthWorksResult> LocateProjectsInProximity(GetProjectAndAssetUidsEarthWorksRequest request,
       string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)

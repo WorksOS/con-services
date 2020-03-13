@@ -15,6 +15,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests.Executors
@@ -246,7 +247,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty, 
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3048,
-        expectedMessageResult: "Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements"
+        expectedMessageResult: "Auto Import: for this serialNumber/TCCorgId, no project meets the time/location/subscription requirements"
       );
     }
 
@@ -390,7 +391,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3048,
-        expectedMessageResult: "Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements"
+        expectedMessageResult: "Auto Import: for this serialNumber/TCCorgId, no project meets the time/location/subscription requirements"
       );
     }
 
@@ -474,7 +475,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3048,
-        expectedMessageResult: "Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements"
+        expectedMessageResult: "Auto Import: for this serialNumber/TCCorgId, no project meets the time/location/subscription requirements"
       );
     }
 
@@ -554,7 +555,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3048,
-        expectedMessageResult: "Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements"
+        expectedMessageResult: "Auto Import: for this serialNumber/TCCorgId, no project meets the time/location/subscription requirements"
       );
     }
 
@@ -638,7 +639,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3048,
-        expectedMessageResult: "Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements"
+        expectedMessageResult: "Auto Import: for this serialNumber/TCCorgId, no project meets the time/location/subscription requirements"
       );
     }
 
@@ -718,7 +719,7 @@ namespace WebApiTests.Executors
         expectedProjectUidResult: string.Empty,
         expectedAssetUidResult: string.Empty,
         expectedCodeResult: 3048,
-        expectedMessageResult: "Auto Import: for this radioSerial/TCCorgId, no project meets the time/location/subscription requirements"
+        expectedMessageResult: "Auto Import: for this serialNumber/TCCorgId, no project meets the time/location/subscription requirements"
       );
     }
     
@@ -825,7 +826,7 @@ namespace WebApiTests.Executors
       int resultCode, string resultMessage)
     {
       Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectTrn");
       Assert.AreEqual(expectedAssetUid, result.AssetUid, "executor returned incorrect AssetUid");
       Assert.AreEqual(resultCode, result.Code, "executor returned incorrect result code");
       Assert.AreEqual(resultMessage, result.Message, "executor returned incorrect result message");

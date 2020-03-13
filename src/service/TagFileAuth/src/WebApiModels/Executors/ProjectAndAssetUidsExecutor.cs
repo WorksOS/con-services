@@ -11,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -34,7 +35,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///             the time of location is not limited to the project start/end time
     ///          PM (aka Civil) are not valid
     ///          Deleted projects are not valid
-    ///     if a radioSerial/dtype is proovided and can be resolved, the assetUid will also be returned.
+    ///     if a serialNumber/dtype is proovided and can be resolved, the assetUid will also be returned.
     /// 
     ///  b) Auto Import
     ///     a device and/or tccOrgId provided.
@@ -220,7 +221,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     private async Task<GetProjectAndAssetUidsResult> HandleAutoImport(GetProjectAndAssetUidsRequest request,
       string assetUid, string assetOwningCustomerUid, List<Subscriptions> assetSubs)
     {
-      // must be able to identify one or other customer for a) tccOrgUid b) radioSerial
+      // must be able to identify one or other customer for a) tccOrgUid b) serialNumber
       string tccCustomerUid = null;
       if (!string.IsNullOrEmpty(request.TccOrgUid))
       {

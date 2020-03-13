@@ -32,7 +32,7 @@ namespace WebApiTests.Models
     [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 91, 179, 3021)] // invalid lat
     [DataRow("", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 89, 181, 3022)] // invalid long
     [DataRow("scooby", DeviceTypeEnum.SNM940, "snm940Serial", "", "", 89, 179, 3036)] // invalid projectUid
-    [DataRow("", DeviceTypeEnum.MANUALDEVICE, "", "", "", 89, 179, 3037)] // missing radioSerial, ec520 and tccOrgId
+    [DataRow("", DeviceTypeEnum.MANUALDEVICE, "", "", "", 89, 179, 3037)] // missing serialNumber, ec520 and tccOrgId
     public void ValidateGetProjectAndAssetUidsRequest_ValidationErrors
     (string projectUid, DeviceTypeEnum deviceType, string radioSerial, string ec520Serial,
       string tccOrgUid,

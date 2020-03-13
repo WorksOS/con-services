@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing CreateProjectRequest.", 39);
       this.DynamicAddwithOffset("Missing UpdateProjectRequest.", 40);
       this.DynamicAddwithOffset("Unable to create/update CoordinateSystem in RaptorServices. returned: {0} {1}.", 41);
-      this.DynamicAddwithOffset("LegacyProjectId has not been generated. {0}", 42);
+      this.DynamicAddwithOffset("shortRaptorProjectId has not been generated. {0}", 42);
       this.DynamicAddwithOffset("Project boundary overlaps another project, for this customer and time span.", 43);
       this.DynamicAddwithOffset("Missing legacyProjectId.", 44);
       this.DynamicAddwithOffset("Landfill is missing its CoordinateSystem.", 45);

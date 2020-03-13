@@ -4,25 +4,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace WebApiTests.Executors
 {
   [TestClass]
   public class AssetIdExecutorTests : ExecutorBaseTests
   {
-    [TestMethod]
-    public void GetAssetRepository()
-    {
-      var repo = ServiceProvider.GetRequiredService<IRepository<IAssetEvent>>();
-      Assert.IsNotNull(repo, "Unable to retrieve asset repo from DI");
-    }
-
     [TestMethod]
     public void GetLogger()
     {
@@ -37,7 +28,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-        AssetRepository, DeviceRepository, CustomerRepository, ProjectRepository, SubscriptionRepository);
+        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -53,7 +44,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-        AssetRepository, DeviceRepository, CustomerRepository, ProjectRepository, SubscriptionRepository);
+        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -62,49 +53,39 @@ namespace WebApiTests.Executors
     }
 
     [TestMethod]
-    [DataRow("SNM940", "snm940Serial", "SNM940", "snm940Serial", "SNM940", "snm940Serial")]
-    [DataRow("SNM941", "snm941Serial", "SNM941", "snm941Serial", "SNM941", "snm941Serial")]
-    [DataRow("SNM940", "snm940Serial", "SNM941", "snm941Serial", "SNM941", "snm941Serial")]
-    [DataRow("EC520", "ec520Serial", "EC520", "ec520Serial", "EC520", "ec520Serial")]
-    public async Task AssetUidExecutor_GetAssetDevice_HappyPath(
-      string deviceTypeRequested, string radioSerialRequested,
-      string deviceTypeExisting, string radioSerialExisting,
-      string deviceTypeExpected, string radioSerialExpected)
+    [DataRow("snm940Serial", "snm940Serial")]
+    [DataRow("snm941Serial", "snm941Serial")]
+    [DataRow("snm940Serial", "snm941Serial")]
+    [DataRow("ec520Serial",  "ec520Serial")]
+    public async Task AssetUidExecutor_GetAssetDevice_HappyPath(string serialNumberRequested, string serialNumberExpected)
     {
-      var assetDeviceIdsToBeReturned = new AssetDeviceIds
-                                       {
-        AssetUID = Guid.NewGuid().ToString(),
-        DeviceType = deviceTypeExpected,
-        DeviceUID = Guid.NewGuid().ToString(),
-        RadioSerial = radioSerialExpected
+      var deviceDataToBeReturned = new DeviceData
+      {
+        AccountTrn = Guid.NewGuid().ToString(),
+        DeviceTrn = Guid.NewGuid().ToString(),
+        SerialNumber = serialNumberExpected
       };
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      Mock<IDeviceRepository> deviceRepo = new Mock<IDeviceRepository>();
-      deviceRepo.Setup(d => d.GetAssociatedAsset(radioSerialRequested, deviceTypeRequested)).ReturnsAsync(assetDeviceIdsToBeReturned);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested)).ReturnsAsync(deviceDataToBeReturned);
 
-      DataRepository dataRepository = new DataRepository(logger, ConfigStore, null, deviceRepo.Object,
-        null, null, null, null, null);
+      var dataRepository = new DataRepository(logger, ConfigStore, projectProxy.Object, accountProxy.Object, deviceProxy.Object);
      
-      var assetDevice = await dataRepository.LoadAssetDevice(radioSerialRequested, deviceTypeRequested);
-      Assert.AreEqual(assetDevice.DeviceType, deviceTypeExpected);
-      Assert.AreEqual(assetDevice.RadioSerial, radioSerialExpected);
+      var device = await dataRepository.LoadDevice(serialNumberRequested);
+      Assert.AreEqual(serialNumberExpected, device.SerialNumber);
     }
 
     [TestMethod]
-    [DataRow("SNM940", "snm940Serial")]
-    public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(
-      string deviceTypeRequested, string radioSerialRequested)
+    [DataRow("snm940Serial")]
+    public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(string serialNumberRequested)
     {
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      Mock<IDeviceRepository> deviceRepo = new Mock<IDeviceRepository>();
-      deviceRepo.Setup(d => d.GetAssociatedAsset(radioSerialRequested, deviceTypeRequested)).ReturnsAsync((AssetDeviceIds)null);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested)).ReturnsAsync((DeviceData)null);
 
-      DataRepository dataRepository = new DataRepository(logger, ConfigStore, null, deviceRepo.Object,
-        null, null, null, null, null);
+      var dataRepository = new DataRepository(logger, ConfigStore, projectProxy.Object, accountProxy.Object, deviceProxy.Object);
 
-      var assetDevice = await dataRepository.LoadAssetDevice(radioSerialRequested, deviceTypeRequested);
-      Assert.IsNull(assetDevice);
+      var device = await dataRepository.LoadDevice(serialNumberRequested);
+      Assert.IsNull(device);
     }
 
   }

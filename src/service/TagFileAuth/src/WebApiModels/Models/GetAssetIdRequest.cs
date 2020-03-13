@@ -8,32 +8,33 @@ using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.Contra
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
-  /// The request representation used to request the asset Id and project monitoring subscription for a given machine whose tagfiles
-  /// are to be processed. The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
-  /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project  is known 
-  /// which is when a tagfile is being manually imported by a user.
+  /// The request representation used to request the shortRaptorAssetID and serviceType (which we will fake for C2S3)
+  /// for a given machine whose tag-files are to be processed.
+  /// The id of the project into which the tag-file data should be processed:
+  ///             value of -1 indicates 'unknown' i.e. when the tag-files are being automatically processed.
+  ///             value greater than zero is when the project is known i.e manual Import 
   /// </summary>
   public class GetAssetIdRequest 
   {
     /// <summary>
-    /// The id of the project into which the tagfile data should be processed. A value of -1 indicates 'unknown' 
-    /// which is when the tagfiles are being automatically processed. A value greater than zero is when the project 
-    /// is known which is when a tagfile is being manually imported by a user.
+    /// The shortRaptorProjectId into which the tag-file data should be processed.
     /// </summary>
     [JsonProperty(PropertyName = "projectId", Required = Required.Always)]
-    public long projectId { get; set; }
+    public long shortRaptorProjectId { get; set; }
 
     /// <summary>
-    /// The device type of the machine. Valid values are 0=Manual Device (John Doe machines) and 6=SNM940 (torch machines).
+    /// The device type of the machine.
+    ///           Valid values are 0=Manual Device (John Doe machines)
+    ///           and SNM940/SNM941/EC520. todoMaverick we don't have a lookup by serialNumber
     /// </summary>
     [JsonProperty(PropertyName = "deviceType", Required = Required.Always)]
     public int deviceType { get; set; }
 
     /// <summary>
-    /// The radio serial number of the machine from the tagfile.
+    /// The serial number (could be of a radio or ec device) of the machine from the tag-file.
     /// </summary>
-    [JsonProperty(PropertyName = "radioSerial", Required = Required.Default)]
-    public string radioSerial { get; set; }
+    [JsonProperty(PropertyName = "serialNumber", Required = Required.Default)]
+    public string serialNumber { get; set; }
 
     /// <summary>
     /// Private constructor
@@ -45,23 +46,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     /// <summary>
     /// Create instance of GetAssetIdRequest
     /// </summary>
-    public static GetAssetIdRequest CreateGetAssetIdRequest(long projectId, int deviceType, string radioSerial)
+    public static GetAssetIdRequest CreateGetAssetIdRequest(long shortRaptorProjectId, int deviceType, string serialNumber)
     {
       return new GetAssetIdRequest
       {
-        projectId = projectId,
+        shortRaptorProjectId = shortRaptorProjectId,
         deviceType = deviceType,
-        radioSerial = radioSerial
+        serialNumber = serialNumber
       };
     }
 
 
     /// <summary>
-    /// Validates assetID And/or projectID is provided
+    /// Validates shortRaptorAssetId and/or shortRaptorProjectId are provided
     /// </summary>
     public void Validate()
     {
-      if (string.IsNullOrEmpty(radioSerial) && projectId <= 0)
+      if (string.IsNullOrEmpty(serialNumber) && shortRaptorProjectId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
@@ -71,15 +72,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       var allowedDeviceTypes = new List<int>() { (int)DeviceTypeEnum.MANUALDEVICE, (int)DeviceTypeEnum.SNM940, (int)DeviceTypeEnum.SNM941, (int)DeviceTypeEnum.EC520 };
       var isDeviceTypeValid = allowedDeviceTypes.Contains(deviceType);
 
-      // rule changed to match cgen --> if a manualDeviceType, allow a radioSerial, EVEN  though the radioSerial is NEVER used
-      if (!string.IsNullOrEmpty(radioSerial) && (!isDeviceTypeValid))
+      // rule changed to match cgen --> if a manualDeviceType, allow a serialNumber, EVEN  though the serialNumber is NEVER used
+      if (!string.IsNullOrEmpty(serialNumber) && (!isDeviceTypeValid))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
             ContractExecutionStatesEnum.ValidationError, 25));
       }
 
-      if (deviceType == 0 && projectId <= 0)
+      if (deviceType == 0 && shortRaptorProjectId <= 0)
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetAssetIdResult.CreateGetAssetIdResult(false, -1, 0, 
