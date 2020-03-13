@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1su
 ARG SERVICE_PATH
 
 #debconf shouldn't expect an interactive terminal
@@ -14,8 +14,16 @@ RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y \
     nodejs
 
+# RUN apt-get update && apt-get install -y \
+#     openjdk-8-jdk
+
 RUN apt-get update && apt-get install -y \
-    openjdk-8-jdk
+    software-properties-common
+
+RUN  add-apt-repository 'deb https://apt.corretto.aws stable main'
+
+RUN apt-get update && apt-get install -y \
+    java-11-amazon-corretto-jdk
 
 RUN apt-get update && apt-get install -y \
     libc6-dev
@@ -30,8 +38,8 @@ COPY . /build/
 WORKDIR /build
 
 # #Need these for ignite to work
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
+ENV JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto
+ENV LD_LIBRARY_PATH=$JAVA_HOME/lib/server
 
 #publish TRex servers
 RUN dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer
