@@ -8,7 +8,7 @@ namespace VSS.TRex.Rendering.Displayers
   /// <summary>
   /// Plan View Map displayer renderer for height/elevation information presented as rendered tiles
   /// </summary>
-  public class PVMDisplayer_Height : PVMDisplayerBase<HeightPalette, ClientHeightAndTimeLeafSubGrid, float>
+  public class PVMDisplayer_Height : PVMDisplayerBase<HeightPalette, ClientHeightLeafSubGrid, float>
   {
     /// <summary>
     /// Queries the data at the current cell location and determines the colour that should be displayed there.

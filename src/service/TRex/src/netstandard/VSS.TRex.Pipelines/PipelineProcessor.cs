@@ -195,6 +195,9 @@ namespace VSS.TRex.Pipelines
       // Ensure the task is initialised with the request descriptor
       Task.RequestDescriptor = RequestDescriptor;
 
+      // Ensure the Task grid data type matches the pipeline processor
+      Task.GridDataType = GridDataType;
+
       // Introduce the task and the pipeline to each other
       Pipeline.PipelineTask = Task;
       Task.PipeLine = Pipeline;
