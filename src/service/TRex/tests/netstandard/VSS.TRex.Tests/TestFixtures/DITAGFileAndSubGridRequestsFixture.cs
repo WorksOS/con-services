@@ -16,6 +16,8 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Interfaces;
+using VSS.TRex.Pipelines;
+using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Profiling;
 using VSS.TRex.Profiling.Factories;
 using VSS.TRex.Profiling.Interfaces;
@@ -94,6 +96,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(TRex.ExistenceMaps.ExistenceMaps.AddExistenceMapFactoriesToDI)
 
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
+
+        // Register the mapper between requests operating in a pipeline and the listeners responding to 
+        // partial responses of subgrids
+        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
 
         .Complete();
     }

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
+using Apache.Ignite.Core.Configuration;
 using Apache.Ignite.Core.Deployment;
 using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Logging;
@@ -89,6 +90,16 @@ namespace VSS.TRex.GridFabric.Servers.Client
             BinaryConfiguration = new BinaryConfiguration
             {
               Serializer = new BinarizableSerializer()
+            },
+
+            // Add the TRex progressive request request custom thread pool
+            ExecutorConfiguration = new List<ExecutorConfiguration>
+            {
+              new ExecutorConfiguration
+              {
+                Name = BaseIgniteClass.TRexProgressiveQueryCustomThreadPoolName,
+                Size = DIContext.Obtain<IConfigurationStore>().GetValueInt(PROGRESSIVE_REQUEST_CUSTOM_POOL_SIZE, DEFAULT_PROGRESSIVE_REQUEST_CUSTOM_POOL_SIZE)
+              }
             }
           };
 
@@ -96,7 +107,6 @@ namespace VSS.TRex.GridFabric.Servers.Client
           {
             cfg.UserAttributes.Add($"{ServerRoles.ROLE_ATTRIBUTE_NAME}-{roleName}", "True");
           }
-
 
           bool.TryParse(Environment.GetEnvironmentVariable("IS_KUBERNETES"), out var isKubernetes);
           cfg = isKubernetes ? setKubernetesIgniteConfiguration(cfg) : setLocalIgniteConfiguration(cfg);

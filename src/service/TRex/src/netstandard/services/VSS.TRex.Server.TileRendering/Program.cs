@@ -137,6 +137,8 @@ namespace VSS.TRex.Server.TileRendering
 
         .Add(x => x.AddSingleton<Func<DisplayMode, IDataSmoother>>(provider => TileRenderingSmootherFactoryMethod))
 
+        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
         .Complete();
     }
 

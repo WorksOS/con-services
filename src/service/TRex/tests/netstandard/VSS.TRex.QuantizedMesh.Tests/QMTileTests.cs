@@ -21,6 +21,7 @@ using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.QuantizedMesh.MeshUtils;
 using VSS.TRex.QuantizedMesh.Models;
 using VSS.TRex.QuantizedMesh.GridFabric;
+using VSS.TRex.SubGrids.Interfaces;
 
 namespace VSS.TRex.QuantizedMesh.Tests
 {
@@ -204,7 +205,11 @@ namespace VSS.TRex.QuantizedMesh.Tests
       filter = new FilterSet(new CombinedFilter());
     }
 
-    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+    private void AddClusterComputeGridRouting()
+    {
+      IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+    }
 
     [Fact]
     public void Creation()

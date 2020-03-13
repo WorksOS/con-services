@@ -14,16 +14,19 @@ namespace VSS.TRex.GridFabric.Arguments
   {
     private const byte VERSION_NUMBER = 1;
 
+    public Guid OriginatingIgniteNodeId { get; set; } = Guid.Empty;
+
     /// <summary>
     /// A common descriptor that may be supplied by the argument consumer to hold an
     /// externally provided Guid identifier for the request
     /// </summary>
-    public Guid ExternalDescriptor { get; private set; } = Guid.Empty;
+    public Guid ExternalDescriptor { get; set; } = Guid.Empty;
 
     public virtual void ToBinary(IBinaryRawWriter writer)
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
+      writer.WriteGuid(OriginatingIgniteNodeId);
       writer.WriteGuid(ExternalDescriptor);
     }
 
@@ -31,6 +34,7 @@ namespace VSS.TRex.GridFabric.Arguments
     {
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
+      OriginatingIgniteNodeId = reader.ReadGuid() ?? Guid.Empty;
       ExternalDescriptor = reader.ReadGuid() ?? Guid.Empty;
     }
 
