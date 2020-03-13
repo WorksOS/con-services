@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Configuration;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
@@ -36,7 +37,9 @@ namespace VSS.TRex.SubGrids.Executors
     where TSubGridsRequestArgument : SubGridsRequestArgument
     where TSubGridRequestsResponse : SubGridRequestsResponse, new()
   {
-    private const int AddressBucketSize = 20;
+    public const string SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE = "SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE";
+
+    private readonly int _addressBucketSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE, 50);
 
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
@@ -154,7 +157,7 @@ namespace VSS.TRex.SubGrids.Executors
 
         try
         {
-          for (int I = 0; I < SubGridResultArray.Length; I++)
+          for (var I = 0; I < SubGridResultArray.Length; I++)
           {
             if (SubGridResultArray[I] == null)
               continue;
@@ -248,7 +251,6 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     /// <param name="requester"></param>
     /// <param name="address"></param>
-    /// <param name="clientGrid"></param>
     private async Task<(ServerRequestResult requestResult, IClientLeafSubGrid clientGrid)> PerformSubGridRequest(ISubGridRequestor requester, SubGridCellAddress address)
     {
       (ServerRequestResult requestResult, IClientLeafSubGrid clientGrid) result = (ServerRequestResult.UnknownError, null);
@@ -403,7 +405,7 @@ namespace VSS.TRex.SubGrids.Executors
     {
       addresses[listCount++] = address;
 
-      if (listCount == AddressBucketSize)
+      if (listCount == _addressBucketSize)
       {
         // Process the sub grids...
         ProcessSubGridAddressGroup(addresses, listCount);
@@ -431,7 +433,7 @@ namespace VSS.TRex.SubGrids.Executors
 
       Log.LogInformation("Scanning sub grids in request");
 
-      addresses = new SubGridCellAddress[AddressBucketSize];
+      addresses = new SubGridCellAddress[_addressBucketSize];
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
       bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();

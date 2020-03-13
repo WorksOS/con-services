@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Arguments;

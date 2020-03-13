@@ -64,7 +64,6 @@ namespace VSS.TRex.GridFabric.Arguments
       writer.WriteByteArray(ProdDataMaskBytes);
       writer.WriteByteArray(SurveyedSurfaceOnlyMaskBytes);
 
-     // writer.WriteString(MessageTopic);
       writer.WriteBoolean(IncludeSurveyedSurfaceInformation);
 
       AreaControlSet.ToBinary(writer);
@@ -86,7 +85,6 @@ namespace VSS.TRex.GridFabric.Arguments
       ProdDataMaskBytes = reader.ReadByteArray();
       SurveyedSurfaceOnlyMaskBytes = reader.ReadByteArray();
 
-      //MessageTopic = reader.ReadString();
       IncludeSurveyedSurfaceInformation = reader.ReadBoolean();
 
       AreaControlSet = new AreaControlSet();
