@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.ServiceDiscovery;
@@ -119,6 +121,13 @@ namespace VSS.WebApi.Common
         config => { config.Filters.Add(new ValidationFilterAttribute()); }
       ).AddMetrics();
 
+      services.AddControllers().AddNewtonsoftJson(options =>
+      {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+      });
+
       services.AddMetrics(metrics);
       services.AddMetricsTrackingMiddleware();
       services.AddMetricsEndpoints(options =>
@@ -142,7 +151,7 @@ namespace VSS.WebApi.Common
     /// <summary>
     /// This method gets called by the run time
     /// </summary>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
       var corsPolicyNames = GetCors().Select(c => c.Item1);
       foreach (var corsPolicyName in corsPolicyNames)
@@ -184,7 +193,7 @@ namespace VSS.WebApi.Common
     /// Useful for adding ASP related options, such as filter MiddleWhere
     /// </summary>
     protected abstract void ConfigureAdditionalAppSettings(IApplicationBuilder app,
-      IHostingEnvironment env,
+      IWebHostEnvironment env,
       ILoggerFactory factory);
 
     /// <summary>
