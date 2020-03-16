@@ -7,7 +7,7 @@
   /// </summary>
   public interface IDataRepository
   {    
-    //Project LoadProject(long legacyProjectId);
+    //Project GetProject(long legacyProjectId);
 
     //IEnumerable<Project> LoadProjects(string customerUid, DateTime validAtDate);
 

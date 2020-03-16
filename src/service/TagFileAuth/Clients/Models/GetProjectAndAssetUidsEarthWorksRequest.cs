@@ -5,7 +5,7 @@ using VSS.Common.Exceptions;
 namespace VSS.Productivity3D.TagFileAuth.Models
 {
   /// <summary>
-  /// TFA v2 endpoint to retrieve ProjectUid and/or AssetUid and subscription indicator for a tagfile.
+  /// TFA v2 endpoint to retrieve ProjectUid and/or DeviceUid and subscription indicator for a tagfile.
   ///      this is used by the 3dp GetSubGridPatches endpoint used by EarthWorks for cut-fill maps.
   /// </summary>
   public class GetProjectAndAssetUidsEarthWorksRequest 
@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     /// Date and time the asset was at the given location. 
     /// </summary>
     [JsonProperty(PropertyName = "tccOrgUid", Required = Required.Default)]
-    public string TccOrgUid { get; set; }
+    public string ObsoleteTccOrgUid { get; set; }
 
     /// <summary>
     /// WGS84 latitude in decimal degrees. 
@@ -56,12 +56,10 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     /// Create instance of GetProjectAndAssetUidsEarthWorksRequest
     /// </summary>
     public GetProjectAndAssetUidsEarthWorksRequest
-    (string ec520Serial, string radioSerial, string tccOrgUid,
-      double latitude, double longitude, DateTime timeOfPosition)
+    (string ec520Serial, string radioSerial, double latitude, double longitude, DateTime timeOfPosition)
     {
       Ec520Serial = ec520Serial;
       RadioSerial = radioSerial;
-      TccOrgUid = tccOrgUid;
       Latitude = latitude;
       Longitude = longitude;
       TimeOfPosition = timeOfPosition;

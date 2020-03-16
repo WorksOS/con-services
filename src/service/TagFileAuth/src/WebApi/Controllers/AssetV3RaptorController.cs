@@ -4,9 +4,10 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
@@ -14,18 +15,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   /// <summary>
   /// Asset controller for C2S2 solution, to support Raptor.
   /// </summary>
-  public class AssetV3Controller : BaseController
+  public class AssetV3RaptorController : BaseController
   {
     private readonly ILogger _log;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public AssetV3Controller(ILoggerFactory logger, IConfigurationStore configStore, 
+    public AssetV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore, 
       IProjectProxy projectProxy, IAccountProxy accountProxy, IDeviceProxy deviceProxy)
       : base(logger, configStore, projectProxy, accountProxy, deviceProxy)
     {
-      _log = logger.CreateLogger<AssetV3Controller>();
+      _log = logger.CreateLogger<AssetV3RaptorController>();
     }
 
     /// <summary>

@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using VSS.Common.Abstractions.Cache.Interfaces;
-using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {
   public interface IAccountProxy : ICacheProxy
   {
-    // todoMaverick not ProjectData
-    Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountTrn);
+    Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountUid);
   }
 }

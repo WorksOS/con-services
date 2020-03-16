@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.Project.Proxy
 {
@@ -30,16 +30,17 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public  override string CacheLifeKey => "ACCOUNT_CACHE_LIFE";
 
-    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountTrn)
+    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountUid)
     {
-      // todoMaverick 
+      // todoMaverick
+      // hookup to existing link in ProjectSvc.AccountController
       throw new System.NotImplementedException();
     }
 
     /// <summary>
     /// Clears an item from the cache
     /// </summary>
-    /// <param name="uid">The uid of the item (deviceTrn) to remove from the cache</param>
+    /// <param name="uid">The uid of the item (deviceUid) to remove from the cache</param>
     /// <param name="userId">The user ID</param>
     public void ClearCacheItem(string uid, string userId=null)
     {

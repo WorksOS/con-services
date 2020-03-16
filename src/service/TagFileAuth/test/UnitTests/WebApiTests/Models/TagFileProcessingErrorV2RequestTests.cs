@@ -3,6 +3,7 @@ using System.Net;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.VisionLink.Interfaces.Events.Notifications.Enums;
@@ -227,7 +228,7 @@ namespace WebApiTests.Models
     [TestMethod]
     public void TagFileProcessingErrorV2Request_Validation_NotEnoughForCustomerIdentification()
     {
-      // Even if no customerUid can be determined e.g. from tccOrgId/AssetUid/ProjectTrn
+      // Even if no customerUid can be determined e.g. from tccOrgId/DeviceUid/ProjectUid
       //      still write a notification.
       string tccOrgId = null;
       long? legacyAssetId = null;

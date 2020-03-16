@@ -8,35 +8,36 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
   /// </summary>
   public class DeviceData  : IMasterDataModel
   {
-    public string AccountTrn { get; set; }
-    public string DeviceTrn { get; set; }
+    public string AccountUid { get; set; }
+    public string DeviceUid { get; set; }
     public string DeviceName { get; set; }
-    public long ShortRaptorAssetId { get; set; }
-    
     public string SerialNumber { get; set; }
     
+    // todoMaverick what will we get from WM Claimed/Registered/other?
+    public string Status { get; set; }
+    public long? ShortRaptorAssetId { get; set; }
+
     public DeviceData()
     { }
 
-    public DeviceData(string accountTrn, string deviceTrn, string deviceName, long shortRaptorAssetId,
-        string serialNumber)
+    public DeviceData(string accountUid, string deviceUid, string deviceName, string serialNumber, long? shortRaptorAssetId)
     {
-      AccountTrn = accountTrn;
-      DeviceTrn = deviceTrn;
+      AccountUid = accountUid;
+      DeviceUid = deviceUid;
       DeviceName = deviceName;
-      ShortRaptorAssetId = shortRaptorAssetId;
       SerialNumber = serialNumber;
+      ShortRaptorAssetId = shortRaptorAssetId;
     }
 
     public override bool Equals(object obj)
     {
       var otherDeviceData = obj as DeviceData;
       if (otherDeviceData == null) return false;
-      return otherDeviceData.AccountTrn == this.AccountTrn
-             && otherDeviceData.DeviceTrn == this.DeviceTrn
+      return otherDeviceData.AccountUid == this.AccountUid
+             && otherDeviceData.DeviceUid == this.DeviceUid
              && otherDeviceData.DeviceName == this.DeviceName
-             && otherDeviceData.ShortRaptorAssetId == this.ShortRaptorAssetId
              && otherDeviceData.SerialNumber == this.SerialNumber
+             && otherDeviceData.ShortRaptorAssetId == this.ShortRaptorAssetId
         ;
     }
     public override int GetHashCode()
@@ -46,8 +47,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
 
     public List<string> GetIdentifiers() => new List<string>()
     {
-      AccountTrn.ToString(),
-      DeviceTrn.ToString()
+      AccountUid.ToString(),
+      DeviceUid.ToString()
     };
   }
 }

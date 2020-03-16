@@ -5,9 +5,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Executors
 {
@@ -61,8 +62,8 @@ namespace WebApiTests.Executors
     {
       var deviceDataToBeReturned = new DeviceData
       {
-        AccountTrn = Guid.NewGuid().ToString(),
-        DeviceTrn = Guid.NewGuid().ToString(),
+        AccountUid = Guid.NewGuid().ToString(),
+        DeviceUid = Guid.NewGuid().ToString(),
         SerialNumber = serialNumberExpected
       };
 
@@ -71,7 +72,7 @@ namespace WebApiTests.Executors
 
       var dataRepository = new DataRepository(logger, ConfigStore, projectProxy.Object, accountProxy.Object, deviceProxy.Object);
      
-      var device = await dataRepository.LoadDevice(serialNumberRequested);
+      var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.AreEqual(serialNumberExpected, device.SerialNumber);
     }
 
@@ -84,7 +85,7 @@ namespace WebApiTests.Executors
 
       var dataRepository = new DataRepository(logger, ConfigStore, projectProxy.Object, accountProxy.Object, deviceProxy.Object);
 
-      var device = await dataRepository.LoadDevice(serialNumberRequested);
+      var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.IsNull(device);
     }
 

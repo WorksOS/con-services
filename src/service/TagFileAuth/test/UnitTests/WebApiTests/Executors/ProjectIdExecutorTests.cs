@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Executors
 {
@@ -15,11 +15,11 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task CanCallProjectIDExecutorNoValidInput()
     {
-      GetProjectIdRequest ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(-1, 91, 181, 0, DateTime.MinValue, "");
-      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var ProjectIdRequest = GetProjectIdRequest.CreateGetProjectIdRequest(-1, 91, 181, DateTime.MinValue);
+      var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(loggerFactory.CreateLogger<ProjectIdExecutorTests>(), ConfigStore,
-        AssetRepository, DeviceRepository, CustomerRepository, ProjectRepository, SubscriptionRepository);
+        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(ProjectIdRequest) as GetProjectIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

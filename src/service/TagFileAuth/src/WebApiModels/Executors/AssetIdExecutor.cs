@@ -3,8 +3,8 @@ using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using TagFileDeviceTypeEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums.TagFileDeviceTypeEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -28,13 +28,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //     so don't need to lookup shortRaptorAssetId
       if (request.shortRaptorProjectId > 0)
       {
-        var project = await dataRepository.LoadProject(request.shortRaptorProjectId);
+        var project = await dataRepository.GetProject(request.shortRaptorProjectId);
         log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded project? {JsonConvert.SerializeObject(project)}");
 
         if (project != null)
         {
           // todoMaverick If a projects account (for manual import) has only a free sub, then should we import tag files into it?
-          //int projectAccountEntitlement = await dataRepository.GetDeviceLicenses(project.AccountTrn);
+          //int projectAccountEntitlement = await dataRepository.GetDeviceLicenses(project.AccountUid);
 
           // todoMaverick I believe this is always true when shortRaptorProjectId is provided 
           if (request.deviceType == (int) TagFileDeviceTypeEnum.ManualImport)
@@ -54,17 +54,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetAssetIdResult.CreateGetAssetIdResult(false, shortRaptorAssetId, serviceType);
       }
 
-
       // Auto or Direct import i.e. no shortRaptorProjectId
       // try to identify the device by it's serialNumber.
-      var device = await dataRepository.LoadDevice(request.serialNumber);
+      var device = await dataRepository.GetDevice(request.serialNumber);
       log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
 
       if (device != null)
       {
-        shortRaptorAssetId = device.ShortRaptorAssetId;
+        shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
         // todoMaverick If a devices account has only a free sub, then should we import tag files into it?
-        int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.AccountTrn);
+        int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.AccountUid);
         if (deviceLicenseTotal > 0)
           serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").CGEnum;
       }

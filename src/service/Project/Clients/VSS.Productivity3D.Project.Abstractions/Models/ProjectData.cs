@@ -1,91 +1,79 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {
-  /// <summary>
-  ///   Describes VL project
-  /// </summary>
   public class ProjectData : IMasterDataModel
   {
-    /// <summary>
-    /// Gets or sets the project uid.
-    /// </summary>
-    public string ProjectTrn { get; set; }
+    public string ProjectUid { get; set; }
 
-    /// <summary>
-    /// Gets or sets the short project ID from for Raptor
-    /// </summary>
-    public int shortRaptorProjectId { get; set; }
+    // legacy ProjectID in Gen2 is a bigint. However Raptor can't handle one, and we're unlikely to need to get that big.
+    public int ShortRaptorProjectId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the type of the project. Only standard supported
-    /// </summary>
     public ProjectType ProjectType { get; set; }
 
-    /// <summary>
-    /// Gets the name of the project type.
-    /// </summary>
-    public string ProjectTypeName => this.ProjectType.ToString();
-
-    /// <summary>
-    /// Gets or sets the name of the project.
-    /// </summary>
     public string Name { get; set; }
-
-    /// <summary>
-    /// Gets or sets the Description of the project.
-    /// </summary>
     public string Description { get; set; }
 
-    /// <summary>
-    /// Gets or sets the legacy project time zone. todoMaverick is this still used?
-    /// </summary>
     public string ProjectTimeZone { get; set; }
 
-    /// <summary>
-    /// Gets or sets the IANA project time zone.
-    /// </summary>
-    public string IanaTimeZone { get; set; }
+    // This should really be named ProjectTimeZoneIana.
+    //     It is required for all projects, not just landfill.
+    //     ProjectTimeZone is in Windows StandardTime name,
+    //         which the UI,and ProjectSvc limit to a known set (contained in PreferencesTimeZones.cs).
+    public string LandfillTimeZone { get; set; }
 
-    /// <summary>
-    /// Gets or sets the start date.
-    /// </summary>
-    public string StartDate { get; set; }
+    // start and end are actually only date with no time component. However C# has no date-only.
+    public DateTime StartDate { get; set; }
 
-    /// <summary>
-    /// Gets or sets the end date.
-    /// </summary>
-    public string EndDate { get; set; }
+    public DateTime EndDate { get; set; }
 
-    /// <summary>
-    /// Gets or sets the AccountTrn which the project is associated with
-    /// </summary>
-    public string AccountTrn { get; set; }
 
-    
-    /// <summary>
-    /// Gets or sets the project boundary.
-    /// </summary>
-    public string ProjectGeofenceWKT { get; set; }
+    public string AccountUid { get; set; }
 
-    /// <summary>
-    /// Gets or sets the CoordinateSystem FileName which the project is associated with
-    /// </summary>
+    // todoMaverick, what is this for?
+    //// legacy CustomerID in Gen2 is a bigint. Unlike LegacyProjectID, this is passed around as a long. I don't know why.
+    //public long LegacyCustomerID { get; set; }
+
+    public string GeometryWKT { get; set; }
+
     public string CoordinateSystemFileName { get; set; }
+    public DateTime? CoordinateSystemLastActionedUTC { get; set; }
 
-    /// <summary>
-    ///   Gets or sets a value indicating whether this instance is archived.
-    /// </summary>
     public bool IsArchived { get; set; }
+
+    public override bool Equals(object obj)
+    {
+      if (!(obj is ProjectData otherProject))
+      {
+        return false;
+      }
+
+      return otherProject.ProjectUid == ProjectUid
+        && otherProject.ShortRaptorProjectId == ShortRaptorProjectId
+        && otherProject.ProjectType == ProjectType
+        && otherProject.Name == Name
+        && otherProject.Description == Description
+        && otherProject.ProjectTimeZone == ProjectTimeZone
+        && otherProject.LandfillTimeZone == LandfillTimeZone
+        && otherProject.StartDate == StartDate
+        && otherProject.EndDate == EndDate
+        && otherProject.AccountUid == AccountUid
+        // todoMaverick && otherProject.LegacyCustomerID == LegacyCustomerID
+        && otherProject.GeometryWKT == GeometryWKT
+        && otherProject.CoordinateSystemFileName == CoordinateSystemFileName
+        && otherProject.CoordinateSystemLastActionedUTC == CoordinateSystemLastActionedUTC
+        && otherProject.IsArchived == IsArchived;
+    }
 
     public List<string> GetIdentifiers()
     {
       return new List<string>
       {
-        AccountTrn,
-        ProjectTrn
+        AccountUid,
+        ProjectUid
       };
     }
   }

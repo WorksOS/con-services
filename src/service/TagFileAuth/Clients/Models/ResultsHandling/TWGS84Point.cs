@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
+﻿namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
 {
   public class TWGS84Point
   {
