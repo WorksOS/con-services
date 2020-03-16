@@ -39,8 +39,7 @@ namespace VSS.Trex.ConnectedSiteGateway.Tests
         FileName = "Test File",
         Data = GoodTagfile
       };
-      ILoggerFactory loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      var loggerFactory = LoggerFactory.Create(builder => builder.AddDebug());
       services.AddLogging().AddSingleton(loggerFactory);
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
     }
