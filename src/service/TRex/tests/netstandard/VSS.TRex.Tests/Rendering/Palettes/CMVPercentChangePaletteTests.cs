@@ -17,21 +17,21 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       palette.PaletteTransitions.Should().NotBeNull();
       palette.PaletteTransitions.Length.Should().Be(8);
       palette.PaletteTransitions[0].Value.Should().Be(short.MinValue);
-      palette.PaletteTransitions[0].Color.Should().Be(ColorTranslator.FromHtml("#D50000"));
+      palette.PaletteTransitions[0].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#D50000"));
       palette.PaletteTransitions[1].Value.Should().Be(-50);
-      palette.PaletteTransitions[1].Color.Should().Be(ColorTranslator.FromHtml("#E57373"));
+      palette.PaletteTransitions[1].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#E57373"));
       palette.PaletteTransitions[2].Value.Should().Be(-20);
-      palette.PaletteTransitions[2].Color.Should().Be(ColorTranslator.FromHtml("#FFCDD2"));
+      palette.PaletteTransitions[2].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#FFCDD2"));
       palette.PaletteTransitions[3].Value.Should().Be(-10);
-      palette.PaletteTransitions[3].Color.Should().Be(ColorTranslator.FromHtml("#8BC34A"));
+      palette.PaletteTransitions[3].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#8BC34A"));
       palette.PaletteTransitions[4].Value.Should().Be(0);
-      palette.PaletteTransitions[4].Color.Should().Be(ColorTranslator.FromHtml("#B3E5FC"));
+      palette.PaletteTransitions[4].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#B3E5FC"));
       palette.PaletteTransitions[5].Value.Should().Be(10);
-      palette.PaletteTransitions[5].Color.Should().Be(ColorTranslator.FromHtml("#4FC3F7"));
+      palette.PaletteTransitions[5].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#4FC3F7"));
       palette.PaletteTransitions[6].Value.Should().Be(20);
-      palette.PaletteTransitions[6].Color.Should().Be(ColorTranslator.FromHtml("#039BE5"));
+      palette.PaletteTransitions[6].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#039BE5"));
       palette.PaletteTransitions[7].Value.Should().Be(50);
-      palette.PaletteTransitions[7].Color.Should().Be(ColorTranslator.FromHtml("#01579B"));
+      palette.PaletteTransitions[7].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#01579B"));
     }
 
     [Fact]

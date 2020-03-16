@@ -391,7 +391,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// <param name="addressCount"></param>
     private void ProcessSubGridAddressGroup(SubGridCellAddress[] addressList, int addressCount)
     {
-      SubGridCellAddress[] addressListCopy = new SubGridCellAddress[addressCount];
+      var addressListCopy = new SubGridCellAddress[addressCount];
       Array.Copy(addressList, addressListCopy, addressCount);
 
       _tasks.Add(PerformSubGridRequestList(addressListCopy, addressCount));
