@@ -57,7 +57,7 @@ namespace VSS.TRex.ConnectedSite.Gateway.WebApi
       DIContext.Inject(services.BuildServiceProvider());
     }
 
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     { }
   }
 }
