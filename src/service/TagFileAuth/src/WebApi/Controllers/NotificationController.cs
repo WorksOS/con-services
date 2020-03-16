@@ -25,8 +25,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public NotificationController(ILoggerFactory logger, IConfigurationStore configStore,
-      IProjectProxy projectProxy, IAccountProxy accountProxy, IDeviceProxy deviceProxy)
-      : base(logger, configStore, projectProxy, accountProxy, deviceProxy)
+      IProjectProxy projectProxy, ICustomerProxy customerProxy, IDeviceProxy deviceProxy)
+      : base(logger, configStore, projectProxy, customerProxy, deviceProxy)
     {
       log = logger.CreateLogger<NotificationController>();
     }
@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV1: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, projectProxy, accountProxy, deviceProxy)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, projectProxy, customerProxy, deviceProxy)
         .Process(request) as TagFileProcessingErrorResult;
       
       log.LogDebug("PostTagFileProcessingErrorV1: result:{0}", JsonConvert.SerializeObject(result));
@@ -83,7 +83,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV2: v1Request:{0}", JsonConvert.SerializeObject(v1Request));
       v1Request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, projectProxy, accountProxy, deviceProxy)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, projectProxy, customerProxy, deviceProxy)
         .Process(v1Request) as TagFileProcessingErrorResult;
 
       log.LogDebug("PostTagFileProcessingErrorV2: v1result:{0}", JsonConvert.SerializeObject(result));

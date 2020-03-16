@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -11,9 +12,9 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.Project.Proxy
 {
-  public class AccountV5Proxy : BaseServiceDiscoveryProxy, IAccountProxy
+  public class CustomerV5Proxy : BaseServiceDiscoveryProxy, ICustomerProxy
   {
-    public AccountV5Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
+    public CustomerV5Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
@@ -30,7 +31,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public  override string CacheLifeKey => "ACCOUNT_CACHE_LIFE";
 
-    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountUid)
+    public Task<DeviceLicenseResponseModel> GetDeviceLicenses(string customerUid)
     {
       // todoMaverick
       // hookup to existing link in ProjectSvc.AccountController
@@ -49,6 +50,21 @@ namespace VSS.Productivity3D.Project.Proxy
       if(string.IsNullOrEmpty(userId))
         ClearCacheByTag(userId);
     }
-    
+
+    public Task<AccountListResponseModel> GetCustomersForMe(string userUid, IDictionary<string, string> customHeaders)
+    {
+      // todoMaverick
+      throw new System.NotImplementedException();
+    }
+
+    public Task<AccountListResponseModel> GetCustomersForUser(string userUid, IDictionary<string, string> customHeaders)
+    {
+      throw new System.NotImplementedException();
+    }
+
+    public Task<AccountResponseModel> GetCustomerForUser(string userUid, string customerUid, IDictionary<string, string> customHeaders = null)
+    {
+      throw new System.NotImplementedException();
+    }
   }
 }

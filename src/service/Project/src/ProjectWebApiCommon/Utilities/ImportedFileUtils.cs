@@ -1,8 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.Extensions;
 using VSS.MasterData.Models.Handlers;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

@@ -34,13 +34,13 @@ namespace VSS.Productivity3D.Filter.Tests
                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.Filter.UnitTests.log")))
                        .AddSingleton<IConfigurationStore, GenericConfiguration>()
                        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-                       .AddTransient<ICustomerProxy, CustomerProxy>()
+                       .AddTransient<ICustomerProxy, CustomerV5Proxy>()
                        .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
                        .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
                        .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
                        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
                        .AddServiceDiscovery()
-                       .AddTransient<IProjectProxy, ProjectV4Proxy>();
+                       .AddTransient<IProjectProxy, ProjectV5Proxy>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 

@@ -36,9 +36,9 @@ namespace WebApiTests.Executors
       var projectAccountUid = Guid.NewGuid().ToString();
       var projectOfInterest = new ProjectData
                               {
-                                ProjectUid = projectUid,
+                                ProjectUID = projectUid,
                                 ProjectType = ProjectType.Standard,
-                                AccountUid = projectAccountUid,
+                                CustomerUID = projectAccountUid,
                                 StartDate = DateTime.UtcNow.AddDays(-4),
                                 EndDate = DateTime.UtcNow.AddDays(-3)
                               };
@@ -54,7 +54,7 @@ namespace WebApiTests.Executors
         projectAccountUid: projectAccountUid,
         projectDeviceLicenseResponseModel: new DeviceLicenseResponseModel() {Total = 1},
         assetUid: assetUid,
-        assetDevice: new DeviceData { AccountUid = assetAccountUid, DeviceUid = assetUid },
+        assetDevice: new DeviceData { CustomerUID = assetAccountUid, DeviceUID = assetUid },
         ec520Uid: ec520Uid,
         ec520Device: (DeviceData)null,
         deviceAccountUid: assetAccountUid,
@@ -627,7 +627,7 @@ namespace WebApiTests.Executors
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() =>
         executor.ProcessAsync((GetProjectAndAssetUidsRequest) null));
@@ -647,11 +647,11 @@ namespace WebApiTests.Executors
       string expectedMessageResult
     )
     {
-      accountProxy.Setup(p => p.GetDeviceLicenses(projectAccountUid)).ReturnsAsync(projectDeviceLicenseResponseModel);
-      accountProxy.Setup(p => p.GetDeviceLicenses(deviceAccountUid)).ReturnsAsync(deviceAccountLicenseResponseModel);
-      accountProxy.Setup(d => d.GetDeviceLicenses(projectAccountUid))
+      customerProxy.Setup(p => p.GetDeviceLicenses(projectAccountUid)).ReturnsAsync(projectDeviceLicenseResponseModel);
+      customerProxy.Setup(p => p.GetDeviceLicenses(deviceAccountUid)).ReturnsAsync(deviceAccountLicenseResponseModel);
+      customerProxy.Setup(d => d.GetDeviceLicenses(projectAccountUid))
         .ReturnsAsync(projectDeviceLicenseResponseModel);
-      accountProxy.Setup(d => d.GetDeviceLicenses(deviceAccountUid))
+      customerProxy.Setup(d => d.GetDeviceLicenses(deviceAccountUid))
         .ReturnsAsync(deviceAccountLicenseResponseModel);
       
       projectProxy.Setup(p => p.GetProject(projectUid, null)).ReturnsAsync(projectOfInterest);
@@ -665,7 +665,7 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, expectedProjectUidResult, expectedAssetUidResult, expectedCodeResult,

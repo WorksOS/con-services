@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   {
     ///  <summary>
     ///  Processes the raptor get project id request and finds the shortRaptorProjectId of any projects
-    ///      which belong to the assets owningAccountUid,
+    ///      which belong to the devices owningCustomerUid,
     ///          for the location, time
     ///          and that the device is assigned to,
     ///          and that the device is licensed (and claimed? todoMaverick).
@@ -41,7 +41,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         var deviceLicenseTotal = 0;
         if (device != null)
-          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.AccountUid);
+          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
 
         if (device == null || deviceLicenseTotal < 1)
           return GetProjectIdResult.CreateGetProjectIdResult(false, projectId);

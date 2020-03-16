@@ -1,4 +1,6 @@
 ﻿using System;
+using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;

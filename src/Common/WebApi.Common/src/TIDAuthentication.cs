@@ -11,7 +11,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.WebApi.Common
 {
@@ -140,7 +140,7 @@ namespace VSS.WebApi.Common
               await SetResult(error, context);
               return;
             }
-            customerName = customer.name;
+            customerName = customer.Name;
           }
           catch (Exception e)
           {

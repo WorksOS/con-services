@@ -33,9 +33,9 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public  override string CacheLifeKey => "PROJECT_CACHE_LIFE";
 
-    public async Task<List<ProjectData>> GetProjects(string accountUid, IDictionary<string, string> customHeaders = null)
+    public async Task<List<ProjectData>> GetProjects(string customerUid, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project", accountUid, null, customHeaders);
+      var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project", customerUid, null, customHeaders);
 
       if (result.Code == 0)
         return result.ProjectDescriptors;
@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.Project.Proxy
     {
       // todoMaverick
       // ProjectSvc.ProjectController should be able to get this from localDB now.
-      // response should include accountUid
+      // response should include customerUid
       throw new System.NotImplementedException();
     }
 
@@ -56,17 +56,17 @@ namespace VSS.Productivity3D.Project.Proxy
     {
       // todoMaverick
       // ProjectSvc.ProjectController should be able to get this from localDB now.
-      // response should include accountUid
+      // response should include customerUid
       throw new System.NotImplementedException();
     }
 
-    public Task<List<ProjectData>> GetIntersectingProjects(string accountUid, 
+    public Task<List<ProjectData>> GetIntersectingProjects(string customerUid, 
       double latitude, double longitude, string projectUid = null, DateTime? timeOfPosition = null, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick
       // ProjectSvc.ProjectController should:
       // a) if projectUid, get it if it overlaps in localDB
-      //    else get overlapping projects in localDB for this AccountUid. 
+      //    else get overlapping projects in localDB for this CustomerUID. 
       //  Note that if timeOfPosition == null, don't check it.
       throw new System.NotImplementedException();
     }
@@ -74,22 +74,22 @@ namespace VSS.Productivity3D.Project.Proxy
     // Have device
     //    get list of projects the loc is within (note if manualImport then time will be null, dont' check time)
     //    want to get list of projects it is associated with
-    //    want to know if loc within any of these todoMaverick may be quicker to do pointinpoly first, then 
+    //    want to know if loc within any of these todoMaverick may be quicker to do point-in-poly first, then 
     //    if lo , want to know if loc within it
     //     also, if device is !enpty, then see if device is associated with the project (and claimed etc)
 
-    public Task<List<ProjectData>> GetIntersectingProjectForDevice(string deviceAccountUid, string deviceUid,
+    public Task<List<ProjectData>> GetIntersectingProjectForDevice(string deviceCustomerUid, string deviceUid,
       double latitude, double longitude, DateTime? timeOfPosition = null, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick ProjectSvc should:
-      // a) get overlapping project in localDB for this AccountUid. Note if timeOfPosition = null then don't check time.
+      // a) get overlapping project in localDB for this CustomerUID. Note if timeOfPosition = null then don't check time.
       // b) if >1 project, and if deviceUid not empty,
       //    retrieve list of projects from WM which this device is associated with
       //    pair up active projects, good devices and project-device associations
       throw new System.NotImplementedException();
     }
 
-    public async Task<ProjectData> GetProjectForAccount(string accountUid, string projectUid,
+    public async Task<ProjectData> GetProjectForCustomer(string customerUid, string projectUid,
       IDictionary<string, string> customHeaders = null)
     {
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataSingleResult>($"/project/{projectUid}",
@@ -105,16 +105,16 @@ namespace VSS.Productivity3D.Project.Proxy
     }
 
     //To support 3dpm v1 end points which use legacy project id
-    public async Task<ProjectData> GetProjectForAccount(string accountUid, long shortRaptorProjectId,
+    public async Task<ProjectData> GetProjectForCustomer(string customerUid, long shortRaptorProjectId,
       IDictionary<string, string> customHeaders = null)
     {
-      return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjects, p => p.ShortRaptorProjectId == shortRaptorProjectId, accountUid, customHeaders);
+      return await GetItemWithRetry<ProjectDataResult, ProjectData>(GetProjects, p => p.ShortRaptorProjectId == shortRaptorProjectId, customerUid, customHeaders);
     }
 
     /// <summary>
     /// Clears an item from the cache
     /// </summary>
-    /// <param name="uid">The uid of the item (either accountUid or projectUid) to remove from the cache</param>
+    /// <param name="uid">The uid of the item (either customerUid or projectUid) to remove from the cache</param>
     /// <param name="userId">The user ID</param>
     public void ClearCacheItem(string uid, string userId = null)
     {

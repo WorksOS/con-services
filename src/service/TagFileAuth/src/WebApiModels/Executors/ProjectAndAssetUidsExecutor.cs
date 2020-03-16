@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
           {
             return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 43);
           }
-          projectAccountDeviceLicenseTotal = await dataRepository.GetDeviceLicenses(project.AccountUid);
+          projectAccountDeviceLicenseTotal = await dataRepository.GetDeviceLicenses(project.CustomerUID);
           log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded ProjectAccount deviceLicenses? {JsonConvert.SerializeObject(projectAccountDeviceLicenseTotal)}");
           if (projectAccountDeviceLicenseTotal < 1)
           {
@@ -109,7 +109,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (intersectingProjects.Count > 1)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 49);
 
-      return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUid, device?.DeviceUid);
+      return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUID, device?.DeviceUID);
     }
     
     private async Task<GetProjectAndAssetUidsResult> HandleAutoImport(GetProjectAndAssetUidsRequest request,
@@ -130,7 +130,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 49);
       }
 
-      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects[0].ProjectUid, device.DeviceUid);
+      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects[0].ProjectUID, device.DeviceUID);
     }
     
     protected override ContractExecutionResult ProcessEx<T>(T item)

@@ -7,7 +7,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   public abstract class ImportedFileBase
   { 
-    public Guid ProjectUid { get; set; }
+    public string ProjectUid { get; set; }
     public ImportedFileType ImportedFileType { get; set; }
     public FileDescriptor FileDescriptor { get; set; }
 

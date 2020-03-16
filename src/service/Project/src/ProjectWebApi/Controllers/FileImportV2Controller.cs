@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -32,10 +31,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public FileImportV2Controller(IKafka producer, IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportV2Controller(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
       IRequestFactory requestFactory)
-      : base(producer, configStore, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+      : base(configStore, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
     // PUT: api/v2/projects/{id}/importedfiles
@@ -116,10 +115,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? $"UpsertImportedFileV2. file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
             : $"UpsertImportedFileV2. file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
-        var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
+        var importedFileUid = creating ? Guid.NewGuid().ToString() : existing.ImportedFileUid;
         var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(importedFileTbc.Name,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff,
-          importedFileUid, importedFileTbc.SurfaceFile?.SurveyedUtc);
+          importedFileUid.ToString(), importedFileTbc.SurfaceFile?.SurveyedUtc);
 
         if (memStream == null)
         {
@@ -127,13 +126,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         }
         await DataOceanHelper.WriteFileToDataOcean(
           memStream, DataOceanRootFolderId, customerUid, project.ProjectUID, dataOceanFileName,
-          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
+          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid.ToString(), ConfigStore);
 
         var fileEntry = await fileEntryTask;
         ImportedFileDescriptorSingleResult importedFile;
         if (creating)
         {
-          var createImportedFile = new CreateImportedFile(Guid.Parse(project.ProjectUID), importedFileTbc.Name,
+          var createImportedFile = new CreateImportedFile(project.ProjectUID, importedFileTbc.Name,
             fileDescriptor,
             importedFileTbc.ImportedFileTypeId,
             importedFileTbc.SurfaceFile?.SurveyedUtc,
@@ -147,7 +146,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             RequestExecutorContainerFactory
               .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 customerUid, userId, userEmailAddress, customHeaders,
-                Producer, KafkaTopicName,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
@@ -161,7 +159,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         {
           var importedFileUpsertEvent = new UpdateImportedFile
           (
-            Guid.Parse(project.ProjectUID), project.LegacyProjectID, importedFileTbc.ImportedFileTypeId,
+            project.ProjectUID, project.ShortRaptorProjectId, importedFileTbc.ImportedFileTypeId,
             importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
               ? importedFileTbc.SurfaceFile.SurveyedUtc
               : (DateTime?)null,
@@ -169,7 +167,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               ? importedFileTbc.LineworkFile.DxfUnitsTypeId
               : DxfUnitsType.Meters,
             fileEntry.createTime, fileEntry.modifyTime,
-            fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
+            fileDescriptor, existing.ImportedFileUid, existing.ImportedFileId,
             DataOceanRootFolderId, 0, dataOceanFileName
           );
 
@@ -177,7 +175,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             RequestExecutorContainerFactory
               .Build<UpdateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
                 customerUid, userId, userEmailAddress, customHeaders,
-                Producer, KafkaTopicName,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)

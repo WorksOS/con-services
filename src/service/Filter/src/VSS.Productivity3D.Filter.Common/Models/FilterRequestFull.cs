@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Net;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         IsApplicationContext = isApplicationContext,
         UserId = userId,
         ProjectData = projectData,
-        ProjectUid = projectData?.ProjectUid,
+        ProjectUid = projectData?.ProjectUID,
         CustomHeaders = customHeaders
       };
     }

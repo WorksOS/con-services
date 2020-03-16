@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -23,13 +22,13 @@ using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
-using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;
@@ -43,7 +42,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     private static string _projectUid;
     private static string _userId;
     private static string _userEmailAddress;
-    private static long _legacyProjectId;
+    private static long _shortRaptorProjectId;
     private static string _fileSpaceId;
 
     public ImportFileV4ExecutorTestsDiFixture()
@@ -53,7 +52,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       _projectUid = Guid.NewGuid().ToString();
       _userId = "sdf870789sdf0";
       _userEmailAddress = "someone@whatever.com";
-      _legacyProjectId = 111;
+      _shortRaptorProjectId = 111;
       _fileSpaceId = "u710e3466-1d47-45e3-87b8-81d1127ed4ed";
     }
 
@@ -89,7 +88,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
@@ -99,7 +98,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var newImportedFile = new ImportedFile
       {
         ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileUid = importedFileUid,
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
@@ -109,8 +108,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       _ = new CreateImportedFileEvent
       {
-        CustomerUID = Guid.Parse(_customerUid),
-        ProjectUID = Guid.Parse(_projectUid),
+        CustomerUID =_customerUid,
+        ProjectUID = _projectUid,
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.DesignSurface,
         DxfUnitsType = DxfUnitsType.Meters,
@@ -127,10 +126,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var createImportedFile = new CreateImportedFile(
-        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
+        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
-      var project = new ProjectDatabaseModel { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
+      var project = new ProjectDatabaseModel { CustomerUID = _customerUid, ProjectUID = _projectUid, ShortRaptorProjectId = (int)_shortRaptorProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -139,14 +138,11 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+      
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
+      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<string>(), It.IsAny<ImportedFileType>(), It.IsAny<string>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
@@ -162,7 +158,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName,
+          customHeaders, 
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
           productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
@@ -183,7 +179,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -200,7 +196,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.DesignSurface,
+       _projectUid, _shortRaptorProjectId, ImportedFileType.DesignSurface,
        null, DxfUnitsType.Meters,
        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44),
        fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
@@ -212,14 +208,11 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+      
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
+      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<string>(), It.IsAny<ImportedFileType>(), It.IsAny<string>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
@@ -232,7 +225,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName,
+          customHeaders, 
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
@@ -246,7 +239,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     public async Task DeleteImportedFile_RaptorHappyPath()
     {
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -265,7 +258,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var deleteImportedFile = new DeleteImportedFile(
-       Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
+       _projectUid, ImportedFileType.DesignSurface, fileDescriptor,
        importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
@@ -275,14 +268,11 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+      
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorDeleteFileResult = new BaseMasterDataResult { Code = 0 };
-      productivity3dV2ProxyNotification.Setup(p => p.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
-        It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<IDictionary<string, string>>()))
+      productivity3dV2ProxyNotification.Setup(p => p.DeleteFile(It.IsAny<string>(), It.IsAny<ImportedFileType>(),
+        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<IDictionary<string, string>>()))
        .ReturnsAsync(raptorDeleteFileResult);
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
@@ -308,7 +298,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName,
+          customHeaders, 
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, filterServiceProxy: filterServiceProxy.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
@@ -323,7 +313,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.tif";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
@@ -334,7 +324,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var newImportedFile = new ImportedFile
       {
         ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileUid = importedFileUid,
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.GeoTiff,
@@ -345,8 +335,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       _ = new CreateImportedFileEvent
       {
-        CustomerUID = Guid.Parse(_customerUid),
-        ProjectUID = Guid.Parse(_projectUid),
+        CustomerUID = _customerUid,
+        ProjectUID = _projectUid,
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.GeoTiff,
         DxfUnitsType = DxfUnitsType.Meters,
@@ -363,7 +353,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var createImportedFile = new CreateImportedFile(
-        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
+        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
         fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
@@ -371,11 +361,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
-      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid, ProjectUID = _projectUid, LegacyProjectID = (int)_legacyProjectId };
+     
+      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid, ProjectUID = _projectUid, ShortRaptorProjectId = (int)_shortRaptorProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -390,7 +377,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
           projectRepo: projectRepo.Object, schedulerProxy: scheduler.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
@@ -409,7 +395,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
@@ -429,8 +415,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       _ = new CreateImportedFileEvent
       {
-        CustomerUID = Guid.Parse(_customerUid),
-        ProjectUID = Guid.Parse(_projectUid),
+        CustomerUID = _customerUid,
+        ProjectUID = _projectUid,
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.DesignSurface,
         DxfUnitsType = DxfUnitsType.Meters,
@@ -447,7 +433,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var createImportedFile = new CreateImportedFile(
-        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
+        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
@@ -457,10 +443,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+      
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
@@ -471,7 +454,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
@@ -485,7 +467,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     public async Task UpdateImportedFile_TRexHappyPath_DesignSurface()
     {
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -502,7 +484,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
+       _projectUid, _shortRaptorProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
        DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
@@ -512,10 +494,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+     
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.UpdateFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
@@ -526,7 +505,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
@@ -544,7 +522,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -553,7 +531,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var existingImportedFile = new ImportedFile
       {
         ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileUid = importedFileUid,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
         Name = fileName,
@@ -563,7 +541,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var deleteImportedFile = new DeleteImportedFile(
-        Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
+        _projectUid, ImportedFileType.DesignSurface, fileDescriptor,
         importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
@@ -574,9 +552,6 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
@@ -604,7 +579,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName,
+          customHeaders, 
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
@@ -619,8 +594,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
-      var parentUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
+      var parentUid = Guid.NewGuid().ToString();
       var offset = 1.5;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -631,20 +606,20 @@ namespace VSS.MasterData.ProjectTests.Executors
       var newImportedFile = new ImportedFile
       {
         ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileUid = importedFileUid,
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.ReferenceSurface,
         Name = fileDescriptor.FileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
         Offset = offset,
-        ParentUid = parentUid.ToString()
+        ParentUid = parentUid
       };
 
       _ = new CreateImportedFileEvent
       {
-        CustomerUID = Guid.Parse(_customerUid),
-        ProjectUID = Guid.Parse(_projectUid),
+        CustomerUID = _customerUid,
+        ProjectUID = _projectUid,
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.ReferenceSurface,
         DxfUnitsType = DxfUnitsType.Meters,
@@ -661,7 +636,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var createImportedFile = new CreateImportedFile(
-        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
+        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
@@ -671,9 +646,6 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
 
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
@@ -685,7 +657,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
@@ -704,8 +675,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
-      var parentUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
+      var parentUid = Guid.NewGuid().ToString();
       var offset = 1.5;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -716,7 +687,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var newImportedFile = new ImportedFile
       {
         ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileUid = importedFileUid,
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -728,8 +699,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       _ = new CreateImportedFileEvent
       {
-        CustomerUID = Guid.Parse(_customerUid),
-        ProjectUID = Guid.Parse(_projectUid),
+        CustomerUID = _customerUid,
+        ProjectUID = _projectUid,
         ImportedFileUID = importedFileUid,
         ImportedFileType = ImportedFileType.ReferenceSurface,
         DxfUnitsType = DxfUnitsType.Meters,
@@ -746,7 +717,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var createImportedFile = new CreateImportedFile(
-        Guid.Parse(_projectUid), fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
+        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
         DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
@@ -756,10 +727,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+     
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
@@ -771,7 +739,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>
        await executor.ProcessAsync(createImportedFile).ConfigureAwait(false));
@@ -781,8 +748,8 @@ namespace VSS.MasterData.ProjectTests.Executors
     public async Task UpdateImportedFile_TRexHappyPath_ReferenceSurface()
     {
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
-      var parentUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
+      var parentUid = Guid.NewGuid().ToString();
       var oldOffset = 1.5;
       var newOffset = 1.5;
       var importedFileId = 9999;
@@ -793,17 +760,17 @@ namespace VSS.MasterData.ProjectTests.Executors
       var existingImportedFile = new ImportedFile
       {
         ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileUid = importedFileUid,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.ReferenceSurface,
         Name = fileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
         Offset = oldOffset,
-        ParentUid = parentUid.ToString()
+        ParentUid = parentUid
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       Guid.Parse(_projectUid), _legacyProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
+       _projectUid, _shortRaptorProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
        DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset, "some file"
       );
 
@@ -813,10 +780,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+     
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.UpdateFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
       var projectRepo = new Mock<IProjectRepository>();
@@ -827,7 +791,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
           _customerUid, _userId, _userEmailAddress, customHeaders,
-          producer.Object, KafkaTopicName,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
@@ -846,8 +809,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
-      var parentUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
+      var parentUid = Guid.NewGuid().ToString();
       var offset = 1.5;
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
@@ -857,17 +820,17 @@ namespace VSS.MasterData.ProjectTests.Executors
       var existingImportedFile = new ImportedFile
       {
         ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileUid = importedFileUid,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.ReferenceSurface,
         Name = fileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
-        ParentUid = parentUid.ToString(),
+        ParentUid = parentUid,
         Offset = offset
       };
 
       var deleteImportedFile = new DeleteImportedFile(
-        Guid.Parse(_projectUid), ImportedFileType.ReferenceSurface, fileDescriptor,
+        _projectUid, ImportedFileType.ReferenceSurface, fileDescriptor,
         importedFileUid, importedFileId, existingImportedFile.LegacyImportedFileId, "some folder", null
       );
 
@@ -878,10 +841,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+      
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
 
@@ -908,7 +868,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName,
+          customHeaders, 
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await executor.ProcessAsync(deleteImportedFile);
@@ -923,7 +883,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid();
+      var importedFileUid = Guid.NewGuid().ToString();
       var parentUid = Guid.NewGuid();
       var offset = 1.5;
       var importedFileId = 9999;
@@ -955,7 +915,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
 
       var deleteImportedFile = new DeleteImportedFile(
-        Guid.Parse(_projectUid), ImportedFileType.DesignSurface, fileDescriptor,
+        _projectUid, ImportedFileType.DesignSurface, fileDescriptor,
         importedFileUid, importedFileId, parentImportedFile.LegacyImportedFileId, "some folder", null
       );
 
@@ -967,10 +927,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      var producer = new Mock<IKafka>();
-      producer.Setup(p => p.InitProducer(It.IsAny<IConfigurationStore>()));
-      producer.Setup(p => p.Send(It.IsAny<string>(), It.IsAny<List<KeyValuePair<string, string>>>()));
-
+      
       var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
       tRexImportFileProxy.Setup(tr => tr.DeleteFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
 
@@ -998,7 +955,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
           logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
-          customHeaders, producer.Object, KafkaTopicName,
+          customHeaders, 
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>

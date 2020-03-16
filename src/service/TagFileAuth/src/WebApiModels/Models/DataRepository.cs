@@ -24,11 +24,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     private ILogger _log;
     private IConfigurationStore _configStore;
     private readonly IProjectProxy _projectProxy;
-    private readonly IAccountProxy _accountProxy;
+    private readonly ICustomerProxy _accountProxy;
     private readonly IDeviceProxy _deviceProxy;
 
     public DataRepository(ILogger logger, IConfigurationStore configStore,
-      IProjectProxy projectProxy, IAccountProxy accountProxy, IDeviceProxy deviceProxy)
+      IProjectProxy projectProxy, ICustomerProxy accountProxy, IDeviceProxy deviceProxy)
     {
       _log = logger;
       _configStore = configStore;
@@ -39,13 +39,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #region account
 
-    public async Task<int> GetDeviceLicenses(string accountUid)
+    public async Task<int> GetDeviceLicenses(string customerUid)
     {
       DeviceLicenseResponseModel deviceLicenseResponseModel = null;
       try
       {
-        if (!string.IsNullOrEmpty(accountUid))
-          deviceLicenseResponseModel = await _accountProxy.GetDeviceLicenses(accountUid);
+        if (!string.IsNullOrEmpty(customerUid))
+          deviceLicenseResponseModel = await _accountProxy.GetDeviceLicenses(customerUid);
       }
       catch (Exception e)
       {
@@ -98,14 +98,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<List<ProjectData>> GetProjects(string accountUid, DateTime validAtDate)
+    public async Task<List<ProjectData>> GetProjects(string customerUid, DateTime validAtDate)
     {
       var projects = new List<ProjectData>();
       try
       {
-        if (!string.IsNullOrEmpty(accountUid))
+        if (!string.IsNullOrEmpty(customerUid))
         {
-          var p = await _projectProxy.GetProjects(accountUid);
+          var p = await _projectProxy.GetProjects(customerUid);
 
           if (p != null)
           {
@@ -133,17 +133,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       
       try
       {
-        if (project != null && !string.IsNullOrEmpty(project.ProjectUid))
-          accountProjects = (await _projectProxy.GetIntersectingProjects(project.AccountUid, latitude, longitude, project.ProjectUid));
+        if (project != null && !string.IsNullOrEmpty(project.ProjectUID))
+          accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID));
 
         if (accountProjects == null || !accountProjects.Any())
           return accountProjects;
 
-        if (device != null && !string.IsNullOrEmpty(device.DeviceUid))
+        if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
         {
-          var deviceAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUid));
+          var deviceAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUID));
           if (deviceAssociatedWithProjects.Any())
-            return deviceAssociatedWithProjects.Where(p => p.ProjectUid == accountProjects[0].ProjectUid).ToList();
+            return deviceAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
         }
 
         return accountProjects;
@@ -163,15 +163,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        if (device != null && !string.IsNullOrEmpty(device.DeviceUid))
-          accountProjects = (await _projectProxy.GetIntersectingProjects(device.AccountUid, latitude, longitude, timeOfPosition: timeOfPosition));
+        if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
+          accountProjects = (await _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
 
         if (!accountProjects.Any())
           return accountProjects;
 
-        var deviceAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUid));
+        var deviceAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUID));
 
-        return deviceAssociatedWithProjects.Where(p => p.ProjectUid == accountProjects[0].ProjectUid).ToList();
+        return deviceAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
       }
       catch (Exception e)
       {

@@ -57,15 +57,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
-        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUid, customerUid: device.AccountUid, uniqueCode: 52);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: 52);
 
       if (potentialProjects.Count > 1)
-        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUid, customerUid: potentialProjects[0].AccountUid, hasValidSub: true, uniqueCode: 49);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
       
-      var deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.AccountUid);
+      var deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
       return GetProjectAndAssetUidsEarthWorksResult.FormatResult(
-        potentialProjects[0].ProjectUid, device.DeviceUid,
-        potentialProjects[0].AccountUid,
+        potentialProjects[0].ProjectUID, device.DeviceUID,
+        potentialProjects[0].CustomerUID,
         (deviceLicenseTotal > 0));
     }
 

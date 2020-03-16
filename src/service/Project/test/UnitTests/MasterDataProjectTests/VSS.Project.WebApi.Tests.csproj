@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj" />
     <ProjectReference Include="..\..\..\..\3DP\Clients\Proxy\VSS.Productivity3D.Productivity3D.Proxy.csproj" />

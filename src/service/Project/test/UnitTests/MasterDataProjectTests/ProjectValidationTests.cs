@@ -10,6 +10,7 @@ using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.ProjectTests.Executors;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -155,7 +156,7 @@ namespace VSS.MasterData.ProjectTests
     public void ValidateUpsertProjectV1Request_GoodBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, "the projectName", "the project description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, "the projectName", "the project description",
         new DateTime(2017, 01, 20), null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
@@ -178,7 +179,7 @@ namespace VSS.MasterData.ProjectTests
     public void ValidateUpsertProjectV1Request_InvalidBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, "the projectName", "the project description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, "the projectName", "the project description",
         new DateTime(2017, 01, 20), null, null, _invalidBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
@@ -199,65 +200,12 @@ namespace VSS.MasterData.ProjectTests
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal));
     }
 
-
-    [Fact]
-    public void ValidateGeofenceTypes_HappyPath()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Landfill };
-      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_LandfillTypeRequired1()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Generic, GeofenceType.Waste };
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_LandfillTypeRequired2()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Filter, GeofenceType.Landfill, GeofenceType.Borrow };
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
-    }
-
-
-    [Fact]
-    public void ValidateGeofenceTypes_UnhappyPath1()
-    {
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(null));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_UnhappyPath2()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Waste };
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_UnhappyPath3()
-    {
-      var geofenceTypes = new List<GeofenceType>();
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal));
-    }
-
     [Fact]
     public async Task ValidateUpsertProjectV4Request_DuplicateProjectName_NoneHappyPath()
     {
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, projectName, "the project description",
         new DateTime(2017, 01, 20), null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
@@ -277,7 +225,7 @@ namespace VSS.MasterData.ProjectTests
       var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTestsDiFixture>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, projectName, "the project description",
         new DateTime(2017, 01, 20), null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
@@ -296,7 +244,7 @@ namespace VSS.MasterData.ProjectTests
     {
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, projectName, "the project description",
         new DateTime(2017, 01, 20), null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
@@ -321,7 +269,7 @@ namespace VSS.MasterData.ProjectTests
     {
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, projectName, "the project description",
         new DateTime(2017, 01, 20), null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
@@ -349,7 +297,7 @@ namespace VSS.MasterData.ProjectTests
       // note that this should NEVER occur as the first duplicate shouldn't have been allowed
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, projectName, "the project description",
         new DateTime(2017, 01, 20), null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);

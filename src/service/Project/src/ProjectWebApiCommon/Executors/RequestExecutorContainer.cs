@@ -9,10 +9,8 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
@@ -53,16 +51,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IDictionary<string, string> customHeaders;
 
     /// <summary>
-    /// Gets or sets the Kafak consumer.
-    /// </summary>
-    protected IKafka producer;
-
-    /// <summary>
-    /// Gets or sets the Kafka topic.
-    /// </summary>
-    protected string kafkaTopicName;
-
-    /// <summary>
     /// Interfaces to Productivity3d
     /// </summary>
     protected IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord;
@@ -70,11 +58,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification;
 
     protected IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction;
-
-    /// <summary>
-    /// 
-    /// </summary>
-    protected ISubscriptionProxy subscriptionProxy;
 
     /// <summary>
     /// 
@@ -95,11 +78,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// Repository factory used extensively for project DB
     /// </summary>
     protected IProjectRepository projectRepo;
-
-    /// <summary>
-    /// Repository factory used for subscription checking
-    /// </summary>
-    protected ISubscriptionRepository subscriptionRepo;
 
     /// <summary>
     /// Repository factory used for accessing files in TCC (at present)
@@ -191,13 +169,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IServiceExceptionHandler serviceExceptionHandler,
       string customerUid, string userId = null, string userEmailAddress = null,
       IDictionary<string, string> headers = null,
-      IKafka producer = null, string kafkaTopicName = null,
-      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
-      ISubscriptionProxy subscriptionProxy = null,
+      IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, 
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, 
+      IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
-      ISubscriptionRepository subscriptionRepo = null, IFileRepository fileRepo = null,
-      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null,
+      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null)
     {
@@ -208,17 +185,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.userId = userId;
       this.userEmailAddress = userEmailAddress;
       this.customHeaders = headers;
-      this.producer = producer;
-      this.kafkaTopicName = kafkaTopicName;
       this.productivity3dV1ProxyCoord = productivity3dV1ProxyCoord;
       this.productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
       this.productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
-      this.subscriptionProxy = subscriptionProxy;
       this.persistantTransferProxy = persistantTransferProxy;
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
-      this.subscriptionRepo = subscriptionRepo;
       this.fileRepo = fileRepo;
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
@@ -239,10 +212,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, IKafka producer = null, string kafkaTopicName = null)
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
       where TExecutor : RequestExecutorContainer, new()
     {
-      return new TExecutor { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, projectRepo = projectRepo, producer  = producer, kafkaTopicName = kafkaTopicName };
+      return new TExecutor { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, projectRepo = projectRepo};
     }
 
 

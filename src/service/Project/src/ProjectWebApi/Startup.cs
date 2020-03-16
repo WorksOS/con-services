@@ -10,7 +10,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -21,14 +20,15 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
@@ -65,15 +65,11 @@ namespace VSS.MasterData.Project.WebAPI
       //TODO: Check if SetPreflightMaxAge(TimeSpan.FromSeconds(2520) in WebApi pkg matters
 
       // Add framework services.
-      services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<ICustomerProxy, CustomerV5Proxy>();
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
-      services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-      services.AddScoped<ICustomerRepository, CustomerRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<IFileRepository, FileRepository>();

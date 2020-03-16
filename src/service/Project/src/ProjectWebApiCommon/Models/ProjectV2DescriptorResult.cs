@@ -1,6 +1,6 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -18,7 +18,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The legacy project ID.
     /// </value>
     [JsonProperty(PropertyName = "id", Required = Required.Default)]
-    public long LegacyProjectId { get; set; }
+    public long ShortRaptorProjectId { get; set; }
 
     /// <summary>
     /// The name for the project.
@@ -61,7 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public override bool Equals(object obj)
     {
       if (!(obj is ProjectV2DescriptorResult otherProject)) return false;
-      return otherProject.LegacyProjectId == this.LegacyProjectId
+      return otherProject.ShortRaptorProjectId == this.ShortRaptorProjectId
              && otherProject.ProjectType == this.ProjectType
              && otherProject.Name == this.Name
              && otherProject.StartDate == this.StartDate

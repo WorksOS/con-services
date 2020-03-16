@@ -13,12 +13,12 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -66,38 +66,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     #region coordSystem
 
-    /// <summary>
-    /// validate if Coord sys file name and content are required
-    /// </summary>
-    public static void ValidateCoordSystemFile(ProjectDatabaseModel existing, IProjectEvent project,
-      IServiceExceptionHandler serviceExceptionHandler)
-    {
-      // Creating project:
-      //    if landfill then must have a CS, else optional
-      // Updating a landfill, or other then May have one. Note that a null one doesn't overwrite any existing in the DBRepo.
-      // Changing the projectType from standard to Landfill,
-      //    must have CS in existing, or one added in the update
-      if (project is CreateProjectEvent)
-      {
-        var projectEvent = (CreateProjectEvent)project;
-        if (projectEvent.ProjectType == ProjectType.LandFill
-            && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName)
-                || projectEvent.CoordinateSystemFileContent == null)
-        )
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
-      }
-
-      if (project is UpdateProjectEvent)
-      {
-        var projectEvent = (UpdateProjectEvent)project;
-        if (projectEvent.ProjectType == ProjectType.LandFill
-            && (string.IsNullOrEmpty(existing.CoordinateSystemFileName)
-                && (string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName) || projectEvent.CoordinateSystemFileContent == null))
-            && string.IsNullOrEmpty(existing.CoordinateSystemFileName)
-        )
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 45);
-      }
-    }
 
     /// <summary>
     /// validate CoordinateSystem if provided
@@ -145,7 +113,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
-    public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid, int legacyProjectId,
+    public static async Task CreateCoordSystemInProductivity3dAndTcc(string projectUid, int shortRaptorProjectId,
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
@@ -164,7 +132,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           //Pass coordinate system to Raptor
           var coordinateSystemSettingsResult = await productivity3dV1ProxyCoord
-            .CoordinateSystemPost(legacyProjectId, coordinateSystemFileContent,
+            .CoordinateSystemPost(shortRaptorProjectId, coordinateSystemFileContent,
               coordinateSystemFileName, headers);
           var message = string.Format($"Post of CS create to RaptorServices returned code: {0} Message {1}.",
             coordinateSystemSettingsResult?.Code ?? -1,
@@ -203,7 +171,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
-              ms, rootFolder, customerUid, projectUid.ToString(),
+              ms, rootFolder, customerUid, projectUid,
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
               log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
           }
@@ -261,7 +229,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     /// <summary>
     /// Used internally, if a step fails, after a project has been CREATED, 
-    ///    then delete it permanently i.e. don't just set IsDeleted.
+    ///    then delete it permanently i.e. don't just set IsArchived.
     /// Since v4 CreateProjectInDB also associates projectCustomer then roll this back also.
     /// DissociateProjectCustomer actually deletes the DB ent4ry
     /// </summary>
@@ -270,7 +238,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <param name="log"></param>
     /// <param name="projectRepo"></param>
     /// <returns></returns>
-    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid, ILogger log,
+    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, string projectUid, ILogger log,
       IProjectRepository projectRepo)
     {
       log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
@@ -281,34 +249,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         ActionUTC = DateTime.UtcNow
       };
       await projectRepo.StoreEvent(deleteProjectEvent);
-
-      await projectRepo.StoreEvent(new DissociateProjectCustomer
-      {
-        CustomerUID = customerUid,
-        ProjectUID = projectUid,
-        ActionUTC = DateTime.UtcNow
-      });
     }
-
-
-    /// <summary>
-    /// rolls back the ProjectSubscription association made, due to a subsequent error
-    /// </summary>
-    /// <returns></returns>
-    public static async Task DissociateProjectSubscription(Guid projectUid, string subscriptionUidAssigned,
-      ILogger log, IDictionary<string, string> customHeaders, ISubscriptionProxy subscriptionProxy)
-    {
-      log.LogDebug($"DissociateProjectSubscription projectUid: {projectUid} subscriptionUidAssigned: {subscriptionUidAssigned}");
-
-      if (!string.IsNullOrEmpty(subscriptionUidAssigned) && Guid.TryParse(subscriptionUidAssigned, out var subscriptionUidAssignedGuid))
-      {
-        if (subscriptionUidAssignedGuid != Guid.Empty)
-        {
-          await subscriptionProxy.DissociateProjectSubscription(subscriptionUidAssignedGuid,
-            projectUid, customHeaders);
-        }
-      }
-    }
+    
     #endregion rollback
 
   }

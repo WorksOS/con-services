@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (project != null)
         {
           // todoMaverick If a projects account (for manual import) has only a free sub, then should we import tag files into it?
-          //int projectAccountEntitlement = await dataRepository.GetDeviceLicenses(project.AccountUid);
+          //int projectAccountEntitlement = await dataRepository.GetDeviceLicenses(project.CustomerUID);
 
           // todoMaverick I believe this is always true when shortRaptorProjectId is provided 
           if (request.deviceType == (int) TagFileDeviceTypeEnum.ManualImport)
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
         // todoMaverick If a devices account has only a free sub, then should we import tag files into it?
-        int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.AccountUid);
+        int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
         if (deviceLicenseTotal > 0)
           serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").CGEnum;
       }

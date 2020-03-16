@@ -8,8 +8,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
   /// </summary>
   public class DeviceData  : IMasterDataModel
   {
-    public string AccountUid { get; set; }
-    public string DeviceUid { get; set; }
+    public string CustomerUID { get; set; }
+    public string DeviceUID { get; set; }
     public string DeviceName { get; set; }
     public string SerialNumber { get; set; }
     
@@ -20,10 +20,10 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     public DeviceData()
     { }
 
-    public DeviceData(string accountUid, string deviceUid, string deviceName, string serialNumber, long? shortRaptorAssetId)
+    public DeviceData(string customerUid, string deviceUid, string deviceName, string serialNumber, long? shortRaptorAssetId)
     {
-      AccountUid = accountUid;
-      DeviceUid = deviceUid;
+      CustomerUID = customerUid;
+      DeviceUID = deviceUid;
       DeviceName = deviceName;
       SerialNumber = serialNumber;
       ShortRaptorAssetId = shortRaptorAssetId;
@@ -33,8 +33,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     {
       var otherDeviceData = obj as DeviceData;
       if (otherDeviceData == null) return false;
-      return otherDeviceData.AccountUid == this.AccountUid
-             && otherDeviceData.DeviceUid == this.DeviceUid
+      return otherDeviceData.CustomerUID == this.CustomerUID
+             && otherDeviceData.DeviceUID == this.DeviceUID
              && otherDeviceData.DeviceName == this.DeviceName
              && otherDeviceData.SerialNumber == this.SerialNumber
              && otherDeviceData.ShortRaptorAssetId == this.ShortRaptorAssetId
@@ -47,8 +47,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
 
     public List<string> GetIdentifiers() => new List<string>()
     {
-      AccountUid.ToString(),
-      DeviceUid.ToString()
+      CustomerUID.ToString(),
+      DeviceUID.ToString()
     };
   }
 }

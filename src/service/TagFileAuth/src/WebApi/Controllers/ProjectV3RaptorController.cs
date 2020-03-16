@@ -23,8 +23,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor 
     /// </summary>
     public ProjectV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore,
-      IProjectProxy projectProxy, IAccountProxy accountProxy, IDeviceProxy deviceProxy)
-      : base(logger, configStore, projectProxy, accountProxy, deviceProxy)
+      IProjectProxy projectProxy, ICustomerProxy customerProxy, IDeviceProxy deviceProxy)
+      : base(logger, configStore, projectProxy, customerProxy, deviceProxy)
     {
       log = logger.CreateLogger<ProjectV3RaptorController>();
     }
@@ -44,7 +44,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug($"{nameof(GetProjectId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, configStore, projectProxy, accountProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, configStore, projectProxy, customerProxy, deviceProxy);
       var result = await executor.ProcessAsync(request) as GetProjectIdResult;
 
       log.LogResult(nameof(GetProjectId), request, result);      
@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug($"{nameof(PostProjectBoundary)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, configStore, projectProxy, accountProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, configStore, projectProxy, customerProxy, deviceProxy);
       var result = await executor.ProcessAsync(request) as GetProjectBoundaryAtDateResult;
 
       log.LogResult(nameof(PostProjectBoundary), request, result);
@@ -86,7 +86,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug($"{nameof(PostProjectBoundaries)}: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, configStore, projectProxy, accountProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, configStore, projectProxy, customerProxy, deviceProxy);
       var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
 
       log.LogResult(nameof(PostProjectBoundaries), request, result);

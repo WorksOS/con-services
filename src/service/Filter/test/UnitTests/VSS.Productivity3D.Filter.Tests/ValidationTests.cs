@@ -15,6 +15,7 @@ using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
@@ -50,7 +51,7 @@ namespace VSS.Productivity3D.Filter.Tests
           "sfgsdfsf",
           false,
           userUid,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType }
         );
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -69,7 +70,7 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           string.Empty,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = Name, FilterJson = FilterJson, FilterType = filterType }
         );
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -94,7 +95,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterUid()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
           new FilterRequest
           {
             FilterUid = "this is so wrong",
@@ -112,7 +113,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterUid_Null()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
           new FilterRequest { FilterUid = null, Name = Name, FilterJson = string.Empty, FilterType = filterType });
 
       requestFull.Validate(serviceExceptionHandler);
@@ -122,7 +123,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_MissingName()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
           new FilterRequest
           {
             FilterUid = filterUid,
@@ -138,7 +139,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidName()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
           new FilterRequest
           {
             FilterUid = filterUid,
@@ -154,7 +155,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_InvalidFilterJson()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = Name, FilterJson = null, FilterType = filterType });
 
       requestFull.Validate(serviceExceptionHandler);
@@ -166,7 +167,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_Should_succeed_When_supplied_json_is_valid(string filterJson)
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
           new FilterRequest
           {
             FilterUid = filterUid,
@@ -181,7 +182,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_Should_fail_When_supplied_string_is_invalid_json()
     {
       var requestFull = FilterRequestFull.Create(null, custUid, false, userUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = filterUid, Name = Name, FilterJson = "de blah", FilterType = filterType });
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -193,7 +194,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void FilterRequestValidation_PartialFill()
     {
       var requestFull =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid });
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid });
 
       requestFull.Validate(serviceExceptionHandler);
     }
@@ -204,7 +205,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
       var projectProxy = new Mock<IProjectProxy>();
-      var projectData = new ProjectData { ProjectUid = projectUid, CustomerUid = custUid };
+      var projectData = new ProjectData { ProjectUID = projectUid, CustomerUID = custUid };
 
       var customHeaders = new Dictionary<string, string>();
       projectProxy.Setup(ps => ps.GetProjectForCustomer(It.IsAny<string>(), projectUid, customHeaders))
@@ -243,11 +244,11 @@ namespace VSS.Productivity3D.Filter.Tests
       var log = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ValidationTests>();
 
       var projectProxy = new Mock<IProjectProxy>();
-      var projectData = new ProjectData { ProjectUid = projectUid, CustomerUid = custUid };
+      var projectData = new ProjectData { ProjectUID = projectUid, CustomerUID = custUid };
       var projects = new List<ProjectData> { projectData };
 
       var customHeaders = new Dictionary<string, string>();
-      projectProxy.SetupSequence(ps => ps.GetProjectsV4(It.IsAny<string>(), customHeaders))
+      projectProxy.SetupSequence(ps => ps.GetProjects(It.IsAny<string>(), customHeaders))
         .ReturnsAsync(new List<ProjectData>())
         .ReturnsAsync(projects);
 
@@ -268,7 +269,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceRepo = new Mock<IGeofenceRepository>();
       var geofenceProxy = new Mock<IGeofenceProxy>();
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -298,7 +299,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -328,7 +329,7 @@ namespace VSS.Productivity3D.Filter.Tests
       geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(
         (GeofenceData)null);
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -358,7 +359,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceData = new GeofenceData { GeometryWKT = geofence.GeometryWKT, GeofenceType = GeofenceType.Generic.ToString() };
       geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -392,7 +393,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceData = new GeofenceData { GeofenceType = GeofenceType.Generic.ToString(), GeometryWKT = geofence.GeometryWKT };
       geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -416,7 +417,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var minTemperature = 100.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -440,7 +441,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var minTemperature = 100.5;
       var maxTemperature = 120.9;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -460,7 +461,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var maxPassCount = 10;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -484,7 +485,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var minPassCount = 5;
       var maxPassCount = 8;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -507,7 +508,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -536,7 +537,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var leftOffset = 4.5;
       var rightOffset = 2.5;
 
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -561,7 +562,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofence = new Geofence { GeofenceUID = boundaryUid, Name = Name, GeometryWKT = GeometryWKT, GeofenceType = GeofenceType.Filter };
       geofenceRepo.Setup(g => g.GetGeofence(It.IsAny<string>())).ReturnsAsync(geofence);
       var geofenceProxy = new Mock<IGeofenceProxy>();
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -602,7 +603,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var geofenceProxy = new Mock<IGeofenceProxy>();
       var geofenceData = new GeofenceData { GeofenceUID = new Guid(boundaryUid), GeofenceName = Name, GeometryWKT = GeometryWKT, GeofenceType = geofenceType.ToString() };
       geofenceProxy.Setup(g => g.GetGeofenceForCustomer(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(geofenceData);
-      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid },
+      var request = FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid },
         new FilterRequest
         {
           FilterUid = filterUid,
@@ -633,7 +634,7 @@ namespace VSS.Productivity3D.Filter.Tests
         (
           "sfgsdfsf",
           false,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = GeometryWKT }
         );
@@ -651,7 +652,7 @@ namespace VSS.Productivity3D.Filter.Tests
         (
           custUid,
           false,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           string.Empty,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = GeometryWKT }
         );
@@ -677,7 +678,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_InvalidBoundaryUid()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUID = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = "this is so wrong", Name = Name, BoundaryPolygonWKT = GeometryWKT });
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
 
@@ -689,7 +690,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_InvalidName()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUID = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = null, BoundaryPolygonWKT = GeometryWKT });
 
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -702,7 +703,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_BoundaryWKTMissing()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUID = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = null });
 
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));
@@ -715,7 +716,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_BoundaryWKTLessThan3Points()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUID = projectUid }, userUid,
           new BoundaryRequest
           {
             BoundaryUid = boundaryUid,
@@ -733,7 +734,7 @@ namespace VSS.Productivity3D.Filter.Tests
     public void BoundaryRequestValidation_BoundaryWKTInvalidFormat()
     {
       var requestFull =
-        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUid = projectUid }, userUid,
+        BoundaryRequestFull.Create(custUid, false, new ProjectData { ProjectUID = projectUid }, userUid,
           new BoundaryRequest { BoundaryUid = boundaryUid, Name = Name, BoundaryPolygonWKT = "Nothing here" });
 
       var ex = Assert.Throws<ServiceException>(() => requestFull.Validate(serviceExceptionHandler));

@@ -33,15 +33,15 @@ namespace WebApiTests.Executors
       var projectAccountUid = Guid.NewGuid().ToString();
       var projectOfInterest = new ProjectData
                               {
-        ProjectUid = projectUid,
+        ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        AccountUid = projectAccountUid,
+        CustomerUID = projectAccountUid,
         StartDate = DateTime.UtcNow.AddDays(-4),
         EndDate = DateTime.UtcNow.AddDays(3)
       };
 
       var assetUid = Guid.NewGuid().ToString();
-      var assetAccountUid = Guid.NewGuid().ToString();
+      var assetCustomerUid = Guid.NewGuid().ToString();
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
 
@@ -51,10 +51,10 @@ namespace WebApiTests.Executors
         projectAccountUid: projectAccountUid,
         projectDeviceLicenseResponseModel: new DeviceLicenseResponseModel(),
         assetUid: assetUid,
-        assetDevice: new DeviceData { AccountUid = assetAccountUid, DeviceUid = assetUid },
+        assetDevice: new DeviceData { CustomerUID = assetCustomerUid, DeviceUID = assetUid },
         ec520Uid: ec520Uid,
         ec520Device: (DeviceData)null,
-        deviceAccountUid: assetAccountUid,
+        deviceAccountUid: assetCustomerUid,
         deviceAccountLicenseResponseModel: new DeviceLicenseResponseModel(),
         projectOfInterest: projectOfInterest,
         intersectingProjects: new List<ProjectData> {projectOfInterest},
@@ -378,9 +378,9 @@ namespace WebApiTests.Executors
       string expectedMessageResult
     )
     {
-      accountProxy.Setup(d => d.GetDeviceLicenses(projectAccountUid))
+      customerProxy.Setup(d => d.GetDeviceLicenses(projectAccountUid))
         .ReturnsAsync(projectDeviceLicenseResponseModel);
-      accountProxy.Setup(d => d.GetDeviceLicenses(deviceAccountUid))
+      customerProxy.Setup(d => d.GetDeviceLicenses(deviceAccountUid))
         .ReturnsAsync(deviceAccountLicenseResponseModel);
       
       projectProxy.Setup(d => d.GetIntersectingProjects(deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<DateTime>(), null))
@@ -392,7 +392,7 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, expectedProjectUidResult, expectedAssetUidResult, expectedCodeResult,

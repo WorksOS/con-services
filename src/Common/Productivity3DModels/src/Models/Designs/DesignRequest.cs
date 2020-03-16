@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
   {
     [JsonProperty(PropertyName = "projectUid", Required = Required.Always)]
     [ValidProjectUID]
-    public Guid ProjectUid { get; set; }
+    public string ProjectUid { get; set; }
 
     [JsonProperty(PropertyName = "fileType", Required = Required.Always)]
     public ImportedFileType FileType { get; set; }
@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
     public string FileName { get; set; }
 
     [JsonProperty(PropertyName = "designUid", Required = Required.Always)]
-    public Guid DesignUid { get; set; }
+    public string DesignUid { get; set; }
 
     [JsonProperty(PropertyName = "surveyedUtc", Required = Required.Default)]
     public DateTime? SurveyedUtc { get; set; }
@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
     {
     }
 
-    public DesignRequest(Guid projectUid, ImportedFileType fileType, string fileName, Guid designUid, DateTime? surveyedUtc)
+    public DesignRequest(string projectUid, ImportedFileType fileType, string fileName, string designUid, DateTime? surveyedUtc)
     {
       ProjectUid = projectUid;
       FileType = fileType;
@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
 
     public void Validate()
     {
-      if (!Guid.TryParseExact(ProjectUid.ToString(), "D", out Guid _) || ProjectUid == Guid.Empty)
+      if (!Guid.TryParseExact(ProjectUid.ToString(), "D", out Guid _) || string.IsNullOrEmpty(ProjectUid))
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "ProjectUid must be provided"));
       }
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Models.Models.Designs
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "File name extension incorrect"));
       }
 
-      if (!Guid.TryParseExact(DesignUid.ToString(), "D", out Guid _) || DesignUid == Guid.Empty)
+      if (!Guid.TryParseExact(DesignUid.ToString(), "D", out Guid _) || string.IsNullOrEmpty(DesignUid))
       {
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "DesignUid must be provided"));
       }

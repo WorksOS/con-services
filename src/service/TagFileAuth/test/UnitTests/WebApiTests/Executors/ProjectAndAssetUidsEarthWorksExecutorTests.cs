@@ -22,7 +22,7 @@ namespace WebApiTests.Executors
     private string _projectUidToBeDiscovered;
     private string _deviceUid;
     private DateTime _timeOfLocation;
-    private string _deviceAccountUid;
+    private string _deviceCustomerUid;
 
     private GetProjectAndAssetUidsEarthWorksRequest _projectAndAssetUidsEarthWorksRequest;
     private string radioSerial = "radSer45";
@@ -38,18 +38,18 @@ namespace WebApiTests.Executors
       _projectUidToBeDiscovered = Guid.NewGuid().ToString();
       _deviceUid = Guid.NewGuid().ToString();
       _timeOfLocation = DateTime.UtcNow;
-      _deviceAccountUid = Guid.NewGuid().ToString();
+      _deviceCustomerUid = Guid.NewGuid().ToString();
       _projectAndAssetUidsEarthWorksRequest = new GetProjectAndAssetUidsEarthWorksRequest(string.Empty, radioSerial, 80, 160, _timeOfLocation);
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
-      deviceData = new DeviceData { AccountUid = _deviceAccountUid, DeviceUid = _deviceUid };
+      deviceData = new DeviceData { CustomerUID = _deviceCustomerUid, DeviceUID = _deviceUid };
     }
 
     [TestMethod]
     public async Task ProjectUidExecutor_InvalidParameters()
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsEarthWorksRequest)null));
 
@@ -68,7 +68,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync((DeviceData)null);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
@@ -83,24 +83,24 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 2};
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync(deviceData);
-      accountProxy.Setup(a => a.GetDeviceLicenses(deviceData.AccountUid)).ReturnsAsync(deviceLicenseResponseModel);
+      customerProxy.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData
         {
-          ProjectUid = _projectUidToBeDiscovered,
-          AccountUid = _deviceAccountUid,
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _deviceCustomerUid,
           ProjectType = ProjectType.Standard
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceAccountUid, true, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceCustomerUid, true, 0);
     }
 
     [TestMethod]
@@ -112,24 +112,24 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync(deviceData);
-      accountProxy.Setup(a => a.GetDeviceLicenses(deviceData.AccountUid)).ReturnsAsync(deviceLicenseResponseModel);
+      customerProxy.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData
         {
-          ProjectUid = _projectUidToBeDiscovered,
-          AccountUid = _deviceAccountUid,
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _deviceCustomerUid,
           ProjectType = ProjectType.Standard
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
-      ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceAccountUid, false, 0);
+      ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceCustomerUid, false, 0);
     }
 
     [TestMethod]
@@ -141,32 +141,32 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync(deviceData);
-      accountProxy.Setup(a => a.GetDeviceLicenses(deviceData.AccountUid)).ReturnsAsync(deviceLicenseResponseModel);
+      customerProxy.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData
         {
-          ProjectUid = _projectUidToBeDiscovered,
-          AccountUid = _deviceAccountUid,
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _deviceCustomerUid,
           ProjectType = ProjectType.Standard,
           Name = "thisProject"
         },
         new ProjectData
         {
-          ProjectUid = _projectUidToBeDiscovered,
-          AccountUid = _deviceAccountUid,
+          ProjectUID = _projectUidToBeDiscovered,
+          CustomerUID = _deviceCustomerUid,
           ProjectType = ProjectType.Standard,
           Name = "otherProject"
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, accountProxy.Object, deviceProxy.Object);
+        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
-      ValidateResult(result, string.Empty, _deviceUid, _deviceAccountUid, true, 3049);
+      ValidateResult(result, string.Empty, _deviceUid, _deviceCustomerUid, true, 3049);
     }
 
     private void ValidateResult(GetProjectAndAssetUidsEarthWorksResult result, string expectedProjectUid, string expectedAssetUid, string expectedCustomerUid, bool expectedHasValidSubscription, int expectedCode)

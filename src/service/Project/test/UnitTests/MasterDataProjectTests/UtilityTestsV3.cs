@@ -4,7 +4,9 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -22,15 +24,14 @@ namespace VSS.MasterData.ProjectTests
     public void MapCreateProjectRequestToEvent()
     {
       var request = CreateProjectRequest.CreateACreateProjectRequest
-      (Guid.NewGuid(), Guid.NewGuid(),
+      (Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
         ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
-        456, null, null);
+       null, null);
 
       var kafkaEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
       Assert.Equal(request.ProjectUID, kafkaEvent.ProjectUID);
-      Assert.Equal(request.CustomerID, kafkaEvent.CustomerID);
       Assert.Equal(request.ProjectType, kafkaEvent.ProjectType);
       Assert.Equal(request.ProjectName, kafkaEvent.ProjectName);
       Assert.Equal(request.Description, kafkaEvent.Description);
@@ -54,7 +55,7 @@ namespace VSS.MasterData.ProjectTests
     public void MapUpdateProjectRequestToEvent()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, "projectName", "this is the description",
+      (Guid.NewGuid().ToString(), ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 02, 15), "csName", new byte[] { 1, 2, 3 }, null);
 
       var kafkaEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
@@ -81,8 +82,8 @@ namespace VSS.MasterData.ProjectTests
       var project = new ProjectDatabaseModel
       {
         ProjectUID = Guid.NewGuid().ToString(),
-        LegacyProjectID = 123,
-        ProjectType = ProjectType.ProjectMonitoring,
+        ShortRaptorProjectId = 123,
+        ProjectType = ProjectType.Standard,
         Name = "the Name",
         Description = "the Description",
         ProjectTimeZone = "NZ stuff",
@@ -90,24 +91,17 @@ namespace VSS.MasterData.ProjectTests
         StartDate = new DateTime(2017, 01, 20),
         EndDate = new DateTime(2017, 02, 15),
         CustomerUID = Guid.NewGuid().ToString(),
-        LegacyCustomerID = 0,
-
-        SubscriptionUID = Guid.NewGuid().ToString(),
-        SubscriptionStartDate = new DateTime(2017, 01, 20),
-        SubscriptionEndDate = new DateTime(9999, 12, 31),
-        ServiceTypeID = (int)ServiceTypeEnum.ProjectMonitoring,
-
         GeometryWKT = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         CoordinateSystemFileName = "",
         CoordinateSystemLastActionedUTC = new DateTime(2017, 01, 21),
 
-        IsDeleted = false,
+        IsArchived = false,
         LastActionedUTC = new DateTime(2017, 01, 21)
       };
 
       var result = AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project);
       Assert.Equal(project.ProjectUID, result.ProjectUid);
-      Assert.Equal(project.LegacyProjectID, result.LegacyProjectId);
+      Assert.Equal(project.ShortRaptorProjectId, result.ShortRaptorProjectId);
       Assert.Equal(project.ProjectType, result.ProjectType);
       Assert.Equal(project.Name, result.Name);
       Assert.Equal(project.Description, result.Description);
@@ -116,20 +110,13 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(project.StartDate.ToString("O"), result.StartDate);
       Assert.Equal(project.EndDate.ToString("O"), result.EndDate);
       Assert.Equal(project.CustomerUID, result.CustomerUid);
-      Assert.Equal(project.LegacyCustomerID.ToString(), result.LegacyCustomerId);
-      Assert.Equal(project.SubscriptionUID, result.SubscriptionUid);
-      if (project.SubscriptionStartDate != null)
-        Assert.Equal((object)project.SubscriptionStartDate.Value.ToString("O"), result.SubscriptionStartDate);
-      if (project.SubscriptionEndDate != null)
-        Assert.Equal((object)project.SubscriptionEndDate.Value.ToString("O"), result.SubscriptionEndDate);
-      Assert.Equal(project.ServiceTypeID, (int)result.ServiceType);
       Assert.Equal(project.GeometryWKT, result.ProjectGeofenceWKT);
       Assert.False(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
       var copyOfProject = AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(project);
       Assert.Equal(project.ProjectUID, copyOfProject.ProjectUID);
-      Assert.Equal(project.LegacyProjectID, copyOfProject.LegacyProjectID);
+      Assert.Equal(project.ShortRaptorProjectId, copyOfProject.ShortRaptorProjectId);
     }
 
     [Fact]
@@ -163,7 +150,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.FileUpdatedUtc, importedFileDescriptor.FileUpdatedUtc);
       Assert.Equal(request.ImportedBy, importedFileDescriptor.ImportedBy);
       Assert.Equal(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc);
-      Assert.Equal(request.ParentUid, importedFileDescriptor.ParentUid.HasValue ? "Fail assertion" : null);
+      Assert.Equal(request.ParentUid, !string.IsNullOrEmpty(importedFileDescriptor.ParentUid) ? "Fail assertion" : null);
       Assert.Equal(request.Offset, importedFileDescriptor.Offset);
       Assert.Equal(request.LastActionedUtc, importedFileDescriptor.ImportedUtc);
       Assert.True(importedFileDescriptor.IsActivated);

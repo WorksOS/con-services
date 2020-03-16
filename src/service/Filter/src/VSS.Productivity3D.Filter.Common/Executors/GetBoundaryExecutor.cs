@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -31,8 +30,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
+      RepositoryBase repository, RepositoryBase auxRepository)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, auxRepository, null, null)
     { }
 
     /// <summary>

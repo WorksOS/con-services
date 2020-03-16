@@ -1,9 +1,7 @@
 ﻿using System;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class CreateProjectEvent : IProjectEvent
   {
@@ -16,12 +14,11 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public string ProjectBoundary { get; set; }
 
 
-    public Guid ProjectUID { get; set; }
-    public Guid CustomerUID { get; set; }
+    public string ProjectUID { get; set; }
+    public string CustomerUID { get; set; }
 
-    //CurrentGen only. Should not be used in NG as it should be assigned but PorjectMasterData automatically
-    public int ProjectID { get; set; }
-    public long CustomerID { get; set; }
+    //CurrentGen only. Should not be used in NG as it should be assigned but ProjectMasterData automatically
+    public int ShortRaptorProjectId { get; set; }
 
     public string CoordinateSystemFileName { get; set; }
     public byte[] CoordinateSystemFileContent { get; set; }

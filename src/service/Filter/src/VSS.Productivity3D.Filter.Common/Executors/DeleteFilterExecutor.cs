@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories;
@@ -25,8 +24,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, null, null, null)
+      RepositoryBase repository)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, null, null, null)
     { }
 
     /// <summary>
@@ -57,13 +56,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       log.LogDebug($"DeleteFilter retrieved filter {JsonConvert.SerializeObject(filter)}");
 
       var deleteEvent = await StoreFilterAndNotifyRaptor<DeleteFilterEvent>(request, new[] { 12, 13 });
-
-      //Only write to kafka for persistent filters
-      if (request.SendKafkaMessages && deleteEvent != null && filter.FilterType != FilterType.Transient)
-      {
-        var payload = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteEvent });
-        SendToKafka(deleteEvent.FilterUID.ToString(), payload, 14);
-      }
 
       return new ContractExecutionResult();
     }

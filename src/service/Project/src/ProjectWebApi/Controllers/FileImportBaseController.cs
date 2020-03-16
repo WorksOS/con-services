@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -25,7 +25,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportBaseController : BaseController<FileImportBaseController>
   {
-    protected ITransferProxy persistantTransferProxy;
+    protected ITransferProxy persistantTransferProxy; 
     protected IFilterServiceProxy filterServiceProxy;
     protected ITRexImportFileProxy tRexImportFileProxy;
 
@@ -42,9 +42,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    public FileImportBaseController(IKafka producer, IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportBaseController(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
-    : base (producer, configStore)
+    : base (configStore)
     {
       this.requestFactory = requestFactory;
 
@@ -82,7 +82,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Notify raptor of an updated import file (used for activations, not file import).
     /// </summary>
-    protected async Task NotifyRaptorUpdateFile(Guid projectUid, IEnumerable<Guid> updatedFileUids)
+    protected async Task NotifyRaptorUpdateFile(string projectUid, IEnumerable<string> updatedFileUids)
     {
       var notificationResult = await Productivity3dV2ProxyNotification.UpdateFiles(projectUid, updatedFileUids, Request.Headers.GetCustomHeaders());
 
@@ -98,14 +98,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Sets activated state for imported files.
     /// </summary>
-    protected async Task<IEnumerable<Guid>> SetFileActivatedState(string projectUid, Dictionary<Guid, bool> fileUids)
+    protected async Task<IEnumerable<string>> SetFileActivatedState(string projectUid, Dictionary<string, bool> fileUids)
     {
       Logger.LogDebug($"SetFileActivatedState: projectUid={projectUid}, {fileUids.Keys.Count} files with changed state");
 
       var deactivatedFileList = await ImportedFileRequestDatabaseHelper.GetImportedFileProjectSettings(projectUid, userId, ProjectRepo).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
       Logger.LogDebug($"SetFileActivatedState: originally {deactivatedFileList.Count} deactivated files");
 
-      var missingUids = new List<Guid>();
+      var missingUids = new List<string>();
       foreach (var key in fileUids.Keys)
       {
         //fileUids contains only uids of files whose state has changed.
@@ -142,7 +142,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, headers: customHeaders,
-            producer: Producer, kafkaTopicName: KafkaTopicName,
             productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;

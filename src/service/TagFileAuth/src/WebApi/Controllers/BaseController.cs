@@ -12,18 +12,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   {
     protected readonly IConfigurationStore configStore;
     protected IProjectProxy projectProxy;
-    protected IAccountProxy accountProxy;
+    protected ICustomerProxy customerProxy;
     protected IDeviceProxy deviceProxy;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     protected BaseController(ILoggerFactory logger, IConfigurationStore configStore, 
-      IProjectProxy projectProxy, IAccountProxy accountProxy, IDeviceProxy deviceProxy)
+      IProjectProxy projectProxy, ICustomerProxy customerProxy, IDeviceProxy deviceProxy)
     {
       this.configStore = configStore;
       this.projectProxy = projectProxy;
-      this.accountProxy = accountProxy;
+      this.customerProxy = customerProxy;
       this.deviceProxy = deviceProxy;
     }
   }

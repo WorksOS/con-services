@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   /// <summary>
   /// The request representation used to Create a project via TBC. 
-  ///   TBC also send CustomerUid and CustomerName on the end, but Legacy and NGen 
+  ///   TBC also send CustomerUID and CustomerName on the end, but Legacy and NGen 
   ///      dont' use this but gets them via TIDAuthenticaition
   /// </summary>
   public class CreateProjectV2Request

@@ -1,8 +1,6 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories.DBModels;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -63,7 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <value>
     /// The legacy project ID.
     /// </value>
-    public int LegacyProjectId { get; set; }
+    public int ShortRaptorProjectId { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the project.
@@ -137,53 +135,54 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </value>
     public string CustomerUid { get; set; }
 
-    /// <summary>
-    /// Gets or sets the customer Id from legacy VisionLink
-    /// </summary>
-    /// <value>
-    /// The legacy Customer Id.
-    /// </value>
-    public string LegacyCustomerId { get; set; }
+    // todoMaverick obsolete
+    ///// <summary>
+    ///// Gets or sets the customer Id from legacy VisionLink
+    ///// </summary>
+    ///// <value>
+    ///// The legacy Customer Id.
+    ///// </value>
+    //public string LegacyCustomerId { get; set; }
 
-    /// <summary>
-    /// Gets or sets the SubscriptionUID which the project is associated with
-    /// </summary>
-    /// <value>
-    /// The subscription UID.
-    /// </value>
-    public string SubscriptionUid { get; set; }
+    ///// <summary>
+    ///// Gets or sets the SubscriptionUID which the project is associated with
+    ///// </summary>
+    ///// <value>
+    ///// The subscription UID.
+    ///// </value>
+    //public string SubscriptionUid { get; set; }
     
-    /// <summary>
-    /// Gets or sets the Subscription start date.
-    /// </summary>
-    /// <value>
-    /// The Subscription start date.
-    /// </value>
-    public string SubscriptionStartDate { get; set; }
+    ///// <summary>
+    ///// Gets or sets the Subscription start date.
+    ///// </summary>
+    ///// <value>
+    ///// The Subscription start date.
+    ///// </value>
+    //public string SubscriptionStartDate { get; set; }
 
-    /// <summary>
-    /// Gets or sets the Subscriptionend date.
-    /// </summary>
-    /// <value>
-    /// The Subscription end date.
-    /// </value>
-    public string SubscriptionEndDate { get; set; }
+    ///// <summary>
+    ///// Gets or sets the Subscription end date.
+    ///// </summary>
+    ///// <value>
+    ///// The Subscription end date.
+    ///// </value>
+    //public string SubscriptionEndDate { get; set; }
     
-    /// <summary>
-    /// Gets or sets the type of the subscription.
-    /// </summary>
-    /// <value>
-    /// The type of the subscription.
-    /// </value>
-    public ServiceTypeEnum ServiceType { get; set; }
+    ///// <summary>
+    ///// Gets or sets the type of the subscription.
+    ///// </summary>
+    ///// <value>
+    ///// The type of the subscription.
+    ///// </value>
+    //public ServiceTypeEnum ServiceType { get; set; }
 
-    /// <summary>
-    /// Gets the name of the subscription type.
-    /// </summary>
-    /// <value>
-    /// The name of the subscription type.
-    /// </value>
-    public string ServiceTypeName => this.ServiceType.ToString();
+    ///// <summary>
+    ///// Gets the name of the subscription type.
+    ///// </summary>
+    ///// <value>
+    ///// The name of the subscription type.
+    ///// </value>
+    //public string ServiceTypeName => this.ServiceType.ToString();
 
     /// <summary>
     /// Gets or sets the project geofence.
@@ -215,7 +214,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       var otherProject = obj as ProjectV4Descriptor;
       if (otherProject == null) return false;
       return otherProject.ProjectUid == this.ProjectUid
-             && otherProject.LegacyProjectId == this.LegacyProjectId
+             && otherProject.ShortRaptorProjectId == this.ShortRaptorProjectId
              && otherProject.ProjectType == this.ProjectType
              && otherProject.Name == this.Name
              && otherProject.Description == this.Description
@@ -224,12 +223,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherProject.StartDate == this.StartDate
              && otherProject.EndDate == this.EndDate
              && otherProject.CustomerUid == this.CustomerUid
-             && otherProject.LegacyCustomerId == this.LegacyCustomerId
+             //&& otherProject.LegacyCustomerId == this.LegacyCustomerId
 
-             && otherProject.SubscriptionUid == this.SubscriptionUid
-             && otherProject.SubscriptionStartDate == this.SubscriptionStartDate
-             && otherProject.SubscriptionEndDate == this.SubscriptionEndDate
-             && otherProject.ServiceType == this.ServiceType
+             //&& otherProject.SubscriptionUid == this.SubscriptionUid
+             //&& otherProject.SubscriptionStartDate == this.SubscriptionStartDate
+             //&& otherProject.SubscriptionEndDate == this.SubscriptionEndDate
+             //&& otherProject.ServiceType == this.ServiceType
 
              && otherProject.ProjectGeofenceWKT == this.ProjectGeofenceWKT
              && otherProject.CoordinateSystemFileName == this.CoordinateSystemFileName

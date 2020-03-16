@@ -13,17 +13,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public DxfUnitsType DxfUnitsType { get; set; }
     public DateTime FileCreatedUtc { get; set; }
     public DateTime FileUpdatedUtc { get; set; }
-    public Guid? ParentUid { get; set; }
+    public string ParentUid { get; set; }
     public double? Offset { get; set; }
-    public Guid ImportedFileUid { get; set; }
+    public string ImportedFileUid { get; set; }
 
     /// <summary>
     /// Create instance of CreateImportedFile
     /// </summary>
-    public CreateImportedFile(Guid projectUid,
+    public CreateImportedFile(string projectUid,
       string fileName, FileDescriptor fileDescriptor, ImportedFileType importedFileType,
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      string dataOceanRootFolder, Guid? parentUid, double? offset, Guid importedFileUid, string dataOceanFileName)
+      string dataOceanRootFolder, string parentUid, double? offset, string importedFileUid, string dataOceanFileName)
     {
       ProjectUid = projectUid;
       FileName = fileName;

@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories
@@ -69,26 +69,27 @@ namespace VSS.MasterData.Repositories
         eventType = "UpdateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
       }
-      else if (evt is AssociateDeviceAssetEvent)
-      {
-        var deviceAsset = new AssetDevice();
-        var deviceEvent = (AssociateDeviceAssetEvent) evt;
-        deviceAsset.DeviceUID = deviceEvent.DeviceUID.ToString();
-        deviceAsset.AssetUID = deviceEvent.AssetUID.ToString();
-        deviceAsset.LastActionedUtc = deviceEvent.ActionUTC;
-        eventType = "AssociateDeviceAssetEvent";
-        upsertedCount = await UpsertDeviceAssetDetail(deviceAsset, eventType);
-      }
-      else if (evt is DissociateDeviceAssetEvent)
-      {
-        var deviceAsset = new AssetDevice();
-        var deviceEvent = (DissociateDeviceAssetEvent) evt;
-        deviceAsset.DeviceUID = deviceEvent.DeviceUID.ToString();
-        deviceAsset.AssetUID = deviceEvent.AssetUID.ToString();
-        deviceAsset.LastActionedUtc = deviceEvent.ActionUTC;
-        eventType = "DissociateDeviceAssetEvent";
-        upsertedCount = await UpsertDeviceAssetDetail(deviceAsset, eventType);
-      }
+      // todoMaverick
+      //else if (evt is AssociateDeviceAssetEvent)
+      //{
+      //  var deviceAsset = new AssetDevice();
+      //  var deviceEvent = (AssociateDeviceAssetEvent) evt;
+      //  deviceAsset.DeviceUID = deviceEvent.DeviceUID.ToString();
+      //  deviceAsset.AssetUID = deviceEvent.AssetUID.ToString();
+      //  deviceAsset.LastActionedUtc = deviceEvent.ActionUTC;
+      //  eventType = "AssociateDeviceAssetEvent";
+      //  upsertedCount = await UpsertDeviceAssetDetail(deviceAsset, eventType);
+      //}
+      //else if (evt is DissociateDeviceAssetEvent)
+      //{
+      //  var deviceAsset = new AssetDevice();
+      //  var deviceEvent = (DissociateDeviceAssetEvent) evt;
+      //  deviceAsset.DeviceUID = deviceEvent.DeviceUID.ToString();
+      //  deviceAsset.AssetUID = deviceEvent.AssetUID.ToString();
+      //  deviceAsset.LastActionedUtc = deviceEvent.ActionUTC;
+      //  eventType = "DissociateDeviceAssetEvent";
+      //  upsertedCount = await UpsertDeviceAssetDetail(deviceAsset, eventType);
+      //}
 
       return upsertedCount;
     }

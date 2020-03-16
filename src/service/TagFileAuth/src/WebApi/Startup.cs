@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       services
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddTransient<IProjectProxy, ProjectV5Proxy>()
-        .AddTransient<IAccountProxy, AccountV5Proxy>()
+        .AddTransient<ICustomerProxy, CustomerV5Proxy>()
         .AddTransient<IDeviceProxy, DeviceV5Proxy>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
 

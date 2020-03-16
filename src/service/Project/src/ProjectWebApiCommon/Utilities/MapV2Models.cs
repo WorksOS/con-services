@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
@@ -16,8 +16,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     public static CreateProjectEvent MapCreateProjectV2RequestToEvent(CreateProjectV2Request source, string customerUid)
     {
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(source);
-      createProjectEvent.ProjectUID = Guid.NewGuid();
-      createProjectEvent.CustomerUID = Guid.Parse(customerUid);
+      createProjectEvent.ProjectUID = Guid.NewGuid().ToString();
+      createProjectEvent.CustomerUID = customerUid;
 
       var internalPoints = AutoMapperUtility.Automapper.Map<List<Point>>(source.BoundaryLL);
       createProjectEvent.ProjectBoundary =

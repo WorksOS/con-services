@@ -23,8 +23,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public AssetV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore, 
-      IProjectProxy projectProxy, IAccountProxy accountProxy, IDeviceProxy deviceProxy)
-      : base(logger, configStore, projectProxy, accountProxy, deviceProxy)
+      IProjectProxy projectProxy, ICustomerProxy customerProxy, IDeviceProxy deviceProxy)
+      : base(logger, configStore, projectProxy, customerProxy, deviceProxy)
     {
       _log = logger.CreateLogger<AssetV3RaptorController>();
     }
@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetAssetId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, configStore, projectProxy, accountProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, configStore, projectProxy, customerProxy, deviceProxy);
       var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
       _log.LogResult(nameof(GetAssetId), request: request, result: result);

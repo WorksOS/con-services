@@ -36,9 +36,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///     if it already knows about it, it will just update and re-notify raptor and return success.
     /// </summary>
     /// <returns></returns>
-    public static async Task<AddFileResult> NotifyRaptorAddFile(long? projectId, Guid projectUid,
+    public static async Task<AddFileResult> NotifyRaptorAddFile(long? projectId, string projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId,
-      Guid importedFileUid, bool isCreate,
+      string importedFileUid, bool isCreate,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProjectRepository projectRepo)
     {
@@ -86,8 +86,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///  if it doesn't know about it then it do nothing and return success
     /// </summary>
     /// <returns></returns>
-    public static async Task<ImportedFileInternalResult> NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType importedFileType,
-      Guid importedFileUid, FileDescriptor fileDescriptor, long importedFileId, long? legacyImportedFileId,
+    public static async Task<ImportedFileInternalResult> NotifyRaptorDeleteFile(string projectUid, ImportedFileType importedFileType,
+      string importedFileUid, FileDescriptor fileDescriptor, long importedFileId, long? legacyImportedFileId,
       ILogger log, IDictionary<string, string> headers, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification)
     {
       BaseMasterDataResult notificationResult = null;
@@ -120,8 +120,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Notify TRex of new DESIGN file
     /// </summary>
     /// <returns></returns>
-    public static async Task<ContractExecutionResult> NotifyTRexAddFile(Guid projectUid,
-      ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
+    public static async Task<ContractExecutionResult> NotifyTRexAddFile(string projectUid,
+      ImportedFileType importedFileType, string filename, string importedFileUid, DateTime? surveyedUtc,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
       ITRexImportFileProxy tRexImportFileProxy, IProjectRepository projectRepo
     )
@@ -172,8 +172,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Notify TRex of updated DESIGN file
     /// </summary>
-    public static async Task<ContractExecutionResult> NotifyTRexUpdateFile(Guid projectUid,
-      ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
+    public static async Task<ContractExecutionResult> NotifyTRexUpdateFile(string projectUid,
+      ImportedFileType importedFileType, string filename, string importedFileUid, DateTime? surveyedUtc,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
       ITRexImportFileProxy tRexImportFileProxy)
     {
@@ -204,8 +204,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Notify trex of delete of a design file
     /// </summary>
     /// <returns></returns>
-    public static async Task<ContractExecutionResult> NotifyTRexDeleteFile(Guid projectUid,
-      ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
+    public static async Task<ContractExecutionResult> NotifyTRexDeleteFile(string projectUid,
+      ImportedFileType importedFileType, string filename, string importedFileUid, DateTime? surveyedUtc,
       ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
       ITRexImportFileProxy tRexImportFileProxy)
     {
@@ -238,7 +238,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Create a DXF file of the alignment center line using Raptor and save it to data ocean.
     /// </summary>
     /// <returns>The generated file name</returns>
-    public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IProductivity3dV2ProxyCompaction productivity3DV2ProxyCompaction,
+    public static async Task<string> CreateGeneratedDxfFile(string customerUid, string projectUid, string alignmentUid, IProductivity3dV2ProxyCompaction productivity3DV2ProxyCompaction,
       IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn,
       IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
     {

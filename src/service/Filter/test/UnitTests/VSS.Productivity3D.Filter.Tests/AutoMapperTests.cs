@@ -4,6 +4,7 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
@@ -54,7 +55,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
 
       );
@@ -80,7 +81,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
       filterRequest.FilterUid = Guid.NewGuid().ToString();
@@ -106,7 +107,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         "ApplicationName",
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
@@ -131,7 +132,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         "ApplicationName",
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
       filterRequest.FilterUid = Guid.NewGuid().ToString();
@@ -157,7 +158,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
@@ -182,7 +183,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
@@ -258,7 +259,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         Guid.NewGuid().ToString(),
         false,
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString()
       );
@@ -275,7 +276,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         Guid.NewGuid().ToString(),
         false,
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
       );
@@ -296,7 +297,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         Guid.NewGuid().ToString(),
         false,
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
       );

@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing ProjectEndDate.", 15);
       this.DynamicAddwithOffset("Project start date must be earlier than end date.", 16);
       this.DynamicAddwithOffset("Project timezone cannot be updated.", 17);
-      this.DynamicAddwithOffset("CustomerUid parameter differs to the requesting CustomerUid. Impersonation is not supported.", 18);
+      this.DynamicAddwithOffset("CustomerUID parameter differs to the requesting CustomerUID. Impersonation is not supported.", 18);
       this.DynamicAddwithOffset("Missing CustomerUID.", 19);
       this.DynamicAddwithOffset("Project already associated with a customer.", 20);
       this.DynamicAddwithOffset("Dissociating projects from customers is not supported.", 21);

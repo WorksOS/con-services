@@ -41,7 +41,6 @@
     <ProjectReference Include="..\..\..\..\Common\AWS.TransferProxy\src\VSS.AWS.TransferProxy.csproj" />
     <ProjectReference Include="..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
@@ -57,6 +56,7 @@
     <ProjectReference Include="..\..\..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Proxy\VSS.Productivity3D.Scheduler.Proxy.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
+    <ProjectReference Include="..\..\Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\..\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
   </ItemGroup>

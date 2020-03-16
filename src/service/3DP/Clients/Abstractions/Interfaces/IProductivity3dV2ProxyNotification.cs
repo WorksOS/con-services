@@ -9,22 +9,23 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
 {
   public interface IProductivity3dV2ProxyNotification : IProductivity3dV2Proxy
   {
-    Task<AddFileResult> AddFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor,
+    Task<AddFileResult> AddFile(string projectUid, ImportedFileType fileType, string fileUid, string fileDescriptor,
       long fileId, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders = null);
 
-    Task<BaseMasterDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor,
+    Task<BaseMasterDataResult> DeleteFile(string projectUid, ImportedFileType fileType, string fileUid, string fileDescriptor,
       long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null);
 
-    Task<BaseMasterDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids,
+
+    Task<BaseMasterDataResult> UpdateFiles(string projectUid, IEnumerable<string> fileUids,
       IDictionary<string, string> customHeaders = null);
 
     Task<BaseMasterDataResult> InvalidateCache(string projectUid,
       IDictionary<string, string> customHeaders = null);
 
-    Task<BaseMasterDataResult> NotifyImportedFileChange(Guid projectUid, Guid fileUid,
+    Task<BaseMasterDataResult> NotifyImportedFileChange(string projectUid, string fileUid,
       IDictionary<string, string> customHeaders = null);
 
-    Task<BaseMasterDataResult> NotifyFilterChange(Guid filterUid, Guid projectUid,
+    Task<BaseMasterDataResult> NotifyFilterChange(string filterUid, string projectUid,
       IDictionary<string, string> customHeaders = null);
   }
 }

@@ -25,7 +25,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected ILogger log;
     private IConfigurationStore configStore;
     private IProjectProxy projectProxy;
-    private IAccountProxy accountProxy;
+    private ICustomerProxy customerProxy;
     private IDeviceProxy deviceProxy;
 
     /// <summary>
@@ -82,11 +82,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///   Builds this instance for specified executor type.
     /// </summary>
     public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, 
-      IProjectProxy projectProxy, IAccountProxy accountProxy, IDeviceProxy deviceProxy) 
+      IProjectProxy projectProxy, ICustomerProxy customerProxy, IDeviceProxy deviceProxy) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, projectProxy = projectProxy, accountProxy = accountProxy, deviceProxy = deviceProxy};
-        dataRepository = new DataRepository(logger, configStore, projectProxy, accountProxy, deviceProxy);
+      var executor = new TExecutor() { log = logger, configStore = configStore, projectProxy = projectProxy, customerProxy = customerProxy, deviceProxy = deviceProxy};
+        dataRepository = new DataRepository(logger, configStore, projectProxy, customerProxy, deviceProxy);
       return executor;
     }
     

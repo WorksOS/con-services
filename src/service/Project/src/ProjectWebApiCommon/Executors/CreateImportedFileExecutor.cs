@@ -9,6 +9,7 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -50,7 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //      notifying raptor, as raptor needs the legacyImportedFileID 
       //      notifying TRex as Trex needs the ImportedFileUid
       var createImportedFileEvent = await ImportedFileRequestDatabaseHelper.CreateImportedFileinDb(
-          Guid.Parse(customerUid),
+          customerUid,
           importedFile.ProjectUid,
           importedFile.ImportedFileType, importedFile.DxfUnitsType, importedFile.FileName,
           importedFile.SurveyedUtc, JsonConvert.SerializeObject(importedFile.FileDescriptor),
@@ -78,7 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (importedFile.ImportedFileType == ImportedFileType.DesignSurface ||
             importedFile.ImportedFileType == ImportedFileType.SurveyedSurface)
         {
-          await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID,
+          await ImportedFileRequestHelper.NotifyRaptorAddFile(project.ShortRaptorProjectId,
             importedFile.ProjectUid,
             importedFile.ImportedFileType, importedFile.DxfUnitsType, importedFile.FileDescriptor,
             createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
@@ -109,7 +110,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             existing.ImportedFileUid,
             importedFile.DataOceanRootFolder,
             dxfFileName,
-            DataOceanFileUtil.DataOceanFileName(project.CoordinateSystemFileName, false, Guid.Parse(project.ProjectUID), null),
+            DataOceanFileUtil.DataOceanFileName(project.CoordinateSystemFileName, false, project.ProjectUID, null),
             importedFile.DxfUnitsType,
             importedFile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
@@ -136,14 +137,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           importedFile.SurveyedUtc);
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
-
-      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
-        {
-          new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
-
+      
       var fileDescriptor = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestDatabaseHelper
           .GetImportedFileList(importedFile.ProjectUid.ToString(), log, userId, projectRepo)

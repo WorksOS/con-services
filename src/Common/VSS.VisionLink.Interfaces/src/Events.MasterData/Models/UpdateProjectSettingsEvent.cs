@@ -1,12 +1,12 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
-
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class UpdateProjectSettingsEvent : IProjectEvent
   {
-    public Guid ProjectUID { get; set; }
+    public string ProjectUID { get; set; }
     public ProjectSettingsType ProjectSettingsType { get; set; }
     public string Settings { get; set; }
 

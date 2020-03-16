@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Repositories
 {
