@@ -54,6 +54,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Pretend there is a single node in the cluster group
       mockClusterNode = new Mock<IClusterNode>(MockBehavior.Strict);
       mockClusterNode.Setup(x => x.GetAttribute<string>("TRexNodeId")).Returns("UnitTest-TRexNodeId");
+      mockClusterNode.Setup(x => x.Id).Returns(Guid.NewGuid());
 
       mockClusterNodes = new Mock<ICollection<IClusterNode>>(MockBehavior.Strict);
       mockClusterNodes.Setup(x => x.Count).Returns(1);
@@ -111,10 +112,14 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockCompute.Setup(x => x.ClusterGroup).Returns(mockClusterGroup.Object);
 
+      // The default mock for WithExecutor just returns the ICompute mock above. Override if finer control is needed for this in a test
+      mockCompute.Setup(x => x.WithExecutor(It.IsAny<string>())).Returns(mockCompute.Object);
+
       mockCluster = new Mock<ICluster>(MockBehavior.Strict);
       mockCluster.Setup(x => x.ForAttribute(It.IsAny<string>(), It.IsAny<string>())).Returns(mockClusterGroup.Object);
       mockCluster.Setup(x => x.GetLocalNode()).Returns(mockClusterNode.Object);
       mockCluster.Setup(x => x.GetMessaging()).Returns(mockMessaging.Object);
+      mockCluster.Setup(x => x.ForNodeIds(It.IsAny<IEnumerable<Guid>>())).Returns(mockClusterGroup.Object);
 
       var clusterActiveState = true;
       mockCluster.Setup(x => x.IsActive()).Returns(() => clusterActiveState);
@@ -273,6 +278,21 @@ namespace VSS.TRex.Tests.TestFixtures
     public static void AddClusterComputeGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
     {
       var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+
+      mockCompute.Setup(x => x.Apply(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
+      {
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(argument);
+
+        var response = func.Invoke(argument);
+
+        if (response != null)
+          TestIBinarizableSerializationForItem(response);
+
+        return response;
+      });
+
       mockCompute.Setup(x => x.Broadcast(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
       {
         // exercise serialize/deserialize of func and argument before invoking function

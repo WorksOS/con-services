@@ -93,7 +93,8 @@ namespace VSS.TRex.Exports.Patches.Executors
       using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
         RequestDescriptor,
         DataModelID,
-        GridDataFromModeConverter.Convert(Mode),
+        // Patch requests always want time with height information
+        Mode == DisplayMode.Height ? GridDataType.HeightAndTime : GridDataFromModeConverter.Convert(Mode),
         PatchSubGridsResponse,
         Filters,
         CutFillDesign,
@@ -106,6 +107,9 @@ namespace VSS.TRex.Exports.Patches.Executors
         BoundingIntegerExtent2D.Inverted(),
         LiftParams))
       {
+        // Set the surface TRexTask parameters for progressive processing
+        processor.Task.TRexNodeID = RequestingTRexNodeID;
+
         // Configure the request analyser to return a single page of results.
         processor.RequestAnalyser.SinglePageRequestNumber = DataPatchPageNumber;
         processor.RequestAnalyser.SinglePageRequestSize = DataPatchPageSize;

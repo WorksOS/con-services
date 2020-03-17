@@ -140,9 +140,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
           _liftParams))
         {
           // Set the surface TRexTask parameters for progressive processing
-          processor.Task.RequestDescriptor = requestDescriptor;
           processor.Task.TRexNodeID = RequestingTRexNodeID;
-          processor.Task.GridDataType = GridDataFromModeConverter.Convert(DisplayMode.Height);
 
           if (!await processor.BuildAsync())
           {

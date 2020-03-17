@@ -36,6 +36,8 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.MapFrom(f => f.ProjectUid))
         .ForMember(x => x.TRexNodeID,
           opt => opt.Ignore())
+        .ForMember(x => x.OriginatingIgniteNodeId,
+          opt => opt.Ignore())
         .ForMember(x => x.ExternalDescriptor,
           opt => opt.Ignore())
         .ForMember(x => x.Filters,
