@@ -73,6 +73,8 @@
     <ProjectReference Include="..\..\..\TagFileAuth\Clients\Proxy\VSS.Productivity3D.TagFileAuth.Proxy.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
+    <ProjectReference Include="..\..\..\TRex\src\netstandard\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
+    <ProjectReference Include="..\..\..\TRex\src\netstandard\VSS.TRex.Geometry\VSS.TRex.Geometry.csproj" />
     <ProjectReference Include="..\Common\VSS.Productivity3D.Common.csproj" />
     <ProjectReference Include="..\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
   </ItemGroup>

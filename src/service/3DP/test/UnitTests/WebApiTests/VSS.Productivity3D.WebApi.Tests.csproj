@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Proxy\VSS.TRex.Gateway.Common.Proxy.csproj" />
     <ProjectReference Include="..\..\..\..\TRex\src\netstandard\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj" />
     <ProjectReference Include="..\..\..\src\Common\VSS.Productivity3D.Common.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.WebApi.Models.csproj" />
