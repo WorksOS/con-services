@@ -49,7 +49,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     public new IConfigurationRoot Configuration { get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env)
+    public Startup(IWebHostEnvironment env)
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
@@ -94,7 +94,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     }
 
     /// <inheritdoc />
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<FilterAuthentication>();
       app.UseMvc();

@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
     }
 
     /// <inheritdoc />
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     { }
   }
 }

@@ -50,7 +50,17 @@ namespace VSS.TCCFileAccess
     /// </summary>
     private static readonly MemoryCache fileCache = new MemoryCache(new MemoryCacheOptions
     {
-      CompactOnMemoryPressure = true,
+      /* Todo: Determine if there is a mititgation action we can do in .Net COre 3+
+       * Note: This flag was removed in .Net Core 3.0, per https://docs.microsoft.com/en-us/dotnet/core/compatibility/2.2-3.1
+       *
+       * Reason for change
+       * Automatically compacting the cache caused problems. To avoid unexpected behavior, the cache should only be compacted when needed.
+       * 
+       * Recommended action
+       * To compact the cache, downcast to MemoryCache and call Compact when needed.
+       */
+      // CompactOnMemoryPressure = true,
+
       ExpirationScanFrequency = TimeSpan.FromMinutes(10)
     });
 

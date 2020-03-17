@@ -72,7 +72,7 @@ namespace LandfillService.WebApi.netcore
     /// <summary>
     ///   Configures the specified application.
     /// </summary>
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
       app.UseFilterMiddleware<TIDAuthentication>();
       app.UseMvc();

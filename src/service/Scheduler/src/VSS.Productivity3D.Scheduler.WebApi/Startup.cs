@@ -139,7 +139,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
     /// <summary>
     /// Called by the runtime to configure the specified application and HTTP request pipeline.
     /// </summary>
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
       app.UseFilterMiddleware<SchedulerAuthentication>();
       app.UseMvc();
