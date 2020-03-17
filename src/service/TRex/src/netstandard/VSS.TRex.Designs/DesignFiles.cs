@@ -40,10 +40,10 @@ end;
   {
     private readonly Dictionary<Guid, IDesignBase> designs = new Dictionary<Guid, IDesignBase>();
 
-    public bool RemoveDesignFromCache(Guid designUid, IDesignBase design, bool deleteFile)
+    public bool RemoveDesignFromCache(Guid designUid, Guid siteModelUid, IDesignBase design, bool deleteFile)
     {
       if (deleteFile)
-        throw new TRexException("Delete file not implemented");
+        design.RemoveFromStorage(siteModelUid, Path.GetFileName(design.FileName));
 
       if (designs.TryGetValue(designUid, out _))
       {

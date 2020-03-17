@@ -90,5 +90,7 @@ namespace VSS.TRex.Designs
     public abstract List<XYZS> ComputeProfile(XYZ[] profilePath, double cellSize);
 
     public abstract List<Fence> GetBoundary();
+
+    public abstract void RemoveFromStorage(Guid siteModelUid, string fileName);
   }
 }

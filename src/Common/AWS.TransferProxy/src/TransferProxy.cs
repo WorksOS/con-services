@@ -144,5 +144,13 @@ namespace VSS.AWS.TransferProxy
         return s3Client.GetPreSignedURL(request);
       }
     }
+
+    public void RemoveFromBucket(string s3Key)
+    {
+      using (var s3Client = GetS3Client())
+      {
+        s3Client.DeleteObjectAsync(awsBucketName, s3Key);
+      }
+    }
   }
 }

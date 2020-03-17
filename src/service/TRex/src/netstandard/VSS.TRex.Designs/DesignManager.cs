@@ -44,6 +44,9 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     private IDesigns Load(Guid siteModelID)
     {
+
+      Log.LogDebug($"#In# DesignManager.Load: siteModelID:{siteModelID}");
+
       try
       {
         ReadStorageProxy.ReadStreamFromPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, out MemoryStream ms);
@@ -78,6 +81,8 @@ namespace VSS.TRex.Designs
     /// <param name="designs"></param>
     private void Store(Guid siteModelID, IDesigns designs)
     {
+      Log.LogDebug($"#In# DesignManager.Store: siteModelID:{siteModelID}");
+
       try
       {
         using (var stream = designs.ToStream())
@@ -104,10 +109,14 @@ namespace VSS.TRex.Designs
     /// <param name="extents"></param>
     public IDesign Add(Guid SiteModelID, DesignDescriptor designDescriptor, BoundingWorldExtent3D extents)
     {
+
+      Log.LogInformation($"#In# DesignManager.Add: designDescriptor:{designDescriptor}");
+
       var designs = Load(SiteModelID);
       var result = designs.AddDesignDetails(designDescriptor.DesignID, designDescriptor, extents);
       Store(SiteModelID, designs);
 
+      Log.LogDebug($"#Out# DesignManager.Add");
       return result;
     }
 
@@ -118,7 +127,7 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     public IDesigns List(Guid siteModelID)
     {
-      Log.LogInformation($"Listing designs from {siteModelID}");
+      Log.LogDebug($"#In# DesignManager.List siteModelID:{siteModelID}");
 
       return Load(siteModelID);
     }
@@ -131,6 +140,8 @@ namespace VSS.TRex.Designs
     /// <returns></returns>
     public bool Remove(Guid siteModelID, Guid designID)
     {
+      Log.LogInformation($"#In# DesignManager.Remove siteModelID:{siteModelID}, designID:{designID}");
+
       IDesigns designs = Load(siteModelID);
       bool result = designs.RemoveDesign(designID);
       Store(siteModelID, designs);

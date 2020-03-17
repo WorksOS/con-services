@@ -45,10 +45,14 @@ namespace VSS.TRex.Common
       try
       {
         var targetFullPath = Path.Combine(targetPath, fileName);
-        using (var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
+        using (fileStreamResult.FileStream) // closes FileStream after use
         {
-          fileStreamResult.FileStream.CopyTo(targetFileStream);
+          using (var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
+          {
+            fileStreamResult.FileStream.CopyTo(targetFileStream);
+          }
         }
+      
       }
       catch (Exception e)
       {
@@ -105,6 +109,28 @@ namespace VSS.TRex.Common
       }
       return true;
     }
+
+    /// <summary>
+    /// Removes a file from S3 or local storage
+    /// </summary>
+    /// <param name="localFullPath"></param>
+    /// <param name="s3FullPath"></param>
+    /// <param name="awsBucketName"></param>
+    public static bool RemoveFileFromBucket(string fileName, string siteModelUid)
+    {
+      try
+      {
+       var s3FullPath = $"{siteModelUid}/{fileName}";
+        DIContext.Obtain<ITransferProxy>().RemoveFromBucket(s3FullPath);
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, $"Exception removing file from s3. file: {fileName} :");
+        return false;
+      }
+      return true;
+    }
+
 
     /// <summary>
     /// Writes a file to S3

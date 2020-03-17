@@ -95,5 +95,17 @@ namespace VSS.AWS.TransferProxy
         stream.CopyTo(fs);
       }
     }
+
+    public void RemoveFromBucket(string s3Key)
+    {
+      var localKey = (s3Key.StartsWith("/") ? s3Key.Substring(1) : s3Key).Replace('/', Path.DirectorySeparatorChar);
+      var fileName = Path.Combine(_rootLocalTransferProxyFolder, _awsBucketName, localKey);
+      if (File.Exists(fileName))
+      {
+        // If file found, delete it from storage    
+        File.Delete(fileName);
+        _logger.LogInformation($"File {Path.GetFileName(fileName)} deleted.");
+      }
+    }
   }
 }

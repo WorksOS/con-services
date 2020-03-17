@@ -204,5 +204,10 @@ namespace VSS.TRex.Designs
       // todo when SDK available
       return null;
     }
+
+    public override void RemoveFromStorage(Guid siteModelUid, string fileName)
+    {
+      S3FileTransfer.RemoveFileFromBucket(fileName, siteModelUid.ToString());
+    }
   }
 }

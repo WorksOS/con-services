@@ -1029,5 +1029,18 @@ namespace VSS.TRex.Designs
 
       return boundary;
     }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="fileName"></param>
+    /// <param name="localPath"></param>
+    public override void RemoveFromStorage(Guid siteModelUid, string fileName)
+    {
+      S3FileTransfer.RemoveFileFromBucket(fileName, siteModelUid.ToString());
+      S3FileTransfer.RemoveFileFromBucket(fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, siteModelUid.ToString());
+      S3FileTransfer.RemoveFileFromBucket(fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, siteModelUid.ToString());
+      S3FileTransfer.RemoveFileFromBucket(fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION, siteModelUid.ToString());
+    }
   }
 }

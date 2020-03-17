@@ -3,8 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
@@ -37,21 +35,29 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpGet("{siteModelUid}/{importedFileType}")]
     public JsonResult GetDesignsForSiteModel(string siteModelUid, string importedFileType)
     {
-      var importedFileTypeEnum = ValidateImportedFileType(importedFileType);
+      Log.LogInformation($"#In# {nameof(GetDesignsForSiteModel)}: siteModelUid:{siteModelUid}, importedFileType:{importedFileType}");
 
-      if (importedFileTypeEnum == ImportedFileType.DesignSurface)
+      var importedFileTypeEnum = ValidateImportedFileType(importedFileType);
+      try
       {
-        return new JsonResult(DIContext.Obtain<IDesignManager>().List(Guid.Parse(siteModelUid)));
+        if (importedFileTypeEnum == ImportedFileType.DesignSurface)
+        {
+          return new JsonResult(DIContext.Obtain<IDesignManager>().List(Guid.Parse(siteModelUid)));
+        }
+        else if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+        {
+          return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().List(Guid.Parse(siteModelUid)));
+        }
+        else if (importedFileTypeEnum == ImportedFileType.Alignment)
+        {
+          return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(Guid.Parse(siteModelUid)));
+        }
+        throw new ArgumentException($"{nameof(GetDesignsForSiteModel)} Unsupported ImportedFileType: {importedFileType}");
       }
-      else if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+      finally
       {
-        return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().List(Guid.Parse(siteModelUid)));
+        Log.LogInformation($"#Out# {nameof(GetDesignsForSiteModel)}: siteModelUid:{siteModelUid}");
       }
-      else if (importedFileTypeEnum == ImportedFileType.Alignment)
-      {
-        return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(Guid.Parse(siteModelUid)));
-      }
-      throw new ArgumentException($"{nameof(GetDesignsForSiteModel)} Unsupported ImportedFileType: {importedFileType}");
     }
 
 
@@ -65,22 +71,74 @@ namespace VSS.TRex.Webtools.Controllers
     [HttpDelete("{siteModelUid}/{importedFileType}/{designId}")]
     public JsonResult DeleteDesignFromSiteModel(string siteModelUid, string importedFileType, string designId)
     {
-      var importedFileTypeEnum = ValidateImportedFileType(importedFileType);
+      Log.LogInformation($"#In# {nameof(DeleteDesignFromSiteModel)}: siteModelUid:{siteModelUid}, importedFileType:{importedFileType}, designId{designId}");
+      string fileName = null;
+      bool designFileRemovedOk = false;
 
-      if (importedFileTypeEnum == ImportedFileType.DesignSurface)
+      try
       {
-        return new JsonResult(DIContext.Obtain<IDesignManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
-      }
-      else if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
-      {
-        return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
-      }
-      else if (importedFileTypeEnum == ImportedFileType.Alignment)
-      {
-        return new JsonResult(DIContext.Obtain<IAlignmentManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
-      }
+        var importedFileTypeEnum = ValidateImportedFileType(importedFileType);
 
-      throw new ArgumentException($"{nameof(DeleteDesignFromSiteModel)} Unsupported ImportedFileType: {importedFileType}");
+        // First remove physical file from storage. Get file name from its UID
+        if (importedFileTypeEnum == ImportedFileType.DesignSurface)
+        {
+          var design = DIContext.Obtain<IDesignManager>().List(Guid.Parse(siteModelUid)).Locate(Guid.Parse(designId));
+          if (design != null)
+          {
+            fileName = design.DesignDescriptor.FileName;
+            designFileRemovedOk = S3FileTransfer.RemoveFileFromBucket(design.DesignDescriptor.FileName, siteModelUid);
+            if (designFileRemovedOk)
+            {
+              Log.LogInformation($" Design: {fileName} removed from storage.");
+              // remove indices associated with design
+              S3FileTransfer.RemoveFileFromBucket(fileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, siteModelUid);
+              S3FileTransfer.RemoveFileFromBucket(fileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, siteModelUid);
+              S3FileTransfer.RemoveFileFromBucket(fileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, siteModelUid);
+            }
+          }
+          return new JsonResult(DIContext.Obtain<IDesignManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
+        }
+        else if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+        {
+
+          var design = DIContext.Obtain<ISurveyedSurfaceManager>().List(Guid.Parse(siteModelUid)).Locate(Guid.Parse(designId));
+          var res = new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
+          if (design != null)
+          {
+            fileName = design.DesignDescriptor.FileName;
+            designFileRemovedOk = S3FileTransfer.RemoveFileFromBucket(design.DesignDescriptor.FileName, siteModelUid);
+            if (designFileRemovedOk)
+            {
+              Log.LogInformation($" Design: {fileName} removed from storage.");
+              // remove indices associated with design
+              S3FileTransfer.RemoveFileFromBucket(fileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, siteModelUid);
+              S3FileTransfer.RemoveFileFromBucket(fileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, siteModelUid);
+              S3FileTransfer.RemoveFileFromBucket(fileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, siteModelUid);
+            }
+          }
+
+          return res;
+         // return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
+        }
+        else if (importedFileTypeEnum == ImportedFileType.Alignment)
+        {
+          var design = DIContext.Obtain<IAlignmentManager>().List(Guid.Parse(siteModelUid)).Locate(Guid.Parse(designId));
+          if (design != null)
+          {
+            fileName = design.DesignDescriptor.FileName;
+            designFileRemovedOk = S3FileTransfer.RemoveFileFromBucket(design.DesignDescriptor.FileName, siteModelUid);
+            if (designFileRemovedOk)
+              Log.LogInformation($" Design: {fileName} removed from storage.");
+          }
+          return new JsonResult(DIContext.Obtain<IAlignmentManager>().Remove(Guid.Parse(siteModelUid), Guid.Parse(designId)));
+        }
+
+        throw new ArgumentException($"{nameof(DeleteDesignFromSiteModel)} Unsupported ImportedFileType: {importedFileType}");
+      }
+      finally
+      {
+        Log.LogInformation($"#Out# {nameof(DeleteDesignFromSiteModel)}: siteModelUid:{siteModelUid}, importedFileType:{importedFileType}, designId{designId}");
+      }
     }
 
     /// <summary>
@@ -96,6 +154,9 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] string asAtDate,
       [FromQuery] Guid designUid)
     {
+
+      Log.LogInformation($"#In# {nameof(UploadDesignToSiteModel)}: siteModelUid:{siteModelUid}, importedFileType:{importedFileType}, designUid{designUid}");
+
       if (Request.Form.Files.Count != 1)
         return BadRequest("Upload a single file only");
 
@@ -116,7 +177,8 @@ namespace VSS.TRex.Webtools.Controllers
       }
       finally
       {
-          System.IO.File.Delete(tempFile);
+        System.IO.File.Delete(tempFile);
+        Log.LogInformation($"#Out# {nameof(UploadDesignToSiteModel)}: siteModelUid:{siteModelUid}, importedFileType:{importedFileType}, designUid{designUid}");
       }
     }
 
@@ -136,106 +198,115 @@ namespace VSS.TRex.Webtools.Controllers
       [FromQuery] string asAtDate,
       [FromQuery] Guid designUid)
     {
-      var importedFileTypeEnum = ValidateImportedFileType(importedFileType);
-      
-      if (string.IsNullOrEmpty(siteModelUid))
-        throw new ArgumentException($"Invalid siteModelUid (you need to have selected one first): {siteModelUid}");
 
-      if (string.IsNullOrEmpty(fileNameAndLocalPath) || 
-          !Path.HasExtension(fileNameAndLocalPath) ||
-         (importedFileTypeEnum != ImportedFileType.Alignment && 
-          (string.Compare(Path.GetExtension(fileNameAndLocalPath), ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
-          ||
-         (importedFileTypeEnum == ImportedFileType.Alignment &&
-          (string.Compare(Path.GetExtension(fileNameAndLocalPath), ".svl", StringComparison.OrdinalIgnoreCase) != 0))
-        )
-        throw new ArgumentException($"Invalid [path]filename: {fileNameAndLocalPath}");
-
-      if (!System.IO.File.Exists(fileNameAndLocalPath))
-        throw new ArgumentException($"Unable to locate [path]fileName: {fileNameAndLocalPath}");
-
-      var siteModelGuid = Guid.Parse(siteModelUid);
-      
-      if (designUid == Guid.Empty)
-        designUid = Guid.NewGuid();
-
-      // copy local file to S3
-      bool designFileLoadedOk;
-      string s3FileName;
-      string destinationFileName = string.Empty;
-
-	    var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
-
-     if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+      Log.LogInformation($"#In# {nameof(AddDesignToSiteModel)}: siteModelUid:{siteModelUid}, importedFileType:{importedFileType}, designUid{designUid}");
+      try
       {
-        var tempDate = asAtDate.Remove(asAtDate.IndexOf(".", 0, StringComparison.Ordinal)).Replace(":", "");
-		    destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
+        var importedFileTypeEnum = ValidateImportedFileType(importedFileType);
 
-        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly, destinationFileName);
+        if (string.IsNullOrEmpty(siteModelUid))
+          throw new ArgumentException($"Invalid siteModelUid (you need to have selected one first): {siteModelUid}");
 
-        s3FileName = destinationFileName;
+        if (string.IsNullOrEmpty(fileNameAndLocalPath) ||
+            !Path.HasExtension(fileNameAndLocalPath) ||
+           (importedFileTypeEnum != ImportedFileType.Alignment &&
+            (string.Compare(Path.GetExtension(fileNameAndLocalPath), ".ttm", StringComparison.OrdinalIgnoreCase) != 0))
+            ||
+           (importedFileTypeEnum == ImportedFileType.Alignment &&
+            (string.Compare(Path.GetExtension(fileNameAndLocalPath), ".svl", StringComparison.OrdinalIgnoreCase) != 0))
+          )
+          throw new ArgumentException($"Invalid [path]filename: {fileNameAndLocalPath}");
+
+        if (!System.IO.File.Exists(fileNameAndLocalPath))
+          throw new ArgumentException($"Unable to locate [path]fileName: {fileNameAndLocalPath}");
+
+        var siteModelGuid = Guid.Parse(siteModelUid);
+
+        if (designUid == Guid.Empty)
+          designUid = Guid.NewGuid();
+
+        // copy local file to S3
+        bool designFileLoadedOk;
+        string s3FileName;
+        string destinationFileName = string.Empty;
+
+        var tempFileNameOnly = Path.GetFileName(fileNameAndLocalPath);
+
+        if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+        {
+          var tempDate = asAtDate.Remove(asAtDate.IndexOf(".", 0, StringComparison.Ordinal)).Replace(":", "");
+          destinationFileName = Path.GetFileNameWithoutExtension(tempFileNameOnly) + $"_{tempDate}" + Path.GetExtension(tempFileNameOnly);
+
+          designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly, destinationFileName);
+
+          s3FileName = destinationFileName;
+        }
+        else
+        {
+          designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly);
+          s3FileName = tempFileNameOnly;
+        }
+
+        if (!designFileLoadedOk)
+          throw new ArgumentException($"Unable to copy design file to S3: {s3FileName}");
+
+        // download to appropriate local location and add to site model
+        string downloadLocalPath = FilePathHelper.GetTempFolderForProject(Guid.Parse(siteModelUid));
+        var downloadedok = await S3FileTransfer.ReadFile(Guid.Parse(siteModelUid), s3FileName, downloadLocalPath).ConfigureAwait(false);
+        if (!downloadedok)
+          throw new ArgumentException($"Unable to restore same design file from S3: {s3FileName}");
+
+        if (importedFileTypeEnum == ImportedFileType.DesignSurface)
+        {
+          AddTheDesignSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName);
+
+          // upload indices
+          var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+          if (!spatialUploadedOk)
+            throw new ArgumentException($"Unable to copy spatial index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
+          var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+          if (!subgridUploadedOk)
+            throw new ArgumentException($"Unable to copy subgrid index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
+          // upload boundary...
+          var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+          if (!boundaryUploadedOk)
+            throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
+
+          return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
+        }
+
+        if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
+        {
+          var surveyedUtc = DateTime.Parse(asAtDate).ToUniversalTime(); //DateTime.UtcNow; // unable to parse the date from UI DateTime.Parse(asAtDate);
+          AddTheSurveyedSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName, surveyedUtc);
+
+          // upload indices
+          var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+          if (!spatialUploadedOk)
+            throw new ArgumentException($"Unable to copy spatial index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
+          var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+          if (!subgridUploadedOk)
+            throw new ArgumentException($"Unable to copy subgrid index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
+          // upload boundary...
+          var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+          if (!boundaryUploadedOk)
+            throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
+
+
+          return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().List(siteModelGuid).Locate(designUid));
+        }
+
+        if (importedFileTypeEnum == ImportedFileType.Alignment)
+        {
+          AddTheAlignmentToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName);
+          return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(siteModelGuid).Locate(designUid));
+        }
+        throw new ArgumentException($"{nameof(AddDesignToSiteModel)} Unsupported ImportedFileType: {importedFileType}");
       }
-      else
+      finally
       {
-        designFileLoadedOk = S3FileTransfer.WriteFile(Path.GetDirectoryName(fileNameAndLocalPath), Guid.Parse(siteModelUid), tempFileNameOnly);
-        s3FileName = tempFileNameOnly;
+        Log.LogInformation($"#Out# {nameof(AddDesignToSiteModel)}: siteModelUid:{siteModelUid}, importedFileType:{importedFileType}, designUid{designUid}");
       }
-
-      if (!designFileLoadedOk)
-        throw new ArgumentException($"Unable to copy design file to S3: {s3FileName}");
-
-      // download to appropriate local location and add to site model
-      string downloadLocalPath = FilePathHelper.GetTempFolderForProject(Guid.Parse(siteModelUid));
-      var downloadedok = await S3FileTransfer.ReadFile(Guid.Parse(siteModelUid), s3FileName, downloadLocalPath).ConfigureAwait(false);
-      if (!downloadedok)
-        throw new ArgumentException($"Unable to restore same design file from S3: {s3FileName}");
-
-      if (importedFileTypeEnum == ImportedFileType.DesignSurface)
-      {
-        AddTheDesignSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName);
-
-        // upload indices
-        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
-        if (!spatialUploadedOk)
-          throw new ArgumentException($"Unable to copy spatial index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
-        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
-        if (!subgridUploadedOk)
-          throw new ArgumentException($"Unable to copy subgrid index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
-        // upload boundary...
-        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
-        if (!boundaryUploadedOk)
-          throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
-
-        return new JsonResult(DIContext.Obtain<IDesignManager>().List(siteModelGuid).Locate(designUid));
-      }
-
-      if (importedFileTypeEnum == ImportedFileType.SurveyedSurface)
-      {
-        var surveyedUtc = DateTime.Parse(asAtDate).ToUniversalTime(); //DateTime.UtcNow; // unable to parse the date from UI DateTime.Parse(asAtDate);
-        AddTheSurveyedSurfaceToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName, surveyedUtc);
-
-        // upload indices
-        var spatialUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
-        if (!spatialUploadedOk)
-          throw new ArgumentException($"Unable to copy spatial index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION}");
-        var subgridUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
-        if (!subgridUploadedOk)
-          throw new ArgumentException($"Unable to copy subgrid index file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION}");
-        // upload boundary...
-        var boundaryUploadedOk = S3FileTransfer.WriteFile(downloadLocalPath, Guid.Parse(siteModelUid), s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION, s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
-        if (!boundaryUploadedOk)
-          throw new ArgumentException($"Unable to copy boundary file to S3: {s3FileName + Designs.TTM.Optimised.Consts.DESIGN_BOUNDARY_FILE_EXTENSION}");
-
-        
-        return new JsonResult(DIContext.Obtain<ISurveyedSurfaceManager>().List(siteModelGuid).Locate(designUid));
-      }
-
-      if (importedFileTypeEnum == ImportedFileType.Alignment)
-      {
-        AddTheAlignmentToSiteModel(siteModelGuid, designUid, downloadLocalPath, s3FileName);
-        return new JsonResult(DIContext.Obtain<IAlignmentManager>().List(siteModelGuid).Locate(designUid));
-      }
-      throw new ArgumentException($"{nameof(AddDesignToSiteModel)} Unsupported ImportedFileType: {importedFileType}");
     }
 
 
@@ -252,6 +323,7 @@ namespace VSS.TRex.Webtools.Controllers
     private void AddTheDesignSurfaceToSiteModel(Guid siteModelUid, Guid designUid, string localPath, string localFileName)
     {
       // Invoke the service to add the design surface
+
       try
       {
         // Load the file and extract its extents
@@ -267,6 +339,7 @@ namespace VSS.TRex.Webtools.Controllers
           .Add(siteModelUid, new DesignDescriptor(designUid, string.Empty, localFileName), extents);
 
         DIContext.Obtain<IExistenceMaps>().SetExistenceMap(siteModelUid, Consts.EXISTENCE_MAP_DESIGN_DESCRIPTOR, design.ID, TTM.SubGridOverlayIndex());
+
       }
       catch (Exception e)
       {
