@@ -65,19 +65,19 @@ RUN dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.
 
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
-RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/libs/ /trex/libs/
+RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
 COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.8.0.jar /trex/libs/
 
 WORKDIR /trex/libs/
-RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar
-RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar
-RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar
-RUN wget http://central.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
-RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
-RUN wget http://central.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
-RUN wget http://central.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
-RUN wget http://central.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
+# RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar
+# RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar
+# RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar
+# RUN wget http://central.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
+# RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
+# RUN wget http://central.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
+# RUN wget http://central.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
+# RUN wget http://central.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
 RUN wget http://central.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.11.0/jmx_prometheus_javaagent-0.11.0.jar
-RUN rm spring*4.3.18*
+# RUN rm spring*4.3.18*
 
 #TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile
