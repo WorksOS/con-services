@@ -23,3 +23,6 @@ rules:
 - apiGroups: ["extensions"]
   resources: ["ingresses"]
   verbs: ["get", "list", "create", "delete", "patch", "update"]
+- apiGroups: ["batch"]
+  resources: ["cronjobs"]
+  verbs: ["get", "list", "create", "delete", "patch", "update"]
