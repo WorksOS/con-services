@@ -133,6 +133,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileA
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{1FBD722F-E9CC-4B0B-AD64-1E09396E6168}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Designs.TTM.Optimised", "..\TRex\src\netstandard\VSS.TRex.Designs.TTM.Optimised\VSS.TRex.Designs.TTM.Optimised.csproj", "{46CC4516-18AE-46CD-9C47-ABEFA2025147}"
+	ProjectSection(ProjectDependencies) = postProject
+		{810B6D65-297F-47A2-BEF2-970285FA2039} = {810B6D65-297F-47A2-BEF2-970285FA2039}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -678,6 +683,18 @@ Global
 		{1FBD722F-E9CC-4B0B-AD64-1E09396E6168}.Release|x64.Build.0 = Release|Any CPU
 		{1FBD722F-E9CC-4B0B-AD64-1E09396E6168}.Release|x86.ActiveCfg = Release|Any CPU
 		{1FBD722F-E9CC-4B0B-AD64-1E09396E6168}.Release|x86.Build.0 = Release|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Debug|x64.Build.0 = Debug|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Debug|x86.Build.0 = Debug|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Release|x64.ActiveCfg = Release|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Release|x64.Build.0 = Release|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Release|x86.ActiveCfg = Release|Any CPU
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -738,6 +755,7 @@ Global
 		{FF505CE3-A9E1-43C4-9CC9-E9E70F95C66C} = {70A11426-2940-486C-8034-9B2E4CFA17E3}
 		{1B87579D-7D53-4714-BA0C-2F1EBAAA4532} = {70A11426-2940-486C-8034-9B2E4CFA17E3}
 		{1FBD722F-E9CC-4B0B-AD64-1E09396E6168} = {70A11426-2940-486C-8034-9B2E4CFA17E3}
+		{46CC4516-18AE-46CD-9C47-ABEFA2025147} = {57791481-2B4F-469B-A40C-C3D2C9067F92}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4439E9D5-149F-4105-A555-A4140926723D}
