@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
   </ItemGroup>

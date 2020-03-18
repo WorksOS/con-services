@@ -1,5 +1,6 @@
 ﻿using System;
 using AutoMapper;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -51,7 +52,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
-            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore());
@@ -114,6 +114,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
           // ProjectGeofenceAssociations
           cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();
+
+          // cws clients
+          cfg.CreateMap<CreateProjectEvent, CreateProjectRequestModel>()
+            .ForMember(dest => dest.accountId, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.projectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
+            .ForMember(dest => dest.boundary, opt => opt.Ignore()) // done externally
+            ;
+           
         }
       );
 

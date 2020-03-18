@@ -1,4 +1,5 @@
 ﻿using System;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Internal;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -54,7 +56,7 @@ namespace VSS.MasterData.Project.WebAPI
     public override string ServiceDescription => " Project masterdata service";
 
     /// <inheritdoc />
-    public override string ServiceVersion => "v4";
+    public override string ServiceVersion => "v6";
 
     private static IServiceProvider serviceProvider;
 
@@ -66,7 +68,6 @@ namespace VSS.MasterData.Project.WebAPI
 
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ICustomerProxy, CustomerV5Proxy>();
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
@@ -88,6 +89,8 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
+      services.AddSingleton<IAccountClient, AccountClient>();
+      services.AddSingleton<IProjectClient, ProjectClient>();
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
@@ -31,7 +32,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, IFileRepository fileRepo = null,
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
-      ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null
+      ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
+      IProjectClient projectCwsClient = null
       )
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -47,7 +49,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers,
         productivity3dV1ProxyCoord, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
         persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, projectRepo, fileRepo, customerRepo,
-        httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient
+        httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient, projectCwsClient
         );
 
       return executor;

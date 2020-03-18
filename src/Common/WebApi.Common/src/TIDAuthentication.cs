@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.WebApi.Common
 {
@@ -22,7 +22,7 @@ namespace VSS.WebApi.Common
   {
     private readonly RequestDelegate _next;
     protected readonly ILogger<TIDAuthentication> log;
-    private readonly ICustomerProxy customerProxy;
+    private readonly IAccountClient accountClient;
     private readonly IConfigurationStore store;
 
     protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/" };
@@ -36,13 +36,13 @@ namespace VSS.WebApi.Common
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
     /// </summary>
     public TIDAuthentication(RequestDelegate next,
-      ICustomerProxy customerProxy,
+      IAccountClient accountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<TIDAuthentication>();
-      this.customerProxy = customerProxy;
+      this.accountClient = accountClient;
       _next = next;
       this.store = store;
       ServiceExceptionHandler = serviceExceptionHandler;
@@ -132,7 +132,7 @@ namespace VSS.WebApi.Common
         {
           try
           {
-            var customer = await customerProxy.GetCustomerForUser(userUid, customerUid, customHeaders);
+            var customer = await accountClient.GetAccountForUser(userUid, customerUid, customHeaders);
             if (customer == null)
             {
               var error = $"User {userUid} is not authorized to configure this customer {customerUid}";

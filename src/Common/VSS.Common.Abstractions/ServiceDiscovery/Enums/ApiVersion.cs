@@ -13,7 +13,8 @@ namespace VSS.Common.Abstractions.ServiceDiscovery.Enums
     V2,
     V3,
     V4,
-    V5
+    V5,
+    V6
 
     // Add more as needed
   }

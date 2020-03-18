@@ -86,6 +86,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return await HandleManualImport(request, project, device);
       }
 
+      if (device == null)
+        return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
+
       return await HandleAutoImport(request, device);
     }
 

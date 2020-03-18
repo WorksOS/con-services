@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
@@ -23,8 +24,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public AssetV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore, 
-      IProjectProxy projectProxy, ICustomerProxy customerProxy, IDeviceProxy deviceProxy)
-      : base(logger, configStore, projectProxy, customerProxy, deviceProxy)
+      IAccountClient accountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      : base(logger, configStore, accountClient, projectProxy, deviceProxy)
     {
       _log = logger.CreateLogger<AssetV3RaptorController>();
     }
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetAssetId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, configStore, projectProxy, customerProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, configStore, accountClient, projectProxy, deviceProxy);
       var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
       _log.LogResult(nameof(GetAssetId), request: request, result: result);

@@ -29,7 +29,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+         accountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -45,7 +45,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+        accountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -70,7 +70,7 @@ namespace WebApiTests.Executors
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
       deviceProxy.Setup(d => d.GetDevice(serialNumberRequested)).ReturnsAsync(deviceDataToBeReturned);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, accountClient.Object, projectProxy.Object, deviceProxy.Object);
      
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.AreEqual(serialNumberExpected, device.SerialNumber);
@@ -83,7 +83,7 @@ namespace WebApiTests.Executors
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
       deviceProxy.Setup(d => d.GetDevice(serialNumberRequested)).ReturnsAsync((DeviceData)null);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, accountClient.Object, projectProxy.Object, deviceProxy.Object);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.IsNull(device);

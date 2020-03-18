@@ -21,6 +21,7 @@ using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -43,6 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private IFileRepository _fileRepo;
     private IDataOceanClient _dataOceanClient;
     private ITPaaSApplicationAuthentication _authorization;
+    private IProjectClient _projectCwsClient;
 
 
     /// <summary> Gets the application logging interface. </summary>
@@ -76,6 +78,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the Data Ocean client agent.
     /// </summary>
     protected IDataOceanClient DataOceanClient => _dataOceanClient ?? (_dataOceanClient = HttpContext.RequestServices.GetService<IDataOceanClient>());
+
+    /// <summary>
+    /// Gets or sets the csw Project Client
+    /// </summary>
+    protected IProjectClient CwsProjectClient => _projectCwsClient ?? (_projectCwsClient = HttpContext.RequestServices.GetService<IProjectClient>());
 
     /// <summary> Gets or sets the TPaaS application authentication helper. </summary>
     protected ITPaaSApplicationAuthentication Authorization => _authorization ?? (_authorization = HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>());
@@ -196,7 +203,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets the project.
     /// </summary>
-    /// <param name="legacyProjectId"></param>
     protected async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId)
     {
       var customerUid = LogCustomerDetails("GetProject by shortRaptorProjectId", shortRaptorProjectId);

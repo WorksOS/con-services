@@ -823,7 +823,7 @@ namespace VSS.Productivity3D.Project.Repository
           "INSERT ImportedFile " +
           "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID) " +
           "  VALUES " +
-          "    (@ProjectTrn, @ImportedFileUid, @ImportedFileId, @CustomerUID, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc, @Offset, @ParentUid)");
+          "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUID, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc, @Offset, @ParentUid)");
 
         upsertedCount = await ExecuteWithAsyncPolicy(insert, importedFile);
         Log.LogDebug(
@@ -843,7 +843,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         const string update =
           @"UPDATE ImportedFile
-              SET fk_ProjectUID = @ProjectTrn, 
+              SET fk_ProjectUID = @ProjectUid, 
                 ImportedFileID = @ImportedFileId,
                 fk_CustomerUID = @CustomerUID,
                 fk_ImportedFileTypeID = @ImportedFileType,
@@ -1096,7 +1096,7 @@ namespace VSS.Productivity3D.Project.Repository
         @"INSERT ProjectSettings
                  (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
             VALUES
-              (@ProjectTrn, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
+              (@ProjectUid, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
             ON DUPLICATE KEY UPDATE
               LastActionedUTC =
                 IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
@@ -1472,9 +1472,9 @@ namespace VSS.Productivity3D.Project.Repository
       ProjectSettingsType projectSettingsType)
     {
       return (await QueryWithAsyncPolicy<ProjectSettings>(@"SELECT 
-                fk_ProjectUID AS ProjectTrn, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
+                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
               FROM ProjectSettings
-              WHERE fk_ProjectUID = @ProjectTrn
+              WHERE fk_ProjectUID = @ProjectUid
                 AND UserID = @UserID
                 AND fk_ProjectSettingsTypeID = @ProjectSettingsType
               ORDER BY fk_ProjectUID, UserID, fk_ProjectSettingsTypeID",
@@ -1492,9 +1492,9 @@ namespace VSS.Productivity3D.Project.Repository
     //{
     //  return QueryWithAsyncPolicy<ProjectSettings>
     //  (@"SELECT 
-    //            fk_ProjectUID AS ProjectTrn, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
+    //            fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
     //          FROM ProjectSettings
-    //          WHERE fk_ProjectUID = @ProjectTrn
+    //          WHERE fk_ProjectUID = @ProjectUid
     //            AND UserID = @UserID",
     //    new { ProjectUID = projectUid, UserID = userId }
     //  );
@@ -1513,7 +1513,7 @@ namespace VSS.Productivity3D.Project.Repository
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
             MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
           FROM ImportedFile
-            WHERE fk_ProjectUID = @ProjectTrn
+            WHERE fk_ProjectUID = @ProjectUid
               AND IsArchived = 0",
         new { ProjectUid = projectUid }
       )).ToList();
@@ -1666,7 +1666,7 @@ namespace VSS.Productivity3D.Project.Repository
                           AND @StartDate <= p.EndDate
                           AND @EndDate >= p.StartDate
                           AND cp.fk_CustomerUID = @CustomerUID
-                          AND p.ProjectTrn != @excludeProjectUid
+                          AND p.ProjectUid != @excludeProjectUid
                           AND st_Intersects({polygonToCheck}, PolygonST) = 1";
 
       return (await QueryWithAsyncPolicy<ProjectDataModel>(select,

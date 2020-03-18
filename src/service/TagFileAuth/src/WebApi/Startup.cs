@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CCSS.CWS.Client;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -33,8 +35,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
       // Add framework services.
       services
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-        .AddTransient<IProjectProxy, ProjectV5Proxy>()
-        .AddTransient<ICustomerProxy, CustomerV5Proxy>()
+        .AddTransient<IAccountClient, AccountClient>()
+        .AddTransient<IProjectProxy, ProjectV6Proxy>()
         .AddTransient<IDeviceProxy, DeviceV5Proxy>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>();
 

@@ -14,9 +14,9 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Project.Proxy
 {
-  public class ProjectV5Proxy : BaseServiceDiscoveryProxy, IProjectProxy
+  public class ProjectV6Proxy : BaseServiceDiscoveryProxy, IProjectProxy
   {
-    public ProjectV5Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
+    public ProjectV6Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
@@ -27,7 +27,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string ExternalServiceName => null;
 
-    public  override ApiVersion Version => ApiVersion.V5;
+    public  override ApiVersion Version => ApiVersion.V6;
 
     public  override ApiType Type => ApiType.Public;
 

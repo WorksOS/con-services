@@ -3,8 +3,11 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -36,8 +39,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createProjectEvent.ProjectUID,
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary,
         log, serviceExceptionHandler, projectRepo);
+
+      // Write to WM first to obtain their ProjectTRN to use as ProjectUid for our DB etc
+      var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
+      createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
+
+      var response = await projectCwsClient.CreateProject(createProjectRequestModel);
+      if (response != null) // todoMaverick exception
+        createProjectEvent.ProjectUID = response.Id;
+      // todoMaverick what about exception/other error
       
-      // todoMaverick if actually creating, then need to write to WM first to obtain the ProjectTrn (and accountTrn?) for our DB 
 
       // now making changes, potentially needing rollback 
       //  order changes to minimize rollback

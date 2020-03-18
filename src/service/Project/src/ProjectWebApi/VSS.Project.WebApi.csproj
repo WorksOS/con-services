@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\AWS.TransferProxy\src\VSS.AWS.TransferProxy.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj" />
     <ProjectReference Include="..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />

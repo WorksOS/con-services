@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -24,8 +25,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     protected ILogger log;
     private IConfigurationStore configStore;
+    private IAccountClient accountClient;
     private IProjectProxy projectProxy;
-    private ICustomerProxy customerProxy;
     private IDeviceProxy deviceProxy;
 
     /// <summary>
@@ -81,12 +82,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, 
-      IProjectProxy projectProxy, ICustomerProxy customerProxy, IDeviceProxy deviceProxy) 
+    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,
+      IAccountClient accountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, projectProxy = projectProxy, customerProxy = customerProxy, deviceProxy = deviceProxy};
-        dataRepository = new DataRepository(logger, configStore, projectProxy, customerProxy, deviceProxy);
+      var executor = new TExecutor() { log = logger, configStore = configStore, accountClient = accountClient, projectProxy = projectProxy, deviceProxy = deviceProxy};
+        dataRepository = new DataRepository(logger, configStore, accountClient, projectProxy, deviceProxy);
       return executor;
     }
     

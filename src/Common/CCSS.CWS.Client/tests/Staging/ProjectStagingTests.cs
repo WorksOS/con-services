@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -12,7 +13,7 @@ using VSS.WebApi.Common;
 namespace CCSS.CWS.Client.UnitTests.Staging
 {
   [TestClass]
-  public class AccountStagingTests : BaseTestClass
+  public class ProjectStagingTests : BaseTestClass
   {
     private static string authHeader = string.Empty;
 
@@ -27,7 +28,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       baseUrl = configuration.GetValueString(BaseClient.CWS_URL_KEY);
 
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
-      services.AddTransient<IAccountClient, AccountClient>();
+      services.AddTransient<IProjectClient, ProjectClient>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
 
@@ -56,26 +57,26 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     }
 
     [TestMethod]
-    public async Task Test_GetMyAccounts()
+    public async Task Test_CreateProject()
     {
-      var client = ServiceProvider.GetRequiredService<IAccountClient>();
-      var result = await client.GetMyAccounts(CustomHeaders());
+      var client = ServiceProvider.GetRequiredService<IProjectClient>();
+      var createProjectRequestModel = new CreateProjectRequestModel
+      {             
+        accountId = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97",
+        projectName = "my first project",
+        timezone = "America/Denver",
+        boundary = new ProjectBoundary()
+        {
+          type = "Polygon",
+          coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.3 }, { 150.3, 1.2 } } } }
+        }
+      };
+      // Forbidden {"status":403,"code":9054,"message":"Forbidden","moreInfo":"Please provide this id to support, while contacting, TraceId 5e7066605642c452c5c580f512629fd1","timestamp":1584424545815} ---> VSS.Common.Exceptions.ServiceException: Forbidden
+      var result = await client.CreateProject(createProjectRequestModel, CustomHeaders());
 
-      Assert.IsNotNull(result, "No result from getting my accounts");
-      Assert.IsNotNull(result.Accounts);
-      Assert.IsTrue(result.Accounts.Count > 0);
+      Assert.IsNotNull(result, "No result from creating my project");
+      Assert.IsNotNull(result.Id);
     }
-
-    [TestMethod]
-    public async Task Test_GetDeviceAccounts()
-    {
-      var client = ServiceProvider.GetRequiredService<IAccountClient>();
-      var headers = CustomHeaders();
-      var accountsResult = await client.GetMyAccounts(headers);
-      var result = await client.GetDeviceLicenses(accountsResult.Accounts[0].Id, headers);
-
-      Assert.IsNotNull(result, "No result from getting device licenses");
-      Assert.AreEqual(DeviceLicenseResponseModel.FREE_DEVICE_LICENSE, result.Total);
-    }
+       
   }
 }

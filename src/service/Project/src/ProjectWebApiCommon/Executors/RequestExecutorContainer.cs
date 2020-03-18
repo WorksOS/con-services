@@ -20,6 +20,7 @@ using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -98,6 +99,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected ITPaaSApplicationAuthentication authn;
     protected ISchedulerProxy schedulerProxy;
     protected IPegasusClient pegasusClient;
+    protected IProjectClient projectCwsClient;
     
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -176,7 +178,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
       IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
-      ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null)
+      ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
+      IProjectClient projectCwsClient = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -199,6 +202,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.authn = authn;
       this.schedulerProxy = schedulerProxy;
       this.pegasusClient = pegasusClient;
+      this.projectCwsClient = projectCwsClient;
     }
 
     /// <summary>

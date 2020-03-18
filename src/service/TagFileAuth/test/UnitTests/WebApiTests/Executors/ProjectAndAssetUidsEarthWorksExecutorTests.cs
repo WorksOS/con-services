@@ -49,7 +49,7 @@ namespace WebApiTests.Executors
     public async Task ProjectUidExecutor_InvalidParameters()
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+         accountClient.Object, projectProxy.Object, deviceProxy.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsEarthWorksRequest)null));
 
@@ -68,7 +68,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync((DeviceData)null);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+         accountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
@@ -81,9 +81,9 @@ namespace WebApiTests.Executors
       _projectAndAssetUidsEarthWorksRequest.Validate();
 
       // device whose account has licenses
-      var deviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 2};
+      var deviceDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync(deviceData);
-      customerProxy.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID)).ReturnsAsync(deviceLicenseResponseModel);
+      accountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData
@@ -97,7 +97,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+         accountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceCustomerUid, true, 0);
@@ -112,7 +112,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync(deviceData);
-      customerProxy.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID)).ReturnsAsync(deviceLicenseResponseModel);
+      accountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData
@@ -126,7 +126,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+         accountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceCustomerUid, false, 0);
@@ -141,7 +141,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>())).ReturnsAsync(deviceData);
-      customerProxy.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID)).ReturnsAsync(deviceLicenseResponseModel);
+      accountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData
@@ -163,7 +163,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-        projectProxy.Object, customerProxy.Object, deviceProxy.Object);
+         accountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, _deviceUid, _deviceCustomerUid, true, 3049);

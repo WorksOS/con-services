@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
@@ -80,6 +82,11 @@ namespace VSS.MasterData.ProjectTests.Executors
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
 
+        // todoMaverick need to send update to cws only if boundary/name changed
+        //var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+        var projectClient = new Mock<IProjectClient>();
+        //projectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+
         var projectRepo = new Mock<IProjectRepository>();
         projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateProjectEvent>())).ReturnsAsync(1);
         projectRepo.Setup(pr => pr.GetProject(It.IsAny<string>()))
@@ -105,7 +112,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
-          projectRepo: projectRepo.Object);
+          projectRepo: projectRepo.Object, projectCwsClient: projectClient.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
@@ -139,8 +146,12 @@ namespace VSS.MasterData.ProjectTests.Executors
             It.IsAny<string>()))
         .ReturnsAsync(false);
 
+      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var projectCwsClient = new Mock<IProjectClient>();
+      projectCwsClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-      httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
+      httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v6/projects");
 
       var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
       productivity3dV1ProxyCoord.Setup(p =>
@@ -167,7 +178,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       (_logger, _configStore, _serviceExceptionHandler, _customerUid, _userId, null, _customHeaders,
         productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
         projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
-        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+        projectCwsClient: projectCwsClient.Object);
       await createExecutor.ProcessAsync(createProjectEvent);
 
       return AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(createProjectEvent);

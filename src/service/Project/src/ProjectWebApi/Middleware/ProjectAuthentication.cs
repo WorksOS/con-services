@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -16,10 +17,10 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     /// Initializes a new instance of the <see cref="ProjectAuthentication"/> class.
     /// </summary>
     public ProjectAuthentication(RequestDelegate next,
-      ICustomerProxy customerProxy,
+      IAccountClient accountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler) : base(next, customerProxy, store, logger, serviceExceptionHandler)
+      IServiceExceptionHandler serviceExceptionHandler) : base(next, accountClient, store, logger, serviceExceptionHandler)
     {
     }
 

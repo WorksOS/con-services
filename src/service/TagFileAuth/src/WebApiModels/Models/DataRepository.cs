@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -23,17 +24,25 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   {
     private ILogger _log;
     private IConfigurationStore _configStore;
+
+    // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
+    private readonly IAccountClient _accountClient;
+
+    // We need to use ProjectSvc IProjectProxy as thats where the project data is
     private readonly IProjectProxy _projectProxy;
-    private readonly ICustomerProxy _accountProxy;
+
+    // We need to use ProjectSvc IDeviceProxy 
+    //    as when we get devices from IDeviceClient, 
+    //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceProxy _deviceProxy;
 
     public DataRepository(ILogger logger, IConfigurationStore configStore,
-      IProjectProxy projectProxy, ICustomerProxy accountProxy, IDeviceProxy deviceProxy)
+      IAccountClient accountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
     {
       _log = logger;
       _configStore = configStore;
+      _accountClient = accountClient; 
       _projectProxy = projectProxy;
-      _accountProxy = accountProxy;
       _deviceProxy = deviceProxy;
     }
 
@@ -45,7 +54,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(customerUid))
-          deviceLicenseResponseModel = await _accountProxy.GetDeviceLicenses(customerUid);
+          deviceLicenseResponseModel = await _accountClient.GetDeviceLicenses(customerUid);
       }
       catch (Exception e)
       {

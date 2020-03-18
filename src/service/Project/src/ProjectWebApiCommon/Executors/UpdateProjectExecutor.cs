@@ -65,7 +65,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log.LogDebug("UpdateProject: CreateCoordSystemInProductivity3dAndTcc succeeded");
       }
 
-      // todoMaverick if actually creating, then need to wrote to WM first to obtain the ProjectTrn (and accountTrn?) for our DB 
+      // todoMaverick if actually creating, then need to wrote to WM first to obtain the ProjectUid (and accountTrn?) for our DB 
       var isUpdated = 0;
       try
       {

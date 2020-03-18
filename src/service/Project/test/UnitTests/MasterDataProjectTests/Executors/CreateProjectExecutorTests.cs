@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
@@ -102,6 +104,10 @@ namespace VSS.MasterData.ProjectTests.Executors
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
         .ReturnsAsync(false);
+
+      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var projectCwsClient = new Mock<IProjectClient>();
+      projectCwsClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
       
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v2/projects");
@@ -131,7 +137,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null, customHeaders,
         productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
         projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
-        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+        projectCwsClient: projectCwsClient.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -162,9 +169,13 @@ namespace VSS.MasterData.ProjectTests.Executors
           pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
             It.IsAny<string>()))
         .ReturnsAsync(false);
-      
+
+      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var projectCWSClient = new Mock<IProjectClient>();
+      projectCWSClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
-      httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v4/projects");
+      httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v6/projects");
 
       var productivity3dV1ProxyCoord = new Mock<IProductivity3dV1ProxyCoord>();
       productivity3dV1ProxyCoord.Setup(p =>
@@ -191,7 +202,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       (logger, configStore, serviceExceptionHandler, _customerUid, userId, null,
         productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
         projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
-        dataOceanClient: dataOceanClient.Object, authn: authn.Object);
+        dataOceanClient: dataOceanClient.Object, authn: authn.Object,
+        projectCwsClient: projectCWSClient.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

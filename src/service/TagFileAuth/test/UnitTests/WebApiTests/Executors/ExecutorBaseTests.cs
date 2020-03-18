@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -19,7 +20,7 @@ namespace WebApiTests.Executors
 
     protected IServiceProvider ServiceProvider;
     protected Mock<IProjectProxy> projectProxy;
-    protected Mock<ICustomerProxy> customerProxy;
+    protected Mock<IAccountClient> accountClient;
     protected Mock<IDeviceProxy> deviceProxy;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
@@ -36,7 +37,7 @@ namespace WebApiTests.Executors
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       projectProxy = new Mock<IProjectProxy>();
-      customerProxy = new Mock<ICustomerProxy>();
+      accountClient = new Mock<IAccountClient>();
       deviceProxy = new Mock<IDeviceProxy>();
     }
   
