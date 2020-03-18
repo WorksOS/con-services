@@ -12,6 +12,10 @@ variables:
   jenkins_url: http://ci.eks.ccss.cloud
   service: trex
   service_path: src/service/Trex
+  image_tag: 'None'
+  build_db: false
+  run_acceptance_tests: true
+  run_unit_tests: true
 
 stages:
   - Build:
