@@ -122,7 +122,7 @@ node ('jenkinsslave-pod') {
         //         [includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA']
         //     ]
         // ])
-        }
+    //    }
     }
 
 	stage('Build Runtime Container') {
