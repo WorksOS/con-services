@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
@@ -30,7 +31,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// <param name="results"></param>
     /// <param name="resultCount"></param>
 
-    protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
+    protected override Task<bool> ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       // Package the resulting sub grids into the MemoryStream
       using (var ms = RecyclableMemoryStreamManagerHelper.Manager.GetStream())
@@ -51,7 +52,7 @@ namespace VSS.TRex.SubGrids.Executors
         }
 
         // ... and send it to the request
-        _responseRequest.Execute(new SubGridProgressiveResponseRequestComputeFuncArgument
+        return _responseRequest.ExecuteAsync(new SubGridProgressiveResponseRequestComputeFuncArgument
         {
           NodeId = localArg.OriginatingIgniteNodeId, 
           RequestDescriptor = localArg.RequestID, 

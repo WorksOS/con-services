@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -42,16 +44,21 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     /// Executes the request to send the payload to the originating node
     /// </summary>
     /// <param name="arg"></param>
-    public bool Execute(ISubGridProgressiveResponseRequestComputeFuncArgument arg)
+    public Task<bool> ExecuteAsync(ISubGridProgressiveResponseRequestComputeFuncArgument arg)
     {
       try
       {
-        return _compute.Apply(_computeFunc, arg);
+        //var sw = Stopwatch.StartNew();
+
+        var result = _compute.ApplyAsync(_computeFunc, arg);
+
+        //Log.LogDebug($"SubGridProgressiveResponseRequest.Execute() for request {arg.RequestDescriptor} with {arg.Payload.Bytes.Length} bytes completed in {sw.Elapsed}");
+        return result;
       }
       catch (Exception e)
       {
         Log.LogError(e, $"Exception in {nameof(SubGridProgressiveResponseRequest)}");
-        return false;
+        return Task.FromResult(false);
       }
     }
 

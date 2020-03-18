@@ -293,6 +293,24 @@ namespace VSS.TRex.Tests.TestFixtures
         return response;
       });
 
+      mockCompute.Setup(x => x.ApplyAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
+      {
+        // exercise serialize/deserialize of func and argument before invoking function
+        TestIBinarizableSerializationForItem(func);
+        TestIBinarizableSerializationForItem(argument);
+
+        var task = new Task<TResponse>(() =>
+        {
+          var response = func.Invoke(argument);
+          TestIBinarizableSerializationForItem(response);
+
+          return response;
+        });
+
+        task.Start();
+        return task;
+      });
+
       mockCompute.Setup(x => x.Broadcast(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
       {
         // exercise serialize/deserialize of func and argument before invoking function

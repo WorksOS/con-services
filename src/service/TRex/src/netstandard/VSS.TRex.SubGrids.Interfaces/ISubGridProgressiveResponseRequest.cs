@@ -1,4 +1,6 @@
-﻿namespace VSS.TRex.SubGrids.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace VSS.TRex.SubGrids.Interfaces
 {
   public interface ISubGridProgressiveResponseRequest
   {
@@ -6,6 +8,6 @@
     /// Executes the request to send the payload to the originating node
     /// </summary>
     /// <param name="payload"></param>
-    bool Execute(ISubGridProgressiveResponseRequestComputeFuncArgument payload);
+    Task<bool> ExecuteAsync(ISubGridProgressiveResponseRequestComputeFuncArgument payload);
   }
 }

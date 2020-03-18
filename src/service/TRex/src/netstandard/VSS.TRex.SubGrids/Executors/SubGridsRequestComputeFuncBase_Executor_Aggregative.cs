@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.GridFabric.Responses;
@@ -25,12 +26,12 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     /// <param name="results"></param>
     /// <param name="resultCount"></param>
-    protected override void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
+    protected override Task<bool> ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount)
     {
       if (Task == null)
         throw new ArgumentException("Task null in ProcessSubGridRequestResult() for SubGridsRequestComputeFuncAggregative<TArgument, TResponse> instance.");
 
-      Task.TransferResponse(results);
+      return System.Threading.Tasks.Task.FromResult(Task.TransferResponse(results));
     }
 
     /// <summary>

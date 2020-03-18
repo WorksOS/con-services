@@ -326,7 +326,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     /// <param name="results"></param>
     /// <param name="resultCount"></param>
-    protected abstract void ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount);
+    protected abstract Task<bool> ProcessSubGridRequestResult(IClientLeafSubGrid[][] results, int resultCount);
 
     /// <summary>
     /// Transforms the internal aggregation state into the desired response for the request
@@ -373,7 +373,7 @@ namespace VSS.TRex.SubGrids.Executors
 
       try
       {
-        ProcessSubGridRequestResult(clientGrids, addressCount);
+        await ProcessSubGridRequestResult(clientGrids, addressCount);
       }
       finally
       {
