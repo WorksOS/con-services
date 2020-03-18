@@ -95,22 +95,27 @@ node ('jenkinsslave-pod') {
 	}
     finally {
         //See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
-        stage('Publish Results'){
-            step([$class: 'XUnitBuilder',
-                thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '10']],
-                tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*/*/**/*']]])
+        // stage('Publish Results'){
+        //     step([$class: 'XUnitBuilder',
+        //         thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '10']],
+        //         tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/*/*/**/*']]])
+
+		xunit(
+			thresholds: [failed(failureThreshold: '0', unstableThreshold: '10')],
+			tools: [NUnit3(pattern: 'TestResults/*/*/**/*')]
+		)
 
         cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
         
         //http://javadoc.jenkins-ci.org/tfs/index.html?hudson/plugins/tfs/model/TeamResultType.html
         //Details of the agent -> https://docs.microsoft.com/en-us/vsts/build-release/task
         //Agent Variables -> https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch
-        step([$class: 'TeamCollectResultsPostBuildAction', 
-            requestedResults: [
-                [includes: 'TestResults/*/*/**/*.xml', teamResultType: 'XUNIT'],
-                [includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA']
-            ]
-        ])
+        // step([$class: 'TeamCollectResultsPostBuildAction', 
+        //     requestedResults: [
+        //         [includes: 'TestResults/*/*/**/*.xml', teamResultType: 'XUNIT'],
+        //         [includes: 'TestResults/TestCoverage/*.xml', teamResultType: 'COBERTURA']
+        //     ]
+        // ])
         }
     }
 
