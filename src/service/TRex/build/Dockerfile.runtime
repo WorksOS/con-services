@@ -15,7 +15,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
 
 RUN apt-get update && apt-get install -y\
-    apt-utils
+    apt-utils 
+
+RUN apt-get update && apt-get install -y \
+    wget
 
 RUN apt-get update && apt-get install -y \
     gnupg2
@@ -35,8 +38,7 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y \
     libc6-dev
 
-RUN apt-get update && apt-get install -y \
-    wget
+
 
 RUN wget https://download.mono-project.com/repo/ubuntu/pool/main/libg/libgdiplus/libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb && \
     apt-get install -y ./libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb
