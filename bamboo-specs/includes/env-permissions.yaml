@@ -1,0 +1,20 @@
+- prod:
+  - users: !include 'includes/merino-admins.yaml'
+    permissions:
+      - view
+      - deploy
+  - users: !include 'includes/merino-users.yaml'
+    permissions:
+      - view
+
+- dev:
+  - users: !include 'includes/merino-users.yaml'
+    permissions:
+      - view
+      - deploy
+      
+- alpha:
+  - users: !include 'includes/merino-users.yaml'
+    permissions:
+      - view
+      - deploy

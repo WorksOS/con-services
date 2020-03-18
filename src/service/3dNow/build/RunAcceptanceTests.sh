@@ -9,7 +9,7 @@ echo "Run the AcceptanceTests solution"
 cd AcceptanceTests
 echo "No Acceptance tests"
 #dotnet publish --force VSS.Visionlink.Project.AcceptanceTests.sln
-#dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
+#dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger \"nunit;LogFileName=acceptancetestresults.xml\"
 
 echo " "
 echo " All acceptance tests completed"

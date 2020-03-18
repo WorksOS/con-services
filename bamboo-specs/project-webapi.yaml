@@ -1,0 +1,26 @@
+---
+version: 2
+triggers: !include 'includes/build-triggers.yaml'
+plan:
+  project-key: CIV3D
+  name: project-webapi
+  key: PROJECT
+
+variables:
+  jenkins_username: jnimmo2
+  jenkins_token: 1123a83c8b6925f1567370f72074adf77f
+  jenkins_url: http://ci.eks.ccss.cloud
+  service: project-webapi
+  service_path: src/service/Project
+  image_tag: 'None'
+  build_db: true
+  run_acceptance_tests: true
+  run_unit_tests: true
+
+stages:
+  - Build:
+      jobs: 
+        - Build Jenkins
+
+Build Jenkins: !include 'build-jenkins.yaml'
+

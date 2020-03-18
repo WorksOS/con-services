@@ -16,7 +16,7 @@ echo "Check the database and kafka to see if port is available"
 
 echo "Run the AcceptanceTests solution"
 cd AcceptanceTests
-dotnet test ConsumerAcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
+dotnet test ConsumerAcceptanceTests.sln --logger \"nunit;LogFileName=acceptancetestresults.xml\"
 echo " "
 echo " All acceptance tests completed"
 echo " "

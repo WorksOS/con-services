@@ -5,11 +5,6 @@ node ('jenkinsslave-pod') {
 		parameters([
 			string(
 				defaultValue: null,
-				description: 'Service name and repo name where it will be pushed',
-				name: 'SERVICE_NAME'
-			),
-			string(
-				defaultValue: null,
 				description: 'The build number supplied by VSTS perhaps fail build if this is nothing to prevent unrequested builds during multibranch scan',
 				name: 'VSTS_BUILD_NUMBER'
 			),
@@ -93,10 +88,6 @@ node ('jenkinsslave-pod') {
 	def runtimeImage
 	def dbRuntimeImage
 	def testImage
-	
-	// Run acceptance tests only for non-feature branches
-	if (!runTests)
-		runTests = !(branchName ==~ /\d{5}-.*/)
 
 	//Set the build name so it is consistant with VSTS
 	currentBuild.displayName = versionNumber
@@ -119,12 +110,7 @@ node ('jenkinsslave-pod') {
 	
 
     stage('Build Solution') {
-        
-//	checkout([$class: 'GitSCM', 
-//        branches: [[name: fullBranchName]],
-//        extensions: [[$class: 'CloneOption', depth: 0, noTags: false, shallow: true,  reference: '+refs/heads/*:refs/remotes/origin/* +refs/pull/*/merge:refs/pull/*/merge', userRemoteConfigs: [[credentialsId: 'e49bcbce-3160-44cc-be4a-3abcd6f39848', url: 'https://visionlink.visualstudio.com/VSS/_git/VSS.Productivity3D.MonoRepo']]]]		
-//        ])
-		
+        	
 	checkout scm
 	
 	sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
@@ -146,7 +132,7 @@ node ('jenkinsslave-pod') {
 			// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
 			// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
 			// Coverlet bug link https://github.com/tonerdo/coverlet/issues/33
-			def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build//$+servicePath+$//test && ls UnitTests/**/*Tests.csproj | xargs -I@ -t dotnet test @ ${targetFramework} /p:CopyLocalLockFileAssemblies=true /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutputDirectory=/TestResults/TestCoverage/ --test-adapter-path:. --logger:"xunit;LogFilePath=/TestResults/@.xml"'/$
+			def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build//$+servicePath+$//test && ls UnitTests/**/*Tests.csproj | xargs -I@ -t dotnet test @ ${targetFramework} /p:CopyLocalLockFileAssemblies=true /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutputDirectory=/TestResults/TestCoverage/ --test-adapter-path:. --logger:"nunit;LogFilePath=/TestResults/@.xml"'/$
 			
 			// **/ //Here to help syntax hilighting in VSCode
 
@@ -157,14 +143,24 @@ node ('jenkinsslave-pod') {
 			
 			//Publish test results to Jenkins, set build stability according to configured thresholds
 			//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
-			step([$class: 'XUnitBuilder',
-					thresholds: [
-						[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
-						[$class: 'SkippedThreshold', unstableThreshold: '1']
-					],
-					tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
+			// step([$class: 'XUnitBuilder',
+			// 		thresholds: [
+			// 			[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
+			// 			[$class: 'SkippedThreshold', unstableThreshold: '1']
+			// 		],
+			// 		tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
+
+			xunit(
+				thresholds: [failed(failureThreshold: '0', unstableThreshold: '1'), skipped(unstableThreshold: '1')],
+				tools: [NUnit3(pattern: 'TestResults/UnitTests/**/*.xml')]
+			)
 
 			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+
+			//If we aren't running ATs archive test results now, otherwise they will be handled then.
+			if (!runTests) {
+				archiveArtifacts artifacts: "TestResults/UnitTests/**/*.xml, TestResults/TestCoverage/*.xml", fingerprint: true
+			}
 
 			//Stash results for publication to vsts after acceptance/integration tests have run
 			dir("TestResults") {
@@ -220,9 +216,10 @@ node ('jenkinsslave-pod') {
 						sh "mkdir /app/testresults"
 						sh "/bin/sh ./build/RunAcceptanceTests.sh"
 
-						step([$class: 'XUnitBuilder',
-								thresholds: [[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1']],
-								tools: [[$class: 'XUnitDotNetTestType', pattern: 'AcceptanceTests/tests/**/TestResults/*.xml']]])
+						xunit(
+							thresholds: [failed(failureThreshold: '0', unstableThreshold: '1')],
+							tools: [NUnit3(pattern: 'AcceptanceTests/tests/**/TestResults/*.xml')]
+						)
 								
 						sh "ls -la AcceptanceTests/tests/"
 

@@ -4,6 +4,8 @@ RUN apt-get update && \
     apt-get install git wget vim -y && \
     apt-get install python3.6 python3-pip -y 
 
+RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
 ENV DOWNLOAD_URL=https://bamboo.trimble.tools/agentServer/agentInstaller/atlassian-bamboo-agent-installer-6.7.2.jar
 ENV AGENT_JAR=${BAMBOO_USER_HOME}/atlassian-bamboo-agent-installer.jar
 

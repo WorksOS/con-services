@@ -1,0 +1,4 @@
+
+- users: !include 'includes/merino-users.yaml'
+  permissions:
+    - view
