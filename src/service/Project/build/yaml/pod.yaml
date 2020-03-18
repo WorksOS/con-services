@@ -22,7 +22,7 @@ spec:
         name: projectservice-testing
 
   - name: masterdataconsumercustomer
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     imagePullPolicy: Always
     envFrom:
     - configMapRef:
@@ -33,7 +33,7 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.ICustomerEvent"
 
   - name: masterdataconsumerproject
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     imagePullPolicy: Always
     env_file:
      - docker-compose.env
@@ -48,7 +48,7 @@ spec:
       value: "VSS-MasterData-Project-Only"
       
   - name: masterdataconsumergeofence
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     imagePullPolicy: Always
     envFrom:
     - configMapRef:
@@ -59,7 +59,7 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.IGeofenceEvent"
 
   - name: masterdataconsumersubscription
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     imagePullPolicy: Always
     envFrom:
     - configMapRef:
@@ -70,7 +70,7 @@ spec:
       value: "VSS.Interfaces.Events.MasterData.ISubscriptionEvent"
 
   - name: masterdataschema
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer-db:latest
     imagePullPolicy: Always
     tty: true
     envFrom:
@@ -81,7 +81,7 @@ spec:
       value: "1"
      
   - name: projectonlyschema
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer-db:latest
     imagePullPolicy: Always
     envFrom:
     - configMapRef:

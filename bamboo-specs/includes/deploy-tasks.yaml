@@ -1,0 +1,18 @@
+tasks:
+    - clean
+    - artifact-download:
+        destination: chart
+    - script:
+        echo ${bamboo.planRepository.branchName}-${bamboo.buildNumber}
+    - script: |
+        #!/bin/bash
+        helm upgrade \
+        --install \
+        ${bamboo.deploy.environment}-${bamboo.shortPlanName} \
+        --namespace ${bamboo.deploy.environment} \
+        --reset-values \
+        --values ./chart/values.yaml  \
+        --set image.tag=${bamboo.planRepository.branchName}-${bamboo.buildNumber},environment=${bamboo.deploy.environment},globalConfig=3dapp-${bamboo.deploy.environment},rootDomain=eks.ccss.cloud,serviceName=${bamboo.deploy.environment}-${bamboo.shortPlanName} \
+        --wait \
+        --force \
+        ./chart/ 

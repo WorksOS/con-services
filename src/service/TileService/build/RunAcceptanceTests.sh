@@ -11,7 +11,7 @@ sleep 20s
 echo "Run the AcceptanceTests solution"
 cd AcceptanceTests
 #dotnet publish --force VSS.Tile.Service.AcceptanceTests.sln
-dotnet test VSS.Tile.Service.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
+dotnet test VSS.Tile.Service.AcceptanceTests.sln --logger \"nunit;LogFileName=acceptancetestresults.xml\"
 
 echo " "
 echo " All acceptance tests completed"

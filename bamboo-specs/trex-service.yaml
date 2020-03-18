@@ -1,0 +1,23 @@
+---
+version: 2
+triggers: !include 'includes/build-triggers.yaml'
+plan:
+  project-key: CIV3D
+  name: trex-service
+  key: TREX
+
+variables:
+  jenkins_username: jnimmo2
+  jenkins_token: 1123a83c8b6925f1567370f72074adf77f
+  jenkins_url: http://ci.eks.ccss.cloud
+  service: tile-webapi
+  service_path: src/service/Filter
+  test: something
+
+stages:
+  - Build:
+      jobs: 
+        - Build Jenkins
+
+Build Jenkins: !include 'build-jenkins.yaml'
+

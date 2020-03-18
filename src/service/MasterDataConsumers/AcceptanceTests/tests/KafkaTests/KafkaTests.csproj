@@ -26,6 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.2.0" />
     <PackageReference Include="Confluent.Kafka" Version="1.0.0-beta" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
+    <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
   </ItemGroup>
 
   <ItemGroup>
