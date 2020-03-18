@@ -21,17 +21,23 @@ node ('jenkinsslave-pod') {
 		])
 	])
 
-
+	def buildkey = UUID.randomUUID()
+					.toString()
+					.split('-')[-1..-2]
+					.join('')
+					.toUpperCase()
     def branch = env.BRANCH_NAME.substring(env.BRANCH_NAME.lastIndexOf("/") + 1)
     def buildNumber = env.BUILD_NUMBER
     def jobnameparts = JOB_NAME.tokenize('/') as String[]
     def project_name = jobnameparts[0].toLowerCase()
     def versionNumber = branch + "-" + params.VSTS_BUILD_NUMBER
 	def servicePath = params.SERVICE_PATH
+	def ecr_prefix = "rpd-ccss-"
 
 
-	def buildContainerTag = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
-	def runtimeContainerTag = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${project_name}:${versionNumber}"
+	// def buildContainerTag = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
+	def buildContainerTag = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
+	def runtimeContainerTag = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}${project_name}:${versionNumber}"
 
 	def trexComponents = [
 		"ApplicationServer",
