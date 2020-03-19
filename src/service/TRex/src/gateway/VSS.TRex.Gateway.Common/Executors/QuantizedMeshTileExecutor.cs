@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -34,7 +35,7 @@ namespace VSS.TRex.Gateway.Common.Executors
     /// <typeparam name="T"></typeparam>
     /// <param name="item"></param>
     /// <returns></returns>
-    protected override ContractExecutionResult ProcessEx<T>(T item)
+    protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as QMTileRequest;
       if (request == null)
@@ -44,7 +45,7 @@ namespace VSS.TRex.Gateway.Common.Executors
       var filter = ConvertFilter(request.Filter, siteModel);
       var qmRequest = new QuantizedMeshRequest();
 
-      var response = qmRequest.Execute(new QuantizedMeshRequestArgument
+      var response = await qmRequest.ExecuteAsync(new QuantizedMeshRequestArgument
       {
         ProjectID = siteModel.ID,
         Filters = new FilterSet(filter),
@@ -54,6 +55,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         Y = request.Y,
         Z = request.Z
       }); 
+
       return new QMTileResult(response.data); 
     }
   }
