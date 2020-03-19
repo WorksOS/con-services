@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.MasterData.Project.WebAPI.Middleware
@@ -25,11 +24,21 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     }
 
     /// <summary>
-    /// project specific logic for requiring customerUid
+    /// calls coming from e.g. TFA which don't have a user/customer context
+    ///    but instead use a TPaaS application context
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
-      return !(context.Request.Path.Value.Contains("api/v3/project") && context.Request.Method != "GET");
+      var isApplicationContext = context.Request.Path.Value.ToLower().Contains("applicationcontext");
+
+      var containsCustomerUid = context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid");
+      if (isApplicationContext && context.Request.Method == "GET" && !containsCustomerUid)
+      {
+        log.LogDebug($"{nameof(RequireCustomerUid)} ApplicationContext request doesn't require customerUid. path: {context.Request.Path}");
+        return false;
+      }
+
+      return true;
     } 
   }
 }

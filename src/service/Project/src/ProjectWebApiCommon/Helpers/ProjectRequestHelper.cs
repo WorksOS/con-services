@@ -50,6 +50,58 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return project;
     }
 
+    /// <summary>
+    /// Gets a Project NO customer uid.
+    /// </summary>
+    public static async Task<ProjectDatabaseModel> GetProject(string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var project = (await projectRepo.GetProject(projectUid));
+
+      if (project == null)
+      {
+        log.LogWarning($"Unable to locate projectUid: {projectUid}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+      }
+
+      log.LogInformation($"Project projectUid: {projectUid} retrieved");
+      return project;
+    }
+
+    /// <summary>
+    /// Gets a Project NO customer uid.
+    /// </summary>
+    public static async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var project = (await projectRepo.GetProject(shortRaptorProjectId));
+
+      if (project == null)
+      {
+        log.LogWarning($"Unable to locate shortRaptorProjectId: {shortRaptorProjectId}");
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
+      }
+
+      log.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} retrieved");
+      return project;
+    }
+
+    /// <summary>
+    /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
+    ///   if projectUid, get it if it overlaps in localDB
+    ///    else get overlapping projects in localDB for this CustomerUID
+    /// </summary>
+    public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
+      string customerUid, double latitude, double longitude, 
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
+      DateTime? timeOfPosition = null)
+    {
+      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude, timeOfPosition)).ToList();        ;
+
+      log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
+      return projects;
+    }
+
     public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
       DateTime projectEndDate, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)

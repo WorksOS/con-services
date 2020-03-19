@@ -93,7 +93,7 @@ namespace WebApiTests.Executors
           ProjectType = ProjectType.Standard
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
@@ -122,7 +122,7 @@ namespace WebApiTests.Executors
           ProjectType = ProjectType.Standard
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
@@ -159,7 +159,7 @@ namespace WebApiTests.Executors
           Name = "otherProject"
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjects(_deviceUid)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,

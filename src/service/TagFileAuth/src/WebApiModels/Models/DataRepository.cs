@@ -77,7 +77,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (shortRaptorProjectId > 0)
-          project = await _projectProxy.GetProject(shortRaptorProjectId);
+          project = await _projectProxy.GetProjectApplicationContext(shortRaptorProjectId);
       }
       catch (Exception e)
       {
@@ -95,7 +95,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(projectUid))
-          project = await _projectProxy.GetProject(projectUid);
+          project = await _projectProxy.GetProjectApplicationContext(projectUid);
       }
       catch (Exception e)
       {
@@ -143,7 +143,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (project != null && !string.IsNullOrEmpty(project.ProjectUID))
-          accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID));
+          accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(project.CustomerUID, latitude, longitude, project.ProjectUID));
 
         if (accountProjects == null || !accountProjects.Any())
           return accountProjects;
@@ -173,7 +173,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
-          accountProjects = (await _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
+          accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
 
         if (!accountProjects.Any())
           return accountProjects;

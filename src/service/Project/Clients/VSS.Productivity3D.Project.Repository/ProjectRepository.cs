@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Project.Repository
           Description = projectEvent.Description,
           Name = projectEvent.ProjectName,
           ProjectTimeZone = projectEvent.ProjectTimezone,
-          LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone),
+          ProjectTimeZoneIana = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone),
           ProjectUID = projectEvent.ProjectUID.ToString(),
           EndDate = projectEvent.ProjectEndDate.Date,
           LastActionedUTC = projectEvent.ActionUTC,
@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.Project.Repository
           LastActionedUTC = projectEvent.ActionUTC,
           ProjectType = projectEvent.ProjectType,
           ProjectTimeZone = projectEvent.ProjectTimezone,
-          LandfillTimeZone = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone)
+          ProjectTimeZoneIana = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone)
         };
 
         if (!string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName))
@@ -245,7 +245,7 @@ namespace VSS.Productivity3D.Project.Repository
       var existing = (await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
                 ProjectUID, Description, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsArchived,
-                ProjectTimeZone, LandfillTimeZone, 
+                ProjectTimeZone, ProjectTimeZoneIana, 
                 LastActionedUTC, StartDate, EndDate, ST_ASWKT(PolygonST) AS GeometryWKT,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC
               FROM Project
@@ -310,9 +310,9 @@ namespace VSS.Productivity3D.Project.Repository
         project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone)
           ? project.ProjectTimeZone
           : existing.ProjectTimeZone;
-        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone)
-          ? project.LandfillTimeZone
-          : existing.LandfillTimeZone;
+        project.ProjectTimeZoneIana = string.IsNullOrEmpty(existing.ProjectTimeZoneIana)
+          ? project.ProjectTimeZoneIana
+          : existing.ProjectTimeZoneIana;
         project.StartDate = existing.StartDate == DateTime.MinValue ? project.StartDate : existing.StartDate;
         project.EndDate = existing.EndDate == DateTime.MinValue ? project.EndDate : existing.EndDate;
         project.LastActionedUTC = existing.LastActionedUTC;
@@ -356,9 +356,9 @@ namespace VSS.Productivity3D.Project.Repository
         project.ProjectTimeZone = string.IsNullOrEmpty(existing.ProjectTimeZone)
           ? project.ProjectTimeZone
           : existing.ProjectTimeZone;
-        project.LandfillTimeZone = string.IsNullOrEmpty(existing.LandfillTimeZone)
-          ? project.LandfillTimeZone
-          : existing.LandfillTimeZone;
+        project.ProjectTimeZoneIana = string.IsNullOrEmpty(existing.ProjectTimeZoneIana)
+          ? project.ProjectTimeZoneIana
+          : existing.ProjectTimeZoneIana;
         project.StartDate = existing.StartDate == DateTime.MinValue ? project.StartDate : existing.StartDate;
         project.EndDate = existing.EndDate == DateTime.MinValue ? project.EndDate : existing.EndDate;
         project.LastActionedUTC = existing.LastActionedUTC;
@@ -410,9 +410,9 @@ namespace VSS.Productivity3D.Project.Repository
           project.ProjectTimeZone = string.IsNullOrEmpty(project.ProjectTimeZone)
             ? existing.ProjectTimeZone
             : project.ProjectTimeZone;
-          project.LandfillTimeZone = string.IsNullOrEmpty(project.LandfillTimeZone)
-            ? existing.LandfillTimeZone
-            : project.LandfillTimeZone;
+          project.ProjectTimeZoneIana = string.IsNullOrEmpty(project.ProjectTimeZoneIana)
+            ? existing.ProjectTimeZoneIana
+            : project.ProjectTimeZoneIana;
           project.StartDate = project.StartDate == DateTime.MinValue ? existing.StartDate : project.StartDate;
 
           if (string.IsNullOrEmpty(project.CoordinateSystemFileName))
@@ -494,7 +494,7 @@ namespace VSS.Productivity3D.Project.Repository
             Log.LogDebug($"ProjectRepository/DeleteProject: updating project={project.ProjectUID}");
 
             // on deletion, the projects endDate will be set to now, in its local time.
-            var localEndDate = project.LastActionedUTC.ToLocalDateTime(existing.LandfillTimeZone);
+            var localEndDate = project.LastActionedUTC.ToLocalDateTime(existing.ProjectTimeZoneIana);
             if (localEndDate != null)
             {
               project.EndDate = localEndDate.Value.Date;
@@ -510,7 +510,7 @@ namespace VSS.Productivity3D.Project.Repository
             }
             else
             {
-              Log.LogError($"ProjectRepository/DeleteProject: Unable to convert current Utc date to local. Unknown timeZone: {existing.LandfillTimeZone}");
+              Log.LogError($"ProjectRepository/DeleteProject: Unable to convert current Utc date to local. Unknown timeZone: {existing.ProjectTimeZoneIana}");
             }
 
             if (upsertedCount > 0)
@@ -529,14 +529,14 @@ namespace VSS.Productivity3D.Project.Repository
           $"ProjectRepository/DeleteProject: delete event where no project exists, creating one. project={project.ProjectUID}");
         project.Name = "";
         project.ProjectTimeZone = "";
-        project.LandfillTimeZone = "";
+        project.ProjectTimeZoneIana = "";
         project.ProjectType = ProjectType.Standard;
 
         const string delete =
           "INSERT Project " +
-          "    (ProjectUID, Name, fk_ProjectTypeID, IsArchived, ProjectTimeZone, LandfillTimeZone, LastActionedUTC)" +
+          "    (ProjectUID, Name, fk_ProjectTypeID, IsArchived, ProjectTimeZone, ProjectTimeZoneIana, LastActionedUTC)" +
           "  VALUES " +
-          "    (@ProjectUID, @Name, @ProjectType, 1, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC)";
+          "    (@ProjectUID, @Name, @ProjectType, 1, @ProjectTimeZone, @ProjectTimeZoneIana, @LastActionedUTC)";
 
         upsertedCount = await ExecuteWithAsyncPolicy(delete, project);
         Log.LogDebug(
@@ -560,15 +560,15 @@ namespace VSS.Productivity3D.Project.Repository
       if (project.ShortRaptorProjectId <= 0) // allow db autoincrement on legacyProjectID
       {
         return "INSERT Project " +
-          "    (ProjectUID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
+          "    (ProjectUID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, ProjectTimeZoneIana, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
           "  VALUES " +
-          $"    (@ProjectUID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
+          $"    (@ProjectUID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @ProjectTimeZoneIana, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
       }
 
       return "INSERT Project " +
-        "    (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, LandfillTimeZone, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
+        "    (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, ProjectTimeZoneIana, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
         "  VALUES " +
-        $"    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @LandfillTimeZone, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
+        $"    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @ProjectTimeZoneIana, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
     }
 
     private string BuildProjectUpdateString(ProjectDataModel project)
@@ -581,7 +581,7 @@ namespace VSS.Productivity3D.Project.Repository
                 SET 
                   Name = @Name, Description = @Description, fk_ProjectTypeID = @ProjectType,
                   IsArchived = @IsArchived,
-                  ProjectTimeZone = @ProjectTimeZone, LandfillTimeZone = @LandfillTimeZone,
+                  ProjectTimeZone = @ProjectTimeZone, ProjectTimeZoneIana = @ProjectTimeZoneIana,
                   LastActionedUTC = @LastActionedUTC,
                   StartDate = @StartDate, EndDate = @EndDate,   
                   CoordinateSystemFileName = @CoordinateSystemFileName,
@@ -594,7 +594,7 @@ namespace VSS.Productivity3D.Project.Repository
                 SET LegacyProjectID = @LegacyProjectID, 
                   Name = @Name, Description = @Description, fk_ProjectTypeID = @ProjectType,
                   IsArchived = @IsArchived,
-                  ProjectTimeZone = @ProjectTimeZone, LandfillTimeZone = @LandfillTimeZone,
+                  ProjectTimeZone = @ProjectTimeZone, ProjectTimeZoneIana = @ProjectTimeZoneIana,
                   LastActionedUTC = @LastActionedUTC,
                   StartDate = @StartDate, EndDate = @EndDate,   
                   CoordinateSystemFileName = @CoordinateSystemFileName,
@@ -937,13 +937,13 @@ namespace VSS.Productivity3D.Project.Repository
     {
       const string insert = @"INSERT INTO ProjectHistory
               (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
-                IsArchived, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate,
+                IsArchived, ProjectTimeZone, ProjectTimeZoneIana, StartDate, EndDate,
                 PolygonST,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
                 LastActionedUTC)
               SELECT 
                   ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
-                  IsArchived, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate,
+                  IsArchived, ProjectTimeZone, ProjectTimeZoneIana, StartDate, EndDate,
                   PolygonST,
                   CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
                   LastActionedUTC
@@ -1117,48 +1117,37 @@ namespace VSS.Productivity3D.Project.Repository
     #region gettersProject
 
     /// <summary>
-    ///     There may be 0 or n subscriptions for this project. None/many may be current.
-    ///     This method just gets ANY one of these or no subs (SubscriptionUID == null)
-    ///     We don't care, up to the calling code to decipher.
+    ///    Gets a project by Uid, only if it is not archived
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public async Task<ProjectDataModel> GetProject(string projectUid)
+    public async Task<ProjectDataModel> GetProject(string projectUid)  // todoMaverick done
     {
       var project = (await QueryWithAsyncPolicy<ProjectDataModel>(@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p 
-                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
-                LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE p.ProjectUID = @ProjectUID 
-                AND p.IsArchived = 0",
+                ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana,
+                LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC, CustomerUID, LastActionedUTC
+              FROM Project 
+              WHERE ProjectUID = @ProjectUID 
+                AND IsArchived = 0",
         new { ProjectUID = projectUid })).FirstOrDefault();
       return project;
     }
 
     /// <summary>
-    ///     Gets by legacyProjectID. No subs
+    ///     Gets by shortRaptorProjectId, only if it is not archived
     /// </summary>
     /// <returns></returns>
-    public async Task<ProjectDataModel> GetProject(long legacyProjectId)
+    public async Task<ProjectDataModel> GetProject(long shortRaptorProjectId)  // todoMaverick done
     {
       var project = await QueryWithAsyncPolicy<ProjectDataModel>(@"SELECT
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
-                p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID
-              FROM Project p 
-                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
-              WHERE p.LegacyProjectID = @LegacyProjectID 
-                AND p.IsArchived = 0",
-        new { LegacyProjectID = legacyProjectId });
+                ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana,
+                LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC, CustomerUID, LastActionedUTC
+              FROM Project 
+              WHERE ShortRaptorProjectId = @ShortRaptorProjectId 
+                AND IsArchived = 0",
+        new { ShortRaptorProjectId = shortRaptorProjectId });
       return project.FirstOrDefault();
     }
 
@@ -1172,7 +1161,7 @@ namespace VSS.Productivity3D.Project.Repository
     //{
     //  var projectSubList = QueryWithAsyncPolicy<ProjectDataModel>
     //  (@"SELECT 
-    //            p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+    //            p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
     //            p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
     //            p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
     //            cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
@@ -1201,7 +1190,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var projectList = QueryWithAsyncPolicy<ProjectDataModel>(@"SELECT 
                 ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID as ProjectType, 
-                IsArchived, ProjectTimeZone, LandfillTimeZone, StartDate, EndDate, 
+                IsArchived, ProjectTimeZone, ProjectTimeZoneIana, StartDate, EndDate, 
                 ST_ASWKT(PolygonST) as GeometryWKT,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
                 LastActionedUTC 
@@ -1220,7 +1209,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var projects = (await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
                 p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -1250,7 +1239,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var projects = QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
                 p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
@@ -1282,7 +1271,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var projects = QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
                 p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -1310,13 +1299,24 @@ namespace VSS.Productivity3D.Project.Repository
     /// </summary>
     /// <param name="customerUid"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<ProjectDataModel>> GetProjectsForCustomer(string customerUid)
-    {
-      // mysql doesn't have any nice mssql features like rowNumber/paritionBy, so quicker to do in c#
+     public async Task<IEnumerable<ProjectDataModel>> GetProjectsForCustomer(string customerUid)  // todoMaverick done
+    {      
       return await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
-              c.CustomerUID, cp.LegacyCustomerID, 
-              p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+              CustomerUID, 
+              ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana,
+              LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
+              CoordinateSystemFileName, CoordinateSystemLastActionedUTC, IsArchived
+            FROM Project  
+            WHERE CustomerUID = @CustomerUID",
+        new { CustomerUID = customerUid }
+      );
+    }
+
+    /*
+    (@"SELECT 
+              c.CustomerUID, LegacyCustomerID,
+              p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
               p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
               p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
               ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
@@ -1326,10 +1326,7 @@ namespace VSS.Productivity3D.Project.Repository
               LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
               LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
             WHERE c.CustomerUID = @CustomerUID",
-        new { CustomerUID = customerUid }
-      );
-    }
-
+*/
     /// <summary>
     ///     Gets the specified project without linked data like customer and subscription.
     /// </summary>
@@ -1339,7 +1336,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var project = (await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
                 p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC
               FROM Project p 
@@ -1396,7 +1393,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var project = (await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
-                  p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                  p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
                   p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
                   p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                   cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
@@ -1425,7 +1422,7 @@ namespace VSS.Productivity3D.Project.Repository
       return await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT
            c.CustomerUID, cp.LegacyCustomerID,
-           p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+           p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
            p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
            p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
            null AS SubscriptionUID, null AS SubscriptionStartDate, null AS SubscriptionEndDate, null AS ServiceTypeID
@@ -1619,7 +1616,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
       var select = "SELECT DISTINCT " +
-                   "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
+                   "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana, " +
                    "        p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT, " +
                    "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
                    "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " + "      FROM Project p " +
@@ -1656,7 +1653,7 @@ namespace VSS.Productivity3D.Project.Repository
       string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
 
       var select = $@"SELECT DISTINCT
-                          p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                          p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
                           p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
                           p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                           cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID
@@ -1718,58 +1715,36 @@ namespace VSS.Productivity3D.Project.Repository
       return tasks.Select(t => t.Result);    
     }
 
-    ///// <summary>
-    /////     Gets any project for the customer
-    /////     which the lat/long is within
-    /////       optionally can check for a) subset of projectTypes and b) within time 
-    ///// </summary>
-    ///// <param name="customerUid"></param>
-    ///// <param name="latitude"></param>
-    ///// <param name="longitude"></param>
-    ///// <param name="projectTypes"></param>
-    ///// <param name="timeOfPosition"></param>
-    ///// <returns>The project</returns>
-    //public Task<IEnumerable<ProjectDataModel>> GetIntersectingProjects(string customerUid,
-    //  double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition)
-    //{
-    //  var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
-    //  var projectTypesString = string.Empty;
-    //  if (projectTypes.Any())
-    //  {
-    //    projectTypesString += " AND p.fk_ProjectTypeID IN ( ";
-    //    for (int i = 0; i < projectTypes.Length; i++)
-    //    {
-    //      projectTypesString += projectTypes[i] + ((i < projectTypes.Length - 1) ? "," : "");
-    //    }
+    /// <summary>
+    ///     Gets active projects for the customer
+    ///     which the lat/long is within
+    ///       optionally can check for within time 
+    ///       note that projectTypes are only standard at present
+    /// </summary>
+    public Task<IEnumerable<ProjectDataModel>> GetIntersectingProjects(string customerUid,
+      double latitude, double longitude, DateTime? timeOfPosition) // todoMaverick done
+    {
+      var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
+     
+      var timeRangeString = string.Empty;
+      if (timeOfPosition != null)
+      {
+        var formattedDate = (timeOfPosition.Value.Date.ToString("yyyy-MM-dd"));
+        timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
+      }
 
-    //    projectTypesString += " ) ";
-    //  }
+      var select = "SELECT DISTINCT " +
+                   "     ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana, " +
+                   "     LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT, " +
+                   "     CoordinateSystemFileName, CoordinateSystemLastActionedUTC, CustomerUID, LastActionedUTC " +
+                   "   FROM Project " +
+                   "      WHERE IsArchived = 0 " +
+                   $"        AND cp.fk_CustomerUID = '{customerUid}' " +
+                   $"       {timeRangeString} " +
+                   $"        AND st_Intersects({point}, PolygonST) = 1";
 
-    //  var timeRangeString = string.Empty;
-    //  if (timeOfPosition != null)
-    //  {
-    //    var formattedDate = (timeOfPosition.Value.Date.ToString("yyyy-MM-dd"));
-    //    timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
-    //  }
-
-    //  var select = "SELECT DISTINCT " +
-    //               "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone, " +
-    //               "        p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT, " +
-    //               "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
-    //               "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, " +
-    //               "        ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID " +
-    //               "      FROM Project p " +
-    //               "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
-    //               "        LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID " +
-    //               "        LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID " +
-    //               "       WHERE     p.IsArchived = 0 " +
-    //               $"        AND cp.fk_CustomerUID = '{customerUid}' " +
-    //               $"       {projectTypesString} " +
-    //               $"       {timeRangeString} " +
-    //               $"        AND st_Intersects({point}, PolygonST) = 1";
-
-    //  return QueryWithAsyncPolicy<ProjectDataModel>(select);
-    //}
+      return QueryWithAsyncPolicy<ProjectDataModel>(select);
+    }
 
     #endregion gettersSpatial
 
@@ -1777,7 +1752,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       return QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.LandfillTimeZone,
+                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
                 p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
                 p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
                 cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 

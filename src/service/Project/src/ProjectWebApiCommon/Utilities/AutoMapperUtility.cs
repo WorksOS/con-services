@@ -1,6 +1,7 @@
 ﻿using System;
 using AutoMapper;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -62,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.GeometryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
             .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
-            .ForMember(dest => dest.LandfillTimeZone, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectTimeZoneIana, opt => opt.Ignore())
             .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
             .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore());
@@ -70,9 +71,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
-          cfg.CreateMap<ProjectDatabaseModel, ProjectV4Descriptor>()
+          cfg.CreateMap<ProjectDatabaseModel, ProjectV6Descriptor>()
             .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
-            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.LandfillTimeZone))
+            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.ProjectTimeZoneIana))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
             .ForMember(dest => dest.IsArchived, opt => opt.MapFrom(src => src.IsArchived))
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
@@ -92,13 +93,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
           // for v2 BC apis
-          cfg.CreateMap<ProjectDatabaseModel, ProjectV2DescriptorResult>()
+          cfg.CreateMap<ProjectDatabaseModel, ProjectV5DescriptorResult>()
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
             .ForMember(dest => dest.Code, opt => opt.Ignore())
             .ForMember(dest => dest.Message, opt => opt.Ignore());
-          cfg.CreateMap<CreateProjectV2Request, CreateProjectEvent>()
+          cfg.CreateMap<CreateProjectV5Request, CreateProjectEvent>()
             .ForMember(dest => dest.CustomerUID, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.ProjectBoundary, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom((src => src.CoordinateSystem.Name)))
@@ -122,7 +123,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
             .ForMember(dest => dest.boundary, opt => opt.Ignore()) // done externally
             ;
-           
+          cfg.CreateMap<AccountResponseModel, CustomerData>()
+            .ForMember(dest => dest.uid, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
+            .ForMember(dest => dest.type, opt => opt.MapFrom(src => CustomerType.Customer.ToString()))            
+            ;
+
         }
       );
 

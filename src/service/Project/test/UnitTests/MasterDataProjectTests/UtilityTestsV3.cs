@@ -87,7 +87,7 @@ namespace VSS.MasterData.ProjectTests
         Name = "the Name",
         Description = "the Description",
         ProjectTimeZone = "NZ stuff",
-        LandfillTimeZone = "Pacific stuff",
+        ProjectTimeZoneIana = "Pacific stuff",
         StartDate = new DateTime(2017, 01, 20),
         EndDate = new DateTime(2017, 02, 15),
         CustomerUID = Guid.NewGuid().ToString(),
@@ -99,14 +99,14 @@ namespace VSS.MasterData.ProjectTests
         LastActionedUTC = new DateTime(2017, 01, 21)
       };
 
-      var result = AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project);
+      var result = AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project);
       Assert.Equal(project.ProjectUID, result.ProjectUid);
       Assert.Equal(project.ShortRaptorProjectId, result.ShortRaptorProjectId);
       Assert.Equal(project.ProjectType, result.ProjectType);
       Assert.Equal(project.Name, result.Name);
       Assert.Equal(project.Description, result.Description);
       Assert.Equal(project.ProjectTimeZone, result.ProjectTimeZone);
-      Assert.Equal(project.LandfillTimeZone, result.IanaTimeZone);
+      Assert.Equal(project.ProjectTimeZoneIana, result.IanaTimeZone);
       Assert.Equal(project.StartDate.ToString("O"), result.StartDate);
       Assert.Equal(project.EndDate.ToString("O"), result.EndDate);
       Assert.Equal(project.CustomerUID, result.CustomerUid);

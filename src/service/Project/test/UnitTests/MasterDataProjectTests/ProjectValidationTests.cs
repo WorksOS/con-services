@@ -55,7 +55,7 @@ namespace VSS.MasterData.ProjectTests
     [Fact]
     public void ValidateCreateProjectV2Request_HappyPath()
     {
-      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      var request = CreateProjectV5Request.CreateACreateProjectV2Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
@@ -76,7 +76,7 @@ namespace VSS.MasterData.ProjectTests
         new TBCPoint(-43.5, 172.6)
       };
 
-      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      var request = CreateProjectV5Request.CreateACreateProjectV2Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
@@ -106,7 +106,7 @@ namespace VSS.MasterData.ProjectTests
         new TBCPoint(-43.5, 172.603)
       };
 
-      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      var request = CreateProjectV5Request.CreateACreateProjectV2Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
       var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);

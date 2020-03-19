@@ -216,7 +216,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
-      Logger.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} retrieved");
+      Logger.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} ProjectUID: {project.ProjectUID} CustomerUID: {project.CustomerUID} retrieved");
       return project;
     }
 

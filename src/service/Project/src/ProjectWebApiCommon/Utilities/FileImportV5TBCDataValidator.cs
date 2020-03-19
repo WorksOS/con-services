@@ -12,7 +12,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   /// <summary>
   /// Validates all file import data
   /// </summary>
-  public class FileImportV2DataValidator
+  public class FileImportV5TBCDataValidator
   {
     protected static ProjectErrorCodesProvider projectErrorCodesProvider = new ProjectErrorCodesProvider();
 

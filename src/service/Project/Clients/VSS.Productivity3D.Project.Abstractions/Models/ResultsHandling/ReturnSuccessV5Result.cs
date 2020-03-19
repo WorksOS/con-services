@@ -3,9 +3,8 @@ using Newtonsoft.Json;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
-  public class ReturnLongV2Result
+  public class ReturnSuccessV5Result 
   {
-
     /// <value>
     ///   Result code.
     /// </value>
@@ -13,15 +12,15 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     public HttpStatusCode Code { get; set; }
 
     /// <summary>
-    /// a legacyId (project or importedFile)
+    /// Succeeded or not
     /// </summary>
-    [JsonProperty(PropertyName = "id")]
-    public long Id { get;  set; }
+    [JsonProperty(PropertyName = "success")]
+    public bool Success { get;  set; }
     
     /// <summary>
     /// Private constructor
     /// </summary>
-    private ReturnLongV2Result()
+    private ReturnSuccessV5Result()
     { }
 
 
@@ -29,12 +28,12 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// CreateLongV2Result create instance
     /// </summary>
     /// <returns></returns>
-    public static ReturnLongV2Result CreateLongV2Result(HttpStatusCode code, long id)
+    public static ReturnSuccessV5Result CreateReturnSuccessV5Result(HttpStatusCode code, bool success)
     {
-      return new ReturnLongV2Result
+      return new ReturnSuccessV5Result
       {
         Code = code,
-        Id = id
+        Success = success
       };
     }
     

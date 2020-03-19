@@ -14,14 +14,18 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
     Task<ImportedFile> GetImportedFile(string importedFileUid);
     Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid);
     Task<IEnumerable<ImportedFile>> GetReferencedImportedFiles(string importedFileUid);
-    Task<Models.DatabaseModels.Project> GetProject(long legacyProjectID);
-    Task<Models.DatabaseModels.Project> GetProject(string projectUid);
+    Task<Models.DatabaseModels.Project> GetProject(long shortRaptorProjectId); // todoMaverick done
+    
+    Task<Models.DatabaseModels.Project> GetProject(string projectUid);  // todoMaverick done
+
     //Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate);
     //Task<Models.DatabaseModels.Project> GetProjectBySubcription(string subscriptionUid);
     Task<Models.DatabaseModels.Project> GetProjectOnly(string projectUid);
     Task<ProjectSettings> GetProjectSettings(string projectUid, string userId, ProjectSettingsType projectSettingsType);
     //Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid, string userId);
-    Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectsForCustomer(string customerUid);
+    
+    Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectsForCustomer(string customerUid);  // todoMaverick done
+
     //Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectsForCustomerUser(string customerUid, string userUid);
     //Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectsForUser(string userUid);
     Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid);
@@ -41,10 +45,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
     //Task<IEnumerable<Models.DatabaseModels.Project>> GetStandardProject(string customerUID, double latitude, double longitude,
     //  DateTime timeOfPosition);
    
-    // todoMaverick
-    //Task<IEnumerable<Models.DatabaseModels.Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude,
-    //  int[] projectTypes, DateTime? timeOfPosition = null);
-    
+    Task<IEnumerable<Models.DatabaseModels.Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude, 
+      DateTime? timeOfPosition = null);     // todoMaverick done
+
     Task<int> StoreEvent(IProjectEvent evt);
   }
 }

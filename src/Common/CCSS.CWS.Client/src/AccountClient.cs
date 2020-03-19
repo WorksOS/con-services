@@ -21,7 +21,7 @@ namespace CCSS.CWS.Client
       return GetData<AccountListResponseModel>("/users/me/accounts", null, customHeaders);
     }
 
-    public Task<AccountResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null)
+    public Task<AccountListResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick need to query by userUid to allow override as per TIDAuthentication
       // CCSSCON-122

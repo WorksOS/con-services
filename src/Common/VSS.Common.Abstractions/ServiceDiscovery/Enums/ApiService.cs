@@ -14,7 +14,6 @@
     Push,
     Tile,
     TagFileAuth,
-    Device,
-    Account
+    Device
   }
 }

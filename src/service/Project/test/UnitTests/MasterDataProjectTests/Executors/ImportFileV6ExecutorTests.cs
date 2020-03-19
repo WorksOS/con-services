@@ -36,7 +36,7 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests.Executors
 {
-  public class ImportFileV4ExecutorTestsDiFixture : UnitTestsDIFixture<ImportFileV4ExecutorTestsDiFixture>
+  public class ImportFilev6ExecutorTestsDiFixture : UnitTestsDIFixture<ImportFilev6ExecutorTestsDiFixture>
   {
     private static string _customerUid;
     private static string _projectUid;
@@ -45,7 +45,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     private static long _shortRaptorProjectId;
     private static string _fileSpaceId;
 
-    public ImportFileV4ExecutorTestsDiFixture()
+    public ImportFilev6ExecutorTestsDiFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
       _customerUid = Guid.NewGuid().ToString();

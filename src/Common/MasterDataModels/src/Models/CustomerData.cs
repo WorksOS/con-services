@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.MasterData.Models.Models

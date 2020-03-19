@@ -13,7 +13,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   public class MapV2Models
   {
     // there no legacyIds: Customer or Project
-    public static CreateProjectEvent MapCreateProjectV2RequestToEvent(CreateProjectV2Request source, string customerUid)
+    public static CreateProjectEvent MapCreateProjectV2RequestToEvent(CreateProjectV5Request source, string customerUid)
     {
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(source);
       createProjectEvent.ProjectUID = Guid.NewGuid().ToString();

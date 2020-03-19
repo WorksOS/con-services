@@ -58,11 +58,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>A list of projects</returns>
     [Route("api/v6/project")]
     [HttpGet]
-    public async Task<ProjectV4DescriptorsListResult> GetProjectsV4([FromQuery] bool? includeLandfill)
+    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6([FromQuery] bool? includeLandfill)
     {
       // Note: includeLandfill is obsolete, but not worth the grief up creating a new endpoint.
 
-      return await GetAllProjectsV4();
+      return await GetAllProjectsV6();
     }
 
     /// <summary>
@@ -72,16 +72,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>A list of projects</returns>
     [Route("api/v6/project/all")]
     [HttpGet]
-    public async Task<ProjectV4DescriptorsListResult> GetAllProjectsV4()
+    public async Task<ProjectV6DescriptorsListResult> GetAllProjectsV6()
     {
-      Logger.LogInformation("GetAllProjectsV4");
+      Logger.LogInformation("GetAllProjectsV6");
 
       var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
 
-      return new ProjectV4DescriptorsListResult
+      return new ProjectV6DescriptorsListResult
       {
         ProjectDescriptors = projects.Select(project =>
-            AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project))
+            AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project))
           .ToImmutableList()
       };
     }
@@ -92,12 +92,65 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>A project data</returns>
     [Route("api/v6/project/{projectUid}")]
     [HttpGet]
-    public async Task<ProjectV4DescriptorsSingleResult> GetProjectV4(string projectUid)
+    public async Task<ProjectV6DescriptorsSingleResult> GetProjectV6(string projectUid)
     {
-      Logger.LogInformation("GetProjectV4");
+      Logger.LogInformation("GetProjectV6");
      
       var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-      return new ProjectV4DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(project));
+      return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
+    }
+
+    /// <summary>
+    /// Gets a project in applicationContext i.e. no customer. 
+    /// </summary>
+    /// <returns>A project data</returns>
+    [Route("api/v6/project/applicationcontext/{projectUid}")]
+    [HttpGet]
+    public async Task<ProjectV6DescriptorsSingleResult> GetProjectUidApplicationContextV6(string projectUid)
+    {
+      Logger.LogInformation($"{nameof(GetProjectUidApplicationContextV6)}");
+
+      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+      return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
+    }
+
+    /// <summary>
+    /// Gets a project in applicationContext i.e. no customer. 
+    /// </summary>
+    /// <returns>A project data</returns>
+    [Route("api/v6/project/applicationcontext/{projectUid}")]
+    [HttpGet]
+    public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
+    {
+      Logger.LogInformation($"{nameof(GetProjectShortIdApplicationContextV6)}");
+
+      var project = await ProjectRequestHelper.GetProject(shortRaptorProjectId, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+      return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
+    }
+
+    /// <summary>
+    /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
+    ///   if projectUid, get it if it overlaps in localDB
+    ///    else get overlapping projects in localDB for this CustomerUID
+    /// </summary>
+    /// <returns>project data list</returns>
+    [Route("api/v6/project/applicationcontext/intersecting")]
+    [HttpGet]
+    public async Task<ProjectV6DescriptorsListResult> GetIntersectingProjectsApplicationContextV6(string customerUid,
+       double latitude, double longitude, DateTime? timeOfPosition = null)
+    {
+      Logger.LogInformation($"{nameof(GetIntersectingProjectsApplicationContextV6)}");
+
+      var projects = await ProjectRequestHelper.GetIntersectingProjects(
+        customerUid, latitude, longitude,
+        Logger, ServiceExceptionHandler, ProjectRepo,
+        timeOfPosition).ConfigureAwait(false);
+      return new ProjectV6DescriptorsListResult
+      {
+        ProjectDescriptors = projects.Select(project =>
+            AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project))
+           .ToImmutableList()
+      };
     }
 
     // POST: api/project
@@ -113,7 +166,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPost]
-    public async Task<ProjectV4DescriptorsSingleResult> CreateProject([FromBody] CreateProjectRequest projectRequest)
+    public async Task<ProjectV6DescriptorsSingleResult> CreateProject([FromBody] CreateProjectRequest projectRequest)
     {
       if (projectRequest == null)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 39);
@@ -145,8 +198,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(createProjectEvent)
       );
 
-      var result = new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+      var result = new ProjectV6DescriptorsSingleResult(
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
       await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID));
@@ -202,14 +255,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPut]
-    public async Task<ProjectV4DescriptorsSingleResult> UpdateProjectV4([FromBody] UpdateProjectRequest projectRequest)
+    public async Task<ProjectV6DescriptorsSingleResult> UpdateProjectV6([FromBody] UpdateProjectRequest projectRequest)
     {
       if (projectRequest == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 40);
       }
 
-      Logger.LogInformation("UpdateProjectV4. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
+      Logger.LogInformation("UpdateProjectV6. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
@@ -228,12 +281,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       //invalidate cache in TRex/Raptor
-      Logger.LogInformation("UpdateProjectV4. Invalidating 3D PM cache");
+      Logger.LogInformation("UpdateProjectV6. Invalidating 3D PM cache");
       await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
-      Logger.LogInformation("UpdateProjectV4. Completed successfully");
-      return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+      Logger.LogInformation("UpdateProjectV6. Completed successfully");
+      return new ProjectV6DescriptorsSingleResult(
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
     }
 
@@ -290,9 +343,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v6/project/{projectUid}")]
     [HttpDelete]
-    public async Task<ProjectV4DescriptorsSingleResult> DeleteProjectV4([FromRoute] string projectUid)
+    public async Task<ProjectV6DescriptorsSingleResult> DeleteProjectV6([FromRoute] string projectUid)
     {
-      LogCustomerDetails("DeleteProjectV4", projectUid);
+      LogCustomerDetails("DeleteProjectV6", projectUid);
       var project = new DeleteProjectEvent
       {
         ProjectUID = projectUid,
@@ -310,9 +363,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (!string.IsNullOrEmpty(customerUid))
         await notificationHubClient.Notify(new CustomerChangedNotification(customerUid));
 
-      Logger.LogInformation("DeleteProjectV4. Completed successfully");
-      return new ProjectV4DescriptorsSingleResult(
-        AutoMapperUtility.Automapper.Map<ProjectV4Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
+      Logger.LogInformation("DeleteProjectV6. Completed successfully");
+      return new ProjectV6DescriptorsSingleResult(
+        AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
     }

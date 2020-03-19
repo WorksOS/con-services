@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     //     It is required for all projects, not just landfill.
     //     ProjectTimeZone is in Windows StandardTime name,
     //         which the UI,and ProjectSvc limit to a known set (contained in PreferencesTimeZones.cs).
-    public string LandfillTimeZone { get; set; }
+    public string ProjectTimeZoneIana { get; set; }
 
     // start and end are actually only date with no time component. However C# has no date-only.
     public DateTime StartDate { get; set; }
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
         && otherProject.Name == Name
         && otherProject.Description == Description
         && otherProject.ProjectTimeZone == ProjectTimeZone
-        && otherProject.LandfillTimeZone == LandfillTimeZone
+        && otherProject.ProjectTimeZoneIana == ProjectTimeZoneIana
         && otherProject.StartDate == StartDate
         && otherProject.EndDate == EndDate
         && otherProject.CustomerUID == CustomerUID

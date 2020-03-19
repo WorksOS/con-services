@@ -2,7 +2,7 @@
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
-  public class DesignDetailV2Result
+  public class DesignDetailV5Result
   {
     /// <summary>
     /// The id for the design.

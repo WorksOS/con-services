@@ -197,7 +197,7 @@ namespace WebApiTests.Executors
       accountClient.Setup(d => d.GetDeviceLicenses(projectAccountUid, null)).ReturnsAsync(projectDeviceLicenseResponseModel);
       accountClient.Setup(d => d.GetDeviceLicenses(deviceAccountUid, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
       
-      projectProxy.Setup(d => d.GetIntersectingProjects(deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<string>(), It.IsAny<DateTime>(), null))
+      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<string>(), It.IsAny<DateTime>(), null))
         .ReturnsAsync(new List<ProjectData> { projectOfInterest });
 
       deviceProxy.Setup(d => d.GetDevice(request.RadioSerial)).ReturnsAsync(assetDevice);

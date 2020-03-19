@@ -7,7 +7,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
   public interface IAccountClient
   {
     Task<AccountListResponseModel> GetMyAccounts(IDictionary<string, string> customHeaders = null);
-    Task<AccountResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null);
+    Task<AccountListResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null);
     Task<AccountResponseModel> GetAccountForUser(string userId, string accountId, IDictionary<string, string> customHeaders = null);
     Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountId, IDictionary<string, string> customHeaders = null);
   }

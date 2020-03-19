@@ -60,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates existing project</remarks>
     [Route("api/v5/projects")]
     [HttpPost]
-    public async Task<ReturnLongV2Result> CreateProjectV2([FromBody] CreateProjectV2Request projectRequest)
+    public async Task<ReturnLongV5Result> CreateProjectV2([FromBody] CreateProjectV5Request projectRequest)
     {
       if (projectRequest == null)
       {
@@ -98,7 +98,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       );
 
       Logger.LogDebug("CreateProjectV2. completed successfully");
-      return ReturnLongV2Result.CreateLongV2Result(HttpStatusCode.Created, createProjectEvent.ShortRaptorProjectId);
+      return ReturnLongV5Result.CreateLongV5Result(HttpStatusCode.Created, createProjectEvent.ShortRaptorProjectId);
     }
 
     #endregion projects
@@ -125,14 +125,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v5/preferences/tcc")]
     [HttpPost]
-    public async Task<ReturnSuccessV2Result> ValidateTccAuthorization(
+    public async Task<ReturnSuccessV5Result> ValidateTccAuthorization(
       [FromBody] ValidateTccAuthorizationRequest tccAuthorizationRequest)
     {
       if (tccAuthorizationRequest == null)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
       }
-      // todoMaverick do we not need ValidateTccOrgExecutor and Custer/CustomerTCCOrg tables anymore?
+      // todoMaverick do we not need ValidateTccOrgExecutor and Customer/CustomerTCCOrg tables anymore?
 
       //Note: This is a very old legacy code that validates subs against TCC. This is not needed anymore as we allow project creation regardless of TCC subscription to support Earthworks machines.
 
@@ -152,7 +152,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
      );*/
 
       Logger.LogInformation("ValidateTccAuthorization. completed succesfully");
-      return ReturnSuccessV2Result.CreateReturnSuccessV2Result(HttpStatusCode.OK, true);
+      return ReturnSuccessV5Result.CreateReturnSuccessV5Result(HttpStatusCode.OK, true);
     }
 
     #endregion TCCAuthorization
