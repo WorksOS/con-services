@@ -143,10 +143,10 @@ def main(argv):
     print("Job queued with ID %s" %(id))
     result=get_build_status(url, s, build, id)
     print("Build Result: %s" % (result))
+ 
+    save_artifacts(s, url, build, id)
     if result != "SUCCESS":
         sys.exit(2)
-
-    save_artifacts(s, url, build, id)
     sys.exit(0)
 
 if __name__ == "__main__":
