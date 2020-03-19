@@ -30,5 +30,5 @@ final-tasks:
     - test-parser:
         type: nunit
         test-results:
-          - artifacts/archive/TestResults/UnitTests/**/*.xml
+          - artifacts/archive/TestResults/**/**/*.xml
           - artifacts/archive/AcceptanceTests/tests/**/TestResults/*.xml
