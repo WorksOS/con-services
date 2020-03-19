@@ -9,7 +9,7 @@ services:
     depends_on:
       - schema
   masterdataconsumercustomer:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -22,7 +22,7 @@ services:
       - schema
       - kafka     
   masterdataconsumerproject:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -35,7 +35,7 @@ services:
       - schema
       - kafka     
   masterdataconsumersubscription:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -45,7 +45,7 @@ services:
     volumes:
       - ./artifacts/logs:/app/logs
   masterdataconsumerasset:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -58,7 +58,7 @@ services:
       - schema
       - kafka
   masterdataconsumerdevice:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
      - docker-compose.env
     environment:
@@ -71,7 +71,7 @@ services:
       - schema
       - kafka
   schema:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer-db
     env_file:
      - docker-compose.env
     environment:
