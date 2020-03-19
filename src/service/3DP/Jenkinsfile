@@ -86,7 +86,7 @@ node('Jenkins-Win2016-Raptor') {
 
         if (branch.contains("release")) {
             stage ('Build Release Images') {
-                bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest-release-${fullVersion} ./Artifacts/WebApi"
+                bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-raptor-webapi:latest-release-${fullVersion} ./Artifacts/WebApi"
                 
                 stage ('Tag repository') {
                     bat 'git rev-parse HEAD > GIT_COMMIT'
@@ -126,8 +126,8 @@ node('Jenkins-Win2016-Raptor') {
         } else {
             //Rebuild Image, tag & push to AWS Docker Repo
             stage ('Build Development Images') {
-                bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
-                bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:latest ./Artifacts/WebApi"
+                bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-raptor-webapi:${fullVersion}-${branchName} ./Artifacts/WebApi"
+                bat "docker build -t 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-raptor-webapi:latest ./Artifacts/WebApi"
             }
             //Publish to AWS Repo
             stage ('Get ecr login, push image to Repo') {

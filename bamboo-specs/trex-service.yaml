@@ -1,17 +1,23 @@
 ---
 version: 2
-triggers: !include 'includes/build-triggers.yaml'
 plan:
   project-key: CIV3D
   name: trex-service
   key: TREX
+
+triggers: !include 'includes/build-triggers.yaml'
+#branches: !include 'includes/build-branches.yaml'
 
 variables:
   jenkins_username: jnimmo2
   jenkins_token: 1123a83c8b6925f1567370f72074adf77f
   jenkins_url: http://ci.eks.ccss.cloud
   service: trex
-  service_path: src/service/Trex
+  service_path: src/service/TRex
+  image_tag: 'None'
+  build_db: false
+  run_acceptance_tests: true
+  run_unit_tests: true
 
 stages:
   - Build:

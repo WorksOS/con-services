@@ -31,4 +31,8 @@ final-tasks:
         type: nunit
         test-results:
           - artifacts/archive/TestResults/UnitTests/**/*.xml
+          - artifacts/archive/TestResults/*/*/**/*.xml
           - artifacts/archive/AcceptanceTests/tests/**/TestResults/*.xml
+          
+
+   
