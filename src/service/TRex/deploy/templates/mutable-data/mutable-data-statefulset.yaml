@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-mds
-  serviceName: {{ template "trex.deployname" . }}-mutable-data
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
@@ -12,6 +11,7 @@ metadata:
     immutable-cluster: "true"
     jmx-prometheus: "true"
 spec:
+  serviceName: {{ template "trex.deployname" . }}-mutable-data
   selector:
     matchLabels:
       #this must match one of metadata.labels above
