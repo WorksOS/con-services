@@ -14,6 +14,7 @@ variables:
   jenkins_url: http://ci.eks.ccss.cloud
   service: productivity3d-trex-webapi
   service_path: src/service/3DP
+  service_discovery_name: productivity3d-service
   image_tag: 'None'
   build_db: false
   run_acceptance_tests: true

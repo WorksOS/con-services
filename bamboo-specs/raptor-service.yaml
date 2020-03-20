@@ -14,6 +14,7 @@ variables:
   jenkins_url: http://ci.eks.ccss.cloud
   service: tile-webapi
   service_path: src/service/Filter
+  service_discovery_name: raptor-service # not used
   test: something
 
 stages:
