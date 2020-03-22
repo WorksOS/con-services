@@ -122,7 +122,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         LocalPort = 47100,
       };
 
-      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.12.0.jar=8088:prometheusConfig.yaml");
 
       return cfg;
     }
