@@ -477,7 +477,7 @@ namespace VSS.TRex.Profiling
             SurfaceElevationPatchArg.SetOTGBottomLeftLocation(_subGridAsLeaf.OriginX, _subGridAsLeaf.OriginY);
             SurfaceElevationPatchArg.ProcessingMap.Assign(FilterMask);
 
-            CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
+            CompositeHeightsGridIntf = await SurfaceElevationPatchRequest.ExecuteAsync(SurfaceElevationPatchArg);
             CompositeHeightsGrid = CompositeHeightsGridIntf as ClientCompositeHeightsLeafSubgrid;
 
             if (CompositeHeightsGrid == null)
