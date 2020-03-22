@@ -8,21 +8,31 @@ rules:
 - apiGroups: [""]
   resources: ["pods", "pods/exec", "pods/log", "persistentvolumeclaims", "services", "ingress", "serviceaccounts"]
   verbs: ["get", "list", "watch"]
+  
 - apiGroups: [""]
   resources: ["pods", "pods/exec", "persistentvolumeclaims", "services", "ingress"]
   verbs: ["create", "delete", "deletecollection", "patch", "update"]
+
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["get", "create", "delete", "patch", "update"]
+
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "list", "create", "delete", "patch", "update"]
+
 - apiGroups: ["apps"]
   resources: ["statefulsets", "deployments", "replicasets"]
   verbs: ["get", "list", "create", "delete", "patch", "update"]
+
 - apiGroups: ["extensions"]
-  resources: ["ingresses"]
+  resources: ["ingresses","deployments"]
   verbs: ["get", "list", "create", "delete", "patch", "update"]
+
 - apiGroups: ["batch"]
   resources: ["cronjobs"]
+  verbs: ["get", "list", "create", "delete", "patch", "update"]
+
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterroles", "clusterrolebindings"]
   verbs: ["get", "list", "create", "delete", "patch", "update"]
