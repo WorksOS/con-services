@@ -6,9 +6,9 @@ metadata:
   namespace: bamboo
 rules:
 - apiGroups: [""]
-  resources: ["pods", "pods/exec", "pods/log", "persistentvolumeclaims", "services", "ingress", "serviceaccounts"]
-  verbs: ["get", "list", "watch"]
-  
+  resources: ["pods", "pods/exec", "pods/log", "persistentvolumeclaims", "services", "ingress", "serviceaccounts", "endpoints"]
+  verbs: ["get", "list", "watch", "create"]
+
 - apiGroups: [""]
   resources: ["pods", "pods/exec", "persistentvolumeclaims", "services", "ingress"]
   verbs: ["create", "delete", "deletecollection", "patch", "update"]
@@ -35,4 +35,8 @@ rules:
 
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["clusterroles", "clusterrolebindings"]
+  verbs: ["get", "list", "create", "delete", "patch", "update"]
+
+- apiGroups: ["autoscaling"]
+  resources: ["horizontalpodautoscalers"]
   verbs: ["get", "list", "create", "delete", "patch", "update"]
