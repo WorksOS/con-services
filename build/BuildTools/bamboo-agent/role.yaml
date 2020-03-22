@@ -6,7 +6,7 @@ metadata:
   namespace: bamboo
 rules:
 - apiGroups: [""]
-  resources: ["pods", "pods/exec", "pods/log", "persistentvolumeclaims", "services", "ingress"]
+  resources: ["pods", "pods/exec", "pods/log", "persistentvolumeclaims", "services", "ingress", "serviceaccounts"]
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["pods", "pods/exec", "persistentvolumeclaims", "services", "ingress"]
