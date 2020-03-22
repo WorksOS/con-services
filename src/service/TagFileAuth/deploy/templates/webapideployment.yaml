@@ -19,6 +19,7 @@ spec:
         app: {{ $serviceName }}
         component: {{ template "component.webapi" . }}
     spec:
+      serviceAccount: {{ .Values.environment }}-service-account
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

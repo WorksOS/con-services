@@ -14,6 +14,7 @@ variables:
   jenkins_url: http://ci.eks.ccss.cloud
   service: file-access-webapi
   service_path: src/service/FileAccess
+  service_discovery_name: file-service-service
   image_tag: 'None'
   build_db: false
   run_acceptance_tests: true

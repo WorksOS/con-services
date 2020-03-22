@@ -13,6 +13,7 @@ variables:
   jenkins_token: 1123a83c8b6925f1567370f72074adf77f
   jenkins_url: http://ci.eks.ccss.cloud
   service: push-webapi
+  service_discovery_name: push-service
   service_path: src/service/Push
   image_tag: 'None'
   build_db: false

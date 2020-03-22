@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{ $name }}
     spec:
+      serviceAccount: {{ .Values.environment }}-service-account
       initContainers:
       - name: init-filterdb
         image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-productivity3d-filter-webapi-db:{{ .Values.image.tag }}

@@ -15,6 +15,7 @@ variables:
   jenkins_url: http://ci.eks.ccss.cloud
   service: asset-management-webapi
   service_path: src/service/3dAssetMgmt
+  service_discovery_name: assetmgmt3d-service
   image_tag: 'None'
   build_db: false
   run_acceptance_tests: false

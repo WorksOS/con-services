@@ -12,7 +12,7 @@ tasks:
         --namespace ${bamboo.deploy.environment} \
         --reset-values \
         --values ./chart/values.yaml  \
-        --set image.tag=${bamboo.planRepository.branchName}-${bamboo.buildNumber},environment=${bamboo.deploy.environment},globalConfig=3dapp-${bamboo.deploy.environment},rootDomain=eks.ccss.cloud,serviceName=${bamboo.deploy.environment}-${bamboo.shortPlanName} \
+        --set image.tag=${bamboo.planRepository.branchName}-${bamboo.buildNumber},environment=${bamboo.deploy.environment},globalConfig=3dapp-${bamboo.deploy.environment},rootDomain=eks.ccss.cloud,serviceName=${bamboo.service_discovery_name} \
         --wait \
         --force \
         ./chart/ 
