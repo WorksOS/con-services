@@ -1,8 +1,6 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
-using VSS.TRex.Volumes.Executors;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Volumes.GridFabric.Responses;
 
@@ -12,14 +10,14 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// The simple volumes compute function that runs in the context of the cluster compute nodes. This function
     /// performs a volumes calculation across the partitions on this node only.
     /// </summary>
-    public class SimpleVolumesRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
+    public class ProgressiveVolumesRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger<SimpleVolumesRequestComputeFunc_ClusterCompute>();
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesRequestComputeFunc_ClusterCompute>();
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
         /// </summary>
-        public SimpleVolumesRequestComputeFunc_ClusterCompute()
+        public ProgressiveVolumesRequestComputeFunc_ClusterCompute()
         {
         }
 
@@ -28,13 +26,13 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         /// </summary>
         /// <param name="arg"></param>
         /// <returns></returns>
-        public SimpleVolumesResponse Invoke(SimpleVolumesRequestArgument arg)
+        public ProgressiveVolumesResponse Invoke(ProgressiveVolumesRequestArgument arg)
         {
-            Log.LogInformation("In SimpleVolumesRequestComputeFunc_ClusterCompute.Invoke()");
+            Log.LogInformation("In ProgressiveVolumesRequestComputeFunc_ClusterCompute.Invoke()");
 
             try
             {
-                ComputeSimpleVolumes_Coordinator simpleVolumes = new ComputeSimpleVolumes_Coordinator
+/*                ComputeSimpleVolumes_Coordinator simpleVolumes = new ComputeSimpleVolumes_Coordinator
                     (arg.ProjectID,
                      arg.LiftParams,
                      arg.VolumeType,
@@ -49,10 +47,13 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
                 Log.LogInformation("Executing simpleVolumes.ExecuteAsync()");
 
                 return simpleVolumes.ExecuteAsync().WaitAndUnwrapException();
+                */
+
+              return null;
             }
             finally
             {
-                Log.LogInformation("Exiting SimpleVolumesRequestComputeFunc_ClusterCompute.Invoke()");
+                Log.LogInformation("Exiting ProgressiveVolumesRequestComputeFunc_ClusterCompute.Invoke()");
             }
         }
     }
