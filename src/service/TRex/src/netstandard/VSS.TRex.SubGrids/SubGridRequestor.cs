@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common;
@@ -266,9 +267,9 @@ namespace VSS.TRex.SubGrids
     }
 
     /// <summary>
-    /// Annotates height information with elevations from surveyed surfaces?
+    /// Annotates height information with elevations from surveyed surfaces
     /// </summary>
-    private ServerRequestResult PerformHeightAnnotation()
+    private async Task<ServerRequestResult> PerformHeightAnnotation()
     {
       if ((FilteredSurveyedSurfaces?.Count ?? 0) == 0)
         return ServerRequestResult.NoError;
@@ -286,67 +287,23 @@ namespace VSS.TRex.SubGrids
       bool ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime = ClientGrid is ClientHeightAndTimeLeafSubGrid;
       bool ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile = ClientGrid is ClientCellProfileLeafSubgrid;
 
-      if (!(ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime || ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile))
+      if (!ClientGrid.UpdateProcessingMapForSurveyedSurfaces(ProcessingMap, FilteredSurveyedSurfaces as IList, ReturnEarliestFilteredCellPass))
+      {
         return ServerRequestResult.NoError;
-
-      if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
-      {
-        ClientGridAsHeightAndTime = (ClientHeightAndTimeLeafSubGrid)ClientGrid;
-
-        ProcessingMap.Assign(ClientGridAsHeightAndTime.FilterMap);
-
-        // If we're interested in a particular cell, but we don't have any  surveyed surfaces later (or earlier)
-        // than the cell production data pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
-        // then there's no point in asking the Design Profiler service for an elevation
-        long[,] Times = ClientGridAsHeightAndTime.Times;
-
-        ProcessingMap.ForEachSetBit((x, y) =>
-        {
-          if (ClientGridAsHeightAndTime.Cells[x, y] != Consts.NullHeight &&
-                      !(ReturnEarliestFilteredCellPass ? FilteredSurveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : FilteredSurveyedSurfaces.HasSurfaceLaterThan(Times[x, y])))
-            ProcessingMap.ClearBit(x, y);
-        });
-      }
-      else // if (ClientGrid_is_TICClientSubGridTreeLeaf_CellProfile)
-      {
-        ClientGridAsCellProfile = (ClientCellProfileLeafSubgrid)ClientGrid;
-        ProcessingMap.Assign(ClientGridAsCellProfile.FilterMap);
-
-        // If we're interested in a particular cell, but we don't have any
-        // surveyed surfaces later (or earlier) than the cell production data
-        // pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
-        // then there's no point in asking the Design Profiler service for an elevation
-        if (Result == ServerRequestResult.NoError)
-        {
-          ProcessingMap.ForEachSetBit((x, y) =>
-          {
-            if (ClientGridAsCellProfile.Cells[x, y].Height == Consts.NullHeight)
-              return;
-
-            if (Filter.AttributeFilter.ReturnEarliestFilteredCellPass)
-            {
-              if (!FilteredSurveyedSurfaces.HasSurfaceEarlierThan(ClientGridAsCellProfile.Cells[x, y].LastPassTime))
-                ProcessingMap.ClearBit(x, y);
-            }
-            else
-            {
-              if (!FilteredSurveyedSurfaces.HasSurfaceLaterThan(ClientGridAsCellProfile.Cells[x, y].LastPassTime))
-                ProcessingMap.ClearBit(x, y);
-            }
-          });
-        }
       }
 
       // If we still have any cells to request surveyed surface elevations for...
       if (ProcessingMap.IsEmpty())
+      {
         return Result;
+      }
 
       try
       {
         // Hand client grid details, a mask of cells we need surveyed surface elevations for, and a temp grid to the Design Profiler
         SurfaceElevationPatchArg.SetOTGBottomLeftLocation(ClientGrid.OriginX, ClientGrid.OriginY);
 
-        SurfaceElevations = surfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg) as ClientHeightAndTimeLeafSubGrid;
+        SurfaceElevations = await surfaceElevationPatchRequest.ExecuteAsync(SurfaceElevationPatchArg) as ClientHeightAndTimeLeafSubGrid;
 
         if (SurfaceElevations == null)
           return Result;
@@ -357,10 +314,17 @@ namespace VSS.TRex.SubGrids
         // IE: It is unsafe to test for null top indicate not-filtered, use the processing map iterators to cover only those cells required
         ProcessingMap.ForEachSetBit((x, y) =>
         {
+          var SurveyedSurfaceCellHeight = SurfaceElevations.Cells[x, y];
+
+          if (SurveyedSurfaceCellHeight == Consts.NullHeight)
+          {
+            return;
+          }
+
+          long SurveyedSurfaceCellTime = SurfaceElevations.Times[x, y];
+
           float ProdHeight;
           long ProdTime;
-          var SurveyedSurfaceCellHeight = SurfaceElevations.Cells[x, y];
-          long SurveyedSurfaceCellTime = SurfaceElevations.Times[x, y];
 
           // If we got back a surveyed surface elevation...
           if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
@@ -376,12 +340,9 @@ namespace VSS.TRex.SubGrids
 
           // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
           // the relative age of the measured surveyed surface elevation compared with a non-null production data height
-          bool SurveyedSurfaceElevationWanted = SurveyedSurfaceCellHeight != Consts.NullHeight &&
-          (ProdHeight == Consts.NullHeight || (ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime > ProdTime));
-
-          if (!SurveyedSurfaceElevationWanted)
+          if (!(ProdHeight == Consts.NullHeight || (ReturnEarliestFilteredCellPass ? SurveyedSurfaceCellTime < ProdTime : SurveyedSurfaceCellTime > ProdTime)))
           {
-            // We didn't get a surveyed surface elevation, so clear the bit so that the renderer won't render it as a surveyed surface
+            // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
             ProcessingMap.ClearBit(x, y);
             return;
           }
@@ -392,7 +353,7 @@ namespace VSS.TRex.SubGrids
             FilterAnnex.InitializeFilteringForCell(Filter.AttributeFilter, (byte)x, (byte)y);
             if (!FilterAnnex.FiltersElevation(SurveyedSurfaceCellHeight))
             {
-              // We didn't get a surveyed surface elevation, so clear the bit so that ASNode won't render it as a surveyed surface
+              // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
               ProcessingMap.ClearBit(x, y);
               return;
             }
@@ -467,7 +428,7 @@ namespace VSS.TRex.SubGrids
       {
         // Construct the filter mask (e.g. spatial filtering) to be applied to the results of surveyed surface analysis
         result.requestResult = SubGridFilterMasks.ConstructSubGridCellFilterMask(ClientGrid, SiteModel, Filter, CellOverrideMask, HasOverrideSpatialCellRestriction, OverrideSpatialCellRestriction, ClientGrid.ProdDataMap, ClientGrid.FilterMap)
-          ? PerformHeightAnnotation()
+          ? await PerformHeightAnnotation()
           : ServerRequestResult.FailedToComputeDesignFilterPatch;
       }
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections;
+using System.IO;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -282,8 +283,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public virtual int IndicativeSizeInBytes()
     {
-      int filterMapSize = FilterMap?.IndicativeSizeInBytes() ?? 0;
-      int prodDataMapSize = ProdDataMap?.IndicativeSizeInBytes() ?? 0;
+      var filterMapSize = FilterMap?.IndicativeSizeInBytes() ?? 0;
+      var prodDataMapSize = ProdDataMap?.IndicativeSizeInBytes() ?? 0;
 
       return filterMapSize + prodDataMapSize;
     }
@@ -300,6 +301,11 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public virtual void DumpToLog()
     {
+    }
+
+    public virtual bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass)
+    {
+      return false;
     }
   }
 }

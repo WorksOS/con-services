@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.IO;
+using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -162,6 +165,29 @@ namespace VSS.TRex.SubGridTrees.Client
 
       //SurveyedSurfaceMap.Assign(((ClientHeightLeafSubGrid)source).SurveyedSurfaceMap);
       //SurveyedSurfaceMap.AndWith(map);
+    }
+
+    public override bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass)
+    {
+      if (!(filteredSurveyedSurfaces is ISurveyedSurfaces surveyedSurfaces))
+      {
+        return false;
+      }
+
+      processingMap.Assign(FilterMap);
+
+      // If we're interested in a particular cell, but we don't have any surveyed surfaces later (or earlier)
+      // than the cell production data pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
+      // then there's no point in asking the Design Profiler service for an elevation
+
+      processingMap.ForEachSetBit((x, y) =>
+      {
+        if (Cells[x, y] != Consts.NullHeight &&
+            !(returnEarliestFilteredCellPass ? surveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : surveyedSurfaces.HasSurfaceLaterThan(Times[x, y])))
+          processingMap.ClearBit(x, y);
+      });
+
+      return true;
     }
   }
 }

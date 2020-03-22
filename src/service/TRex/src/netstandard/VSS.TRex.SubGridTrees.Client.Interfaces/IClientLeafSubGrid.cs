@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System.Collections;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
@@ -60,5 +61,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     BoundingWorldExtent3D WorldExtents();
 
     void DumpToLog();
+
+    bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass);
   }
 }
