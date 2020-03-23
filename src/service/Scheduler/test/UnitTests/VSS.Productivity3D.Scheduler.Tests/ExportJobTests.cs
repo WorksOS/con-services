@@ -22,7 +22,6 @@ namespace VSS.Productivity3D.Scheduler.Tests
   [TestClass]
   public class ExportJobTests : BaseJobTests
   {
-//    [Ignore]
     [TestMethod]
     public void CanGetS3KeyForExport()
     {
@@ -34,11 +33,9 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Assert.AreEqual(expectedKey, key, "Wrong S3 key");
     }
 
-//    [Ignore]
     [TestMethod]
     public void CanGetDownloadLink()
     {
-      return;
       var jobId = "Some id";
       var filename = "dummy";
       var presignedUrl = "some presigned url";
@@ -53,12 +50,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
       Assert.AreEqual(presignedUrl, actualLink);
     }
 
-//    [Ignore]
     [TestMethod]
     [DataRow("Export Success")]
     public void CanGetExportDataSuccess(string message)
     {
-      return;
       var customHeaders = new Dictionary<string, string>();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
@@ -76,12 +71,10 @@ namespace VSS.Productivity3D.Scheduler.Tests
       var result = exportJob.GetExportData(Guid.NewGuid(), customHeaders, context);
     }
 
-//    [Ignore]
     [TestMethod]
     [DataRow("Export Success")]
     public void CanGetUpdatedFilename(string message)
     {
-      return;
       // We will say our filename is named something different to the content type, and make sure the export function gives us back the correct file name
 
       const string extension = ".json";
@@ -119,13 +112,11 @@ namespace VSS.Productivity3D.Scheduler.Tests
       ms.Dispose();
     }
 
-//    [Ignore]
     [TestMethod]
     [DataRow("BadRequest {\"Code\":2002,\"Message\":\"Failed to get requested export data with error: No data for export\"}")]
     [DataRow("InternalServerError Some general exception message")]
     public async Task CanGetExportDataFailure(string message)
     {
-      return;
       var customHeaders = new Dictionary<string, string>();
 
       var scheduleRequest = new ScheduleJobRequest { Url = "some url", Filename = "dummy" };
