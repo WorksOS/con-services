@@ -65,7 +65,13 @@ namespace VSS.TRex.GridFabric.Servers.Client
             JvmOptions = new List<string>() {
               "-DIGNITE_QUIET=false",
               "-Djava.net.preferIPv4Stack=true",
-              "-XX:+UseG1GC"
+              "-XX:+UseG1GC",
+              "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
+              "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+              "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
+              "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+              "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+              "--illegal-access=permit"
             },
 
             JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB),
