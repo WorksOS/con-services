@@ -22,15 +22,13 @@ namespace VSS.TRex.Volumes.Executors
     /// </summary>
     public class ComputeSimpleVolumes_Coordinator
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(ComputeSimpleVolumes_Coordinator));
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeSimpleVolumes_Coordinator>();
 
         /// <summary>
         /// The ID of the site model the volume is being calculated for 
         /// </summary>
         public Guid SiteModelID;
        
-        //ExternalDescriptor : TASNodeRequestDescriptor;
-
         /// <summary>
         /// The volume computation method to use when calculating volume information
         /// </summary>
@@ -144,7 +142,6 @@ namespace VSS.TRex.Volumes.Executors
         /// Constructor
         /// </summary>
         public ComputeSimpleVolumes_Coordinator(Guid siteModelID,
-                                    //ExternalDescriptor : TASNodeRequestDescriptor;
                                     ILiftParameters liftParams,
                                     VolumeComputationType volumeType,
                                     ICombinedFilter baseFilter,
@@ -174,11 +171,7 @@ namespace VSS.TRex.Volumes.Executors
         public async Task<SimpleVolumesResponse> ExecuteAsync()
         {
             var volumesResult = new SimpleVolumesResponse();
-
             var resultBoundingExtents = BoundingWorldExtent3D.Null();
-//            BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
-//            long[] SurveyedSurfaceExclusionList = new long[0];
-
             var requestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
             Log.LogInformation($"#In# Performing {nameof(ComputeSimpleVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
@@ -187,26 +180,6 @@ namespace VSS.TRex.Volumes.Executors
             {
                 try
                 {
-                    /*
-                     if Assigned(ASNodeImplInstance.RequestCancellations) and
-                         ASNodeImplInstance.RequestCancellations.IsRequestCancelled(FExternalDescriptor) then
-                         begin
-                            SIGLogMessage.PublishNoODS(Self, 'Request cancelled: ' + FExternalDescriptor.ToString, slmcDebug);
-                            ResultStatus:= asneRequestHasBeenCancelled;
-                            Exit;
-                         end;
-
-                        ScheduledWithGovernor:= ASNodeImplInstance.Governor.Schedule(FExternalDescriptor, Self, gqVolumes, ResultStatus);
-                        if not ScheduledWithGovernor then
-                          Exit;
-
-                        if ASNodeImplInstance.PSLoadBalancer.LoadBalancedPSService.GetDataModelSpatialExtents(FDataModelID, SurveyedSurfaceExclusionList, SpatialExtent, CellSize, IndexOriginOffset) <> icsrrNoError then
-                          begin
-                            ResultStatus:= asneFailedToRequestDatamodelStatistics;
-                            Exit;
-                          end;
-                    */
-
                     ApplicationServiceRequestStatistics.Instance.NumVolumeRequests.Increment();
 
                     // Prepare filters for use in the request
