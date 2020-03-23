@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Reflection;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Interfaces;
@@ -34,21 +32,21 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public abstract class VolumesCalculatorBase
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<VolumesCalculatorBase>();
 
         /// <summary>
         /// DI'ed context for access to ExistenceMaps functionality
         /// </summary>
-        private IExistenceMaps existenceMaps = null;
-        private IExistenceMaps GetExistenceMaps() => existenceMaps ?? (existenceMaps = DIContext.Obtain<IExistenceMaps>());
+        private IExistenceMaps _existenceMaps = null;
+        private IExistenceMaps GetExistenceMaps() => _existenceMaps ?? (_existenceMaps = DIContext.Obtain<IExistenceMaps>());
 
         /// <summary>
-        /// The Aggregator to use for calculation volumes statistics
+        /// The Aggregator to use for calculating volumes statistics
         /// </summary>
         public ISubGridRequestsAggregator Aggregator { get; set; }
 
         /// <summary>
-        /// The Sitemodel from which the volume is being calculated
+        /// The site model from which the volume is being calculated
         /// </summary>
         public ISiteModel SiteModel { get; set; }
 
@@ -68,18 +66,6 @@ namespace VSS.TRex.Volumes
         public VolumesCalculatorBase()
         {
         }
-
-        /// <summary>
-        /// Constructor accepting an instantiated aggregator instance
-        /// </summary>
-        /// <param name="aggregator"></param>
-        public VolumesCalculatorBase(ISubGridRequestsAggregator aggregator) : this()
-        {
-            Aggregator = aggregator;
-        }
-
-        //      function CheckCellIsInSpatialConstraints(const CellX, CellY: Integer): Boolean;
-        //      function GetCellSize: Double; 
 
         protected BoundingWorldExtent3D Extents = BoundingWorldExtent3D.Inverted(); // No get;set; on purpose
 
@@ -108,7 +94,7 @@ namespace VSS.TRex.Volumes
         /// used to calculate the additional elevation information to be combined with
         /// the 'AsAt'/latest surface information from the 'From' filter.
         ///
-        /// The conditions for using the intermedairy filter are then:
+        /// The conditions for using the intermediary filter are then:
         /// 1. A summary volume requested between two filters
         /// 2. The 'from' filter is defined as an 'As-At' filter, with latest data selected
         /// 3. The 'to' filter is defined either as an 'As-At' or a time range filter,
@@ -154,7 +140,7 @@ namespace VSS.TRex.Volumes
         public ProdReportSelectionType ToSelectionType { get; set; }  = ProdReportSelectionType.None;
 
         /*
-        // FAborted keeps track of whether we've been buchwhacked or not!
+        // FAborted keeps track of whether we've been bushwhacked or not!
         protected FAborted : Boolean;
 
         // FNoChangeMap maps the area of cells that we have considered and found to have
@@ -163,7 +149,7 @@ namespace VSS.TRex.Volumes
         */
 
         /// <summary>
-        /// UseEarliestData governs whether we want the earlist or latest data from filtered
+        /// UseEarliestData governs whether we want the earliest or latest data from filtered
         /// ranges of cell passes in the base filtered surface.
         /// </summary>
         public bool UseEarliestData { get; set; }
@@ -188,36 +174,36 @@ namespace VSS.TRex.Volumes
 
         private void ConfigurePipeline(SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine)
         {
-            //PipeLine.TimeToLiveSeconds := VLPDSvcLocations.VLPDPSNode_VolumePipelineTTLSeconds;
-            PipeLine.RequestDescriptor = RequestDescriptor;
-            //PipeLine.ExternalDescriptor := FExternalDescriptor;
+          //PipeLine.TimeToLiveSeconds := VLPDSvcLocations.VLPDPSNode_VolumePipelineTTLSeconds;
+          PipeLine.RequestDescriptor = RequestDescriptor;
+          //PipeLine.ExternalDescriptor := FExternalDescriptor;
 
-            PipeLine.DataModelID = SiteModel.ID;
+          PipeLine.DataModelID = SiteModel.ID;
 
-            Log.LogDebug($"Volume calculation extents for DM={SiteModel.ID}, Request={RequestDescriptor}: {Extents}");
+          Log.LogDebug($"Volume calculation extents for DM={SiteModel.ID}, Request={RequestDescriptor}: {Extents}");
 
-            PipeLine.OverallExistenceMap = OverallExistenceMap;
-            PipeLine.ProdDataExistenceMap = ProdDataExistenceMap;
-            PipeLine.DesignSubGridOverlayMap = DesignSubgridOverlayMap;
+          PipeLine.OverallExistenceMap = OverallExistenceMap;
+          PipeLine.ProdDataExistenceMap = ProdDataExistenceMap;
+          PipeLine.DesignSubGridOverlayMap = DesignSubgridOverlayMap;
 
-            // Initialise a request analyser to provide to the pipeline
-            PipeLine.RequestAnalyser = DIContext.Obtain<IRequestAnalyser>();
-            PipeLine.RequestAnalyser.Pipeline = PipeLine;
-            PipeLine.RequestAnalyser.WorldExtents.Assign(Extents);
+          // Initialise a request analyzer to provide to the pipeline
+          PipeLine.RequestAnalyser = DIContext.Obtain<IRequestAnalyser>();
+          PipeLine.RequestAnalyser.Pipeline = PipeLine;
+          PipeLine.RequestAnalyser.WorldExtents.Assign(Extents);
 
-            PipeLine.LiftParams = LiftParams;
+          PipeLine.LiftParams = LiftParams;
 
-            // Construct and assign the filter set into the pipeline
-            IFilterSet FilterSet;
+          // Construct and assign the filter set into the pipeline
+          IFilterSet FilterSet;
 
-            if (VolumeType == VolumeComputationType.Between2Filters)
-            {
+          if (VolumeType == VolumeComputationType.Between2Filters)
+          {
             // Determine if intermediary filter/surface behaviour is required to
             // support summary volumes
             if (BaseFilter.AttributeFilter.HasTimeFilter && BaseFilter.AttributeFilter.StartTime == Consts.MIN_DATETIME_AS_UTC // 'From' has As-At Time filter
-            && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
-            && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
-            && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
+                                                         && !BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass // Want latest cell pass in 'from'
+                                                         && TopFilter.AttributeFilter.HasTimeFilter && TopFilter.AttributeFilter.StartTime != Consts.MIN_DATETIME_AS_UTC // 'To' has time-range filter with latest
+                                                         && !TopFilter.AttributeFilter.ReturnEarliestFilteredCellPass) // Want latest cell pass in 'to'
             {
               // Create and use the intermediary filter. The intermediary filter
               // is create from the Top filter, with the return earliest flag set to true
@@ -228,27 +214,27 @@ namespace VSS.TRex.Volumes
               FilterSet = new FilterSet(new[] {BaseFilter, IntermediaryFilter, TopFilter});
             }
             else
-            FilterSet = new FilterSet(BaseFilter, TopFilter);
+              FilterSet = new FilterSet(BaseFilter, TopFilter);
           }
-          else if (VolumeType == VolumeComputationType.BetweenDesignAndFilter)
-                FilterSet = new FilterSet(TopFilter);
-            else
-                FilterSet = new FilterSet(BaseFilter);
+          else
+          {
+            FilterSet = VolumeType == VolumeComputationType.BetweenDesignAndFilter ? new FilterSet(TopFilter) : new FilterSet(BaseFilter);
+          }
 
-            PipeLine.FilterSet = FilterSet;
-            PipeLine.GridDataType = GridDataType.Height;
+          PipeLine.FilterSet = FilterSet;
+          PipeLine.GridDataType = GridDataType.Height;
 
-            if (FilteredTopSurveyedSurfaces.Count > 0 || FilteredBaseSurveyedSurfaces.Count > 0)
-                PipeLine.IncludeSurveyedSurfaceInformation = true;
+          if (FilteredTopSurveyedSurfaces.Count > 0 || FilteredBaseSurveyedSurfaces.Count > 0)
+            PipeLine.IncludeSurveyedSurfaceInformation = true;
         }
 
         public RequestErrorStatus ExecutePipeline()
         {
-          SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine;
+            SubGridPipelineAggregative<SubGridsRequestArgument, SimpleVolumesResponse> PipeLine;
 
-            RequestErrorStatus Result = RequestErrorStatus.Unknown;
+            var Result = RequestErrorStatus.Unknown;
 
-            bool PipelineAborted = false;
+            var PipelineAborted = false;
             // bool ShouldAbortDueToCompletedEventSet  = false;
 
             try
@@ -275,7 +261,7 @@ namespace VSS.TRex.Volumes
 
                     // Work out the surveyed surfaces and coverage areas that need to be taken into account
 
-                    ISurveyedSurfaces SurveyedSurfaces = SiteModel.SurveyedSurfaces;
+                    var SurveyedSurfaces = SiteModel.SurveyedSurfaces;
 
                     if (SurveyedSurfaces != null)
                     {
@@ -299,7 +285,7 @@ namespace VSS.TRex.Volumes
                     // Add in the production data existence map to the computed surveyed surfaces existence maps
                     OverallExistenceMap.SetOp_OR(ProdDataExistenceMap);
 
-                    // If necessary, impose spatial constraints from Lift filter design(s)
+                    // If necessary, impose spatial constraints from filter design(s)
                     if (VolumeType == VolumeComputationType.Between2Filters || VolumeType == VolumeComputationType.BetweenFilterAndDesign)
                     {
                         if (!DesignFilterUtilities.ProcessDesignElevationsForFilter(SiteModel, BaseFilter, OverallExistenceMap))
@@ -312,7 +298,7 @@ namespace VSS.TRex.Volumes
                             return RequestErrorStatus.Unknown;
                     }
 
-                    VolumesComputationTask PipelinedTask = new VolumesComputationTask
+                    var PipelinedTask = new VolumesComputationTask
                     {
                         Aggregator = Aggregator
                     };
@@ -409,16 +395,16 @@ namespace VSS.TRex.Volumes
                                 Result = RequestErrorStatus.RequestHasBeenCancelled;
                     }
                 }
-                catch (Exception E)
+                catch (Exception e)
                 {
-                    Log.LogError(E, "ExecutePipeline raised exception");
+                    Log.LogError(e, "ExecutePipeline raised exception");
                 }
 
                 return Result;
             }
-            catch (Exception E)
+            catch (Exception e)
             {
-                Log.LogError(E, "Exception");
+                Log.LogError(e, "Exception");
             }
 
             return RequestErrorStatus.Unknown;
@@ -449,4 +435,4 @@ namespace VSS.TRex.Volumes
       }
       */
   }
-  }
+}

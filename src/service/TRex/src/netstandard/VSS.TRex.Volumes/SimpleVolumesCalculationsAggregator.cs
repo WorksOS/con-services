@@ -344,7 +344,7 @@ namespace VSS.TRex.Volumes
           Monitor.Enter(CoverageMap);
         try
         {
-          ISubGrid CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
+          var CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
           ((SubGridTreeLeafBitmapSubGrid)CoverageMapSubgrid).Bits = bits;
         }
         finally
