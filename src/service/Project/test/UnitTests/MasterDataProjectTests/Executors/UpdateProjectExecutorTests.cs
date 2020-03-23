@@ -84,7 +84,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
         // todoMaverick need to send update to cws only if boundary/name changed
         //var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
-        var projectClient = new Mock<IProjectClient>();
+        var projectClient = new Mock<ICwsProjectClient>();
         //projectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
 
         var projectRepo = new Mock<IProjectRepository>();
@@ -112,7 +112,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         (_logger, _configStore, _serviceExceptionHandler,
           _customerUid, _userId, null, _customHeaders,
           productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
-          projectRepo: projectRepo.Object, projectCwsClient: projectClient.Object);
+          projectRepo: projectRepo.Object, cwsProjectClient: projectClient.Object);
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
@@ -147,8 +147,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         .ReturnsAsync(false);
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
-      var projectCwsClient = new Mock<IProjectClient>();
-      projectCwsClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
 
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v6/projects");
@@ -179,7 +179,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
         projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
-        projectCwsClient: projectCwsClient.Object);
+        cwsProjectClient: cwsProjectClient.Object);
       await createExecutor.ProcessAsync(createProjectEvent);
 
       return AutoMapperUtility.Automapper.Map<ProjectDatabaseModel>(createProjectEvent);

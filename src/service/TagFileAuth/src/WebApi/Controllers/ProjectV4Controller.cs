@@ -22,8 +22,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public ProjectV4Raptor(ILoggerFactory logger, IConfigurationStore configStore,
-      IAccountClient accountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
-      : base(logger, configStore, accountClient, projectProxy, deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
     {
       _log = logger.CreateLogger<ProjectV4Raptor>();
     }
@@ -58,7 +58,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, configStore, accountClient, projectProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
       _log.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, accountClient, projectProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       _log.LogResult(nameof(GetProjectAndDeviceUids), request, result);

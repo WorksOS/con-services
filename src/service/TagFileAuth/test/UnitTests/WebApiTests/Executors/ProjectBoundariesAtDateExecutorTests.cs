@@ -19,7 +19,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>(), ConfigStore,
-         accountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(projectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

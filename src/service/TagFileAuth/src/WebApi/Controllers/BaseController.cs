@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   public abstract class BaseController : Controller
   {
     protected readonly IConfigurationStore configStore;
-    protected IAccountClient accountClient;
+    protected ICwsAccountClient cwsAccountClient;
     protected IProjectProxy projectProxy;
     protected IDeviceProxy deviceProxy;
 
@@ -20,10 +20,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     protected BaseController(ILoggerFactory logger, IConfigurationStore configStore,
-      IAccountClient accountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
     {
       this.configStore = configStore;
-      this.accountClient = accountClient;
+      this.cwsAccountClient = cwsAccountClient;
       this.projectProxy = projectProxy;
       this.deviceProxy = deviceProxy;
     }

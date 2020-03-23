@@ -44,7 +44,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
       createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
-      var response = await projectCwsClient.CreateProject(createProjectRequestModel);
+      var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
       if (response != null) // todoMaverick exception
         createProjectEvent.ProjectUID = response.Id;
       // todoMaverick what about exception/other error

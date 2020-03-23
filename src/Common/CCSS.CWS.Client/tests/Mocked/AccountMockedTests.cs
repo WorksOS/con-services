@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,10 +20,10 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
     protected override IServiceCollection SetupTestServices(IServiceCollection services, IConfigurationStore configuration)
     {
-      baseUrl = configuration.GetValueString(BaseClient.CWS_URL_KEY);
+      baseUrl = configuration.GetValueString(BaseClient.CWS_PROFILEMANAGER_URL_KEY);
 
       services.AddSingleton(mockWebRequest.Object);
-      services.AddTransient<IAccountClient, AccountClient>();
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
 
       return services;
     }
@@ -45,7 +46,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
       MockUtilities.TestRequestSendsCorrectJson("Get My Accounts", mockWebRequest, null, expectedUrl, HttpMethod.Get, accountListModel, async () =>
       {
-        var client = ServiceProvider.GetRequiredService<IAccountClient>();
+        var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
         var result = await client.GetMyAccounts();
 
         Assert.IsNotNull(result, "No result from getting my accounts");
@@ -59,10 +60,25 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     }
 
     [TestMethod]
+    [Ignore]
+    public void Test_GetAccountsForUser()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
+    [Ignore]
+    public void Test_GetAccountForUser()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
     public void Test_GetDeviceLicenses()
+
     {
       const string accountId = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
-      
+
       var deviceLicensesModel = new DeviceLicenseResponseModel
       {
         Total = 57
@@ -71,7 +87,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
       MockUtilities.TestRequestSendsCorrectJson("Get Device Licenses", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceLicensesModel, async () =>
       {
-        var client = ServiceProvider.GetRequiredService<IAccountClient>();
+        var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
         var result = await client.GetDeviceLicenses(accountId);
 
         Assert.IsNotNull(result, "No result from getting device licenses");

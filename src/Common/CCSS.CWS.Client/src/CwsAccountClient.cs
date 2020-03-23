@@ -10,14 +10,15 @@ using VSS.MasterData.Proxies.Interfaces;
 
 namespace CCSS.CWS.Client
 {
-  public class AccountClient : BaseClient, IAccountClient
+  public class CwsAccountClient : BaseClient, ICwsAccountClient
   {
-    public AccountClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient) : base(configuration, logger, gracefulClient)
+    public CwsAccountClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient) : base(configuration, logger, gracefulClient)
     {
     }
 
     public Task<AccountListResponseModel> GetMyAccounts(IDictionary<string, string> customHeaders = null)
     {
+      // todoMaverick odd, but this only seems to require an application token
       return GetData<AccountListResponseModel>("/users/me/accounts", null, customHeaders);
     }
 
@@ -37,6 +38,7 @@ namespace CCSS.CWS.Client
 
     public async Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountId, IDictionary<string, string> customHeaders = null)
     {
+      // todoMaverick require an application token
       return await GetData<DeviceLicenseResponseModel>($"/accounts/{accountId}/devicelicense", null, customHeaders);
     }
   }

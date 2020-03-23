@@ -10,6 +10,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
@@ -26,7 +27,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     private IConfigurationStore _configStore;
 
     // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
-    private readonly IAccountClient _accountClient;
+    private readonly ICwsAccountClient _cwsAccountClient;
 
     // We need to use ProjectSvc IProjectProxy as thats where the project data is
     private readonly IProjectProxy _projectProxy;
@@ -37,11 +38,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     private readonly IDeviceProxy _deviceProxy;
 
     public DataRepository(ILogger logger, IConfigurationStore configStore,
-      IAccountClient accountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
     {
       _log = logger;
       _configStore = configStore;
-      _accountClient = accountClient; 
+      _cwsAccountClient = cwsAccountClient; 
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
     }
@@ -54,7 +55,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(customerUid))
-          deviceLicenseResponseModel = await _accountClient.GetDeviceLicenses(customerUid);
+          deviceLicenseResponseModel = await _cwsAccountClient.GetDeviceLicenses(customerUid);
       }
       catch (Exception e)
       {
@@ -150,9 +151,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
         if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
         {
-          var deviceAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUID));
-          if (deviceAssociatedWithProjects.Any())
-            return deviceAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
+          var projectsAssociatedWithDevice = (await _deviceProxy.GetProjects(device.DeviceUID));
+          if (projectsAssociatedWithDevice.ProjectDescriptors.Any())
+            return projectsAssociatedWithDevice.ProjectDescriptors.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
         }
 
         return accountProjects;
@@ -178,9 +179,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         if (!accountProjects.Any())
           return accountProjects;
 
-        var deviceAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUID));
-
-        return deviceAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
+        var projectsAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUID));
+        return projectsAssociatedWithProjects.ProjectDescriptors.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
       }
       catch (Exception e)
       {
@@ -195,9 +195,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #region device
 
-    public async Task<DeviceData> GetDevice(string serialNumber)
+    public async Task<DeviceDataSingleResult> GetDevice(string serialNumber)
     {
-      DeviceData device = null;
+      DeviceDataSingleResult device = null;
       try
       {
         if (!string.IsNullOrEmpty(serialNumber))
@@ -213,9 +213,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return device;
     }
 
-    public async Task<DeviceData> GetDevice(long shortRaptorAssetId)
+    public async Task<DeviceDataSingleResult> GetDevice(int shortRaptorAssetId)
     {
-      DeviceData device = null;
+      DeviceDataSingleResult device = null;
       try
       {
         if (shortRaptorAssetId > 0)

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
@@ -29,7 +30,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-         accountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -45,7 +46,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-        accountClient.Object, projectProxy.Object, deviceProxy.Object);
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -60,20 +61,23 @@ namespace WebApiTests.Executors
     [DataRow("ec520Serial",  "ec520Serial")]
     public async Task AssetUidExecutor_GetAssetDevice_HappyPath(string serialNumberRequested, string serialNumberExpected)
     {
-      var deviceDataToBeReturned = new DeviceData
+      var deviceDataToBeReturned = new DeviceDataSingleResult
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        DeviceUID = Guid.NewGuid().ToString(),
-        SerialNumber = serialNumberExpected
+        DeviceDescriptor = new DeviceData()
+        {
+          CustomerUID = Guid.NewGuid().ToString(),
+          DeviceUID = Guid.NewGuid().ToString(),
+          SerialNumber = serialNumberExpected
+        }
       };
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested)).ReturnsAsync(deviceDataToBeReturned);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, null)).ReturnsAsync(deviceDataToBeReturned);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, accountClient.Object, projectProxy.Object, deviceProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
      
       var device = await dataRepository.GetDevice(serialNumberRequested);
-      Assert.AreEqual(serialNumberExpected, device.SerialNumber);
+      Assert.AreEqual(serialNumberExpected, device.DeviceDescriptor.SerialNumber);
     }
 
     [TestMethod]
@@ -81,9 +85,9 @@ namespace WebApiTests.Executors
     public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(string serialNumberRequested)
     {
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested)).ReturnsAsync((DeviceData)null);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, null)).ReturnsAsync((DeviceDataSingleResult)null);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, accountClient.Object, projectProxy.Object, deviceProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.IsNull(device);

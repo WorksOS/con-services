@@ -106,8 +106,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         .ReturnsAsync(false);
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
-      var projectCwsClient = new Mock<IProjectClient>();
-      projectCwsClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
       
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v2/projects");
@@ -138,7 +138,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
         projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
-        projectCwsClient: projectCwsClient.Object);
+        cwsProjectClient: cwsProjectClient.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
 
@@ -171,8 +171,8 @@ namespace VSS.MasterData.ProjectTests.Executors
         .ReturnsAsync(false);
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
-      var projectCWSClient = new Mock<IProjectClient>();
-      projectCWSClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+      var cwsProjectClient = new Mock<ICwsProjectClient>();
+      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
 
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v6/projects");
@@ -203,7 +203,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         productivity3dV1ProxyCoord: productivity3dV1ProxyCoord.Object,
         projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, httpContextAccessor: httpContextAccessor,
         dataOceanClient: dataOceanClient.Object, authn: authn.Object,
-        projectCwsClient: projectCWSClient.Object);
+        cwsProjectClient: cwsProjectClient.Object);
       await executor.ProcessAsync(createProjectEvent);
     }
   }

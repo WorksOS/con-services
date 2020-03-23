@@ -20,7 +20,7 @@ namespace WebApiTests.Executors
 
     protected IServiceProvider ServiceProvider;
     protected Mock<IProjectProxy> projectProxy;
-    protected Mock<IAccountClient> accountClient;
+    protected Mock<ICwsAccountClient> cwsAccountClient;
     protected Mock<IDeviceProxy> deviceProxy;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
@@ -37,7 +37,7 @@ namespace WebApiTests.Executors
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
       projectProxy = new Mock<IProjectProxy>();
-      accountClient = new Mock<IAccountClient>();
+      cwsAccountClient = new Mock<ICwsAccountClient>();
       deviceProxy = new Mock<IDeviceProxy>();
     }
   

@@ -79,7 +79,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
       services.AddTransient<IProjectProxy, ProjectV6Proxy>();
       services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
-      services.AddTransient<IAccountClient, AccountClient>();
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();

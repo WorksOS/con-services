@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
@@ -30,10 +31,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       string customerUid, string userId = null, string userEmailAddress = null, IDictionary<string, string> headers = null,
       IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
-      IProjectRepository projectRepo = null, IFileRepository fileRepo = null,
+      IProjectRepository projectRepo = null, IDeviceRepository deviceRepo = null, IFileRepository fileRepo = null,
       ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
       ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
-      IProjectClient projectCwsClient = null
+      ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null
       )
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -48,8 +49,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       executor.Initialise(
         log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers,
         productivity3dV1ProxyCoord, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
-        persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, projectRepo, fileRepo, customerRepo,
-        httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient, projectCwsClient
+        persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, projectRepo, deviceRepo, fileRepo, customerRepo,
+        httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient, cwsProjectClient, cwsDeviceClient
         );
 
       return executor;

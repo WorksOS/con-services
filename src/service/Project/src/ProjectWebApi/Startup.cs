@@ -22,6 +22,7 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
+using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
@@ -71,6 +72,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
+      services.AddScoped<IDeviceRepository, DeviceRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<IFileRepository, FileRepository>();
@@ -89,8 +91,9 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
-      services.AddSingleton<IAccountClient, AccountClient>();
-      services.AddSingleton<IProjectClient, ProjectClient>();
+      services.AddSingleton<ICwsAccountClient, CwsAccountClient>();
+      services.AddSingleton<ICwsProjectClient, CwsProjectClient>();
+      services.AddSingleton<ICwsDeviceClient, CwsDeviceClient>();
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

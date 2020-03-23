@@ -16,10 +16,10 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     /// Initializes a new instance of the <see cref="ProjectAuthentication"/> class.
     /// </summary>
     public ProjectAuthentication(RequestDelegate next,
-      IAccountClient accountClient,
+      ICwsAccountClient cwsAccountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler) : base(next, accountClient, store, logger, serviceExceptionHandler)
+      IServiceExceptionHandler serviceExceptionHandler) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
     {
     }
 

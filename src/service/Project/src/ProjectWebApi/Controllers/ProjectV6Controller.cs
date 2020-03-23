@@ -194,7 +194,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
-            projectCwsClient: CwsProjectClient)
+            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient)
           .ProcessAsync(createProjectEvent)
       );
 

@@ -111,8 +111,8 @@ namespace VSS.Productivity3D.Project.Proxy
 
     // customHeaders will NOT include customerUid
     public async Task<List<ProjectData>> GetIntersectingProjectsApplicationContext(string customerUid,
-        double latitude, double longitude, string projectUid = null, DateTime? timeOfPosition = null, 
-        IDictionary<string, string> customHeaders = null) 
+        double latitude, double longitude, string projectUid = null, DateTime? timeOfPosition = null,
+        IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick
       // ProjectSvc.ProjectController should:
@@ -121,14 +121,14 @@ namespace VSS.Productivity3D.Project.Proxy
       //  Note that if timeOfPosition == null, don't check it.
 
       var topAsString = timeOfPosition == null ? null : timeOfPosition.ToString();
-            var queryParameters = new List<KeyValuePair<string, string>>{
+      var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("customerUid", customerUid),
           new KeyValuePair<string, string>( "latitude",latitude.ToString()),
           new KeyValuePair<string, string>( "longitude",longitude.ToString()),
           new KeyValuePair<string, string>( "timeOfPosition",topAsString) };
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project/applicationcontext/intersecting",
         customerUid, null, customHeaders, queryParameters);
-      
+
       if (result.Code == 0)
         if (!string.IsNullOrEmpty(projectUid))
           return result.ProjectDescriptors.Where(p => string.Compare(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase) == 0).ToList();
@@ -172,5 +172,5 @@ namespace VSS.Productivity3D.Project.Proxy
       if (string.IsNullOrEmpty(userId))
         ClearCacheByTag(userId);
     }
-      }
+  }
 }

@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (device == null)
         return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: string.Empty, customerUid: string.Empty, uniqueCode: 33);
 
-      return await HandleCutFillExport(request, device);
+      return await HandleCutFillExport(request, device.DeviceDescriptor);
     }
 
     /// <summary>

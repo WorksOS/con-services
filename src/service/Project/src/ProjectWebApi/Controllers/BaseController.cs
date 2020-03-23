@@ -22,6 +22,7 @@ using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.MasterData.Repositories;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -41,10 +42,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
     private IProductivity3dV2ProxyCompaction _productivity3dV2ProxyCompaction;
     private IProjectRepository _projectRepo;
+    private IDeviceRepository _deviceRepo;
     private IFileRepository _fileRepo;
     private IDataOceanClient _dataOceanClient;
     private ITPaaSApplicationAuthentication _authorization;
-    private IProjectClient _projectCwsClient;
+    private ICwsProjectClient _cwsProjectClient;
+    private ICwsDeviceClient _cwsDeviceClient;
 
 
     /// <summary> Gets the application logging interface. </summary>
@@ -71,7 +74,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary> Gets or sets the Project Repository.  </summary>
     protected IProjectRepository ProjectRepo => _projectRepo ?? (_projectRepo = HttpContext.RequestServices.GetService<IProjectRepository>());
 
-   /// <summary> Gets or sets the TCC File Repository. </summary>
+    /// <summary> Gets or sets the Device Repository.  </summary>
+    protected IDeviceRepository DeviceRepo => _deviceRepo ?? (_deviceRepo = HttpContext.RequestServices.GetService<IDeviceRepository>());
+    
+    /// <summary> Gets or sets the TCC File Repository. </summary>
     protected IFileRepository FileRepo => _fileRepo ?? (_fileRepo = HttpContext.RequestServices.GetService<IFileRepository>());
 
     /// <summary>
@@ -82,7 +88,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets or sets the csw Project Client
     /// </summary>
-    protected IProjectClient CwsProjectClient => _projectCwsClient ?? (_projectCwsClient = HttpContext.RequestServices.GetService<IProjectClient>());
+    protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ?? (_cwsProjectClient = HttpContext.RequestServices.GetService<ICwsProjectClient>());
+
+    /// <summary>
+    /// Gets or sets the csw Device Client
+    /// </summary>
+    protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ?? (_cwsDeviceClient = HttpContext.RequestServices.GetService<ICwsDeviceClient>());
 
     /// <summary> Gets or sets the TPaaS application authentication helper. </summary>
     protected ITPaaSApplicationAuthentication Authorization => _authorization ?? (_authorization = HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>());

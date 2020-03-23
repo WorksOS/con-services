@@ -8,15 +8,24 @@ using VSS.MasterData.Proxies.Interfaces;
 
 namespace CCSS.CWS.Client
 {
-  public class ProjectClient : BaseClient, IProjectClient
+  /// <summary>
+  /// These use the cws cws-profilemanager controller
+  /// </summary>
+  public class CwsProjectClient : BaseClient, ICwsProjectClient
   {
-    public ProjectClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient) : base(configuration, logger, gracefulClient)
+    public CwsProjectClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient) : base(configuration, logger, gracefulClient)
     {
     }
 
     public Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
     {
       return PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
+    }
+    
+    public async Task<DeviceListResponseModel> GetDevicesForProject(string projectUid, IDictionary<string, string> customHeaders = null)
+    {
+      //  http://api-stg.trimble.com/cws-profilemanager-stg/1.0/projects/{projectId}/devices
+      return await GetData<DeviceListResponseModel>($"/projects/{projectUid}/devices");
     }
   }
 }

@@ -36,17 +36,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // assetId could be valid (>0) or -1 (john doe i.e. landfill) or -2 (imported tagfile)
       if (request.shortRaptorAssetId > 0)
       {
-        var device = await dataRepository.GetDevice(request.shortRaptorAssetId);
+        var device = await dataRepository.GetDevice((int) request.shortRaptorAssetId);
         log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
 
         var deviceLicenseTotal = 0;
         if (device != null)
-          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
+          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.DeviceDescriptor.CustomerUID);
 
         if (device == null || deviceLicenseTotal < 1)
           return GetProjectIdResult.CreateGetProjectIdResult(false, projectId);
 
-        var potentialProjects = await dataRepository.CheckDeviceProjectIntersection(device,
+        var potentialProjects = await dataRepository.CheckDeviceProjectIntersection(device.DeviceDescriptor,
           request.latitude, request.longitude, request.timeOfPosition);
         log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded projects which lat/long is within {JsonConvert.SerializeObject(potentialProjects)}");
          

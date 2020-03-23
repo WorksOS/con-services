@@ -81,6 +81,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IProjectRepository projectRepo;
 
     /// <summary>
+    /// Repository factory used extensively for device
+    /// </summary>
+    protected IDeviceRepository deviceRepo;
+
+    /// <summary>
     /// Repository factory used for accessing files in TCC (at present)
     /// </summary>
     protected IFileRepository fileRepo;
@@ -99,8 +104,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected ITPaaSApplicationAuthentication authn;
     protected ISchedulerProxy schedulerProxy;
     protected IPegasusClient pegasusClient;
-    protected IProjectClient projectCwsClient;
-    
+    protected ICwsProjectClient cwsProjectClient;
+    protected ICwsDeviceClient cwsDeviceClient;
+
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
@@ -175,11 +181,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, 
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
-      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
+      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, IDeviceRepository deviceRepo = null,
       IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
-      IProjectClient projectCwsClient = null)
+      ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null)
     {
       log = logger;
       this.configStore = configStore;
@@ -195,6 +201,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
+      this.deviceRepo = deviceRepo;
       this.fileRepo = fileRepo;
       this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
@@ -202,7 +209,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.authn = authn;
       this.schedulerProxy = schedulerProxy;
       this.pegasusClient = pegasusClient;
-      this.projectCwsClient = projectCwsClient;
+      this.cwsProjectClient = cwsProjectClient;
+      this.cwsDeviceClient = cwsDeviceClient;
     }
 
     /// <summary>
@@ -216,10 +224,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, 
+      IProjectRepository projectRepo, DeviceRepository deviceRepo)
       where TExecutor : RequestExecutorContainer, new()
     {
-      return new TExecutor { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, projectRepo = projectRepo};
+      return new TExecutor { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, 
+        projectRepo = projectRepo, deviceRepo = deviceRepo};
     }
 
 

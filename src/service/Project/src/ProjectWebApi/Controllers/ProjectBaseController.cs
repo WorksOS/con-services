@@ -12,18 +12,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class ProjectBaseController : BaseController<ProjectBaseController>
   {
-   
-    /// <summary>
-    /// Save for potential rollback
-    /// </summary>
-    protected Guid subscriptionUidAssigned = Guid.Empty;
-
-    /// <summary>
-    ///  Used for rollback
-    /// </summary>
-    protected Guid geofenceUidCreated = Guid.Empty;
-
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ProjectBaseController"/> class.
     /// </summary>

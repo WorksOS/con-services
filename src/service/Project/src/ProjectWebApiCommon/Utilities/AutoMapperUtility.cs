@@ -112,7 +112,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
             .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
             .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
-
+          cfg.CreateMap<DeviceResponseModel, CreateDeviceEvent>()
+            .ForMember(dest => dest.DeviceUID, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow));
           // ProjectGeofenceAssociations
           cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();
 

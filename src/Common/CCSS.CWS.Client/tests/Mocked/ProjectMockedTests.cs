@@ -19,10 +19,10 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
     protected override IServiceCollection SetupTestServices(IServiceCollection services, IConfigurationStore configuration)
     {
-      baseUrl = configuration.GetValueString(BaseClient.CWS_URL_KEY);
+      baseUrl = configuration.GetValueString(BaseClient.CWS_PROFILEMANAGER_URL_KEY);
 
       services.AddSingleton(mockWebRequest.Object);
-      services.AddTransient<IProjectClient, ProjectClient>();
+      services.AddTransient<ICwsProjectClient, CwsProjectClient>();
 
       return services;
     }
@@ -52,7 +52,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
 
       MockUtilities.TestRequestSendsCorrectJson("Create a project", mockWebRequest, null, expectedUrl, HttpMethod.Post, createProjectResponseModel, async () =>
       {
-        var client = ServiceProvider.GetRequiredService<IProjectClient>();
+        var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
         var result = await client.CreateProject(createProjectRequestModel);
 
         Assert.IsNotNull(result, "No result from posting my project");

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -75,7 +76,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      DeviceData device = null;
+      DeviceDataSingleResult device = null;
       // a CB will have a RadioSerial, whose suffix defines the type
       device = await dataRepository.GetDevice(request.RadioSerial);
       if (device == null)
@@ -83,13 +84,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
-        return await HandleManualImport(request, project, device);
+        return await HandleManualImport(request, project, device.DeviceDescriptor);
       }
 
       if (device == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
 
-      return await HandleAutoImport(request, device);
+      return await HandleAutoImport(request, device.DeviceDescriptor);
     }
 
 

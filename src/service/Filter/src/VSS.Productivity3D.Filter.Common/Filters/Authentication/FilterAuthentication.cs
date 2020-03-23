@@ -21,11 +21,11 @@ namespace VSS.Productivity3D.Filter.Common.Filters.Authentication
     /// Initializes a new instance of the <see cref="FilterAuthentication"/> class.
     /// </summary>
     public FilterAuthentication(RequestDelegate next,
-      IAccountClient accountClient,
+      ICwsAccountClient cwsAccountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy) : base(next, accountClient, store, logger, serviceExceptionHandler)
+      IProjectProxy projectProxy) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
     { 
       ProjectProxy = projectProxy;
     }

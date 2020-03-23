@@ -22,7 +22,7 @@ namespace VSS.WebApi.Common
   {
     private readonly RequestDelegate _next;
     protected readonly ILogger<TIDAuthentication> log;
-    private readonly IAccountClient accountClient;
+    private readonly ICwsAccountClient accountClient;
     private readonly IConfigurationStore store;
 
     protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/" };
@@ -36,7 +36,7 @@ namespace VSS.WebApi.Common
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
     /// </summary>
     public TIDAuthentication(RequestDelegate next,
-      IAccountClient accountClient,
+      ICwsAccountClient accountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)

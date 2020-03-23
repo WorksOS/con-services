@@ -11,6 +11,7 @@ using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace WebApiTests.Executors
 {
@@ -194,20 +195,20 @@ namespace WebApiTests.Executors
       string expectedMessageResult
     )
     {
-      accountClient.Setup(d => d.GetDeviceLicenses(projectAccountUid, null)).ReturnsAsync(projectDeviceLicenseResponseModel);
-      accountClient.Setup(d => d.GetDeviceLicenses(deviceAccountUid, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
+      cwsAccountClient.Setup(d => d.GetDeviceLicenses(projectAccountUid, null)).ReturnsAsync(projectDeviceLicenseResponseModel);
+      cwsAccountClient.Setup(d => d.GetDeviceLicenses(deviceAccountUid, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
       
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<string>(), It.IsAny<DateTime>(), null))
         .ReturnsAsync(new List<ProjectData> { projectOfInterest });
 
-      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial)).ReturnsAsync(assetDevice);
-      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial)).ReturnsAsync(ec520Device);
-      deviceProxy.Setup(d => d.GetProjects(assetUid)).ReturnsAsync(new List<ProjectData> { projectOfInterest });
-      deviceProxy.Setup(d => d.GetProjects(ec520Uid)).ReturnsAsync(new List<ProjectData> { projectOfInterest });
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = assetDevice });
+      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = ec520Device });
+      deviceProxy.Setup(d => d.GetProjects(assetUid, null)).ReturnsAsync(new ProjectDataResult { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } });
+      deviceProxy.Setup(d => d.GetProjects(ec520Uid, null)).ReturnsAsync(new ProjectDataResult { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } });
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        accountClient.Object, projectProxy.Object, deviceProxy.Object);
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, expectedProjectUidResult, expectedAssetUidResult, expectedCodeResult,

@@ -13,9 +13,8 @@ using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using Filter=VSS.Productivity3D.Filter.Abstractions.Models.Filter;
+using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
-using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

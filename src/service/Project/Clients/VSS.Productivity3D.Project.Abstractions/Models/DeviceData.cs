@@ -20,12 +20,13 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     public DeviceData()
     { }
 
-    public DeviceData(string customerUid, string deviceUid, string deviceName, string serialNumber, long? shortRaptorAssetId)
+    public DeviceData(string customerUid, string deviceUid, string deviceName, string serialNumber, string status, long? shortRaptorAssetId)
     {
       CustomerUID = customerUid;
       DeviceUID = deviceUid;
       DeviceName = deviceName;
       SerialNumber = serialNumber;
+      Status = Status;
       ShortRaptorAssetId = shortRaptorAssetId;
     }
 
@@ -37,6 +38,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
              && otherDeviceData.DeviceUID == this.DeviceUID
              && otherDeviceData.DeviceName == this.DeviceName
              && otherDeviceData.SerialNumber == this.SerialNumber
+             && otherDeviceData.Status == this.Status
              && otherDeviceData.ShortRaptorAssetId == this.ShortRaptorAssetId
         ;
     }

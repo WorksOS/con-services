@@ -15,7 +15,7 @@ namespace CCSS.CWS.Client
 {
   public abstract class BaseClient
   {
-    public const string CWS_URL_KEY = "CWS_URL";
+    public const string CWS_PROFILEMANAGER_URL_KEY = "CWS_PROFILEMANAGER_URL";
 
     private readonly string baseUrl;
 
@@ -29,10 +29,10 @@ namespace CCSS.CWS.Client
       webClient = gracefulClient;
       Log = logger.CreateLogger(GetType().Name);
 
-      baseUrl = configuration.GetValueString(CWS_URL_KEY);
+      baseUrl = configuration.GetValueString(CWS_PROFILEMANAGER_URL_KEY);
       if (string.IsNullOrEmpty(baseUrl))
       {
-        throw new ArgumentException($"Missing environment variable {CWS_URL_KEY}");
+        throw new ArgumentException($"Missing environment variable {CWS_PROFILEMANAGER_URL_KEY}");
       }
     }
 

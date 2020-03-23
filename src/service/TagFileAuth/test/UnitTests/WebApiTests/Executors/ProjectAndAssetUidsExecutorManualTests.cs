@@ -9,6 +9,7 @@ using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
@@ -627,7 +628,7 @@ namespace WebApiTests.Executors
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         accountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() =>
         executor.ProcessAsync((GetProjectAndAssetUidsRequest) null));
@@ -642,26 +643,26 @@ namespace WebApiTests.Executors
       string assetUid, DeviceData assetDevice,
       string ec520Uid, DeviceData ec520Device,
       string deviceAccountUid, DeviceLicenseResponseModel deviceDeviceLicenseResponseModel,
-      ProjectData projectOfInterest, 
+      ProjectData projectOfInterest,
       string expectedProjectUidResult, string expectedAssetUidResult, int expectedCodeResult,
       string expectedMessageResult
     )
     {
-      accountClient.Setup(p => p.GetDeviceLicenses(projectAccountUid, null)).ReturnsAsync(projectDeviceLicenseResponseModel);
-      accountClient.Setup(p => p.GetDeviceLicenses(deviceAccountUid, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
-      
+      cwsAccountClient.Setup(p => p.GetDeviceLicenses(projectAccountUid, null)).ReturnsAsync(projectDeviceLicenseResponseModel);
+      cwsAccountClient.Setup(p => p.GetDeviceLicenses(deviceAccountUid, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
+
       projectProxy.Setup(p => p.GetProjectApplicationContext(projectUid, null)).ReturnsAsync(projectOfInterest);
       projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), projectUid, null, null))
-            .ReturnsAsync(new List<ProjectData>(){projectOfInterest});
+            .ReturnsAsync(new List<ProjectData>() { projectOfInterest });
 
-      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial)).ReturnsAsync(assetDevice);
-      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial)).ReturnsAsync(ec520Device);
-      deviceProxy.Setup(d => d.GetProjects(assetUid)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = assetDevice });
+      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = ec520Device });
+      deviceProxy.Setup(d => d.GetProjects(assetUid, null)).ReturnsAsync(new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest }});
 
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         accountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, expectedProjectUidResult, expectedAssetUidResult, expectedCodeResult,

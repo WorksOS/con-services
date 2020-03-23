@@ -4,7 +4,7 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
 {
-  public interface IAccountClient
+  public interface ICwsAccountClient
   {
     Task<AccountListResponseModel> GetMyAccounts(IDictionary<string, string> customHeaders = null);
     Task<AccountListResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null);

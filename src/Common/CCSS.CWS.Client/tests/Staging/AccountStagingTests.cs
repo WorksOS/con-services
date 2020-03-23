@@ -24,10 +24,10 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     protected override IServiceCollection SetupTestServices(IServiceCollection services, IConfigurationStore configuration)
     {
       this.configuration = configuration;
-      baseUrl = configuration.GetValueString(BaseClient.CWS_URL_KEY);
+      baseUrl = configuration.GetValueString(BaseClient.CWS_PROFILEMANAGER_URL_KEY);
 
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
-      services.AddTransient<IAccountClient, AccountClient>();
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
 
@@ -58,7 +58,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     [TestMethod]
     public async Task Test_GetMyAccounts()
     {
-      var client = ServiceProvider.GetRequiredService<IAccountClient>();
+      var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
       var result = await client.GetMyAccounts(CustomHeaders());
 
       Assert.IsNotNull(result, "No result from getting my accounts");
@@ -67,9 +67,23 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     }
 
     [TestMethod]
+    [Ignore]
+    public async Task Test_GetAccountsForUser()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
+    [Ignore]
+    public async Task Test_GetAccountForUser()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
     public async Task Test_GetDeviceAccounts()
     {
-      var client = ServiceProvider.GetRequiredService<IAccountClient>();
+      var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
       var headers = CustomHeaders();
       var accountsResult = await client.GetMyAccounts(headers);
       var result = await client.GetDeviceLicenses(accountsResult.Accounts[0].Id, headers);
