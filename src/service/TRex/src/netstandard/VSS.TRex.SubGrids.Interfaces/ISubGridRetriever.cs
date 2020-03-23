@@ -2,7 +2,7 @@
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.SubGrids
+namespace VSS.TRex.SubGrids.Interfaces
 {
   public interface ISubGridRetriever
   {

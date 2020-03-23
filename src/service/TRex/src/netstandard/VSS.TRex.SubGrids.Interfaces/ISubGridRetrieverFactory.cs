@@ -7,7 +7,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
-namespace VSS.TRex.SubGrids
+namespace VSS.TRex.SubGrids.Interfaces
 {
   public interface ISubGridRetrieverFactory
   {
