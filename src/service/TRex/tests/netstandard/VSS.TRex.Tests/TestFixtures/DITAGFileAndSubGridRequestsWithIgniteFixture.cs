@@ -38,6 +38,7 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 using VSS.TRex.QuantizedMesh.Executors.Tasks;
+using VSS.TRex.Volumes.Executors.Tasks;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -62,13 +63,16 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       return key switch
       {
-        PipelineProcessorTaskStyle.AggregatedPipelined => (ITRexTask) new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.AggregatedPipelined => new AggregatedPipelinedSubGridTask(),
         PipelineProcessorTaskStyle.PatchExport => new PatchTask(),
         PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
         PipelineProcessorTaskStyle.GriddedReport => new GriddedReportTask(),
         PipelineProcessorTaskStyle.PVMRendering => new PVMRenderingTask(),
         PipelineProcessorTaskStyle.CSVExport => new CSVExportTask(),
         PipelineProcessorTaskStyle.QuantizedMesh => new QuantizedMeshTask(),
+        PipelineProcessorTaskStyle.SimpleVolumes => new VolumesComputationTask(),
+        PipelineProcessorTaskStyle.ProgressiveVolumes => new VolumesComputationTask(),
+
         _ => null
       };
     }

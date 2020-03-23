@@ -39,6 +39,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Volumes.Executors.Tasks;
 
 namespace VSS.TRex.Server.Application
 {
@@ -74,6 +75,10 @@ namespace VSS.TRex.Server.Application
           return new GriddedReportTask();
         case PipelineProcessorTaskStyle.CSVExport:
           return new CSVExportTask();
+        case PipelineProcessorTaskStyle.SimpleVolumes: 
+          return new VolumesComputationTask();
+        case PipelineProcessorTaskStyle.ProgressiveVolumes:
+          return new VolumesComputationTask();
         default:
           return null;
       }
