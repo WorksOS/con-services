@@ -35,7 +35,7 @@ namespace VSS.TRex.SubGrids
     private IClientLeafSubGridFactory ClientLeafSubGridFactory
        => clientLeafSubGridFactory ?? (clientLeafSubGridFactory = DIContext.Obtain<IClientLeafSubGridFactory>());
 
-    private SubGridRetriever retriever;
+    private ISubGridRetriever retriever;
     private ISiteModel SiteModel;
     private GridDataType GridDataType;
     private ICombinedFilter Filter;
@@ -99,18 +99,18 @@ namespace VSS.TRex.SubGrids
       HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
       OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
 
-      retriever = new SubGridRetriever(siteModel,
+      retriever = DIContext.Obtain<ISubGridRetrieverFactory>().Instance(siteModel,
                                        gridDataType,
                                        storageProxy,
-                                       Filter,
+                                       filter,
                                        FilterAnnex,
                                        hasOverrideSpatialCellRestriction,
                                        overrideSpatialCellRestriction,
-                                       subGridCacheContext != null,
                                        maxNumberOfPassesToReturn,
                                        areaControlSet,
                                        populationControl,
                                        PDExistenceMap,
+                                       subGridCacheContext,
                                        overrides,
                                        liftParams);
 

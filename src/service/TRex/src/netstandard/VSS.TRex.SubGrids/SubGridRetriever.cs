@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGrids
   /// <summary>
   /// Contains and orchestrates the business logic for processing sub grids...
   /// </summary>
-  public class SubGridRetriever
+  public class SubGridRetriever : ISubGridRetriever
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridRetriever>();
 
@@ -330,62 +330,62 @@ namespace VSS.TRex.SubGrids
           _currentPass = filteredPassDataArray[idxPtr];
 
           if (_currentPass.FilteredPass.HalfPass)
+          {
+            if (haveHalfPass)
+              passRangeCount++; // increase count on second half pass encountered
+            else
             {
-              if (haveHalfPass)
-                 passRangeCount++; // increase count on second half pass encounted
-              else
-                {
-                  haveHalfPass = !haveHalfPass;
-                  continue; // wont be using first half pass
-                }
-                haveHalfPass = !haveHalfPass;
-             }
-           else
+              haveHalfPass = !haveHalfPass;
+              continue; // wont be using first half pass
+            }
+
+            haveHalfPass = !haveHalfPass;
+          }
+          else
              passRangeCount++; // increase count for a full pass
 
-           if (Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax))
-           {
-             filteredPassBoolArray[idxPtr] = true; // tagged for minElev check
-             if (_filter.AttributeFilter.HasElevationTypeFilter)
-                _assignmentContext.FilteredValue.PassCount = 1;
-             else
-               {
-                 validPasses++;
-                 _assignmentContext.FilteredValue.PassCount = validPasses;
-               }
+          if (Range.InRange(passRangeCount, _filter.AttributeFilter.PassCountRangeMin, _filter.AttributeFilter.PassCountRangeMax))
+          {
+            filteredPassBoolArray[idxPtr] = true; // tagged for minElev check
+            if (_filter.AttributeFilter.HasElevationTypeFilter)
+              _assignmentContext.FilteredValue.PassCount = 1;
+            else
+            {
+              validPasses++;
+              _assignmentContext.FilteredValue.PassCount = validPasses;
+            }
 
-             if ((_filter.AttributeFilter.HasElevationMappingModeFilter && _filter.AttributeFilter.ElevationMappingMode == ElevationMappingMode.MinimumElevation)
-              || (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
-               {
-                 if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
-                    _tempPass = _currentPass;
-                  _haveFilteredPass = true;
-                }
-              else if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Highest)
-                {
-                  if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
-                    _tempPass = _currentPass;
-                  _haveFilteredPass = true;
-                }
-              else
-                { 
-                  // are we only interested in first pass
-                  if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.First)
-                  {
-                    _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
-                    _haveFilteredPass = true;
-                    _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
-                    break; // we are out of here
-                  }
+            if ((_filter.AttributeFilter.HasElevationMappingModeFilter && _filter.AttributeFilter.ElevationMappingMode == ElevationMappingMode.MinimumElevation)
+                || (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Lowest))
+            {
+              if (!_haveFilteredPass || _currentPass.FilteredPass.Height < _tempPass.FilteredPass.Height)
+                _tempPass = _currentPass;
+              _haveFilteredPass = true;
+            }
+            else if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.Highest)
+            {
+              if (!_haveFilteredPass || _currentPass.FilteredPass.Height > _tempPass.FilteredPass.Height)
+                _tempPass = _currentPass;
+              _haveFilteredPass = true;
+            }
+            else
+            {
+              // are we only interested in first pass
+              if (_filter.AttributeFilter.HasElevationTypeFilter && _filter.AttributeFilter.ElevationType == ElevationType.First)
+              {
+                _assignmentContext.FilteredValue.FilteredPassData = _currentPass;
+                _haveFilteredPass = true;
+                _assignmentContext.FilteredValue.PassCount = CellPassConsts.NullPassCountValue;
+                break; // we are out of here
+              }
 
-                  if (!minElevCheckRequired)
-                    minElevCheckRequired = true; // means we need to do an extra check below for minElevation on choosen last pass
-                  if (!_haveFilteredPass)
-                    _haveFilteredPass = true;
-                  _tempPass = _currentPass; // good pass. Last one assigned will be latest
-                }
-
-           } // end in range
+              if (!minElevCheckRequired)
+                minElevCheckRequired = true; // means we need to do an extra check below for minElevation on choosen last pass
+              if (!_haveFilteredPass)
+                _haveFilteredPass = true;
+              _tempPass = _currentPass; // good pass. Last one assigned will be latest
+            }
+          } // end in range
 
           if (passRangeCount == _filter.AttributeFilter.PassCountRangeMax)
             break; // we are out of here
@@ -550,7 +550,7 @@ namespace VSS.TRex.SubGrids
     private void RetrieveSubGridStripe(byte StripeIndex)
     {
       //  int TopMostLayerPassCount = 0;
-      int TopMostLayerCompactionHalfPassCount = 0;
+      var TopMostLayerCompactionHalfPassCount = 0;
 
       // if (Debug_ExtremeLogSwitchD) Log.LogDebug($"Beginning stripe iteration {StripeIndex} at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
@@ -672,9 +672,9 @@ namespace VSS.TRex.SubGrids
                 // If we have a temperature filter to be filtered by last pass
                 if (_filter.AttributeFilter.HasTemperatureRangeFilter && _filter.AttributeFilter.FilterTemperatureByLastPass)
                 {
-                  var _materialTemperature = _cellProfile.Passes.FilteredPassData[_cellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature;
-                  _haveFilteredPass = _materialTemperature != CellPassConsts.NullMaterialTemperatureValue &&
-                                      Range.InRange(_materialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax);
+                  var materialTemperature = _cellProfile.Passes.FilteredPassData[_cellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature;
+                  _haveFilteredPass = materialTemperature != CellPassConsts.NullMaterialTemperatureValue &&
+                                      Range.InRange(materialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax);
                 }
                 else
                   _haveFilteredPass = true;
@@ -807,7 +807,7 @@ namespace VSS.TRex.SubGrids
         throw new TRexSubGridProcessingException($"Grid data type of client leaf sub grid [{clientGrid.GridDataType}] is not compatible with the grid data type of retriever [{_gridDataType}]");
       }
 
-      var Result = ServerRequestResult.UnknownError;
+      var result = ServerRequestResult.UnknownError;
 
       //  SIGLogMessage.PublishNoODS(Nil, Format('In RetrieveSubGrid: Active pass filters = %s, Active cell filters = %s', [PassFilter.ActiveFiltersText, CellFilter.ActiveFiltersText]));
 
@@ -892,13 +892,13 @@ namespace VSS.TRex.SubGrids
         if (!_subGrid.IsLeafSubGrid())
         {
           Log.LogInformation("Requests of node sub grids in the server sub grid are not yet supported");
-          return Result;
+          return result;
         }
 
         if (!(_subGrid is IServerLeafSubGrid))
         {
           Log.LogError($"_SubGrid {_subGrid.Moniker()} is not a server grid leaf node");
-          return Result;
+          return result;
         }
 
         // SIGLogMessage.PublishNoODS(Nil, Format('Getting sub grid leaf at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
@@ -930,7 +930,7 @@ namespace VSS.TRex.SubGrids
 
         // Determine if a sieve filter is required for the sub grid where the sieve matches
         // the X and Y pixel world size (used for WMS tile computation)
-        _subGrid.CalculateWorldOrigin(out double subGridWorldOriginX, out double subGridWorldOriginY);
+        _subGrid.CalculateWorldOrigin(out var subGridWorldOriginX, out var subGridWorldOriginY);
 
         _sieveFilterInUse = _areaControlSet.UseIntegerAlgorithm 
           ? GridRotationUtilities.ComputeSieveBitmaskInteger(subGridWorldOriginX, subGridWorldOriginY, _subGrid.Moniker(), _areaControlSet, _siteModel.CellSize, out _sieveBitmask) 
@@ -957,11 +957,13 @@ namespace VSS.TRex.SubGrids
 
         // Iterate over the stripes in the sub grid processing each one in turn.
         for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+        {
           RetrieveSubGridStripe(I);
+        }
 
         //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
-        Result = ServerRequestResult.NoError;
+        result = ServerRequestResult.NoError;
       }
       catch (Exception e)
       {
@@ -969,7 +971,7 @@ namespace VSS.TRex.SubGrids
         throw;
       }
 
-      return Result;
+      return result;
     }
   }
 }

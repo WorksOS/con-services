@@ -37,15 +37,15 @@ namespace VSS.TRex.Tests.SubGrids
     public RequestorUtilitiesTestsLoggingFixture()
     {
       // Provide the surveyed surface request mock
-      Mock<ISurfaceElevationPatchRequest> surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
+      var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
       surfaceElevationPatchRequest.Setup(x => x.ExecuteAsync(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(Task.FromResult(new ClientHeightAndTimeLeafSubGrid() as IClientLeafSubGrid));
       SurfaceElevationPatchRequest = surfaceElevationPatchRequest.Object;
 
       // Provide the mocks for spatial caching
-      Mock<ITRexSpatialMemoryCacheContext> tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
+      var tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
       TRexSpatialMemoryCacheContext = tRexSpatialMemoryCacheContext.Object;
 
-      Mock<ITRexSpatialMemoryCache> tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
+      var tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(TRexSpatialMemoryCacheContext);
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(TRexSpatialMemoryCacheContext);
 
@@ -63,6 +63,8 @@ namespace VSS.TRex.Tests.SubGrids
 
         .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
+
+        .Add(x => x.AddSingleton<ISubGridRetrieverFactory>(new SubGridRetrieverFactory()))
 
         .Complete();
     }
