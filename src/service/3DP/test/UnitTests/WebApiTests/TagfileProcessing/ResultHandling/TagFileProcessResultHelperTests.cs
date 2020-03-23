@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.ResultHandling
     [DataRow(TRexTagFileResultCode.TRexInvalidTagfile, 5, Type.PERMANENT, true, "The TAG file was found to be corrupted on its pre-processing scan.")]
     [DataRow(TRexTagFileResultCode.TfaException, 21, Type.TEMPORARY, false, "TFA service error. Can not request Project or Asset from TFA.")]
     [DataRow(TRexTagFileResultCode.TRexQueueSubmissionError, 17, Type.PERMANENT, true, "OnProcessTAGFile. TAG file already exists in data model's processing folder.")]
-    [DataRow(TRexTagFileResultCode.TrexTagFileReaderError, 5, Type.PERMANENT, true, "The TAG file was found to be corrupted on its pre-processing scan.")]
+//    [DataRow(TRexTagFileResultCode.TrexTagFileReaderError, 5, Type.PERMANENT, true, "The TAG file was found to be corrupted on its pre-processing scan.")]
     [DataRow(TRexTagFileResultCode.TFABadRequestInvalidTimeOfPosition, 15, Type.NULL, null, "OnOverrideEvent. Failed on event's date validation.")]
 
     [DataRow(TRexTagFileResultCode.TRexBadRequestMissingProjectUid, 22, Type.NULL, null, "Internal Error. Failed validation.")]
