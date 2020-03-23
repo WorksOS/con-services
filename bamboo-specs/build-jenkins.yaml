@@ -1,4 +1,5 @@
 tasks:
+  - clean
   - script:
     - chmod +x ./bamboo-specs/build-via-jenkins.py
   - script:
