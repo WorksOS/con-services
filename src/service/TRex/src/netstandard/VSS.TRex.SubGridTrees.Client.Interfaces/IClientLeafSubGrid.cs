@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
@@ -63,5 +64,8 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     void DumpToLog();
 
     bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass);
+
+    bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+      IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilter);
   }
 }

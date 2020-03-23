@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.IO;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
@@ -304,6 +305,12 @@ namespace VSS.TRex.SubGridTrees.Client
     }
 
     public virtual bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass)
+    {
+      return false;
+    }
+
+    public virtual bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+      IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilter)
     {
       return false;
     }
