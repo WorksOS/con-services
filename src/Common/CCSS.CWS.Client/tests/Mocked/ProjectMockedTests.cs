@@ -1,27 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Proxies.Interfaces;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 
 namespace CCSS.CWS.Client.UnitTests.Mocked
 {
   [TestClass]
   public class ProjectMockedTests : BaseTestClass
   {
-    private string baseUrl;
-
-    private Mock<IWebRequest> mockWebRequest = new Mock<IWebRequest>();
-
-    protected override IServiceCollection SetupTestServices(IServiceCollection services, IConfigurationStore configuration)
+    protected override IServiceCollection SetupTestServices(IServiceCollection services)
     {
-      baseUrl = configuration.GetValueString(BaseClient.CWS_PROFILEMANAGER_URL_KEY);
-
       services.AddSingleton(mockWebRequest.Object);
+      services.AddSingleton(mockServiceResolution.Object);
       services.AddTransient<ICwsProjectClient, CwsProjectClient>();
 
       return services;
@@ -48,7 +43,10 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       {
         Id = expectedId
       };
-      var expectedUrl = $"{baseUrl}/projects";
+      const string route = "/projects";
+      var expectedUrl = $"{baseUrl}{route}";
+      mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
+        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
       MockUtilities.TestRequestSendsCorrectJson("Create a project", mockWebRequest, null, expectedUrl, HttpMethod.Post, createProjectResponseModel, async () =>
       {

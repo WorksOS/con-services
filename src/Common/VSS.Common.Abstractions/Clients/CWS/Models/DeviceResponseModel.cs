@@ -1,8 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class DeviceResponseModel
+  public class DeviceResponseModel : IMasterDataModel
   {
     //Note: There are other properties returned but we only want some of it
     /// <summary>
@@ -22,5 +24,10 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("serialNumber")]
     public string SerialNumber { get; set; }
+
+    public List<string> GetIdentifiers() => new List<string>
+    {
+      Id
+    };
   }
 }

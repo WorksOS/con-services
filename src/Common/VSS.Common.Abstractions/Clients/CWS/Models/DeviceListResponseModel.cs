@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using System.Linq;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class DeviceListResponseModel
+  public class DeviceListResponseModel : IMasterDataModel
   {
     public DeviceListResponseModel()
     {
@@ -21,6 +23,12 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("hasMore")]
     public bool HasMore { get; set; }
+
+    public List<string> GetIdentifiers() => Devices?
+                                              .SelectMany(d => d.GetIdentifiers())
+                                              .Distinct()
+                                              .ToList()
+                                            ?? new List<string>();
   }
 
   /* Example response:

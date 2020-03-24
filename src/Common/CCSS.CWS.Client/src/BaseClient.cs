@@ -1,118 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
+using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 
 namespace CCSS.CWS.Client
 {
-  public abstract class BaseClient
+  public abstract class BaseClient : BaseServiceDiscoveryProxy
   {
-    public const string CWS_PROFILEMANAGER_URL_KEY = "CWS_PROFILEMANAGER_URL";
+    public override bool IsInsideAuthBoundary => false;
+    public override ApiService InternalServiceType => ApiService.None;
+    public override string ExternalServiceName => "cws";
+    public override ApiVersion Version => ApiVersion.V1;
+    public override ApiType Type => ApiType.Public;
+    public override string CacheLifeKey => "CWS_CACHE_LIFE";
 
-    private readonly string baseUrl;
-
-    protected readonly IConfigurationStore Configuration;
-    protected readonly ILogger Log;
-    protected readonly IWebRequest webClient;
-
-    protected BaseClient(IConfigurationStore configuration, ILoggerFactory logger, IWebRequest gracefulClient)
+    protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
+     IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
+     dataCache, serviceResolution)
     {
-      Configuration = configuration;
-      webClient = gracefulClient;
-      Log = logger.CreateLogger(GetType().Name);
-
-      baseUrl = configuration.GetValueString(CWS_PROFILEMANAGER_URL_KEY);
-      if (string.IsNullOrEmpty(baseUrl))
-      {
-        throw new ArgumentException($"Missing environment variable {CWS_PROFILEMANAGER_URL_KEY}");
-      }
     }
 
-    protected Task<TRes> GetData<TRes>(string route,
-      IDictionary<string, string> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TRes: class
+    // NOTE: must have a uid or userId for cache key
+    protected Task<TRes> GetData<TRes>(string route, string uid, string userId,
+      IList<KeyValuePair<string, string>> parameters = null,
+      IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
     {
-      var url = ConvertToUrl(route, parameters);
-      Log.LogDebug($"GetData: {url}");
-      // TODO attempt to catch an error from here
-      return webClient.ExecuteRequest<TRes>(url, null, customHeaders, HttpMethod.Get);
+      var result = GetMasterDataItemServiceDiscovery<TRes>(route, uid, userId,
+        customHeaders, parameters);
+      return result;
     }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
       TReq request,
-      IDictionary<string, string> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, new()
+      IList<KeyValuePair<string, string>> parameters = null,
+      IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
       var payload = JsonConvert.SerializeObject(request);
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        var url = ConvertToUrl(route, parameters);
-        Log.LogDebug($"PostData: {url}");
-        // TODO attempt to catch an error from here
-        // Need to await here, or else stream is closed
-        return await webClient.ExecuteRequest<TRes>(url, ms, customHeaders, HttpMethod.Post);
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters);
       }
     }
 
-    protected Task DeleteData(string route, IDictionary<string, string> parameters = null,
-      IDictionary<string, string> customHeaders = null)
+    protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
+      IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
     {
-      var url = ConvertToUrl(route, parameters);
-      Log.LogDebug($"DeleteData: {url}");
-      // TODO attempt to catch an error from here
-      return webClient.ExecuteRequest(url, null, customHeaders, HttpMethod.Delete);
+      return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
     }
 
     protected async Task<TRes> UpdateData<TReq, TRes>(string route,
       TReq request,
-      IDictionary<string, string> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, new()
+      IList<KeyValuePair<string, string>> parameters = null,
+      IDictionary<string, string> customHeaders = null) where TReq : class where TRes : class, IMasterDataModel
     {
       var payload = JsonConvert.SerializeObject(request);
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        var url = ConvertToUrl(route, parameters);
-        Log.LogDebug($"UpdateData: {url}");
-        // TODO attempt to catch an error from here
-        // Need to await here, or else stream is closed
-        return await webClient.ExecuteRequest<TRes>(url, ms, customHeaders, HttpMethod.Put);
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
       }
     }
 
-    protected Task CallEndpoint<TReq>(string route, TReq request, HttpMethod method, IDictionary<string, string> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class
-    {
-      var url = ConvertToUrl(route, parameters);
-      Log.LogDebug($"GetMethod: {url}");
-
-      var payload = JsonConvert.SerializeObject(request);
-      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
-      {
-        return webClient.ExecuteRequest(url, ms, customHeaders, HttpMethod.Get);
-      }
-    }
-
-    private string ConvertToUrl(string route, IDictionary<string, string> parameters = null)
-    {
-      if (parameters == null || parameters.Count == 0)
-      {
-        return $"{baseUrl}{route}";
-      }
-
-      var p = string.Join("&",
-        parameters.Select(kvp => $"{HttpUtility.UrlEncode((string) kvp.Key)}={HttpUtility.UrlEncode((string) kvp.Value)}"));
-
-      return $"{baseUrl}{route}?{p}";
-    }
   }
 }

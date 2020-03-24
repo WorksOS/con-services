@@ -1,15 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  public class CreateProjectResponseModel
+  public class CreateProjectResponseModel : IMasterDataModel
   {
-    
     /// <summary>
     /// Project TRN ID
     /// </summary>
     [JsonProperty("projectId")]
     public string Id { get; set; }
+
+    public List<string> GetIdentifiers() => new List<string> { Id };
   }
 
   /* example
