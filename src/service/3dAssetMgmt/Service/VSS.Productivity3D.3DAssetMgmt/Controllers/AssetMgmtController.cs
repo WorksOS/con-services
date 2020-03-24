@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
@@ -14,14 +13,14 @@ using VSS.Productivity3D.AssetMgmt3D.Models;
 
 namespace VSS.Productivity3D.AssetMgmt3D.Controllers
 {
-
   public class AssetMgmtController : BaseController
   {
     private readonly IAssetRepository assetRepository;
 
-    public AssetMgmtController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler,
-      IAssetRepository assetRepository)
-      : base(loggerFactory, serviceExceptionHandler)
+    /// <summary>
+    /// Public constructor.
+    /// </summary>
+    public AssetMgmtController(IAssetRepository assetRepository)
     {
       this.assetRepository = assetRepository;
     }
@@ -29,8 +28,6 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// <summary>
     /// Get a list of asset Uid/Id matches for Uids supplied
     /// </summary>
-    /// <response code="200">A list of matched assets.</response>
-    /// <response code="403">Invalid access token provided</response>
     [HttpPost("api/v1/assets/assetuids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
     public async Task<IActionResult> GetMatchingAssets([FromBody] List<Guid> assetUids)
@@ -46,8 +43,6 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// <summary>
     /// Get a list of asset Uid/Id matches for Ids supplied
     /// </summary>
-    /// <response code="200">A list of matched assets.</response>
-    /// <response code="403">Invalid access token provided</response>
     [HttpPost("api/v1/assets/assetids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
     public async Task<IActionResult> GetMatchingAssets([FromBody] List<long> assetIds)
@@ -63,18 +58,16 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// <summary>
     /// Get a potentially matching 2D asset  for a 3D asset
     /// </summary>
-    /// <response code="200">A list of matched assets.</response>
-    /// <response code="403">Invalid access token provided</response>
     [HttpGet("api/v1/assets/match3dasset/{assetUid}")]
     [ProducesResponseType(typeof(AssetDisplayModel), 200)]
     public async Task<IActionResult> GetMatching2DAssets([FromRoute] Guid assetUid)
     {
       Log.LogInformation($"Getting matching Assets for AssetUID3D: {assetUid}");
-      var matchingAsset = new MatchingAssets() {AssetUID3D = assetUid.ToString()};
+      var matchingAsset = new MatchingAssets { AssetUID3D = assetUid.ToString() };
       var result = await assetRepository.GetMatching3D2DAssets(matchingAsset);
 
       var model = result == null
-        ? new MatchingAssetsDisplayModel((int) AssetMgmt3DExecutionStates.ErrorCodes.NoMatchingAssets, "No matching assets found")
+        ? new MatchingAssetsDisplayModel((int)AssetMgmt3DExecutionStates.ErrorCodes.NoMatchingAssets, "No matching assets found")
         : new MatchingAssetsDisplayModel
         {
           AssetUID3D = result.AssetUID3D,
@@ -95,14 +88,12 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// <summary>
     /// Get a potentially matching 3D asset  for a 2D asset
     /// </summary>
-    /// <response code="200">A list of matched assets.</response>
-    /// <response code="403">Invalid access token provided</response>
     [HttpGet("api/v1/assets/match2dasset/{assetUid}")]
     [ProducesResponseType(typeof(AssetDisplayModel), 200)]
     public async Task<IActionResult> GetMatching3DAssets([FromRoute] Guid assetUid)
     {
       Log.LogInformation($"Getting matching Assets for AssetUID2D: {assetUid}");
-      var matchingAsset = new MatchingAssets() { AssetUID2D = assetUid.ToString() };
+      var matchingAsset = new MatchingAssets { AssetUID2D = assetUid.ToString() };
       var result = await assetRepository.GetMatching3D2DAssets(matchingAsset);
 
       var model = result == null
