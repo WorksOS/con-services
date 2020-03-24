@@ -293,7 +293,7 @@ namespace VSS.TRex.Volumes
                 break;
 
               default:
-                Log.LogError($"Unknown volume type {VolumeType} in ProcessVolumeInformationForSubgrid()");
+                Log.LogError($"Unknown volume type {VolumeType} in ProcessVolumeInformationForSubGrid()");
                 break;
             }
           }

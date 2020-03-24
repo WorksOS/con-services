@@ -180,7 +180,7 @@ namespace VSS.TRex.Volumes.Executors
             {
                 try
                 {
-                    ApplicationServiceRequestStatistics.Instance.NumVolumeRequests.Increment();
+                    ApplicationServiceRequestStatistics.Instance.NumSimpleVolumeRequests.Increment();
 
                     // Prepare filters for use in the request
                     var resultStatus = await FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
@@ -265,9 +265,9 @@ namespace VSS.TRex.Volumes.Executors
                 }
                 finally
                 {
-                    ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsCompleted.Increment();
+                    ApplicationServiceRequestStatistics.Instance.NumSimpleVolumeRequestsCompleted.Increment();
                     if (volumesResult.ResponseCode != SubGridRequestsResponseResult.OK)
-                        ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsFailed.Increment();
+                        ApplicationServiceRequestStatistics.Instance.NumSimpleVolumeRequestsFailed.Increment();
                 }
             }
             catch (Exception e)

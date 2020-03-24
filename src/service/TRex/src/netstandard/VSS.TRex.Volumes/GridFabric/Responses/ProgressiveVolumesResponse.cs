@@ -4,11 +4,10 @@ using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Responses;
 
 namespace VSS.TRex.Volumes.GridFabric.Responses
 {
-  public class ProgressiveVolumesResponse : SubGridRequestsResponse, IAggregateWith<ProgressiveVolumesResponse>
+  public class ProgressiveVolumesResponse : SubGridsPipelinedResponseBase, IAggregateWith<ProgressiveVolumesResponse>
   {
     private const byte VERSION_NUMBER = 1;
 

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
@@ -43,8 +42,8 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
       }
       else
       {
-        Log.LogInformation("Summary volume failure, could not convert bounding area from grid to WGS coordinates");
-        response.ResponseCode = SubGridRequestsResponseResult.Failure;
+        Log.LogInformation("Progressive volume failure, could not convert bounding area from grid to WGS coordinates");
+        response.ResultStatus = errorCode;
       }
 
       return response;
