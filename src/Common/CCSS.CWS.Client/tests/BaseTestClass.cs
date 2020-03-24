@@ -24,6 +24,8 @@ namespace CCSS.CWS.Client.UnitTests
 
     protected ILogger Log { get; set; }
 
+    protected string userId;
+
     [TestInitialize]
     public async Task SetupServices()
     {

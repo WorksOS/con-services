@@ -38,6 +38,7 @@ data:
   unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-alpha-unifiedproductivity/1.0
   productivity3d_service_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/1.0
   productivity3d_service_public_v2: https://api-stg.trimble.com/t/trimble.com/vss-alpha-3dproductivity/2.0
+  cws_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
 #CAP configuration  
