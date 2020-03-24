@@ -57,7 +57,13 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
         "-Djava.net.preferIPv4Stack=true",
-        "-XX:+UseG1GC"
+        "-XX:+UseG1GC",
+        "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
+        "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+        "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+        "--illegal-access=permit"
       };
 
       cfg.JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB);
@@ -122,7 +128,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
         LocalPort = 47100,
       };
 
-      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.12.0.jar=8088:prometheusConfig.yaml");
 
       return cfg;
     }

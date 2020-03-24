@@ -10,6 +10,7 @@ metadata:
     immutable-cluster: "true"
     jmx-prometheus: "true"
 spec:
+  serviceName: {{ template "trex.deployname" . }}-psnode
   selector:
     matchLabels:
       #this must match one of metadata.labels above
