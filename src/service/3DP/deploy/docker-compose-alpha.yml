@@ -1,7 +1,7 @@
 version: '3'
 services:
   webapi_alpha:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:[VERSION]
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-raptor-webapi:[VERSION]
     restart: always
     deploy:
       replicas: 1

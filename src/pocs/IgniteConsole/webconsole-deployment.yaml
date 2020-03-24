@@ -39,7 +39,7 @@ spec:
           value: "3000"
         - name: server_sessionSecret
           value: CHANGE_ME
-        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-backend
+        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex:console-backend
         name: backend
         resources: {}
       restartPolicy: Always

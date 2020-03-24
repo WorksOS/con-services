@@ -14,7 +14,7 @@ cd AcceptanceTests
 echo "List out files in AcceptanceTests directory"
 ls
 echo "Run the AcceptanceTests solution"
-dotnet test VSS.Productivity3D.Scheduler.AcceptanceTests.sln --logger \"xunit;LogFileName=acceptancetestresults.xml\"
+dotnet test VSS.Productivity3D.Scheduler.AcceptanceTests.sln --logger \"nunit;LogFileName=acceptancetestresults.xml\"
 echo " "
 echo " All acceptance tests completed"
 echo " "

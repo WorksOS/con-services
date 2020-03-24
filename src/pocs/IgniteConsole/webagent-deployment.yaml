@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: web-agent
-        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-trex:console-webagent
+        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex:console-webagent
         imagePullPolicy: Always
         resources:
           limits:
