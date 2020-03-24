@@ -25,5 +25,9 @@ stages:
       jobs: 
         - Build Jenkins
 
-Build Jenkins: !include 'build-jenkins.yaml'
+Build Jenkins: 
+  tasks: !include 'includes/jenkins-build.yaml'
+  artifacts: !include 'includes/jenkins-artifacts.yaml'
+  final-tasks: !include 'includes/jenkins-test-coverage.yaml'
+
 
