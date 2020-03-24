@@ -3,7 +3,7 @@ version: 2
 
 plan:
   project-key: CIV3D
-  name: asset-maangement-webapi
+  name: asset-management-webapi
   key: ASSET
 
 triggers: !include 'includes/build-triggers.yaml'
