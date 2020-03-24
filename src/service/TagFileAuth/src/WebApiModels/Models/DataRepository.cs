@@ -10,7 +10,6 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
@@ -135,6 +134,33 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
+    public async Task<List<ProjectData>> GetProjectsAssociatedWithDevice(string customerUid, string deviceUid, DateTime validAtDate)
+    {
+      var projects = new List<ProjectData>();
+      try
+      {
+        if (!string.IsNullOrEmpty(customerUid))
+        {
+          var p = await _deviceProxy.GetProjects(deviceUid);
+          if (p != null)
+          {
+            projects = p
+              .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) &&
+              x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsArchived)
+              .ToList();
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+      }
+
+      return projects;
+    }
+
     // manual import, no time, optional device
     public async Task<List<ProjectData>> CheckManualProjectIntersection(ProjectData project, double latitude, double longitude,
       DeviceData device = null)
@@ -152,8 +178,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
         {
           var projectsAssociatedWithDevice = (await _deviceProxy.GetProjects(device.DeviceUID));
-          if (projectsAssociatedWithDevice.ProjectDescriptors.Any())
-            return projectsAssociatedWithDevice.ProjectDescriptors.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
+          if (projectsAssociatedWithDevice.Any())
+            return projectsAssociatedWithDevice.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
         }
 
         return accountProjects;
@@ -180,7 +206,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
           return accountProjects;
 
         var projectsAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUID));
-        return projectsAssociatedWithProjects.ProjectDescriptors.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
+        return projectsAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
       }
       catch (Exception e)
       {
@@ -195,9 +221,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #region device
 
-    public async Task<DeviceDataSingleResult> GetDevice(string serialNumber)
+    public async Task<DeviceData> GetDevice(string serialNumber)
     {
-      DeviceDataSingleResult device = null;
+      DeviceData device = null;
       try
       {
         if (!string.IsNullOrEmpty(serialNumber))
@@ -213,9 +239,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return device;
     }
 
-    public async Task<DeviceDataSingleResult> GetDevice(int shortRaptorAssetId)
+    public async Task<DeviceData> GetDevice(int shortRaptorAssetId)
     {
-      DeviceDataSingleResult device = null;
+      DeviceData device = null;
       try
       {
         if (shortRaptorAssetId > 0)

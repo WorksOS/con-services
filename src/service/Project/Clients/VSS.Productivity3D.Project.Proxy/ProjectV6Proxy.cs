@@ -125,6 +125,7 @@ namespace VSS.Productivity3D.Project.Proxy
           new KeyValuePair<string, string>("customerUid", customerUid),
           new KeyValuePair<string, string>( "latitude",latitude.ToString()),
           new KeyValuePair<string, string>( "longitude",longitude.ToString()),
+          new KeyValuePair<string, string>( "projectUid",projectUid),
           new KeyValuePair<string, string>( "timeOfPosition",topAsString) };
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project/applicationcontext/intersecting",
         customerUid, null, customHeaders, queryParameters);
@@ -138,25 +139,6 @@ namespace VSS.Productivity3D.Project.Proxy
       log.LogDebug($"Failed to get list of projects which intersect: {result.Code}, {result.Message}");
       return null;
     }
-
-    // Have device
-    //    get list of projects the loc is within (note if manualImport then time will be null, dont' check time)
-    //    want to get list of projects it is associated with
-    //    want to know if loc within any of these todoMaverick may be quicker to do point-in-poly first, then 
-    //    if lo , want to know if loc within it
-    //     also, if device is !enpty, then see if device is associated with the project (and claimed etc)
-
-    // todoMaverick not needed anymore?
-    //public Task<List<ProjectData>> GetIntersectingProjectsForDeviceApplicationContext(string deviceCustomerUid, string deviceUid,
-    //   double latitude, double longitude, DateTime? timeOfPosition = null, IDictionary<string, string> customHeaders = null)
-    //{
-    //  // todoMaverick ProjectSvc should:
-    //  // a) get overlapping project in localDB for this CustomerUID. Note if timeOfPosition = null then don't check time.
-    //  // b) if >1 project, and if deviceUid not empty,
-    //  //    retrieve list of projects from WM which this device is associated with
-    //  //    pair up active projects, good devices and project-device associations
-    //  throw new System.NotImplementedException();
-    //}
 
     #endregion applicationContext
 

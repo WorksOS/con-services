@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         }
       }
 
-      DeviceDataSingleResult device = null;
+      DeviceData device = null;
       // a CB will have a RadioSerial, whose suffix defines the type
       device = await dataRepository.GetDevice(request.RadioSerial);
       if (device == null)
@@ -84,13 +84,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
       {
-        return await HandleManualImport(request, project, device.DeviceDescriptor);
+        return await HandleManualImport(request, project, device);
       }
 
       if (device == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
 
-      return await HandleAutoImport(request, device.DeviceDescriptor);
+      return await HandleAutoImport(request, device);
     }
 
 

@@ -28,7 +28,7 @@ namespace WebApiTests.Executors
     private GetProjectAndAssetUidsEarthWorksRequest _projectAndAssetUidsEarthWorksRequest;
     private string radioSerial = "radSer45";
     private string ec520Serial = "ecSer";
-    private DeviceDataSingleResult deviceData;
+    private DeviceData deviceData;
  
 
     [TestInitialize]
@@ -43,7 +43,7 @@ namespace WebApiTests.Executors
       _projectAndAssetUidsEarthWorksRequest = new GetProjectAndAssetUidsEarthWorksRequest(string.Empty, radioSerial, 80, 160, _timeOfLocation);
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
-      deviceData = new DeviceDataSingleResult() { DeviceDescriptor = new DeviceData { CustomerUID = _deviceCustomerUid, DeviceUID = _deviceUid } };
+      deviceData = new DeviceData { CustomerUID = _deviceCustomerUid, DeviceUID = _deviceUid };
     }
 
     [TestMethod]
@@ -66,7 +66,7 @@ namespace WebApiTests.Executors
       _projectAndAssetUidsEarthWorksRequest.Validate();
 
       // device
-      deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync((DeviceDataSingleResult)null);
+      deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync((DeviceData)null);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
@@ -84,7 +84,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync(deviceData);
-      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.DeviceDescriptor.CustomerUID, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
+      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
       var projects = 
         new List<ProjectData>()
         {
@@ -95,7 +95,7 @@ namespace WebApiTests.Executors
           ProjectType = ProjectType.Standard
           }   };
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
-      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(new ProjectDataResult() { ProjectDescriptors = projects });
+      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
@@ -113,7 +113,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync(deviceData);
-      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.DeviceDescriptor.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
+      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>()
           { new ProjectData() {
               ProjectUID = _projectUidToBeDiscovered,
@@ -122,7 +122,7 @@ namespace WebApiTests.Executors
           } };
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null))
         .ReturnsAsync(projects);
-      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(new ProjectDataResult() { ProjectDescriptors = projects });
+      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
@@ -140,7 +140,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync(deviceData);
-      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.DeviceDescriptor.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
+      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData
@@ -159,7 +159,7 @@ namespace WebApiTests.Executors
         }
       };
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
-      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(new ProjectDataResult() { ProjectDescriptors = projects });
+      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);

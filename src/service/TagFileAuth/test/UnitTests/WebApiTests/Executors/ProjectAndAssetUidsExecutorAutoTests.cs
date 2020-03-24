@@ -201,10 +201,10 @@ namespace WebApiTests.Executors
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<string>(), It.IsAny<DateTime>(), null))
         .ReturnsAsync(new List<ProjectData> { projectOfInterest });
 
-      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = assetDevice });
-      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = ec520Device });
-      deviceProxy.Setup(d => d.GetProjects(assetUid, null)).ReturnsAsync(new ProjectDataResult { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } });
-      deviceProxy.Setup(d => d.GetProjects(ec520Uid, null)).ReturnsAsync(new ProjectDataResult { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } });
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(assetDevice);
+      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(ec520Device);
+      deviceProxy.Setup(d => d.GetProjects(assetUid, null)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
+      deviceProxy.Setup(d => d.GetProjects(ec520Uid, null)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,

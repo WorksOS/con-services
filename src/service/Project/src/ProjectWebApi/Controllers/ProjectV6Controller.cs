@@ -48,8 +48,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.notificationHubClient = notificationHubClient;
     }
 
-    #region projects
-
     /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types,
     ///    and both active and archived projects.
@@ -115,10 +113,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets a project in applicationContext i.e. no customer. 
+    /// Gets projects which this device has access to, from cws
+    ///   applicationContext i.e. no customer. 
+    ///   Could have TFA go direct to cwsProjectClient
     /// </summary>
-    /// <returns>A project data</returns>
-    [Route("api/v6/project/applicationcontext/{projectUid}")]
+    [Route("api/v6/project/applicationcontext/{shortRaptorProjectId}")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
     {
@@ -152,6 +151,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
            .ToImmutableList()
       };
     }
+
+    ///// <summary>
+    ///// Gets projects which this device has access to, from cws
+    /////   applicationContext i.e. no customer. 
+    /////   Could have TFA go direct to cwsProjectClient
+    ///// </summary>
+    ///// <returns>A project data</returns>
+    //[Route("api/v6/project/applicationcontext/{shortRaptorProjectId}")]
+    //[HttpGet]
+    //public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
+    //{
+    //  Logger.LogInformation($"{nameof(GetProjectShortIdApplicationContextV6)}");
+
+    //  var project = await ProjectRequestHelper.GetProject(shortRaptorProjectId, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+    //  return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
+    //}
 
     // POST: api/project
     /// <summary>
@@ -264,6 +279,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation("UpdateProjectV6. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
+      project.CustomerUID = customerUid;
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
@@ -333,7 +349,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return await scheduler.ScheduleBackgroundJob(request, customHeaders);
     }
 
-    // DELETE: api/Project/
+    // Archive: api/Project/
     /// <summary>
     /// Delete Project
     /// </summary>
@@ -343,9 +359,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <response code="400">Bad request</response>
     [Route("api/v6/project/{projectUid}")]
     [HttpDelete]
-    public async Task<ProjectV6DescriptorsSingleResult> DeleteProjectV6([FromRoute] string projectUid)
+    public async Task<ProjectV6DescriptorsSingleResult> ArchiveProjectV6([FromRoute] string projectUid)
     {
-      LogCustomerDetails("DeleteProjectV6", projectUid);
+      LogCustomerDetails("ArchiveProjectV6", projectUid);
       var project = new DeleteProjectEvent
       {
         ProjectUID = projectUid,
@@ -363,14 +379,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (!string.IsNullOrEmpty(customerUid))
         await notificationHubClient.Notify(new CustomerChangedNotification(customerUid));
 
-      Logger.LogInformation("DeleteProjectV6. Completed successfully");
+      Logger.LogInformation("ArchiveProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
         AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(project.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
     }
-
-    #endregion projects
     
   }
 }

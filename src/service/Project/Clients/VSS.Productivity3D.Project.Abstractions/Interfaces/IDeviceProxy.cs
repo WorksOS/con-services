@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Cache.Interfaces;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {
   public interface IDeviceProxy : ICacheProxy
   {
-    Task<DeviceDataSingleResult> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null);
-    Task<DeviceDataSingleResult> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null);
-    Task<ProjectDataResult> GetProjects(string deviceUid, IDictionary<string, string> customHeaders = null);
+    Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null);
+    Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null);
+    Task<List<ProjectData>> GetProjects(string deviceUid, IDictionary<string, string> customHeaders = null);
   }
 }

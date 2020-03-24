@@ -655,9 +655,9 @@ namespace WebApiTests.Executors
       projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), projectUid, null, null))
             .ReturnsAsync(new List<ProjectData>() { projectOfInterest });
 
-      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = assetDevice });
-      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(new DeviceDataSingleResult() { DeviceDescriptor = ec520Device });
-      deviceProxy.Setup(d => d.GetProjects(assetUid, null)).ReturnsAsync(new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest }});
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(assetDevice);
+      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(ec520Device);
+      deviceProxy.Setup(d => d.GetProjects(assetUid, null)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
 
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(

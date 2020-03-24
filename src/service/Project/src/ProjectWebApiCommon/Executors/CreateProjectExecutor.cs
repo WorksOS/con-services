@@ -41,14 +41,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         log, serviceExceptionHandler, projectRepo);
 
       // Write to WM first to obtain their ProjectTRN to use as ProjectUid for our DB etc
-      var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
-      createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
+      try
+      {
+        // todo convert from ours to WM Project TimeZone?
+        var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
+        createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
-      var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
-      if (response != null) // todoMaverick exception
-        createProjectEvent.ProjectUID = response.Id;
-      // todoMaverick what about exception/other error
-      
+        var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+        if (response != null) 
+          createProjectEvent.ProjectUID = response.Id;
+        // todoMaverick what about exception/other error
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 61, "worksManager.CreateProject", e.Message);
+      }
 
       // now making changes, potentially needing rollback 
       //  order changes to minimize rollback
