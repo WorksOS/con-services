@@ -5,7 +5,6 @@ using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Models;
 using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
@@ -18,7 +17,7 @@ using VSS.TRex.Designs.Models;
 namespace VSS.TRex.Volumes.Executors
 {
   /// <summary>
-  /// Computes a simple volumes calculation within a partition in the cache compute cluster
+  /// Computes a progressive volumes calculation within a partition in the cache compute cluster
   /// </summary>
   public class ComputeProgressiveVolumes_Coordinator
   {
@@ -72,7 +71,7 @@ namespace VSS.TRex.Volumes.Executors
     /// <summary>
     /// The aggregator to be used to compute the volumes related results
     /// </summary>
-    public SimpleVolumesCalculationsAggregator Aggregator { get; set; }
+    public ProgressiveVolumesCalculationsAggregator Aggregator { get; set; }
 
     /// <summary>
     ///  Local reference to the site model to be used during processing
@@ -153,16 +152,16 @@ namespace VSS.TRex.Volumes.Executors
     }
 
     /// <summary>
-    /// Executes the simple volumes computation returning a SimpleVolumesResponse with the results
+    /// Executes the progressive volumes computation returning a ProgressiveVolumesResponse with the results
     /// </summary>
     /// <returns></returns>
-    public async Task<SimpleVolumesResponse> ExecuteAsync()
+    public async Task<ProgressiveVolumesResponse> ExecuteAsync()
     {
-      var volumesResult = new SimpleVolumesResponse();
+      var volumesResult = new ProgressiveVolumesResponse();
       var resultBoundingExtents = BoundingWorldExtent3D.Null();
       var requestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
-      Log.LogInformation($"#In# Performing {nameof(ComputeSimpleVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
+      Log.LogInformation($"#In# Performing {nameof(ComputeProgressiveVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
 
       try
       {
@@ -183,9 +182,8 @@ namespace VSS.TRex.Volumes.Executors
 
           // Create and configure the aggregator that contains the business logic for the 
           // underlying volume calculation
-          Aggregator = new SimpleVolumesCalculationsAggregator
+          Aggregator = new ProgressiveVolumesCalculationsAggregator
           {
-            RequiresSerialisation = true,
             SiteModelID = SiteModelID,
             LiftParams = _liftParams,
             CellSize = _siteModel.CellSize,
@@ -243,24 +241,28 @@ namespace VSS.TRex.Volumes.Executors
           }
 
           // Fill in the result object to pass back to the caller
+          /* todo
           volumesResult.Cut = Aggregator.CutFillVolume.CutVolume;
           volumesResult.Fill = Aggregator.CutFillVolume.FillVolume;
           volumesResult.TotalCoverageArea = Aggregator.CoverageArea;
           volumesResult.CutArea = Aggregator.CutArea;
           volumesResult.FillArea = Aggregator.FillArea;
+          */
           volumesResult.BoundingExtentGrid = Aggregator.BoundingExtents;
           volumesResult.BoundingExtentLLH = resultBoundingExtents;
         }
         finally
         {
           ApplicationServiceRequestStatistics.Instance.NumProgressiveVolumeRequestsCompleted.Increment();
-          if (volumesResult.ResponseCode != SubGridRequestsResponseResult.OK)
+          if (volumesResult.ResultStatus != RequestErrorStatus.OK)
+          {
             ApplicationServiceRequestStatistics.Instance.NumProgressiveVolumeRequestsFailed.Increment();
+          }
         }
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Failed to compute the simple volumes. Site Model ID: {SiteModelID}");
+        Log.LogError(e, $"Failed to compute the progressive volumes. Site Model ID: {SiteModelID}");
       }
 
       return volumesResult;

@@ -185,7 +185,7 @@ namespace VSS.TRex.Volumes
     }
 
     /// <summary>
-    /// Combine this aggregator with another simple volumes aggregator and store the result in this aggregator
+    /// Combine this aggregator with another progressive volumes aggregator and store the result in this aggregator
     /// </summary>
     /// <param name="other"></param>
     public ProgressiveVolumesCalculationsAggregator AggregateWith(ProgressiveVolumesCalculationsAggregator other)

@@ -53,7 +53,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
     {
       var request = new ProgressiveVolumesRequest_ClusterCompute();
 
-      Log.LogInformation("Executing SimpleVolumesRequestComputeFunc_ApplicationService.ExecuteAsync()");
+      Log.LogInformation("Executing ProgressiveVolumesRequestComputeFunc_ApplicationService.ExecuteAsync()");
 
       // Calculate the volumes and convert the grid bounding rectangle into WGS 84 lat/long to return to the caller.
       return await ConvertBoundaryFromGridToWGS84(arg.ProjectID, await request.ExecuteAsync(arg));

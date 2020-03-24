@@ -20,7 +20,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     }
 
     /// <summary>
-    /// Invokes the simple volumes request with the given simple volumes request argument
+    /// Invokes the progressive volumes request with the given progressive volumes request argument
     /// </summary>
     /// <param name="arg"></param>
     /// <returns></returns>

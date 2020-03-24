@@ -34,7 +34,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 
             try
             {
-                ComputeSimpleVolumes_Coordinator simpleVolumes = new ComputeSimpleVolumes_Coordinator
+                var simpleVolumes = new ComputeSimpleVolumes_Coordinator
                     (arg.ProjectID,
                      arg.LiftParams,
                      arg.VolumeType,
