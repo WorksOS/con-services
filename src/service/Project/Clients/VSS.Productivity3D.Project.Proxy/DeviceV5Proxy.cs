@@ -8,6 +8,7 @@ using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Project.Proxy
@@ -31,7 +32,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public  override string CacheLifeKey => "DEVICE_CACHE_LIFE";
 
-    public async Task<DeviceDataSingleResult> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick at this stage we may not need to query also by device type. Question with Sankari re options
       // in ProjectSvc.DeviceV1Controller GetDevice
@@ -46,13 +47,13 @@ namespace VSS.Productivity3D.Project.Proxy
         customHeaders, queryParams);
 
       if (result.Code == 0)
-        return new DeviceDataSingleResult() { DeviceDescriptor = result.DeviceDescriptor };
+        return result.DeviceDescriptor;
 
       log.LogDebug($"Failed to get device with Uid {serialNumber} result: {result.Code}, {result.Message}");
       return null;
     }
 
-    public async Task<DeviceDataSingleResult> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick 
       // in ProjectSvc.DeviceController GetDevice
@@ -67,13 +68,13 @@ namespace VSS.Productivity3D.Project.Proxy
         customHeaders, queryParams);
 
       if (result.Code == 0)
-        return new DeviceDataSingleResult() { DeviceDescriptor = result.DeviceDescriptor };
+        return result.DeviceDescriptor;
 
       log.LogDebug($"Failed to get device with shortRaptorAssetId {shortRaptorAssetId} result: {result.Code}, {result.Message}");
       return null;
     }
     
-    public async Task<ProjectDataResult> GetProjects(string deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<List<ProjectData>> GetProjects(string deviceUid, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick 
       // in ProjectSvc.DeviceController
@@ -87,7 +88,7 @@ namespace VSS.Productivity3D.Project.Proxy
         customHeaders, queryParams);
 
       if (result.Code == 0)
-        return result;
+        return result.ProjectDescriptors;
 
       log.LogDebug($"Failed to get project for deviceUid {deviceUid} result: {result.Code}, {result.Message}");
       return null;

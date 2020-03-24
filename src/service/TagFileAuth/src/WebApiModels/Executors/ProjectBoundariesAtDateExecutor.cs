@@ -31,10 +31,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var deviceLicenseTotal = 0;
       if (device != null)
       {
-        if (device.DeviceDescriptor.Status != "Claimed")
+        if (string.Compare(device.Status, "Claimed", true)!= 0)
           log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}: Device is not registered and claimed");
         else
-          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.DeviceDescriptor.CustomerUID);
+          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
       }
 
       if (device == null || deviceLicenseTotal < 1)
@@ -44,8 +44,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       //Look for projects which are active at date time request.tagFileUTC
       //i.e. tagFileUTC is between project start and end dates
-      //and which belong to the asset owner and get their boundary points
-      var projects = await dataRepository.GetProjects(device.DeviceDescriptor.CustomerUID, request.tagFileUTC.Date);
+      //and which belong to the asset owner, and the asset is invited to 
+      // and get their boundary points
+      var projects = await dataRepository.GetProjectsAssociatedWithDevice(device.CustomerUID, device.DeviceUID, request.tagFileUTC.Date);
       log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}:  Loaded Projects for customer {JsonConvert.SerializeObject(projects)}");
 
       if (projects.Any())

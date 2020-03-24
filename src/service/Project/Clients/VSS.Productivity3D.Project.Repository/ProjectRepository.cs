@@ -26,6 +26,7 @@ namespace VSS.Productivity3D.Project.Repository
 
     // The landfill Service requires the existance of a Geofence representing the Projects Boundary.
     // Its type is ProjectType and it must be associated with a ProjectGeofence 
+    // todoMaverick remove this?
     private static bool _isProjectTypeGeofenceRequired = false;
 
     public ProjectRepository(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore,
@@ -56,6 +57,7 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (CreateProjectEvent)evt;
         var project = new ProjectDataModel
         {
+          CustomerUID = projectEvent.CustomerUID,
           ShortRaptorProjectId = projectEvent.ShortRaptorProjectId,
           Description = projectEvent.Description,
           Name = projectEvent.ProjectName,
@@ -91,6 +93,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         var project = new ProjectDataModel
         {
+          CustomerUID = projectEvent.CustomerUID,
           ProjectUID = projectEvent.ProjectUID.ToString(),
           Name = projectEvent.ProjectName,
           Description = projectEvent.Description,
@@ -119,29 +122,7 @@ namespace VSS.Productivity3D.Project.Repository
           LastActionedUTC = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent", projectEvent.DeletePermanently);
-      }
-      else if (evt is AssociateProjectGeofence)
-      {
-        var projectEvent = (AssociateProjectGeofence)evt;
-        var projectGeofence = new ProjectGeofence
-        {
-          ProjectUID = projectEvent.ProjectUID.ToString(),
-          GeofenceUID = projectEvent.GeofenceUID.ToString(),
-          LastActionedUTC = projectEvent.ActionUTC
-        };
-        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
-      }
-      else if (evt is DissociateProjectGeofence)
-      {
-        var projectEvent = (DissociateProjectGeofence)evt;
-        var projectGeofence = new ProjectGeofence
-        {
-          ProjectUID = projectEvent.ProjectUID.ToString(),
-          GeofenceUID = projectEvent.GeofenceUID.ToString(),
-          LastActionedUTC = projectEvent.ActionUTC
-        };
-        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "DissociateProjectGeofenceEvent");
-      }
+      }     
       else if (evt is CreateImportedFileEvent)
       {
         var projectEvent = (CreateImportedFileEvent)evt;
@@ -244,13 +225,14 @@ namespace VSS.Productivity3D.Project.Repository
       var upsertedCount = 0;
       var existing = (await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT 
-                ProjectUID, Description, LegacyProjectID, Name, fk_ProjectTypeID AS ProjectType, IsArchived,
+                ProjectUID, CustomerUID, ShortRaptorProjectID, Name, Description, 
+                fk_ProjectTypeID AS ProjectType, IsArchived,
                 ProjectTimeZone, ProjectTimeZoneIana, 
                 LastActionedUTC, StartDate, EndDate, ST_ASWKT(PolygonST) AS GeometryWKT,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC
               FROM Project
               WHERE ProjectUID = @ProjectUID
-                OR shortRaptorProjectId = @LegacyProjectID",
+                OR ShortRaptorProjectID = @ShortRaptorProjectId",
         new { project.ProjectUID, project.ShortRaptorProjectId }
       )).FirstOrDefault();
 
@@ -286,7 +268,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          await UpsertProjectTypeGeofence("CreatedProject", project);
+          // await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -378,7 +360,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          await UpsertProjectTypeGeofence("UpdatedProject", project);
+          // await UpsertProjectTypeGeofence("UpdatedProject", project);
         }
 
         return upsertedCount;
@@ -433,7 +415,7 @@ namespace VSS.Productivity3D.Project.Repository
           if (upsertedCount > 0)
           {
             upsertedCount = await InsertProjectHistory(project);
-            await UpsertProjectTypeGeofence("UpdatedProject", project);
+            // await UpsertProjectTypeGeofence("UpdatedProject", project);
           }
 
           return upsertedCount;
@@ -456,7 +438,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          await UpsertProjectTypeGeofence("CreatedProject", project);
+          // await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -560,15 +542,15 @@ namespace VSS.Productivity3D.Project.Repository
       if (project.ShortRaptorProjectId <= 0) // allow db autoincrement on legacyProjectID
       {
         return "INSERT Project " +
-          "    (ProjectUID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, ProjectTimeZoneIana, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
+          "    (ProjectUID, CustomerUID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, ProjectTimeZoneIana, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
           "  VALUES " +
-          $"    (@ProjectUID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @ProjectTimeZoneIana, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
+          $"    (@ProjectUID, @CustomerUID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @ProjectTimeZoneIana, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
       }
 
       return "INSERT Project " +
-        "    (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, ProjectTimeZoneIana, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC ) " +
+        "    (ProjectUID, CustomerUID, ShortRaptorProjectID, Name, Description, fk_ProjectTypeID, IsArchived, ProjectTimeZone, ProjectTimeZoneIana, LastActionedUTC, StartDate, EndDate, PolygonST, CoordinateSystemFileName, CoordinateSystemLastActionedUTC) " +
         "  VALUES " +
-        $"    (@ProjectUID, @LegacyProjectID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @ProjectTimeZoneIana, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
+        $"    (@ProjectUID, @CustomerUID, @ShortRaptorProjectID, @Name, @Description, @ProjectType, @IsArchived, @ProjectTimeZone, @ProjectTimeZoneIana, @LastActionedUTC, @StartDate, @EndDate, {formattedPolygon}, @CoordinateSystemFileName, @CoordinateSystemLastActionedUTC)";
     }
 
     private string BuildProjectUpdateString(ProjectDataModel project)
@@ -604,177 +586,6 @@ namespace VSS.Productivity3D.Project.Repository
     }
 
     #endregion project
-
-    #region landfill
-
-    private async Task UpsertProjectTypeGeofence(string upsertType, ProjectDataModel project)
-    {
-      if (!_isProjectTypeGeofenceRequired)
-        return;
-
-      if (string.IsNullOrEmpty(project.GeometryWKT))
-      {
-        Log.LogInformation(
-          $"ProjectRepository/UpsertProjectTypeGeofence: Unable to Upsert GeofenceBoundary as boundary not available. UpsertType {upsertType}. project={project.ProjectUID}.");
-        return;
-      }
-
-      // may be an existing one if this create comes from a replay of kafka que.
-      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, " +
-                   "     FillColor, IsTransparent, IsArchived, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
-                   "     AreaSqMeters, g.LastActionedUTC " +
-                   "  FROM ProjectGeofence pg " +
-                   "   INNER JOIN Geofence g ON g.GeofenceUID = pg.fk_GeofenceUID " +
-                   $" WHERE fk_ProjectUID = '{project.ProjectUID}' " +
-                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
-      var existingGeofence = (await QueryWithAsyncPolicy<Geofence>(select)).FirstOrDefault();
-
-      Log.LogDebug(
-        $"ProjectRepository/UpsertProjectTypeGeofence: going to upsert. upsertType {upsertType}. project={project.ProjectUID} existingGeofence? {existingGeofence}");
-
-      if (existingGeofence == null)
-        await CreateGeofenceAndAssociation(project);
-      else
-        await UpdateGeofence(project, existingGeofence);
-    }
-
-    private async Task<int> CreateGeofenceAndAssociation(ProjectDataModel project)
-    {
-      var geofence = new Geofence().Setup();
-      geofence.GeofenceUID = Guid.NewGuid().ToString();
-      geofence.Name = project.Name;
-      geofence.GeofenceType = GeofenceType.Project;
-      geofence.GeometryWKT = project.GeometryWKT;
-      geofence.CustomerUID = ""; // we don't know this from a Project Kafka event
-      geofence.AreaSqMeters = GeofenceValidation.CalculateAreaSqMeters(project.GeometryWKT);
-      geofence.IsDeleted = false;
-      geofence.LastActionedUTC = DateTime.UtcNow;
-
-      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
-
-      string insert = string.Format(
-         "INSERT Geofence " +
-         "     (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsArchived, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters) " +
-         " VALUES " +
-         "     (@GeofenceUID, @Name, @Description, {0}, @FillColor, @IsTransparent, @IsArchived, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)", formattedPolygon);
-
-      var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
-      Log.LogDebug(
-        $"ProjectRepository/UpsertGeofence inserted. upsertedCount {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
-
-      if (upsertedCount == 1)
-      {
-        var projectGeofence = new ProjectGeofence()
-        {
-          ProjectUID = project.ProjectUID,
-          GeofenceUID = geofence.GeofenceUID,
-          LastActionedUTC = DateTime.UtcNow
-        };
-        await AssociateProjectGeofence(projectGeofence, null);
-        return upsertedCount;
-      }
-
-      return 0;
-    }
-
-    private async Task<int> UpdateGeofence(ProjectDataModel project, Geofence existingGeofence)
-    {
-      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
-
-      var update = "UPDATE Geofence " +
-                   $" SET PolygonST = {formattedPolygon} " +
-                   $" WHERE GeofenceUID = '{existingGeofence.GeofenceUID}' " +
-                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
-      var upsertedCount = await ExecuteWithAsyncPolicy(update);
-      Log.LogDebug(
-        $"ProjectRepository/UpsertGeofence updated. upsertedCount {upsertedCount} rows for: geofenceUid:{existingGeofence.GeofenceUID}");
-
-      return upsertedCount;
-    }
-
-    #endregion landfill
-
-    #region associate
-    
-    private async Task<int> UpsertProjectGeofenceDetail(ProjectGeofence projectGeofence, string eventType)
-    {
-      var upsertedCount = 0;
-
-      var existing = (await QueryWithAsyncPolicy<ProjectGeofence>
-      (@"SELECT 
-              fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
-            FROM ProjectGeofence
-            WHERE fk_ProjectUID = @ProjectUID AND fk_GeofenceUID = @GeofenceUID",
-        new { projectGeofence.ProjectUID, projectGeofence.GeofenceUID }
-      )).FirstOrDefault();
-
-      if (eventType == "AssociateProjectGeofenceEvent")
-        upsertedCount = await AssociateProjectGeofence(projectGeofence, existing);
-      if (eventType == "DissociateProjectGeofenceEvent")
-        upsertedCount = await DissociateProjectGeofence(projectGeofence, existing);
-
-      return upsertedCount;
-    }
-
-    private async Task<int> AssociateProjectGeofence(ProjectGeofence projectGeofence, ProjectGeofence existing)
-    {
-      var upsertedCount = 0;
-      if (existing == null)
-      {
-        Log.LogDebug(
-          $"ProjectRepository/AssociateProjectGeofence: projectGeofence={JsonConvert.SerializeObject(projectGeofence)}");
-
-        const string insert =
-          @"INSERT ProjectGeofence
-                (fk_GeofenceUID, fk_ProjectUID, LastActionedUTC)
-              VALUES
-                (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
-
-        upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
-        Log.LogDebug(
-          $"ProjectRepository/AssociateProjectGeofence: inserted {upsertedCount} rows for: projectUid:{projectGeofence.ProjectUID} geofenceUid:{projectGeofence.GeofenceUID}");
-
-        return upsertedCount;
-      }
-
-      Log.LogDebug(
-        $"ProjectRepository/AssociateProjectGeofence: can't create as already exists projectGeofence={JsonConvert.SerializeObject(projectGeofence)}");
-      return upsertedCount;
-    }
-
-    private async Task<int> DissociateProjectGeofence(ProjectGeofence projectGeofence, ProjectGeofence existing)
-    {
-      var upsertedCount = 0;
-
-      Log.LogDebug(
-        $"ProjectRepository/DissociateProjectGeofence: projectGeofence={JsonConvert.SerializeObject(projectGeofence)} existing={JsonConvert.SerializeObject(existing)}");
-
-      if (existing != null)
-      {
-        if (projectGeofence.LastActionedUTC >= existing.LastActionedUTC)
-        {
-          const string delete =
-            @"DELETE FROM ProjectGeofence
-                WHERE fk_GeofenceUID = @GeofenceUID 
-                  AND fk_ProjectUID = @ProjectUID";
-          upsertedCount = await ExecuteWithAsyncPolicy(delete, projectGeofence);
-          Log.LogDebug(
-            $"ProjectRepository/DissociateProjectGeofence: upserted {upsertedCount} rows for: geofenceUid:{projectGeofence.GeofenceUID}");
-          return upsertedCount;
-        }
-
-        // may have been associated again since, so don't delete
-        Log.LogDebug("ProjectRepository/DissociateProjectGeofence: old delete event ignored");
-      }
-      else
-      {
-        Log.LogDebug("ProjectRepository/DissociateProjectGeofence: can't delete as none existing");
-      }
-
-      return upsertedCount;
-    }
-
-    #endregion associate
 
 
     #region importedFiles
@@ -936,13 +747,13 @@ namespace VSS.Productivity3D.Project.Repository
     private async Task<int> InsertProjectHistory(ProjectDataModel project)
     {
       const string insert = @"INSERT INTO ProjectHistory
-              (ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
+              (ProjectUID, CustomerUID, ShortRaptorProjectId, Name, Description, fk_ProjectTypeID,
                 IsArchived, ProjectTimeZone, ProjectTimeZoneIana, StartDate, EndDate,
                 PolygonST,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
                 LastActionedUTC)
               SELECT 
-                  ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID,
+                  ProjectUID, CustomerUID, ShortRaptorProjectId, Name, Description, fk_ProjectTypeID,
                   IsArchived, ProjectTimeZone, ProjectTimeZoneIana, StartDate, EndDate,
                   PolygonST,
                   CoordinateSystemFileName, CoordinateSystemLastActionedUTC,

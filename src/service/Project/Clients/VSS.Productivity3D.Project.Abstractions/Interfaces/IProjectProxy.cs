@@ -26,10 +26,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces
     Task<List<ProjectData>> GetIntersectingProjectsApplicationContext(string customerUid,
         double latitude, double longitude, string projectUid = null, DateTime? timeOfPosition = null, IDictionary<string, string> customHeaders = null);
 
-    // todoMaverick not needed anymore?
-    //Task<List<ProjectData>> GetIntersectingProjectsForDeviceApplicationContext(string deviceCustomerUid, string deviceUid,
-    //   double latitude, double longitude, DateTime? timeOfPosition = null, IDictionary<string, string> customHeaders = null);
-    
     #endregion applicationContext 
 
   }

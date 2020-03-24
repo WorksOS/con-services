@@ -51,33 +51,30 @@ namespace WebApiTests.Executors
 
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.AreEqual(-1, result.assetId, "executor returned incorrect AssetId");
-      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");      
+      Assert.AreEqual(0, result.machineLevel, "executor returned incorrect serviceType, should be unknown(0)");
     }
 
     [TestMethod]
     [DataRow("snm940Serial", "snm940Serial")]
     [DataRow("snm941Serial", "snm941Serial")]
     [DataRow("snm940Serial", "snm941Serial")]
-    [DataRow("ec520Serial",  "ec520Serial")]
+    [DataRow("ec520Serial", "ec520Serial")]
     public async Task AssetUidExecutor_GetAssetDevice_HappyPath(string serialNumberRequested, string serialNumberExpected)
     {
-      var deviceDataToBeReturned = new DeviceDataSingleResult
+      var deviceDataToBeReturned = new DeviceData()
       {
-        DeviceDescriptor = new DeviceData()
-        {
-          CustomerUID = Guid.NewGuid().ToString(),
-          DeviceUID = Guid.NewGuid().ToString(),
-          SerialNumber = serialNumberExpected
-        }
+        CustomerUID = Guid.NewGuid().ToString(),
+        DeviceUID = Guid.NewGuid().ToString(),
+        SerialNumber = serialNumberExpected
       };
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
       deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, null)).ReturnsAsync(deviceDataToBeReturned);
 
       var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
-     
+
       var device = await dataRepository.GetDevice(serialNumberRequested);
-      Assert.AreEqual(serialNumberExpected, device.DeviceDescriptor.SerialNumber);
+      Assert.AreEqual(serialNumberExpected, device.SerialNumber);
     }
 
     [TestMethod]
@@ -85,7 +82,7 @@ namespace WebApiTests.Executors
     public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(string serialNumberRequested)
     {
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, null)).ReturnsAsync((DeviceDataSingleResult)null);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, null)).ReturnsAsync((DeviceData)null);
 
       var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
 

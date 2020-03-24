@@ -20,22 +20,53 @@ namespace CCSS.CWS.Client
     {
     }
 
+    /// <summary>
+    /// GET https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/1332J023SW
+    ///   application token
+    ///   todoMaaverick where is this used ?
+    ///                 what response fields are required?
+    ///   CCSSCON-115
+    /// </summary>
     public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
-      //  https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/1332J023SW
-      return await GetData<DeviceResponseModel>($"/devices/{serialNumber}", serialNumber, null, null, customHeaders);
+      return await GetData<DeviceResponseModel>($"/devices/{serialNumber}", null, null, null, customHeaders);
     }
 
+    /// <summary>
+    /// GET https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/{deviceId}
+    ///   application token
+    ///   todoMaaverick where is this used ?
+    ///                 what response fields are required?
+    ///   CCSSCON-114
+    /// </summary>
     public async Task<DeviceResponseModel> GetDeviceByDeviceUid(string deviceUid, IDictionary<string, string> customHeaders = null)
     {
-      //  https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/trn::profilex:us-west-2:device:08d4c9ce-7b0e-d19c-c26a-a008a0000116
       return await GetData<DeviceResponseModel>($"/devices/{deviceUid}", deviceUid, null, null, customHeaders); 
     }
 
+    /// <summary>
+    /// GET https://api.trimble.com/t/trimble.com/cws-devicegateway/1.0/accounts/{accountUid}/devices
+    ///   application token
+    ///   todoMaaverick where is this used ?
+    ///                 what response fields are required?
+    ///   CCSSCON-136
+    /// </summary>
     public async Task<DeviceListResponseModel> GetDevicesForAccount(string accountUid, IDictionary<string, string> customHeaders = null)
     {
       return await GetData<DeviceListResponseModel>($"/accounts/{accountUid}/devices", accountUid, null, null, customHeaders); 
       //  parameters: &includeTccRegistrationStatus=true
+    }
+
+    /// <summary>
+    /// GET https://api.trimble.com/t/trimble.com/cws-device?? manager/1.0/projects/device/{deviceUid}
+    ///   application token
+    ///   todoMaaverick where is this used - TFA get boundaries for device
+    ///                 what response fields are required?
+    ///   CCSSCON-113
+    /// </summary>
+    public async Task<ProjectListResponseModel> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
+    {
+      return await GetData<ProjectListResponseModel>($"/projects/device/{deviceUid}", deviceUid, null, null, customHeaders);
     }
 
   }

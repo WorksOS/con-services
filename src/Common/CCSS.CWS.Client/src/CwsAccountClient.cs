@@ -19,16 +19,28 @@ namespace CCSS.CWS.Client
     {
     }
 
+    /// <summary>
+    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me/accounts
+    ///   user token
+    ///   todoMaaverick where is this used ?
+    ///                 what response fields are required?
+    ///   CCSSCON- available
+    /// </summary>
     public Task<AccountListResponseModel> GetMyAccounts(string userId, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick odd, but this only seems to require an application token
       return GetData<AccountListResponseModel>("/users/me/accounts", null, userId, null, customHeaders);
     }
 
+    /// <summary>
+    /// We need to query by userUid to allow override as per TIDAuthentication
+    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/{userId}/accounts?
+    ///   application token
+    ///   todoMaaverick where is this used ?
+    ///                 what response fields are required?
+    ///   CCSSCON-122
+    /// </summary>
     public Task<AccountListResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick need to query by userUid to allow override as per TIDAuthentication
-      // CCSSCON-122
       throw new NotImplementedException();
     }
 
@@ -39,9 +51,15 @@ namespace CCSS.CWS.Client
       return myAccounts.Accounts.Where(a => a.Id == accountId).FirstOrDefault();
     }
 
+    /// <summary>
+    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/accounts/{accountId}/devicelicense
+    ///   application token
+    ///   todoMaaverick where is this used ?
+    ///                 what response fields are required?
+    ///   CCSSCON-available                
+    /// </summary>
     public async Task<DeviceLicenseResponseModel> GetDeviceLicenses(string accountId, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick require an application token
       return await GetData<DeviceLicenseResponseModel>($"/accounts/{accountId}/devicelicense", accountId, null, null, customHeaders);
     }
   }

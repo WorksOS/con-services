@@ -41,12 +41,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         var deviceLicenseTotal = 0;
         if (device != null)
-          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.DeviceDescriptor.CustomerUID);
+          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
 
         if (device == null || deviceLicenseTotal < 1)
           return GetProjectIdResult.CreateGetProjectIdResult(false, projectId);
 
-        var potentialProjects = await dataRepository.CheckDeviceProjectIntersection(device.DeviceDescriptor,
+        var potentialProjects = await dataRepository.CheckDeviceProjectIntersection(device,
           request.latitude, request.longitude, request.timeOfPosition);
         log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded projects which lat/long is within {JsonConvert.SerializeObject(potentialProjects)}");
          

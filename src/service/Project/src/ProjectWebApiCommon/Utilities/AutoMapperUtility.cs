@@ -4,6 +4,7 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -125,10 +126,32 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
             .ForMember(dest => dest.boundary, opt => opt.Ignore()) // done externally
             ;
+          cfg.CreateMap<UpdateProjectEvent, CreateProjectRequestModel>()
+            .ForMember(dest => dest.accountId, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.projectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
+            .ForMember(dest => dest.boundary, opt => opt.Ignore()) // done externally
+            ;
+
           cfg.CreateMap<AccountResponseModel, CustomerData>()
             .ForMember(dest => dest.uid, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.type, opt => opt.MapFrom(src => CustomerType.Customer.ToString()))            
+            .ForMember(dest => dest.type, opt => opt.MapFrom(src => CustomerType.Customer.ToString()))
+            ;
+          cfg.CreateMap<ProjectResponseModel, ProjectData>()
+            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.accountId))
+            .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => src.projectId))
+            .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore()) // done externally todoMaverick
+            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => ProjectType.Standard.ToString()))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.projectName))
+            .ForMember(dest => dest.ProjectTimeZone, opt => opt.MapFrom(src => src.timezone))
+            .ForMember(dest => dest.ProjectTimeZoneIana, opt => opt.Ignore()) // done externally todoMaverick
+            .ForMember(dest => dest.StartDate, opt => opt.Ignore()) // done externally todoMaverick
+            .ForMember(dest => dest.EndDate, opt => opt.Ignore()) // done externally todoMaverick
+            .ForMember(dest => dest.GeometryWKT, opt => opt.Ignore()) // done externally todoMaverick
+            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore()) // done externally todoMaverick
+            .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore()) // done externally todoMaverick
+            .ForMember(dest => dest.IsArchived, opt => opt.Ignore()) // done externally todoMaverick
             ;
 
         }

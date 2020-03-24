@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -90,6 +91,40 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
       return deviceDataResult;
     }
+
+    /// <summary>
+    /// Gets device by serialNumber, including Uid and shortId 
+    /// </summary>
+    [Route("api/v1/device/{deviceUid}/projects")]
+    [HttpGet]
+    public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid)
+    {
+      // todoMaverick executor and validation
+      var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(deviceUid);
+      if (cwsDeviceClient == null)
+        throw new NotImplementedException();
+
+      var projectDataResult = new ProjectDataResult();
+      foreach(var projectCws in projectsFromCws.Projects)
+      {
+        var project = AutoMapperUtility.Automapper.Map<ProjectData>(projectCws);
+        
+        // todoMaverick fill in blanks from local DB ESPECIALLY shortRaptorProjectId
+        //ShortRaptorProjectId
+        //ProjectTimeZoneIana
+        //StartDate
+        //EndDate
+        //GeometryWKT
+        //CoordinateSystemFileName
+        //CoordinateSystemLastActionedUTC
+        //IsArchived
+
+        projectDataResult.ProjectDescriptors.Add(project);
+      };      
+
+      return projectDataResult;
+    }
+
   }
 }
 

@@ -2,9 +2,11 @@
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -49,6 +51,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       log.LogDebug($"UpdateProject: passed validation {updateProjectEvent.ProjectUID}");
 
+      // create/update in Cws
+      try
+      {
+        var projectTRN = await UpdateCwsAsync(existing, updateProjectEvent);
+        if (!string.IsNullOrEmpty(projectTRN)) // no error, may have been a create project
+          updateProjectEvent.ProjectUID = projectTRN;
+        // todoMaverick what kind of errors?
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62, "worksManager.UpdateProject", e.Message);
+      }
+
       /*** now making changes, potentially needing rollback ***/
       //  order changes to minimise rollback
       //    if CreateCoordSystemInProductivity3dAndTcc fails then nothing is done
@@ -63,9 +78,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           log, serviceExceptionHandler, customerUid, customHeaders,
           projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
         log.LogDebug("UpdateProject: CreateCoordSystemInProductivity3dAndTcc succeeded");
-      }
+      }         
 
-      // todoMaverick if actually creating, then need to wrote to WM first to obtain the ProjectUid (and accountTrn?) for our DB 
       var isUpdated = 0;
       try
       {
@@ -85,6 +99,51 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return new ContractExecutionResult();
     }
 
+    // todoMaverick if actually creating, then need to write to WM first to obtain the ProjectUid for our DB 
+    private async Task<string> UpdateCwsAsync(ProjectDatabaseModel existing, UpdateProjectEvent updateProjectEvent)
+    {
+      if (existing == null)
+      {
+        try
+        {
+          // todo convert from ours to WM Project TimeZone?
+          var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(updateProjectEvent);
+          createProjectRequestModel.accountId = customerUid;
+          createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
+
+          var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+          if (response != null)
+          {
+            updateProjectEvent.ProjectUID = response.Id;
+            return response.Id;
+            // todoMaverick what about exception/other error
+          }
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62, "worksManager.CreateProject", e.Message);
+        }
+      }
+      else
+      {
+        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0)
+        {
+          // todoMaverick how to update endDate and Description?
+          var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
+          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel);
+          // todoMaverick what are errors?
+        }
+        if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.GeometryWKT,
+            updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
+        {
+          // todoMaverick how to update timezone
+          var boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
+          await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
+          // todoMaverick what are errors?
+        }
+      }
+      return null;
+    }
 
     private async Task RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, ProjectDatabaseModel existing = null)
     {
