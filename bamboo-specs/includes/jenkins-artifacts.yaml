@@ -1,0 +1,20 @@
+# Define multiple artifacts with the object divisor in YAML
+# -
+#   name: Unit Test Results
+#   location: artifacts/archive/TestResults/UnitTests/
+#   pattern: '**/*.xml'
+#   required: false
+# -
+#   name: Acceptance Test Results
+#   location: artifacts/archive/AcceptanceTests/tests/
+#   pattern: '**/TestResults/*.xml'
+#   required: false
+-
+  name: Deployment Chart
+  location: artifacts/archive/deploy
+  pattern: '**/*'
+  shared: true
+# -
+#   name: Code Coverage
+#   location: artifacts/archive/TestResults/TestCoverage
+#   pattern: '*.xml'

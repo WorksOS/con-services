@@ -3,7 +3,7 @@ version: 2
 
 plan:
   project-key: CIV3D
-  name: asset-maangement-webapi
+  name: asset-management-webapi
   key: ASSET
 
 triggers: !include 'includes/build-triggers.yaml'
@@ -27,5 +27,6 @@ stages:
       jobs: 
         - Build Jenkins
 
-Build Jenkins: !include 'build-jenkins.yaml'
-
+Build Jenkins: 
+  tasks: !include 'includes/jenkins-build.yaml'
+  artifacts: !include 'includes/jenkins-artifacts.yaml'
