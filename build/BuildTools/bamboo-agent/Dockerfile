@@ -1,8 +1,17 @@
 FROM atlassian/bamboo-agent-base
+
+#### Install packages for builds
+
 USER root
 RUN apt-get update && \
-    apt-get install git wget vim -y && \
+    apt-get install git wget vim sudo -y && \
     apt-get install python3.6 python3-pip -y 
+
+RUN pip3 install python-jenkins
+
+#### END OF Install packages
+
+#### SETUP AGENT
 
 RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 
@@ -15,9 +24,53 @@ RUN set -x && \
     curl -L --silent --output ${AGENT_JAR} ${DOWNLOAD_URL} && \
     mkdir -p ${BAMBOO_USER_HOME}/bamboo-agent-home/bin
 
-RUN pip3 install python-jenkins
+#### END OF AGENT
+
+#### INSTALL DOCKER
+RUN apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common -y
+
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+RUN apt-key fingerprint 0EBFCD88
+
+RUN add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+RUN apt-get update
+RUN apt-get install docker-ce docker-ce-cli containerd.io -y
+
+# from DIND image
+# https://github.com/jpetazzo/dind
+# Modified to not create a shell, just setup docker (hence why it's in source)
+ADD ./wrapdocker /usr/local/bin/wrapdocker
+RUN chmod +x /usr/local/bin/wrapdocker
+
+VOLUME /var/lib/docker
+RUN usermod -aG docker ${BAMBOO_USER}
+RUN echo "${BAMBOO_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+### END OF DOCKER 
+
+### Run Agent specific commands as bamboo here
 
 USER ${BAMBOO_USER}
 RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.git.executable" /usr/bin/git
+RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.docker.executable" /usr/bin/docker
 RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "team" "merino"
 RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "cluster" "fsm-dev"
+
+# Setup the agent script to enable docker by calling 'wrapdocker'
+RUN mv ./runAgent.sh runAgent-nodocker.sh
+
+# Find the last line (java command for agent), and insert the wrapdocker before it
+# https://unix.stackexchange.com/questions/356312/sed-insert-something-after-the-second-last-line
+RUN sed '$isudo wrapdocker' ./runAgent-nodocker.sh > ./runAgent.sh 
+
+# Make sure we ca nexecute our new file
+RUN chmod +x ./runAgent.sh
+ENTRYPOINT ["./runAgent.sh"]

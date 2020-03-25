@@ -26,8 +26,10 @@ podSecurityContext:
   fsGroup: 1000
 
 securityContext: 
+  privileged: true
   runAsNonRoot: true
   runAsUser: 1000 # Bamboo runs as user bamboo (UID 1000)
+  allowPrivilegeEscalation: true
 
 service:
   type: ClusterIP
