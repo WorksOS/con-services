@@ -9,7 +9,6 @@
     <OutputType>Exe</OutputType>
     <PackageId>WebApi</PackageId>
     <RootNamespace>VSS.Productivity3D.WebApi</RootNamespace>
-    <DependsOnNETStandard>netstandard2.0</DependsOnNETStandard>
     <Platforms>x64</Platforms>
     <PackageTags>vss-productivity3d-service</PackageTags>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
