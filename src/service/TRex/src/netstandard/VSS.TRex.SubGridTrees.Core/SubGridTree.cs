@@ -5,8 +5,8 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Types;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.Common.Utilities.ExtensionMethods;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 /*
 Glossary

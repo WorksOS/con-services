@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Utilities;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.Designs.SVL
 {

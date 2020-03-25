@@ -1,4 +1,4 @@
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-2.0-runtime
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-runtime
 # Set the Working Directory
 WORKDIR /app
 

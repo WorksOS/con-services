@@ -1,12 +1,12 @@
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-2.1-sdk as builder
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-sdk as builder
 ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/WebApi/VSS.Productivity3D.TagFileAuth.WebAPI.csproj -o /build/artifacts/WebApi -f netcoreapp2.1 -c Docker
+RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/WebApi/VSS.Productivity3D.TagFileAuth.WebAPI.csproj -o /build/artifacts/WebApi -f netcoreapp3.1 -c Docker
 
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-2.1-aspnetcore-runtime
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-aspnetcore-runtime
 
 #This is required for the webpi to run properly
 RUN apt-get update && apt-get install -y \

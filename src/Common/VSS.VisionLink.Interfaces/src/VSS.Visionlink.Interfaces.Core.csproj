@@ -5,7 +5,7 @@
     <Title>Interface definitions for various aspects in VisionLink.</Title>
     <AssemblyTitle></AssemblyTitle>
     <Authors>Merino</Authors>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>VSS.Interfaces.netcore</AssemblyName>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>

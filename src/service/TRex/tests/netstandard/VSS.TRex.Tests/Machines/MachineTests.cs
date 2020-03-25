@@ -1,6 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity.UI.Pages.Internal.Account.Manage;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Common;
 using VSS.TRex.Machines;

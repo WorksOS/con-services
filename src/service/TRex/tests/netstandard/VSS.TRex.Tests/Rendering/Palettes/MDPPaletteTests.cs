@@ -36,7 +36,7 @@ namespace VSS.TRex.Tests.Rendering.Palettes
       palette.PaletteTransitions[3].Value.Should().Be(75);
       palette.PaletteTransitions[3].Color.Should().Be(Color.Lime);
       palette.PaletteTransitions[4].Value.Should().Be(100);
-      palette.PaletteTransitions[4].Color.Should().Be(ColorTranslator.FromHtml("#FF8080"));
+      palette.PaletteTransitions[4].Color.Should().Be(System.Drawing.ColorTranslator.FromHtml("#FF8080"));
     }
 
     [Fact]

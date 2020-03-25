@@ -57,13 +57,13 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       // Kubernetes client uses extension methods to find services, this is the acutal method that will finally be called
       mock.Setup(m =>
           m.ListNamespacedServiceWithHttpMessagesAsync(It.IsAny<string>(),
+            It.IsAny<bool?>(),
             It.IsAny<string>(),
             It.IsAny<string>(),
             It.Is<string>(s => string.IsNullOrEmpty(serviceName) || s == expectedFilter),
             It.IsAny<int?>(),
             It.IsAny<string>(),
             It.IsAny<int?>(),
-            It.IsAny<bool?>(),
             It.IsAny<bool?>(),
             It.IsAny<string>(),
             It.IsAny<Dictionary<string, List<string>>>(),
@@ -76,13 +76,13 @@ namespace VSS.Common.ServiceDiscovery.UnitTests.Resolvers
       var expectedFilter = $"service-name={serviceName}";
 
       client.Verify(m => m.ListNamespacedServiceWithHttpMessagesAsync(It.IsAny<string>(),
+        It.IsAny<bool?>(),
         It.IsAny<string>(),
         It.IsAny<string>(),
         It.Is<string>(s => s == expectedFilter),
         It.IsAny<int?>(),
         It.IsAny<string>(),
         It.IsAny<int?>(),
-        It.IsAny<bool?>(),
         It.IsAny<bool?>(),
         It.IsAny<string>(),
         It.IsAny<Dictionary<string, List<string>>>(),

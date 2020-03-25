@@ -1,7 +1,7 @@
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-2.1-sdk 
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-sdk 
 ARG SERVICE_PATH
 
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish /nowarn:1591 ./$SERVICE_PATH/Service/VSS.Productivity3D.Push/VSS.Productivity3D.Push.csproj -o /build/artifacts/Push --framework netcoreapp2.1 --runtime linux-x64
+RUN dotnet publish /nowarn:1591 ./$SERVICE_PATH/Service/VSS.Productivity3D.Push/VSS.Productivity3D.Push.csproj -o /build/artifacts/Push --framework netcoreapp3.1 --runtime linux-x64

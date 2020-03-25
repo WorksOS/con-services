@@ -2,6 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>netcoreapp3.0</TargetFramework>
+		<AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<UserSecretsId>48ef76b5-58f8-4d2c-8246-139b9d56396e</UserSecretsId>
 		<RootNamespace>VSS.MasterData.WebAPI.Subscription</RootNamespace>

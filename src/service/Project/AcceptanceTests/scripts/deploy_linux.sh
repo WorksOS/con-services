@@ -10,4 +10,4 @@ mkdir deploy/testresults
 dotnet restore --no-cache VSS.Visionlink.Project.AcceptanceTests.sln
 
 cd tests
-dotnet publish IntegrationTests/IntegrationTests.csproj -o ../../deploy/IntegrationTests -f netcoreapp2.1
+dotnet publish IntegrationTests/IntegrationTests.csproj -o ../../deploy/IntegrationTests -f netcoreapp3.1
