@@ -26,7 +26,7 @@ data:
 #Service references  
  # ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/associateprojectsubscription
  # DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/dissociateprojectsubscription
-  CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-customerservice/1.0/Customers/me
+  CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-customer/1.0/Customers/me
   GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-geofenceservice/1.0/
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-preferenceservice/1.0
   VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0/export/veta
