@@ -27,7 +27,7 @@
     <PackageReference Include="Hangfire.Core" Version="1.7.9" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
-    <PackageReference Include="MySql.Data" Version="8.0.13" />
+    <PackageReference Include="MySql.Data" Version="8.0.19" />
   </ItemGroup>
 
   <ItemGroup>
