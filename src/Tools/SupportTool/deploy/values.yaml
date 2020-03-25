@@ -1,6 +1,6 @@
 environment: alpha
 
-rootDomain: eks.vspengg.com
+rootDomain: eks.ccss.cloud
 
 replicaCount: 1
 

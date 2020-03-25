@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 environment: dev
 
-rootDomain: eks.vspengg.com
+rootDomain: eks.ccss.cloud
 
 replicaCount: 1
 

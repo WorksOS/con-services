@@ -3,7 +3,7 @@
 
 environment: dev
 
-rootDomain: eks.vspengg.com
+rootDomain: eks.ccss.cloud
 
 serviceAccountName: trex
 
