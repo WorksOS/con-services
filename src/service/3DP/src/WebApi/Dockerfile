@@ -1,4 +1,5 @@
-FROM microsoft/dotnet-framework:4.7.2-runtime-windowsservercore-ltsc2016
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-runtime
+#FROM microsoft/dotnet-framework:4.7.2-runtime-windowsservercore-ltsc2016
 
 # Set the Working Directory
 WORKDIR /app
