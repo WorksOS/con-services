@@ -4,7 +4,7 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish ./$SERVICE_PATH/Service/VSS.Productivity3D.3DAssetMgmt/VSS.Productivity3D.AssetMgmt3D.csproj -o /build/artifacts/WebApi -f netcoreapp2.1
+RUN dotnet publish ./$SERVICE_PATH/Service/VSS.Productivity3D.3DAssetMgmt/VSS.Productivity3D.AssetMgmt3D.csproj -o /build/artifacts/WebApi -f netcoreapp3.1
 
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-aspnetcore-runtime
 

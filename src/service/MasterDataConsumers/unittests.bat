@@ -1,2 +1,2 @@
-dotnet test ./test/UnitTests/MasterDataConsumerTests -f netcoreapp2.0 
+dotnet test ./test/UnitTests/MasterDataConsumerTests -f netcoreapp3.1 
 

@@ -4,8 +4,8 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp2.1
-RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp2.1
+RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o /artifacts -f netcoreapp3.1
+RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/src/VSS.Productivity3D.Filter.Cleanup/VSS.Productivity3D.Filter.Cleanup.csproj -o /artifacts -f netcoreapp3.1
 
 
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-aspnetcore-runtime
