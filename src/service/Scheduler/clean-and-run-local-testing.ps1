@@ -55,7 +55,7 @@ Set-Location ./src/VSS.Productivity3D.Scheduler.WebApi
 Copy-Item ./appsettings.json $artifactsWorkingDir
 Copy-Item ./Dockerfile $artifactsWorkingDir
 Copy-Item ./web.config $artifactsWorkingDir
-Copy-Item ./bin/Docker/netcoreapp2.1/VSS.Productivity3D.Scheduler.WebAPI.xml $artifactsWorkingDir
+Copy-Item ./bin/Docker/netcoreapp3.1/VSS.Productivity3D.Scheduler.WebAPI.xml $artifactsWorkingDir
 
 & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
 

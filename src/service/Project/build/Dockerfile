@@ -4,7 +4,7 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish ./$SERVICE_PATH/src/ProjectWebApi/VSS.Project.WebApi.csproj -o /build/artifacts/ProjectWebApi --framework netcoreapp2.1 --runtime linux-x64
+RUN dotnet publish ./$SERVICE_PATH/src/ProjectWebApi/VSS.Project.WebApi.csproj -o /build/artifacts/ProjectWebApi --framework netcoreapp3.1 --runtime linux-x64
 
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:dotnet-3.1-runtime
 
