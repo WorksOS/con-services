@@ -13,7 +13,7 @@ namespace CCSS.CWS.Client
   /// <summary>
   ///  These use the cws cws-devicegateway controller
   /// </summary>
-  public class CwsDeviceClient : BaseClient, ICwsDeviceClient
+  public class CwsDeviceClient : CwsProfileManagerClient, ICwsDeviceClient
   {
     public CwsDeviceClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)

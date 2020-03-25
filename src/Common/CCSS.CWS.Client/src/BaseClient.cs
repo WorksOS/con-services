@@ -19,14 +19,8 @@ namespace CCSS.CWS.Client
   {
     public override bool IsInsideAuthBoundary => false;
     public override ApiService InternalServiceType => ApiService.None;
-    public override string ExternalServiceName => "cws";
-    public override ApiVersion Version => ApiVersion.V1;
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
-
-    public const string CWS_BASE_URL_KEY = "CWS_BASE_URL";
-    public const string CWS_PROFILEMANAGER_URL_KEY = "CWS_PROFILEMANAGER_URL";
-    public const string CWS_DEVICEMANAGER_URL_KEY = "CWS_DEVICEMANAGER_URL";
 
     protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
