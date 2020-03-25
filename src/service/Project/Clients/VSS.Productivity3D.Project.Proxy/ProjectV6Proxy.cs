@@ -90,13 +90,14 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
 
-    // customHeaders will NOT include customerUid
+    /// <summary>
+    /// Called from TFA
+    ///    application token i.e. customHeaders will NOT include customerUid
+    ///    ProjectSvc.ProjectController should be able to get this from localDB now.
+    ///       response to include customerUid
+    /// </summary>
     public async Task<ProjectData> GetProjectApplicationContext(long shortRaptorProjectId, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick
-      // ProjectSvc.ProjectController should be able to get this from localDB now.
-      // response should include customerUid
-
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataSingleResult>($"/project/applicationcontext/{shortRaptorProjectId}",
              shortRaptorProjectId.ToString(),
              null,

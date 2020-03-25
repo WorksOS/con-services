@@ -203,8 +203,8 @@ namespace WebApiTests.Executors
 
       deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(assetDevice);
       deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(ec520Device);
-      deviceProxy.Setup(d => d.GetProjects(assetUid, null)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
-      deviceProxy.Setup(d => d.GetProjects(ec520Uid, null)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
+      deviceProxy.Setup(d => d.GetProjectsForDevice(assetUid, null)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
+      deviceProxy.Setup(d => d.GetProjectsForDevice(ec520Uid, null)).ReturnsAsync(new List<ProjectData>() { projectOfInterest });
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,

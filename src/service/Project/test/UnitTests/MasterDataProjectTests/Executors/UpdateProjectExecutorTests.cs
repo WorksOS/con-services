@@ -116,7 +116,6 @@ namespace VSS.MasterData.ProjectTests.Executors
         await updateExecutor.ProcessAsync(updateProjectEvent);
       }
     }
-
   
     private async Task<ProjectDatabaseModel> CreateProject(string projectUid, ProjectType projectType, string coordinateSystemFileName = null, byte[] coordinateSystemFileContent = null)
     {

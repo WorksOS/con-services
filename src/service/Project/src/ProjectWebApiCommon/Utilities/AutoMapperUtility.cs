@@ -69,6 +69,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.IsArchived, opt => opt.Ignore())
             .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()
+            .ForMember(dest => dest.CustomerUID, opt => opt.Ignore())
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
@@ -138,22 +139,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.type, opt => opt.MapFrom(src => CustomerType.Customer.ToString()))
             ;
-          cfg.CreateMap<ProjectResponseModel, ProjectData>()
-            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.accountId))
-            .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => src.projectId))
-            .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore()) // done externally todoMaverick
-            .ForMember(dest => dest.ProjectType, opt => opt.MapFrom(src => ProjectType.Standard.ToString()))
-            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.projectName))
-            .ForMember(dest => dest.ProjectTimeZone, opt => opt.MapFrom(src => src.timezone))
-            .ForMember(dest => dest.ProjectTimeZoneIana, opt => opt.Ignore()) // done externally todoMaverick
-            .ForMember(dest => dest.StartDate, opt => opt.Ignore()) // done externally todoMaverick
-            .ForMember(dest => dest.EndDate, opt => opt.Ignore()) // done externally todoMaverick
-            .ForMember(dest => dest.GeometryWKT, opt => opt.Ignore()) // done externally todoMaverick
-            .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.Ignore()) // done externally todoMaverick
-            .ForMember(dest => dest.CoordinateSystemLastActionedUTC, opt => opt.Ignore()) // done externally todoMaverick
-            .ForMember(dest => dest.IsArchived, opt => opt.Ignore()) // done externally todoMaverick
-            ;
-
         }
       );
 

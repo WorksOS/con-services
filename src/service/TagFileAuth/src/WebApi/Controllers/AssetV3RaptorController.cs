@@ -36,7 +36,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///  
     ///      ProjectID (now known as shortRaptorProjectId) is -1 for auto processing of tag files and non-zero for manual processing.
     ///      Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
-    ///      In C2S2 there are no customer/asset/project subscriptions. We are piggybacking (for now) on WorksManager device package entitlements.
+    ///      In C2S2 there are no customer/asset/project subscriptions. 
+    ///          We are piggybacking (for now) on WorksManager device package entitlements.
+    ///          On overall success, a serviceType which Raptor will understand, is set.
     /// </summary>
     /// <returns>shortRaptorAssetId and/or serviceType and True for success, 
     ///          shortRaptorAssetId==-1, serviceType = 0 and False for failure</returns>

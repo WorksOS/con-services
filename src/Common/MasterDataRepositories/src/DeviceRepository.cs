@@ -60,8 +60,7 @@ namespace VSS.MasterData.Repositories
 
       var existing = (await QueryWithAsyncPolicy<Device>
       (@"SELECT 
-            DeviceUID, DeviceSerialNumber, DeviceType, DeviceState, DeregisteredUTC, ModuleType, MainboardSoftwareVersion, RadioFirmwarePartNumber, GatewayFirmwarePartNumber, DataLinkType, OwningCustomerUID,
-            LastActionedUTC AS LastActionedUtc
+            DeviceUID, ShortRaptorAssetId, LastActionedUTC AS LastActionedUtc
           FROM Device
           WHERE DeviceUID = @DeviceUID"
         , new {DeviceUID = device.DeviceUID}
@@ -83,6 +82,7 @@ namespace VSS.MasterData.Repositories
     {
       if (existing == null)
       {
+        // the DB will generate the ShortRaptorAssetId
         const string upsert =
           @"INSERT Device
                 (DeviceUID, LastActionedUTC )

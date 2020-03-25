@@ -95,7 +95,7 @@ namespace WebApiTests.Executors
           ProjectType = ProjectType.Standard
           }   };
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
-      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(projects);
+      deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
@@ -122,7 +122,7 @@ namespace WebApiTests.Executors
           } };
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null))
         .ReturnsAsync(projects);
-      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(projects);
+      deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
@@ -159,7 +159,7 @@ namespace WebApiTests.Executors
         }
       };
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, _timeOfLocation, null)).ReturnsAsync(projects);
-      deviceProxy.Setup(d => d.GetProjects(_deviceUid, null)).ReturnsAsync(projects);
+      deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);

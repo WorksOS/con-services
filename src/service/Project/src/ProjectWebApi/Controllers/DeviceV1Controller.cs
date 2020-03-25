@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -34,12 +29,18 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets device by serialNumber, including Uid and shortId 
+    /// Gets device by serialNumber
+    ///  called by TFA AssetIdExecutor
+    ///   a) retrieve from cws using serialNumber which must get AccountTRN and DeviceTRN
+    ///   b) get from localDB shortRaptorAssetId so we can fill it into response
+    ///     note that if it doesn't exist localDB it means that 
+    ///     the user hasn't logged in to fill in our DB after adding the device to the account
     /// </summary>
     [Route("api/v1/device/serialnumber")]
     [HttpGet]
     public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery]  string serialNumber)
     {
+      Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)}");
       // todoMaverick executor and validation
       var deviceResponseModel = await cwsDeviceClient.GetDeviceBySerialNumber(serialNumber);
       if (deviceResponseModel == null)
@@ -51,11 +52,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         DeviceDescriptor = new DeviceData()
         {
-          //CustomerUID = deviceResponseModel.AccountId, // todoMaverick
+          CustomerUID = deviceResponseModel.AccountId, 
           DeviceUID = deviceResponseModel.Id,
-          //DeviceName = deviceResponseModel.DeviceName,  // todoMaverick
+          DeviceName = deviceResponseModel.DeviceName, 
           SerialNumber = deviceResponseModel.SerialNumber,
-          //Status = deviceResponseModel.Status,  // todoMaverick
+          Status = deviceResponseModel.Status,  
           ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetId
         }
       };
@@ -65,10 +66,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets device by serialNumber, including Uid and shortId 
     /// </summary>
-    [Route("api/v1/device/shortid")]
+    [Route("api/v1/device/shortRaptorAssetId")]
     [HttpGet]
     public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
     {
+      Logger.LogInformation($"{nameof(GetDevice)}");
       // todoMaverick executor and validation
       var deviceFromRepo = await DeviceRepo.GetDevice(shortRaptorAssetId); 
       
@@ -81,11 +83,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         DeviceDescriptor = new DeviceData()
         {
-          //CustomerUID = deviceResponseModel.AccountId,  // todoMaverick
+          CustomerUID = deviceResponseModel.AccountId, 
           DeviceUID = deviceResponseModel.Id,
-          //DeviceName = deviceResponseModel.DeviceName,  // todoMaverick
+          DeviceName = deviceResponseModel.DeviceName,
           SerialNumber = deviceResponseModel.SerialNumber,
-          //Status = deviceResponseModel.Status,  // todoMaverick
+          Status = deviceResponseModel.Status, 
           ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetId
         }
       };
@@ -99,6 +101,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid)
     {
+      Logger.LogInformation($"{nameof(GetProjectsForDevice)}");
+
       // todoMaverick executor and validation
       var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(deviceUid);
       if (cwsDeviceClient == null)
@@ -107,19 +111,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var projectDataResult = new ProjectDataResult();
       foreach(var projectCws in projectsFromCws.Projects)
       {
-        var project = AutoMapperUtility.Automapper.Map<ProjectData>(projectCws);
-        
-        // todoMaverick fill in blanks from local DB ESPECIALLY shortRaptorProjectId
-        //ShortRaptorProjectId
-        //ProjectTimeZoneIana
-        //StartDate
-        //EndDate
-        //GeometryWKT
-        //CoordinateSystemFileName
-        //CoordinateSystemLastActionedUTC
-        //IsArchived
+        var project = await ProjectRepo.GetProject(projectCws.projectId);
 
-        projectDataResult.ProjectDescriptors.Add(project);
+        //// use WorksOS data rather than cws as it is the source of truth
+        if (project != null)
+        {
+          if (string.Compare(project.CustomerUID, projectCws.accountId, true) != 0)
+            Logger.LogError($"{nameof(GetProjectsForDevice)} project account differs between WorksOS and WorksManager: projectId: {project.ProjectUID} WorksOS customer: {project.CustomerUID}  CWS account: {projectCws.accountId}");
+          else
+            projectDataResult.ProjectDescriptors.Add(AutoMapperUtility.Automapper.Map<ProjectData>(project));
+        }
       };      
 
       return projectDataResult;

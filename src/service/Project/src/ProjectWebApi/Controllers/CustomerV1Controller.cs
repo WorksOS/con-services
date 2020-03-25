@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
@@ -36,6 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1ListResult> GetCustomersForMe()
     {
+      Logger.LogInformation($"{nameof(GetCustomersForMe)}");
       var customers = await GetCustomersForUser(userId);
       return customers;
     }
@@ -47,6 +49,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1ListResult> GetCustomersForUser(string userUid)
     {
+      Logger.LogInformation($"{nameof(GetCustomersForUser)}");
       var customers = await cwsAccountClient.GetAccountsForUser(userUid);
       var customerDataResult = new CustomerDataResult();
      
@@ -65,6 +68,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1SingleResult> GetCustomerForUser(string userUid, string customerUid)
     {
+      Logger.LogInformation($"{nameof(GetCustomerForUser)}");
       var customers = await cwsAccountClient.GetAccountsForUser(userUid);
       var customerDataResult = new CustomerDataResult();
       var foundIt = customers.Accounts.Where(c => c.Id == customerUid).FirstOrDefault();
@@ -81,6 +85,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1DeviceLicenseResult> GetCustomerDeviceLicense(string customerUid)
     {
+      Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)}");
       var deviceLicenses = await cwsAccountClient.GetDeviceLicenses(customerUid);
 
       // todoMaverick may want to move this, and into executor
@@ -93,6 +98,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       foreach (var device in deviceList.Devices)
       {
         // if it exists, does nothing but return a count of 0
+        // todoMaverick do we care what the status is?
         await DeviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(device));
       }
 

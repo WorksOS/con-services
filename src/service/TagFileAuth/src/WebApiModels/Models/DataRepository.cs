@@ -141,7 +141,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var p = await _deviceProxy.GetProjects(deviceUid);
+          var p = await _deviceProxy.GetProjectsForDevice(deviceUid);
           if (p != null)
           {
             projects = p
@@ -177,7 +177,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
         if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
         {
-          var projectsAssociatedWithDevice = (await _deviceProxy.GetProjects(device.DeviceUID));
+          var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
           if (projectsAssociatedWithDevice.Any())
             return projectsAssociatedWithDevice.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
         }
@@ -205,7 +205,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         if (!accountProjects.Any())
           return accountProjects;
 
-        var projectsAssociatedWithProjects = (await _deviceProxy.GetProjects(device.DeviceUID));
+        var projectsAssociatedWithProjects = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
         return projectsAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
       }
       catch (Exception e)
@@ -221,6 +221,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     #region device
 
+    // Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
+    // and shortRaptorAssetId(localDB)
     public async Task<DeviceData> GetDevice(string serialNumber)
     {
       DeviceData device = null;

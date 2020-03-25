@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
     }
 
-    #region store
+    #region projectstore
 
     public async Task<int> StoreEvent(IProjectEvent evt)
     {
@@ -122,7 +122,31 @@ namespace VSS.Productivity3D.Project.Repository
           LastActionedUTC = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent", projectEvent.DeletePermanently);
-      }     
+      }
+
+      else if (evt is AssociateProjectGeofence)
+      {
+        var projectEvent = (AssociateProjectGeofence)evt;
+        var projectGeofence = new ProjectGeofence
+        {
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          GeofenceUID = projectEvent.GeofenceUID.ToString(),
+          LastActionedUTC = projectEvent.ActionUTC
+        };
+        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
+      }
+      else if (evt is DissociateProjectGeofence)
+      {
+        var projectEvent = (DissociateProjectGeofence)evt;
+        var projectGeofence = new ProjectGeofence
+        {
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          GeofenceUID = projectEvent.GeofenceUID.ToString(),
+          LastActionedUTC = projectEvent.ActionUTC
+        };
+        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "DissociateProjectGeofenceEvent");
+      }
+      
       else if (evt is CreateImportedFileEvent)
       {
         var projectEvent = (CreateImportedFileEvent)evt;
@@ -206,11 +230,6 @@ namespace VSS.Productivity3D.Project.Repository
       return upsertedCount;
     }
 
-    #endregion store
-
-
-    #region project
-
     /// <summary>
     ///     All detail-related columns can be inserted,
     ///     but only certain columns can be updated.
@@ -268,7 +287,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          // await UpsertProjectTypeGeofence("CreatedProject", project);
+          await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -360,7 +379,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          // await UpsertProjectTypeGeofence("UpdatedProject", project);
+          await UpsertProjectTypeGeofence("UpdatedProject", project);
         }
 
         return upsertedCount;
@@ -415,7 +434,7 @@ namespace VSS.Productivity3D.Project.Repository
           if (upsertedCount > 0)
           {
             upsertedCount = await InsertProjectHistory(project);
-            // await UpsertProjectTypeGeofence("UpdatedProject", project);
+            await UpsertProjectTypeGeofence("UpdatedProject", project);
           }
 
           return upsertedCount;
@@ -438,7 +457,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          // await UpsertProjectTypeGeofence("CreatedProject", project);
+          await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -585,10 +604,47 @@ namespace VSS.Productivity3D.Project.Repository
                 WHERE ProjectUID = @ProjectUID";
     }
 
-    #endregion project
+    #endregion projectstore
 
 
-    #region importedFiles
+    #region projectSettingsStore
+
+    /// <summary>
+    ///     Only an upsert is implemented.
+    /// 1) because as that is the only endpoint in ProjectMDM
+    /// 2) because create and Update have to cover both scenarios anyway
+    /// can't update the type or UserID, only the Settings
+    /// </summary>
+    /// <param name="projectSettings"></param>
+    /// <returns></returns>
+    private async Task<int> UpsertProjectSettings(ProjectSettings projectSettings)
+    {
+      Log.LogDebug(
+        $"ProjectRepository/UpsertProjectSettings: projectSettings={JsonConvert.SerializeObject(projectSettings)}))')");
+
+      const string upsert =
+        @"INSERT ProjectSettings
+                 (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
+            VALUES
+              (@ProjectUid, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
+            ON DUPLICATE KEY UPDATE
+              LastActionedUTC =
+                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
+                    VALUES(LastActionedUtc), LastActionedUTC),
+              Settings =
+                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
+                    VALUES(Settings), Settings)";
+
+      var upsertedCount = await ExecuteWithAsyncPolicy(upsert, projectSettings);
+      Log.LogDebug(
+        $"ProjectRepository/UpsertProjectSettings: upserted {upsertedCount} rows (1=insert, 2=update) for: projectSettingsProjectUid:{projectSettings.ProjectUid}");
+      return upsertedCount.CalculateUpsertCount();
+    }
+
+    #endregion projectSettingsStore
+
+
+    #region importedFilesStore
 
     private async Task<int> UpsertImportedFile(ImportedFile importedFile, string eventType,
       bool isDeletePermanently = false)
@@ -885,59 +941,192 @@ namespace VSS.Productivity3D.Project.Repository
       return upsertedCount;
     }
 
-    #endregion importedFiles
+    #endregion importedFilesStore
 
 
-    #region projectSettings
+    #region projectGeofenceStore  // todoMaverick not needed anymore for FilterSvc?
 
-    /// <summary>
-    ///     Only an upsert is implemented.
-    /// 1) because as that is the only endpoint in ProjectMDM
-    /// 2) because create and Update have to cover both scenarios anyway
-    /// can't update the type or UserID, only the Settings
-    /// </summary>
-    /// <param name="projectSettings"></param>
-    /// <returns></returns>
-    private async Task<int> UpsertProjectSettings(ProjectSettings projectSettings)
+    private async Task<int> UpsertProjectGeofenceDetail(ProjectGeofence projectGeofence, string eventType)
     {
-      Log.LogDebug(
-        $"ProjectRepository/UpsertProjectSettings: projectSettings={JsonConvert.SerializeObject(projectSettings)}))')");
+      var upsertedCount = 0;
 
-      const string upsert =
-        @"INSERT ProjectSettings
-                 (fk_ProjectUID, fk_ProjectSettingsTypeID, Settings, UserID, LastActionedUTC)
-            VALUES
-              (@ProjectUid, @ProjectSettingsType, @Settings, @UserID, @LastActionedUtc)
-            ON DUPLICATE KEY UPDATE
-              LastActionedUTC =
-                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
-                    VALUES(LastActionedUtc), LastActionedUTC),
-              Settings =
-                IF ( VALUES(LastActionedUtc) >= LastActionedUTC, 
-                    VALUES(Settings), Settings)";
+      var existing = (await QueryWithAsyncPolicy<ProjectGeofence>
+      (@"SELECT 
+              fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, LastActionedUTC
+            FROM ProjectGeofence
+            WHERE fk_ProjectUID = @ProjectUID AND fk_GeofenceUID = @GeofenceUID",
+        new { projectGeofence.ProjectUID, projectGeofence.GeofenceUID }
+      )).FirstOrDefault();
 
-      var upsertedCount = await ExecuteWithAsyncPolicy(upsert, projectSettings);
-      Log.LogDebug(
-        $"ProjectRepository/UpsertProjectSettings: upserted {upsertedCount} rows (1=insert, 2=update) for: projectSettingsProjectUid:{projectSettings.ProjectUid}");
-      return upsertedCount.CalculateUpsertCount();
+      if (eventType == "AssociateProjectGeofenceEvent")
+        upsertedCount = await AssociateProjectGeofence(projectGeofence, existing);
+      if (eventType == "DissociateProjectGeofenceEvent")
+        upsertedCount = await DissociateProjectGeofence(projectGeofence, existing);
+
+      return upsertedCount;
     }
 
-    #endregion projectSettings
+    private async Task<int> AssociateProjectGeofence(ProjectGeofence projectGeofence, ProjectGeofence existing)
+    {
+      var upsertedCount = 0;
+      if (existing == null)
+      {
+        Log.LogDebug(
+          $"ProjectRepository/AssociateProjectGeofence: projectGeofence={JsonConvert.SerializeObject(projectGeofence)}");
+
+        const string insert =
+          @"INSERT ProjectGeofence
+                (fk_GeofenceUID, fk_ProjectUID, LastActionedUTC)
+              VALUES
+                (@GeofenceUID, @ProjectUID, @LastActionedUTC)";
+
+        upsertedCount = await ExecuteWithAsyncPolicy(insert, projectGeofence);
+        Log.LogDebug(
+          $"ProjectRepository/AssociateProjectGeofence: inserted {upsertedCount} rows for: projectUid:{projectGeofence.ProjectUID} geofenceUid:{projectGeofence.GeofenceUID}");
+
+        return upsertedCount;
+      }
+
+      Log.LogDebug(
+        $"ProjectRepository/AssociateProjectGeofence: can't create as already exists projectGeofence={JsonConvert.SerializeObject(projectGeofence)}");
+      return upsertedCount;
+    }
+
+    private async Task<int> DissociateProjectGeofence(ProjectGeofence projectGeofence, ProjectGeofence existing)
+    {
+      var upsertedCount = 0;
+
+      Log.LogDebug(
+        $"ProjectRepository/DissociateProjectGeofence: projectGeofence={JsonConvert.SerializeObject(projectGeofence)} existing={JsonConvert.SerializeObject(existing)}");
+
+      if (existing != null)
+      {
+        if (projectGeofence.LastActionedUTC >= existing.LastActionedUTC)
+        {
+          const string delete =
+            @"DELETE FROM ProjectGeofence
+                WHERE fk_GeofenceUID = @GeofenceUID 
+                  AND fk_ProjectUID = @ProjectUID";
+          upsertedCount = await ExecuteWithAsyncPolicy(delete, projectGeofence);
+          Log.LogDebug(
+            $"ProjectRepository/DissociateProjectGeofence: upserted {upsertedCount} rows for: geofenceUid:{projectGeofence.GeofenceUID}");
+          return upsertedCount;
+        }
+
+        // may have been associated again since, so don't delete
+        Log.LogDebug("ProjectRepository/DissociateProjectGeofence: old delete event ignored");
+      }
+      else
+      {
+        Log.LogDebug("ProjectRepository/DissociateProjectGeofence: can't delete as none existing");
+      }
+
+      return upsertedCount;
+    }
+
+    private async Task UpsertProjectTypeGeofence(string upsertType, ProjectDataModel project)
+    {
+      if (!_isProjectTypeGeofenceRequired)
+        return;
+
+      if (string.IsNullOrEmpty(project.GeometryWKT))
+      {
+        Log.LogInformation(
+          $"ProjectRepository/UpsertProjectTypeGeofence: Unable to Upsert GeofenceBoundary as boundary not available. UpsertType {upsertType}. project={project.ProjectUID}.");
+        return;
+      }
+
+      // may be an existing one if this create comes from a replay of kafka que.
+      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, " +
+                   "     FillColor, IsTransparent, IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
+                   "     AreaSqMeters, g.LastActionedUTC " +
+                   "  FROM ProjectGeofence pg " +
+                   "   INNER JOIN Geofence g ON g.GeofenceUID = pg.fk_GeofenceUID " +
+                   $" WHERE fk_ProjectUID = '{project.ProjectUID}' " +
+                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
+      var existingGeofence = (await QueryWithAsyncPolicy<Geofence>(select)).FirstOrDefault();
+
+      Log.LogDebug(
+        $"ProjectRepository/UpsertProjectTypeGeofence: going to upsert. upsertType {upsertType}. project={project.ProjectUID} existingGeofence? {existingGeofence}");
+
+      if (existingGeofence == null)
+        await CreateGeofenceAndAssociation(project);
+      else
+        await UpdateGeofence(project, existingGeofence);
+    }
+
+    private async Task<int> CreateGeofenceAndAssociation(ProjectDataModel project)
+    {
+      var geofence = new Geofence().Setup();
+      geofence.GeofenceUID = Guid.NewGuid().ToString();
+      geofence.Name = project.Name;
+      geofence.GeofenceType = GeofenceType.Project;
+      geofence.GeometryWKT = project.GeometryWKT;
+      geofence.CustomerUID = ""; // we don't know this from a Project Kafka event
+      geofence.AreaSqMeters = GeofenceValidation.CalculateAreaSqMeters(project.GeometryWKT);
+      geofence.IsDeleted = false;
+      geofence.LastActionedUTC = DateTime.UtcNow;
+
+      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
+
+      string insert = string.Format(
+         "INSERT Geofence " +
+         "     (GeofenceUID, Name, Description, PolygonST, FillColor, IsTransparent, IsDeleted, fk_CustomerUID, UserUID, LastActionedUTC, fk_GeofenceTypeID, AreaSqMeters) " +
+         " VALUES " +
+         "     (@GeofenceUID, @Name, @Description, {0}, @FillColor, @IsTransparent, @IsDeleted, @CustomerUID, @UserUID, @LastActionedUTC, @GeofenceType, @AreaSqMeters)", formattedPolygon);
+
+      var upsertedCount = await ExecuteWithAsyncPolicy(insert, geofence);
+      Log.LogDebug(
+        $"ProjectRepository/UpsertGeofence inserted. upsertedCount {upsertedCount} rows for: geofenceUid:{geofence.GeofenceUID}");
+
+      if (upsertedCount == 1)
+      {
+        var projectGeofence = new ProjectGeofence()
+        {
+          ProjectUID = project.ProjectUID,
+          GeofenceUID = geofence.GeofenceUID,
+          LastActionedUTC = DateTime.UtcNow
+        };
+        await AssociateProjectGeofence(projectGeofence, null);
+        return upsertedCount;
+      }
+
+      return 0;
+    }
+
+    private async Task<int> UpdateGeofence(ProjectDataModel project, Geofence existingGeofence)
+    {
+      string formattedPolygon = RepositoryHelper.WKTToSpatial(project.GeometryWKT);
+
+      var update = "UPDATE Geofence " +
+                   $" SET PolygonST = {formattedPolygon} " +
+                   $" WHERE GeofenceUID = '{existingGeofence.GeofenceUID}' " +
+                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
+      var upsertedCount = await ExecuteWithAsyncPolicy(update);
+      Log.LogDebug(
+        $"ProjectRepository/UpsertGeofence updated. upsertedCount {upsertedCount} rows for: geofenceUid:{existingGeofence.GeofenceUID}");
+
+      return upsertedCount;
+    }
+
+    #endregion projectGeofenceStore
 
 
-    #region gettersProject
+    #region projects
 
     /// <summary>
     ///    Gets a project by Uid, only if it is not archived
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public async Task<ProjectDataModel> GetProject(string projectUid)  // todoMaverick done
+    public async Task<ProjectDataModel> GetProject(string projectUid)
     {
       var project = (await QueryWithAsyncPolicy<ProjectDataModel>(@"SELECT 
-                ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana,
-                LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                CoordinateSystemFileName, CoordinateSystemLastActionedUTC, CustomerUID, LastActionedUTC
+                ProjectUID, CustomerUID, ShortRaptorProjectId, fk_ProjectTypeID as ProjectType,
+                Name, Description, ProjectTimeZone, ProjectTimeZoneIana,
+                StartDate, EndDate, ST_ASWKT(PolygonST) as GeometryWKT,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
+                IsArchived, LastActionedUTC
               FROM Project 
               WHERE ProjectUID = @ProjectUID 
                 AND IsArchived = 0",
@@ -949,12 +1138,14 @@ namespace VSS.Productivity3D.Project.Repository
     ///     Gets by shortRaptorProjectId, only if it is not archived
     /// </summary>
     /// <returns></returns>
-    public async Task<ProjectDataModel> GetProject(long shortRaptorProjectId)  // todoMaverick done
+    public async Task<ProjectDataModel> GetProject(long shortRaptorProjectId) 
     {
       var project = await QueryWithAsyncPolicy<ProjectDataModel>(@"SELECT
-                ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana,
-                LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                CoordinateSystemFileName, CoordinateSystemLastActionedUTC, CustomerUID, LastActionedUTC
+                ProjectUID, CustomerUID, ShortRaptorProjectId, fk_ProjectTypeID as ProjectType,
+                Name, Description, ProjectTimeZone, ProjectTimeZoneIana,
+                StartDate, EndDate, ST_ASWKT(PolygonST) as GeometryWKT,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
+                IsArchived, LastActionedUTC
               FROM Project 
               WHERE ShortRaptorProjectId = @ShortRaptorProjectId 
                 AND IsArchived = 0",
@@ -962,182 +1153,6 @@ namespace VSS.Productivity3D.Project.Repository
       return project.FirstOrDefault();
     }
 
-
-    ///// <summary>
-    /////     There may be 0 or n subscriptions for this project. None/many may be current.
-    /////     This method just gets ANY one of these or no subs (SubscriptionUID == null)
-    /////     We don't care, up to the calling code to decipher.
-    ///// </summary>
-    //public Task<IEnumerable<ProjectDataModel>> GetProjectAndSubscriptions(long legacyProjectID, DateTime validAtDate)
-    //{
-    //  var projectSubList = QueryWithAsyncPolicy<ProjectDataModel>
-    //  (@"SELECT 
-    //            p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-    //            p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-    //            p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-    //            cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
-    //            ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-    //          FROM Project p 
-    //            JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-    //            JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
-    //            LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-    //            LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID
-    //          WHERE p.LegacyProjectID = @LegacyProjectID 
-    //            AND p.IsArchived = 0
-    //            AND @validAtDate BETWEEN s.StartDate AND s.EndDate",
-    //    new { LegacyProjectID = legacyProjectID, validAtDate = validAtDate.Date }
-    //  );
-
-
-    //  return projectSubList;
-    //}
-
-    /// <summary>
-    ///     There should be 1 or more per ProjectUID
-    /// </summary>
-    /// <param name="projectUid"></param>
-    /// <returns></returns>
-    public Task<IEnumerable<ProjectDataModel>> GetProjectHistory(string projectUid)
-    {
-      var projectList = QueryWithAsyncPolicy<ProjectDataModel>(@"SELECT 
-                ProjectUID, LegacyProjectID, Name, Description, fk_ProjectTypeID as ProjectType, 
-                IsArchived, ProjectTimeZone, ProjectTimeZoneIana, StartDate, EndDate, 
-                ST_ASWKT(PolygonST) as GeometryWKT,
-                CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
-                LastActionedUTC 
-              FROM ProjectHistory             
-              WHERE ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid });
-      return projectList;
-    }
-
-    /// <summary>
-    ///     gets only 1 row for a particular sub. only 1 projectUID and be associated with a sub
-    /// </summary>
-    /// <param name="subscriptionUid"></param>
-    /// <returns></returns>
-    public async Task<ProjectDataModel> GetProjectBySubcription(string subscriptionUid)
-    {
-      var projects = (await QueryWithAsyncPolicy<ProjectDataModel>
-      (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-                p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p
-                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
-                JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE ps.fk_SubscriptionUID = @SubscriptionUID 
-                AND p.IsArchived = 0",
-        new { SubscriptionUID = subscriptionUid }
-      )).FirstOrDefault();
-
-      return projects;
-    }
-
-
-    /// <summary>
-    ///     There may be 0 or n subscriptions for each project. None/many may be current.
-    ///     This method just gets ANY one of these or no subs (SubscriptionUID == null)
-    ///     We don't care, up to the calling code to decipher.
-    /// </summary>
-    /// <param name="userUid"></param>
-    /// <returns></returns>
-    public Task<IEnumerable<ProjectDataModel>> GetProjectsForUser(string userUid)
-    {
-      var projects = QueryWithAsyncPolicy<ProjectDataModel>
-      (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-                p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID,
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p
-                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
-                JOIN CustomerUser cu on cu.fk_CustomerUID = c.CustomerUID
-                LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE cu.UserUID = @userUid 
-                AND p.IsArchived = 0",
-        new { userUid }
-      );
-
-
-      return projects;
-    }
-    
-    /// <summary>
-    ///     There may be 0 or n subscriptions for each project. None/many may be current.
-    ///     This method just gets ANY one of these or no subs (SubscriptionUID == null)
-    ///     We don't care, up to the calling code to decipher.
-    /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="userUid"></param>
-    /// <returns></returns>
-    public Task<IEnumerable<ProjectDataModel>> GetProjectsForCustomerUser(string customerUid, string userUid)
-    {
-      var projects = QueryWithAsyncPolicy<ProjectDataModel>
-      (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-                p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p
-                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
-                JOIN CustomerUser cu ON cu.fk_CustomerUID = c.CustomerUID
-                LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE cp.fk_CustomerUID = @CustomerUID 
-                AND cu.UserUID = @userUid 
-                AND p.IsArchived = 0",
-        new { CustomerUID = customerUid, userUid }
-      );
-
-
-      return projects;
-    }
-
-    /// <summary>
-    ///     There may be 0 or n subscriptions for each project. None/many may be current.
-    ///     This method gets the latest EndDate so at most 1 sub per project
-    ///     Also returns the GeofenceWRK. List returned includes archived projects.
-    /// </summary>
-    /// <param name="customerUid"></param>
-    /// <returns></returns>
-     public async Task<IEnumerable<ProjectDataModel>> GetProjectsForCustomer(string customerUid)  // todoMaverick done
-    {      
-      return await QueryWithAsyncPolicy<ProjectDataModel>
-      (@"SELECT 
-              CustomerUID, 
-              ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana,
-              LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-              CoordinateSystemFileName, CoordinateSystemLastActionedUTC, IsArchived
-            FROM Project  
-            WHERE CustomerUID = @CustomerUID",
-        new { CustomerUID = customerUid }
-      );
-    }
-
-    /*
-    (@"SELECT 
-              c.CustomerUID, LegacyCustomerID,
-              p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-              p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-              p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-              ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-            FROM Customer c  
-              JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID 
-              JOIN Project p on p.ProjectUID = cp.fk_ProjectUID           
-              LEFT OUTER JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-              LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-            WHERE c.CustomerUID = @CustomerUID",
-*/
     /// <summary>
     ///     Gets the specified project without linked data like customer and subscription.
     /// </summary>
@@ -1147,14 +1162,15 @@ namespace VSS.Productivity3D.Project.Repository
     {
       var project = (await QueryWithAsyncPolicy<ProjectDataModel>
       (@"SELECT
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-                p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC
-              FROM Project p 
-              WHERE p.ProjectUID = @ProjectUID",
+                ProjectUID, CustomerUID, ShortRaptorProjectId, fk_ProjectTypeID as ProjectType,
+                Name, Description, ProjectTimeZone, ProjectTimeZoneIana,
+                StartDate, EndDate, ST_ASWKT(PolygonST) as GeometryWKT,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
+                IsArchived, LastActionedUTC
+              FROM Project 
+              WHERE ProjectUID = @ProjectUID",
         new { ProjectUID = projectUid }
       )).FirstOrDefault();
-
 
       return project;
     }
@@ -1172,102 +1188,107 @@ namespace VSS.Productivity3D.Project.Repository
               WHERE p.ProjectUID = @ProjectUID",
         new { ProjectUID = projectUid }
       )).FirstOrDefault();
-
-
+      
       return !string.IsNullOrEmpty(uid);
     }
 
     /// <summary>
-    ///     Checks if a project with the specified projectUid is associated with a customer.
+    ///     There may be 0 or n subscriptions for each project. None/many may be current.
+    ///     This method gets the latest EndDate so at most 1 sub per project
+    ///     Also returns the GeofenceWRK. List returned includes archived projects.
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <returns>true if project is associated with a customer or false otherwise</returns>
-    public async Task<bool> CustomerProjectExists(string projectUid)
-    {
-      var uid = (await QueryWithAsyncPolicy<string>
-      (@"SELECT cp.fk_ProjectUID
-              FROM CustomerProject cp 
-              WHERE cp.fk_ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
-      )).FirstOrDefault();
-
-
-      return !string.IsNullOrEmpty(uid);
-    }
-
-    /// <summary>
-    ///     for unit tests - so we don't have to create everything (associations) for a test
-    /// </summary>
-    /// <param name="projectUid"></param>
+    /// <param name="customerUid"></param>
     /// <returns></returns>
-    public async Task<ProjectDataModel> GetProject_UnitTest(string projectUid)
-    {
-      var project = (await QueryWithAsyncPolicy<ProjectDataModel>
-      (@"SELECT 
-                  p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-                  p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                  p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                  cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                  ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p 
-                LEFT JOIN CustomerProject cp ON p.ProjectUID = cp.fk_ProjectUID
-                LEFT JOIN Customer c ON c.CustomerUID = cp.fk_CustomerUID
-                LEFT JOIN ProjectSubscription ps on p.ProjectUID = ps.fk_ProjectUID
-                LEFT OUTER JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE p.ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
-      )).FirstOrDefault();
-
-      return project;
-    }
-
-    /// <summary>
-    /// There may be 0 or n subscriptions for each project. None/many may be current.
-    /// This method gets the latest EndDate so at most 1 sub per project
-    /// </summary>
-    /// <remarks>
-    /// Transient, required only until the DataOcean migration is complete.
-    /// </remarks>
-    public async Task<IEnumerable<ProjectDataModel>> GetActiveProjects()
+    public async Task<IEnumerable<ProjectDataModel>> GetProjectsForCustomer(string customerUid) 
     {
       return await QueryWithAsyncPolicy<ProjectDataModel>
-      (@"SELECT
-           c.CustomerUID, cp.LegacyCustomerID,
-           p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-           p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-           p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-           null AS SubscriptionUID, null AS SubscriptionStartDate, null AS SubscriptionEndDate, null AS ServiceTypeID
-         FROM Customer c  
-           JOIN CustomerProject cp ON cp.fk_CustomerUID = c.CustomerUID
-           JOIN Project p on p.ProjectUID = cp.fk_ProjectUID
-         WHERE p.IsArchived = 0  
-           AND UTC_TIMESTAMP between p.StartDate and p.EndDate      
-         GROUP BY ProjectUID
-         ORDER BY p.LastActionedUTC DESC"
+      (@"SELECT 
+              CustomerUID, 
+              ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana,
+              LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
+              CoordinateSystemFileName, CoordinateSystemLastActionedUTC, IsArchived
+            FROM Project  
+            WHERE CustomerUID = @CustomerUID",
+        new { CustomerUID = customerUid }
       );
+    }
+
+    #endregion projects
+
+
+    #region projectSpatial
+
+    /// <summary>
+    ///     Gets any project which
+    ///     1) for this Customer
+    ///     2) is active at the time
+    ///     3) the lat/long is within,
+    ///     4) but ignore the project if it's an update
+    /// </summary>
+    /// <param name="customerUid"></param>
+    /// <param name="geometryWkt"></param>
+    /// <param name="startDate"></param>
+    /// <param name="endDate"></param>
+    /// <param name="excludeProjectUid"></param>
+    /// <returns>The project</returns>
+    public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
+      DateTime endDate, string excludeProjectUid = "")
+    {
+      string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
+
+      var select = $@"SELECT DISTINCT
+                          ProjectUID, CustomerUID, ShortRaptorProjectId, fk_ProjectTypeID as ProjectType,
+                          Name, Description, ProjectTimeZone, ProjectTimeZoneIana,
+                          StartDate, EndDate, ST_ASWKT(PolygonST) as GeometryWKT,
+                          CoordinateSystemFileName, CoordinateSystemLastActionedUTC,
+                          IsArchived, LastActionedUTC
+                        FROM Project
+                        WHERE IsArchived = 0
+                          AND @StartDate <= EndDate
+                          AND @EndDate >= StartDate
+                          AND CustomerUID = @CustomerUID
+                          AND ProjectUid != @excludeProjectUid
+                          AND st_Intersects({polygonToCheck}, PolygonST) = 1";
+
+      return (await QueryWithAsyncPolicy<ProjectDataModel>(select,
+          new { CustomerUID = customerUid, StartDate = startDate.Date, EndDate = endDate.Date, excludeProjectUid }))
+        .Any();
     }
 
     /// <summary>
-    /// Gets the list of geofence UIDs associated wih the specified project
+    ///     Gets active projects for the customer
+    ///     which the lat/long is within
+    ///       optionally can check for within time 
+    ///       note that projectTypes are only standard at present
     /// </summary>
-    /// <param name="projectUid"></param>
-    /// <returns>List of associations</returns>
-    public Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid)
+    public Task<IEnumerable<ProjectDataModel>> GetIntersectingProjects(string customerUid,
+      double latitude, double longitude, DateTime? timeOfPosition) 
     {
-      return QueryWithAsyncPolicy<ProjectGeofence>
-      (@"SELECT 
-                fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, pg.LastActionedUTC, g.fk_GeofenceTypeID AS GeofenceType 
-              FROM ProjectGeofence pg
-                LEFT OUTER JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID
-              WHERE fk_ProjectUID = @ProjectUID",
-        new { ProjectUID = projectUid }
-      );
+      var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
+
+      var timeRangeString = string.Empty;
+      if (timeOfPosition != null)
+      {
+        var formattedDate = (timeOfPosition.Value.Date.ToString("yyyy-MM-dd"));
+        timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
+      }
+
+      var select = "SELECT DISTINCT " +
+                   "     ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana, " +
+                   "     LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT, " +
+                   "     CoordinateSystemFileName, CoordinateSystemLastActionedUTC, CustomerUID, LastActionedUTC " +
+                   "   FROM Project " +
+                   "      WHERE IsArchived = 0 " +
+                   $"        AND cp.fk_CustomerUID = '{customerUid}' " +
+                   $"       {timeRangeString} " +
+                   $"        AND st_Intersects({point}, PolygonST) = 1";
+
+      return QueryWithAsyncPolicy<ProjectDataModel>(select);
     }
+    #endregion projectSpatial
 
-    #endregion gettersProject
 
-
-    #region gettersProjectSettings
+    #region projectSettings
 
     /// <summary>
     /// At this stage 2 types
@@ -1290,54 +1311,28 @@ namespace VSS.Productivity3D.Project.Repository
         .FirstOrDefault();
     }
 
-    ///// <summary>
-    ///// At this stage 2 types, user must eval result
-    ///// </summary>
-    ///// <param name="projectUid"></param>
-    ///// <param name="userId"></param>
-    ///// <returns></returns>
-    //public Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid, string userId)
-    //{
-    //  return QueryWithAsyncPolicy<ProjectSettings>
-    //  (@"SELECT 
-    //            fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
-    //          FROM ProjectSettings
-    //          WHERE fk_ProjectUID = @ProjectUid
-    //            AND UserID = @UserID",
-    //    new { ProjectUID = projectUid, UserID = userId }
-    //  );
-    //}
-
-    #endregion gettersProjectSettings
-
-
-    #region gettersImportedFiles
-
-    public async Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid)
+    /// <summary>
+    /// At this stage 2 types, user must eval result
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    public Task<IEnumerable<ProjectSettings>> GetProjectSettings(string projectUid, string userId)
     {
-      var importedFileList = (await QueryWithAsyncPolicy<ImportedFile>
+      return QueryWithAsyncPolicy<ProjectSettings>
       (@"SELECT 
-            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
-            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
-            MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
-          FROM ImportedFile
-            WHERE fk_ProjectUID = @ProjectUid
-              AND IsArchived = 0",
-        new { ProjectUid = projectUid }
-      )).ToList();
-
-      var historyAllFiles = await GetImportedFileHistory(projectUid);
-      foreach (var importedFile in importedFileList)
-      {
-        var historyOne = historyAllFiles.FindAll(x => x.ImportedFileUid == importedFile.ImportedFileUid);
-        if (historyOne.Any())
-        {
-          importedFile.ImportedFileHistory = new ImportedFileHistory(historyOne);
-        }
-      }
-
-      return importedFileList;
+                fk_ProjectUID AS ProjectUid, fk_ProjectSettingsTypeID AS ProjectSettingsType, Settings, UserID, LastActionedUTC
+              FROM ProjectSettings
+              WHERE fk_ProjectUID = @ProjectUid
+                AND UserID = @UserID",
+        new { ProjectUID = projectUid, UserID = userId }
+      );
     }
+
+    #endregion projectSettings
+
+
+    #region importedFiles
 
     public async Task<ImportedFile> GetImportedFile(string importedFileUid)
     {
@@ -1362,23 +1357,7 @@ namespace VSS.Productivity3D.Project.Repository
 
       return importedFile;
     }
-
-    private async Task<List<ImportedFileHistoryItem>> GetImportedFileHistory(string projectUid,
-      string importedFileUid = null)
-    {
-      return (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
-      (@"SELECT 
-              ImportedFileUID, ifh.FileCreatedUTC, ifh.FileUpdatedUTC, ifh.ImportedBy
-            FROM ImportedFile iff
-              INNER JOIN ImportedFileHistory ifh ON ifh.fk_ImportedFileUID = iff.ImportedFileUID
-            WHERE fk_ProjectUID = @projectUid
-              AND IsArchived = 0
-              AND (@ImportedFileUid IS NULL OR ImportedFileUID = @ImportedFileUid)
-            ORDER BY ImportedFileUID, ifh.FileUpdatedUTC",
-        new { projectUid, ImportedFileUid = importedFileUid }
-      )).ToList();
-    }
-
+    
     public async Task<IEnumerable<ImportedFile>> GetReferencedImportedFiles(string importedFileUid)
     {
       var importedFileList = (await QueryWithAsyncPolicy<ImportedFile>
@@ -1408,84 +1387,91 @@ namespace VSS.Productivity3D.Project.Repository
 
       return importedFileList;
     }
-    #endregion gettersImportedFiles
 
-
-    #region gettersSpatial
-
-    /// <summary>
-    ///     Gets any standard project which the lat/long is within,
-    ///     which satisfies all conditions for the asset
-    /// </summary>
-    /// <param name="customerUID"></param>
-    /// <param name="latitude"></param>
-    /// <param name="longitude"></param>
-    /// <param name="timeOfPosition"></param>
-    /// <returns>The project</returns>
-    public async Task<IEnumerable<ProjectDataModel>> GetStandardProject(string customerUID, double latitude,
-      double longitude, DateTime timeOfPosition)
+    public async Task<IEnumerable<ImportedFile>> GetImportedFiles(string projectUid)
     {
-      var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
-      var select = "SELECT DISTINCT " +
-                   "        p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana, " +
-                   "        p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT, " +
-                   "        p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC, " +
-                   "        cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID " + "      FROM Project p " +
-                   "        INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID " +
-                   "      WHERE p.fk_ProjectTypeID = 0 " + "        AND p.IsArchived = 0 " +
-                   "        AND @timeOfPosition BETWEEN p.StartDate AND p.EndDate " +
-                   "        AND cp.fk_CustomerUID = @CustomerUID " +
-                   $"        AND st_Intersects({point}, PolygonST) = 1";
+      var importedFileList = (await QueryWithAsyncPolicy<ImportedFile>
+      (@"SELECT 
+            fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
+            Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
+            MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
+          FROM ImportedFile
+            WHERE fk_ProjectUID = @ProjectUid
+              AND IsArchived = 0",
+        new { ProjectUid = projectUid }
+      )).ToList();
 
-      var projects =
-        await QueryWithAsyncPolicy<ProjectDataModel>(select,
-          new { CustomerUID = customerUID, timeOfPosition = timeOfPosition.Date });
+      var historyAllFiles = await GetImportedFileHistory(projectUid);
+      foreach (var importedFile in importedFileList)
+      {
+        var historyOne = historyAllFiles.FindAll(x => x.ImportedFileUid == importedFile.ImportedFileUid);
+        if (historyOne.Any())
+        {
+          importedFile.ImportedFileHistory = new ImportedFileHistory(historyOne);
+        }
+      }
 
-      return projects;
+      return importedFileList;
     }
-     
-   
-    /// <summary>
-    ///     Gets any project which
-    ///     1) for this Customer
-    ///     2) is active at the time
-    ///     3) the lat/long is within,
-    ///     4) but ignore the project if it's an update
-    /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="geometryWkt"></param>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
-    /// <param name="excludeProjectUid"></param>
-    /// <returns>The project</returns>
-    public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
-      DateTime endDate, string excludeProjectUid = "")
+
+    private async Task<List<ImportedFileHistoryItem>> GetImportedFileHistory(string projectUid,
+      string importedFileUid = null)
     {
-      string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
+      return (await QueryWithAsyncPolicy<ImportedFileHistoryItem>
+      (@"SELECT 
+              ImportedFileUID, ifh.FileCreatedUTC, ifh.FileUpdatedUTC, ifh.ImportedBy
+            FROM ImportedFile iff
+              INNER JOIN ImportedFileHistory ifh ON ifh.fk_ImportedFileUID = iff.ImportedFileUID
+            WHERE fk_ProjectUID = @projectUid
+              AND IsArchived = 0
+              AND (@ImportedFileUid IS NULL OR ImportedFileUID = @ImportedFileUid)
+            ORDER BY ImportedFileUID, ifh.FileUpdatedUTC",
+        new { projectUid, ImportedFileUid = importedFileUid }
+      )).ToList();
+    }
 
-      var select = $@"SELECT DISTINCT
-                          p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-                          p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                          p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                          cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID
-                        FROM Project p 
-                          INNER JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                        WHERE p.IsArchived = 0
-                          AND @StartDate <= p.EndDate
-                          AND @EndDate >= p.StartDate
-                          AND cp.fk_CustomerUID = @CustomerUID
-                          AND p.ProjectUid != @excludeProjectUid
-                          AND st_Intersects({polygonToCheck}, PolygonST) = 1";
+    #endregion importedFiles
 
-      return (await QueryWithAsyncPolicy<ProjectDataModel>(select,
-          new { CustomerUID = customerUid, StartDate = startDate.Date, EndDate = endDate.Date, excludeProjectUid }))
-        .Any();
+
+    #region geofenceForFilters
+
+    /// <summary>
+    /// Gets the list of geofence UIDs associated wih the specified project
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns>List of associations</returns>
+    public Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid)
+    {
+      return QueryWithAsyncPolicy<ProjectGeofence>
+      (@"SELECT 
+                fk_GeofenceUID AS GeofenceUID, fk_ProjectUID AS ProjectUID, pg.LastActionedUTC, g.fk_GeofenceTypeID AS GeofenceType 
+              FROM ProjectGeofence pg
+                LEFT OUTER JOIN Geofence g on g.GeofenceUID = pg.fk_GeofenceUID
+              WHERE fk_ProjectUID = @ProjectUID",
+        new { ProjectUID = projectUid }
+      );
+    }
+
+
+    /// <summary>
+    /// Determines which, if any, of the given geofence polygons intersect the project polygon
+    /// </summary>
+    public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectGeometryWkt, IEnumerable<string> geometryWkts)
+    {
+      var list = geometryWkts.ToList();
+      var tasks = new List<Task<bool>>();
+      for (var i = 0; i < list.Count; i++)
+      {
+        tasks.Add(DoesPolygonOverlap(projectGeometryWkt, list[i]));
+      }
+      await Task.WhenAll(tasks);
+      return tasks.Select(t => t.Result);
     }
 
     /// <summary>
     /// Determines if the given geofence polygon intersects the project polygon
     /// </summary>
-    public async Task<bool> DoesPolygonOverlap(string projectGeometryWkt, string geometryWkt)
+    private async Task<bool> DoesPolygonOverlap(string projectGeometryWkt, string geometryWkt)
     {
       //Do some basic checking first to avoid filling the logs with lots of exceptions
       if (string.IsNullOrEmpty(geometryWkt) || !geometryWkt.StartsWith("POLYGON"))
@@ -1511,70 +1497,7 @@ namespace VSS.Productivity3D.Project.Repository
       return result == 1;
     }
 
-    /// <summary>
-    /// Determines which, if any, of the given geofence polygons intersect the project polygon
-    /// </summary>
-    public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectGeometryWkt, IEnumerable<string> geometryWkts)
-    {
-      var list = geometryWkts.ToList();
-      var tasks = new List<Task<bool>>();
-      for (var i=0; i<list.Count; i++)
-      {
-        tasks.Add(DoesPolygonOverlap(projectGeometryWkt, list[i]));
-      }
-      await Task.WhenAll(tasks);
-      return tasks.Select(t => t.Result);    
-    }
-
-    /// <summary>
-    ///     Gets active projects for the customer
-    ///     which the lat/long is within
-    ///       optionally can check for within time 
-    ///       note that projectTypes are only standard at present
-    /// </summary>
-    public Task<IEnumerable<ProjectDataModel>> GetIntersectingProjects(string customerUid,
-      double latitude, double longitude, DateTime? timeOfPosition) // todoMaverick done
-    {
-      var point = $"ST_GeomFromText('POINT({longitude} {latitude})')";
-     
-      var timeRangeString = string.Empty;
-      if (timeOfPosition != null)
-      {
-        var formattedDate = (timeOfPosition.Value.Date.ToString("yyyy-MM-dd"));
-        timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
-      }
-
-      var select = "SELECT DISTINCT " +
-                   "     ProjectUID, Name, Description, ShortRaptorProjectId, ProjectTimeZone, ProjectTimeZoneIana, " +
-                   "     LastActionedUTC, IsArchived, StartDate, EndDate, fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT, " +
-                   "     CoordinateSystemFileName, CoordinateSystemLastActionedUTC, CustomerUID, LastActionedUTC " +
-                   "   FROM Project " +
-                   "      WHERE IsArchived = 0 " +
-                   $"        AND cp.fk_CustomerUID = '{customerUid}' " +
-                   $"       {timeRangeString} " +
-                   $"        AND st_Intersects({point}, PolygonST) = 1";
-
-      return QueryWithAsyncPolicy<ProjectDataModel>(select);
-    }
-
-    #endregion gettersSpatial
-
-    public Task<IEnumerable<ProjectDataModel>> GetProjects_UnitTests()
-    {
-      return QueryWithAsyncPolicy<ProjectDataModel>
-      (@"SELECT 
-                p.ProjectUID, p.Name, p.Description, p.LegacyProjectID, p.ProjectTimeZone, p.ProjectTimeZoneIana,
-                p.LastActionedUTC, p.IsArchived, p.StartDate, p.EndDate, p.fk_ProjectTypeID as ProjectType, ST_ASWKT(PolygonST) as GeometryWKT,
-                p.CoordinateSystemFileName, p.CoordinateSystemLastActionedUTC,
-                cp.fk_CustomerUID AS CustomerUID, cp.LegacyCustomerID, 
-                ps.fk_SubscriptionUID AS SubscriptionUID, s.StartDate AS SubscriptionStartDate, s.EndDate AS SubscriptionEndDate, fk_ServiceTypeID AS ServiceTypeID
-              FROM Project p 
-                JOIN CustomerProject cp ON cp.fk_ProjectUID = p.ProjectUID
-                JOIN Customer c on c.CustomerUID = cp.fk_CustomerUID
-                JOIN ProjectSubscription ps on ps.fk_ProjectUID = p.ProjectUID
-                JOIN Subscription s on s.SubscriptionUID = ps.fk_SubscriptionUID 
-              WHERE p.IsArchived = 0"
-      );
-    }
+    #endregion geofenceForFilters
+      
   }
 }

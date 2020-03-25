@@ -62,7 +62,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
         && otherProject.StartDate == StartDate
         && otherProject.EndDate == EndDate
         && otherProject.CustomerUID == CustomerUID
-        // todoMaverick && otherProject.LegacyCustomerID == LegacyCustomerID
         && otherProject.GeometryWKT == GeometryWKT
         && otherProject.CoordinateSystemFileName == CoordinateSystemFileName
         && otherProject.CoordinateSystemLastActionedUTC == CoordinateSystemLastActionedUTC

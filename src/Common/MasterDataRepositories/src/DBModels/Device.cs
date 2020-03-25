@@ -16,10 +16,11 @@ namespace VSS.MasterData.Repositories.DBModels
 
         public override bool Equals(object obj)
         {
-            var otherAsset = obj as Device;
-            if (otherAsset == null) return false;
-            return otherAsset.DeviceUID == DeviceUID
-                   && otherAsset.LastActionedUtc == LastActionedUtc;
+            var otherDevice = obj as Device;
+            if (otherDevice == null) return false;
+            return otherDevice.DeviceUID == DeviceUID
+                   && otherDevice.ShortRaptorAssetId == ShortRaptorAssetId
+                   && otherDevice.LastActionedUtc == LastActionedUtc;
         }
 
         public override int GetHashCode()

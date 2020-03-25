@@ -75,13 +75,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var project = (await projectRepo.GetProject(shortRaptorProjectId));
-
-      if (project == null)
-      {
-        log.LogWarning($"Unable to locate shortRaptorProjectId: {shortRaptorProjectId}");
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
-      }
-
+      
       log.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} retrieved");
       return project;
     }

@@ -35,12 +35,13 @@ namespace VSS.Productivity3D.Project.Proxy
     public async Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick at this stage we may not need to query also by device type. Question with Sankari re options
+      // called by TFA AssetIdExecutor, projectUidexe
       // in ProjectSvc.DeviceV1Controller GetDevice
-      // a) retrieve from cws using serialNumber which gets DeviceTRN etc
-      //    https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/1332J023SW
-      // b) get/create localDB shortRaptorAssetId so we can fill it into response
+      // a) retrieve from cws using serialNumber which must get 
+      //   Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
+      // b) get from localDB shortRaptorAssetId so we can fill it into response
 
-      // should do a cache by serialNumber
+      // should we cache by serialNumber
       log.LogDebug($"{nameof(GetDevice)} serialNumber: {serialNumber}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("serialNumber", serialNumber) };
       var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataSingleResult>($"/device/serialnumber",
@@ -56,6 +57,7 @@ namespace VSS.Productivity3D.Project.Proxy
     public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick 
+      // called by TFA ProjectIDExecutor, projectBoundariesAtDateExecutor
       // in ProjectSvc.DeviceController GetDevice
       // a) lookup localDB using shortRaptorAssetId to get DeviceTRN (return if not present)
       // b) retrieve from cws using DeviceTRN need licensed/not
@@ -64,7 +66,7 @@ namespace VSS.Productivity3D.Project.Proxy
       // should do a cache by shortRaptorAssetId
       log.LogDebug($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("shortRaptorAssetId", shortRaptorAssetId.ToString()) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataSingleResult>($"/device/shortid",
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataSingleResult>($"/device/shortRaptorAssetId",
         customHeaders, queryParams);
 
       if (result.Code == 0)
@@ -74,7 +76,7 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
     
-    public async Task<List<ProjectData>> GetProjects(string deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<List<ProjectData>> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
     {
       // todoMaverick 
       // in ProjectSvc.DeviceController
@@ -82,7 +84,7 @@ namespace VSS.Productivity3D.Project.Proxy
       //    Response must include list of projects; device status for each licensed/pending/?
 
       // should do a cache by deviceUid
-      log.LogDebug($"{nameof(GetProjects)} deviceUid: {deviceUid}");
+      log.LogDebug($"{nameof(GetProjectsForDevice)} deviceUid: {deviceUid}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("deviceUid", deviceUid) };
       var result = await GetMasterDataItemServiceDiscoveryNoCache<ProjectDataResult>($"/project/applicationcontext/device",
         customHeaders, queryParams);

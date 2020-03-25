@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
@@ -88,7 +87,7 @@ namespace WebApiTests.Executors
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.IsNull(device);
-    }
+    }      
 
   }
 }

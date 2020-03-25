@@ -114,8 +114,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     /// <summary>
     /// Gets projects which this device has access to, from cws
-    ///   applicationContext i.e. no customer. 
-    ///   Could have TFA go direct to cwsProjectClient
+    ///    application token i.e. customHeaders will NOT include customerUid
+    ///    get this from localDB now.
+    ///       response to include customerUid
     /// </summary>
     [Route("api/v6/project/applicationcontext/{shortRaptorProjectId}")]
     [HttpGet]

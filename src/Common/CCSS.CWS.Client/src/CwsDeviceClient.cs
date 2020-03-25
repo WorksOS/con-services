@@ -21,10 +21,10 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// GET https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/1332J023SW
+    /// GET https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/1332J023SW ??
     ///   application token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
+    ///   todoMaaverick used by TFA AssetIdExecutor; ProjectAndAssetUidsExecutor;  ProjectAndAssetUidsEarthWorksExecutor
+    ///                 response fields: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
     ///   CCSSCON-115
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
@@ -35,8 +35,8 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// GET https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/{deviceId}
     ///   application token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
+    ///   todoMaaverick used by TFA ProjectIDExecutor, projectBoundariesAtDateExecutor
+    ///                 response fields: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
     ///   CCSSCON-114
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceByDeviceUid(string deviceUid, IDictionary<string, string> customHeaders = null)
@@ -47,8 +47,9 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// GET https://api.trimble.com/t/trimble.com/cws-devicegateway/1.0/accounts/{accountUid}/devices
     ///   application token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
+    ///   todoMaaverick used when UI calls ProjectSvc.GetCustomerDeviceLicense() 
+    ///   to load devices for account into DB (to generate shortRaptorAssetId)
+    ///                 response fields: DeviceTRN
     ///   CCSSCON-136
     /// </summary>
     public async Task<DeviceListResponseModel> GetDevicesForAccount(string accountUid, IDictionary<string, string> customHeaders = null)
@@ -60,13 +61,13 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// GET https://api.trimble.com/t/trimble.com/cws-device?? manager/1.0/projects/device/{deviceUid}
     ///   application token
-    ///   todoMaaverick where is this used - TFA get boundaries for device
-    ///                 what response fields are required?
+    ///   todoMaaverick used by TFA: projectIdExecutor; ProjectBoundariesAtDateExec; ProjectAndAssetUidsExecutor; ProjectAndAssetUidsEarthWorksExecutor
+    ///                 response fields: ProjectTRN
     ///   CCSSCON-113
     /// </summary>
     public async Task<ProjectListResponseModel> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
     {
-      return await GetData<ProjectListResponseModel>($"/projects/device/{deviceUid}", deviceUid, null, null, customHeaders);
+      return await GetData<ProjectListResponseModel>($"/device/{deviceUid}/projects", deviceUid, null, null, customHeaders);
     }
 
   }

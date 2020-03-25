@@ -33,14 +33,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         if (project != null)
         {
-          // todoMaverick If a projects account (for manual import) has only a free sub, then should we import tag files into it?
-          //int projectAccountEntitlement = await dataRepository.GetDeviceLicenses(project.CustomerUID);
-
-          // todoMaverick I believe this is always true when shortRaptorProjectId is provided 
-          if (request.deviceType == (int) TagFileDeviceTypeEnum.ManualImport)
-          {
-            serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").CGEnum; ;
-          }
+          // todoMaverick I believe deviceType will always be Manual when shortRaptorProjectId is provided 
+          //  If a projects account (for manual import) has only a free sub, I don't believe the UI should allow it to get here.
+          //  However, if it does, then should we allow manually importing tag files into project where the account has no deviceLicenses? 
+          //   Assuming no here.
+          var projectAccountLicenseTotal = await dataRepository.GetDeviceLicenses(project.CustomerUID);
+          if (request.deviceType == (int) TagFileDeviceTypeEnum.ManualImport || projectAccountLicenseTotal > 0)
+            serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").CGEnum; 
+          else
+            log.LogDebug($"{nameof(AssetIdExecutor)}: Project found, however it's customer has no device licenses: {projectAccountLicenseTotal} or not a manual deviceType: {request.deviceType.ToString()}");
         }
 
         log.LogDebug($"{nameof(AssetIdExecutor)}: ManualImport return: shortRaptorAssetId {shortRaptorAssetId} serviceType {serviceType}");
@@ -55,17 +56,24 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       // Auto or Direct import i.e. no shortRaptorProjectId
-      // try to identify the device by it's serialNumber.
+      // try to identify the device by it's serialNumber in cws. Need to get CustomerUid (cws) and shortRaptorAssetId (localDB)
       var device = await dataRepository.GetDevice(request.serialNumber);
       log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
 
       if (device != null)
       {
-        shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
-        // todoMaverick If a devices account has only a free sub, then should we import tag files into it?
-        int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
-        if (deviceLicenseTotal > 0)
-          serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").CGEnum;
+        if (string.Compare(device.Status, "ACTIVE", true) == 0)
+        {
+          shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
+          // todoMaverick If a devices account has only a free sub, then should we import tag files into it?
+          int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
+          if (deviceLicenseTotal > 0)
+            serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").CGEnum;
+          else
+            log.LogDebug($"{nameof(AssetIdExecutor)}: Device found, however it's customer has no device licenses: {deviceLicenseTotal}");
+        }
+        else
+          log.LogDebug($"{nameof(AssetIdExecutor)}: Device found, however status is not active");
       }
 
       log.LogDebug($"{nameof(AssetIdExecutor)}: Auto/Direct Import return: shortRaptorAssetId {shortRaptorAssetId} serviceType {serviceType}");

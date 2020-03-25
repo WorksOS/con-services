@@ -6,6 +6,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
   public class Project
   {
     public string ProjectUID { get; set; }
+    public string CustomerUID { get; set; }
 
     // legacy ProjectID in Gen2 is a bigint. However Raptor can't handle one, and we're unlikely to need to get that big.
     public int ShortRaptorProjectId { get; set; }
@@ -28,8 +29,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public DateTime EndDate { get; set; }
 
-
-    public string CustomerUID { get; set; }
 
     // todoMaverick, what is this for?
     //// legacy CustomerID in Gen2 is a bigint. Unlike LegacyProjectID, this is passed around as a long. I don't know why.
