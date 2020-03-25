@@ -114,10 +114,10 @@ metadata:
     app: frontend
   annotations:
     kubernetes.io/ingress.class: nginx
-    external-dns.alpha.kubernetes.io/target: eks.vspengg.com
+    external-dns.alpha.kubernetes.io/target: eks.ccss.cloud
 spec:
   rules:
-    - host: trex.mutable-console.dev.eks.vspengg.com
+    - host: trex.mutable-console.dev.eks.ccss.cloud
       http:
         paths:
           - backend:
