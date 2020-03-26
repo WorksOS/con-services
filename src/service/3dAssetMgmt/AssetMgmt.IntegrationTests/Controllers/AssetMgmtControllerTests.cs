@@ -11,23 +11,21 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.AssetMgmt3D.Controllers;
-using VSS.Productivity3D.AssetMgmt3D.Helpers;
 using VSS.Productivity3D.AssetMgmt3D.Models;
 using Xunit;
 
 namespace AssetMgmt.IntegrationTests.Controllers
 {
-  public class AssetMgmtControllerFixture : TestBase
+  public class AssetMgmtControllerTests : TestBase
   {
     private readonly ServiceProvider _serviceProvider;
 
-    public AssetMgmtControllerFixture()
+    public AssetMgmtControllerTests()
     {
       _serviceProvider = new ServiceCollection()
                          .AddSingleton(Log)
                          .AddSingleton<IConfigurationStore, GenericConfiguration>()
                          .AddSingleton<IAssetRepository, AssetRepository>()
-                         .AddSingleton<AssetExtensions>()
                          .BuildServiceProvider();
     }
 
@@ -45,14 +43,12 @@ namespace AssetMgmt.IntegrationTests.Controllers
       assetRepository.Setup(x => x.GetAssets(assetUids))
                      .Returns(Task.FromResult<IEnumerable<Asset>>(assets));
 
-      var assetExtensions = _serviceProvider.GetService<AssetExtensions>();
-
       var controller = new AssetMgmtController(assetRepository.Object)
       {
         ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { RequestServices = _serviceProvider } }
       };
 
-      var result = await controller.GetMatchingAssets(assetExtensions, assetUids);
+      var result = await controller.GetMatchingAssets(assetUids);
 
       Assert.IsType<JsonResult>(result);
 
@@ -76,14 +72,12 @@ namespace AssetMgmt.IntegrationTests.Controllers
       assetRepository.Setup(x => x.GetAssets(assetIds))
                      .Returns(Task.FromResult<IEnumerable<Asset>>(assets));
 
-      var assetExtensions = _serviceProvider.GetService<AssetExtensions>();
-
       var controller = new AssetMgmtController(assetRepository.Object)
       {
         ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { RequestServices = _serviceProvider } }
       };
 
-      var result = await controller.GetMatchingAssets(assetExtensions, assetIds);
+      var result = await controller.GetMatchingAssets(assetIds);
 
       Assert.IsType<JsonResult>(result);
 

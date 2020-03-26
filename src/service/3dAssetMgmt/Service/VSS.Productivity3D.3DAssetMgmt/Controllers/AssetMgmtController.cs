@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
-using VSS.Productivity3D.AssetMgmt3D.Helpers;
+using VSS.Productivity3D.AssetMgmt3D.Extensions;
 using VSS.Productivity3D.AssetMgmt3D.Models;
 
 namespace VSS.Productivity3D.AssetMgmt3D.Controllers
@@ -31,16 +31,14 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     [HttpPost("api/v1/assets/assetuids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
     public async Task<IActionResult> GetMatchingAssets(
-      [FromServices] AssetExtensions assetExtensions,
       [FromBody] List<Guid> assetUids)
     {
       var assetUidDisplay = string.Join(", ", assetUids ?? new List<Guid>());
       Log.LogInformation($"Getting Assets for AssetIds: {assetUidDisplay}");
 
       var assets = await _assetRepository.GetAssets(assetUids);
-      var displayModel = assetExtensions.ConvertDbAssetToDisplayModel(assets);
 
-      return Json(displayModel);
+      return Json(assets.ConvertDbAssetToDisplayModel());
     }
 
     /// <summary>
@@ -49,16 +47,14 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     [HttpPost("api/v1/assets/assetids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
     public async Task<IActionResult> GetMatchingAssets(
-      [FromServices] AssetExtensions assetExtensions,
       [FromBody] List<long> assetIds)
     {
       var assetIdDisplay = string.Join(", ", assetIds ?? new List<long>());
       Log.LogInformation($"Getting Assets for AssetIds: {assetIdDisplay}");
 
       var assets = await _assetRepository.GetAssets(assetIds);
-      var displayModel = assetExtensions.ConvertDbAssetToDisplayModel(assets);
 
-      return Json(displayModel);
+      return Json(assets.ConvertDbAssetToDisplayModel());
     }
 
     /// <summary>
