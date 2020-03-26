@@ -208,8 +208,8 @@ public class PlanSpec {
     Deployment addDeploymentEnvironment(BambooServer bambooServer, Deployment deployment, String name) {
 
 
-        String cleanupCommand = "$STATUS=helm ls --namespace ${bamboo.deploy.environment} | grep ${bamboo.deploy.environment}-${bamboo.service} | awk '{ print $8 }'\n"
-                + "if [ ! -z $STATUS  ] && [ $STATUS = 'failed' ]; then\n"
+        String cleanupCommand = "STATUS=$(helm ls --namespace ${bamboo.deploy.environment} | grep ${bamboo.deploy.environment}-${bamboo.service} | awk '{ print $8 }')\n"
+                + "if [ ! -z \"$STATUS\"  ] && [ \"$STATUS\" = 'failed' ]; then\n"
                 + "helm delete --namespace ${bamboo.deploy.environment} ${bamboo.deploy.environment}-${bamboo.service}\n"
                 + "else\n"
                 + "echo Good Release\n"
@@ -240,10 +240,6 @@ public class PlanSpec {
 
         env.tasks(new ScriptTask()
                 .inlineBody("echo ${bamboo.planRepository.branchName}-${bamboo.buildNumber}")
-                .interpreterBinSh());
-
-        env.tasks(new ScriptTask()
-                .inlineBody("echo " + cleanupCommand)
                 .interpreterBinSh());
 
         env.tasks(new ScriptTask()
