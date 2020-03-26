@@ -1,12 +1,12 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class DeleteImportedFileEvent : IProjectEvent
   {
-    public Guid ImportedFileUID { get; set; }
-    public Guid ProjectUID { get; set; }
+    public string ImportedFileUID { get; set; }
+    public string ProjectUID { get; set; }
     public bool DeletePermanently { get; set; }
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }

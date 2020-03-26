@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
@@ -24,13 +25,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public NotificationController(ILoggerFactory logger, IConfigurationStore configStore, 
-      IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
-      IRepository<ICustomerEvent> customerRepository, IRepository<IProjectEvent> projectRepository,
-      IRepository<ISubscriptionEvent> subscriptionsRepository, IKafka producer)
-      :base(logger, configStore, assetRepository, deviceRepository,
-        customerRepository, projectRepository,
-        subscriptionsRepository, producer)
+    public NotificationController(ILoggerFactory logger, IConfigurationStore configStore,
+      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
     {
       log = logger.CreateLogger<NotificationController>();
     }
@@ -43,6 +40,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// True for success and false for failure.
     /// </returns>
     /// <executor>TagFileProcessingErrorV1Executor</executor>
+    [Obsolete("todoMaverick obsolete", false)]
     [Route("api/v1/notification/tagFileProcessingError")]
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV1Request request)
@@ -50,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV1: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, cwsAccountClient, projectProxy, deviceProxy)
         .Process(request) as TagFileProcessingErrorResult;
       
       log.LogDebug("PostTagFileProcessingErrorV1: result:{0}", JsonConvert.SerializeObject(result));
@@ -64,7 +62,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
     /// <returns>
     /// True for success and false for failure.
-    ///   20180116 Raptor has inadvertantly been ported to use v2 which isn't supported.
+    ///   20180116 Raptor has inadvertently been ported to use v2 which isn't supported.
     ///   v2 has been changes to implement v1 for the time being as it is the path of least resistance.
     /// </returns>
     /// <executor>TagFileProcessingErrorV2Executor</executor>
@@ -86,37 +84,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV2: v1Request:{0}", JsonConvert.SerializeObject(v1Request));
       v1Request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, cwsAccountClient, projectProxy, deviceProxy)
         .Process(v1Request) as TagFileProcessingErrorResult;
 
       log.LogDebug("PostTagFileProcessingErrorV2: v1result:{0}", JsonConvert.SerializeObject(result));
       return result;
     }
-
-    /*
-    /// the following is for AlertNotification. This will not be completed until after the June2018-all-hands-to-the-pump
-    /// Please LEAVE!
-    /// <summary>
-    /// Writes a Kafka event for the given tag file processing error. 
-    /// </summary>
-    /// <param name="request">Details of the error including the customerUid, the tag file and the type of error</param>
-    /// <returns>
-    /// True for success and false for failure.
-    /// </returns>
-    /// <executor>TagFileProcessingErrorV2Executor</executor>
-    [Route("api/v2/notification/tagFileProcessingError")]
-    [HttpPost]
-    public async Task<TagFileProcessingErrorResult> PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
-    {
-      log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
-      request.Validate();
-
-      var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV2Executor>(log, configStore, assetRepository, deviceRepository, customerRepository, projectRepository, subscriptionsRepository, producer, kafkaTopicName);
-      var result = await executor.ProcessAsync(request) as TagFileProcessingErrorResult;
-
-      log.LogDebug("PostTagFileProcessingErrorV2: result:{0}", JsonConvert.SerializeObject(result));
-      return result;
-    } */
 
     /// <summary>
     /// Posts the application alarm.

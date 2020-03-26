@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
@@ -20,6 +20,7 @@ using VSS.Productivity3D.Filter.Common.Utilities;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
@@ -39,8 +40,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       IServiceExceptionHandler serviceExceptionHandler, IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IRepository<IGeofenceEvent> geofenceRepo,
-      IKafka producer, IRepository<IProjectEvent> projectRepo)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, producer, "IBoundaryEvent")
+      IRepository<IProjectEvent> projectRepo)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, "IBoundaryEvent")
     {
       Log = logger.CreateLogger<BoundaryController>();
       _geofenceRepository = geofenceRepo as GeofenceRepository;
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       }
 
       var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger,
-        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer, kafkaTopicName: KafkaTopicName);
+        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy);
       var result = await executor.ProcessAsync(requestFull) as GeofenceDataSingleResult;
 
       Log.LogInformation(
@@ -108,7 +109,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.SendKafkaMessages = false;
 
       var executor = RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger,
-        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer, kafkaTopicName: KafkaTopicName);
+        ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy);
 
       var result = await executor.ProcessAsync(requestFull);
 
@@ -141,8 +142,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler,
-        _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer,
-        kafkaTopicName: KafkaTopicName, geofenceProxy: geofenceProxy, unifiedProductivityProxy: unifiedProductivityProxy);
+        _geofenceRepository, _projectRepository, ProjectProxy, 
+        geofenceProxy: geofenceProxy, unifiedProductivityProxy: unifiedProductivityProxy);
 
       var result = await executor.ProcessAsync(requestFull);
 
@@ -174,7 +175,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<GetBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler,
-        _geofenceRepository, _projectRepository, ProjectProxy, producer: Producer, kafkaTopicName: KafkaTopicName);
+        _geofenceRepository, _projectRepository, ProjectProxy);
 
       var result = await executor.ProcessAsync(requestFull);
 

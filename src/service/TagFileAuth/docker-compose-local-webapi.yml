@@ -10,19 +10,6 @@ services:
      - "3001:80"
     depends_on:
       - schema
-  schema:
-    build: ./database
-    env_file:
-     - docker-compose-local.env
-    depends_on:
-      - db
-  db:
-    image: mysql/mysql-server:5.7.15 
-    command: [mysqld, --character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci] 
-    env_file:
-     - docker-compose-local.env
-    ports:
-      - "3306:3306"
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:

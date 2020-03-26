@@ -1,11 +1,11 @@
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+﻿namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
-	public enum CustomerType
-	{
-		Dealer = 0,
-        Customer = 1,
-        Account = 2,
-		Operations = 3,
-		Corporate = 4
-	}
+  public enum CustomerType
+  {
+    Dealer = 0,
+    Customer = 1,
+    Account = 2,
+    Operations = 3,
+    Corporate = 4
+  }
 }

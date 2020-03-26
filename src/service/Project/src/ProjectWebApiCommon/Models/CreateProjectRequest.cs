@@ -1,6 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -15,7 +15,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The unique ID of the project. if null, then one will be generated.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectUID", Required = Required.Default)]
-    public Guid? ProjectUID { get; set; } = null;
+    public string ProjectUID { get; set; } = null;
 
     
     /// <summary>
@@ -23,7 +23,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// if null, then the customer from the header will be used.
     /// </summary>
     [JsonProperty(PropertyName = "CustomerUID", Required = Required.Default)]
-    public Guid? CustomerUID { get; set; } = null;
+    public string CustomerUID { get; set; } = null;
 
     /// <summary>
     /// The type of the project.
@@ -73,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// This is no longer required by raptor so will be optional.
     /// </summary>
     [JsonProperty(PropertyName = "CustomerID", Required = Required.Default)]
-    public long? CustomerID { get; set; } = 0;
+    public long? ObsoleteCustomerID { get; set; } = 0;
 
     /// <summary>
     /// The CS of the project. 
@@ -99,10 +99,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// Create instance of CreateProjectRequest
     /// </summary>
-    public static CreateProjectRequest CreateACreateProjectRequest(Guid? projectUid, Guid? customerUid, 
+    public static CreateProjectRequest CreateACreateProjectRequest(string projectUid, string customerUid, 
       ProjectType projectType, string projectName, string description,
       DateTime projectStartDate, DateTime projectEndDate, string projectTimezone, string projectBoundary,
-      long? customerId, string coordinateSystemFileName, byte[] coordinateSystemFileContent
+      string coordinateSystemFileName, byte[] coordinateSystemFileContent
       )
     {
       return new CreateProjectRequest
@@ -116,7 +116,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
         ProjectEndDate = projectEndDate,
         ProjectTimezone = projectTimezone,
         ProjectBoundary = projectBoundary,
-        CustomerID = customerId,
         CoordinateSystemFileName = coordinateSystemFileName,
         CoordinateSystemFileContent = coordinateSystemFileContent
       };

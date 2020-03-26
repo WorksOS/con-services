@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -32,8 +31,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, geofenceProxy, null)
+      RepositoryBase repository, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, auxRepository, geofenceProxy, null)
     {
     }
 
@@ -143,12 +142,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         filterRequest.FilterJson = existingFilter.FilterJson;
         var updateFilterEvent = await StoreFilterAndNotifyRaptor<UpdateFilterEvent>(filterRequest, new[] { 17, 18 });
 
-        if (filterRequest.SendKafkaMessages && updateFilterEvent != null)
-        {
-          var payload = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent });
-          SendToKafka(updateFilterEvent.FilterUID.ToString(), payload, 26);
-        }
-
         return RetrieveFilter(updateFilterEvent);
       }
 
@@ -175,14 +168,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
 
       filterRequest.FilterUid = Guid.NewGuid().ToString();
       var createFilterEvent = await StoreFilterAndNotifyRaptor<CreateFilterEvent>(filterRequest, isTransient ? new[] { 19, 20 } : new[] { 24, 25 });
-
-      //Only write to kafka for persistent filters
-      if (filterRequest.SendKafkaMessages && !isTransient && createFilterEvent != null)
-      {
-        var payload = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent });
-        SendToKafka(createFilterEvent.FilterUID.ToString(), payload, 26);
-      }
-
+      
       return RetrieveFilter(createFilterEvent);
     }
 

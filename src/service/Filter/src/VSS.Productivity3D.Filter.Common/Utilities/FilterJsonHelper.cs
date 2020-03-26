@@ -9,6 +9,7 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using DbFilter = VSS.MasterData.Repositories.DBModels.Filter;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities
@@ -46,12 +47,12 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       var filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterJson);
 
       // date timezone changes
-      filterObj.ApplyDateRange(project?.IanaTimeZone);
+      filterObj.ApplyDateRange(project?.ProjectTimeZone);
 
       if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
       {
         // get project productionData data extents from 3dpm
-        var statistics = productivity3dV2ProxyCompaction?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+        var statistics = productivity3dV2ProxyCompaction?.GetProjectStatistics(Guid.Parse(project?.ProjectUID), customHeaders).Result;
         filterObj.StartUtc = statistics?.startTime;
         filterObj.EndUtc = statistics?.endTime;
       }
@@ -59,13 +60,13 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       // The UI needs to know the start date for specified ranges, this is actually the range data will be returned for
       if (filterObj.AsAtDate == true)
       {
-        var statistics = productivity3dV2ProxyCompaction?.GetProjectStatistics(Guid.Parse(project?.ProjectUid), customHeaders).Result;
+        var statistics = productivity3dV2ProxyCompaction?.GetProjectStatistics(Guid.Parse(project?.ProjectUID), customHeaders).Result;
         filterObj.StartUtc = statistics?.startTime;
         filterObj.DateRangeType = DateRangeType.Custom;
       }
 
       // pair up AssetUids and legacyAssetIds in contributingMachines
-      await PairUpAssetIdentifiers(project?.ProjectUid, filterObj.ContributingMachines, productivity3dV2ProxyCompaction, customHeaders);
+      await PairUpAssetIdentifiers(project?.ProjectUID, filterObj.ContributingMachines, productivity3dV2ProxyCompaction, customHeaders);
 
       return (JsonConvert.SerializeObject(filterObj), filterObj.ContainsBoundary);
     }

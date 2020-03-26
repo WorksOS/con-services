@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing ProjectEndDate.", 15);
       this.DynamicAddwithOffset("Project start date must be earlier than end date.", 16);
       this.DynamicAddwithOffset("Project timezone cannot be updated.", 17);
-      this.DynamicAddwithOffset("CustomerUid parameter differs to the requesting CustomerUid. Impersonation is not supported.", 18);
+      this.DynamicAddwithOffset("CustomerUID parameter differs to the requesting CustomerUID. Impersonation is not supported.", 18);
       this.DynamicAddwithOffset("Missing CustomerUID.", 19);
       this.DynamicAddwithOffset("Project already associated with a customer.", 20);
       this.DynamicAddwithOffset("Dissociating projects from customers is not supported.", 21);
@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Missing CreateProjectRequest.", 39);
       this.DynamicAddwithOffset("Missing UpdateProjectRequest.", 40);
       this.DynamicAddwithOffset("Unable to create/update CoordinateSystem in RaptorServices. returned: {0} {1}.", 41);
-      this.DynamicAddwithOffset("LegacyProjectId has not been generated. {0}", 42);
+      this.DynamicAddwithOffset("shortRaptorProjectId has not been generated. {0}", 42);
       this.DynamicAddwithOffset("Project boundary overlaps another project, for this customer and time span.", 43);
       this.DynamicAddwithOffset("Missing legacyProjectId.", 44);
       this.DynamicAddwithOffset("Landfill is missing its CoordinateSystem.", 45);

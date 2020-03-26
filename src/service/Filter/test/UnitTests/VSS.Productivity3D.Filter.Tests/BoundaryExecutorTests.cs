@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
@@ -18,6 +17,7 @@ using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Repository;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
@@ -63,7 +63,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         userUid,
         boundaryUid
       );
@@ -145,7 +145,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         userUid,
         null
       );
@@ -225,7 +225,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         userUid,
         null
       );
@@ -294,7 +294,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         userUid,
         null
       );
@@ -370,7 +370,7 @@ namespace VSS.Productivity3D.Filter.Tests
       (
         custUid,
         false,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         userUid,
         null
       );
@@ -426,23 +426,20 @@ namespace VSS.Productivity3D.Filter.Tests
       projectRepo.As<IProjectRepository>().Setup(p => p.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
-
-      var producer = new Mock<IKafka>();
-      string kafkaTopicName = "whatever";
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var request = BoundaryRequestFull.Create
       (
         custUid,
         false,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         userUid,
         new BoundaryRequest { BoundaryUid = null, Name = name, BoundaryPolygonWKT = geometryWKT }
       );
 
       var executor =
         RequestExecutorContainer.Build<UpsertBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
-          geofenceRepo.Object, projectRepo.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
+          geofenceRepo.Object, projectRepo.Object);
       var result = await executor.ProcessAsync(request) as GeofenceDataSingleResult;
 
       Assert.NotNull(result);
@@ -482,16 +479,13 @@ namespace VSS.Productivity3D.Filter.Tests
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
-
-      var producer = new Mock<IKafka>();
-      string kafkaTopicName = "whatever";
-
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      
       var request = BoundaryUidRequestFull.Create
       (
         custUid,
         false,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         userUid,
         boundaryUid
       );
@@ -499,7 +493,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor =
         RequestExecutorContainer.Build<DeleteBoundaryExecutor>(configStore, logger, serviceExceptionHandler,
           geofenceRepo.Object, projectRepo.Object,
-          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
+          productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object);
       var result = await executor.ProcessAsync(request);
 
       Assert.NotNull(result);

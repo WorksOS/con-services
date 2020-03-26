@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -31,8 +30,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
+      RepositoryBase repository, RepositoryBase auxRepository)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, auxRepository, null, null)
     { }
 
     /// <summary>
@@ -82,24 +81,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 58);
       }
 
-      if (request.SendKafkaMessages)
-      {
-        try
-        {
-          var payload = JsonConvert.SerializeObject(new { CreateBoundaryEvent = createBoundaryEvent });
-
-          producer.Send(kafkaTopicName,
-            new List<KeyValuePair<string, string>>
-            {
-              new KeyValuePair<string, string>(createBoundaryEvent.GeofenceUID.ToString(), payload)
-            });
-        }
-        catch (Exception e)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 56, e.Message);
-        }
-      }
-
       //and associate it with the project
 
       //TODO
@@ -122,24 +103,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         if (associatedCount == 0)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 55);
-        }
-
-        if (request.SendKafkaMessages)
-        {
-          try
-          {
-            var payload = JsonConvert.SerializeObject(new { AssociateProjectBoundaryEvent = associateProjectGeofence });
-
-            producer.Send(kafkaTopicName,
-              new List<KeyValuePair<string, string>>
-              {
-              new KeyValuePair<string, string>(associateProjectGeofence.GeofenceUID.ToString(), payload)
-              });
-          }
-          catch (Exception e)
-          {
-            serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 56, e.Message);
-          }
         }
       }
 

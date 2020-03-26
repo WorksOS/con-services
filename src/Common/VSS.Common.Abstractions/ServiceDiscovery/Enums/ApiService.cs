@@ -13,6 +13,7 @@
     AssetMgmt3D,
     Push,
     Tile,
-    TagFileAuth
+    TagFileAuth,
+    Device
   }
 }

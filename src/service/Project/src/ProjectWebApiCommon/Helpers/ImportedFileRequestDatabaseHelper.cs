@@ -13,9 +13,10 @@ using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Filter=VSS.Productivity3D.Filter.Abstractions.Models.Filter;
+using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -74,7 +75,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     public static async Task<ImportedFile> GetImportedFileForProject
       (string projectUid, string fileName, ImportedFileType importedFileType, DateTime? surveyedUtc,
-      ILogger log, IProjectRepository projectRepo, double? offset, Guid? parentUid)
+      ILogger log, IProjectRepository projectRepo, double? offset, string parentUid)
     {
       var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
       ImportedFile existing = null;
@@ -84,7 +85,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           existing = importedFiles.FirstOrDefault
           (f => f.ImportedFileType == ImportedFileType.ReferenceSurface &&
-                f.ParentUid == parentUid.ToString() &&
+                f.ParentUid == parentUid &&
                 f.Offset.EqualsToNearestMillimeter(offset));
         }
         else
@@ -120,11 +121,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Creates an imported file in Db.
     /// </summary>
     /// <returns />
-    public static async Task<CreateImportedFileEvent> CreateImportedFileinDb(Guid customerUid, Guid projectUid,
+    public static async Task<CreateImportedFileEvent> CreateImportedFileinDb(string customerUid, string projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
-      Guid? parentUid, double? offset, Guid importedFileUid)
+      string parentUid, double? offset, string importedFileUid)
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
@@ -161,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (existing != null && existing.ImportedFileId > 0)
       {
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
-        createImportedFileEvent.ImportedFileUID = Guid.Parse(existing.ImportedFileUid); // for unit tests
+        createImportedFileEvent.ImportedFileUID = existing.ImportedFileUid; // for unit tests
       }
       else
       {
@@ -177,7 +178,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes imported file from the Db.
     /// </summary>
     /// <returns />
-    public static async Task<DeleteImportedFileEvent> DeleteImportedFileInDb(Guid projectUid, Guid importedFileUid,
+    public static async Task<DeleteImportedFileEvent> DeleteImportedFileInDb(string projectUid, string importedFileUid,
       IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, bool deletePermanently = false)
     {
       var nowUtc = DateTime.UtcNow;
@@ -245,7 +246,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Used solely for rollback and is never inserted in the kafka que.
     /// </summary>
     /// <returns />
-    public static async Task UndeleteImportedFile(Guid projectUid, Guid importedFileUid,
+    public static async Task UndeleteImportedFile(string projectUid, string importedFileUid,
       IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var nowUtc = DateTime.UtcNow;
@@ -267,10 +268,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    public static async Task<List<Filter>> GetFilters(Guid projectUid, 
+    public static async Task<List<Filter>> GetFilters(string projectUid, 
       IDictionary<string, string> customHeaders, IFilterServiceProxy filterServiceProxy)
     {
-      var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
+      var filterDescriptors = await filterServiceProxy.GetFilters(projectUid, customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)
       {
         return null;
@@ -282,12 +283,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Check if parent design exists for a reference surface
     /// </summary>
-    public static async Task<ImportedFile> CheckIfParentSurfaceExistsAsync(ImportedFileType importedFileType, Guid? parentUid, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    public static async Task<ImportedFile> CheckIfParentSurfaceExistsAsync(ImportedFileType importedFileType, string parentUid, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       //Check parent exists for a reference design
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
-        var parent = await projectRepo.GetImportedFile(parentUid?.ToString());
+        var parent = await projectRepo.GetImportedFile(parentUid);
         if (parent == null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);

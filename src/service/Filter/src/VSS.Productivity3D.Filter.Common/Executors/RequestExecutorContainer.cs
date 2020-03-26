@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -54,17 +53,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// Main DB repo for filters/boundaries used in ProcessEx
     /// </summary>
     protected RepositoryBase Repository;
-
-    /// <summary>
-    /// Gets or sets the Kafa consumer.
-    /// </summary>
-    protected IKafka producer;
-
-    /// <summary>
-    /// Gets or sets the Kafka topic.
-    /// </summary>
-    protected string kafkaTopicName;
-
+    
     /// <summary>
     /// Auxilary DB repo for filters/boundaries used in ProcessEx
     /// </summary>
@@ -155,7 +144,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy, RepositoryBase repository,
-      IKafka producer, string kafkaTopicName, RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy) : this()
+      RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy) : this()
     {
       this.configStore = configStore;
       if (logger != null)
@@ -165,8 +154,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
       Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
       Repository = repository;
-      this.producer = producer;
-      this.kafkaTopicName = kafkaTopicName;
       this.auxRepository = auxRepository;
       this.fileImportProxy = fileImportProxy;
       GeofenceProxy = geofenceProxy;
@@ -192,7 +179,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       RepositoryBase repository, RepositoryBase auxRepository,
       IProjectProxy projectProxy = null,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
-      IKafka producer = null, string kafkaTopicName = null, IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null,
+      IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null,
       IUnifiedProductivityProxy unifiedProductivityProxy = null)
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -206,8 +193,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction,
         fileImportProxy = fileImportProxy,
         Repository = repository,
-        producer = producer,
-        kafkaTopicName = kafkaTopicName,
         auxRepository = auxRepository,
         GeofenceProxy = geofenceProxy,
         UnifiedProductivityProxy = unifiedProductivityProxy

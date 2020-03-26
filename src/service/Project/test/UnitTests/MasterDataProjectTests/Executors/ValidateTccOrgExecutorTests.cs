@@ -13,7 +13,7 @@ using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.MasterData.ProjectTests.Executors

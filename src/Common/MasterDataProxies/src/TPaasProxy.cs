@@ -46,6 +46,30 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Gets a new bearer token from TPaaS Oauth
+    /// </summary>
+    public async Task<TPaasOauthResult> GetUserBearerToken(string payLoadToSend, Dictionary<string, string> customHeaders)
+    {
+      log.LogDebug($"GetApplicationBearerToken: grantType: {payLoadToSend} customHeaders: {customHeaders.LogHeaders(_logMaxChar)}");
+      var tPaasOauthResult = new TPaasOauthResult();
+      try
+      {
+        tPaasOauthResult.tPaasOauthRawResult = await SendRequest<TPaasOauthRawResult>("TPAAS_OAUTH_URL", payLoadToSend, customHeaders, "/token", HttpMethod.Post, string.Empty);
+      }
+      catch (Exception e)
+      {
+        tPaasOauthResult.Code = 1902; // todo
+        tPaasOauthResult.Message = e.Message;
+      }
+
+      var resultString = tPaasOauthResult == null ? "null" : JsonConvert.SerializeObject(tPaasOauthResult);
+      var message = $"GetApplicationBearerToken: response: {resultString}";
+      log.LogDebug(message);
+
+      return tPaasOauthResult;
+    }
+
+    /// <summary>
     /// Revokes a bearer token from TPaaS Oauth
     /// </summary>
     public async Task<BaseDataResult> RevokeApplicationBearerToken(string token, Dictionary<string, string> customHeaders)

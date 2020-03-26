@@ -1,9 +1,9 @@
-﻿namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+﻿namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public enum ProjectType
   {
-    Standard = 0,
-    LandFill = 1,
-    ProjectMonitoring = 2
+    Standard = 0
+    //LandFill = 1,
+    //ProjectMonitoring = 2
   }
 }

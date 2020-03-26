@@ -47,9 +47,25 @@ namespace VSS.WebApi.Common
     /// </summary>
     public string GetApplicationBearerToken()
     {
-      const int TOKEN_EXPIRY_GRACE_SECONDS = 60;
       const string grantType = "client_credentials";
+      return GetBearerToken(grantType);
+    }
 
+    /// <summary>
+    /// Gets a temporary bearer token for a user. Refreshes the token as required.
+    /// </summary>
+    public string GetUserBearerToken(string grantType)
+    {
+      return GetBearerToken(grantType);
+    }
+
+    /// <summary>
+    /// Gets a temporary bearer token for an application. Refreshes the token as required.
+    /// </summary>
+    private string GetBearerToken(string grantType)
+    {
+      const int TOKEN_EXPIRY_GRACE_SECONDS = 60;
+      
       lock (_lock)
       {
         if (string.IsNullOrEmpty(_applicationBearerToken) ||
@@ -81,7 +97,10 @@ namespace VSS.WebApi.Common
               _tPaasTokenExpiryUtc = DateTime.MinValue;
             }
             //Authenticate to get a token
-            tPaasOauthResult = tpaas.GetApplicationBearerToken(grantType, customHeaders).WaitAndUnwrapException();
+            if (string.Compare(grantType,"client_credentials", true) == 0)
+              tPaasOauthResult = tpaas.GetApplicationBearerToken(grantType, customHeaders).WaitAndUnwrapException();
+            else
+              tPaasOauthResult = tpaas.GetUserBearerToken(grantType, customHeaders).WaitAndUnwrapException();
 
             var tPaasUrl = configuration.GetValueString("TPAAS_OAUTH_URL") ?? "null";
             Log.LogInformation(

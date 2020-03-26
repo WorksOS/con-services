@@ -14,7 +14,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     /// <summary>
     /// The Uid of the asset. could be empty/-1/-2?
     /// </summary>
-    public string AssetUid { get; set; }
+    public string DeviceUid { get; set; }
 
     /// <summary>
     /// Create instance of GetProjectAndAssetUidsResult
@@ -23,10 +23,10 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     ///    For TFA, these are 3k based 
     ///    Message is the english version of any error
     /// </summary>
-    public GetProjectAndAssetUidsResult(string projectUid, string assetUid, int uniqueCode = 0, string messageDetail = "success")
+    public GetProjectAndAssetUidsResult(string projectUid, string deviceUid, int uniqueCode = 0, string messageDetail = "success")
     {
       ProjectUid = projectUid;
-      AssetUid = assetUid;
+      DeviceUid = deviceUid;
       Code = uniqueCode;
       Message = messageDetail;
     }

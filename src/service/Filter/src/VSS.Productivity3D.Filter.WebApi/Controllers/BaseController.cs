@@ -3,12 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -39,19 +38,9 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     protected readonly ILoggerFactory Logger;
 
     /// <summary>
-    /// Gets the implmented Kafka Producer.
-    /// </summary>
-    protected readonly IKafka Producer;
-
-    /// <summary>
     /// Gets or sets the service's log controller.
     /// </summary>
     protected ILogger Log;
-
-    /// <summary>
-    /// Gets the service's Kafka Topic.
-    /// </summary>
-    protected readonly string KafkaTopicName;
 
     /// <summary>
     /// Gets or sets the service's exception hander implementation of <see cref="IServiceExceptionHandler"/>.
@@ -82,7 +71,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     protected BaseController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction, IKafka producer, string eventType)
+      IProjectProxy projectProxy, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction, string eventType)
     {
       Logger = logger;
       Log = logger.CreateLogger<BaseController>();
@@ -92,14 +81,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       ProjectProxy = projectProxy;
       Productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
       Productivity3dV2ProxyCompaction = productivity3dV2ProxyCompaction;
-      Producer = producer;
-
-      if (!Producer.IsInitializedProducer)
-      {
-        Producer.InitProducer(configStore);
-      }
-
-      KafkaTopicName = $"VSS.Interfaces.Events.MasterData.{eventType}{configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")}".Trim();
     }
   }
 }

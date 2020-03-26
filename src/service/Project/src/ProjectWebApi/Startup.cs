@@ -1,4 +1,5 @@
 ﻿using System;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -6,11 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.DataOcean.Client;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -27,8 +28,10 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
@@ -54,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI
     public override string ServiceDescription => " Project masterdata service";
 
     /// <inheritdoc />
-    public override string ServiceVersion => "v4";
+    public override string ServiceVersion => "v6";
 
     private static IServiceProvider serviceProvider;
 
@@ -65,15 +68,11 @@ namespace VSS.MasterData.Project.WebAPI
       //TODO: Check if SetPreflightMaxAge(TimeSpan.FromSeconds(2520) in WebApi pkg matters
 
       // Add framework services.
-      services.AddSingleton<IKafka, RdKafkaDriver>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ISubscriptionProxy, SubscriptionProxy>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
-      services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-      services.AddScoped<ICustomerRepository, CustomerRepository>();
+      services.AddScoped<IDeviceRepository, DeviceRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<IFileRepository, FileRepository>();
@@ -92,6 +91,9 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
+      services.AddSingleton<ICwsAccountClient, CwsAccountClient>();
+      services.AddSingleton<ICwsProjectClient, CwsProjectClient>();
+      services.AddSingleton<ICwsDeviceClient, CwsDeviceClient>();
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

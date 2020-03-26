@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Interfaces
+namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces
 {
   public interface IAssetEvent
   {

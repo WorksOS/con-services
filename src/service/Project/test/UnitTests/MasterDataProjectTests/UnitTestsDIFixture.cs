@@ -5,7 +5,6 @@ using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -22,9 +21,6 @@ namespace VSS.MasterData.ProjectTests
   public class UnitTestsDIFixture<T> : IDisposable
   {
     public IServiceProvider ServiceProvider;
-    public string KafkaTopicName;
-
-    protected IErrorCodesProvider ProjectErrorCodesProvider;
     protected IServiceExceptionHandler ServiceExceptionHandler;
     public ILogger Log;
 
@@ -44,13 +40,9 @@ namespace VSS.MasterData.ProjectTests
         .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
         .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
         .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
-        .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
-      KafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       ServiceProvider.GetRequiredService<IConfigurationStore>().GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
-      ProjectErrorCodesProvider = ServiceProvider.GetRequiredService<IErrorCodesProvider>();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();

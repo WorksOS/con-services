@@ -4,7 +4,6 @@ using DotNetCore.CAP;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
@@ -20,20 +19,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
   public class SubscriberService : ISubscriberService, ICapSubscribe
   {
     private readonly IProjectRepository projectRepo;
-    private readonly IKafka producer;
-    private readonly string kafkaTopicName;
     private readonly ILogger log;
     private readonly IServiceExceptionHandler serviceExceptionHandler;
 
-    public SubscriberService(IProjectRepository projectRepo, IKafka producer, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
+    public SubscriberService(IProjectRepository projectRepo, IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler)
     {
       this.serviceExceptionHandler = serviceExceptionHandler;
       this.projectRepo = projectRepo;
-      this.producer = producer;
-
-      kafkaTopicName = (configStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
-                        configStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
-
       log = logger.CreateLogger<SubscriberService>();
     }
 
@@ -60,12 +52,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             log, serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false);
 
-        var messagePayload = JsonConvert.SerializeObject(new {UpdateImportedFileEvent = updateImportedFileEvent});
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>
-          {
-            new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-          });
       }
     }
   }

@@ -1,15 +1,15 @@
 ﻿using System;
+using CCSS.CWS.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -34,13 +34,13 @@ namespace VSS.Productivity3D.Filter.Tests
                        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Productivity3D.Filter.UnitTests.log")))
                        .AddSingleton<IConfigurationStore, GenericConfiguration>()
                        .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
-                       .AddTransient<ICustomerProxy, CustomerProxy>()
+                       .AddTransient<ICwsAccountClient, CwsAccountClient>()
                        .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
                        .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
                        .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
                        .AddTransient<IRepository<IFilterEvent>, FilterRepository>()
                        .AddServiceDiscovery()
-                       .AddTransient<IProjectProxy, ProjectV4Proxy>();
+                       .AddTransient<IProjectProxy, ProjectV6Proxy>();
 
       serviceProvider = serviceCollection.BuildServiceProvider();
 

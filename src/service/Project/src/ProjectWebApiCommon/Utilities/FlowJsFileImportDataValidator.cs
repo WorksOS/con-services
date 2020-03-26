@@ -14,10 +14,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// <summary>
     /// Validate the Create request e.g that the file has been uploaded and parameters are as expected.
     /// </summary>
-    public static void ValidateUpsertImportedFileRequest(FlowFile file, Guid projectUid,
+    public static void ValidateUpsertImportedFileRequest(FlowFile file, string projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, 
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      string importedBy, DateTime? surveyedUtc, Guid? parentUid, double? offset)
+      string importedBy, DateTime? surveyedUtc, string parentUid, double? offset)
     {
       if (file == null)
       {

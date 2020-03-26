@@ -1,5 +1,6 @@
-using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+﻿using System;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
 {
@@ -11,7 +12,8 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public string Description { get; set; }
     public ProjectType ProjectType { get; set; }
 
-    public Guid ProjectUID { get; set; }
+    public string ProjectUID { get; set; }
+    public string CustomerUID { get; set; }
     public string ProjectBoundary { get; set; } // this is an addition later in the game, so optional
 
     public string CoordinateSystemFileName { get; set; }

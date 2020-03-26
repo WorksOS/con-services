@@ -1,102 +1,84 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using TagFileDeviceTypeEnum = VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums.TagFileDeviceTypeEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
   /// <summary>
-  /// The executor which gets a legacyAssetId and/or serviceType for the requested radioSerial and/or legacyProjectId.
+  /// The executor which gets a shortRaptorAssetId and/or serviceType
+  ///     for the requested serialNumber and/or shortRaptorProjectId.
   /// </summary>
   public class AssetIdExecutor : RequestExecutorContainer
   {
-    /// <summary>
-    /// Processes the get asset request and finds the id of the asset corresponding to the given tagfile radio serial number.
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="item"></param>
-    /// <returns>a GetAssetIdResult if successful</returns>      
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as GetAssetIdRequest;
-      long legacyAssetId = -1;
+      if (request == null) return null;
+
+      long shortRaptorAssetId = -1;
       var serviceType = 0;
-      var result = false;
 
-      Project.Abstractions.Models.DatabaseModels.Project project = null;
-      var projectCustomerSubs = new List<Subscriptions>();
-      var assetCustomerSubs = new List<Subscriptions>();
-      var assetSubs = new List<Subscriptions>();
-
-      // legacyProjectId can exist with and without a radioSerial so set this up early
-      if (request.projectId > 0)
+      // for WorksOS, anyone can do a manualImport
+      // I believe that when shortRaptorProjectId is provided , TagFileDeviceTypeEnum will always be ManualImport
+      //     so don't need to lookup shortRaptorAssetId
+      if (request.shortRaptorProjectId > 0)
       {
-        project = await dataRepository.LoadProject(request.projectId);
+        var project = await dataRepository.GetProject(request.shortRaptorProjectId);
         log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded project? {JsonConvert.SerializeObject(project)}");
 
         if (project != null)
         {
-          projectCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(project.CustomerUID, DateTime.UtcNow);
-          log.LogDebug(
-            $"{nameof(AssetIdExecutor)}: Loaded projectsCustomerSubs? {JsonConvert.SerializeObject(projectCustomerSubs)}");
+          // todoMaverick I believe deviceType will always be Manual when shortRaptorProjectId is provided 
+          //  If a projects account (for manual import) has only a free sub, I don't believe the UI should allow it to get here.
+          //  However, if it does, then should we allow manually importing tag files into project where the account has no deviceLicenses? 
+          //   Assuming no here.
+          var projectAccountLicenseTotal = await dataRepository.GetDeviceLicenses(project.CustomerUID);
+          if (request.deviceType == (int) TagFileDeviceTypeEnum.ManualImport || projectAccountLicenseTotal > 0)
+            serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").CGEnum; 
+          else
+            log.LogDebug($"{nameof(AssetIdExecutor)}: Project found, however it's customer has no device licenses: {projectAccountLicenseTotal} or not a manual deviceType: {request.deviceType.ToString()}");
         }
+
+        log.LogDebug($"{nameof(AssetIdExecutor)}: ManualImport return: shortRaptorAssetId {shortRaptorAssetId} serviceType {serviceType}");
+        return GetAssetIdResult.CreateGetAssetIdResult(serviceType == 0, shortRaptorAssetId, serviceType);
+      }
+      
+
+      if (string.IsNullOrEmpty(request.serialNumber))
+      {
+        log.LogDebug($"{nameof(AssetIdExecutor)}: Not a manualImport and no serialNumber, therefore nothing to identify with.");
+        return GetAssetIdResult.CreateGetAssetIdResult(false, shortRaptorAssetId, serviceType);
       }
 
+      // Auto or Direct import i.e. no shortRaptorProjectId
+      // try to identify the device by it's serialNumber in cws. Need to get CustomerUid (cws) and shortRaptorAssetId (localDB)
+      var device = await dataRepository.GetDevice(request.serialNumber);
+      log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
 
-      //Special case: Allow manual import of tag file if user has manual 3D subscription.
-      //ProjectID is -1 for auto processing of tag files and non-zero for manual processing.
-      //Radio serial may not be present in the tag file. The logic below replaces the 'john doe' handling in Raptor for these tag files.
-      if (string.IsNullOrEmpty(request.radioSerial) || request.deviceType == (int) DeviceTypeEnum.MANUALDEVICE)
+      if (device != null)
       {
-        //Check for manual 3D subscription for the projects customer, Only allowed to process tag file if legacyProjectId is > 0.
-        //If ok then set asset Id to -1 so Raptor knows it's a John Doe machine and set serviceType machineLevel to 18 "Manual 3D PM"
-        if (project != null)
+        if (string.Compare(device.Status, "ACTIVE", true) == 0)
         {
-          CheckForManual3DCustomerBasedSub(request.projectId, projectCustomerSubs, out legacyAssetId, out serviceType);
-        }
-      }
-      else
-      {
-        //Radio serial in tag file. Use it to map to asset in VL.
-        var assetDevice =
-          await dataRepository.LoadAssetDevice(request.radioSerial, ((DeviceTypeEnum) request.deviceType).ToString());
-
-        // special case in CGen US36833 If fails on DT SNM940 try as again SNM941 
-        if (assetDevice == null && (DeviceTypeEnum) request.deviceType == DeviceTypeEnum.SNM940)
-        {
-          log.LogDebug($"{nameof(AssetIdExecutor)}: Failed for SNM940. Trying again as Device Type SNM941");
-          assetDevice = await dataRepository.LoadAssetDevice(request.radioSerial, DeviceTypeEnum.SNM941.ToString());
-        }
-
-        log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetDevice? {JsonConvert.SerializeObject(assetDevice)}");
-
-        if (assetDevice != null)
-        {
-          legacyAssetId = assetDevice.LegacyAssetID;
-          assetSubs = await dataRepository.LoadAssetSubs(assetDevice.AssetUID, DateTime.UtcNow);
-          log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetSubs? {JsonConvert.SerializeObject(assetSubs)}");
-
-          // should this append to any assetCustomerSubs which may have come from Project.CustomerUID above?
-          assetCustomerSubs = await dataRepository.LoadManual3DCustomerBasedSubs(assetDevice.OwningCustomerUID, DateTime.UtcNow);
-          log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded assetsCustomerSubs? {JsonConvert.SerializeObject(assetCustomerSubs)}");
-
-          serviceType = GetMostSignificantServiceType(assetDevice.AssetUID, project, projectCustomerSubs, assetCustomerSubs, assetSubs);
+          shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
+          // todoMaverick If a devices account has only a free sub, then should we import tag files into it?
+          int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
+          if (deviceLicenseTotal > 0)
+            serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").CGEnum;
+          else
+            log.LogDebug($"{nameof(AssetIdExecutor)}: Device found, however it's customer has no device licenses: {deviceLicenseTotal}");
         }
         else
-        {
-          CheckForManual3DCustomerBasedSub(request.projectId, projectCustomerSubs, out legacyAssetId, out serviceType);
-        }
+          log.LogDebug($"{nameof(AssetIdExecutor)}: Device found, however status is not active");
       }
 
-      result = !((legacyAssetId == -1) && (serviceType == 0));
-      return GetAssetIdResult.CreateGetAssetIdResult(result, legacyAssetId, serviceType);
+      log.LogDebug($"{nameof(AssetIdExecutor)}: Auto/Direct Import return: shortRaptorAssetId {shortRaptorAssetId} serviceType {serviceType}");
+      var result = !((shortRaptorAssetId == -1) && (serviceType == 0));
+      return GetAssetIdResult.CreateGetAssetIdResult(result, shortRaptorAssetId, serviceType);
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
@@ -104,87 +86,5 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       throw new NotImplementedException();
     }
 
-
-    private void CheckForManual3DCustomerBasedSub(long legacyProjectId,
-      List<Subscriptions> projectCustomerSubs,
-      out long legacyAssetId, out int serviceType)
-    {
-      // these are CustomerBased and no legacyAssetID will be returned
-      legacyAssetId = -1;
-      serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").CGEnum;
-      log.LogDebug(
-        $"{nameof(CheckForManual3DCustomerBasedSub)}: legacyProjectId {legacyProjectId} serviceType {serviceType}");
-
-      if (legacyProjectId > 0)
-      {
-        if (projectCustomerSubs != null && projectCustomerSubs.Any())
-        {
-          legacyAssetId = -1; //Raptor needs to know it's a John Doe machine i.e. not a VL asset
-          serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Manual 3D Project Monitoring").CGEnum;
-        }
-      }
-
-      log.LogDebug(
-        $"{nameof(CheckForManual3DCustomerBasedSub)}: CheckForManual3DCustomerBasedSub(). legacyAssetId {legacyAssetId} serviceType {serviceType}");
-    }
-
-    private int GetMostSignificantServiceType(string assetUid,
-      Project.Abstractions.Models.DatabaseModels.Project project,
-      List<Subscriptions> projectCustomerSubs, List<Subscriptions> assetCustomerSubs,
-      List<Subscriptions> assetSubs)
-    {
-      log.LogDebug($"{nameof(GetMostSignificantServiceType)}: asset UID {assetUid}");
-
-      var serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "Unknown").NGEnum;
-
-      var subs = new List<Subscriptions>();
-      if (projectCustomerSubs != null && projectCustomerSubs.Any()) subs.AddRange(projectCustomerSubs.Select(s => s));
-      if (assetCustomerSubs != null && assetCustomerSubs.Any()) subs.AddRange(assetCustomerSubs.Select(s => s));
-      if (assetSubs != null && assetSubs.Any()) subs.AddRange(assetSubs.Select(s => s));
-
-      log.LogDebug($"{nameof(GetMostSignificantServiceType)}: subs being checked {JsonConvert.SerializeObject(subs)}");
-
-      if (subs.Any())
-      {
-        //Look for highest level machine subscription which is current
-        foreach (var sub in subs)
-        {
-          // Manual3d is least significant
-          if (sub.serviceTypeId == (int) ServiceTypeEnum.Manual3DProjectMonitoring)
-          {
-            if (serviceType != (int) ServiceTypeEnum.ThreeDProjectMonitoring)
-            {
-              log.LogDebug(
-                $"{nameof(GetMostSignificantServiceType)}: found ServiceTypeEnum.Manual3DProjectMonitoring for asset UID {assetUid}");
-              serviceType = (int) ServiceTypeEnum.Manual3DProjectMonitoring;
-            }
-          }
-
-          // 3D PM is most significant
-          // if 3D asset-based, the assets customer must be the same as the Projects customer 
-          if (sub.serviceTypeId == (int) ServiceTypeEnum.ThreeDProjectMonitoring)
-          {
-            if (serviceType != (int) ServiceTypeEnum.ThreeDProjectMonitoring)
-            {
-              //Allow manual tag file import for customer who has the 3D subscription for the asset
-              //and allow automatic tag file processing in all cases (can't tell customer for automatic)
-              log.LogDebug(
-                $"{nameof(GetMostSignificantServiceType)}: found ServiceTypeEnum.e3DProjectMonitoring for asset {assetUid} sub.customerUid {sub.customerUid}");
-              if (project == null || sub.customerUid == project.CustomerUID)
-              {
-                serviceType = (int) ServiceTypeEnum.ThreeDProjectMonitoring;
-                break;
-              }
-            }
-          }
-        }
-      }
-
-      var cGenServiceTypeId = serviceTypeMappings.serviceTypes.Find(st => st.NGEnum == serviceType).CGEnum;
-      log.LogDebug(
-        $"{nameof(GetMostSignificantServiceType)}: for asset {assetUid} , returning serviceTypeNG {serviceType} actually serviceTypeCG (i.e Raptor) {cGenServiceTypeId}");
-
-      return cGenServiceTypeId;
-    }
   }
 }

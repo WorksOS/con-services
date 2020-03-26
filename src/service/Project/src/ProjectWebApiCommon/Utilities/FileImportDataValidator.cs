@@ -20,10 +20,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// <summary>
     /// Validate the Create request e.g that the file has been uploaded and parameters are as expected.
     /// </summary>
-    public static void ValidateUpsertImportedFileRequest(Guid projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, 
-      DateTime fileUpdatedUtc, string importedBy, DateTime? surveyedUtc, string filename, Guid? parentUid, double? offset)
+    public static void ValidateUpsertImportedFileRequest(string projectUid, ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, DateTime fileCreatedUtc, 
+      DateTime fileUpdatedUtc, string importedBy, DateTime? surveyedUtc, string filename, string parentUid, double? offset)
     {
-      if (projectUid == Guid.Empty)
+      if (string.IsNullOrEmpty(projectUid))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(5),
@@ -103,7 +103,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             ProjectErrorCodesProvider.FirstNameWithOffset(36)));
       }
 
-      if (importedFileType == ImportedFileType.ReferenceSurface && (parentUid == null || offset == null || offset.Value == 0))
+      if (importedFileType == ImportedFileType.ReferenceSurface && (string.IsNullOrEmpty(parentUid) || offset == null || offset.Value == 0))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(118),

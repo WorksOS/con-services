@@ -37,6 +37,8 @@ data:
   unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-unifiedproductivity/1.0
   productivity3d_service_public_v1: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0
   productivity3d_service_public_v2: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0
+  cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
+  cws_devicemanager_public_v2: https://api-stg.trimble.com/t/trimble.com/cws-devicemanager-stg/2.0
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2
 #Misc stuff
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"

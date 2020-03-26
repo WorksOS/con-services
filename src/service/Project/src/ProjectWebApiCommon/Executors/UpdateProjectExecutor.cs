@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -31,17 +31,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       var existing = await projectRepo.GetProject(updateProjectEvent.ProjectUID.ToString());
       if (existing == null)
-      {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
-      }
 
       ProjectRequestHelper.ValidateProjectBoundary(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
 
-      // if updating  type from Standard to Landfill, or creating Landfill, then must have a CoordSystem
-      ProjectRequestHelper.ValidateCoordSystemFile(existing, updateProjectEvent, serviceExceptionHandler);
-
       await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
+      // todoMaverick theres a bug if endDate is extended, it needs to re-check overlap
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.GeometryWKT,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
@@ -51,16 +47,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       if (existing != null && existing.ProjectType != updateProjectEvent.ProjectType)
-      {
-        if (existing.ProjectType != ProjectType.Standard || updateProjectEvent.ProjectType == ProjectType.Standard)
-        {
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 85);
-        }
-
-        await ProjectDataValidator.ValidateFreeSub(customerUid, updateProjectEvent.ProjectType, log, serviceExceptionHandler, subscriptionRepo);
-      }
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7); // todoMaverick only 1 projectType now
 
       log.LogDebug($"UpdateProject: passed validation {updateProjectEvent.ProjectUID}");
+
+      // create/update in Cws
+      try
+      {
+        var projectTRN = await UpdateCwsAsync(existing, updateProjectEvent);
+        if (!string.IsNullOrEmpty(projectTRN)) // no error, may have been a create project
+          updateProjectEvent.ProjectUID = projectTRN;
+        // todoMaverick what kind of errors?
+      }
+      catch (Exception e)
+      {
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62, "worksManager.UpdateProject", e.Message);
+      }
 
       /*** now making changes, potentially needing rollback ***/
       //  order changes to minimise rollback
@@ -71,24 +73,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // don't bother rolling this back
         await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID,
-          existing.LegacyProjectID,
+          existing.ShortRaptorProjectId,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
           projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
         log.LogDebug("UpdateProject: CreateCoordSystemInProductivity3dAndTcc succeeded");
-      }
-
-      if (existing != null && existing.ProjectType == ProjectType.Standard &&
-          (updateProjectEvent.ProjectType == ProjectType.LandFill ||
-           updateProjectEvent.ProjectType == ProjectType.ProjectMonitoring))
-      {
-        subscriptionUidAssigned = await ProjectRequestHelper.AssociateProjectSubscriptionInSubscriptionService(
-            updateProjectEvent.ProjectUID.ToString(), updateProjectEvent.ProjectType, customerUid,
-            log, serviceExceptionHandler, customHeaders, subscriptionProxy, subscriptionRepo, projectRepo, false)
-          .ConfigureAwait(false);
-      }
-
-      log.LogDebug($"UpdateProject: subscriptionUidAssigned? {subscriptionUidAssigned}. ExistingProjectType: {existing.ProjectType} updatedProjectType: {updateProjectEvent.ProjectType}");
+      }         
 
       var isUpdated = 0;
       try
@@ -106,37 +96,59 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       log.LogDebug("UpdateProject: Project updated successfully");
-
-
-      // doing this as late as possible in case something fails. We can't cleanup kafka que.
-      CreateKafkaEvents(updateProjectEvent);
-
-      log.LogDebug("UpdateProjectV4. completed succesfully");
       return new ContractExecutionResult();
     }
 
-    /// <summary>
-    /// Creates Kafka events.
-    /// </summary>
-    /// <param name="updateProjectEvent"></param>
-    /// <returns></returns>
-    protected void CreateKafkaEvents(UpdateProjectEvent updateProjectEvent)
+    // todoMaverick if actually creating, then need to write to WM first to obtain the ProjectUid for our DB 
+    private async Task<string> UpdateCwsAsync(ProjectDatabaseModel existing, UpdateProjectEvent updateProjectEvent)
     {
-      var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
+      if (existing == null)
+      {
+        try
         {
-          new KeyValuePair<string, string>(updateProjectEvent.ProjectUID.ToString(), messagePayload)
-        });
-    }
+          // todo convert from ours to WM Project TimeZone?
+          var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(updateProjectEvent);
+          createProjectRequestModel.accountId = customerUid;
+          createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
 
+          var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+          if (response != null)
+          {
+            updateProjectEvent.ProjectUID = response.Id;
+            return response.Id;
+            // todoMaverick what about exception/other error
+          }
+        }
+        catch (Exception e)
+        {
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 62, "worksManager.CreateProject", e.Message);
+        }
+      }
+      else
+      {
+        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0)
+        {
+          // todoMaverick how to update endDate and Description?
+          var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
+          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel);
+          // todoMaverick what are errors?
+        }
+        if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.GeometryWKT,
+            updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
+        {
+          // todoMaverick how to update timezone
+          var boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
+          await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
+          // todoMaverick what are errors?
+        }
+      }
+      return null;
+    }
 
     private async Task RollbackAndThrow(UpdateProjectEvent updateProjectEvent, HttpStatusCode httpStatusCode, int errorCode, string exceptionMessage, ProjectDatabaseModel existing = null)
     {
       log.LogDebug($"Rolling back the Project Update for updateProjectEvent: {updateProjectEvent.ProjectUID.ToString()} subscriptionUidAssigned: {subscriptionUidAssigned}");
-
-      await ProjectRequestHelper.DissociateProjectSubscription(updateProjectEvent.ProjectUID, subscriptionUidAssigned, log, customHeaders, subscriptionProxy).ConfigureAwait(false);
-
+      
       if (existing != null)
       {
         // rollback changes to Project

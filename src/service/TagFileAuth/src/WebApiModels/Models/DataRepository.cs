@@ -4,75 +4,80 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
-using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
-  ///   Represents abstract container for all request executors. Uses abstract factory pattern to separate executor logic
-  ///   from
+  /// Represents abstract container for all request executors.
+  /// Uses abstract factory pattern to separate executor logic from
   ///   controller logic for testability and possible executor versioning.
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    /// <summary>
-    /// Logger used in ProcessEx
-    /// </summary>
-    public ILogger Log;
-
+    private ILogger _log;
     private IConfigurationStore _configStore;
 
-    /// <summary>
-    /// Repository factory used in ProcessEx
-    /// </summary>
-    private readonly IAssetRepository _assetRepository;
-    private readonly IDeviceRepository _deviceRepository;
-    private readonly ICustomerRepository _customerRepository;
-    private readonly IProjectRepository _projectRepository;
-    private readonly ISubscriptionRepository _subscriptionsRepository;
+    // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
+    private readonly ICwsAccountClient _cwsAccountClient;
 
-    private IKafka Producer;
-    private string KafkaTopicName;
+    // We need to use ProjectSvc IProjectProxy as thats where the project data is
+    private readonly IProjectProxy _projectProxy;
 
+    // We need to use ProjectSvc IDeviceProxy 
+    //    as when we get devices from IDeviceClient, 
+    //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
+    private readonly IDeviceProxy _deviceProxy;
 
-    /// <summary>
-    /// allows mapping between CG (which Raptor requires) and NG
-    /// </summary>
-    public ServiceTypeMappings ServiceTypeMappings = new ServiceTypeMappings();
-
-    public DataRepository(ILogger logger, IConfigurationStore configStore, IAssetRepository assetRepository, IDeviceRepository deviceRepository,
-      ICustomerRepository customerRepository, IProjectRepository projectRepository,
-      ISubscriptionRepository subscriptionsRepository,
-      IKafka producer, string kafkaTopicName)
+    public DataRepository(ILogger logger, IConfigurationStore configStore,
+      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
     {
-      Log = logger;
+      _log = logger;
       _configStore = configStore;
-      _assetRepository = assetRepository;
-      _deviceRepository = deviceRepository;
-      _customerRepository = customerRepository;
-      _projectRepository = projectRepository;
-      _subscriptionsRepository = subscriptionsRepository;
-      Producer = producer;
-      KafkaTopicName = kafkaTopicName;
+      _cwsAccountClient = cwsAccountClient; 
+      _projectProxy = projectProxy;
+      _deviceProxy = deviceProxy;
     }
 
-    public async Task<ProjectDataModel> LoadProject(long legacyProjectId)
+    #region account
+
+    public async Task<int> GetDeviceLicenses(string customerUid)
     {
-      ProjectDataModel project = null;
+      DeviceLicenseResponseModel deviceLicenseResponseModel = null;
       try
       {
-        if (legacyProjectId > 0)
-          project = await _projectRepository.GetProject(legacyProjectId);
+        if (!string.IsNullOrEmpty(customerUid))
+          deviceLicenseResponseModel = await _cwsAccountClient.GetDeviceLicenses(customerUid);
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+      }
+
+      return deviceLicenseResponseModel?.Total ?? 0;
+    }
+
+    #endregion account
+
+
+    #region project
+
+    public async Task<ProjectData> GetProject(long shortRaptorProjectId)
+    {
+      ProjectData project = null;
+      try
+      {
+        if (shortRaptorProjectId > 0)
+          project = await _projectProxy.GetProjectApplicationContext(shortRaptorProjectId);
       }
       catch (Exception e)
       {
@@ -84,13 +89,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<ProjectDataModel> LoadProject(string projectUid)
+    public async Task<ProjectData> GetProject(string projectUid)
     {
-      ProjectDataModel project = null;
+      ProjectData project = null;
       try
       {
         if (!string.IsNullOrEmpty(projectUid))
-          project = await _projectRepository.GetProject(projectUid);
+          project = await _projectProxy.GetProjectApplicationContext(projectUid);
       }
       catch (Exception e)
       {
@@ -102,19 +107,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return project;
     }
 
-    public async Task<List<ProjectDataModel>> LoadProjects(string customerUid, DateTime validAtDate)
+    public async Task<List<ProjectData>> GetProjects(string customerUid, DateTime validAtDate)
     {
-      var projects = new List<ProjectDataModel>();
+      var projects = new List<ProjectData>();
       try
       {
-        if (customerUid != null)
+        if (!string.IsNullOrEmpty(customerUid))
         {
-          var p = await _projectRepository.GetProjectsForCustomer(customerUid);
+          var p = await _projectProxy.GetProjects(customerUid);
 
           if (p != null)
           {
             projects = p
-              .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsDeleted)
+              .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsArchived)
               .ToList();
           }
         }
@@ -129,212 +134,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       return projects;
     }
 
-    public async Task<List<ProjectDataModel>> GetStandardProject(string customerUid, double latitude,
-      double longitude, DateTime timeOfPosition)
+    public async Task<List<ProjectData>> GetProjectsAssociatedWithDevice(string customerUid, string deviceUid, DateTime validAtDate)
     {
-      var projects = new List<ProjectDataModel>();
-
-      try
-      {
-        if (customerUid != null)
-        {
-          var p = (await _projectRepository.GetStandardProject(customerUid, latitude, longitude, timeOfPosition));
-          if (p != null)
-            projects = p.ToList();
-        }
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return projects;
-    }
-
-    public async Task<List<ProjectDataModel>> GetProjectMonitoringProject(string customerUid, double latitude,
-      double longitude, DateTime timeOfPosition,
-      int projectType, int serviceType)
-    {
-      var projects = new List<ProjectDataModel>();
-      try
-      {
-        if (customerUid != null)
-        {
-          var p = await _projectRepository.GetProjectMonitoringProject(customerUid,
-            latitude, longitude, timeOfPosition,
-            projectType,
-            serviceType);
-
-          if (p != null)
-            projects = p.ToList();
-        }
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return projects;
-    }
-
-    public async Task<List<ProjectDataModel>> GetIntersectingProjects(string customerUid,
-      double latitude, double longitude, int[] projectTypes, DateTime? timeOfPosition = null)
-    {
-      var projects = new List<ProjectDataModel>();
-      try
-      {
-        if (customerUid != null)
-        {
-          var p = await _projectRepository.GetIntersectingProjects(customerUid, latitude, longitude, projectTypes,
-              timeOfPosition);
-          if (p != null)
-            projects = p.ToList();
-        }
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return projects;
-    }
-
-    public async Task<AssetDeviceIds> LoadAssetDevice(string radioSerial, string deviceType)
-    {
-      AssetDeviceIds assetDevice = null;
-      try
-      {
-        if (!string.IsNullOrEmpty(radioSerial) && !string.IsNullOrEmpty(deviceType))
-          assetDevice = await _deviceRepository.GetAssociatedAsset(radioSerial, deviceType);
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return assetDevice;
-    }
-
-    public async Task<Customer> LoadCustomer(string customerUid)
-    {
-      // TFA is only interested in customer and dealer types
-      Customer customer = null;
+      var projects = new List<ProjectData>();
       try
       {
         if (!string.IsNullOrEmpty(customerUid))
         {
-          var a = await _customerRepository.GetCustomer(new Guid(customerUid));
-          if (a != null &&
-              (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
-               a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
-          )
-            customer = a;
-        }
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return customer;
-    }
-
-    public async Task<CustomerTccOrg> LoadCustomerByTccOrgId(string tccOrgUid)
-    {
-      // TFA is only interested in customer and dealer types
-      CustomerTccOrg customer = null;
-      try
-      {
-        if (!string.IsNullOrEmpty(tccOrgUid))
-        {
-          var customerTccOrg = await _customerRepository.GetCustomerWithTccOrg(tccOrgUid);
-          if (customerTccOrg != null &&
-              (customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
-               customerTccOrg.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
-          )
-            customer = customerTccOrg;
-        }
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return customer;
-    }
-
-    public async Task<CustomerTccOrg> LoadCustomerByCustomerUIDAsync(string customerUid)
-    {
-      // TFA is only interested in customer and dealer types
-      CustomerTccOrg customer = null;
-      try
-      {
-        if (customerUid != null)
-        {
-          var a = await _customerRepository.GetCustomerWithTccOrg(new Guid(customerUid));
-          if (a != null &&
-              (a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Customer ||
-               a.CustomerType == VisionLink.Interfaces.Events.MasterData.Models.CustomerType.Dealer)
-          )
-            customer = a;
-        }
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return customer;
-    }
-
-    public async Task<Asset> LoadAsset(long legacyAssetId)
-    {
-      Asset asset = null;
-      try
-      {
-        if (legacyAssetId > 0)
-          asset = await _assetRepository.GetAsset(legacyAssetId);
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
-      }
-
-      return asset;
-    }
-
-    // customer Man3Dpm(18-15)
-    // this may be from the Projects CustomerUID OR the Assets OwningCustomerUID
-    public async Task<List<Subscriptions>> LoadManual3DCustomerBasedSubs(string customerUid,
-      DateTime validAtDate)
-    {
-      var subs = new List<Subscriptions>();
-      try
-      {
-        if (!string.IsNullOrEmpty(customerUid))
-        {
-          var s = await _subscriptionsRepository.GetProjectBasedSubscriptionsByCustomer(customerUid, validAtDate);
-          if (s != null)
+          var p = await _deviceProxy.GetProjectsForDevice(deviceUid);
+          if (p != null)
           {
-            subs = s
-              .Where(x => x.ServiceTypeID == (int)ServiceTypeEnum.Manual3DProjectMonitoring)
-              .Select(x => new Subscriptions("", "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate))
+            projects = p
+              .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) &&
+              x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsArchived)
               .ToList();
           }
         }
@@ -346,27 +158,78 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
             ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
       }
 
-      return subs;
+      return projects;
     }
 
-    // asset:3dProjMon (16 --> 13) 
-    public async Task<List<Subscriptions>> LoadAssetSubs(string assetUid, DateTime validAtDate)
+    // manual import, no time, optional device
+    public async Task<List<ProjectData>> CheckManualProjectIntersection(ProjectData project, double latitude, double longitude,
+      DeviceData device = null)
     {
-      var subs = new List<Subscriptions>();
+      var accountProjects = new List<ProjectData>();
+      
       try
       {
-        if (!string.IsNullOrEmpty(assetUid))
+        if (project != null && !string.IsNullOrEmpty(project.ProjectUID))
+          accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(project.CustomerUID, latitude, longitude, project.ProjectUID));
+
+        if (accountProjects == null || !accountProjects.Any())
+          return accountProjects;
+
+        if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
         {
-          var s = await _subscriptionsRepository.GetSubscriptionsByAsset(assetUid, validAtDate.Date);
-          if (s != null)
-          {
-            subs = s
-              .Where(x => x.ServiceTypeID == (int)ServiceTypeEnum.ThreeDProjectMonitoring)
-              .Select(x => new Subscriptions(assetUid, "", x.CustomerUID, x.ServiceTypeID, x.StartDate, x.EndDate))
-              .Distinct()
-              .ToList();
-          }
+          var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
+          if (projectsAssociatedWithDevice.Any())
+            return projectsAssociatedWithDevice.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
         }
+
+        return accountProjects;
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+      }
+    }
+
+    public async Task<List<ProjectData>> CheckDeviceProjectIntersection(DeviceData device,
+      double latitude, double longitude, DateTime timeOfPosition)
+    {
+      var accountProjects = new List<ProjectData>();
+
+      try
+      {
+        if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
+          accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
+
+        if (!accountProjects.Any())
+          return accountProjects;
+
+        var projectsAssociatedWithProjects = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
+        return projectsAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+      }
+    }
+
+    #endregion project
+
+
+    #region device
+
+    // Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
+    // and shortRaptorAssetId(localDB)
+    public async Task<DeviceData> GetDevice(string serialNumber)
+    {
+      DeviceData device = null;
+      try
+      {
+        if (!string.IsNullOrEmpty(serialNumber))
+          device = await _deviceProxy.GetDevice(serialNumber);
       }
       catch (Exception e)
       {
@@ -375,8 +238,29 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
             ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
       }
 
-      return subs;
+      return device;
     }
+
+    public async Task<DeviceData> GetDevice(int shortRaptorAssetId)
+    {
+      DeviceData device = null;
+      try
+      {
+        if (shortRaptorAssetId > 0)
+          device = await _deviceProxy.GetDevice(shortRaptorAssetId);
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+      }
+
+      return device;
+    }
+
+    #endregion device
+
 
     public TWGS84Point[] ParseBoundaryData(string s)
     {
@@ -399,6 +283,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         var fencePoints = points.ToArray();
         return fencePoints;
       }
+
       return new TWGS84Point[0];
     }
   }

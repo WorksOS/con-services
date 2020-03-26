@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,14 +10,11 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Productivity3D.Project.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
@@ -44,39 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(2),
             projectErrorCodesProvider.FirstNameWithOffset(2)));
     }
-
-    /// <summary>
-    /// Validate list of geofenceTypes
-    /// </summary>
-    /// <param name="geofenceTypes">FileName</param>
-    /// <param name="projectType"></param>
-    public static bool ValidateGeofenceTypes(List<GeofenceType> geofenceTypes, ProjectType? projectType = null)
-    {
-      if (geofenceTypes == null || geofenceTypes.Count == 0 )
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(73),
-            projectErrorCodesProvider.FirstNameWithOffset(73)));
-      }
-
-      if (geofenceTypes.Count != 1 || geofenceTypes[0] != GeofenceType.Landfill)
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(102),
-            projectErrorCodesProvider.FirstNameWithOffset(102)));
-      }
-
-      // future-proofing here, geofence types will be dependant on projectType
-      if (projectType != null && projectType != ProjectType.LandFill )
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(102),
-            projectErrorCodesProvider.FirstNameWithOffset(102)));
-      }
-
-      return true;
-    }
-
+    
     /// <summary>
     /// Validate the coordinateSystem filename
     /// </summary>
@@ -134,7 +97,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(4),
             projectErrorCodesProvider.FirstNameWithOffset(4)));
       }
-      if (evt.ProjectUID == Guid.Empty)
+      if (string.IsNullOrEmpty(evt.ProjectUID))
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(5),
@@ -264,68 +227,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         }
         //Nothing else to check for DeleteProjectEvent
       }
-      else if (evt is AssociateProjectCustomer)
-      {
-        var associateEvent = evt as AssociateProjectCustomer;
-        if (associateEvent.CustomerUID == Guid.Empty)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(19),
-              projectErrorCodesProvider.FirstNameWithOffset(19)));
-        }
-        if (projectRepo.CustomerProjectExists(evt.ProjectUID.ToString()).Result)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(20),
-              projectErrorCodesProvider.FirstNameWithOffset(20)));
-        }
-      }
-      else if (evt is DissociateProjectCustomer)
-      {
-        throw new ServiceException(HttpStatusCode.NotImplemented,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(21),
-            projectErrorCodesProvider.FirstNameWithOffset(21)));
-      }
-      else if (evt is AssociateProjectGeofence)
-      {
-        var associateEvent = evt as AssociateProjectGeofence;
-        if (associateEvent.GeofenceUID == Guid.Empty)
-        {
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(22),
-              projectErrorCodesProvider.FirstNameWithOffset(22)));
-        }
-      }
     }
-
-
-    /// <summary>
-    /// Seee if any free subs for a project type
-    /// </summary>
-    /// <param name="customerUid">The customer uid.</param>
-    /// <param name="projectType"></param>
-    /// <param name="log"></param>
-    /// <param name="serviceExceptionHandler"></param>
-    /// <param name="subscriptionRepo"></param>
-    /// <returns></returns>
-    public static async Task ValidateFreeSub(string customerUid, ProjectType projectType,
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler,
-      ISubscriptionRepository subscriptionRepo)
-    {
-      if (projectType == ProjectType.LandFill || projectType == ProjectType.ProjectMonitoring)
-      {
-        var availableFreeSub =
-          (await subscriptionRepo.GetFreeProjectSubscriptionsByCustomer(customerUid, DateTime.UtcNow.Date)
-            .ConfigureAwait(false))
-          .Where(s => s.ServiceTypeID == (int)projectType.MatchSubscriptionType()).ToImmutableList();
-
-        if (!availableFreeSub.Any())
-        {
-          log.LogInformation($"There are no free subscriptions for project type {projectType}");
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 37);
-        }
-      }
-    }
+    
 
     /// <summary>
     /// Validates a projectname. Must be unique amoungst active projects for the Customer.
@@ -345,7 +248,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       var duplicateProjectNames =
         (await projectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false))
         .Where(
-          p => p.IsDeleted == false &&
+          p => p.IsArchived == false &&
                 string.Equals(p.Name, projectName, StringComparison.OrdinalIgnoreCase) &&
                !string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase))
         .ToList();

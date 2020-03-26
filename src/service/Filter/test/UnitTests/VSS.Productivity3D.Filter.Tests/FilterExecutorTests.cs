@@ -9,11 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -80,7 +78,7 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = filterUid }
       );
 
@@ -133,7 +131,7 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         requestingUserUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = filterUid }
       );
       var executor =
@@ -187,7 +185,7 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        new ProjectData { ProjectUid = projectUid });
+        new ProjectData { ProjectUID = projectUid });
 
       var executor =
         RequestExecutorContainer.Build<GetFiltersExecutor>(configStore, logger, serviceExceptionHandler,
@@ -218,10 +216,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var projectProxy = new Mock<IProjectProxy>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
-
-      var producer = new Mock<IKafka>();
-      string kafkaTopicName = "whatever";
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filters = new List<MasterData.Repositories.DBModels.Filter>
@@ -250,12 +245,12 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           userUid,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType }
         );
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object, projectProxy.Object,
-        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       Assert.Contains("2016", ex.GetContent);
@@ -276,10 +271,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
-
-      var producer = new Mock<IKafka>();
-      string kafkaTopicName = "whatever";
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filters = new List<MasterData.Repositories.DBModels.Filter>
@@ -320,13 +312,13 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           userUid,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           new FilterRequest { Name = string.Empty, FilterJson = filterJson, FilterType = FilterType.Transient }
         );
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
-        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.NotNull(result);
@@ -359,10 +351,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
-
-      var producer = new Mock<IKafka>();
-      string kafkaTopicName = "whatever";
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filter = new MasterData.Repositories.DBModels.Filter
@@ -404,12 +393,12 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           userUid,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
-        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.NotNull(result);
@@ -451,7 +440,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var fileImportProxy = new Mock<IFileImportProxy>();
       fileImportProxy.Setup(x => x.GetFiles(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync
@@ -459,9 +448,6 @@ namespace VSS.Productivity3D.Filter.Tests
       {
         new FileData { CustomerUid = custUid, ProjectUid = projectUid, Name = designName, ImportedFileUid = designUid }
       });
-
-      var producer = new Mock<IKafka>();
-      var kafkaTopicName = "whatever";
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filter = new MasterData.Repositories.DBModels.Filter
@@ -527,7 +513,7 @@ namespace VSS.Productivity3D.Filter.Tests
           custUid,
           false,
           userUid,
-          new ProjectData { ProjectUid = projectUid },
+          new ProjectData { ProjectUID = projectUid },
           new FilterRequest
           {
             Name = name, 
@@ -544,7 +530,6 @@ namespace VSS.Productivity3D.Filter.Tests
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
         productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, 
-        producer: producer.Object, kafkaTopicName: kafkaTopicName,
         fileImportProxy:fileImportProxy.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -577,10 +562,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var projectProxy = new Mock<IProjectProxy>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
-
-      var producer = new Mock<IKafka>();
-      string kafkaTopicName = "whatever";
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filters = new List<MasterData.Repositories.DBModels.Filter>
@@ -601,10 +583,10 @@ namespace VSS.Productivity3D.Filter.Tests
       filterRepo.As<IFilterRepository>().Setup(ps => ps.StoreEvent(It.IsAny<DeleteFilterEvent>())).ReturnsAsync(1);
 
       var request =
-        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
+        FilterRequestFull.Create(null, custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, null, projectProxy.Object,
-        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, producer: producer.Object, kafkaTopicName: kafkaTopicName);
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object);
       var result = await executor.ProcessAsync(request);
 
       Assert.NotNull(result);

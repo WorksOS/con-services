@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories;
@@ -29,8 +28,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy,
-      RepositoryBase repository, IKafka producer, string kafkaTopicName, RepositoryBase auxRepository)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, producer, kafkaTopicName, auxRepository, null, null)
+      RepositoryBase repository, RepositoryBase auxRepository)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, fileImportProxy, repository, auxRepository, null, null)
     { }
 
     /// <summary>
@@ -108,23 +107,6 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       if (deletedCount == 0)
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 12);
-      }
-
-      try
-      {
-        if (request.SendKafkaMessages && deleteEvent != null)
-        {
-          producer.Send(kafkaTopicName,
-            new List<KeyValuePair<string, string>>
-            {
-              new KeyValuePair<string, string>(deleteEvent.GeofenceUID.ToString(),
-              JsonConvert.SerializeObject(new { DeleteGeofenceEvent = deleteEvent }))
-            });
-        }
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 14, e.Message);
       }
 
       //NOTE: A gap at the moment is that we don't support deleting an association between project and boundary (geofence).
