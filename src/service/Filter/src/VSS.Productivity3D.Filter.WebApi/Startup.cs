@@ -68,9 +68,15 @@ namespace VSS.Productivity3D.Filter.WebApi
     {
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
+
+      // the code in these repos is used by FilterSvc to refer to tables contained in the local Filter database (not the ProjectSvc one).
+      //    e.g. when a filter with boundary is created, ths service calls projectRepo.Store(associateProjectGeofence),
+      //         which stores it in the local VSS.Filter.ProejctGeofence table.
+      //         then it will query the local db e.g. projectRepo.GetAssociatedGeofences refers to the VSS.Filter.ProejctGeofence table which it previouse
       services.AddTransient<IRepository<IFilterEvent>, FilterRepository>();
       services.AddTransient<IRepository<IGeofenceEvent>, GeofenceRepository>();
       services.AddTransient<IRepository<IProjectEvent>, ProjectRepository>();
+
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>();

@@ -34,7 +34,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       Log = logger.CreateLogger<ProjectRepository>();
       if (!bool.TryParse(configurationStore.GetValueString("ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED"),
-        out _isProjectTypeGeofenceRequired))
+          out _isProjectTypeGeofenceRequired))
       {
         _isProjectTypeGeofenceRequired = false;
       }
@@ -123,29 +123,7 @@ namespace VSS.Productivity3D.Project.Repository
         };
         upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent", projectEvent.DeletePermanently);
       }
-
-      else if (evt is AssociateProjectGeofence)
-      {
-        var projectEvent = (AssociateProjectGeofence)evt;
-        var projectGeofence = new ProjectGeofence
-        {
-          ProjectUID = projectEvent.ProjectUID.ToString(),
-          GeofenceUID = projectEvent.GeofenceUID.ToString(),
-          LastActionedUTC = projectEvent.ActionUTC
-        };
-        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
-      }
-      else if (evt is DissociateProjectGeofence)
-      {
-        var projectEvent = (DissociateProjectGeofence)evt;
-        var projectGeofence = new ProjectGeofence
-        {
-          ProjectUID = projectEvent.ProjectUID.ToString(),
-          GeofenceUID = projectEvent.GeofenceUID.ToString(),
-          LastActionedUTC = projectEvent.ActionUTC
-        };
-        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "DissociateProjectGeofenceEvent");
-      }
+       
       
       else if (evt is CreateImportedFileEvent)
       {
@@ -214,6 +192,7 @@ namespace VSS.Productivity3D.Project.Repository
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UndeleteImportedFileEvent");
       }
+
       else if (evt is UpdateProjectSettingsEvent projectEvent)
       {
         var projectSettings = new ProjectSettings
@@ -225,6 +204,30 @@ namespace VSS.Productivity3D.Project.Repository
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertProjectSettings(projectSettings);
+      }
+
+      // this geofence code is used by FilterSvc and refer to tables solely in the FilterSvc database (not the ProjectSvc one).
+      else if (evt is AssociateProjectGeofence)
+      {
+        var projectGeofenceEvent = (AssociateProjectGeofence)evt;
+        var projectGeofence = new ProjectGeofence
+        {
+          ProjectUID = projectGeofenceEvent.ProjectUID.ToString(),
+          GeofenceUID = projectGeofenceEvent.GeofenceUID.ToString(),
+          LastActionedUTC = projectGeofenceEvent.ActionUTC
+        };
+        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "AssociateProjectGeofenceEvent");
+      }
+      else if (evt is DissociateProjectGeofence)
+      {
+        var projectGeofenceEvent = (DissociateProjectGeofence)evt;
+        var projectGeofence = new ProjectGeofence
+        {
+          ProjectUID = projectGeofenceEvent.ProjectUID.ToString(),
+          GeofenceUID = projectGeofenceEvent.GeofenceUID.ToString(),
+          LastActionedUTC = projectGeofenceEvent.ActionUTC
+        };
+        upsertedCount = await UpsertProjectGeofenceDetail(projectGeofence, "DissociateProjectGeofenceEvent");
       }
 
       return upsertedCount;
@@ -944,7 +947,7 @@ namespace VSS.Productivity3D.Project.Repository
     #endregion importedFilesStore
 
 
-    #region projectGeofenceStore  // todoMaverick not needed anymore for FilterSvc?
+    #region projectGeofenceStore  // this geofence code is used by FilterSvc and refer to tables solely in the FilterSvc database (not the ProjectSvc one).
 
     private async Task<int> UpsertProjectGeofenceDetail(ProjectGeofence projectGeofence, string eventType)
     {
@@ -1433,7 +1436,7 @@ namespace VSS.Productivity3D.Project.Repository
     #endregion importedFiles
 
 
-    #region geofenceForFilters
+    #region geofenceForFilters // this geofence code is used by FilterSvc and refer to tables solely in the FilterSvc database (not the ProjectSvc one).
 
     /// <summary>
     /// Gets the list of geofence UIDs associated wih the specified project

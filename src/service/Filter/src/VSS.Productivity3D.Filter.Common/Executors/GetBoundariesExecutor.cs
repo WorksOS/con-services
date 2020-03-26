@@ -67,6 +67,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         boundariesTask = BoundaryHelper.GetProjectBoundaries(
         log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository)Repository);
         //b) favorite geofences that overlap project 
+
+        // todoMaverick what to do with refs to geofence and UnifiedProd services which we no longer have access to?
         favoritesTask =
           GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
         //c) unified productivity associated geofences

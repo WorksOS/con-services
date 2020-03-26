@@ -57,7 +57,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 
     #endregion importedFiles
 
-    #region geofenceForFilters  // todoMaverick not needed anymore for FilterSvc?
+    #region geofenceForFilters  // this geofence code is used by FilterSvc and refer to tables solely in the FilterSvc database (not the ProjectSvc one).
 
     Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid);
 
