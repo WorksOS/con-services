@@ -14,7 +14,6 @@ using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
 using VSS.Productivity3D.WebApi.Middleware;
 using VSS.Productivity3D.WebApi.Models.Compaction.AutoMapper;
-using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
 using WebApiContrib.Core.Formatter.Protobuf;
 
