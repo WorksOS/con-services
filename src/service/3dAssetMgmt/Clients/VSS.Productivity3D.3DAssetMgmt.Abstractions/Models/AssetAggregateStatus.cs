@@ -11,9 +11,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models
 
     public Guid ProjectUid { get; set; }
 
-    public Guid? AssetUid { get; set; } 
-
-    
+    public Guid? AssetUid { get; set; }
 
     public DateTime? LocationLastUpdatedUtc { get; set; }
 
@@ -41,10 +39,10 @@ namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models
 
     public List<string> GetIdentifiers()
     {
-      return new List<string>()
+      return new List<string>
       {
         CustomerUid.ToString(),
-        ProjectUid.ToString(), 
+        ProjectUid.ToString(),
         AssetUid.ToString()
       };
     }

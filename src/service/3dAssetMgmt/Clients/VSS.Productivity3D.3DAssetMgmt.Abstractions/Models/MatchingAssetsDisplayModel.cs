@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models 
+namespace VSS.Productivity3D.AssetMgmt3D.Abstractions.Models
 {
   public class MatchingAssetsDisplayModel : ContractExecutionResult, IMasterDataModel
   {
     public MatchingAssetsDisplayModel()
-    {
-      
-    }
+    { }
 
     public MatchingAssetsDisplayModel(int code, string message = null) : base(code, message)
-    {
-      
-    }
+    { }
 
     public string AssetUID2D { get; set; }
     public string AssetUID3D { get; set; }

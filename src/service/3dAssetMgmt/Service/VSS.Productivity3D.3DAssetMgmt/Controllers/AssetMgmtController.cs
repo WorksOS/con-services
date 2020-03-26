@@ -6,23 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
+using VSS.Productivity3D.AssetMgmt3D.Helpers;
 using VSS.Productivity3D.AssetMgmt3D.Models;
 
 namespace VSS.Productivity3D.AssetMgmt3D.Controllers
 {
   public class AssetMgmtController : BaseController
   {
-    private readonly IAssetRepository assetRepository;
+    private readonly IAssetRepository _assetRepository;
 
     /// <summary>
     /// Public constructor.
     /// </summary>
     public AssetMgmtController(IAssetRepository assetRepository)
     {
-      this.assetRepository = assetRepository;
+      _assetRepository = assetRepository;
     }
 
     /// <summary>
@@ -30,13 +30,16 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// </summary>
     [HttpPost("api/v1/assets/assetuids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
-    public async Task<IActionResult> GetMatchingAssets([FromBody] List<Guid> assetUids)
+    public async Task<IActionResult> GetMatchingAssets(
+      [FromServices] AssetExtensions assetExtensions,
+      [FromBody] List<Guid> assetUids)
     {
       var assetUidDisplay = string.Join(", ", assetUids ?? new List<Guid>());
       Log.LogInformation($"Getting Assets for AssetIds: {assetUidDisplay}");
 
-      var assets = await assetRepository.GetAssets(assetUids);
-      var displayModel = ConvertDbAssetToDisplayModel(assets);
+      var assets = await _assetRepository.GetAssets(assetUids);
+      var displayModel = assetExtensions.ConvertDbAssetToDisplayModel(assets);
+
       return Json(displayModel);
     }
 
@@ -45,13 +48,16 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     /// </summary>
     [HttpPost("api/v1/assets/assetids")]
     [ProducesResponseType(typeof(List<AssetDisplayModel>), 200)]
-    public async Task<IActionResult> GetMatchingAssets([FromBody] List<long> assetIds)
+    public async Task<IActionResult> GetMatchingAssets(
+      [FromServices] AssetExtensions assetExtensions,
+      [FromBody] List<long> assetIds)
     {
       var assetIdDisplay = string.Join(", ", assetIds ?? new List<long>());
       Log.LogInformation($"Getting Assets for AssetIds: {assetIdDisplay}");
 
-      var assets = await assetRepository.GetAssets(assetIds);
-      var displayModel = ConvertDbAssetToDisplayModel(assets);
+      var assets = await _assetRepository.GetAssets(assetIds);
+      var displayModel = assetExtensions.ConvertDbAssetToDisplayModel(assets);
+
       return Json(displayModel);
     }
 
@@ -64,7 +70,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     {
       Log.LogInformation($"Getting matching Assets for AssetUID3D: {assetUid}");
       var matchingAsset = new MatchingAssets { AssetUID3D = assetUid.ToString() };
-      var result = await assetRepository.GetMatching3D2DAssets(matchingAsset);
+      var result = await _assetRepository.GetMatching3D2DAssets(matchingAsset);
 
       var model = result == null
         ? new MatchingAssetsDisplayModel((int)AssetMgmt3DExecutionStates.ErrorCodes.NoMatchingAssets, "No matching assets found")
@@ -94,7 +100,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     {
       Log.LogInformation($"Getting matching Assets for AssetUID2D: {assetUid}");
       var matchingAsset = new MatchingAssets { AssetUID2D = assetUid.ToString() };
-      var result = await assetRepository.GetMatching3D2DAssets(matchingAsset);
+      var result = await _assetRepository.GetMatching3D2DAssets(matchingAsset);
 
       var model = result == null
         ? new MatchingAssetsDisplayModel((int)AssetMgmt3DExecutionStates.ErrorCodes.NoMatchingAssets, "No matching assets found")
@@ -116,25 +122,38 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
     }
 
     /// <summary>
-    /// Convert a List of Asset Database Models to Display Models, validating the Guid string can be parsed
+    /// Get location data for a given set of Assets.
     /// </summary>
-    private AssetDisplayModel ConvertDbAssetToDisplayModel(IEnumerable<Asset> assets)
+    /// <remarks>
+    /// For use with Dot on the Map polling requests from the UI.
+    /// </remarks>
+    [HttpPost("api/v1/assets/location")]
+    [ProducesResponseType(typeof(AssetDisplayModel), 200)]
+    public async Task<IActionResult> GetAssetLocationData([FromBody] List<Guid> assetUids)
     {
-      var results = assets.Select(a =>
+      var assetUidDisplay = string.Join(", ", assetUids ?? new List<Guid>());
+      Log.LogInformation($"Getting Asset location data for: {assetUidDisplay}");
+
+      var assets = await _assetRepository.GetAssets(assetUids);
+
+      var resultSet = new List<AssetLocationData>(assets.Count());
+
+      foreach (var asset in assets)
       {
-        if (Guid.TryParse(a.AssetUID, out var g))
-          return new KeyValuePair<Guid, long>(g, a.LegacyAssetID);
+        resultSet.Add(new AssetLocationData
+        {
+          AssetUid = Guid.Parse(asset.AssetUID),
+          AssetIdentifier = asset.EquipmentVIN,
+          AssetSerialNumber = asset.SerialNumber,
+          LocationLastUpdatedUtc = asset.LastActionedUtc,
+          MachineName = asset.Name,
+          Latitude = 0,
+          Longitude = 0,
+        });
+      }
 
-        Log.LogWarning($"Failed to parse {a.AssetUID} to a guid for AssetID: {a.LegacyAssetID}");
-        return new KeyValuePair<Guid, long>(Guid.Empty, a.LegacyAssetID);
-      }).ToList();
-
-      Log.LogInformation($"Matched assets: {JsonConvert.SerializeObject(results)}");
-
-      return new AssetDisplayModel
-      {
-        assetIdentifiers = results
-      };
+      Log.LogInformation($"Returning location data for {resultSet.Count} Assets.");
+      return Json(resultSet);
     }
   }
 }
