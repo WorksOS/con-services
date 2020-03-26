@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
-    <ProjectReference Include="..\..\Service\VSS.Productivity3D.3DAssetMgmt\VSS.Productivity3D.AssetMgmt3D.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\Service\VSS.Productivity3D.3DAssetMgmt\VSS.Productivity3D.AssetMgmt3D.csproj" />
   </ItemGroup>
 
 </Project>
