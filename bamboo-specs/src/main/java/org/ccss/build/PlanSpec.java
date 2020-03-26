@@ -208,8 +208,13 @@ public class PlanSpec {
     Deployment addDeploymentEnvironment(BambooServer bambooServer, Deployment deployment, String name) {
 
 
-        String cleanupCommand = "if [ `helm ls --namespace ${bamboo.deploy.environment} | grep ${bamboo.deploy.environment}-${bamboo.service} | awk '{ print $8 }'` = \"failed\" ]; then " + 
-                        "helm delete --namespace ${bamboo.deploy.environment} ${bamboo.deploy.environment}-${bamboo.service}; fi";
+        String cleanupCommand = "$STATUS=helm ls --namespace ${bamboo.deploy.environment} | grep ${bamboo.deploy.environment}-${bamboo.service} | awk '{ print $8 }'\n"
+                + "if [ ! -z $STATUS  ] && [ $STATUS = 'failed' ]; then\n"
+                + "helm delete --namespace ${bamboo.deploy.environment} ${bamboo.deploy.environment}-${bamboo.service}\n"
+                + "else\n"
+                + "echo Good Release\n"
+                + "fi";
+
 
         String deployCommand = "helm upgrade " +
                 "--install " +
