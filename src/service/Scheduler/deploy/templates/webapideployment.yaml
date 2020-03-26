@@ -16,18 +16,7 @@ spec:
       labels:
         app: {{ $name }}
     spec:
-      serviceAccount: {{ .Values.environment }}-service-account
-      initContainers:
-      - name: init-schedulerdb
-        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-scheduler-webapi-db:{{ .Values.image.tag }}
-        tty: true
-        envFrom:
-        - configMapRef:
-            name: {{ $configName }}
-        - configMapRef:
-            name: {{ .Values.globalConfig }}
-        - secretRef:
-            name: {{ .Values.globalConfig }}-secret            
+      serviceAccount: {{ .Values.environment }}-service-account        
       containers:
       - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-scheduler-webapi:{{ .Values.image.tag }}
         name: {{ $name }}     

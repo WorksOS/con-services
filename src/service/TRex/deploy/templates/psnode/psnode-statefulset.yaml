@@ -10,6 +10,7 @@ metadata:
     immutable-cluster: "true"
     jmx-prometheus: "true"
 spec:
+  serviceName: {{ template "trex.deployname" . }}-psnode
   selector:
     matchLabels:
       #this must match one of metadata.labels above
@@ -56,7 +57,7 @@ spec:
         - name: ENABLE_TFA_SERVICE
           value: "true"
         - name: TFA_SERVICE_BASEURL
-          value: "http://tagfileauth.dev.eks.vspengg.com/"
+          value: "http://tagfileauth.dev.eks.ccss.cloud/"
         - name: IS_KUBERNETES
           value: "true"
         - name: DEPLOYED_ENV

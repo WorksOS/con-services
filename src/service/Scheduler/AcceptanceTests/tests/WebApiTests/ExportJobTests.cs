@@ -12,6 +12,7 @@ using VSS.Productivity3D.Scheduler.Models;
 
 namespace WebApiTests
 {
+  [Ignore]
   [TestClass]
   public class ExportJobTests
   {
@@ -34,6 +35,7 @@ namespace WebApiTests
       };
     }
 
+    [Ignore]
     [TestMethod]
     public void CanDoExportSuccess()
     {
@@ -58,6 +60,7 @@ namespace WebApiTests
       Assert.AreEqual(expectedSorted, actualSorted, "Export data does not match");
     }
 
+    [Ignore]
     [TestMethod]
     public void CanGetExportJobStatusMissingJob()
     {
@@ -71,6 +74,7 @@ namespace WebApiTests
       Assert.AreEqual($"Missing job details for {jobId}", result.Message, "Wrong error message");
     }
 
+    [Ignore]
     [TestMethod]
     public void CanDoExportFailure()
     {
@@ -88,6 +92,7 @@ namespace WebApiTests
       Assert.IsTrue(statusResult.FailureDetails.Result.Message.Contains("Failed to get requested export data with error: No data for export"), "Wrong failure message");
     }
 
+    [Ignore]
     [TestMethod]
     [Timeout(800000)]
     public void CanDoLongRunningExport()
@@ -103,6 +108,7 @@ namespace WebApiTests
       Assert.IsTrue(!string.IsNullOrEmpty(statusResult.DownloadLink), "Should get a download link on success");
     }
 
+    [Ignore]
     [TestMethod]
     public void CanDoExportTimeout()
     {

@@ -88,7 +88,7 @@ namespace VSS.Tile.Service.WebApi
     }
 
     /// <inheritdoc />
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<TileAuthentication>();
     }

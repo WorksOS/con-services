@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Utilities;
 using Xunit;
 
 namespace VSS.TRex.Tests.Utility
@@ -15,11 +14,11 @@ namespace VSS.TRex.Tests.Utility
             byte upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, byte.MinValue, byte.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, byte.MinValue, byte.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, byte.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, byte.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, byte.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, byte.MaxValue));
         }
 
         [Fact]
@@ -30,11 +29,11 @@ namespace VSS.TRex.Tests.Utility
             short upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, short.MinValue, short.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, short.MinValue, short.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, short.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, short.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, short.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, short.MaxValue));
         }
 
         [Fact]
@@ -45,11 +44,11 @@ namespace VSS.TRex.Tests.Utility
             ushort upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, ushort.MinValue, ushort.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, ushort.MinValue, ushort.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, ushort.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, ushort.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, ushort.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, ushort.MaxValue));
         }
 
         [Fact]
@@ -60,11 +59,11 @@ namespace VSS.TRex.Tests.Utility
             int upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, int.MinValue, int.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, int.MinValue, int.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, int.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, int.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, int.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, int.MaxValue));
         }
 
         [Fact]
@@ -75,11 +74,11 @@ namespace VSS.TRex.Tests.Utility
             uint upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, uint.MinValue, uint.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, uint.MinValue, uint.MaxValue));
 
             // Test out of range
-            Assert.Equal(10U, Range.EnsureRange(value, uint.MinValue, lowerConstraint));
-            Assert.Equal(200U, Range.EnsureRange(value, upperConstraint, uint.MaxValue));
+            Assert.Equal(10U, VSS.TRex.Common.Utilities.Range.EnsureRange(value, uint.MinValue, lowerConstraint));
+            Assert.Equal(200U, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, uint.MaxValue));
         }
 
         [Fact]
@@ -90,11 +89,11 @@ namespace VSS.TRex.Tests.Utility
             long upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, long.MinValue, long.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, long.MinValue, long.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, long.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, long.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, long.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, long.MaxValue));
         }
 
         [Fact]
@@ -105,11 +104,11 @@ namespace VSS.TRex.Tests.Utility
             ulong upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, ulong.MinValue, ulong.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, ulong.MinValue, ulong.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, ulong.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, ulong.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, ulong.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, ulong.MaxValue));
         }
 
         [Fact]
@@ -120,11 +119,11 @@ namespace VSS.TRex.Tests.Utility
             float upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, float.MinValue, float.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, float.MinValue, float.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, float.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, float.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, float.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, float.MaxValue));
         }
 
         [Fact]
@@ -135,11 +134,11 @@ namespace VSS.TRex.Tests.Utility
             double upperConstraint = 200;
 
             // Test in range
-            Assert.Equal(value, Range.EnsureRange(value, double.MinValue, double.MaxValue));
+            Assert.Equal(value, VSS.TRex.Common.Utilities.Range.EnsureRange(value, double.MinValue, double.MaxValue));
 
             // Test out of range
-            Assert.Equal(10, Range.EnsureRange(value, double.MinValue, lowerConstraint));
-            Assert.Equal(200, Range.EnsureRange(value, upperConstraint, double.MaxValue));
+            Assert.Equal(10, VSS.TRex.Common.Utilities.Range.EnsureRange(value, double.MinValue, lowerConstraint));
+            Assert.Equal(200, VSS.TRex.Common.Utilities.Range.EnsureRange(value, upperConstraint, double.MaxValue));
         }
 
         [Fact]
@@ -150,11 +149,11 @@ namespace VSS.TRex.Tests.Utility
             byte upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, byte.MinValue, byte.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, byte.MinValue, byte.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, byte.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, byte.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, byte.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, byte.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -165,11 +164,11 @@ namespace VSS.TRex.Tests.Utility
             short upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, short.MinValue, short.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, short.MinValue, short.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, short.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, short.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, short.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, short.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -180,11 +179,11 @@ namespace VSS.TRex.Tests.Utility
             ushort upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, ushort.MinValue, ushort.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, ushort.MinValue, ushort.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, ushort.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, ushort.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, ushort.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, ushort.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -195,11 +194,11 @@ namespace VSS.TRex.Tests.Utility
             int upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, int.MinValue, int.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, int.MinValue, int.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, int.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, int.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, int.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, int.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -210,11 +209,11 @@ namespace VSS.TRex.Tests.Utility
             uint upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, uint.MinValue, uint.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, uint.MinValue, uint.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, uint.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, uint.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, uint.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, uint.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -225,11 +224,11 @@ namespace VSS.TRex.Tests.Utility
             long upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, long.MinValue, long.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, long.MinValue, long.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, long.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, long.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, long.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, long.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -240,11 +239,11 @@ namespace VSS.TRex.Tests.Utility
             ulong upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, ulong.MinValue, ulong.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, ulong.MinValue, ulong.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, ulong.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, ulong.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, ulong.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, ulong.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -255,11 +254,11 @@ namespace VSS.TRex.Tests.Utility
             float upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, float.MinValue, float.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, float.MinValue, float.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, float.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, float.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, float.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, float.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -270,11 +269,11 @@ namespace VSS.TRex.Tests.Utility
             double upperConstraint = 200;
 
             // Test in range
-            Assert.True(Range.InRange(value, double.MinValue, double.MaxValue), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, double.MinValue, double.MaxValue), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, double.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, double.MaxValue), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, double.MinValue, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, double.MaxValue), "InRange failed on partial underlying type value range");
         }
 
         [Fact]
@@ -285,11 +284,11 @@ namespace VSS.TRex.Tests.Utility
             DateTime upperConstraint = DateTime.SpecifyKind(new DateTime(2010, 1, 1), DateTimeKind.Utc);
 
             // Test in range
-            Assert.True(Range.InRange(value, Consts.MIN_DATETIME_AS_UTC, Consts.MAX_DATETIME_AS_UTC), "InRange failed on full underlying type value range");
+            Assert.True(VSS.TRex.Common.Utilities.Range.InRange(value, Consts.MIN_DATETIME_AS_UTC, Consts.MAX_DATETIME_AS_UTC), "InRange failed on full underlying type value range");
 
             // Test out of range
-            Assert.False(Range.InRange(value, Consts.MIN_DATETIME_AS_UTC, lowerConstraint), "InRange failed on partial underlying type value range");
-            Assert.False(Range.InRange(value, upperConstraint, Consts.MAX_DATETIME_AS_UTC), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, Consts.MIN_DATETIME_AS_UTC, lowerConstraint), "InRange failed on partial underlying type value range");
+            Assert.False(VSS.TRex.Common.Utilities.Range.InRange(value, upperConstraint, Consts.MAX_DATETIME_AS_UTC), "InRange failed on partial underlying type value range");
         }
     }
 }

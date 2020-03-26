@@ -97,7 +97,7 @@ namespace VSS.TRex.Designs.TTM.Optimised
     /// </summary>
     /// <param name="stream"></param>
     /// <param name="bytes"></param>
-    private void LoadFromStream(Stream stream, byte [] bytes)
+    public void LoadFromStream(Stream stream, byte [] bytes)
     {
       using (BinaryReader reader = new BinaryReader(stream))
       {

@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -40,7 +43,7 @@ namespace VSS.TRex.Webtools
     /// Initializes a new instance of the <see cref="Startup"/> class.
     /// </summary>
     /// <param name="env">The env.</param>
-    public Startup(IHostingEnvironment env)
+    public Startup(IWebHostEnvironment env)
     {
       var builder = new ConfigurationBuilder()
         .SetBasePath(env.ContentRootPath)
@@ -48,6 +51,7 @@ namespace VSS.TRex.Webtools
         .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       builder.AddEnvironmentVariables();
+
       Configuration = builder.Build();
     }
 
@@ -63,7 +67,15 @@ namespace VSS.TRex.Webtools
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+      services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+      services.AddControllers().AddNewtonsoftJson(options =>
+      {
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+      });
+
       services.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
       {
         // Allow up to 256Mb worth of freed small blocks used by the recyclable streams for later reuse
@@ -133,26 +145,22 @@ namespace VSS.TRex.Webtools
     }
     
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+      app.UseRouting();
 
       app.UseHttpsRedirection();
       app.UseStaticFiles();
       app.UseSpaStaticFiles();
 
-      app.UseMvc(routes =>
-      {
-        routes.MapRoute(
-                  name: "default",
-                  template: "{controller}/{action=Index}/{id?}");
-      });
+      app.UseEndpoints(endpoints => endpoints.MapControllerRoute("default", "{controller}/{action=Index}/{id?}"));
 
       app.UseSpa(spa =>
       {
-              // To learn more about options for serving an Angular SPA from ASP.NET Core,
-              // see https://go.microsoft.com/fwlink/?linkid=864501
+        // To learn more about options for serving an Angular SPA from ASP.NET Core,
+        // see https://go.microsoft.com/fwlink/?linkid=864501
 
-              spa.Options.SourcePath = "ClientApp";
+        spa.Options.SourcePath = "ClientApp";
 
         if (env.IsDevelopment())
         {

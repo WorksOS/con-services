@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.2-sdk
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 ARG SERVICE_PATH
 
 #debconf shouldn't expect an interactive terminal
@@ -12,10 +12,23 @@ RUN apt-get update && apt-get install -y \
 
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y \
-    nodejs
+    nodejs \ 
+    npm
+
+RUN wget -q https://packages.microsoft.com/config/ubuntu/19.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb
+
+RUN apt-get update && apt-get install -y \ 
+    dotnet-sdk-2.1
 
 RUN apt-get update && apt-get install -y \
-    openjdk-8-jdk
+    software-properties-common
+
+RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
+    add-apt-repository 'deb https://apt.corretto.aws stable main'
+
+RUN apt-get update && apt-get install -y \
+    java-11-amazon-corretto-jdk
 
 RUN apt-get update && apt-get install -y \
     libc6-dev
@@ -30,8 +43,8 @@ COPY . /build/
 WORKDIR /build
 
 # #Need these for ignite to work
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-ENV LD_LIBRARY_PATH=$JAVA_HOME/jre/lib/amd64/server
+ENV JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto
+ENV LD_LIBRARY_PATH=$JAVA_HOME/lib/server
 
 #publish TRex servers
 RUN dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer
@@ -52,19 +65,18 @@ RUN dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.
 
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
-RUN cp -r /root/.nuget/packages/apache.ignite/2.7.6/libs/ /trex/libs/
-COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.7.0.jar /trex/libs/
+RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
+COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.8.0.jar /trex/libs/
 
 WORKDIR /trex/libs/
-RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar
-RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar
-RUN wget http://central.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar
-RUN wget http://central.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
-RUN wget http://central.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
-RUN wget http://central.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
-RUN wget http://central.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
-RUN wget http://central.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
-RUN wget http://central.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.11.0/jmx_prometheus_javaagent-0.11.0.jar
-RUN rm spring*4.3.18*
-
+RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar
+RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar
+RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar
+# RUN wget http://repo1.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
+# RUN wget http://repo1.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
+# RUN wget http://repo1.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
+# RUN wget http://repo1.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
+# RUN wget https://repo1.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
+RUN wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
+# RUN rm spring*4.3.18*
 #TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile

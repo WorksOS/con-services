@@ -11,6 +11,7 @@ using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.IO.Helpers;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.Events
 {

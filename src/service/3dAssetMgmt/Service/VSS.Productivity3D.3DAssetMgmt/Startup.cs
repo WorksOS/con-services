@@ -62,7 +62,7 @@ namespace VSS.Productivity3D.AssetMgmt3D
     }
 
     /// <inheritdoc />
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<AssetMgmt3DAuthentication>();
       app.UseMvc();

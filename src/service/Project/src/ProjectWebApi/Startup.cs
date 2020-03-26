@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http.Internal;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy;
@@ -126,7 +126,7 @@ namespace VSS.MasterData.Project.WebAPI
       */
     }
 
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<ProjectAuthentication>();
       app.UseStaticFiles();
@@ -135,7 +135,7 @@ namespace VSS.MasterData.Project.WebAPI
       // See https://stackoverflow.com/questions/31389781/read-request-body-twice
       app.Use(next => context =>
       {
-        context.Request.EnableRewind();
+        HttpRequestRewindExtensions.EnableBuffering(context.Request);
         return next(context);
       });
       app.UseMvc();

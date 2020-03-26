@@ -1,1 +1,1 @@
-dotnet "..\..\src\tools\VSS.TRex.Tools.TAGfileSubmitter\bin\debug\netcoreapp2.1\VSS.TRex.Tools.TAGFileSubmittor.dll" "{C7A34262-7777-4E00-9A5C-06BE19BD745C}" "C:\Temp\SouthernMotorwayProjectTAGFiles\All TagFiles"
+dotnet "..\..\src\tools\VSS.TRex.Tools.TAGfileSubmitter\bin\debug\netcoreapp3.1\VSS.TRex.Tools.TAGFileSubmittor.dll" "{C7A34262-7777-4E00-9A5C-06BE19BD745C}" "C:\Temp\SouthernMotorwayProjectTAGFiles\All TagFiles"

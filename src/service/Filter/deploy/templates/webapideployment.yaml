@@ -16,20 +16,9 @@ spec:
       labels:
         app: {{ $name }}
     spec:
-      serviceAccount: {{ .Values.environment }}-service-account
-      initContainers:
-      - name: init-filterdb
-        image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-productivity3d-filter-webapi-db:{{ .Values.image.tag }}
-        tty: true
-        envFrom:
-        - configMapRef:
-            name: {{ $configName }}
-        - configMapRef:
-            name: {{ .Values.globalConfig }}
-        - secretRef:
-            name: {{ .Values.globalConfig }}-secret            
+      serviceAccount: {{ .Values.environment }}-service-account    
       containers:
-      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-productivity3d-filter-webapi:{{ .Values.image.tag }}
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-filter-webapi:{{ .Values.image.tag }}
         name: {{ $name }}     
         livenessProbe:
           httpGet:

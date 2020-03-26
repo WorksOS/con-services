@@ -45,7 +45,7 @@ Write-Host "Building solution" -ForegroundColor DarkGray
 $artifactsWorkingDir = "${PSScriptRoot}/artifacts/VSS.Productivity3D.Scheduler.WebApi"
 
 Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
-Invoke-Expression "dotnet publish ./src/VSS.Productivity3D.Scheduler.WebApi/VSS.Productivity3D.Scheduler.WebApi.csproj -o ../../artifacts/VSS.Productivity3D.Scheduler.WebApi -f netcoreapp2.1 -c Docker"
+Invoke-Expression "dotnet publish ./src/VSS.Productivity3D.Scheduler.WebApi/VSS.Productivity3D.Scheduler.WebApi.csproj -o ../../artifacts/VSS.Productivity3D.Scheduler.WebApi -f netcoreapp3.1 -c Docker"
 Invoke-Expression "dotnet build ./test/UnitTests/VSS.Productivity3D.Scheduler.Tests/VSS.Productivity3D.Scheduler.Tests.csproj"
 Copy-Item ./src/VSS.Productivity3D.Scheduler.WebApi/appsettings.json $artifactsWorkingDir
 New-Item -ItemType directory ./artifacts/logs | out-null
@@ -55,7 +55,7 @@ Set-Location ./src/VSS.Productivity3D.Scheduler.WebApi
 Copy-Item ./appsettings.json $artifactsWorkingDir
 Copy-Item ./Dockerfile $artifactsWorkingDir
 Copy-Item ./web.config $artifactsWorkingDir
-Copy-Item ./bin/Docker/netcoreapp2.1/VSS.Productivity3D.Scheduler.WebAPI.xml $artifactsWorkingDir
+Copy-Item ./bin/Docker/netcoreapp3.1/VSS.Productivity3D.Scheduler.WebAPI.xml $artifactsWorkingDir
 
 & $PSScriptRoot/AcceptanceTests/Scripts/deploy_win.ps1
 

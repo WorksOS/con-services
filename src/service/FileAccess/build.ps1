@@ -10,7 +10,7 @@ if (Test-Path -path $artifactsDir) {
 }
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
-Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/WebApi -o ../../artifacts/WebApi -f netcoreapp2.0 -c Docker"
+Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/WebApi -o ../../artifacts/WebApi -f netcoreapp3.1 -c Docker"
 if ($LastExitCode -ne 0) {
     throw "Publish of web api project **** Failed ****"
 }

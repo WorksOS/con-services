@@ -1,6 +1,5 @@
-MYSQL_DATABASE_NAME: VSS-TagFileAuth-Alpha
-KAFKA_GROUP_NAME: TagFileAuth-Consumer-Alpha-3
-KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent,VSS.Interfaces.Events.MasterData.IProjectEvent.V1,VSS.Interfaces.Events.MasterData.ISubscriptionEvent,VSS.Interfaces.Events.MasterData.IAssetEvent,VSS.Interfaces.Events.MasterData.IDeviceEvent
-CUSTOM_INIT_SCRIPT: zookeeper_check.sh
+MYSQL_DATABASE_NAME: Alpha-TagFileAuth
+KAFKA_GROUP_NAME: TagFileAuth--Consumer-Alpha
+KAFKA_TOPICS: CCSS.Interfaces.Events.MasterData.ICustomerEvent,CCSS.Interfaces.Events.MasterData.IProjectEvent,CCSS.Interfaces.Events.MasterData.ISubscriptionEvent,CCSS.Interfaces.Events.MasterData.IAssetEvent,CCSS.Interfaces.Events.MasterData.IDeviceEvent
 JAEGER_SERVICE_NAME: Alpha TagFileAuth Service API
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"

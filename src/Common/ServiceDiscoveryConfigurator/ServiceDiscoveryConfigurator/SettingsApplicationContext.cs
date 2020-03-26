@@ -98,12 +98,12 @@ namespace ServiceDiscoveryConfigurator
             new DisplaySetting()
             {
               Name = "Dev",
-              Value = "http://filter.dev.eks.vspengg.com/"
+              Value = "http://filter.dev.eks.ccss.cloud/"
             },
             new DisplaySetting()
             {
               Name = "Alpha",
-              Value = "http://filter.alpha.eks.vspengg.com/"
+              Value = "http://filter.alpha.eks.ccss.cloud/"
             }
           }
         });
@@ -136,12 +136,12 @@ namespace ServiceDiscoveryConfigurator
             new DisplaySetting()
             {
               Name = "Dev",
-              Value = "http://project.dev.eks.vspengg.com/"
+              Value = "http://project.dev.eks.ccss.cloud/"
             },
             new DisplaySetting()
             {
               Name = "Alpha",
-              Value = "http://project.alpha.eks.vspengg.com/"
+              Value = "http://project.alpha.eks.ccss.cloud/"
             }
           }
         });
@@ -155,12 +155,12 @@ namespace ServiceDiscoveryConfigurator
             new DisplaySetting()
             {
               Name = "Dev",
-              Value = "http://scheduler.dev.eks.vspengg.com/"
+              Value = "http://scheduler.dev.eks.ccss.cloud/"
             },
             new DisplaySetting()
             {
               Name = "Alpha",
-              Value = "http://scheduler.alpha.eks.vspengg.com/"
+              Value = "http://scheduler.alpha.eks.ccss.cloud/"
             }
           }
         });
@@ -174,12 +174,12 @@ namespace ServiceDiscoveryConfigurator
             new DisplaySetting()
             {
               Name = "Dev",
-              Value = "http://push.dev.eks.vspengg.com/"
+              Value = "http://push.dev.eks.ccss.cloud/"
             },
             new DisplaySetting()
             {
               Name = "Alpha",
-              Value = "http://push.alpha.eks.vspengg.com/"
+              Value = "http://push.alpha.eks.ccss.cloud/"
             }
           }
         });
@@ -193,12 +193,12 @@ namespace ServiceDiscoveryConfigurator
             new DisplaySetting()
             {
               Name = "Dev",
-              Value = "http://tile.dev.eks.vspengg.com"
+              Value = "http://tile.dev.eks.ccss.cloud"
             },
             new DisplaySetting()
             {
               Name = "Alpha",
-              Value = "http://tile.alpha.eks.vspengg.com"
+              Value = "http://tile.alpha.eks.ccss.cloud"
             }
           }
         });
@@ -212,12 +212,12 @@ namespace ServiceDiscoveryConfigurator
             new DisplaySetting()
             {
               Name = "Dev",
-              Value = "http://assetmgmt3d.dev.eks.vspengg.com"
+              Value = "http://assetmgmt3d.dev.eks.ccss.cloud"
             },
             new DisplaySetting()
             {
               Name = "Alpha",
-              Value = "http://assetmgmt3d.alpha.eks.vspengg.com"
+              Value = "http://assetmgmt3d.alpha.eks.ccss.cloud"
             }
           }
         });

@@ -112,6 +112,14 @@ namespace VSS.TRex.Tests.Rendering.Requests
         {
           bmp.Save(fileName);
         }
+        else
+        {
+          // If the comparison file does not exist then create it to provide a base comparison moving forward.
+          if (!string.IsNullOrEmpty(compareToFile) && !File.Exists(compareToFile))
+          {
+            bmp.Save(compareToFile);
+          }
+        }
 
         if (!string.IsNullOrEmpty(compareToFile))
         {

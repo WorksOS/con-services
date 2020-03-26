@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using VSS.TRex.Designs.TTM.Optimised.Exceptions;
+﻿using System.IO;
 using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.TTM.Optimised
