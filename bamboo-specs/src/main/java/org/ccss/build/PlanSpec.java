@@ -207,6 +207,10 @@ public class PlanSpec {
 
     Deployment addDeploymentEnvironment(BambooServer bambooServer, Deployment deployment, String name) {
 
+
+        String cleanupCommand = "if [ `helm ls --namespace ${bamboo.deploy.environment} | grep ${bamboo.deploy.environment}-${bamboo.service} | awk '{ print $8 }'` = \"failed\" ]; then " + 
+                        "helm delete --namespace ${bamboo.deploy.environment} ${bamboo.deploy.environment}-${bamboo.service}; fi";
+
         String deployCommand = "helm upgrade " +
                 "--install " +
                 "${bamboo.deploy.environment}-${bamboo.service} " +
@@ -231,6 +235,14 @@ public class PlanSpec {
 
         env.tasks(new ScriptTask()
                 .inlineBody("echo ${bamboo.planRepository.branchName}-${bamboo.buildNumber}")
+                .interpreterBinSh());
+
+        env.tasks(new ScriptTask()
+                .inlineBody("echo " + cleanupCommand)
+                .interpreterBinSh());
+
+        env.tasks(new ScriptTask()
+                .inlineBody(cleanupCommand)
                 .interpreterBinSh());
 
         env.tasks(new ScriptTask()
