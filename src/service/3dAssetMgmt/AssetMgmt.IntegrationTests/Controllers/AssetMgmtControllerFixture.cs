@@ -105,6 +105,7 @@ namespace AssetMgmt.IntegrationTests.Controllers
                        AssetUID = Guid.NewGuid().ToString(),
                        EquipmentVIN = "5678AB",
                        SerialNumber = "34251",
+                       AssetType = "Tough Bulldozer",
                        LastActionedUtc = new DateTime(2020, 3, 26, 9, 10, 0),
                        Name = "Tonka Tough"
                      }
@@ -135,6 +136,7 @@ namespace AssetMgmt.IntegrationTests.Controllers
       var assetData = assetLocationData[0];
       Assert.Equal(asset.AssetUID, assetData.AssetUid.ToString());
       Assert.Equal(asset.EquipmentVIN, assetData.AssetIdentifier);
+      Assert.Equal(asset.AssetType, assetData.AssetType);
       Assert.Equal(asset.LastActionedUtc, assetData.LocationLastUpdatedUtc);
       Assert.Equal(asset.SerialNumber, assetData.AssetSerialNumber);
       Assert.Equal(asset.Name, assetData.MachineName);

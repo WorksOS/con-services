@@ -145,6 +145,7 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
           AssetUid = Guid.Parse(asset.AssetUID),
           AssetIdentifier = asset.EquipmentVIN,
           AssetSerialNumber = asset.SerialNumber,
+          AssetType = asset.AssetType,
           LocationLastUpdatedUtc = asset.LastActionedUtc,
           MachineName = asset.Name,
           Latitude = 0,
