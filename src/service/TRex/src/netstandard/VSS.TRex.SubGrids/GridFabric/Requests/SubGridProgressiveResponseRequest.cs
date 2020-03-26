@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -46,11 +47,16 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
     {
       try
       {
-        return _compute.Apply(_computeFunc, arg);
+        var sw = Stopwatch.StartNew();
+
+        var result = _compute.Apply(_computeFunc, arg);
+
+        Log.LogDebug($"SubGridProgressiveResponseRequest.Execute() for request {arg.RequestDescriptor} with {arg.Payload.Bytes.Length} bytes completed in {sw.Elapsed}");
+        return result;
       }
       catch (Exception e)
       {
-        Log.LogError(e, $"Exception in {nameof(SubGridProgressiveResponseRequest)}");
+        Log.LogError(e, $"Exception in {nameof(SubGridProgressiveResponseRequest )}");
         return false;
       }
     }

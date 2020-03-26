@@ -1,4 +1,5 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System.Diagnostics;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.ComputeFuncs;
@@ -25,7 +26,11 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
         Log.LogError($"Listener for request {arg.RequestDescriptor} is null");
       }
 
-      return listener?.Invoke(arg.NodeId, arg.Payload) ?? false;
+      var sw = Stopwatch.StartNew();
+      var result = listener?.Invoke(arg.NodeId, arg.Payload) ?? false;
+      Log.LogDebug($"SubGridProgressiveResponseRequestComputeFunc.Invoke({arg.NodeId}), size {arg.Payload.Bytes.Length} result {result} completed in {sw.Elapsed}");
+
+      return result;
     }
   }
 }

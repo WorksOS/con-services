@@ -54,7 +54,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
       var tagFiles = new[] { Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag") };
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
-      // Add a flat design to the site model at the minimum elevatiokn in the site model
+      // Add a flat design to the site model at the minimum elevation in the site model
 
       var elevation = elevationSource switch
       {

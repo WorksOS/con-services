@@ -15,8 +15,8 @@ using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.Profiling.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Types;
-using VSS.TRex.Common.Utilities;
 using ElevationType = VSS.TRex.Common.Types.ElevationType;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.Filters
 {

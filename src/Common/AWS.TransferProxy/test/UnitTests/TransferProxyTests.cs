@@ -10,7 +10,7 @@ namespace VSS.AWS.TransferProxy.UnitTests
 {
   public class TransferProxyTests
   {
-    [Fact]
+    [Fact(Skip = "No AWS infrastructure yet")]
     public void TestLoginNoKey()
     {
       // We cannot use Access keys with S3 now, so we have to use assumed roles
@@ -29,7 +29,7 @@ namespace VSS.AWS.TransferProxy.UnitTests
       Assert.StartsWith(s3BaseUrl + s3Key, key);
     }
 
-    [Fact]
+    [Fact(Skip = "No AWS infrastructure yet")]
     public void TestUpload()
     {
       const string originalFileContents = "test-data-please-ignore";

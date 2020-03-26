@@ -19,6 +19,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess.UnitTests", "TCCFileAccess\test\UnitTests\VSS.TCCFileAccess.UnitTests.csproj", "{8BB595E1-DDB7-4049-941E-8174445DE336}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies.UnitTests", "MasterDataProxies\test\UnitTests\VSS.MasterData.Proxies.UnitTests.csproj", "{AE6404FE-B292-4B1B-A164-891F3EBA2397}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BB3B2E3F-E4D5-41A1-82C8-9D5A4305E669} = {BB3B2E3F-E4D5-41A1-82C8-9D5A4305E669}
+		{593D68D0-419C-443C-8178-DEB13561FE7B} = {593D68D0-419C-443C-8178-DEB13561FE7B}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8AF291F2-01BC-4EA8-BB3C-3CFBEAF660E9}"
 EndProject
@@ -94,6 +98,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Abstractions", "..\service\Filter\Clients\VSS.Productivity3D.Filter.Abstractions\VSS.Productivity3D.Filter.Abstractions.csproj", "{89D2416A-6EE1-4026-AA2B-BB3F3C6E0E1C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Push.Abstractions", "..\service\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj", "{8C21D32E-7E86-4A72-B2B7-DE6FAD4FC73A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{593D68D0-419C-443C-8178-DEB13561FE7B} = {593D68D0-419C-443C-8178-DEB13561FE7B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

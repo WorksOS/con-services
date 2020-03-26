@@ -21,6 +21,8 @@ using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
 using TagFiles.Common;
+using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.TRex.Gateway.Common.Proxy;
 
 /// <summary>
 /// Runs as a Windows service converting packet data from TMC software into Trimble tagfiles.
@@ -54,6 +56,7 @@ namespace MegalodonSvc
                                                                     .AddSingleton<IWebRequest, GracefulWebRequest>()
                                                                     .AddSingleton<IDataCache, InMemoryDataCache>()
                                                                     .AddSingleton<IMemoryCache,MemoryCache>()
+                                                                    .AddSingleton<ITRexTagFileProxy,TRexTagFileV2Proxy>()
                                                                     .AddServiceDiscovery(); 
 
             })

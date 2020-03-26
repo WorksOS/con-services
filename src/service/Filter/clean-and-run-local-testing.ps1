@@ -33,7 +33,7 @@ Write-Host "Building solution" -ForegroundColor DarkGray
 $artifactsWorkingDir = "${PSScriptRoot}/artifacts/VSS.Productivity3D.Filter.WebApi"
 
 Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
-Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o ../../artifacts/VSS.Productivity3D.Filter.WebApi -f netcoreapp2.1 -c Docker"
+Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o ../../artifacts/VSS.Productivity3D.Filter.WebApi -f netcoreapp3.1 -c Docker"
 Invoke-Expression "dotnet build /nowarn:CS1591 ./test/UnitTests/VSS.Productivity3D.Filter.Tests/VSS.Productivity3D.Filter.Tests.csproj"
 Copy-Item ./src/VSS.Productivity3D.Filter.WebApi/appsettings.json $artifactsWorkingDir
 New-Item -ItemType directory ./artifacts/logs | out-null

@@ -3,7 +3,7 @@
 
 environment: dev
 
-rootDomain: eks.vspengg.com
+rootDomain: eks.ccss.cloud
 
 serviceAccountName: trex
 
@@ -18,7 +18,7 @@ ingress:
     - trex
   annotations:
     kubernetes.io/ingress.class: nginx
-    external-dns.alpha.kubernetes.io/target: eks.vspengg.com
+    external-dns.alpha.kubernetes.io/target: eks.ccss.cloud
 
 service:
   type: ClusterIP

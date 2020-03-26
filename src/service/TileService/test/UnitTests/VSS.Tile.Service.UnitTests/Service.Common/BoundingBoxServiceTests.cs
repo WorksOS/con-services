@@ -1,6 +1,9 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using VSS.MasterData.Models.Models;
+using VSS.Serilog.Extensions;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
 using Xunit;
@@ -13,8 +16,12 @@ namespace VSS.Tile.Service.UnitTests.Service.Common
 
     public BoundingBoxServiceTests()
     {
-      loggerFactory = new LoggerFactory();
-      loggerFactory.AddDebug();
+      var serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Tile.Service.UnitTests.log")))
+        .BuildServiceProvider();
+
+      loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
     }
 
     [Theory]
