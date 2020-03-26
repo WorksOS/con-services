@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 environment: alpha
 
-rootDomain: eks.vspengg.com
+rootDomain: eks.ccss.cloud
 
 globalConfig: 3dapp-alpha
 
@@ -13,7 +13,7 @@ serviceName: productivity3d-service
 replicaCount: 1
 
 image:
-  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-3dpm-webapi"
+  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-3dpm-webapi"
   tag: latest-linux
 
 resources:
@@ -33,4 +33,4 @@ ingress:
     - 3dpm
   annotations:
     kubernetes.io/ingress.class: nginx
-    external-dns.alpha.kubernetes.io/target: eks.vspengg.com
+    external-dns.alpha.kubernetes.io/target: eks.ccss.cloud

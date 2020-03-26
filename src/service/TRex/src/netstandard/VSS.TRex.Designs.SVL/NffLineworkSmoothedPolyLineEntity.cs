@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.Designs.SVL.Utilities;
 using VSS.TRex.Geometry;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.Designs.SVL
 {

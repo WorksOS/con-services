@@ -20,6 +20,7 @@ using VSS.TRex.Rendering.Implementations.Core2.GridFabric.Responses;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -31,8 +32,11 @@ namespace VSS.TRex.Tests.Rendering.Requests
     protected void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
       <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
 
-    protected void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting
-      <SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+    protected void AddClusterComputeGridRouting()
+    {
+      IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+    }
 
     protected void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
@@ -107,6 +111,14 @@ namespace VSS.TRex.Tests.Rendering.Requests
         if (!string.IsNullOrEmpty(fileName))
         {
           bmp.Save(fileName);
+        }
+        else
+        {
+          // If the comparison file does not exist then create it to provide a base comparison moving forward.
+          if (!string.IsNullOrEmpty(compareToFile) && !File.Exists(compareToFile))
+          {
+            bmp.Save(compareToFile);
+          }
         }
 
         if (!string.IsNullOrEmpty(compareToFile))

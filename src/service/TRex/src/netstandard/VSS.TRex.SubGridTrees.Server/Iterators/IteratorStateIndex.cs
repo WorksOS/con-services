@@ -3,7 +3,7 @@ using System.Collections;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
-using VSS.TRex.Common.Utilities;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.SubGridTrees.Server.Iterators
 {

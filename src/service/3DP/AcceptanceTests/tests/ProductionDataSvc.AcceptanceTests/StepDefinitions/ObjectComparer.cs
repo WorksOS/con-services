@@ -81,7 +81,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       foreach (var propertyInfo in obj.GetType().GetProperties(BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance))
       {
         if (propertyInfo.PropertyType != typeof(double) && propertyInfo.PropertyType != typeof(double?))
-        { 
+        {
           continue;
         }
 
@@ -116,7 +116,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
         // Redo the comparison using Assert.Equal because when it fails we'll dump the JSON, rather than simply True or False.
         AssertAreEqual(actualResultObj, expectedResultObj, true, resultName);
       }
-       
+
       Assert.True(true);
     }
 
@@ -130,7 +130,18 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
 
     public static void AssertAreEqual(string actualResultJson, string expectedResultJson, bool ignoreCase = false, string resultName = "")
     {
-      Assert.Equal(expectedResultJson, actualResultJson, ignoreCase: ignoreCase, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+      var result = expectedResultJson.Equals(actualResultJson, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+
+      if (!result)
+      {
+        Console.WriteLine($"JSON difference in '{resultName}' data:");
+        Console.WriteLine($"ACTUAL: {actualResultJson}");
+        Console.WriteLine($"EXPECTED: {expectedResultJson}");
+
+        Assert.Equal(expectedResultJson, actualResultJson, ignoreCase: ignoreCase, ignoreLineEndingDifferences: true, ignoreWhiteSpaceDifferences: true);
+      }
+
+      Assert.True(result);
     }
 
     public static bool CompareDouble(double expectedDouble, double actualDouble, string field, int rowCount, int precision = 6)

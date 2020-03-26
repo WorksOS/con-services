@@ -1,13 +1,10 @@
 ﻿using Apache.Ignite.Core;
-using Apache.Ignite.Core.Cache;
-using Apache.Ignite.Core.Cache.Configuration;
 using Apache.Ignite.Core.Communication.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp;
 using Apache.Ignite.Core.Discovery.Tcp.Static;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Apache.Ignite.Core.Binary;
 using Apache.Ignite.Core.Deployment;
@@ -17,7 +14,6 @@ using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.Logging;
 using VSS.TRex.Storage.Models;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.DI;
 
@@ -69,7 +65,13 @@ namespace VSS.TRex.GridFabric.Servers.Client
             JvmOptions = new List<string>() {
               "-DIGNITE_QUIET=false",
               "-Djava.net.preferIPv4Stack=true",
-              "-XX:+UseG1GC"
+              "-XX:+UseG1GC",
+              "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
+              "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+              "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
+              "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+              "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+              "--illegal-access=permit"
             },
 
             JvmMaxMemoryMb = DIContext.Obtain<IConfigurationStore>().GetValueInt(IGNITE_JVM_MAX_HEAP_SIZE_MB, DEFAULT_IGNITE_JVM_MAX_HEAP_SIZE_MB),
@@ -123,7 +125,7 @@ namespace VSS.TRex.GridFabric.Servers.Client
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
     {
       cfg.SpringConfigUrl = @".\igniteMutableKubeConfig.xml";
-      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.12.0.jar=8088:prometheusConfig.yaml");
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {

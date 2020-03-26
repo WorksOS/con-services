@@ -5,13 +5,14 @@ using Apache.Ignite.Core.Compute;
 using FluentAssertions;
 using VSS.Productivity3D.Models.Models.Reports;
 using VSS.TRex.Cells;
-using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.Requests;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -32,11 +33,16 @@ namespace VSS.TRex.Tests.Reports.StationOffset
       StationOffsetReportRequestArgument_ApplicationService, 
       StationOffsetReportRequestResponse_ApplicationService>();
 
-    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting
-    <IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute,
-        StationOffsetReportRequestResponse_ClusterCompute>,
-      StationOffsetReportRequestArgument_ClusterCompute,
-      StationOffsetReportRequestResponse_ClusterCompute>();
+    private void AddClusterComputeGridRouting()
+    {
+      IgniteMock.AddClusterComputeGridRouting
+      <IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute,
+          StationOffsetReportRequestResponse_ClusterCompute>,
+        StationOffsetReportRequestArgument_ClusterCompute,
+        StationOffsetReportRequestResponse_ClusterCompute>();
+
+      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+    }
 
     private StationOffsetReportRequestArgument_ApplicationService SimpleStationOffsetReportRequestArgument_ApplicationService(ISiteModel siteModel, bool withOverrides)
     {

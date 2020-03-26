@@ -60,9 +60,11 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
         MediaTypes.JSON,
         null).Result;
 
+
       var receiveStream = HttpResponseMessage.Content.ReadAsStreamAsync().Result;
       var readStream = new StreamReader(receiveStream, Encoding.UTF8);
       var responseBody = readStream.ReadToEnd();
+      
       if (expectedHttpCode != (int)HttpResponseMessage.StatusCode)
       {
         Console.WriteLine("FAILEDHTTPSTATUS:" + responseBody);

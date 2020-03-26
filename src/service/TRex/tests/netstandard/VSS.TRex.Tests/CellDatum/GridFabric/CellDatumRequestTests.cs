@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.CellDatum.GridFabric.Arguments;
@@ -22,6 +21,8 @@ using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -44,9 +45,13 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
 
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CellDatumRequestComputeFunc_ApplicationService, CellDatumRequestArgument_ApplicationService, CellDatumResponse_ApplicationService>();
 
-    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeSpatialAffinityGridRouting<CellDatumRequestComputeFunc_ClusterCompute, CellDatumRequestArgument_ClusterCompute, CellDatumResponse_ClusterCompute>();
+    private void AddClusterComputeGridRouting()
+    {
+      IgniteMock.AddClusterComputeSpatialAffinityGridRouting<CellDatumRequestComputeFunc_ClusterCompute, CellDatumRequestArgument_ClusterCompute, CellDatumResponse_ClusterCompute>();
+      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+    }
 
-  
+
     private ISiteModel BuildModelForSingleCellDatum(DateTime baseTime, bool heightOnly = false)
     {
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();

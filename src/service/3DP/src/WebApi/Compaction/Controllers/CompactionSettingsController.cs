@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.ResponseCaching.Internal;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -7,10 +6,8 @@ using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.Productivity3D.Common.Extensions;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Models;
@@ -37,19 +34,15 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     private readonly IProjectSettingsProxy projectSettingsProxy;
 
-    private readonly IResponseCache cache;
-
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
     /// <param name="logger">LoggerFactory</param>
     /// <param name="projectSettingsProxy">Project settings proxy</param>
-    /// <param name="cache">The memory cache for the controller</param>
-    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy, IResponseCache cache)
+    public CompactionSettingsController(ILoggerFactory logger, IProjectSettingsProxy projectSettingsProxy)
     {
       this.log = logger.CreateLogger<CompactionSettingsController>();
       this.projectSettingsProxy = projectSettingsProxy;
-      this.cache = cache;
     }
 
     /// <summary>
@@ -113,8 +106,6 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         //Clear the cache for these updated settings so we get the updated settings for compaction requests.
         log.LogDebug($"About to clear settings for project {projectUid + settingsType}");
         ClearProjectSettingsCaches(projectUid + settingsType, Request.Headers.GetCustomHeaders());
-        log.LogDebug($"About to clear response cache for project PRJUID={projectUid.ToUpperInvariant()}");
-        cache.InvalidateReponseCacheForProject(projectUid);
       }
       log.LogInformation("ValidateProjectSettings returned: " + Response.StatusCode);
       return new ContractExecutionResult(ContractExecutionStatesEnum.ExecutedSuccessfully, $"Project settings {settingsType} are valid");

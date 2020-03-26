@@ -104,7 +104,13 @@ namespace VSS.TRex.GridFabric.Servers.Compute
       cfg.JvmOptions = new List<string>() {
         "-DIGNITE_QUIET=false",
         "-Djava.net.preferIPv4Stack=true",
-        "-XX:+UseG1GC"
+        "-XX:+UseG1GC",
+        "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED",
+        "--add-exports=java.base/sun.nio.ch=ALL-UNNAMED",
+        "--add-exports=java.management/com.sun.jmx.mbeanserver=ALL-UNNAMED",
+        "--add-exports=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED",
+        "--add-exports=java.base/sun.reflect.generics.reflectiveObjects=ALL-UNNAMED",
+        "--illegal-access=permit"
       };
 
 
@@ -130,7 +136,7 @@ namespace VSS.TRex.GridFabric.Servers.Compute
     private IgniteConfiguration setKubernetesIgniteConfiguration(IgniteConfiguration cfg)
     {
       cfg.SpringConfigUrl = @".\ignitePersistantMutableKubeConfig.xml";
-      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.11.0.jar=8088:prometheusConfig.yaml");
+      cfg.JvmOptions.Add("-javaagent:./libs/jmx_prometheus_javaagent-0.12.0.jar=8088:prometheusConfig.yaml");
 
       cfg.CommunicationSpi = new TcpCommunicationSpi()
       {

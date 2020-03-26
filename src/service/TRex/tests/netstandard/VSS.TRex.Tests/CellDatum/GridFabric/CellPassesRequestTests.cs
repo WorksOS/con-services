@@ -16,6 +16,8 @@ using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -29,9 +31,12 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
   {
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CellPassesRequestComputeFunc_ApplicationService, CellPassesRequestArgument_ApplicationService, CellPassesResponse>();
 
-    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeSpatialAffinityGridRouting<CellPassesRequestComputeFunc_ClusterCompute, CellPassesRequestArgument_ClusterCompute, CellPassesResponse>();
+    private void AddClusterComputeGridRouting()
+    {
+      IgniteMock.AddClusterComputeSpatialAffinityGridRouting<CellPassesRequestComputeFunc_ClusterCompute, CellPassesRequestArgument_ClusterCompute, CellPassesResponse>();
+      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+    }
 
-    
     private static CellPassesRequestArgument_ClusterCompute CreateRequestArgument(ISiteModel siteModel)
     {
       //The single cell is at world origin

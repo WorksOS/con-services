@@ -19,8 +19,9 @@ spec:
         app: {{ $serviceName }}
         component: {{ template "component.webapi" . }}
     spec:
+      serviceAccount: {{ .Values.environment }}-service-account
       containers:
-      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-3dassetmgmt-webapi:{{ .Values.image.tag }}
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-asset-management-webapi:{{ .Values.image.tag }}
         name: {{ $serviceName }}     
         livenessProbe:
           httpGet:

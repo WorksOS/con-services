@@ -40,7 +40,6 @@ namespace VSS.TRex.Gateway.WebApi
  
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      // Add framework services.
       DIBuilder.New(services)
         .Build()
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
@@ -81,7 +80,7 @@ namespace VSS.TRex.Gateway.WebApi
         .Complete();
     }
 
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
     }
   }

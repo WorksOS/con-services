@@ -3,12 +3,12 @@
 
 environment: dev
 
-rootDomain: eks.vspengg.com
+rootDomain: eks.ccss.cloud
 
 serviceAccountName: trex
 
 image:
-  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-trex"
+  repository: "940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-trex"
   tag: latest
 
 ingress:
@@ -18,7 +18,7 @@ ingress:
     - trex
   annotations:
     kubernetes.io/ingress.class: nginx
-    external-dns.alpha.kubernetes.io/target: eks.vspengg.com
+    external-dns.alpha.kubernetes.io/target: eks.ccss.cloud
 
 service:
   type: ClusterIP
@@ -90,7 +90,7 @@ mutableData:
       memory: 2048Mi
   storage:
     size: 10Gi
-    className: efs
+    className: aws-efs
     
   environment:
     enableTfa: false
@@ -119,7 +119,7 @@ psnode:
       memory: 7.0Gi
   storage:
     size: 10Gi
-    className: efs
+    className: aws-efs
   
 qmeshServer:
   replicaCount: 1

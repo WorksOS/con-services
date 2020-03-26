@@ -1,19 +1,19 @@
 version: '3'
 services:
   webapi_dev:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-raptor-webapi:[VERSION]
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-raptor-webapi:[VERSION]
     environment:
       - ALK_KEY=97CC5BD1CA28934796791B229AE9C3FA
       - ASNODEIP=dev-aslv01.vssengg.com
-      - assetmgmt3d_service=http://assetmgmt3d.dev.eks.vspengg.com
-      - push_service=http://push.dev.eks.vspengg.com
-      - scheduler_service=http://scheduler.dev.eks.vspengg.com
-      - project_service=http://project.dev.eks.vspengg.com
-      - filter_service=http://filter.dev.eks.vspengg.com
-      - tagfileauth_service=http://tagfileauth.dev.eks.vspengg.com
-      - trex_service_connectedsite=http://connectedsite.alpha.eks.vspengg.com
-      - trex_service_immutable=http://trex.immutable.dev.eks.vspengg.com
-      - trex_service_mutable=http://trex.mutable.dev.eks.vspengg.com
+      - assetmgmt3d_service=http://assetmgmt3d.dev.eks.ccss.cloud
+      - push_service=http://push.dev.eks.ccss.cloud
+      - scheduler_service=http://scheduler.dev.eks.ccss.cloud
+      - project_service=http://project.dev.eks.ccss.cloud
+      - filter_service=http://filter.dev.eks.ccss.cloud
+      - tagfileauth_service=http://tagfileauth.dev.eks.ccss.cloud
+      - trex_service_connectedsite=http://connectedsite.alpha.eks.ccss.cloud
+      - trex_service_immutable=http://trex.immutable.dev.eks.ccss.cloud
+      - trex_service_mutable=http://trex.mutable.dev.eks.ccss.cloud
       - ASSETMGMT_CACHE_LIFE=00:15:00
       - AWS_DESIGNIMPORT_BUCKET_NAME=vss-project3dp-stg
       - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
@@ -62,7 +62,7 @@ services:
       - MYSQL_SERVER_NAME_VSPDB=rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
       - MYSQL_USERNAME=Merino
       - MYSQL_USERNAME_BUILD="vssBuildUsr"
-      - NOTIFICATION_HUB_URL=http://push.dev.eks.vspengg.com/notifications
+      - NOTIFICATION_HUB_URL=http://push.dev.eks.ccss.cloud/notifications
       - PREFERENCE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0
       - PROJECT_CACHE_LIFE=00:30:00
       - PROJECT_SETTINGS_CACHE_LIFE=00:15:00
@@ -70,7 +70,7 @@ services:
       - RAPTORUSERNAME=svcRaptor
       - SCHEDULED_JOB_TIMEOUT=900000
       - SHAREUNC=\\dev-iolv01.vssengg.com\ProductionData
-      - SNAKEPIT_HOST=snakepit.dev.eks.vspengg.com
+      - SNAKEPIT_HOST=snakepit.dev.eks.ccss.cloud
       - TCCBASEURL=https://www.myconnectedsite.com
       - TCCFILESPACEID=u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
       - TCC_TAGFILE_FILESPACEID=ue5e7c33f-29c9-448c-b2d6-f6c9f4439c47

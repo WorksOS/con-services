@@ -7,7 +7,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.Rendering.Palettes;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
 
@@ -31,7 +30,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     public TileRenderRequestArgument()
     { }
 
-    public TileRenderRequestArgument(Guid siteModelID,
+    public TileRenderRequestArgument(Guid siteModelId,
                                      DisplayMode mode,
                                      IPlanViewPalette palette,
                                      BoundingWorldExtent3D extents,
@@ -41,7 +40,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
                                      IFilterSet filters,
                                      DesignOffset referenceDesign)
     {
-      ProjectID = siteModelID;
+      ProjectID = siteModelId;
       Mode = mode;
       Palette = palette;
       Extents = extents;
@@ -53,7 +52,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content to the writer
+    /// Serializes content to the writer
     /// </summary>
     /// <param name="writer"></param>
     public override void ToBinary(IBinaryRawWriter writer)
@@ -76,7 +75,7 @@ namespace VSS.TRex.Rendering.GridFabric.Arguments
     }
 
     /// <summary>
-    /// Serialises content from the writer
+    /// Serializes content from the writer
     /// </summary>
     /// <param name="reader"></param>
     public override void FromBinary(IBinaryRawReader reader)

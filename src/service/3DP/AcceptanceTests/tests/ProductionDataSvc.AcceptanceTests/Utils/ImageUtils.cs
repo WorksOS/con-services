@@ -11,24 +11,24 @@ namespace ProductionDataSvc.AcceptanceTests.Utils
     /// <summary>
     /// Compare the images and return the difference as a percentage.
     /// </summary>
-    public static float CompareImagesAndGetDifferencePercent(byte[] expectedTileData, byte[] actualTileData, string expFileName, string actFileName)
+    public static float CompareImagesAndGetDifferencePercent(byte[] expectedTileData, byte[] actualTileData)
+    {
+      var expectedImage = ConvertToImage(expectedTileData);
+      var actualImage = ConvertToImage(actualTileData);
+
+      return expectedImage.PercentageDifference(actualImage, 0);
+    }
+
+    public static void SaveImageFiles(byte[] expectedTileData, byte[] actualTileData, string expFileName, string actFileName)
     {
       var expectedImage = ConvertToImage(expectedTileData);
       var actualImage = ConvertToImage(actualTileData);
       SaveImageFile(expFileName, expectedImage);
       SaveImageFile(actFileName, actualImage);
 
-      var len = actFileName.Length - 4;
-      var diff = expectedImage.PercentageDifference(actualImage, 0);
-
-      if (diff > 0.0)
-      {
-        var diffImage = expectedImage.GetDifferenceImage(actualImage);
-        var diffFileName = actFileName.Substring(0, len) + "Differences.png";
-        SaveImageFile(diffFileName, diffImage);        
-      }
-
-      return diff;
+      var diffImage = expectedImage.GetDifferenceImage(actualImage);
+      var diffFileName = actFileName.Substring(0, actFileName.Length - 4) + "Differences.png";
+      SaveImageFile(diffFileName, diffImage);
     }
 
     /// <summary>

@@ -88,7 +88,7 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
         .Complete();
     }
 
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     { }
   }
 }

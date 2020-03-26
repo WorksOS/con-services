@@ -9,6 +9,7 @@ using VSS.TRex.Designs.SVL;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.Designs
 {

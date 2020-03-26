@@ -110,6 +110,8 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddSingleton<ITransferProxyFactory>(factory => new TransferProxyFactory(factory.GetRequiredService<IConfigurationStore>(), factory.GetRequiredService<ILoggerFactory>())))
         .Add(x => x.AddTransient<ITransferProxy>(sp => sp.GetRequiredService<ITransferProxyFactory>().NewProxy("AWS_BUCKET_NAME")))
 
+        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
         .Complete();
     }
 

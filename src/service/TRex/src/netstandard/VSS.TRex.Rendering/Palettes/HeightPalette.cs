@@ -2,8 +2,8 @@
 using System.Drawing;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.Types.CellPasses;
+using Range = VSS.TRex.Common.Utilities.Range;
 
 namespace VSS.TRex.Rendering.Palettes
 {

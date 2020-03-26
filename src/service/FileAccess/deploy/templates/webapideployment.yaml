@@ -15,8 +15,9 @@ spec:
       labels:
         app: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}
     spec:
+      serviceAccount: {{ .Values.environment }}-service-account
       containers:
-      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-fileaccess-webapi:{{ .Values.image.tag }}
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-file-access-webapi:{{ .Values.image.tag }}
         name: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}        
         livenessProbe:
           httpGet:

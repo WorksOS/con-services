@@ -10,9 +10,9 @@ data:
   TCCBASEURL: https://www.myconnectedsite.com
   TCCFILESPACEID: u3bdc38d6-1afe-470e-8c1c-fc241d4c5e01
 #Jaeger configuration
-  JAEGER_AGENT_HOST: jaeger-agent.logging
-  JAEGER_AGENT_PORT: "6831"
-  JAEGER_SAMPLER_TYPE: const
+#  JAEGER_AGENT_HOST: jaeger-agent.logging
+#  JAEGER_AGENT_PORT: "6831"
+#  JAEGER_SAMPLER_TYPE: const
 #MySql configuration
   MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
@@ -29,7 +29,7 @@ data:
   DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/dissociateprojectsubscription
   GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/  
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0 
-  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.vspengg.com/internal/v1
+  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
   VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
@@ -115,7 +115,7 @@ data:
   MIN_WORKER_THREADS: "512"
   SCHEDULED_JOB_TIMEOUT: "900000"
 #Notifications config
-  NOTIFICATION_HUB_URL: http://push.dev.eks.vspengg.com/notifications
+  NOTIFICATION_HUB_URL: http://push.dev.eks.ccss.cloud/notifications
   PUSH_NO_AUTHENTICATION_HEADER: "true"
 #DataOcean config
   DATA_OCEAN_URL: https://api-stg-usw2.trimblepaas.com/data_ocean_stage-v1.0

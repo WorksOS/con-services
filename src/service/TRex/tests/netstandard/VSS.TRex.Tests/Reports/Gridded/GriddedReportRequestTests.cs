@@ -10,6 +10,7 @@ using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
+using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -29,7 +30,11 @@ namespace VSS.TRex.Tests.Reports.Gridded
 
     private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<GriddedReportRequestComputeFunc, GriddedReportRequestArgument, GriddedReportRequestResponse>();
 
-    private void AddClusterComputeGridRouting() => IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+    private void AddClusterComputeGridRouting()
+    {
+      IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+    }
 
     private GriddedReportRequestArgument SimpleGriddedReportRequestArgument(Guid projectUid)
     {

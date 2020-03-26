@@ -251,7 +251,9 @@ namespace VSS.TRex.Pipelines
         {
           // If we have nothing to process, no point in waiting.
           if (TotalSubGridsToProcess == 0)
-            return Task.FromResult(true); 
+          {
+            return Task.FromResult(true);
+          }
 
           // Todo: Make the 2 minute limit configurable
           return PipelineSignalEvent.WaitAsync(120000); // Don't wait for more than two minutes...

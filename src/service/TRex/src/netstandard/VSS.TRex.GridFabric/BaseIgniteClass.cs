@@ -17,6 +17,12 @@ namespace VSS.TRex.GridFabric
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<BaseIgniteClass>();
 
+    /// <summary>
+    /// The name of the custom thread pool that progressive queries should be run within to avoid deadlock with
+    /// the primary public thread pool
+    /// </summary>
+    public const string TRexProgressiveQueryCustomThreadPoolName = "TRexProgressiveQueryResponsePool";
+
     private IIgnite _ignite;
     /// <summary>
     /// Ignite instance.

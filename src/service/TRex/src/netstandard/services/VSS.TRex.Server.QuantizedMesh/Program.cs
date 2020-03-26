@@ -93,6 +93,8 @@ namespace VSS.TRex.Server.QuantizedMesh
 
         .Add(x => x.AddSingleton<ITRexHeartBeatLogger>(new TRexHeartBeatLogger()))
 
+        .Add(x => x.AddSingleton<IPipelineListenerMapper>(new PipelineListenerMapper()))
+
         .Complete();
     }
 

@@ -17,7 +17,7 @@ services:
     ports:
       - "5001:5001"
   masterdataconsumercustomer:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -30,7 +30,7 @@ services:
       - schema
       - kafka
   masterdataconsumerproject:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -44,7 +44,7 @@ services:
       - projectonlyschema
       - kafka
   masterdataconsumergeofence:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -57,7 +57,7 @@ services:
       - schema
       - kafka
   masterdataconsumersubscription:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
     env_file:
       - docker-compose-local.env
     environment:
@@ -77,13 +77,13 @@ services:
       - db
       - masterdataschema
   masterdataschema:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer-db:latest
     env_file:
       - docker-compose-local.env
     depends_on:
       - db
   projectonlyschema:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/vss-masterdataconsumer-db:latest
+    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer-db:latest
     env_file:
       - docker-compose-local.env
     environment:

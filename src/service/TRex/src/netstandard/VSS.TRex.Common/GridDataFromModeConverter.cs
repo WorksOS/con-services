@@ -9,7 +9,11 @@ namespace VSS.TRex.Types
     {
       switch (Mode)
       {
-        case DisplayMode.Height: return GridDataType.HeightAndTime;
+        // Note: The internal sub grid requestor will typically retrieve height and time internally to satisfy
+        // a request for Height, and will return only the height component. Contexts that definitely want to receive
+        // height and time should ask for that explicitly
+        case DisplayMode.Height: return GridDataType.Height;
+
         case DisplayMode.CCV: return GridDataType.CCV;
         case DisplayMode.CCVPercent: return GridDataType.CCV;
         case DisplayMode.CCVSummary: return GridDataType.CCV;

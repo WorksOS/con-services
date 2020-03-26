@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Rewrite;
@@ -10,8 +9,6 @@ using VSS.Common.ServiceDiscovery;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
-using VSS.Productivity3D.Common.Filters.Caching;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
 using VSS.Productivity3D.Push.WebAPI;
@@ -40,7 +37,7 @@ namespace VSS.Productivity3D.WebApi
     public IConfigurationRoot ConfigurationRoot{ get; }
 
     /// <inheritdoc />
-    public Startup(IHostingEnvironment env)
+    public Startup(IWebHostEnvironment env)
     {
       var builder = new ConfigurationBuilder()
           .SetBasePath(env.ContentRootPath)
@@ -62,7 +59,6 @@ namespace VSS.Productivity3D.WebApi
       });
 
       services.AddResponseCompression();
-      services.AddCustomResponseCaching();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
@@ -87,7 +83,7 @@ namespace VSS.Productivity3D.WebApi
     }
 
     /// <inheritdoc />
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<RaptorAuthentication>();
 
@@ -96,11 +92,6 @@ namespace VSS.Productivity3D.WebApi
       app.UseResponseCompression();
       app.UseMvc();
 
-      //TODO: Remove this when our custom response caching fixed
-      if (CustomCachingPolicyProvider.ResponseCachingDisabled)
-      {
-        Log.LogWarning("Response caching disabled");
-      }
 #if RAPTOR
       CheckRaptorAvailabilityIfRequired();
 #endif

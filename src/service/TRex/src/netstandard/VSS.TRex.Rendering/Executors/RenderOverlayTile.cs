@@ -519,9 +519,7 @@ namespace VSS.TRex.Rendering.Executors
           ))
           {
             // Set the PVM rendering rexTask parameters for progressive processing
-            processor.Task.RequestDescriptor = RequestDescriptor;
             processor.Task.TRexNodeID = RequestingTRexNodeID;
-            processor.Task.GridDataType = GridDataFromModeConverter.Convert(Mode);
             ((IPVMRenderingTask)processor.Task).TileRenderer = Renderer;
 
             // Set the spatial extents of the tile boundary rotated into the north reference frame of the cell coordinate system to act as

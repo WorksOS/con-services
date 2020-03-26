@@ -1,0 +1,8 @@
+create:
+  for-new-branch: .*
+integration:
+  # plan branch name. At RSS world it will be repo branch name.
+  # Bamboo tries to find by plan branch name, if not found then by VCS branch name,
+  # if not found then merge with "master" plan.
+  merge-to: master
+  push-on-success: true
