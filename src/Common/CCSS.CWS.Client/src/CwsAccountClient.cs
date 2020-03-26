@@ -12,7 +12,7 @@ using VSS.MasterData.Proxies.Interfaces;
 
 namespace CCSS.CWS.Client
 {
-  public class CwsAccountClient : BaseClient, ICwsAccountClient
+  public class CwsAccountClient : CwsProfileManagerClient, ICwsAccountClient
   {
     public CwsAccountClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)

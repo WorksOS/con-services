@@ -13,7 +13,7 @@ namespace CCSS.CWS.Client
   /// <summary>
   /// These use the cws cws-profilemanager controller
   /// </summary>
-  public class CwsProjectClient : BaseClient, ICwsProjectClient
+  public class CwsProjectClient : CwsProfileManagerClient, ICwsProjectClient
   {
     public CwsProjectClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)

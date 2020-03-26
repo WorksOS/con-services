@@ -19,14 +19,8 @@ namespace CCSS.CWS.Client
   {
     public override bool IsInsideAuthBoundary => false;
     public override ApiService InternalServiceType => ApiService.None;
-    public override string ExternalServiceName => "cws";
-    public override ApiVersion Version => ApiVersion.V1;
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "CWS_CACHE_LIFE";
-
-    public const string CWS_BASE_URL_KEY = "CWS_BASE_URL";
-    public const string CWS_PROFILEMANAGER_URL_KEY = "CWS_PROFILEMANAGER_URL";
-    public const string CWS_DEVICEMANAGER_URL_KEY = "CWS_DEVICEMANAGER_URL";
 
     protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
@@ -57,10 +51,29 @@ namespace CCSS.CWS.Client
       }
     }
 
+    protected async Task PostData<TReq>(string route,
+      TReq request,
+      IList<KeyValuePair<string, string>> parameters = null,
+      IDictionary<string, string> customHeaders = null) where TReq : class
+    {
+      var payload = JsonConvert.SerializeObject(request);
+
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
+      {
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters);
+      }
+    }
+
     protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
       IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
     {
       return SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Delete, parameters);
+    }
+
+    protected Task DeleteData(string route, IList<KeyValuePair<string, string>> parameters = null,
+      IDictionary<string, string> customHeaders = null)
+    {
+      return SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Delete, parameters);
     }
 
     protected async Task<TRes> UpdateData<TReq, TRes>(string route,
@@ -76,6 +89,20 @@ namespace CCSS.CWS.Client
         return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Put, parameters, ms);
       }
     }
-     
+
+    protected async Task UpdateData<TReq>(string route,
+      TReq request,
+      IList<KeyValuePair<string, string>> parameters = null,
+      IDictionary<string, string> customHeaders = null) where TReq : class 
+    {
+      var payload = JsonConvert.SerializeObject(request);
+
+      using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
+      {
+        // Need to await this, as we need the stream (if we return the task, the stream is disposed)
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Put, parameters, ms);
+      }
+    }
+
   }
 }
