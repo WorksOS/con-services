@@ -396,13 +396,134 @@ namespace VSS.TRex.SubGrids
       // <-- ###US79098###
     }
 
+    private void AssignedFilteredValueContextToClient(byte stripeIndex, byte j, int topMostLayerCompactionHalfPassCount)
+    {
+      if (_gridDataType == GridDataType.PassCount || _gridDataType == GridDataType.CellProfile)
+        _assignmentContext.FilteredValue.PassCount = topMostLayerCompactionHalfPassCount / 2;
+
+      // If we are displaying a CCV summary view or are displaying a summary of only
+      // the top layer in the cell pass stack, then we need to make additional checks to
+      // determine if the CCV value filtered from the cell passes is not overridden by
+      // the layer in question being superseded. If that is the case, then the CCV value
+      // is not assigned to the result set to be passed back to the client as it effectively
+      // does not exist given this situation.
+
+      if (_cellProfile == null)
+        _clientGrid.AssignFilteredValue(stripeIndex, j, _assignmentContext);
+      else
+      {
+        if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) &&
+             (_liftParams.CCVSummaryTypes == CCVSummaryTypes.None || !_liftParams.CCVSummarizeTopLayerOnly)) ||
+            ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) &&
+             (_liftParams.MDPSummaryTypes == MDPSummaryTypes.None || !_liftParams.MDPSummarizeTopLayerOnly)) ||
+            // ReSharper disable once UseMethodAny.0
+            _cellProfile.Layers.Count() > 0 ||
+            _gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) // no CCA settings
+        {
+          _clientGrid.AssignFilteredValue(stripeIndex, j, _assignmentContext);
+        }
+      }
+    }
+
+    private void ChooseSingleFilteredPassForCell(byte stripeIndex, byte j)
+    {
+      _cellPassIterator.SetCellCoordinatesInSubgrid(stripeIndex, j);
+
+      if (_filter.AttributeFilter.HasElevationRangeFilter)
+        _cellPassIterator.SetIteratorElevationRange(_filterAnnex.ElevationRangeBottomElevationForCell, _filterAnnex.ElevationRangeTopElevationForCell);
+
+      _cellPassIterator.Initialise();
+
+      if (_filter.AttributeFilter.HasPassCountRangeFilter)
+        ProcessCellPassesPassCountRange();
+      else
+        ProcessCellPasses();
+
+      if (_haveFilteredPass &&
+          (_firstPassMinElev || _filter.AttributeFilter.HasElevationTypeFilter &&
+            (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest)))
+      {
+        _assignmentContext.FilteredValue.FilteredPassData = _tempPass;
+        _assignmentContext.FilteredValue.PassCount = -1;
+      }
+    }
+
+    private void ChooseSingleFilteredPassForCellPromProfiler(byte stripeIndex, byte j, int topMostLayerCompactionHalfPassCount)
+    {
+      // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using profiler");
+
+      if (_canUseGlobalLatestCells)
+      {
+        // Optimistically assume that the global latest value is acceptable
+        AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref _assignmentContext.FilteredValue.FilteredPassData.FilteredPass, stripeIndex, j);
+
+        _assignmentContext.FilteredValue.PassCount = -1;
+
+        // Check to see if there is a non-null value for the requested field in the latest value.
+        // If there is none, then there is no non-null value in any of the recorded cells passes
+        // so the null value may be returned as the filtered value.
+        if (_clientGrid.AssignableFilteredValueIsNull(ref _assignmentContext.FilteredValue.FilteredPassData))
+        {
+          return;
+        }
+
+        if (_clientGrid.WantsLiftProcessingResults())
+          _haveFilteredPass = IsFilteredValueFromLatestCellPass(stripeIndex, j);
+
+        if (_haveFilteredPass)
+          FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex],
+            _populationControl, ref _assignmentContext.FilteredValue.FilteredPassData);
+      }
+
+      if (!_haveFilteredPass)
+      {
+        _cellPassIterator.SetCellCoordinatesInSubgrid(stripeIndex, j);
+
+        // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Calling BuildLiftsForCell");
+
+        if (_profiler.CellLiftBuilder.Build(_cellProfile, _liftParams, _clientGrid,
+          _assignmentContext, // Place a filtered value into this assignment context
+          _cellPassIterator, // Iterate over the cells using this cell pass iterator
+          true)) // Return an individual filtered value
+        {
+          // topMostLayerPassCount = _profiler.CellLiftBuilder.FilteredPassCountOfTopMostLayer;
+          topMostLayerCompactionHalfPassCount = _profiler.CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
+
+          // Filtered value selection is combined with lift analysis in this context via
+          // the provision of the client grid and the assignment context to the lift analysis engine
+
+          // If we have a temperature filter to be filtered by last pass
+          if (_filter.AttributeFilter.HasTemperatureRangeFilter && _filter.AttributeFilter.FilterTemperatureByLastPass)
+          {
+            var materialTemperature = _cellProfile.Passes.FilteredPassData[_cellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature;
+            _haveFilteredPass = materialTemperature != CellPassConsts.NullMaterialTemperatureValue &&
+                                Range.InRange(materialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax);
+          }
+          else
+            _haveFilteredPass = true;
+        }
+
+        // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Call to BuildLiftsForCell completed");
+      }
+    }
+
+    private void ChooseSingleFilteredValueFromLastPass(byte stripeIndex, byte j)
+    {
+      // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using last pass grid");
+
+      AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref _assignmentContext.FilteredValue.FilteredPassData.FilteredPass, stripeIndex, j);
+
+      _haveFilteredPass = true;
+      _assignmentContext.FilteredValue.PassCount = -1;
+    }
+
     /// <summary>
     /// Retrieves cell values for a sub grid stripe at a time.
     /// </summary>
     /// <returns></returns>
     public override void RetrieveSubGridStripe(byte stripeIndex)
     {
-      //  int TopMostLayerPassCount = 0;
+      //  int topMostLayerPassCount = 0;
       var topMostLayerCompactionHalfPassCount = 0;
 
       // if (Debug_ExtremeLogSwitchD) Log.LogDebug($"Beginning stripe iteration {StripeIndex} at {clientGrid.OriginX}x{clientGrid.OriginY}");
@@ -425,138 +546,25 @@ namespace VSS.TRex.SubGrids
 
         if (_useLastPassGrid)
         {
-          // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using last pass grid");
-
-          AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref _assignmentContext.FilteredValue.FilteredPassData.FilteredPass, stripeIndex, j);
-
-          // TODO: Review if line below replaced with line above in Ignite POC is good...
-          // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[StripeIndex, J];
-
-          _haveFilteredPass = true;
-          _assignmentContext.FilteredValue.PassCount = -1;
+          ChooseSingleFilteredValueFromLastPass(stripeIndex, j);
         }
         else
         {
-          // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using profiler");
-
           _filterAnnex.InitializeFilteringForCell(_filter.AttributeFilter, stripeIndex, j);
 
           if (_profiler != null)
           {
-            // While we have been given a profiler, we may not need to use it to analyze layers in the cell pass stack.
-            // The layer analysis in this operation is intended to locate cell passes belonging to superseded layers,
-            // in which case they are not considered for providing the requested value. However, if there is no filter
-            // in effect, then the global latest information for the sub grid may be consulted first to see if the
-            // appropriate values came from the last physically collected cell pass in the cell. Note that the tracking
-            // of latest values is also true for time, so that the time recorded in the latest values structure also
-            // includes that cell pass time.
-
-            if (_canUseGlobalLatestCells)
-            {
-              // Optimistically assume that the global latest value is acceptable
-              AssignRequiredFilteredPassAttributesFromGlobalLatestCells(ref _assignmentContext.FilteredValue.FilteredPassData.FilteredPass, stripeIndex, j);
-
-              // TODO: Review if line below replaced with line above in Ignite POC is good...
-              // AssignmentContext.FilteredValue.FilteredPassData.FilteredPass = _GlobalLatestCells[StripeIndex, J];
-
-              _assignmentContext.FilteredValue.PassCount = -1;
-
-              // Check to see if there is a non-null value for the requested field in the latest value.
-              // If there is none, then there is no non-null value in any of the recorded cells passes
-              // so the null value may be returned as the filtered value.
-              if (_clientGrid.AssignableFilteredValueIsNull(ref _assignmentContext.FilteredValue.FilteredPassData))
-                continue;
-
-              if (_clientGrid.WantsLiftProcessingResults())
-                _haveFilteredPass = IsFilteredValueFromLatestCellPass(stripeIndex, j);
-
-              if (_haveFilteredPass)
-                FiltersValuePopulation.PopulateFilteredValues(_siteModel.MachinesTargetValues[_currentPass.FilteredPass.InternalSiteModelMachineIndex],
-                  _populationControl, ref _assignmentContext.FilteredValue.FilteredPassData);
-            }
-
-            if (!_haveFilteredPass)
-            {
-              _cellPassIterator.SetCellCoordinatesInSubgrid(stripeIndex, j);
-
-              // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Calling BuildLiftsForCell");
-
-              if (_profiler.CellLiftBuilder.Build(_cellProfile, _liftParams, _clientGrid,
-                _assignmentContext, // Place a filtered value into this assignment context
-                _cellPassIterator, // Iterate over the cells using this cell pass iterator
-                true)) // Return an individual filtered value
-              {
-                // TopMostLayerPassCount = _profiler.CellLiftBuilder.FilteredPassCountOfTopMostLayer;
-                topMostLayerCompactionHalfPassCount = _profiler.CellLiftBuilder.FilteredHalfCellPassCountOfTopMostLayer;
-
-                // Filtered value selection is combined with lift analysis in this context via
-                // the provision of the client grid and the assignment context to the lift analysis engine
-
-                // If we have a temperature filter to be filtered by last pass
-                if (_filter.AttributeFilter.HasTemperatureRangeFilter && _filter.AttributeFilter.FilterTemperatureByLastPass)
-                {
-                  var materialTemperature = _cellProfile.Passes.FilteredPassData[_cellProfile.Passes.PassCount - 1].FilteredPass.MaterialTemperature;
-                  _haveFilteredPass = materialTemperature != CellPassConsts.NullMaterialTemperatureValue &&
-                                      Range.InRange(materialTemperature, _filter.AttributeFilter.MaterialTemperatureMin, _filter.AttributeFilter.MaterialTemperatureMax);
-                }
-                else
-                  _haveFilteredPass = true;
-              }
-
-              // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Call to BuildLiftsForCell completed");
-            }
+            ChooseSingleFilteredPassForCellPromProfiler(stripeIndex, j, topMostLayerCompactionHalfPassCount);
           }
           else
           {
-            _cellPassIterator.SetCellCoordinatesInSubgrid(stripeIndex, j);
-
-            if (_filter.AttributeFilter.HasElevationRangeFilter)
-              _cellPassIterator.SetIteratorElevationRange(_filterAnnex.ElevationRangeBottomElevationForCell, _filterAnnex.ElevationRangeTopElevationForCell);
-
-            _cellPassIterator.Initialise();
-
-            if (_filter.AttributeFilter.HasPassCountRangeFilter)
-              ProcessCellPassesPassCountRange();
-            else
-              ProcessCellPasses();
-
-            if (_haveFilteredPass &&
-                (_firstPassMinElev || _filter.AttributeFilter.HasElevationTypeFilter &&
-                (_filter.AttributeFilter.ElevationType == ElevationType.Highest || _filter.AttributeFilter.ElevationType == ElevationType.Lowest)))
-            {
-              _assignmentContext.FilteredValue.FilteredPassData = _tempPass;
-              _assignmentContext.FilteredValue.PassCount = -1;
-            }
+            ChooseSingleFilteredPassForCell(stripeIndex, j);
           }
         }
 
         if (_haveFilteredPass)
         {
-          if (_gridDataType == GridDataType.PassCount || _gridDataType == GridDataType.CellProfile)
-            _assignmentContext.FilteredValue.PassCount = topMostLayerCompactionHalfPassCount / 2;
-
-          // If we are displaying a CCV summary view or are displaying a summary of only
-          // the top layer in the cell pass stack, then we need to make additional checks to
-          // determine if the CCV value filtered from the cell passes is not overridden by
-          // the layer in question being superseded. If that is the case, then the CCV value
-          // is not assigned to the result set to be passed back to the client as it effectively
-          // does not exist given this situation.
-
-          if (_cellProfile == null)
-            _clientGrid.AssignFilteredValue(stripeIndex, j, _assignmentContext);
-          else
-          {
-            if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) &&
-                 (_liftParams.CCVSummaryTypes == CCVSummaryTypes.None || !_liftParams.CCVSummarizeTopLayerOnly)) ||
-                ((_gridDataType == GridDataType.MDP || _gridDataType == GridDataType.MDPPercent) &&
-                 (_liftParams.MDPSummaryTypes == MDPSummaryTypes.None || !_liftParams.MDPSummarizeTopLayerOnly)) ||
-                // ReSharper disable once UseMethodAny.0
-                _cellProfile.Layers.Count() > 0 ||
-                _gridDataType == GridDataType.CCA || _gridDataType == GridDataType.CCAPercent) // no CCA settings
-            {
-              _clientGrid.AssignFilteredValue(stripeIndex, j, _assignmentContext);
-            }
-          }
+          AssignedFilteredValueContextToClient(stripeIndex, j, topMostLayerCompactionHalfPassCount);
         }
       }
 
