@@ -21,11 +21,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public string ProjectUid { get; set; }
 
     public IDictionary<string, string> CustomHeaders { get; set; }
-
-    /// <summary>
-    /// Determines whether CRUD operations should result in a Kafka message being sent.
-    /// </summary>
-    public bool SendKafkaMessages;
     
     public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
     {

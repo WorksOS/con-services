@@ -137,7 +137,7 @@ namespace VSS.MasterData.Repositories
         return ExecuteWithAsyncPolicy(insert, filter);
       }
 
-      // a delete was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
+      // a delete was processed before the create, even though it's actionUTC is later (due to old kafka partioning issue?)
       //       update everything but ActionUTC from the create
       if (existing.LastActionedUtc >= filter.LastActionedUtc && existing.IsDeleted)
       {
@@ -220,7 +220,7 @@ namespace VSS.MasterData.Repositories
       }
       else
       {
-        // a delete was processed before the create, even though it's actionUTC is later (due to kafka partioning issue)
+        // a delete was processed before the create, even though it's actionUTC is later (due to old kafka partioning issue?)
         Log.LogDebug(
           $"FilterRepository/DeleteFilter: delete event where no filter exists, creating one. filter={filter.FilterUid}");
 

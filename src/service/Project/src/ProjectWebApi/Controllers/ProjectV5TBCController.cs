@@ -132,24 +132,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 86);
       }
-      // todoMaverick do we not need ValidateTccOrgExecutor and Customer/CustomerTCCOrg tables anymore?
-
-      //Note: This is a very old legacy code that validates subs against TCC. This is not needed anymore as we allow project creation regardless of TCC subscription to support Earthworks machines.
-
-      /* Logger.LogInformation(
-       $"ValidateTCCAuthorization. tccAuthorizationRequest: {JsonConvert.SerializeObject(tccAuthorizationRequest)}");
-
-     tccAuthorizationRequest.Validate();
-
-     await WithServiceExceptionTryExecuteAsync(() =>
-       RequestExecutorContainerFactory
-         .Build<ValidateTccOrgExecutor>(Logger, ConfigStore, ServiceExceptionHandler,
-           customerUid, null, null, customHeaders,
-           null, null,
-           null, null, null,
-           null, FileRepo, customerRepo)
-         .ProcessAsync(tccAuthorizationRequest)
-     );*/
 
       Logger.LogInformation("ValidateTccAuthorization. completed succesfully");
       return ReturnSuccessV5Result.CreateReturnSuccessV5Result(HttpStatusCode.OK, true);

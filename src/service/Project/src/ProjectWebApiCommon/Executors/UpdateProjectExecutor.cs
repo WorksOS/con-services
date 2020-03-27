@@ -38,7 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
       // todoMaverick theres a bug if endDate is extended, it needs to re-check overlap
-      if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.GeometryWKT,
+      if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID.ToString(),
@@ -133,7 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel);
           // todoMaverick what are errors?
         }
-        if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.GeometryWKT,
+        if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
         {
           // todoMaverick how to update timezone
@@ -158,7 +158,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         rollbackProjectEvent.ProjectName = existing.Name;
         rollbackProjectEvent.Description = existing.Description;
         rollbackProjectEvent.ProjectType = existing.ProjectType;
-        rollbackProjectEvent.ProjectBoundary = existing.GeometryWKT;
+        rollbackProjectEvent.ProjectBoundary = existing.Boundary;
         rollbackProjectEvent.CoordinateSystemFileName = existing.CoordinateSystemFileName;
         rollbackProjectEvent.ActionUTC = DateTime.UtcNow;
 

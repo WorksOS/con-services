@@ -12,7 +12,7 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public int? FillColor { get; set; }
     public bool? IsTransparent { get; set; }
     public Guid GeofenceUID { get; set; }
-    public Guid UserUID { get; set; }
+    public string UserUID { get; set; }
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }
     public DateTime? EndDate { get; set; }

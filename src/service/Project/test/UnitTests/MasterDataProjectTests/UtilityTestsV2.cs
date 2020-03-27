@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -81,7 +80,7 @@ namespace VSS.MasterData.ProjectTests
         StartDate = new DateTime(2017, 01, 20),
         EndDate = new DateTime(2017, 02, 15),
         CustomerUID = Guid.NewGuid().ToString(),
-        GeometryWKT = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
+        Boundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         CoordinateSystemFileName = "",
         CoordinateSystemLastActionedUTC = new DateTime(2017, 01, 21),
 
@@ -100,7 +99,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(project.StartDate.ToString("O"), result.StartDate);
       Assert.Equal(project.EndDate.ToString("O"), result.EndDate);
       Assert.Equal(project.CustomerUID, result.CustomerUid);
-      Assert.Equal(project.GeometryWKT, result.ProjectGeofenceWKT);
+      Assert.Equal(project.Boundary, result.ProjectGeofenceWKT);
       Assert.False(result.IsArchived, "IsArchived has not been mapped correctly");
 
       // just make a copy
@@ -124,7 +123,7 @@ namespace VSS.MasterData.ProjectTests
         StartDate = new DateTime(2017, 01, 20),
         EndDate = new DateTime(2017, 02, 15),
         CustomerUID = Guid.NewGuid().ToString(),
-        GeometryWKT = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
+        Boundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         CoordinateSystemFileName = "",
         CoordinateSystemLastActionedUTC = new DateTime(2017, 01, 21),
 

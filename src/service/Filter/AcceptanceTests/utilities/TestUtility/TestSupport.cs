@@ -16,7 +16,6 @@ namespace TestUtility
 
     public Guid CustomerUid { get; set; }
     public DateTime EventDate { get; set; }
-    public bool IsPublishToKafka { get; set; }
     public bool IsPublishToWebApi { get; set; }
 
     public readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
@@ -48,7 +47,7 @@ namespace TestUtility
       EventDate = DateTime.SpecifyKind(DateTime.Today.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
     }
     /// <summary>
-    /// Publish events to kafka from string array
+    /// Publish events from string array
     /// </summary>
     /// <param name="eventArray">string array with all the events we are going to publish</param>
     public void PublishEventCollection(string[] eventArray)
@@ -56,9 +55,7 @@ namespace TestUtility
       try
       {
         if (IsPublishToWebApi)
-        { msg.DisplayEventsToConsoleWeb(eventArray); }
-        else if (IsPublishToKafka)
-        { msg.DisplayEventsToConsoleKafka(eventArray); }
+        { msg.DisplayEventsToConsoleWeb(eventArray); }        
         else
         { msg.DisplayEventsForDbInjectToConsole(eventArray); }
 
@@ -67,12 +64,9 @@ namespace TestUtility
         {
           var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
           dynamic dynEvt = ConvertToExpando(allColumnNames, eventRow);
-          //var eventDate = dynEvt.EventDate;
-          //LastEventDate = eventDate;
-          if (IsPublishToKafka || IsPublishToWebApi)
+          if (IsPublishToWebApi)
           {
             var jsonString = BuildEventIntoObject(dynEvt);
-            //var topicName = SetTheKafkaTopicFromTheEvent(dynEvt.EventType);
             if (IsPublishToWebApi)
             {
               string routeSuffix;
@@ -95,12 +89,7 @@ namespace TestUtility
                   break;
               }
               CallFilterWebApi(routeSuffix, method, jsonString);
-            }
-            else
-            {
-              //kafkaDriver.SendKafkaMessage(topicName, jsonString);
-              //WaitForTimeBasedOnNumberOfRecords(eventArray.Length);
-            }
+            }           
           }
           else
           {

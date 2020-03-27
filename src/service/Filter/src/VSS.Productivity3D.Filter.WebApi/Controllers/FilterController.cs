@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// </summary>
     [HttpPut("api/v1/filter/{ProjectUid}")]
     public async Task<FilterDescriptorSingleResult> PutFilter(
-      [FromServices] IGeofenceProxy geofenceProxy,
+      //[FromServices] IGeofenceProxy geofenceProxy,
       [FromServices] IFileImportProxy fileImportProxy,
       [FromServices] INotificationHubClient notificationHubClient,
       string projectUid,
@@ -121,7 +121,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectProxy,
         productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-        fileImportProxy: fileImportProxy, geofenceProxy: geofenceProxy);
+        fileImportProxy: fileImportProxy /*, geofenceProxy: geofenceProxy */);
       var upsertFilterResult = await UpsertFilter(filterExecutor, await GetProject(projectUid), request);
 
       if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent)
@@ -141,8 +141,9 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpPost("api/v1/filters/{projectUid}")]
     public async Task<FilterDescriptorListResult> CreateFilters(
       string projectUid,
-      [FromBody] FilterListRequest request,
-      [FromServices] IGeofenceProxy geofenceProxy)
+      [FromBody] FilterListRequest request
+      /* ,     [FromServices] IGeofenceProxy geofenceProxy */
+      )
     {
       Log.LogInformation($"{nameof(CreateFilters)}: CustomerUID={CustomerUid} FilterListRequest: {JsonConvert.SerializeObject(request)}");
 
@@ -154,8 +155,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var projectTask = GetProject(projectUid);
       var newFilters = new List<FilterDescriptor>();
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectProxy,
-        productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-        geofenceProxy: geofenceProxy);
+        productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction
+        /* , geofenceProxy: geofenceProxy */ );
 
       var project = await projectTask;
 

@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
     /// <summary>
     /// Hydrates the filterJson string with the boundary data and uses the MasterData Models filter model to do so - to isolate logic there
     /// </summary>
-    public static async Task<string> HydrateJsonWithBoundary(IGeofenceProxy geofenceProxy, IGeofenceRepository geofenceRepository,
+    public static async Task<string> HydrateJsonWithBoundary(/*IGeofenceProxy geofenceProxy, */ IGeofenceRepository geofenceRepository,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, FilterRequestFull filterRequestFull)
     {
       var filterTempForHydration = filterRequestFull.FilterModel(serviceExceptionHandler);
@@ -55,15 +55,16 @@ namespace VSS.Productivity3D.Filter.Common.Validators
           filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid);
         }
 
-        if (filterBoundary == null)
-        {
-          //Get geofence from geofence service. It could be a favorite or an associated geofence.
-          methodName = "geofenceProxy.GetGeofenceForCustomer";
-          var geofence = await geofenceProxy.GetGeofenceForCustomer(
-            filterRequestFull.CustomerUid, filterTempForHydration.PolygonUid, filterRequestFull.CustomHeaders);
-          if (geofence != null)
-            filterBoundary = AutoMapperUtility.Automapper.Map<Geofence>(geofence);
-        }
+        // geofenceSvc not available to ccss
+        //if (filterBoundary == null)
+        //{
+        //  //Get geofence from geofence service. It could be a favorite or an associated geofence.
+        //  methodName = "geofenceProxy.GetGeofenceForCustomer";
+        //  var geofence = await geofenceProxy.GetGeofenceForCustomer(
+        //    filterRequestFull.CustomerUid, filterTempForHydration.PolygonUid, filterRequestFull.CustomHeaders);
+        //  if (geofence != null)
+        //    filterBoundary = AutoMapperUtility.Automapper.Map<Geofence>(geofence);
+        //}
       }
       catch (Exception e)
       {

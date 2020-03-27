@@ -11,8 +11,6 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
@@ -79,7 +77,10 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       services.AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>();
+
+      // we don't have these VSS services available to ccss yet
+      //services.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>();
+      //services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
 
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();

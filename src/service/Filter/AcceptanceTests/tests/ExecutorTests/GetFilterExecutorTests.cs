@@ -13,6 +13,7 @@ using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
@@ -67,7 +68,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId,  new ProjectData() { ProjectUid = projectUid }, new FilterRequest {FilterUid = filterUid, FilterType = filterType});
+      var request = FilterRequestFull.Create(null, custUid, false, userId,  new ProjectData() { ProjectUID = projectUid }, new FilterRequest {FilterUid = filterUid, FilterType = filterType});
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -122,7 +123,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, true, "0", new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, FilterType = filterType });
+      var request = FilterRequestFull.Create(null, custUid, true, "0", new ProjectData() { ProjectUID = projectUid }, new FilterRequest { FilterUid = filterUid, FilterType = filterType });
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -212,13 +213,13 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
@@ -259,13 +260,13 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
@@ -321,7 +322,7 @@ namespace ExecutorTests
 
       WriteEventToDb(filterCreateEvent);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectData: projectData, filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
 
@@ -329,7 +330,7 @@ namespace ExecutorTests
       tcs.SetResult(new List<ProjectData> {projectData});
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
 

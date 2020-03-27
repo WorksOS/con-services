@@ -1,7 +1,6 @@
 [Console]::ResetColor()
 
-# Set KAFKA_ADVERTISED_HOST_NAME for local testing.
-& ../../config/apply-kafka-config-local.ps1
+IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
 
 Write-Host "Stopping Docker containers"
 docker ps -q | ForEach-Object { docker stop $_ }

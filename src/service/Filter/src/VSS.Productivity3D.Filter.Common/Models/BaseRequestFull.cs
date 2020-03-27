@@ -19,11 +19,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public IDictionary<string, string> CustomHeaders { get; set; }
 
     /// <summary>
-    /// Determines whether CRUD operations should result in a Kafka message being sent.
-    /// </summary>
-    public bool SendKafkaMessages = true;
-
-    /// <summary>
     /// Returns a new instance of <see cref="BaseRequestFull"/> using the provided inputs.
     /// </summary>
     public static BaseRequestFull Create(

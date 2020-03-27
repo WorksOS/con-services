@@ -702,7 +702,7 @@ namespace RepositoryTests
     [TestMethod]
     public void GetAssociatedProjectGeofences()
     {
-      var projUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid().ToString();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createAssociateEvent1 = new AssociateProjectGeofence
@@ -730,7 +730,7 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateAssociatedProjectGeofence_HappyPath()
     {
-      var projUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid().ToString();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createAssociateEvent = new AssociateProjectGeofence
@@ -752,8 +752,8 @@ namespace RepositoryTests
       var geofenceUid = Guid.NewGuid();
       var createGeofenceEvent = new CreateGeofenceEvent
       {
-        CustomerUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
+        UserUID = Guid.NewGuid().ToString(),
         GeofenceUID = geofenceUid,
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
@@ -772,8 +772,8 @@ namespace RepositoryTests
     [TestMethod]
     public void GetGeofences_HappyPath()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var geofenceType = GeofenceType.Filter.ToString();
@@ -843,8 +843,8 @@ namespace RepositoryTests
       var geofenceType = GeofenceType.Filter;
       var createGeofenceEvent = new CreateGeofenceEvent
       {
-        CustomerUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
+        UserUID = Guid.NewGuid().ToString(),
         GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
@@ -883,11 +883,11 @@ namespace RepositoryTests
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var geofenceUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
+      var userUid = Guid.NewGuid().ToString();
       var geofenceType = GeofenceType.Filter;
       var createGeofenceEvent = new CreateGeofenceEvent
       {
-        CustomerUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
         UserUID = userUid,
         GeofenceUID = geofenceUid,
         GeofenceName = "Boundary one",

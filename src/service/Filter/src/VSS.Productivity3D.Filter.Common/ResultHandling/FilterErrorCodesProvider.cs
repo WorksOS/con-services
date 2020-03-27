@@ -19,7 +19,7 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       DynamicAddwithOffset("DeleteFilter failed. The requested filter does not exist, or does not belong to the requesting customer; project or user.", 11);
       DynamicAddwithOffset("DeleteFilter failed. Unable to delete filterUid.", 12);
       DynamicAddwithOffset("DeleteFilter failed. Unable to delete filterUid. Exception: {0}.", 13);
-      DynamicAddwithOffset("DeleteFilter failed. Unable to write to Kafka. Exception: {0}.", 14);
+      //DynamicAddwithOffset("DeleteFilter failed. Unable to write to Kafka. Exception: {0}.", 14);
       DynamicAddwithOffset("UpsertFilter failed. Unable to read filters for project. Exception: {0}.", 15);
       DynamicAddwithOffset("UpsertFilter failed. Transient filter not updateable, should not have filterUid provided.", 16);
       DynamicAddwithOffset("UpsertFilter failed. Unable to update persistent filter.", 17);
@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       //DynamicAddwithOffset("UpsertFilter failed. Unable to delete persistent filter. Exception: {0}.", 23);
       DynamicAddwithOffset("UpsertFilter failed. Unable to create persistent filter.", 24);
       DynamicAddwithOffset("UpsertFilter failed. Unable to create persistent filter. Exception: {0}.", 25);
-      DynamicAddwithOffset("UpsertFilter failed. Unable to write to Kafka. Exception: {0}.", 26);
+      //DynamicAddwithOffset("UpsertFilter failed. Unable to write to Kafka. Exception: {0}.", 26);
       DynamicAddwithOffset("Invalid customerUid.", 27);
       DynamicAddwithOffset("Invalid userUid.", 28);
       //29: FilterValidationErrorCodesProvider
@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Filter.Common.ResultHandling
       DynamicAddwithOffset("DeleteBoundary. Invalid parameters.", 53);
       DynamicAddwithOffset("UpsertBoundary. Invalid parameters.", 54);
       DynamicAddwithOffset("UpsertBoundary failed. Unable to create association to project.", 55);
-      DynamicAddwithOffset("UpsertBoundary failed. Unable to write to Kafka. Exception: {0}.", 56);
+      //DynamicAddwithOffset("UpsertBoundary failed. Unable to write to Kafka. Exception: {0}.", 56);*/
       DynamicAddwithOffset("UpsertBoundary failed. Unable to create boundary. Exception: {0}.", 57);
       DynamicAddwithOffset("UpsertBoundary failed. Unable to create boundary.", 58);
       DynamicAddwithOffset("Invalid boundaryUid.", 59);

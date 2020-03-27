@@ -29,10 +29,10 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy,
-      RepositoryBase repository, RepositoryBase auxRepository,
-      IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy)
+      RepositoryBase repository, RepositoryBase auxRepository
+      /*, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy */)
        : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
-         fileImportProxy, repository, auxRepository, geofenceProxy, unifiedProductivityProxy)
+         fileImportProxy, repository, auxRepository /*, geofenceProxy, unifiedProductivityProxy */)
     {
     }
 
@@ -59,8 +59,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       var projectRepo = (IProjectRepository)auxRepository;
 
       Task<GeofenceDataListResult> boundariesTask = null;
-      Task<List<GeofenceData>> favoritesTask = null;
-      Task<List<GeofenceData>> associatedTask = null;
+      //Task<List<GeofenceData>> favoritesTask = null;
+      //Task<List<GeofenceData>> associatedTask = null;
       try
       {
         //a) Custom boundaries 
@@ -68,13 +68,13 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         log, serviceExceptionHandler, request.ProjectUid, projectRepo, (IGeofenceRepository)Repository);
         //b) favorite geofences that overlap project 
 
-        // todoMaverick what to do with refs to geofence and UnifiedProd services which we no longer have access to?
-        favoritesTask =
-          GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
-        //c) unified productivity associated geofences
-        associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid, request.CustomHeaders);
+        // geofence and UnifiedProd services are not available to ccss
+        //favoritesTask =
+        //  GeofenceProxy.GetFavoriteGeofences(request.CustomerUid, request.UserUid, request.CustomHeaders);
+        ////c) unified productivity associated geofences
+        //associatedTask = UnifiedProductivityProxy.GetAssociatedGeofences(request.ProjectUid, request.CustomHeaders);
 
-        await Task.WhenAll(boundariesTask, favoritesTask, associatedTask);
+        await Task.WhenAll(boundariesTask /*, favoritesTask, associatedTask */);
       }
       catch (Exception e)
       {
@@ -85,20 +85,20 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       {
         if (boundariesTask != null && !boundariesTask.IsFaulted && boundariesTask.Result != null)
           boundaries.AddRange(boundariesTask.Result.GeofenceData);
-        if (associatedTask != null && !associatedTask.IsFaulted && associatedTask.Result != null)
-          boundaries.AddRange(associatedTask.Result);
-        if (favoritesTask != null && !favoritesTask.IsFaulted && favoritesTask.Result != null)
-        {
-          //Find out which favorite geofences overlap project boundary
-          var overlappingGeofences =
-            (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT,
-              favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
-          for (var i = 0; i < favoritesTask.Result.Count; i++)
-          {
-            if (overlappingGeofences[i])
-              boundaries.Add(favoritesTask.Result[i]);
-          }
-        }
+        //if (associatedTask != null && !associatedTask.IsFaulted && associatedTask.Result != null)
+        //  boundaries.AddRange(associatedTask.Result);
+        //if (favoritesTask != null && !favoritesTask.IsFaulted && favoritesTask.Result != null)
+        //{
+        //  //Find out which favorite geofences overlap project boundary
+        //  var overlappingGeofences =
+        //    (await projectRepo.DoPolygonsOverlap(request.ProjectGeometryWKT,
+        //      favoritesTask.Result.Select(g => g.GeometryWKT))).ToList();
+        //  for (var i = 0; i < favoritesTask.Result.Count; i++)
+        //  {
+        //    if (overlappingGeofences[i])
+        //      boundaries.Add(favoritesTask.Result[i]);
+        //  }
+        //}
       }
       catch (Exception ex)
       {

@@ -13,6 +13,7 @@ using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
@@ -285,13 +286,13 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString());
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorListResult;
 
@@ -344,13 +345,13 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(customerUid: events[0].CustomerUID.ToString(), userId: events[0].UserID, projectUid: events[0].ProjectUID.ToString(), filterUid: events[0].FilterUID.ToString());
 
-      var projectData = new ProjectData { ProjectUid = events[0].ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = events[0].ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(events[0].CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(events[0].CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
 
@@ -407,7 +408,7 @@ namespace ExecutorTests
 
       WriteEventToDb(filterCreateEvent);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectData: projectData, filterUid: filterCreateEvent.FilterUID.ToString());
     
@@ -415,7 +416,7 @@ namespace ExecutorTests
       tcs.SetResult(new List<ProjectData> {projectData});
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorListResult;
 

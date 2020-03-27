@@ -9,7 +9,6 @@ namespace TestUtility
     {
 
       private const string DASH   = "----------------------------------------------------------------------------------------------------------------------"; 
-      private const string INJECT = "                            Inject Kafka Events                            ";
       private const string INJECTWEB = "                        Inject Web API messages                         "; 
       private const string INJSQL = "                            Inject MySql Records                           "; 
       private const string MYSQL  = "MySql Query:"; 
@@ -40,22 +39,7 @@ namespace TestUtility
           Console.WriteLine(descriptionOfTest);
           Console.WriteLine();
       }    
-      /// <summary>
-      /// Display all the events in the console 
-      /// </summary>
-      /// <param name="eventArray"></param>
-      public void DisplayEventsToConsoleKafka(string[] eventArray)
-      {
-          Console.WriteLine(DASH);
-          Console.WriteLine(INJECT);
-          Console.WriteLine(DASH);
-          foreach (var row in eventArray)
-          {
-              Console.WriteLine(row);
-          }
-          Console.WriteLine(DASH);
-      }
-
+      
       /// <summary>
       /// Display all the events in the console 
       /// </summary>

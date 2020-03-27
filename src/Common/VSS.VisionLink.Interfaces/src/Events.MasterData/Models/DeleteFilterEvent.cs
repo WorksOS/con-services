@@ -10,7 +10,7 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }
 
-    // the following are provided to allow for insert where the delete arrives from kafka before the Create
+    // the following are provided to allow for insert where the delete arrives from old kafka before the Create
     public Guid CustomerUID { get; set; }
 
     [Obsolete]

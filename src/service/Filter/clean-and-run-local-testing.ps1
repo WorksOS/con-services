@@ -5,7 +5,7 @@ IF ($args -contains "--set-vars") { & ./set-environment-variables.ps1 }
 Write-Host "Removing old Filter service application containers" -ForegroundColor DarkGray
 
 # Stop and remove Filter service containers only; leave non affected containers running.
-$array = @("filter_kafka", "filter_webapi", "filter_accepttest")
+$array = @("filter_webapi", "filter_accepttest")
 
 FOR ($i = 0; $i -lt $array.length; $i++) {
     $containerName = $array[$i]
@@ -22,7 +22,7 @@ FOR ($i = 0; $i -lt $array.length; $i++) {
 Write-Host "Done" -ForegroundColor Green
 
 Write-Host "Connecting to image host" -ForegroundColor DarkGray
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile okta)
 
 IF (-not $?) {
     Write-Host "Error: Logging in to AWS, won't pull latest images for container dependancies." -ForegroundColor Red
@@ -33,7 +33,7 @@ Write-Host "Building solution" -ForegroundColor DarkGray
 $artifactsWorkingDir = "${PSScriptRoot}/artifacts/VSS.Productivity3D.Filter.WebApi"
 
 Remove-Item -Path ./artifacts -Recurse -Force -ErrorAction Ignore
-Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o ../../artifacts/VSS.Productivity3D.Filter.WebApi -f netcoreapp3.1 -c Docker"
+Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/VSS.Productivity3D.Filter.WebApi/VSS.Productivity3D.Filter.WebApi.csproj -o $artifactsWorkingDir -f netcoreapp3.1 -c Docker"
 Invoke-Expression "dotnet build /nowarn:CS1591 ./test/UnitTests/VSS.Productivity3D.Filter.Tests/VSS.Productivity3D.Filter.Tests.csproj"
 Copy-Item ./src/VSS.Productivity3D.Filter.WebApi/appsettings.json $artifactsWorkingDir
 New-Item -ItemType directory ./artifacts/logs | out-null

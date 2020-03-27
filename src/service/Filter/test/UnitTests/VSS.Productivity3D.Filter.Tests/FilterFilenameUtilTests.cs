@@ -36,7 +36,6 @@ namespace VSS.Productivity3D.Filter.Tests
     private readonly string custUid = Guid.NewGuid().ToString();
     private readonly string userUid = Guid.NewGuid().ToString();
     private readonly string projectUid = Guid.NewGuid().ToString();
-    private string KafkaTopicName => GetType().Name;
     
     public FilterFilenameUtilTests(ExecutorBaseTests classFixture)
     {

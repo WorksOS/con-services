@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 
 namespace VSS.MasterData.Models.Models
@@ -22,11 +21,11 @@ namespace VSS.MasterData.Models.Models
     
     public bool IsTransparent { get; set; }
 
-    public Guid CustomerUID { get; set; }
+    public string CustomerUID { get; set; }
 
     public Guid GeofenceUID { get; set; }
 
-    public Guid UserUID { get; set; }
+    public string UserUID { get; set; }
 
     public DateTime ActionUTC => DateTime.UtcNow;
     public double? AreaSqMeters { get; set; }

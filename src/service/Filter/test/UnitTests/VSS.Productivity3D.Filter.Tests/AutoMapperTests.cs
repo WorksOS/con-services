@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_UserContext(FilterType filterType)
+    public void MapFilterRequestToCreateFilterEvent_UserContext(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_UserContext_NoFilterUID(FilterType filterType)
+    public void MapFilterRequestToCreateFilterEvent_UserContext_NoFilterUID(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -99,7 +99,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext(FilterType filterType)
+    public void MapFilterRequestToCreateFilterEvent_ApplicationContext(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -124,7 +124,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext_NoFilterUID(FilterType filterType)
+    public void MapFilterRequestToCreateFilterEvent_ApplicationContext_NoFilterUID(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -150,7 +150,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToUpdateKafkaEvent(FilterType filterType)
+    public void MapFilterRequestToUpdateFilterEvent(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -175,7 +175,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToDeleteKafkaEvent(FilterType filterType)
+    public void MapFilterRequestToDeletevEvent(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -197,7 +197,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterDBModelRequestToDeleteKafkaEvent(FilterType filterType)
+    public void MapFilterDBModelRequestToDeleteFilterEvent(FilterType filterType)
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -220,7 +220,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapProjectGeofenceRequestToAssociateKafkaEvent()
+    public void MapProjectGeofenceRequestToAssociateFilterEvent()
     {
       var request = ProjectGeofenceRequest.Create(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
    
@@ -253,7 +253,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapBoundaryRequestToDeleteKafkaEvent()
+    public void MapBoundaryRequestToDeleteFilterEvent()
     {
       var request = BoundaryUidRequestFull.Create
       (
@@ -270,7 +270,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapBoundaryRequestToCreateKafkaEvent()
+    public void MapBoundaryRequestToCreateFilterEvent()
     {
       var request = BoundaryRequestFull.Create
       (
@@ -291,7 +291,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapBoundaryRequestToUpdateKafkaEvent()
+    public void MapBoundaryRequestToUpdateFilterEvent()
     {
       var request = BoundaryRequestFull.Create
       (
@@ -319,8 +319,8 @@ namespace VSS.Productivity3D.Filter.Tests
         GeofenceName = "whatever",
         GeofenceType = GeofenceType.CutZone.ToString(),
         GeometryWKT = "blah",
-        CustomerUID = Guid.NewGuid(),
-        UserUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
+        UserUID = Guid.NewGuid().ToString(),
         IsTransparent = true,
         Description = null,
         AreaSqMeters = 1.234,

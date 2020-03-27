@@ -13,7 +13,7 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public DateTime ReceivedUTC { get; set; }
 
     // the following are not updateable. 
-    //   They are provided to allow for insert where the update arrives from kafka before the Create.
+    //   They are provided to allow for insert where the update arrives from old kafka before the Create.
     public Guid CustomerUID { get; set; }
     [Obsolete]
     public Guid UserUID { get; set; }

@@ -13,13 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Deploy\**" />
+    <Compile Remove="deploy\**" />
     <Compile Remove="logs\**" />
-    <Content Remove="Deploy\**" />
+    <Content Remove="deploy\**" />
     <Content Remove="logs\**" />
-    <EmbeddedResource Remove="Deploy\**" />
+    <EmbeddedResource Remove="deploy\**" />
     <EmbeddedResource Remove="logs\**" />
-    <None Remove="Deploy\**" />
+    <None Remove="deploy\**" />
     <None Remove="logs\**" />
   </ItemGroup>
 
