@@ -250,7 +250,7 @@ public class PlanSpec {
                 .interpreterBinSh());
 
         env.tasks(new ScriptTask()
-                .inlineBody("echo " + deployCommand)
+                .inlineBody("echo \"" + deployCommand + "\"")
                 .interpreterBinSh());
 
         env.tasks(new ScriptTask()
