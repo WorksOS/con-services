@@ -207,7 +207,6 @@ public class PlanSpec {
 
     Deployment addDeploymentEnvironment(BambooServer bambooServer, Deployment deployment, String name) {
 
-
         String cleanupCommand = "STATUS=$(helm ls --namespace ${bamboo.deploy.environment} | grep ${bamboo.deploy.environment}-${bamboo.service} | awk '{ print $8 }')\n"
                 + "if [ ! -z \"$STATUS\"  ] && [ \"$STATUS\" = 'failed' ]; then\n"
                 + "helm delete --namespace ${bamboo.deploy.environment} ${bamboo.deploy.environment}-${bamboo.service}\n"
@@ -216,13 +215,17 @@ public class PlanSpec {
                 + "fi";
 
 
-        String deployCommand = "helm upgrade " +
+        String deployCommand =
+                // Remove the prefix from a branch name
+                // i.e feature/test -> test
+                "IMAGETAG=$(echo ${bamboo.planRepository.branchName} | sed -e 's/.\\///')\n"+
+                "helm upgrade " +
                 "--install " +
                 "${bamboo.deploy.environment}-${bamboo.service} " +
                 "--namespace ${bamboo.deploy.environment} " +
                 "--reset-values " +
                 "--values ./chart/values.yaml " +
-                "--set image.tag=${bamboo.planRepository.branchName}-${bamboo.buildNumber}," +
+                "--set image.tag=$IMAGETAG-${bamboo.buildNumber}," +
                 "environment=${bamboo.deploy.environment}," +
                 "globalConfig=3dapp-${bamboo.deploy.environment}," +
                 "rootDomain=eks.ccss.cloud," +
