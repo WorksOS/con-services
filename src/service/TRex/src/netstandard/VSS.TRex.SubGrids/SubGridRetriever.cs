@@ -363,36 +363,39 @@ namespace VSS.TRex.SubGrids
 
     private void CheckForMinimumElevationRequirements(int stripeIndex, int j)
     {
-      // ###US79098### -->
-      if (_useLastPassGrid)
+      if (!_useLastPassGrid)
       {
-        // Determine if there is an elevation mapping mode that may require searching through cell passes. If so, the last pass grid can
-        // only be used if the machine that recorded that last pass is not an excavator with an elevation mode set to MinimumHeight.
-        // This only applies if there is not an elevation mapping mode filter selecting cells with LatestPass mapping mode
-        if (_gridDataType == GridDataType.CutFill || _gridDataType == GridDataType.Height || _gridDataType == GridDataType.HeightAndTime)
-        {
-          var internalMachineIndex = _globalLatestCells.ReadInternalMachineIndex(stripeIndex, j);
-          if (internalMachineIndex != CellPassConsts.NullInternalSiteModelMachineIndex)
-          {
-            var machine = _siteModel.Machines[internalMachineIndex];
-
-            var machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
-            var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents
-              .LastStateValue();
-
-            var minimumElevationMappingModeAtLatestCellPassTime =
-              mappingMode == ElevationMappingMode.MinimumElevation;
-
-            if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
-            {
-              // It is not possible to use the latest cell pass to answer the query - force the query engine into the cell pass examination work flow
-              _useLastPassGrid = false;
-              _canUseGlobalLatestCells = false;
-            }
-          }
-        }
+        return;
       }
-      // <-- ###US79098###
+
+      // Determine if there is an elevation mapping mode that may require searching through cell passes. If so, the last pass grid can
+      // only be used if the machine that recorded that last pass is not an excavator with an elevation mode set to MinimumHeight.
+      // This only applies if there is not an elevation mapping mode filter selecting cells with LatestPass mapping mode
+      if (_gridDataType != GridDataType.CutFill && _gridDataType != GridDataType.Height && _gridDataType != GridDataType.HeightAndTime)
+      {
+        return;
+      }
+
+      var internalMachineIndex = _globalLatestCells.ReadInternalMachineIndex(stripeIndex, j);
+      if (internalMachineIndex == CellPassConsts.NullInternalSiteModelMachineIndex)
+      {
+        return;
+      }
+
+      var machine = _siteModel.Machines[internalMachineIndex];
+
+      var machineIsAnExcavator = machine.MachineType == MachineType.Excavator;
+      var mappingMode = _siteModel.MachinesTargetValues[internalMachineIndex].ElevationMappingModeStateEvents.LastStateValue();
+
+      var minimumElevationMappingModeAtLatestCellPassTime =
+        mappingMode == ElevationMappingMode.MinimumElevation;
+
+      if (machineIsAnExcavator && minimumElevationMappingModeAtLatestCellPassTime)
+      {
+        // It is not possible to use the latest cell pass to answer the query - force the query engine into the cell pass examination work flow
+        _useLastPassGrid = false;
+        _canUseGlobalLatestCells = false;
+      }
     }
 
     private void AssignedFilteredValueContextToClient(byte stripeIndex, byte j, int topMostLayerCompactionHalfPassCount)
@@ -408,7 +411,9 @@ namespace VSS.TRex.SubGrids
       // does not exist given this situation.
 
       if (_cellProfile == null)
+      {
         _clientGrid.AssignFilteredValue(stripeIndex, j, _assignmentContext);
+      }
       else
       {
         if (((_gridDataType == GridDataType.CCV || _gridDataType == GridDataType.CCVPercent) &&

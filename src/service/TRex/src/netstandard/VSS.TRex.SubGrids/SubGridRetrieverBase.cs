@@ -430,7 +430,7 @@ namespace VSS.TRex.SubGrids
           _areaControlSet.PixelYWorldSize = 0;
         }
 
-        //if (VLPDSvcLocations.Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {clientGrid.OriginX}x{clientGrid.OriginY}");
+        //if (Debug_ExtremeLogSwitchC) Log.LogDebug($"Performing stripe iteration at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
         // Before iterating over stripes of this sub grid, compute a scan map detailing to the best of our current
         // knowledge, which cells need to be visited so that only cells the filter wants and which are actually
@@ -447,7 +447,7 @@ namespace VSS.TRex.SubGrids
           RetrieveSubGridStripe(i);
         }
 
-        //if VLPDSvcLocations.Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
+        //if Debug_ExtremeLogSwitchC then Log.LogDebug($"Stripe iteration complete at {clientGrid.OriginX}x{clientGrid.OriginY}");
 
         result = ServerRequestResult.NoError;
       }
