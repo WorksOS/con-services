@@ -28,7 +28,7 @@ namespace VSS.TRex.SubGrids
     private bool _haveFilteredPass;
     private FilteredPassData _currentPass;
     private FilteredPassData _tempPass;
-    bool _firstPassMinElev;
+    private bool _firstPassMinElev;
 
     /// <summary>
     /// Constructor for the sub grid retriever helper
@@ -163,7 +163,6 @@ namespace VSS.TRex.SubGrids
         }
       }
     }
-
 
     /// <summary>
     /// Special version of ProcessCellPasses when using a pass count range Filter.
