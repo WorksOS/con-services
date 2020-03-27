@@ -3,12 +3,13 @@ using FluentAssertions;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class ClientLeafSubGridFactoryTests
+  public class ClientLeafSubGridFactoryTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_ClientLeafSubGridFactoryTests_Creation()

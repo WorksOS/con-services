@@ -2,11 +2,12 @@
 using FluentAssertions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class SubGridTreeBitMaskTests
+  public class SubGridTreeBitMaskTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_SubGridTreeBitMask_SubGridTreeBitMask()
