@@ -4,6 +4,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Swagger;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
@@ -34,7 +35,7 @@ namespace VSS.WebApi.Common
       //Configure swagger
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc(version, new Info { Title = serviceTitle, Description = serviceDescription, Version = version });
+        c.SwaggerDoc(version, new OpenApiInfo  { Title = serviceTitle, Description = serviceDescription, Version = version });
         // Allows swagger to index models on it's full name, rather than class name - which causes conflicts if a class name is used more than once in the swagger documentation
         // https://stackoverflow.com/questions/46071513/swagger-error-conflicting-schemaids-duplicate-schemaids-detected-for-types-a-a
         c.CustomSchemaIds(x => x.FullName);

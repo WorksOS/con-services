@@ -118,7 +118,11 @@ namespace VSS.WebApi.Common
       ConfigureAdditionalServices(services);
 
       services.AddMvc(
-        config => { config.Filters.Add(new ValidationFilterAttribute()); }
+        config =>
+        {
+          config.Filters.Add(new ValidationFilterAttribute());
+          config.EnableEndpointRouting = false;
+        }
       ).AddMetrics();
 
       services.AddControllers().AddNewtonsoftJson(options =>
@@ -153,6 +157,7 @@ namespace VSS.WebApi.Common
     /// </summary>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
+      app.UseRouting();
       var corsPolicyNames = GetCors().Select(c => c.Item1);
       foreach (var corsPolicyName in corsPolicyNames)
         app.UseCors(corsPolicyName);
@@ -172,7 +177,9 @@ namespace VSS.WebApi.Common
       Services.AddSingleton(loggerFactory);
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
-      app.UseMvc();
+      app.UseEndpoints(endpoints => {
+        endpoints.MapControllers();
+      });
     }
 
     /// <summary>
