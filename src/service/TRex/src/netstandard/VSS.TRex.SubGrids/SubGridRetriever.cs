@@ -448,9 +448,10 @@ namespace VSS.TRex.SubGrids
       }
     }
 
-    private void ChooseSingleFilteredPassForCellPromProfiler(byte stripeIndex, byte j, int topMostLayerCompactionHalfPassCount)
+    private void ChooseSingleFilteredPassForCellPromProfiler(byte stripeIndex, byte j, out int topMostLayerCompactionHalfPassCount)
     {
       // if (Debug_ExtremeLogSwitchD) Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Using profiler");
+      topMostLayerCompactionHalfPassCount = 0;
 
       if (_canUseGlobalLatestCells)
       {
@@ -554,7 +555,7 @@ namespace VSS.TRex.SubGrids
 
           if (_profiler != null)
           {
-            ChooseSingleFilteredPassForCellPromProfiler(stripeIndex, j, topMostLayerCompactionHalfPassCount);
+            ChooseSingleFilteredPassForCellPromProfiler(stripeIndex, j, out topMostLayerCompactionHalfPassCount);
           }
           else
           {
