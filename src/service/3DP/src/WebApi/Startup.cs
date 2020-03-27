@@ -79,6 +79,8 @@ namespace VSS.Productivity3D.WebApi
       services.AddOpenTracing();*/
 
       ConfigureApplicationServices(services);
+
+      
     }
 
     /// <inheritdoc />
@@ -89,7 +91,6 @@ namespace VSS.Productivity3D.WebApi
       app.UseRewriter(new RewriteOptions().Add(URLRewriter.RewriteMalformedPath));
       app.UseResponseCaching();
       app.UseResponseCompression();
-      app.UseMvc();
 
 #if RAPTOR
       CheckRaptorAvailabilityIfRequired();
