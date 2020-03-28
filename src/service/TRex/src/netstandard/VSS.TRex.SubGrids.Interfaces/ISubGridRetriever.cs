@@ -6,6 +6,8 @@ namespace VSS.TRex.SubGrids.Interfaces
 {
   public interface ISubGridRetriever
   {
+    void RetrieveSubGridStripe(byte stripeIndex);
+
     ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask);
   }

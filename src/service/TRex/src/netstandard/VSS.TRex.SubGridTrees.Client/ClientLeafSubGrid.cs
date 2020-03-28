@@ -113,6 +113,8 @@ namespace VSS.TRex.SubGridTrees.Client
       // general sub grid result cache along with HeightAndTime results that are derived from production data
       // and SurveyedSurfaceHeightAndTime results
       true, // SurveyedSurfaceHeightAndTime = 0x0000001C
+
+      false // Progressing volumes = = 0x0000001D
     };
 
     /// <summary>

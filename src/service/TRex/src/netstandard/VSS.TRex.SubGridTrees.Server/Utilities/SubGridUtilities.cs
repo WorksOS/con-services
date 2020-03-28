@@ -50,7 +50,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                                  bool acceptSpeculativeReadFailure)
         {
             IServerLeafSubGrid leafSubGrid = null;
-            bool createdANewSubGrid = false;
+            var createdANewSubGrid = false;
 
             ISubGrid result = null;
 
@@ -192,7 +192,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                     }
                 }
 
-                // TODO Ignite special case - allow Dirty leaf sub grids to be returned
+                // Ignite special case - allow Dirty leaf sub grids to be returned
                 if (result == null)
                 {
                     if (leafSubGrid.HasSubGridDirectoryDetails && leafSubGrid.Dirty && leafSubGrid.HasAllCellPasses() && leafSubGrid.HasLatestData())
@@ -207,7 +207,8 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
             {
                 if (result != null && result.IsLeafSubGrid())
                 {
-                  /* TODO ... caching semantics
+                  /* Raptor implementation. In TRex this is stored in the Ignite cache
+
                       // Add the sub grid we just read to the cache manager, even if the read failed
                       if (!Result.PresentInCache)
                       {
@@ -215,13 +216,13 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
                               SIGLogMessage.PublishNoODS(Nil, Format('Failed to add sub grid %s to the cache', [Result.Moniker]), ...);
                       }
         
-                      if (VLPDSvcLocations.VLPDPSNode_TouchSubGridAndSegmentsInCacheDuringAccessOperations)
+                      if (TouchSubGridAndSegmentsInCacheDuringAccessOperations)
                           GridDataCache.SubGridTouched(Result as TSubGridTreeSubGridBase);
                       */
-                  }
+                }
             }
 
-        return result;
+            return result;
         }
     }
 }

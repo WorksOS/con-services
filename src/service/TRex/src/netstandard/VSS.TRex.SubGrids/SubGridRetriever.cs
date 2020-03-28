@@ -431,7 +431,7 @@ namespace VSS.TRex.SubGrids
 
     private void ChooseSingleFilteredPassForCell(byte stripeIndex, byte j)
     {
-      _cellPassIterator.SetCellCoordinatesInSubgrid(stripeIndex, j);
+      _cellPassIterator.SetCellCoordinatesInSubGrid(stripeIndex, j);
 
       if (_filter.AttributeFilter.HasElevationRangeFilter)
         _cellPassIterator.SetIteratorElevationRange(_filterAnnex.ElevationRangeBottomElevationForCell, _filterAnnex.ElevationRangeTopElevationForCell);
@@ -482,7 +482,7 @@ namespace VSS.TRex.SubGrids
 
       if (!_haveFilteredPass)
       {
-        _cellPassIterator.SetCellCoordinatesInSubgrid(stripeIndex, j);
+        _cellPassIterator.SetCellCoordinatesInSubGrid(stripeIndex, j);
 
         // if (Debug_ExtremeLogSwitchD)  Log.LogDebug{$"SI@{StripeIndex}/{J} at {clientGrid.OriginX}x{clientGrid.OriginY}: Calling BuildLiftsForCell");
 

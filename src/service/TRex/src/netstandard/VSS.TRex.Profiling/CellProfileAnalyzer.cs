@@ -516,7 +516,7 @@ namespace VSS.TRex.Profiling
           }
 
           // get cell address relative to sub grid and SetCellCoordinatesInSubGrid
-          cellPassIterator.SetCellCoordinatesInSubgrid(
+          cellPassIterator.SetCellCoordinatesInSubGrid(
             (byte) (profileCells[i].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
             (byte) (profileCells[i].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
           PassFilterAnnex.InitializeFilteringForCell(PassFilter, cellPassIterator.CellX, cellPassIterator.CellY);

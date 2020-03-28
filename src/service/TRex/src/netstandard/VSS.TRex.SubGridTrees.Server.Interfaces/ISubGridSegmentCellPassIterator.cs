@@ -16,7 +16,7 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
         bool GetNextCellPass(ref CellPass CellPass);
         void Initialise();
         bool MayHaveMoreFilterableCellPasses();
-        void SetCellCoordinatesInSubgrid(byte cellX, byte cellY);
+        void SetCellCoordinatesInSubGrid(byte cellX, byte cellY);
         void SetIteratorElevationRange(double minElevation, double maxElevation);
         void SetTimeRange(bool hasTimeFilter, DateTime iteratorStartTime, DateTime iteratorEndTime);
     }
