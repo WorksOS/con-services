@@ -28,7 +28,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
 
     bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
 
-    void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context);
+    void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context);
 
     bool TopLayerOnly { get; set; }
 
@@ -44,9 +44,9 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// <returns></returns>
     bool LeafContentEquals(IClientLeafSubGrid other);
 
-    void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source);
+    void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source);
 
-    void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
+    void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
     SubGridTreeBitmapSubGridBits ProdDataMap { get; }
 

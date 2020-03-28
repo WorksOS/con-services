@@ -196,7 +196,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
 
       var clientGrid2 = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
 
-      clientGrid2.AssignFromCachedPreProcessedClientSubgrid(clientGrid, new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled));
+      clientGrid2.AssignFromCachedPreProcessedClientSubGrid(clientGrid, new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Filled));
 
       clientGrid.Should().BeEquivalentTo(clientGrid2);
     }
@@ -216,7 +216,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
         [0, 0] = true
       };
 
-      clientGrid2.AssignFromCachedPreProcessedClientSubgrid(clientGrid, filterMap);
+      clientGrid2.AssignFromCachedPreProcessedClientSubGrid(clientGrid, filterMap);
 
       // If we get here it's all good!
       Assert.True(true, "");
@@ -228,7 +228,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
 
-      clientGrid.AssignFromCachedPreProcessedClientSubgrid(clientGrid);
+      clientGrid.AssignFromCachedPreProcessedClientSubGrid(clientGrid);
 
       // If we get here it's all good!
       Assert.True(true, "");

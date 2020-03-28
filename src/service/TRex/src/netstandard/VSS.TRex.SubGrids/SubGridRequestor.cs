@@ -224,7 +224,7 @@ namespace VSS.TRex.SubGrids
           ModifyFilterMapBasedOnAdditionalSpatialFiltering();
 
           // Use that mask to copy the relevant cells from the cache to the client sub grid
-          ClientGrid.AssignFromCachedPreProcessedClientSubgrid(cachedSubGrid, ClientGrid.FilterMap);
+          ClientGrid.AssignFromCachedPreProcessedClientSubGrid(cachedSubGrid, ClientGrid.FilterMap);
 
           return ServerRequestResult.NoError;
         }
@@ -245,7 +245,7 @@ namespace VSS.TRex.SubGrids
           // Add the newly computed client sub grid to the cache by creating a clone of the client and adding it...
           var clientGrid2 = ClientLeafSubGridFactory.GetSubGrid(ClientGrid.GridDataType);
           clientGrid2.Assign(ClientGrid);
-          clientGrid2.AssignFromCachedPreProcessedClientSubgrid(ClientGrid);
+          clientGrid2.AssignFromCachedPreProcessedClientSubGrid(ClientGrid);
 
           if (!SubGridCache.Add(SubGridCacheContext, clientGrid2))
           {

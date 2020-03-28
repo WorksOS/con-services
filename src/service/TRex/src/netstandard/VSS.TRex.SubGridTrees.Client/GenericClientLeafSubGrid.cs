@@ -30,7 +30,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// Constructs a default client sub grid with no owner or parent, at the standard leaf bottom sub grid level,
         /// and using the default cell size and index origin offset
         /// </summary>
-        public GenericClientLeafSubGrid() : base(null, null, SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset)
+        protected GenericClientLeafSubGrid() : base(null, null, SubGridTreeConsts.SubGridTreeLevels, SubGridTreeConsts.DefaultCellSize, SubGridTreeConsts.DefaultIndexOriginOffset)
         {
         }
 
@@ -42,7 +42,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <param name="level"></param>
         /// <param name="cellSize"></param>
         /// <param name="indexOriginOffset"></param>
-        public GenericClientLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, int indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
+        protected GenericClientLeafSubGrid(ISubGridTree owner, ISubGrid parent, byte level, double cellSize, int indexOriginOffset) : base(owner, parent, level, cellSize, indexOriginOffset)
         {
         }
 
@@ -52,7 +52,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <returns></returns>
         public T[,] Clone2DArray()
         {
-          T[,] result = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+          var result = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
           Array.Copy(Cells, 0, result, 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
        
           return result;
@@ -67,11 +67,11 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <returns></returns>
         public bool ForEach(Func<T, bool> functor)
         {
-            for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+            for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
-                for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+                for (byte j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                    if (!functor(Cells[I, J]))
+                    if (!functor(Cells[i, j]))
                     {
                         return false;
                     }
@@ -89,11 +89,11 @@ namespace VSS.TRex.SubGridTrees.Client
         /// <returns></returns>
         public void ForEach(Action<byte, byte, T> functor)
         {
-            for (byte I = 0; I < SubGridTreeConsts.SubGridTreeDimension; I++)
+            for (byte i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
             {
-                for (byte J = 0; J < SubGridTreeConsts.SubGridTreeDimension; J++)
+                for (byte j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
                 {
-                    functor(I, J, Cells[I, J]);
+                    functor(i, j, Cells[i, j]);
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// client leaf sub grid
         /// </summary>
         /// <param name="source"></param>
-        public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
+        public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source)
         {
           Array.Copy(((GenericClientLeafSubGrid<T>)source).Cells, Cells, SubGridTreeConsts.CellsPerSubGrid);
         }
@@ -124,10 +124,10 @@ namespace VSS.TRex.SubGridTrees.Client
         /// </summary>
         /// <param name="source"></param>
         /// <param name="map"></param>
-        public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
+        public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
         {
           if (map.IsFull())
-            AssignFromCachedPreProcessedClientSubgrid(source);
+            AssignFromCachedPreProcessedClientSubGrid(source);
           else
           {
             var subGrid = (GenericClientLeafSubGrid<T>)source;

@@ -141,9 +141,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
+    public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source)
     {
-      base.AssignFromCachedPreProcessedClientSubgrid(source);
+      base.AssignFromCachedPreProcessedClientSubGrid(source);
       Array.Copy(((ClientHeightAndTimeLeafSubGrid)source).Times, Times, SubGridTreeConsts.CellsPerSubGrid);
 
       //SurveyedSurfaceMap.Assign(((ClientHeightAndTimeLeafSubGrid)source).SurveyedSurfaceMap);
@@ -157,9 +157,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="source"></param>
     /// <param name="map"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
+    public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
     {
-      base.AssignFromCachedPreProcessedClientSubgrid(source, map);
+      base.AssignFromCachedPreProcessedClientSubGrid(source, map);
 
       // Copy all of the times as the nullity (or not) of the elevation is the determinator of a value being present
       Array.Copy(((ClientHeightAndTimeLeafSubGrid)source).Times, Times, SubGridTreeConsts.CellsPerSubGrid);
