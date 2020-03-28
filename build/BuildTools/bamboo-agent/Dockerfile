@@ -47,8 +47,8 @@ RUN apt-get install docker-ce docker-ce-cli containerd.io -y
 # from DIND image
 # https://github.com/jpetazzo/dind
 # Modified to not create a shell, just setup docker (hence why it's in source)
-ADD ./wrapdocker /usr/local/bin/wrapdocker
-RUN chmod +x /usr/local/bin/wrapdocker
+ADD ./wrapdocker.sh /usr/local/bin/wrapdocker.sh
+RUN chmod +x /usr/local/bin/wrapdocker.sh
 
 VOLUME /var/lib/docker
 RUN usermod -aG docker ${BAMBOO_USER}
@@ -69,7 +69,7 @@ RUN mv ./runAgent.sh runAgent-nodocker.sh
 
 # Find the last line (java command for agent), and insert the wrapdocker before it
 # https://unix.stackexchange.com/questions/356312/sed-insert-something-after-the-second-last-line
-RUN sed '$isudo wrapdocker' ./runAgent-nodocker.sh > ./runAgent.sh 
+RUN sed '$isudo wrapdocker.sh' ./runAgent-nodocker.sh > ./runAgent.sh 
 
 # Make sure we ca nexecute our new file
 RUN chmod +x ./runAgent.sh

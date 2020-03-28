@@ -18,7 +18,7 @@ services:
       - AWS_DESIGNIMPORT_BUCKET_NAME=vss-project3dp-stg
       - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00
       - AWS_TAGFILE_BUCKET_NAME=vss-stg-directtagfile-archives      
-      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
+      - CUSTOMERSERVICE_API_URL=https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-customer/1.0/Customers/me
       - CUSTOMER_CACHE_LIFE=00:30:00
       - DEFAULT_CONNECTION_LIMIT=64
       - ELEVATION_EXTENTS_CACHE_LIFE=00:30:00
