@@ -13,13 +13,13 @@ using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class GenericClientLeafSubgridTests : IClassFixture<DILoggingFixture>
+  public class GenericClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
     static int GetGridDataTypeCount() => Enum.GetValues(typeof(GridDataType)).Length;
 
     static readonly int GridDataTypeCount = GetGridDataTypeCount();
 
-    private const int kGridDataTypeCount_Expected = 16;
+    private const int kGridDataTypeCount_Expected = 17;
     private const int kGridDataTypeCount = 30;
 
     /// <summary>
@@ -44,7 +44,8 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
              gridDataType == GridDataType.CellProfile ||
              gridDataType == GridDataType.CellPasses ||
              gridDataType == GridDataType.CCA ||
-             gridDataType == GridDataType.CutFill;
+             gridDataType == GridDataType.CutFill ||
+             gridDataType == GridDataType.ProgressiveVolumes;
     }
 
     /// <summary>
@@ -122,7 +123,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       clientGrid.Clear();
       clientGrid.ForEach((x, y) =>
       {
-        if (gridDataType != GridDataType.CCVPercentChange)
+        if (gridDataType != GridDataType.CCVPercentChange && gridDataType != GridDataType.ProgressiveVolumes)
           Assert.True(!clientGrid.CellHasValue(x, y), "Clear() did not clear all cells");
       });
     }
@@ -159,7 +160,6 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
     {
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
       clientGrid.FillWithTestPattern();
-
       clientGrid.ForEach((x, y) => Assert.True(clientGrid.CellHasValue(x, y), "Cell does not have value when it should"));
     }
 
@@ -170,7 +170,7 @@ namespace VSS.TRex.Tests.SubGridTrees.Client
       var clientGrid = ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory().GetSubGrid(gridDataType);
       clientGrid.ForEach((x, y) =>
       {
-        if (gridDataType != GridDataType.CCVPercentChange)
+        if (gridDataType != GridDataType.CCVPercentChange && gridDataType != GridDataType.ProgressiveVolumes)
           Assert.False(clientGrid.CellHasValue(x, y), "Cell does have value when it should not");
         else
           Assert.True(clientGrid.CellHasValue(x, y), "Cell does not have value when it should");
