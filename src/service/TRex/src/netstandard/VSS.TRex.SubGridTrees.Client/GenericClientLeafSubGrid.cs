@@ -19,7 +19,7 @@ namespace VSS.TRex.SubGridTrees.Client
         /// It is the responsibility of the derived class to proved a class constructor to initialise the
         /// values NullCells to the correct nu ll values
         /// </summary>
-        protected static readonly T[,] NullCells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+        public static readonly T[,] NullCells = new T[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
 
         /// <summary>
         /// Represented a T element configured as the null value for cells is this client leaf sub grid

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
@@ -12,17 +13,29 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
   /// </summary>
-  public class ClientProgressiveHeightsLeafSubGrid : ClientLeafSubGrid
+  public class ClientProgressiveHeightsLeafSubGrid : ClientLeafSubGrid, IDisposable
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
 
-    public float[,][] Heights { get; set; }
+    public List<float[,]> Heights { get; set; }
 
-    /// <summary>
-    /// Surveyed surface map records which cells hold cell pass heights that were derived
-    /// from a surveyed surface
-    /// </summary>
-    /// public readonly SubGridTreeBitmapSubGridBits SurveyedSurfaceMap = new SubGridTreeBitmapSubGridBits(SubGridBitsCreationOptions.Unfilled);
+    private int _numberOfProgressions;
+
+    public int NumberOfProgressions
+    {
+      get => _numberOfProgressions;
+      set
+      {
+        _numberOfProgressions = value;
+        Heights = new List<float[,]>(_numberOfProgressions);
+        for (var i = 0; i < _numberOfProgressions; i++)
+        {
+          Heights[i] = GenericTwoDArrayCacheHelper<float>.Caches().Rent();
+        }
+
+        Clear();
+      }
+    }
 
     private void Initialise()
     {
@@ -50,25 +63,6 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       Initialise();
     }
-
-    /// <summary>
-    /// Assign contents of another height client lead sub grid to this one
-    /// </summary>
-    /// <param name="heightAndTimeResults"></param>
-    public void Assign(ClientHeightAndTimeLeafSubGrid heightAndTimeResults)
-    {
-      throw new NotImplementedException();
-    }
-
-    /// <summary>
-    /// Assign contents of another height client lead sub grid to this one
-    /// </summary>
-    /// <param name="heightLeaf"></param>
-    public void Assign(ClientHeightLeafSubGrid heightLeaf)
-    {
-      throw new NotImplementedException();
-    }
-
 
     /// <summary>
     /// Determine if a filtered height is valid (not null)
@@ -141,6 +135,11 @@ namespace VSS.TRex.SubGridTrees.Client
     public override void Clear()
     {
       base.Clear();
+
+      for (var i = 0; i < _numberOfProgressions; i++)
+      {
+        Array.Copy(ClientHeightLeafSubGrid.NullCells, 0, Heights[i], 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
+      }
     }
 
     public override void DumpToLog(string title)
@@ -208,9 +207,23 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override int IndicativeSizeInBytes()
     {
-      return base.IndicativeSizeInBytes() + 
-             //SurveyedSurfaceMap.IndicativeSizeInBytes() +
-             SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+      return base.IndicativeSizeInBytes() +
+             _numberOfProgressions * SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+    }
+
+    private void ReleaseHeightsRental()
+    {
+      for (var i = 0; i < _numberOfProgressions; i++)
+      {
+        var tmp = Heights[i];
+        GenericTwoDArrayCacheHelper<float>.Caches().Return(ref tmp);
+        Heights[i] = null;
+      }
+    }
+
+    public void Dispose()
+    {
+      ReleaseHeightsRental();
     }
   }
 }
