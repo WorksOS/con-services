@@ -53,6 +53,7 @@ public class PlanSpec {
         return new DeploymentPermissions(deployment.getName())
                 .permissions(new Permissions()
                         .userPermissions("Stephen_Post@Trimble.com", PermissionType.BUILD)
+                        .userPermissions("David_Glassenbury@Trimble.com", PermissionType.BUILD)
                         .loggedInUserPermissions(PermissionType.VIEW));
 
     }
@@ -62,7 +63,8 @@ public class PlanSpec {
                 .environmentName(env)
                 .permissions(new Permissions()
                         .loggedInUserPermissions(PermissionType.VIEW)
-                        .userPermissions("Stephen_Post@Trimble.com", PermissionType.BUILD));
+                        .userPermissions("Stephen_Post@Trimble.com", PermissionType.BUILD)
+                        .userPermissions("David_Glassenbury@Trimble.com", PermissionType.BUILD));
 
     }
 
