@@ -31,6 +31,9 @@ namespace VSS.MasterData.Repositories
     protected RepositoryBase(IConfigurationStore configurationStore, ILoggerFactory logger)
     {
       _connectionString = configurationStore.GetConnectionString("VSPDB");
+
+      Console.WriteLine($"Connection string from configuration store for MySql is '{_connectionString}'");
+
       Log = logger.CreateLogger<RepositoryBase>();
     }
 
@@ -92,7 +95,6 @@ namespace VSS.MasterData.Repositories
           using (var connection = new MySqlConnection(_connectionString))
           {
             Console.WriteLine($"Connection string for MySql is '{_connectionString}'");
-            Console.WriteLine($"Connection for MySql is '{connection}'");
 
             await connection.OpenAsync();
             if (Log.IsTraceEnabled())
