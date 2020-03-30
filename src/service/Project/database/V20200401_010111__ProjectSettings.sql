@@ -1,5 +1,3 @@
-USE `Alpha-Project-ccss`;
-
 CREATE TABLE IF NOT EXISTS  `ProjectSettings` (
   `fk_ProjectUID` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
   `fk_ProjectSettingsTypeID` int(10) NOT NULL DEFAULT '0',

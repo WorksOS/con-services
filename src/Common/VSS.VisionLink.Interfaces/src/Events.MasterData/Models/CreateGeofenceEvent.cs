@@ -12,7 +12,7 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
     public string GeometryWKT { get; set; }  //Required Field
     public int FillColor { get; set; }
     public bool IsTransparent { get; set; }
-    public Guid GeofenceUID { get; set; }
+    public string GeofenceUID { get; set; }
     public string UserUID { get; set; }
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }

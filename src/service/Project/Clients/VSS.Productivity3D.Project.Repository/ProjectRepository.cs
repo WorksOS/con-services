@@ -15,7 +15,6 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.Productivity3D.Project.Repository
@@ -1190,13 +1189,6 @@ namespace VSS.Productivity3D.Project.Repository
       return !string.IsNullOrEmpty(uid);
     }
 
-    /// <summary>
-    ///     There may be 0 or n subscriptions for each project. None/many may be current.
-    ///     This method gets the latest EndDate so at most 1 sub per project
-    ///     Also returns the GeofenceWRK. List returned includes archived projects.
-    /// </summary>
-    /// <param name="customerUid"></param>
-    /// <returns></returns>
     public async Task<IEnumerable<ProjectDataModel>> GetProjectsForCustomer(string customerUid) 
     {
       return await QueryWithAsyncPolicy<ProjectDataModel>
@@ -1213,25 +1205,41 @@ namespace VSS.Productivity3D.Project.Repository
       );
     }
 
-    #endregion projects
+    public async Task<IEnumerable<ProjectDataModel>> GetProjectHistory_UnitTests(string projectUid)
+    {
+      return await QueryWithAsyncPolicy<ProjectDataModel>
+      (@"SELECT 
+                ProjectUID, CustomerUID, ShortRaptorProjectID, Name, Description, 
+                fk_ProjectTypeID AS ProjectType, StartDate, EndDate, 
+                ProjectTimeZone, ProjectTimeZoneIana, 
+                ST_ASWKT(Boundary) AS Boundary,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC, 
+                IsArchived, LastActionedUTC
+            FROM Project  
+            WHERE ProjectUID = @ProjectUID",
+        new { ProjectUID = projectUid }
+      );
+    }
+
+#endregion projects
 
 
-    #region projectSpatial
+#region projectSpatial
 
-    /// <summary>
-    ///     Gets any project which
-    ///     1) for this Customer
-    ///     2) is active at the time
-    ///     3) the lat/long is within,
-    ///     4) but ignore the project if it's an update
-    /// </summary>
-    /// <param name="customerUid"></param>
-    /// <param name="geometryWkt"></param>
-    /// <param name="startDate"></param>
-    /// <param name="endDate"></param>
-    /// <param name="excludeProjectUid"></param>
-    /// <returns>The project</returns>
-    public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
+/// <summary>
+///     Gets any project which
+///     1) for this Customer
+///     2) is active at the time
+///     3) the lat/long is within,
+///     4) but ignore the project if it's an update
+/// </summary>
+/// <param name="customerUid"></param>
+/// <param name="geometryWkt"></param>
+/// <param name="startDate"></param>
+/// <param name="endDate"></param>
+/// <param name="excludeProjectUid"></param>
+/// <returns>The project</returns>
+public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
       DateTime endDate, string excludeProjectUid = "")
     {
       string polygonToCheck = RepositoryHelper.WKTToSpatial(geometryWkt);
@@ -1437,7 +1445,8 @@ namespace VSS.Productivity3D.Project.Repository
     #endregion importedFiles
 
 
-    #region geofenceForFilters // this geofence code is used by FilterSvc and refer to tables solely in the FilterSvc database (not the ProjectSvc one).
+    // this geofence code is used by projectSvc and FilterSvc and wll refer to database within the service
+    #region geofenceForFilters 
 
     /// <summary>
     /// Gets the list of geofence UIDs associated wih the specified project

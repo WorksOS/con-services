@@ -39,10 +39,11 @@ namespace MockProjectWebApi
           .WithMethods("OPTIONS", "TRACE", "GET", "POST", "DELETE", "PUT", "HEAD"));
       });
 
+      services.AddMvc();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IFiltersService, FiltersService>();
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
-      services.AddSingleton<IProjectService, ProjectService>();
+      services.AddSingleton<IProjectService, ProjectService>();      
     }
 
     /// <summary>
@@ -50,11 +51,15 @@ namespace MockProjectWebApi
     /// </summary>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
+      app.UseRouting();
+
       app.UseExceptionTrap();
       app.UseCors("VSS");
       app.UseExceptionDummyPostMiddleware();
 
-      app.UseMvc();
+      app.UseEndpoints(endpoints => {
+        endpoints.MapControllers();
+      });
     }
   }
 }

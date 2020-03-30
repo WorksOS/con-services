@@ -614,7 +614,7 @@ namespace TestUtility
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
             ProjectUID = eventObject.ProjectUID,
-            GeofenceUID = new Guid(eventObject.GeofenceUID)
+            GeofenceUID = eventObject.GeofenceUID
           };
           jsonString = JsonConvert.SerializeObject(new { AssociateProjectGeofence = associateProjectGeofence }, JsonSettings);
           break;
@@ -623,7 +623,7 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
-            GeofenceUID = new Guid(eventObject.GeofenceUID),
+            GeofenceUID = eventObject.GeofenceUID,
             CustomerUID = eventObject.CustomerUID,
             Description = eventObject.Description,
             FillColor = int.Parse(eventObject.FillColor),

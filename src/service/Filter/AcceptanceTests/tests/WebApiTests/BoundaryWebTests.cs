@@ -109,7 +109,7 @@ namespace WebApiTests
     [TestMethod]
     public void GetBoundaries()
     {
-      var overlappingFavoriteGeofences = new List<Guid> { GoldenDimensionFavoriteGeofenceUid };
+      var overlappingFavoriteGeofences = new List<string> { GoldenDimensionFavoriteGeofenceUid.ToString() };
       var associatedGeofences = new List<Guid> {GoldenDimensionAssociatedGeofenceUid, EOP13AssociatedGeofenceUid};
 
       ts.DeleteAllBoundariesAndAssociations();
@@ -141,7 +141,7 @@ namespace WebApiTests
       }
       foreach (var geofenceUid in associatedGeofences)
       {
-        Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == geofenceUid), "Missing associated geofence");
+        Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == geofenceUid.ToString()), "Missing associated geofence");
       }
     }
   }

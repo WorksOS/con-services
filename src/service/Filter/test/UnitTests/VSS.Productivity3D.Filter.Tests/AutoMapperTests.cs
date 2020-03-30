@@ -315,7 +315,7 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var geofenceData = new GeofenceData
       {
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         GeofenceName = "whatever",
         GeofenceType = GeofenceType.CutZone.ToString(),
         GeometryWKT = "blah",

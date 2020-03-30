@@ -56,7 +56,7 @@ namespace ExecutorTests
       var custUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -120,7 +120,7 @@ namespace ExecutorTests
       var custUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent

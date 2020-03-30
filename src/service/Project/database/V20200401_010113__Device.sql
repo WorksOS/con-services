@@ -1,5 +1,3 @@
-USE `Alpha-Project-ccss`;
-
 CREATE TABLE IF NOT EXISTS  Device
  (  
   DeviceUID varchar(80) NOT NULL,

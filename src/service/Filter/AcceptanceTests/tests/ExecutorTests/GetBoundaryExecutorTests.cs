@@ -36,7 +36,7 @@ namespace ExecutorTests
       var custUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
-      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid());
+      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid().ToString());
 
       var executor = RequestExecutorContainer.Build<GetBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
@@ -51,7 +51,7 @@ namespace ExecutorTests
       var custUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -112,7 +112,7 @@ namespace ExecutorTests
       var custUid = Guid.NewGuid().ToString();
       var userId = Guid.NewGuid().ToString();
       var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -154,7 +154,7 @@ namespace ExecutorTests
       var userId = Guid.NewGuid().ToString();
       var projectUid1 = Guid.NewGuid().ToString();
       var projectUid2 = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid().ToString();
 
       WriteEventToDb(new CreateGeofenceEvent
       {
@@ -186,14 +186,14 @@ namespace ExecutorTests
       Assert.IsTrue(serviceException.GetContent.Contains("GetBoundary By BoundaryUid. The requested Boundary does not exist, or does not belong to the requesting project or filter."));
     }
 
-    private BoundaryUidRequestFull CreateAndValidateRequest(string custUid, string projectUid, string userId, Guid boundaryUid)
+    private BoundaryUidRequestFull CreateAndValidateRequest(string custUid, string projectUid, string userId, string boundaryUid)
     {
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
         new ProjectData() { ProjectUID = projectUid.ToString() },
         userId.ToString(),
-        boundaryUid.ToString());
+        boundaryUid);
       request.Validate(ServiceExceptionHandler);
       return request;
     }

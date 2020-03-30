@@ -23,7 +23,7 @@ namespace VSS.MasterData.Models.Models
 
     public string CustomerUID { get; set; }
 
-    public Guid GeofenceUID { get; set; }
+    public string GeofenceUID { get; set; }
 
     public string UserUID { get; set; }
 

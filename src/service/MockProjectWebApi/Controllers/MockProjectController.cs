@@ -26,8 +26,8 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4")]
-    [Route("api/v4/project")]
+    [Route("api/v6")]
+    [Route("api/v6/project")]
     [HttpGet]
     public ProjectDataResult GetMockProjects()
     {
@@ -42,8 +42,8 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4/{projectUid}")]
-    [Route("api/v4/project/{projectUid}")]
+    [Route("api/v6/{projectUid}")]
+    [Route("api/v6/project/{projectUid}")]
     [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {

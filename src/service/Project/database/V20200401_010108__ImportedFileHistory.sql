@@ -1,5 +1,3 @@
-USE `Alpha-Project-ccss`;
-
 CREATE TABLE IF NOT EXISTS `ImportedFileHistory` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,
   `fk_ImportedFileUID` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,

@@ -1,5 +1,3 @@
-USE `Alpha-Project-ccss`;
-
 CREATE TABLE IF NOT EXISTS `DXFUnitsTypeEnum` (
   `ID` int(11) NOT NULL,
   `Description` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,

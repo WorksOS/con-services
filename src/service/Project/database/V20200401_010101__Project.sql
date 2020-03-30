@@ -1,5 +1,3 @@
-USE `Alpha-Project-ccss`;
-
 -- UID example: "trn::profilex:us-west-2:project:eaf7260e-946a-4019-a92d-fab11683149e"
 CREATE TABLE IF NOT EXISTS `Project` (
   `ProjectUID` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,

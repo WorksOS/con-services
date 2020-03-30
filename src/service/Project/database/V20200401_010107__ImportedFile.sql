@@ -1,5 +1,3 @@
-USE `Alpha-Project-ccss`;
-
 CREATE TABLE IF NOT EXISTS `ImportedFile` (
   `fk_ProjectUID` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ImportedFileUID` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,

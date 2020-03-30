@@ -708,14 +708,14 @@ namespace RepositoryTests
       var createAssociateEvent1 = new AssociateProjectGeofence
       {
         ProjectUID = projUid,
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
       var createAssociateEvent2 = new AssociateProjectGeofence
       {
         ProjectUID = projUid,
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -736,7 +736,7 @@ namespace RepositoryTests
       var createAssociateEvent = new AssociateProjectGeofence
       {
         ProjectUID = projUid,
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -749,7 +749,7 @@ namespace RepositoryTests
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var geofenceType = GeofenceType.Filter;
-      var geofenceUid = Guid.NewGuid();
+      var geofenceUid = Guid.NewGuid().ToString();
       var createGeofenceEvent = new CreateGeofenceEvent
       {
         CustomerUID = Guid.NewGuid().ToString(),
@@ -782,7 +782,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         UserUID = userId,
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
@@ -793,7 +793,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         UserUID = userId,
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         GeofenceName = "Boundary two",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((81.257874 13.677856,80.856873 14.039345,81.375977 14.443052,81.257874 13.677856))",
@@ -804,7 +804,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         UserUID = userId,
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         GeofenceName = "Boundary three",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((82.257874 14.677856,81.856873 15.039345,82.375977 15.443052,82.257874 14.677856))",
@@ -845,7 +845,7 @@ namespace RepositoryTests
       {
         CustomerUID = Guid.NewGuid().ToString(),
         UserUID = Guid.NewGuid().ToString(),
-        GeofenceUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid().ToString(),
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
@@ -882,7 +882,7 @@ namespace RepositoryTests
     public void DeleteGeofence_HappyPath()
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var geofenceUid = Guid.NewGuid();
+      var geofenceUid = Guid.NewGuid().ToString();
       var userUid = Guid.NewGuid().ToString();
       var geofenceType = GeofenceType.Filter;
       var createGeofenceEvent = new CreateGeofenceEvent

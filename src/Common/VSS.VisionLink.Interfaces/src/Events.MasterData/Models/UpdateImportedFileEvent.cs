@@ -5,7 +5,7 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class UpdateImportedFileEvent : IProjectEvent
   {
-    public Guid ImportedFileUID { get; set; }
+    public string ImportedFileUID { get; set; }
     public string FileDescriptor { get; set; }
     public DateTime FileCreatedUtc { get; set; }
     public DateTime FileUpdatedUtc { get; set; }

@@ -1,9 +1,8 @@
-#THIS HAS NO EFFECT - Project db schema is handled by masterdata, this 'database' folder can probably be deleted.
 FROM dhoer/flyway:4.1.2
 ARG SERVICE_PATH
 
 RUN mkdir -p /scripts/sql
-#COPY database/*.sql /scripts/sql/ #why is this line commented? - josh
+COPY ./$SERVICE_PATH/database/*.sql /scripts/sql/
 COPY ./$SERVICE_PATH/database/*.sh /scripts/
 RUN chmod 555 /scripts/*
 WORKDIR /scripts
