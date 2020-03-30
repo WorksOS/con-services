@@ -1,6 +1,6 @@
 ﻿using MockProjectWebApi.Json;
 using VSS.Productivity3D.Filter.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Utils
 {

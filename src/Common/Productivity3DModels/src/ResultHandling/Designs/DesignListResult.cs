@@ -4,7 +4,7 @@ using System.Linq;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Models.ResultHandling.Designs
 {

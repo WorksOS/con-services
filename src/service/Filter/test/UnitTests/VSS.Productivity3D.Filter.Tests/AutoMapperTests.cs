@@ -5,7 +5,7 @@ using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.Productivity3D.Filter.Tests

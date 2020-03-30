@@ -9,7 +9,7 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace ExecutorTests
 {

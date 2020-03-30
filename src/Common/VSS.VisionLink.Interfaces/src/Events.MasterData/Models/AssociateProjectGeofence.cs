@@ -1,7 +1,7 @@
 ﻿using System;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class AssociateProjectGeofence : IProjectEvent
   {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MockProjectWebApi.Utils;
 using VSS.Productivity3D.Filter.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Services
 {

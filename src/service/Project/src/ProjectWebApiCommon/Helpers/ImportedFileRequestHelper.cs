@@ -19,6 +19,7 @@ using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 

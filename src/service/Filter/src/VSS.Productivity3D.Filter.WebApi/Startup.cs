@@ -1,8 +1,8 @@
-﻿using CCSS.CWS.Client;
+﻿using System;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -11,20 +11,20 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
-using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
-using VSS.Productivity3D.Push.WebAPI;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Filter.WebApi
@@ -43,27 +43,31 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <inheritdoc />
     public override string ServiceVersion => "v1";
 
-    /// <summary>
-    /// Gets the configuration.
-    /// </summary>
-    public new IConfigurationRoot Configuration { get; }
+    private static IServiceProvider serviceProvider;
 
-    /// <inheritdoc />
-    public Startup(IWebHostEnvironment env)
-    {
-      var builder = new ConfigurationBuilder()
-        .SetBasePath(env.ContentRootPath)
-        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+    ///// <summary>
+    ///// Gets the configuration.
+    ///// </summary>
+    //public new IConfigurationRoot Configuration { get; }
 
-      builder.AddEnvironmentVariables();
-      Configuration = builder.Build();
-      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-    }
+    ///// <inheritdoc />
+    //public Startup(IWebHostEnvironment env)
+    //{
+    //  var builder = new ConfigurationBuilder()
+    //    .SetBasePath(env.ContentRootPath)
+    //    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+    //    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+
+    //  builder.AddEnvironmentVariables();
+    //  Configuration = builder.Build();
+    //  AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
+    //}
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
+
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
 
@@ -88,7 +92,11 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
       services.AddTransient<ICwsAccountClient, CwsAccountClient>();
 
-      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      // todoMaverick
+      //services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); todoMaverick 
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      // endof todoMaverick
+
       services.AddSingleton<CacheInvalidationService>();
 
       services.AddOpenTracing(builder =>
@@ -103,8 +111,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
-      app.UseFilterMiddleware<FilterAuthentication>();
-      app.UseMvc();
+      app.UseFilterMiddleware<FilterAuthentication>();     
     }
   }
 }

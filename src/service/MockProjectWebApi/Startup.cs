@@ -13,7 +13,7 @@ namespace MockProjectWebApi
 {
   public class Startup
   {
-    public Startup(IHostingEnvironment env)
+    public Startup(IWebHostEnvironment env)
     {
       var builder = new ConfigurationBuilder()
           .SetBasePath(env.ContentRootPath)
@@ -39,12 +39,10 @@ namespace MockProjectWebApi
           .WithMethods("OPTIONS", "TRACE", "GET", "POST", "DELETE", "PUT", "HEAD"));
       });
 
-      services.AddMvc();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IFiltersService, FiltersService>();
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
       services.AddSingleton<IProjectService, ProjectService>();
-      services.AddSingleton<IGeofenceservice, GeofenceService>();
     }
 
     /// <summary>

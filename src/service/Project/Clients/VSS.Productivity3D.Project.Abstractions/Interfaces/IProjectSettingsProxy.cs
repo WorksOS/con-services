@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using VSS.Common.Abstractions.Cache.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {

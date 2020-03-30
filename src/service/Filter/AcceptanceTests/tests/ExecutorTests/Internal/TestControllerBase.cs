@@ -15,7 +15,6 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -25,6 +24,7 @@ using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Serilog.Extensions;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Filter.Repository;
 
 namespace ExecutorTests.Internal
 {

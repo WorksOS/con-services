@@ -1,4 +1,4 @@
-USE `Alpha-Project-c2s2`;
+USE `Alpha-Project-ccss`;
 
 CREATE TABLE IF NOT EXISTS `Filter` (
   `ID` bigint(20) NOT NULL AUTO_INCREMENT,

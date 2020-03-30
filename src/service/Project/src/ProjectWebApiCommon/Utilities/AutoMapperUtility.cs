@@ -136,7 +136,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<AccountResponseModel, CustomerData>()
             .ForMember(dest => dest.uid, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.type, opt => opt.MapFrom(src => CustomerType.Customer.ToString()))
             ;
         }
       );

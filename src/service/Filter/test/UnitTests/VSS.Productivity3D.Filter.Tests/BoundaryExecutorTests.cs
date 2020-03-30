@@ -7,20 +7,20 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Repository;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.Productivity3D.Filter.Tests

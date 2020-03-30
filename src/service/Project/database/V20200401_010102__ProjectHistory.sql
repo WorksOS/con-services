@@ -1,4 +1,4 @@
-USE `Alpha-Project-c2s2`;
+USE `Alpha-Project-ccss`;
 
 -- UID example: "trn::profilex:us-west-2:project:eaf7260e-946a-4019-a92d-fab11683149e"
 CREATE TABLE IF NOT EXISTS `ProjectHistory` (

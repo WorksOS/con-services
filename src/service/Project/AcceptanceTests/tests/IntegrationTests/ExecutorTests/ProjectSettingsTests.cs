@@ -6,7 +6,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
 
 namespace IntegrationTests.ExecutorTests
@@ -172,8 +172,7 @@ namespace IntegrationTests.ExecutorTests
 
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
-        customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),
-        _fixture.Producer, _fixture.KafkaTopicName,
+        customerUidSomeOther, userId, userEmailAddress, _fixture.CustomHeaders(customerUidOfProject),       
         productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(projectSettingsRequest)).ConfigureAwait(false);
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2001", StringComparison.Ordinal));
@@ -199,7 +198,6 @@ namespace IntegrationTests.ExecutorTests
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
         (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-        _fixture.Producer, _fixture.KafkaTopicName,
         productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);
@@ -251,7 +249,6 @@ namespace IntegrationTests.ExecutorTests
       var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
       (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
         customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-        _fixture.Producer, _fixture.KafkaTopicName,
         productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
       var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
       Assert.NotNull(result);

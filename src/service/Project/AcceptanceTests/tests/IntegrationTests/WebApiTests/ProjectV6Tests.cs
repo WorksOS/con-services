@@ -10,7 +10,7 @@ using Xunit;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class ProjectV4Tests : WebApiTestsBase
+  public class ProjectV6Tests : WebApiTestsBase
   {
     [Fact]
     public async Task CreateStandardProjectAndGetProjectListV4()
@@ -1062,114 +1062,7 @@ namespace IntegrationTests.WebApiTests
       var response = await ts.PublishEventToWebApi(projectEventArray);
       Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
       await ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, projectEventArray, true);
-    }
-
-    [Fact]
-    public async Task CreateLandfillGeofencesThenQueryForAvailable()
-    {
-      Msg.Title("Project v4 test 28", "Create landfill sites, then query available for customer and associated for project");
-
-      var ts = new TestSupport();
-      var projectUid = Guid.NewGuid().ToString();
-      var customerUid = Guid.NewGuid();
-      Guid.NewGuid();
-      var subscriptionUid = Guid.NewGuid();
-      var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
-      var startDate = startDateTime.ToString("yyyy-MM-dd");
-      var endDate = endDateTime.ToString("yyyy-MM-dd");
-
-      var eventsArray = new[]
-      {
-        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
-       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
-       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"
-      };
-      await ts.PublishEventCollection(eventsArray);
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[]
-      {
-        "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem         |",
-       $"| CreateProjectRequest | 0d+09:00:00 | {projectUid} | Boundary Test 24 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | 1 |false      | BootCampDimensions.dc    |"
-      };
-      await ts.PublishEventCollection(projectEventArray);
-      await ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-
-      var geofenceUidLandfillSite1 = Guid.NewGuid();
-      var geofenceUidLandfillSite2 = Guid.NewGuid();
-      var geofenceEventArray = new[]
-      {
-        "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description   | FillColor | GeofenceName  | fk_GeofenceTypeID            | GeofenceUID                 | GeometryWKT   | IsTransparent | Name | UserUID        | IsDeleted | LastActionedUTC |",
-        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | LandfillSite1 | 1         | LandfillSite1 | {(int) GeofenceType.Landfill} | {geofenceUidLandfillSite1}  | {Boundaries.Boundary1} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |",
-        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | LandfillSite2 | 1         | LandfillSite2 | {(int) GeofenceType.Landfill} | {geofenceUidLandfillSite2}  | {Boundaries.Boundary1} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |"
-      };
-      ts.IsPublishToWebApi = false;
-      await ts.PublishEventCollection(geofenceEventArray, HttpStatusCode.BadRequest);
-
-      var availableGeofences = await ts.GetProjectGeofencesViaWebApiV4(customerUid.ToString(), "?geofenceType=Landfill", string.Empty);
-      Assert.NotNull(availableGeofences);
-      Assert.Equal(2, availableGeofences.GeofenceDescriptors.Count);
-
-      var associatedGeofences = await ts.GetProjectGeofencesViaWebApiV4(customerUid.ToString(), "?geofenceType=Landfill", $"&projectUid={projectUid}");
-      Assert.NotNull(associatedGeofences);
-      Assert.Empty(associatedGeofences.GeofenceDescriptors);
-    }
-
-    [Fact]
-    public async Task CreateLandfillGeofenceThenAssociate()
-    {
-      Msg.Title("Project v4 test 29", "Create landfill sites, then associate to project");
-
-      var ts = new TestSupport();
-      var projectUid = Guid.NewGuid().ToString();
-      var customerUid = Guid.NewGuid();
-      Guid.NewGuid();
-      var subscriptionUid = Guid.NewGuid();
-      var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
-      var startDate = startDateTime.ToString("yyyy-MM-dd");
-      var endDate = endDateTime.ToString("yyyy-MM-dd");
-
-      var eventsArray = new[]
-      {
-        "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
-       $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
-       $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |"
-      };
-      await ts.PublishEventCollection(eventsArray);
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[]
-      {
-        "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem         |",
-       $"| CreateProjectRequest | 0d+09:00:00 | {projectUid} | Boundary Test 29 | LandFill    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | 1 |false      | BootCampDimensions.dc    |"
-      };
-      await ts.PublishEventCollection(projectEventArray);
-      await ts.GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-
-      var geofenceUidLandfillSite1 = Guid.NewGuid();
-      var geofenceUidLandfillSite2 = Guid.NewGuid();
-      var geofenceEventArray = new[]
-      {
-        "| TableName  | EventType           | EventDate   | fk_CustomerUID | Description   | FillColor | GeofenceName  | fk_GeofenceTypeID            | GeofenceUID                 | GeometryWKT   | IsTransparent | Name | UserUID        | IsDeleted | LastActionedUTC |",
-        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | LandfillSite1 | 1         | LandfillSite1 | {(int) GeofenceType.Landfill} | {geofenceUidLandfillSite1}  | {Boundaries.Boundary1} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |",
-        $"| Geofence   | CreateGeofenceEvent | 0d+09:00:00 | {customerUid}  | LandfillSite2 | 1         | LandfillSite2 | {(int) GeofenceType.Landfill} | {geofenceUidLandfillSite2}  | {Boundaries.Boundary1} | {false}       | Blah | {customerUid}  | {false}   | 0d+09:00:00     |"
-      };
-      ts.IsPublishToWebApi = false;
-      await ts.PublishEventCollection(geofenceEventArray);
-
-      var associatedResult = await ts.AssociateProjectGeofencesViaWebApiV4(customerUid.ToString(), projectUid, new List<GeofenceType> { GeofenceType.Landfill }, new List<Guid> { geofenceUidLandfillSite1 });
-      Assert.NotNull(associatedResult);
-      Assert.Equal("success", associatedResult.Message);
-
-      var availableGeofences = await ts.GetProjectGeofencesViaWebApiV4(customerUid.ToString(), "?geofenceType=Landfill", string.Empty);
-      Assert.NotNull(availableGeofences);
-      Assert.Single(availableGeofences.GeofenceDescriptors);
-      Assert.Equal(geofenceUidLandfillSite2.ToString(), availableGeofences.GeofenceDescriptors[0].GeofenceUid);
-
-      var associatedGeofences = await ts.GetProjectGeofencesViaWebApiV4(customerUid.ToString(), "?geofenceType=Landfill", $"&projectUid={projectUid}");
-      Assert.NotNull(associatedGeofences);
-      Assert.Single(associatedGeofences.GeofenceDescriptors);
-      Assert.Equal(geofenceUidLandfillSite1.ToString(), associatedGeofences.GeofenceDescriptors[0].GeofenceUid);
-    }
+    }   
+   
   }
 }

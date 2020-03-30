@@ -8,10 +8,10 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace RepositoryTests
 {

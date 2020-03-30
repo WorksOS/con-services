@@ -2,7 +2,7 @@
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
 {

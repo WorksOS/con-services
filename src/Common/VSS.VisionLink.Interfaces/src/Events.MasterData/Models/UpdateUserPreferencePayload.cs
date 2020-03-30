@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
 	/// <summary>
 	/// update user preference

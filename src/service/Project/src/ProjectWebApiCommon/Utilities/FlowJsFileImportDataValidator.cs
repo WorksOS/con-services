@@ -4,6 +4,7 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities

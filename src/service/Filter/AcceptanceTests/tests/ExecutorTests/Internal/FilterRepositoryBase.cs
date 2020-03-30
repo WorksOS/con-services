@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace ExecutorTests.Internal
 {

@@ -1,4 +1,4 @@
-USE `Alpha-Project-c2s2`;
+USE `Alpha-Project-ccss`;
 
 CREATE TABLE IF NOT EXISTS FilterTypeEnum (
   ID int(11) NOT NULL,

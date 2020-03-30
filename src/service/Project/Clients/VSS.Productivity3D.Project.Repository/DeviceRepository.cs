@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
-namespace VSS.MasterData.Repositories
+namespace VSS.Productivity3D.Project.Repository
 {
   public class DeviceRepository : RepositoryBase, IRepository<IDeviceEvent>, IDeviceRepository
   {
@@ -32,9 +33,9 @@ namespace VSS.MasterData.Repositories
       if (evt is CreateDeviceEvent)
       {
         var device = new Device();
-        var deviceEvent = (CreateDeviceEvent) evt;
+        var deviceEvent = (CreateDeviceEvent)evt;
         device.DeviceUID = deviceEvent.DeviceUID.ToString();
-        device.ShortRaptorAssetId = -1;        
+        device.ShortRaptorAssetId = -1;
         device.LastActionedUtc = deviceEvent.ActionUTC;
         eventType = "CreateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
@@ -63,7 +64,7 @@ namespace VSS.MasterData.Repositories
             DeviceUID, ShortRaptorAssetId, LastActionedUTC AS LastActionedUtc
           FROM Device
           WHERE DeviceUID = @DeviceUID"
-        , new {DeviceUID = device.DeviceUID}
+        , new { device.DeviceUID }
       )).FirstOrDefault();
 
       if (eventType == "CreateDeviceEvent")
@@ -90,7 +91,7 @@ namespace VSS.MasterData.Repositories
                 (@DeviceUID, @LastActionedUtc)";
         return await ExecuteWithAsyncPolicy(upsert, device);
       }
-      
+
       return await Task.FromResult(0);
     }
 
@@ -106,7 +107,7 @@ namespace VSS.MasterData.Repositories
               DeviceUID, ShortRaptorAssetId,  LastActionedUTC AS LastActionedUtc
             FROM Device
             WHERE DeviceUID = @DeviceUID"
-        , new {DeviceUID = deviceUid}
+        , new { DeviceUID = deviceUid }
       )).FirstOrDefault();
     }
 
@@ -117,7 +118,7 @@ namespace VSS.MasterData.Repositories
               DeviceUID, ShortRaptorAssetId,  LastActionedUTC AS LastActionedUtc
             FROM Device
             WHERE ShortRaptorAssetId = @shortRaptorAssetId"
-        , new { shortRaptorAssetId = shortRaptorAssetId }
+        , new { shortRaptorAssetId }
       )).FirstOrDefault();
     }
 

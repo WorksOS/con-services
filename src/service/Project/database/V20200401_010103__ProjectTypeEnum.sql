@@ -1,3 +1,5 @@
+USE `Alpha-Project-ccss`;
+
 CREATE TABLE IF NOT EXISTS ProjectTypeEnum (
   ID int(11) NOT NULL,
   Description varchar(20) NOT NULL,

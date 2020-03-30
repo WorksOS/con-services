@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models
 {

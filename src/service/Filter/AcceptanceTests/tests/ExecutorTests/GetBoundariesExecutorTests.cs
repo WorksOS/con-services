@@ -9,7 +9,7 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -43,8 +43,9 @@ namespace ExecutorTests
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(
         ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
+
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(2, result.GeofenceData.Count, "Should be two overlapping favorite or associated geofences returned");
+      Assert.AreEqual(0, result.GeofenceData.Count, "Should be no boundaries");
       var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
       Assert.AreEqual(0, boundaries.Count, "Shouldn't be any boundaries returned");
     }

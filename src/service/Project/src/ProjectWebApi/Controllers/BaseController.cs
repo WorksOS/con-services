@@ -22,7 +22,6 @@ using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.MasterData.Repositories;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {

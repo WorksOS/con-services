@@ -12,12 +12,13 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Serilog.Extensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.Tests
 {

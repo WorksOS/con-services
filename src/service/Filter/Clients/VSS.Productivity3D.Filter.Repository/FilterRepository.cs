@@ -4,11 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Repositories.DBModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
-namespace VSS.MasterData.Repositories
+namespace VSS.Productivity3D.Filter.Repository
 {
   public class FilterRepository : RepositoryBase, IRepository<IFilterEvent>, IFilterRepository
   {
@@ -36,7 +37,7 @@ namespace VSS.MasterData.Repositories
       {
         case CreateFilterEvent @event:
           {
-            var filter = new Filter
+            var filter = new MasterData.Repositories.DBModels.Filter
             {
               CustomerUid = @event.CustomerUID.ToString(),
               UserId = @event.UserID,
@@ -54,7 +55,7 @@ namespace VSS.MasterData.Repositories
           }
         case UpdateFilterEvent @event:
           {
-            var filter = new Filter
+            var filter = new MasterData.Repositories.DBModels.Filter
             {
               CustomerUid = @event.CustomerUID.ToString(),
               UserId = @event.UserID,
@@ -70,7 +71,7 @@ namespace VSS.MasterData.Repositories
           }
         case DeleteFilterEvent @event:
           {
-            var filter = new Filter
+            var filter = new MasterData.Repositories.DBModels.Filter
             {
               CustomerUid = @event.CustomerUID.ToString(),
               UserId = @event.UserID,
@@ -94,17 +95,17 @@ namespace VSS.MasterData.Repositories
     ///     but only certain columns can be updated.
     ///     on deletion, a flag will be set.
     /// </summary>
-    private async Task<int> UpsertFilterDetail(Filter filter, string eventType)
+    private async Task<int> UpsertFilterDetail(MasterData.Repositories.DBModels.Filter filter, string eventType)
     {
       var upsertedCount = 0;
-      var existing = (await QueryWithAsyncPolicy<Filter>(@"SELECT 
+      var existing = (await QueryWithAsyncPolicy<MasterData.Repositories.DBModels.Filter>(@"SELECT 
                 f.FilterUID, f.fk_CustomerUid AS CustomerUID, 
                 f.fk_ProjectUID AS ProjectUID, f.UserID,                                  
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
                 f.IsDeleted, f.LastActionedUTC
               FROM Filter f
               WHERE f.FilterUID = @FilterUid",
-        new { FilterUid = filter.FilterUid })).FirstOrDefault();
+        new { filter.FilterUid })).FirstOrDefault();
 
       if (eventType == "CreateFilterEvent")
         upsertedCount = await CreateFilter(filter, existing);
@@ -118,7 +119,7 @@ namespace VSS.MasterData.Repositories
     }
 
 
-    private Task<int> CreateFilter(Filter filter, Filter existing)
+    private Task<int> CreateFilter(MasterData.Repositories.DBModels.Filter filter, MasterData.Repositories.DBModels.Filter existing)
     {
       Log.LogDebug($"{nameof(FilterRepository)}/{nameof(CreateFilter)}: filter={JsonConvert.SerializeObject(filter)}))')");
 
@@ -157,10 +158,10 @@ namespace VSS.MasterData.Repositories
       return Task.FromResult(0);
     }
 
-    private async Task<int> UpdateFilter(Filter filter, Filter existing)
+    private async Task<int> UpdateFilter(MasterData.Repositories.DBModels.Filter filter, MasterData.Repositories.DBModels.Filter existing)
     {
       Log.LogDebug($"FilterRepository/UpdateFilter: filter={JsonConvert.SerializeObject(filter)}))')");
-      int upsertedCount = 0;
+      var upsertedCount = 0;
 
       // following are immutable: FilterUID, fk_CustomerUid, fk_ProjectUID, UserID, FilterType
       if (existing != null && existing.FilterType == FilterType.Transient)
@@ -196,7 +197,7 @@ namespace VSS.MasterData.Repositories
       return upsertedCount;
     }
 
-    private async Task<int> DeleteFilter(Filter filter, Filter existing)
+    private async Task<int> DeleteFilter(MasterData.Repositories.DBModels.Filter filter, MasterData.Repositories.DBModels.Filter existing)
     {
       Log.LogDebug($"FilterRepository/DeleteFilter: project={JsonConvert.SerializeObject(filter)})')");
 
@@ -258,7 +259,7 @@ namespace VSS.MasterData.Repositories
     /// <param name="projectUid"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public Task<IEnumerable<Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userId,
+    public Task<IEnumerable<MasterData.Repositories.DBModels.Filter>> GetFiltersForProjectUser(string customerUid, string projectUid, string userId,
       bool includeAll = false)
     {
       string queryString = null;
@@ -287,8 +288,8 @@ namespace VSS.MasterData.Repositories
                 AND f.IsDeleted = 0
                 AND f.fk_FilterTypeID = {(int)FilterType.Persistent}";
 
-      return (QueryWithAsyncPolicy<Filter>(queryString,
-        new { CustomerUid = customerUid, ProjectUid = projectUid, UserId = userId }));
+      return QueryWithAsyncPolicy<MasterData.Repositories.DBModels.Filter>(queryString,
+        new { CustomerUid = customerUid, ProjectUid = projectUid, UserId = userId });
     }
 
     /// <summary>
@@ -296,9 +297,9 @@ namespace VSS.MasterData.Repositories
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns></returns>
-    public Task<IEnumerable<Filter>> GetFiltersForProject(string projectUid)
+    public Task<IEnumerable<MasterData.Repositories.DBModels.Filter>> GetFiltersForProject(string projectUid)
     {
-      return (QueryWithAsyncPolicy<Filter>($@"SELECT 
+      return QueryWithAsyncPolicy<MasterData.Repositories.DBModels.Filter>($@"SELECT 
                 f.fk_CustomerUid AS CustomerUID, f.UserID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                   
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
@@ -307,7 +308,7 @@ namespace VSS.MasterData.Repositories
               WHERE f.fk_ProjectUID = @ProjectUid 
                 AND f.IsDeleted = 0
                 AND f.fk_FilterTypeID = {(int)FilterType.Persistent}",
-        new { ProjectUid = projectUid }));
+        new { ProjectUid = projectUid });
     }
 
     /// <summary>
@@ -315,9 +316,9 @@ namespace VSS.MasterData.Repositories
     /// </summary>
     /// <param name="filterUid"></param>
     /// <returns></returns>
-    public async Task<Filter> GetFilter(string filterUid)
+    public async Task<MasterData.Repositories.DBModels.Filter> GetFilter(string filterUid)
     {
-      return (await QueryWithAsyncPolicy<Filter>(@"SELECT 
+      return (await QueryWithAsyncPolicy<MasterData.Repositories.DBModels.Filter>(@"SELECT 
                 f.fk_CustomerUid AS CustomerUID, f.UserID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                  
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType,
@@ -348,9 +349,9 @@ namespace VSS.MasterData.Repositories
     /// </summary>
     /// <param name="filterUid"></param>
     /// <returns></returns>
-    public async Task<Filter> GetFilterForUnitTest(string filterUid)
+    public async Task<MasterData.Repositories.DBModels.Filter> GetFilterForUnitTest(string filterUid)
     {
-      return (await QueryWithAsyncPolicy<Filter>(@"SELECT 
+      return (await QueryWithAsyncPolicy<MasterData.Repositories.DBModels.Filter>(@"SELECT 
                 f.fk_CustomerUid AS CustomerUID, f.UserID, 
                 f.fk_ProjectUID AS ProjectUID, f.FilterUID,                  
                 f.Name, f.FilterJson, f.fk_FilterTypeID as FilterType, 

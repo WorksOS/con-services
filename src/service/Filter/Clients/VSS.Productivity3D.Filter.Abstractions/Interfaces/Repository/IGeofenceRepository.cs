@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.Repositories
+namespace VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository
 {
   public interface IGeofenceRepository
   {

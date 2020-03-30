@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 {

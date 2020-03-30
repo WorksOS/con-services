@@ -2,7 +2,7 @@
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
-namespace VSS.MasterData.Repositories
+namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 {
   public interface IDeviceRepository
   {

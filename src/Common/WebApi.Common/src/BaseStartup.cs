@@ -153,6 +153,7 @@ namespace VSS.WebApi.Common
     /// </summary>
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
     {
+      app.UseRouting();
       var corsPolicyNames = GetCors().Select(c => c.Item1);
       foreach (var corsPolicyName in corsPolicyNames)
         app.UseCors(corsPolicyName);
@@ -172,7 +173,9 @@ namespace VSS.WebApi.Common
       Services.AddSingleton(loggerFactory);
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
-      app.UseMvc();
+      app.UseEndpoints(endpoints => {
+        endpoints.MapControllers();
+      });
     }
 
     /// <summary>

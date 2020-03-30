@@ -1,4 +1,4 @@
-USE `Alpha-Project-c2s2`;
+USE `Alpha-Project-ccss`;
 
 CREATE TABLE IF NOT EXISTS  `ProjectSettings` (
   `fk_ProjectUID` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL,

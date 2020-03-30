@@ -7,16 +7,15 @@ using Moq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
-using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Filters.Authentication;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.Productivity3D.Filter.Tests

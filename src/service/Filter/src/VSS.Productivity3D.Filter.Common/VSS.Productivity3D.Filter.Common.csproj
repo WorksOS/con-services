@@ -33,6 +33,7 @@
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\..\..\3DP\Clients\Abstractions\VSS.Productivity3D.Productivity3D.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Clients\VSS.Productivity3D.Filter.Repository\VSS.Productivity3D.Filter.Repository.csproj" />
   </ItemGroup>
 
 </Project>

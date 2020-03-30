@@ -7,12 +7,12 @@ using IntegrationTests.UtilityClasses;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
-using ImportedFileType = VSS.VisionLink.Interfaces.Events.MasterData.Models.ImportedFileType;
 
 namespace IntegrationTests.WebApiTests
 {
-  public class FileImportV2forTBCTests : WebApiTestsBase
+  public class FileImportV5forTBCTests : WebApiTestsBase
   {
     [Fact]
     public async Task TestImportV2ForTbcSvlFile_AlignmentType_OK()
@@ -53,13 +53,13 @@ namespace IntegrationTests.WebApiTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name             | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {importFilename} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
-      var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
+      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.ShortRaptorProjectId, importFileArray, 1);
+      var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
 
       Assert.Equal(HttpStatusCode.OK, importFileV2Result.Code);
       Assert.NotEqual(-1, importFileV2Result.Id);
 
-      var importFileList = await importFile.GetImportedFilesFromWebApi<ImmutableList<DesignDetailV2Result>>($"api/v2/projects/{project.LegacyProjectId}/importedfiles", customerUid);
+      var importFileList = await importFile.GetImportedFilesFromWebApi<ImmutableList<DesignDetailV5Result>>($"api/v2/projects/{project.ShortRaptorProjectId}/importedfiles", customerUid);
       Assert.True(importFileList.Count == 1, "Expected 1 imported files but got " + importFileList.Count);
       Assert.Equal(importFileV2Result.Id, importFileList[0].id);
       Assert.Equal(Path.GetFileName(importFilename), importFileList[0].name);
@@ -106,8 +106,8 @@ namespace IntegrationTests.WebApiTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name             | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {importFilename} | 4                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1);
-      var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
+      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.ShortRaptorProjectId, importFileArray, 1);
+      var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
 
       Assert.Equal(HttpStatusCode.OK, importFileV2Result.Code);
       Assert.Equal(-1, importFileV2Result.Id);
@@ -152,8 +152,8 @@ namespace IntegrationTests.WebApiTests
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name             | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {importFilename} | 7               | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"};
-      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.LegacyProjectId, importFileArray, 1, HttpStatusCode.BadRequest);
-      var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV2Result>(response);
+      var response = await importFile.SendImportedFilesToWebApiV2(ts, project.ShortRaptorProjectId, importFileArray, 1, HttpStatusCode.BadRequest);
+      var importFileV2Result = JsonConvert.DeserializeObject<ReturnLongV5Result>(response);
 
       Assert.NotEqual(HttpStatusCode.OK, importFileV2Result.Code);
       Assert.Equal(0, importFileV2Result.Id);

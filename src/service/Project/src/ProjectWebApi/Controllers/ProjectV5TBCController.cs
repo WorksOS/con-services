@@ -9,7 +9,6 @@ using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -22,12 +21,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class ProjectV5TBCController : ProjectBaseController
   {
-
-    /// <summary>
-    /// Gets or sets the Customer Repository.
-    /// </summary>
-    protected readonly ICustomerRepository customerRepo;
-
     /// <summary>
     /// Gets or sets the httpContextAccessor.
     /// </summary>
@@ -36,10 +29,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV5TBCController(IConfigurationStore configStore, ICustomerRepository customerRepo, IHttpContextAccessor httpContextAccessor)
+    public ProjectV5TBCController(IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor)
       : base(configStore)
     {
-      this.customerRepo = customerRepo;
       this.httpContextAccessor = httpContextAccessor;
     }
 

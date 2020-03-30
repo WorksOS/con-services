@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TestUtility.Model;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility

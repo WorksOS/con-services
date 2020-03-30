@@ -7,7 +7,6 @@ using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -32,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord = null, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null, ITRexImportFileProxy tRexImportFileProxy = null,
       IProjectRepository projectRepo = null, IDeviceRepository deviceRepo = null, IFileRepository fileRepo = null,
-      ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
+      IHttpContextAccessor httpContextAccessor = null, IDataOceanClient dataOceanClient = null,
       ITPaaSApplicationAuthentication authn = null, ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null
       )
@@ -49,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       executor.Initialise(
         log, configStore, serviceExceptionHandler, customerUid, userId, userEmailAddress, headers,
         productivity3dV1ProxyCoord, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction,
-        persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, projectRepo, deviceRepo, fileRepo, customerRepo,
+        persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, projectRepo, deviceRepo, fileRepo,
         httpContextAccessor, dataOceanClient, authn, schedulerProxy, pegasusClient, cwsProjectClient, cwsDeviceClient
         );
 

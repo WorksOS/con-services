@@ -2,6 +2,7 @@
 using System.Net;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities

@@ -15,11 +15,11 @@ using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
