@@ -1,3 +1,15 @@
+#######################################
+#
+# To run locally
+# > docker build -t bamboo-agent .
+# > docker run -it --privileged -v <directory-you-want-to-mount>:/home/bamboo/bamboo-agent-home/ --entrypoint "/bin/bash" bamboo-agent
+#
+#
+# Once running bash inside the container, run the following to enable docker
+# > sudo /usr/local/bin/wrapdocker.sh
+#
+########################################
+
 FROM atlassian/bamboo-agent-base
 
 #### Install packages for builds
@@ -5,7 +17,15 @@ FROM atlassian/bamboo-agent-base
 USER root
 RUN apt-get update && \
     apt-get install git wget vim sudo -y && \
-    apt-get install python3.6 python3-pip -y 
+    apt-get install python3.6 python3-pip -y
+
+# dos2unix helper for running local files with windows line endings
+RUN apt-get install dos2unix -y
+# Install AWS CLI
+RUN apt-get install unzip -y
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    sudo ./aws/install
 
 RUN pip3 install python-jenkins
 
