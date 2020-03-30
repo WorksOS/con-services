@@ -31,9 +31,6 @@ namespace VSS.MasterData.Repositories
     protected RepositoryBase(IConfigurationStore configurationStore, ILoggerFactory logger)
     {
       _connectionString = configurationStore.GetConnectionString("VSPDB");
-
-      Console.WriteLine($"Connection string from configuration store for MySql is '{_connectionString}'");
-
       Log = logger.CreateLogger<RepositoryBase>();
     }
 
