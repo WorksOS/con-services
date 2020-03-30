@@ -16,13 +16,13 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.MinY,
           opt => opt.MapFrom(f => f.BottomleftY))
         .ForMember(x => x.MinZ,
-          opt => opt.UseValue(0))
+          opt => opt.MapFrom(src => 0))
         .ForMember(x => x.MaxX,
           opt => opt.MapFrom(f => f.TopRightX))
         .ForMember(x => x.MaxY,
           opt => opt.MapFrom(f => f.TopRightY))
         .ForMember(x => x.MaxZ,
-          opt => opt.UseValue(0));
+          opt => opt.MapFrom(src => 0));
 
       CreateMap<BoundingBox2DLatLon, BoundingWorldExtent3D>()
         .ForMember(x => x.MinX,
@@ -30,13 +30,13 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.MinY,
           opt => opt.MapFrom(f => f.BottomLeftLat))
         .ForMember(x => x.MinZ,
-          opt => opt.UseValue(0))
+          opt => opt.MapFrom(src => 0))
         .ForMember(x => x.MaxX,
           opt => opt.MapFrom(f => f.TopRightLon))
         .ForMember(x => x.MaxY,
           opt => opt.MapFrom(f => f.TopRightLat))
         .ForMember(x => x.MaxZ,
-          opt => opt.UseValue(0));
+          opt => opt.MapFrom(src => 0));
     }
   }
 }
