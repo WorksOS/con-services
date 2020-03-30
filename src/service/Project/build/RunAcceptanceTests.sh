@@ -5,7 +5,7 @@ mkdir testresults
 echo "List out files in current directory"
 ls
 
-echo "Wait 40 seconds for MySQL and Kafka"
+echo "$(date) Wait 40 seconds for MySQL and Kafka"
 sleep 40
 #echo "Check the database and kafka to see if port is available"
 # Polling the database and kafka status before test
@@ -14,7 +14,7 @@ sleep 40
 #echo "Wait for 20 seconds"
 #sleep 20
 
-echo "Run the AcceptanceTests solution"
+echo "$(date) Run the AcceptanceTests solution"
 cd AcceptanceTests
 dotnet test VSS.Visionlink.Project.AcceptanceTests.sln --logger \"nunit;LogFileName=acceptancetestresults.xml\"
 
