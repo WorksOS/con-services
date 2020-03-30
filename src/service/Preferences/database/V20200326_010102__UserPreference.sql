@@ -9,3 +9,4 @@ CREATE TABLE IF NOT EXISTS `UserPreference` (
   PRIMARY KEY (`UserPreferenceID`),
   UNIQUE KEY `UserPreference_CustomerUser_Key_UK` (`UserUID`,`fk_PreferenceKeyID`)
   ) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;
+

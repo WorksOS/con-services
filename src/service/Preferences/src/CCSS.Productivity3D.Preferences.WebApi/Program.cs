@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog.Extensions.Logging;
+using VSS.Productivity3D.Filter.WebApi;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
 

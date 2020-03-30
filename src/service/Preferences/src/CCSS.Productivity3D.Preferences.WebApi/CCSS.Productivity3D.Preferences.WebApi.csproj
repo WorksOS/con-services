@@ -44,9 +44,11 @@
     <ProjectReference Include="..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\..\Clients\CCSS.Productivity3D.Preferences.Abstractions\CCSS.Productivity3D.Preferences.Abstractions.csproj" />
     <ProjectReference Include="..\..\Clients\CCSS.Productivity3D.Preferences.Repository\CCSS.Productivity3D.Preferences.Repository.csproj" />
+    <ProjectReference Include="..\CCSS.Productivity3D.Preferences.Common\CCSS.Productivity3D.Preferences.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
