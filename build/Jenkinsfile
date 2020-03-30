@@ -214,6 +214,9 @@ node ('jenkinsslave-pod') {
 				node (label) {
 					dir ("/app/${servicePath}") {
 						sh "mkdir /app/testresults"
+						
+						sleep(time:40,unit:"SECONDS")
+						
 						sh "/bin/sh ./build/RunAcceptanceTests.sh"
 
 						xunit(
