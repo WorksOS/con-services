@@ -17,6 +17,7 @@ namespace TagFiles
 
     private int port = 1500;
     private string tcip = "127.0.0.1";
+    private int logEntries = 100;
 
     public bool _PortRestartNeeded = false;
     public bool PortRestartNeeded 
@@ -284,9 +285,9 @@ namespace TagFiles
           { // record first 5 entries for possible trouble shooting
             epochsSeen++;
             if (epochsSeen == 1)
-              _log.LogInformation("** Logging first five datapackets **");
+              _log.LogInformation($"** Logging first {logEntries} datapackets **");
             _log.LogInformation(FormatTrace(content));
-            if (epochsSeen > 5)
+            if (epochsSeen > logEntries)
               logStartup = false; 
           }
           else if (_DebugTraceToLog)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using VSS.Common.Abstractions.Http;
 
@@ -20,7 +21,7 @@ namespace VSS.WebApi.Common.Swagger
         Required = false
       });
 
-      operation.Parameters.Add(new OpenApiParameter()
+      operation.Parameters.Add(new OpenApiParameter
       {
         Name = HeaderConstants.AUTHORIZATION,
         In = ParameterLocation.Header,
@@ -28,7 +29,7 @@ namespace VSS.WebApi.Common.Swagger
         Required = false
       });
 
-      operation.Parameters.Add(new OpenApiParameter()
+      operation.Parameters.Add(new OpenApiParameter
       {
         Name = HeaderConstants.X_JWT_ASSERTION,
         In = ParameterLocation.Header,

@@ -118,7 +118,11 @@ namespace VSS.WebApi.Common
       ConfigureAdditionalServices(services);
 
       services.AddMvc(
-        config => { config.Filters.Add(new ValidationFilterAttribute()); }
+        config =>
+        {
+          config.Filters.Add(new ValidationFilterAttribute());
+          config.EnableEndpointRouting = false;
+        }
       ).AddMetrics();
 
       services.AddControllers().AddNewtonsoftJson(options =>
