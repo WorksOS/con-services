@@ -31,7 +31,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
         .ForMember(x => x.ReferenceDesign,
-          opt => opt.ResolveUsing<CustomStationOffsetReferenceDesignResolver>())
+          opt => opt.MapFrom<CustomStationOffsetReferenceDesignResolver>())
         .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides))
         .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings));
 
@@ -53,7 +53,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.Filters,
           opt => opt.Ignore())
         .ForMember(x => x.ReferenceDesign,
-          opt => opt.ResolveUsing<CustomGridReferenceDesignResolver>())
+          opt => opt.MapFrom<CustomGridReferenceDesignResolver>())
         .ForMember(x => x.Overrides, opt => opt.MapFrom(o => o.Overrides))
         .ForMember(x => x.LiftParams, opt => opt.MapFrom(o => o.LiftSettings));
     }

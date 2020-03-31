@@ -30,7 +30,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
 
       CreateMap<Design, DesignFileDescriptor>()
         .ForMember(x => x.FileType,
-          opt => opt.UseValue(ImportedFileType.DesignSurface))
+          opt => opt.MapFrom(src => ImportedFileType.DesignSurface))
         .ForMember(x => x.Name,
           opt => opt.MapFrom(f => f.DesignDescriptor.FileName))
         .ForMember(x => x.DesignUid,
@@ -42,7 +42,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
 
       CreateMap<SurveyedSurface, DesignFileDescriptor>()
         .ForMember(x => x.FileType,
-          opt => opt.UseValue(ImportedFileType.SurveyedSurface))
+          opt => opt.MapFrom(src => ImportedFileType.SurveyedSurface))
         .ForMember(x => x.Name,
           opt => opt.MapFrom(f => f.DesignDescriptor.FileName))
         .ForMember(x => x.DesignUid,
@@ -54,7 +54,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
 
       CreateMap<Alignment, DesignFileDescriptor>()
         .ForMember(x => x.FileType,
-          opt => opt.UseValue(ImportedFileType.Alignment))
+          opt => opt.MapFrom(src => ImportedFileType.Alignment))
         .ForMember(x => x.Name,
           opt => opt.MapFrom(f => f.DesignDescriptor.FileName))
         .ForMember(x => x.DesignUid,

@@ -8,7 +8,7 @@ namespace TestUtility
 {
   public class RdKafkaDriver
   {
-    public Producer<byte[], byte[]> KafkaProducer;
+    public IProducer<byte[], byte[]> KafkaProducer;
 
     public RdKafkaDriver()
     {
@@ -23,7 +23,7 @@ namespace TestUtility
         //{"acks", "all"},
         //{"block.on.buffer.full", "true"}
       };
-      this.KafkaProducer = new Producer<byte[], byte[]>(producerConfig.ToList<KeyValuePair<string, string>>());
+      this.KafkaProducer = new ProducerBuilder<byte[], byte[]>(producerConfig.ToList<KeyValuePair<string, string>>()).Build();
     }
 
     /// <summary>

@@ -93,7 +93,7 @@ namespace VSS.MasterData.Repositories
           {
             await connection.OpenAsync();
             if (Log.IsTraceEnabled())
-              Log.LogTrace("Repository PollyAsync: db open (with connection reuse) was successfull");
+              Log.LogTrace("Repository PollyAsync: db open (with connection reuse) was successful");
             result = await body(connection);
             connection.Close();
             MySqlHealthCheck.SetStatus(true, this.GetType());
