@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Text;
+using Microsoft.Extensions.Logging;
 using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
@@ -89,7 +91,12 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public override void FillWithTestPattern()
     {
-      //throw new NotImplementedException();
+      NumberOfProgressions = 2;
+
+      for (var i = 0; i < NumberOfProgressions; i++)
+      {
+        ForEach((x, y) => Heights[i][x, y] = i);
+      }
     }
 
     /// <summary>
@@ -99,15 +106,15 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public override bool LeafContentEquals(IClientLeafSubGrid other)
     {
-      return true;
-      // throw new NotImplementedException();
+      var result = true;
 
-//      bool result = true;
+      var _other = (ClientProgressiveHeightsLeafSubGrid)other;
+      for (var i = 0; i < NumberOfProgressions; i++)
+      {
+        ForEach((x, y) => result &= Heights[i][x, y] == _other.Heights[i][x, y]);
+      }
 
-//      IGenericClientLeafSubGrid<float> _other = (IGenericClientLeafSubGrid<float>)other;
-//      ForEach((x, y) => result &= Cells[x, y] == _other.Cells[x, y]);
-
-//      return result;
+      return result;
     }
 
     public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source)
@@ -122,12 +129,13 @@ namespace VSS.TRex.SubGridTrees.Client
 
     /// <summary>
     /// Determines if the height at the cell location is null or not.
+    /// For the multi-layered progressive height arrays this function simple returns true
+    /// delegating the management of this aspect to upper layers.
     /// </summary>
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
     /// <returns></returns>
-    public override bool CellHasValue(byte cellX, byte cellY) => true; //Cells[cellX, cellY] != Consts.NullHeight;
-
+    public override bool CellHasValue(byte cellX, byte cellY) => true;
 
     /// <summary>
     /// Sets all cell heights to null and clears the first pass and surveyed surface pass maps
@@ -144,7 +152,30 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public override void DumpToLog(string title)
     {
-      throw new NotImplementedException();
+      Log.LogDebug(title);
+      Log.LogDebug($"Number of layers: {Heights.Count}");
+
+      for (var i = 0; i < NumberOfProgressions; i++)
+      {
+        Log.LogDebug("Height layer {i}");
+
+        var sb = new StringBuilder();
+
+        for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+        {
+          sb.Clear();
+
+          for (var k = 0; k < SubGridTreeConsts.SubGridTreeDimension; k++)
+          {
+            sb.Append(Heights[i][j, k].ToString(CultureInfo.InvariantCulture));
+            sb.Append(" ");
+          }
+
+          Log.LogDebug($"Row: {j}: {sb}");
+        }
+
+        Log.LogDebug("");
+      }
     }
 
     /// <summary>
@@ -157,21 +188,23 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer);
 
-    //  throw new NotImplementedException();
-/*
-      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+      writer.Write(NumberOfProgressions);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
+      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        Buffer.BlockCopy(Cells, 0, buffer, 0, BUFFER_SIZE);
-        writer.Write(buffer, 0, BUFFER_SIZE);
+        for (var i = 0; i < NumberOfProgressions; i++)
+        {
+          Buffer.BlockCopy(Heights[i], 0, buffer, 0, bufferSize);
+          writer.Write(buffer, 0, bufferSize);
+        }
       }
       finally
       {
         GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
       }
-      */
     }
 
     /// <summary>
@@ -184,21 +217,23 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader);
 
-     // throw new NotImplementedException();
-      /*
-      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+      NumberOfProgressions = reader.ReadInt32();
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
+      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        reader.Read(buffer, 0, BUFFER_SIZE);
-        Buffer.BlockCopy(buffer, 0, Cells, 0, BUFFER_SIZE);
+        for (var i = 0; i < NumberOfProgressions; i++)
+        {
+          reader.Read(buffer, 0, bufferSize);
+          Buffer.BlockCopy(buffer, 0, Heights[i], 0, bufferSize);
+        }
       }
       finally
       {
         GenericArrayPoolCacheHelper<byte>.Caches().Return(ref buffer);
       }
-      */
     }
 
     /// <summary>

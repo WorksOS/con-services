@@ -248,7 +248,6 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
     public override void Write(BinaryWriter writer)
     {
       base.Write(writer);

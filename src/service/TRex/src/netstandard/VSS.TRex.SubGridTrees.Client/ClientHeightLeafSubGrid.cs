@@ -190,13 +190,13 @@ namespace VSS.TRex.SubGridTrees.Client
 
       //SurveyedSurfaceMap.Write(writer);
 
-      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        Buffer.BlockCopy(Cells, 0, buffer, 0, BUFFER_SIZE);
-        writer.Write(buffer, 0, BUFFER_SIZE);
+        Buffer.BlockCopy(Cells, 0, buffer, 0, bufferSize);
+        writer.Write(buffer, 0, bufferSize);
       }
       finally
       {
@@ -216,13 +216,13 @@ namespace VSS.TRex.SubGridTrees.Client
 
       //SurveyedSurfaceMap.Read(reader);
 
-      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        reader.Read(buffer, 0, BUFFER_SIZE);
-        Buffer.BlockCopy(buffer, 0, Cells, 0, BUFFER_SIZE);
+        reader.Read(buffer, 0, bufferSize);
+        Buffer.BlockCopy(buffer, 0, Cells, 0, bufferSize);
       }
       finally
       {
