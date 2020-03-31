@@ -77,7 +77,7 @@ RUN echo "${BAMBOO_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
 RUN dpkg -i packages-microsoft-prod.deb
 RUN add-apt-repository universe && apt-get update
-RUN apt-get install dotnet-sdk-3.1 -y
+RUN apt-get install dotnet-sdk-3.1 libgdiplus -y
 
 ### Run Agent specific commands as bamboo here
 
