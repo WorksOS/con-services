@@ -261,8 +261,7 @@ public class PlanSpec {
                 .finalTasks(testParserTask)
                 .requirements(new Requirement("team")
                         .matchType(Requirement.MatchType.EQUALS)
-                        .matchValue("merino"),
-                        new Requirement("system.dotnet.executable"));
+                        .matchValue("merino"));
 
         stage.jobs(buildJob);
     }
