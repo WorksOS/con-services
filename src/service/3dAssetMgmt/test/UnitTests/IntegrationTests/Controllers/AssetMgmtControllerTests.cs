@@ -30,7 +30,7 @@ namespace AssetMgmt.IntegrationTests.Controllers
     }
 
     [Fact]
-    public async Task GetMatchingAssets_Should_return_correct_Assets_When_given_valid_UIDs()
+    public async Task GetMatchingAssetsShouldReturnAssetFromUid()
     {
       var assetUids = new List<Guid> { Guid.NewGuid() };
 
@@ -41,7 +41,7 @@ namespace AssetMgmt.IntegrationTests.Controllers
 
       var assetRepository = new Mock<IAssetRepository>();
       assetRepository.Setup(x => x.GetAssets(assetUids))
-                     .Returns(Task.FromResult<IEnumerable<Asset>>(assets));
+                     .Returns(Task.FromResult(assets));
 
       var controller = new AssetMgmtController(assetRepository.Object)
       {
@@ -59,7 +59,7 @@ namespace AssetMgmt.IntegrationTests.Controllers
     }
 
     [Fact]
-    public async Task GetMatchingAssets_Should_return_correct_Assets_When_given_valid_Ids()
+    public async Task GetMatchingAssetsShouldReturnAssetsFromLegacyId()
     {
       var assetIds = new List<long> { 987654321 };
 
@@ -70,7 +70,7 @@ namespace AssetMgmt.IntegrationTests.Controllers
 
       var assetRepository = new Mock<IAssetRepository>();
       assetRepository.Setup(x => x.GetAssets(assetIds))
-                     .Returns(Task.FromResult<IEnumerable<Asset>>(assets));
+                     .Returns(Task.FromResult(assets));
 
       var controller = new AssetMgmtController(assetRepository.Object)
       {
@@ -88,33 +88,16 @@ namespace AssetMgmt.IntegrationTests.Controllers
     }
 
     [Fact]
-    public async Task GetAssetsLocationData_Should_return_correct_Assets_When_given_valid_Ids()
+    public async Task GetAssetsLocationDataShouldReturnFullyHydratedAssetDto()
     {
-      var assetUids = new List<Guid> { Guid.NewGuid() };
-
-      var assets = new List<Asset>
-                   {
-                     new Asset
-                     {
-                       AssetUID = Guid.NewGuid().ToString(),
-                       EquipmentVIN = "5678AB",
-                       SerialNumber = "34251",
-                       AssetType = "Tough Bulldozer",
-                       LastActionedUtc = new DateTime(2020, 3, 26, 9, 10, 0),
-                       Name = "Tonka Tough"
-                     }
-                   };
-
       var assetRepository = new Mock<IAssetRepository>();
-      assetRepository.Setup(x => x.GetAssets(assetUids))
-                     .Returns(Task.FromResult<IEnumerable<Asset>>(assets));
 
       var controller = new AssetMgmtController(assetRepository.Object)
       {
         ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { RequestServices = _serviceProvider } }
       };
 
-      var result = await controller.GetAssetLocationData(assetUids);
+      var result = await controller.GetAssetLocationData(new List<Guid> { Guid.Parse("6cb6fa71-9800-4700-b7ff-c62014970deb") });
 
       Assert.IsType<JsonResult>(result);
 
@@ -123,19 +106,46 @@ namespace AssetMgmt.IntegrationTests.Controllers
       Assert.NotNull(jsonResult);
       Assert.IsType<List<AssetLocationData>>(jsonResult.Value);
 
-      var asset = assets[0];
       var assetLocationData = jsonResult.Value as List<AssetLocationData>;
       Assert.NotNull(assetLocationData);
 
       var assetData = assetLocationData[0];
-      Assert.Equal(asset.AssetUID, assetData.AssetUid.ToString());
-      Assert.Equal(asset.EquipmentVIN, assetData.AssetIdentifier);
-      Assert.Equal(asset.AssetType, assetData.AssetType);
-      Assert.Equal(asset.LastActionedUtc, assetData.LocationLastUpdatedUtc);
-      Assert.Equal(asset.SerialNumber, assetData.AssetSerialNumber);
-      Assert.Equal(asset.Name, assetData.MachineName);
+      Assert.Equal("6cb6fa71-9800-4700-b7ff-c62014970deb", assetData.AssetUid.ToString());
+      Assert.Equal("970DEB", assetData.AssetIdentifier);
+      Assert.Equal("C62014", assetData.AssetSerialNumber);
+      Assert.Equal("30/03/2020 2:45:04 PM", assetData.LocationLastUpdatedUtc.ToString());
+      Assert.Equal("Dump Truck", assetData.AssetType);
+      Assert.Equal("Tonka Dump Truck", assetData.MachineName);
       Assert.Equal(0, assetData.Latitude);
       Assert.Equal(0, assetData.Longitude);
+    }
+
+    [Fact]
+    public async Task GetAssetsLocationDataShouldReturnMultipleAssets()
+    {
+      var assetRepository = new Mock<IAssetRepository>();
+
+      var controller = new AssetMgmtController(assetRepository.Object)
+                       {
+                         ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext { RequestServices = _serviceProvider } }
+                       };
+
+      var result = await controller.GetAssetLocationData(new List<Guid> { Guid.Parse("6b4dc385-b517-4baa-9419-d9dc58f808c5"),
+                                                                          Guid.Parse("6cb6fa71-9800-4700-b7ff-c62014970deb")});
+
+      Assert.IsType<JsonResult>(result);
+
+      var jsonResult = result as JsonResult;
+
+      Assert.NotNull(jsonResult);
+      Assert.IsType<List<AssetLocationData>>(jsonResult.Value);
+
+      var assetLocationData = jsonResult.Value as List<AssetLocationData>;
+      Assert.NotNull(assetLocationData);
+
+      Assert.Equal(2, assetLocationData.Count);
+      Assert.Equal("6cb6fa71-9800-4700-b7ff-c62014970deb", assetLocationData[0].AssetUid.ToString());
+      Assert.Equal("6b4dc385-b517-4baa-9419-d9dc58f808c5", assetLocationData[1].AssetUid.ToString());
     }
   }
 }

@@ -8,7 +8,7 @@ namespace AssetMgmt.UnitTests.WebApiTests.HelpersTests
   public class AssetExtensionsTests : TestBase
   {
     [Fact]
-    public void Should_return_correct_result_When_given_good_inputs()
+    public void ShouldReturnResultFromValidUid()
     {
       var assets = new []
                    {
