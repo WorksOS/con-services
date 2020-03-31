@@ -230,6 +230,8 @@ public class PlanSpec {
         createSanityJob(stage, "TILE", "Tile", "src/service/Tile/VSS.Tile.Service.sln");
         createSanityJob(stage, "TREX", "TRex", "src/service/TRex/TRex.netstandard.sln");
 
+        plan.stages(stage);
+
         PlanPermissions planPermission = PlanSpec.createPlanPermission(plan.getIdentifier());
         bambooServer.publish(planPermission);
         bambooServer.publish(plan);
