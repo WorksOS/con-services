@@ -252,7 +252,7 @@ public class PlanSpec {
         TestParserTask testParserTask = TestParserTask.createNUnitParserTask()
                 .resultDirectories("artifacts/**/*.xml");
 
-        Job buildJob = new Job(serviceName, "SAN-"+key)
+        Job buildJob = new Job(serviceName, "SAN"+key)
                 .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript)
                 .artifacts(artifacts)
                 .finalTasks(testParserTask);
