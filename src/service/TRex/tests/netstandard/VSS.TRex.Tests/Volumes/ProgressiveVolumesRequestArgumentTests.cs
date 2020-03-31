@@ -12,12 +12,12 @@ using Xunit;
 
 namespace VSS.TRex.Tests.Volumes
 {
-  public class SimpleVolumesRequestArgumentTests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
+  public class ProgressiveVolumesRequestArgumentTests : IClassFixture<DITAGFileAndSubGridRequestsFixture>
   {
     [Fact]
-    public void Test_SimpleVolumesRequestArgument_Creation()
+    public void Creation()
     {
-      var arg = new SimpleVolumesRequestArgument();
+      var arg = new ProgressiveVolumesRequestArgument();
 
       Assert.NotNull(arg);
     }
@@ -25,12 +25,12 @@ namespace VSS.TRex.Tests.Volumes
     [Fact]
     public void Serialization_Null()
     {
-      var arg = new SimpleVolumesRequestArgument();
+      var arg = new ProgressiveVolumesRequestArgument();
 
       var writer = new TestBinaryWriter();
       arg.ToBinary(writer);
 
-      var cp2 = new SimpleVolumesRequestArgument();
+      var cp2 = new ProgressiveVolumesRequestArgument();
       cp2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
 
       arg.Should().BeEquivalentTo(cp2);
@@ -39,8 +39,11 @@ namespace VSS.TRex.Tests.Volumes
     [Fact]
     public void Serialization_Complex()
     {
-      var arg = new SimpleVolumesRequestArgument
+      var arg = new ProgressiveVolumesRequestArgument
       {
+        Interval = new TimeSpan(1, 0, 0, 0),
+        StartDate = new DateTime(2020, 1, 1, 1, 1, 1),
+        EndDate = new DateTime(2020, 1, 1, 1, 1, 1),
         CutTolerance = 0.05,
         FillTolerance = 0.01,
         AdditionalSpatialFilter = new CombinedFilter(),
@@ -58,7 +61,7 @@ namespace VSS.TRex.Tests.Volumes
       var writer = new TestBinaryWriter();
       arg.ToBinary(writer);
 
-      var cp2 = new SimpleVolumesRequestArgument();
+      var cp2 = new ProgressiveVolumesRequestArgument();
       cp2.FromBinary(new TestBinaryReader(writer._stream.BaseStream as MemoryStream));
 
       arg.Should().BeEquivalentTo(cp2);

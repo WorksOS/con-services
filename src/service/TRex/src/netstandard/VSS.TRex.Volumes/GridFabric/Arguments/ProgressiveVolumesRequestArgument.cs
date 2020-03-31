@@ -17,11 +17,6 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     /// </summary>
     public VolumeComputationType VolumeType = VolumeComputationType.None;
 
-    /// <summary>
-    /// Filter controlling selection of cells and cell passes for progressive volumes.
-    /// </summary>
-    public ICombinedFilter Filter { get; set; }
-
     public DesignOffset BaseDesign { get; set; } = new DesignOffset();
     public DesignOffset TopDesign { get; set; } = new DesignOffset();
 
@@ -47,19 +42,37 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
     public double FillTolerance = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
 
     /// <summary>
+    /// The date/time at which to start calculating progressive volumes.
+    /// The first progressive volume will be calculated at this date
+    /// </summary>
+    public DateTime StartDate { get; set; }
+
+    /// <summary>
+    /// The date/time at which to stop calculating progressive volumes.
+    /// The last progressive volume will be calculated at or before this date according
+    /// to the progressive volumes interval specified
+    /// </summary>
+    public DateTime EndDate { get; set; }
+
+    /// <summary>
+    /// The time interval between calculated progressive volumes
+    /// </summary>
+    public TimeSpan Interval { get; set; }
+
+    /// <summary>
     /// Default no-arg constructor
     /// </summary>
     public ProgressiveVolumesRequestArgument()
     {
     }
 
-    private void WriteFilter(IBinaryRawWriter writer, ICombinedFilter filter)
+    private static void WriteFilter(IBinaryRawWriter writer, ICombinedFilter filter)
     {
       writer.WriteBoolean(filter != null);
       filter?.ToBinary(writer);
     }
 
-    private ICombinedFilter ReadFilter(IBinaryRawReader reader)
+    private static ICombinedFilter ReadFilter(IBinaryRawReader reader)
     {
       ICombinedFilter filter = null;
 
@@ -85,8 +98,6 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
       writer.WriteGuid(ProjectID);
       writer.WriteInt((int)VolumeType);
 
-      WriteFilter(writer, Filter);
-
       writer.WriteBoolean(BaseDesign != null);
       BaseDesign?.ToBinary(writer);
       writer.WriteBoolean(TopDesign != null);
@@ -96,6 +107,10 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
 
       writer.WriteDouble(CutTolerance);
       writer.WriteDouble(FillTolerance);
+
+      writer.WriteLong(StartDate.ToBinary());
+      writer.WriteLong(EndDate.ToBinary());
+      writer.WriteLong(Interval.Ticks);
     }
 
     /// <summary>
@@ -110,8 +125,6 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
 
       ProjectID = reader.ReadGuid() ?? Guid.Empty;
       VolumeType = (VolumeComputationType)reader.ReadInt();
-
-      Filter = ReadFilter(reader);
 
       if (reader.ReadBoolean())
       {
@@ -128,6 +141,10 @@ namespace VSS.TRex.Volumes.GridFabric.Arguments
 
       CutTolerance = reader.ReadDouble();
       FillTolerance = reader.ReadDouble();
+
+      StartDate = DateTime.FromBinary(reader.ReadLong());
+      EndDate = DateTime.FromBinary(reader.ReadLong());
+      Interval = TimeSpan.FromTicks(reader.ReadLong());
     }
   }
 }

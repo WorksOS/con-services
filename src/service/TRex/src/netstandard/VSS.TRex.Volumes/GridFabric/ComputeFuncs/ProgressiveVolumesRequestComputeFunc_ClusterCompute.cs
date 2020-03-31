@@ -1,6 +1,7 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
+using VSS.TRex.Filters;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.Executors;
 using VSS.TRex.Volumes.GridFabric.Arguments;
@@ -38,7 +39,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
         (arg.ProjectID,
           arg.LiftParams,
           arg.VolumeType,
-          arg.Filter,
+          arg.Filters.Filters.Length == 0 ? new CombinedFilter() : arg.Filters.Filters[0],
           arg.BaseDesign,
           arg.TopDesign,
           arg.AdditionalSpatialFilter,
