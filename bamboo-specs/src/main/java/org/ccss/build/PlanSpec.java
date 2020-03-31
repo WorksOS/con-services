@@ -248,7 +248,7 @@ public class PlanSpec {
                 .interpreterBinSh();
 
         TestParserTask testParserTask = TestParserTask.createNUnitParserTask()
-                .resultDirectories("./linux-x64/**/*.xml");
+                .resultDirectories("./linux-x64/TestResults.xml");
 
         Job buildJob = new Job(serviceName, "SAN"+key)
                 .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript, testParserTask)
