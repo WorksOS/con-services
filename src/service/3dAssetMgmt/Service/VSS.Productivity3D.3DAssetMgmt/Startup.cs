@@ -46,8 +46,8 @@ namespace VSS.Productivity3D.AssetMgmt3D
       services.AddTransient<IWebRequest, GracefulWebRequest>();
       services.AddTransient<IAssetRepository, AssetRepository>();
 
-      services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
-      services.AddScoped<IErrorCodesProvider, AssetMgmt3DExecutionStates>();
+      services.AddSingleton<IServiceExceptionHandler, ServiceExceptionHandler>();
+      services.AddSingleton<IErrorCodesProvider, AssetMgmt3DExecutionStates>();
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();

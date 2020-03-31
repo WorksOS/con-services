@@ -7,7 +7,6 @@ using Moq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.ProjectTests.Executors;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;

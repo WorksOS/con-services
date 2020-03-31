@@ -64,7 +64,7 @@ namespace VSS.MasterData.Proxies.UnitTests
         {
           _ = cache.GetOrCreate(cacheKey, entry => mockedCacheFactory.Invoke().Result);
         }
-        catch (Exception)
+        catch
         {
           // The test will throw an exception, which represents what happens when a failed cache item is added (such as a service exception)
         }

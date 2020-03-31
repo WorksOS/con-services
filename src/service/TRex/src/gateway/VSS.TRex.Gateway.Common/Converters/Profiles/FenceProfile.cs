@@ -14,7 +14,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.Y,
           opt => opt.MapFrom(f => f.y))
         .ForMember(x => x.Z,
-          opt => opt.UseValue(0));
+          opt => opt.MapFrom(src => 0));
 
       CreateMap<WGSPoint, FencePoint>()
         .ForMember(x => x.X,
@@ -22,7 +22,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
         .ForMember(x => x.Y,
           opt => opt.MapFrom(f => f.Lat))
         .ForMember(x => x.Z,
-          opt => opt.UseValue(0));
+          opt => opt.MapFrom(src => 0));
     }
   }
 }

@@ -33,10 +33,10 @@ namespace VSS.WebApi.Common
 
     protected IServiceCollection Services { get; private set; }
     protected ServiceProvider ServiceProvider { get; private set; }
-    
+
     protected IConfigurationStore Configuration
     {
-      get { return _configuration ?? (_configuration = new GenericConfiguration(new NullLoggerFactory())); }
+      get { return _configuration ??= new GenericConfiguration(new NullLoggerFactory()); }
       set => _configuration = value;
     }
 
@@ -45,7 +45,7 @@ namespace VSS.WebApi.Common
     /// </summary>
     protected ILogger Log
     {
-      get { return _logger ?? (_logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name)); }
+      get { return _logger ??= ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name); }
       set => _logger = value;
     }
 
@@ -139,7 +139,7 @@ namespace VSS.WebApi.Common
         options.MetricsEndpointOutputFormatter =
           metrics.OutputMetricsFormatters.GetType<MetricsPrometheusTextOutputFormatter>();
       });
-      
+
       Services = services;
       ServiceProvider = services.BuildServiceProvider();
 
@@ -177,7 +177,8 @@ namespace VSS.WebApi.Common
       Services.AddSingleton(loggerFactory);
       ConfigureAdditionalAppSettings(app, env, loggerFactory);
 
-      app.UseEndpoints(endpoints => {
+      app.UseEndpoints(endpoints =>
+      {
         endpoints.MapControllers();
       });
     }

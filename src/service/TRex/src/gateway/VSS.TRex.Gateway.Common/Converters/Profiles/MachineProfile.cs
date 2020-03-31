@@ -11,7 +11,7 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
     {
       CreateMap<IMachine, MachineStatus>()
         .ForMember(x => x.AssetId,
-          opt => opt.UseValue(-1))
+          opt => opt.MapFrom(src => (-1)))
         .ForMember(x => x.AssetUid,
           opt => opt.MapFrom(f => f.ID))
         .ForMember(x => x.MachineName,
@@ -22,9 +22,9 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
           opt => opt.MapFrom(f => f.LastKnownPositionTimeStamp))
         // Lat/long should be set outside of this simple mapper as it requires call to another service
         .ForMember(x => x.lastKnownLongitude,
-         opt => opt.UseValue(Double.MaxValue))
+         opt => opt.MapFrom(src => Double.MaxValue))
         .ForMember(x => x.lastKnownLatitude,
-        opt => opt.UseValue(Double.MaxValue))
+        opt => opt.MapFrom(src => Double.MaxValue))
         ;
     }
   }

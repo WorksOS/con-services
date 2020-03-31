@@ -12,8 +12,8 @@ namespace VSS.KafkaConsumer.Kafka
 {
   public class RdKafkaDriver : IKafka
   {
-    private Consumer<Ignore, byte[]> rdConsumer;
-    private Producer<byte[], byte[]> rdProducer;
+    private IConsumer<Ignore, byte[]> rdConsumer;
+    private IProducer<byte[], byte[]> rdProducer;
 
     private readonly object syncPollObject = new object();
     private Dictionary<string, string> consumerConfig;
@@ -35,18 +35,18 @@ namespace VSS.KafkaConsumer.Kafka
     public bool IsInitializedProducer { get; private set; }
     public bool IsInitializedConsumer { get; private set; }
 
-    public TopicPartitionOffset Commit()
+    public void Commit()
     {
       if (lastValidResult == null)
       {
-        return null;
+        return;
       }
 
-      var committedOffsets = rdConsumer.Commit(lastValidResult);
+      rdConsumer.Commit(lastValidResult);
+
       if (log?.IsTraceEnabled() ?? false)
         log?.LogTrace($"Committed number of offsets {lastValidResult}");
 
-      return committedOffsets;
     }
 
     [Obsolete("Use Consume() instead")]
@@ -134,7 +134,7 @@ namespace VSS.KafkaConsumer.Kafka
 
     public void Subscribe(List<string> topics)
     {
-      rdConsumer = new Consumer<Ignore, byte[]>(consumerConfig.ToList());
+      rdConsumer = new ConsumerBuilder<Ignore, byte[]>(consumerConfig.ToList()).Build();
       rdConsumer.Subscribe(topics);
     }
 
@@ -160,7 +160,7 @@ namespace VSS.KafkaConsumer.Kafka
       };
 
       //socket.blocking.max.ms=1
-      rdProducer = new Producer<byte[], byte[]>(producerConfig.ToList());
+      rdProducer = new ProducerBuilder<byte[], byte[]>(producerConfig.ToList()).Build();
       IsInitializedProducer = true;
     }
 
