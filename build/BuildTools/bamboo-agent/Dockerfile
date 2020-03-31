@@ -1,13 +1,31 @@
+#######################################
+#
+# To run locally
+# > docker build -t bamboo-agent .
+# > docker run -it --privileged -v <directory-you-want-to-mount>:/home/bamboo/bamboo-agent-home/ --entrypoint "/bin/bash" bamboo-agent
+#
+#
+# Once running bash inside the container, run the following to enable docker
+# > sudo /usr/local/bin/wrapdocker.sh
+#
+########################################
+
 FROM atlassian/bamboo-agent-base
 
 #### Install packages for builds
 
 USER root
 RUN apt-get update && \
-    apt-get install git wget vim sudo -y && \
-    apt-get install python3.6 python3-pip -y 
+    apt-get install git wget vim sudo dos2unix unzip -y && \
+    apt-get install python3.6 python3-pip nodejs -y 
 
+# Python is used to run the Jenkins build script
 RUN pip3 install python-jenkins
+
+# AWS is used to login to ECR repos to push docker iamges
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    sudo ./aws/install
 
 #### END OF Install packages
 
