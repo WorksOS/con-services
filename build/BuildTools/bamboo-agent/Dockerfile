@@ -66,6 +66,7 @@ RUN apt-get install dotnet-sdk-3.1 -y
 USER ${BAMBOO_USER}
 RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.git.executable" /usr/bin/git
 RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.docker.executable" /usr/bin/docker
+RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "system.dotnet.executable" /usr/bin/dotnet
 RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "team" "merino"
 RUN ${BAMBOO_USER_HOME}/bamboo-update-capability.sh "cluster" "fsm-dev"
 

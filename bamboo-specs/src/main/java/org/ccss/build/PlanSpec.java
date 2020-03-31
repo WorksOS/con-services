@@ -13,6 +13,7 @@ import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import com.atlassian.bamboo.specs.api.builders.plan.branches.BranchCleanup;
 import com.atlassian.bamboo.specs.api.builders.plan.branches.PlanBranchManagement;
 import com.atlassian.bamboo.specs.api.builders.project.Project;
+import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.builders.trigger.AfterSuccessfulBuildPlanTrigger;
 import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
@@ -257,7 +258,11 @@ public class PlanSpec {
         Job buildJob = new Job(serviceName, "SAN"+key)
                 .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript)
                 .artifacts(artifacts)
-                .finalTasks(testParserTask);
+                .finalTasks(testParserTask)
+                .requirements(new Requirement("team")
+                        .matchType(Requirement.MatchType.EQUALS)
+                        .matchValue("merino"),
+                        new Requirement("system.dotnet.executable"));
 
         stage.jobs(buildJob);
     }
@@ -347,6 +352,9 @@ public class PlanSpec {
     Plan addPlanStages(Plan plan,  boolean runAcceptanceTest) {
         Job buildJob = new Job("Build", "JOB1")
                 .tasks(cleanTask(), checkoutCodeTask(), chmodScript(), runJenkinsScript())
+                .requirements(new Requirement("team")
+                        .matchType(Requirement.MatchType.EQUALS)
+                        .matchValue("merino"))
                 .artifacts(artifact());
 
         if(runAcceptanceTest)
