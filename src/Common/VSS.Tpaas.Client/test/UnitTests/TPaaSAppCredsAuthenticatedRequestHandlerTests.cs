@@ -19,7 +19,6 @@ namespace VSS.Tpaas.Client.UnitTests
     /// TPaaSApplicationCredentialsRequestHandler presensts a basic token
     /// and expects to recieve a bearer token and expiry time from TPaaS
     /// </summary>
-    /// <returns></returns>
     [Fact]
     public async Task TestApplicationAuthHeaderIsAdded()
     {

@@ -32,7 +32,7 @@ namespace VSS.WebApi.Common
     public static IApplicationBuilder UseCommon(this IApplicationBuilder app, string serviceTitle)
     {
       if (app == null)
-        throw new ArgumentNullException("app");
+        throw new ArgumentNullException(nameof(app));
 
       app.UseExceptionTrap();
       app.UseFilterMiddleware<RequestIDMiddleware>();
@@ -90,7 +90,7 @@ namespace VSS.WebApi.Common
         .Build();
 
       if (builder == null)
-        throw new ArgumentNullException("builder");
+        throw new ArgumentNullException(nameof(builder));
 
       builder.ConfigureMetrics(Metrics)
         .UseMetrics()
@@ -108,10 +108,10 @@ namespace VSS.WebApi.Common
         ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
         ITracer tracer;
-        if (!String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST")) &&
-            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_PORT")) &&
-            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SAMPLER_TYPE")) &&
-            !String.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SERVICE_NAME")))
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_HOST")) &&
+            !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_AGENT_PORT")) &&
+            !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SAMPLER_TYPE")) &&
+            !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JAEGER_SERVICE_NAME")))
         {
 
           Configuration jagerConfig = Jaeger.Configuration.FromEnv(loggerFactory);
@@ -159,6 +159,5 @@ namespace VSS.WebApi.Common
 
       return result;
     }
-
   }
 }

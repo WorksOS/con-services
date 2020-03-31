@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
@@ -14,21 +15,16 @@ using VSS.Productivity3D.Models.Exceptions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling;
+using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.Compaction.Executors;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
 using VSS.Productivity3D.WebApi.Models.Interfaces;
-using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
-using VSS.Productivity3D.Models.Enums;
-using VSS.Productivity3D.Models.Exceptions;
-using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Models.ResultHandling;
-using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.WebApi.Models.ProductionData;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
-using VSS.TRex.Gateway.Common.Abstractions;
+using VSS.Productivity3D.WebApiModels.Compaction.Interfaces;
 using VSS.Serilog.Extensions;
-using VSS.MasterData.Models;
+using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.Models.MapHandling
 {
