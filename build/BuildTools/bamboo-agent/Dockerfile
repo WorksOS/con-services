@@ -56,6 +56,11 @@ RUN echo "${BAMBOO_USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 ### END OF DOCKER 
 
+RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+RUN add-apt-repository universe && apt-get update
+RUN apt-get install dotnet-sdk-3.1 -y
+
 ### Run Agent specific commands as bamboo here
 
 USER ${BAMBOO_USER}
@@ -70,7 +75,6 @@ RUN mv ./runAgent.sh runAgent-nodocker.sh
 # Find the last line (java command for agent), and insert the wrapdocker before it
 # https://unix.stackexchange.com/questions/356312/sed-insert-something-after-the-second-last-line
 RUN sed '$isudo wrapdocker.sh' ./runAgent-nodocker.sh > ./runAgent.sh 
-
 # Make sure we ca nexecute our new file
 RUN chmod +x ./runAgent.sh
 ENTRYPOINT ["./runAgent.sh"]

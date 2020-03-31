@@ -15,10 +15,14 @@ import com.atlassian.bamboo.specs.api.builders.plan.branches.PlanBranchManagemen
 import com.atlassian.bamboo.specs.api.builders.project.Project;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.builders.trigger.AfterSuccessfulBuildPlanTrigger;
+import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
+
+import java.time.LocalTime;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -76,6 +80,11 @@ public class PlanSpec {
 
 
     void publishPlans(BambooServer bambooServer) {
+
+        // Sanity build - no deployment
+        createSanityPlan(bambooServer);
+
+
         // Names must match what bamboo/jenkins has
         // Asset Management Service
         createPlan(bambooServer,"Asset Management Service", "ASSET",
@@ -166,6 +175,8 @@ public class PlanSpec {
                         new Variable("run_acceptance_tests", runAcceptanceTest ? "true" : "false"),
                         new Variable("run_unit_tests", runUnitTests ? "true" : "false")
                         )
+                .triggers(new RepositoryPollingTrigger()
+                        .pollOnceDaily(LocalTime.MIDNIGHT))
                 .planBranchManagement(new PlanBranchManagement()
                         .createForVcsBranchMatching("feature/.*")
                         .notificationForCommitters()
@@ -188,6 +199,65 @@ public class PlanSpec {
 
         bambooServer.publish(deployment);
         bambooServer.publish(plan);
+    }
+
+    void createSanityPlan(BambooServer bambooServer) {
+        Plan plan = new Plan(project(), "Services Sanity Build", "SANITY")
+                .linkedRepositories("con-services")
+                .description("Plan created from Bamboo Java Specs")
+                .notifications(new EmptyNotificationsList())
+                .triggers(new RepositoryPollingTrigger()
+                        .pollEvery(1, TimeUnit.MINUTES))
+                .planBranchManagement(new PlanBranchManagement()
+                        .createForVcsBranchMatching("feature/.*")
+                        .notificationForCommitters()
+                        .triggerBuildsLikeParentPlan()
+                        .delete(new BranchCleanup()
+                                .whenInactiveInRepositoryAfterDays(30)));
+
+        Stage stage = new Stage("Sanity Builds");
+        createSanityJob(stage, "COMMON", "Common", "src/Common/Common.sln");
+        createSanityJob(stage, "ASSETMGMT", "Asset Management", "src/service/3dAssetMgmt/VSS.Productivity3D.3DAssetMgmt.sln");
+        createSanityJob(stage, "3DNOW", "3D Now", "src/service/3dNow/VSS.Productivity3D.3DNow.sln");
+        createSanityJob(stage, "3DP", "3DP", "src/service/3DP/VSS.Productivity3D.Service.sln");
+        createSanityJob(stage, "FILEACCESS", "File Access", "src/service/FileAccess/VSS.Productivity3D.FileAccess.Service.sln");
+        createSanityJob(stage, "FILTER", "Filter", "src/service/Filter/VSS.Productivity3D.Filter.sln");
+        createSanityJob(stage, "MOCKAPI", "Mock Web API", "src/service/MockProjectWebApi/MockProjectWebApi.sln");
+        createSanityJob(stage, "PROJECT", "Project", "src/service/Project/VSS.Visionlink.Project.sln");
+        createSanityJob(stage, "PUSH", "Push", "src/service/Push/VSS.Productivity3D.Push.sln");
+        createSanityJob(stage, "SCHEDULER", "Scheduler", "src/service/Scheduler/VSS.Productivity3D.Scheduler.sln");
+        createSanityJob(stage, "TFA", "Tag File Auth", "src/service/TagFileAuth/VSS.TagFileAuth.Service.sln");
+        createSanityJob(stage, "TILE", "Tile", "src/service/Tile/VSS.Tile.Service.sln");
+        createSanityJob(stage, "TREX", "TRex", "src/service/TRex/TRex.netstandard.sln");
+
+        PlanPermissions planPermission = PlanSpec.createPlanPermission(plan.getIdentifier());
+        bambooServer.publish(planPermission);
+        bambooServer.publish(plan);
+    }
+
+    void createSanityJob(Stage stage, String key, String serviceName, String solutionPath) {
+        ScriptTask buildScript = new ScriptTask()
+                .inlineBody("dotnet build -r linux-x64 " + solutionPath)
+                .interpreterBinSh();
+
+        ScriptTask testScript = new ScriptTask()
+                .inlineBody("dotnet test -r linux-x64 --logger \"nunit\" " + solutionPath)
+                .interpreterBinSh();
+
+        Artifact artifacts = new Artifact("Test Results")
+                .location("./linux-x64/")
+                .copyPattern("**/*.xml")
+                .shared(true);
+
+        TestParserTask testParserTask = TestParserTask.createNUnitParserTask()
+                .resultDirectories("artifacts/**/*.xml");
+
+        Job buildJob = new Job(serviceName, "SAN-"+key)
+                .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript)
+                .artifacts(artifacts)
+                .finalTasks(testParserTask);
+
+        stage.jobs(buildJob);
     }
 
     Deployment createDeployment(BambooServer bambooServer, String key, String name)
