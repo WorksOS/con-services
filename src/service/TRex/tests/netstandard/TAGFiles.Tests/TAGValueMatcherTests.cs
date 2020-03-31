@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using FluentAssertions;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Classes;
