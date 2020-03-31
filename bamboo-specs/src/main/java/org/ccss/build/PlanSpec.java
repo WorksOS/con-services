@@ -217,9 +217,9 @@ public class PlanSpec {
                                 .whenInactiveInRepositoryAfterDays(30)));
 
         Stage stage = new Stage("Sanity Builds");
-        createSanityJob(stage, "COMMON", "Common", "src/Common/Common.sln");
+        createSanityJob(stage, "COMMON", "Common", "src/Common/NugetPackages.sln");
         createSanityJob(stage, "ASSETMGMT", "Asset Management", "src/service/3dAssetMgmt/VSS.Productivity3D.3DAssetMgmt.sln");
-        createSanityJob(stage, "3DNOW", "3D Now", "src/service/3dNow/VSS.Productivity3D.3DNow.sln");
+//        createSanityJob(stage, "3DNOW", "3D Now", "src/service/3dNow/VSS.Productivity3D.3DNow.sln");
         createSanityJob(stage, "3DP", "3DP", "src/service/3DP/VSS.Productivity3D.Service.sln");
         createSanityJob(stage, "FILEACCESS", "File Access", "src/service/FileAccess/VSS.Productivity3D.FileAccess.Service.sln");
         createSanityJob(stage, "FILTER", "Filter", "src/service/Filter/VSS.Productivity3D.Filter.sln");
