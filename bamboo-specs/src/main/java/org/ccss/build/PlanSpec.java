@@ -247,17 +247,11 @@ public class PlanSpec {
                 .inlineBody("dotnet test -r linux-x64 --logger \"nunit\" " + solutionPath)
                 .interpreterBinSh();
 
-        Artifact artifacts = new Artifact(serviceName + "Test Results")
-                .location("./linux-x64/")
-                .copyPattern("**/*.xml")
-                .shared(true);
-
         TestParserTask testParserTask = TestParserTask.createNUnitParserTask()
-                .resultDirectories("artifacts/**/*.xml");
+                .resultDirectories("./linux-x64/**/*.xml");
 
         Job buildJob = new Job(serviceName, "SAN"+key)
-                .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript)
-                .artifacts(artifacts)
+                .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript, testParserTask)
                 .finalTasks(testParserTask)
                 .requirements(new Requirement("team")
                         .matchType(Requirement.MatchType.EQUALS)
