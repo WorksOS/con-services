@@ -21,6 +21,7 @@ using VSS.VisionLink.Interfaces.Events.Preference;
 using CCSS.Productivity3D.Preferences.Common.Executors;
 using CSS.Productivity3D.Preferences.Common.Utilities;
 using CCSS.Productivity3D.Preferences.Common.Utilities;
+using CCSS.Productivity3D.Preferences.Common.Models;
 
 namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
 {
@@ -135,26 +136,15 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
     /// </summary>
     [Route("api/v1/user")]
     [HttpGet]
-    public async Task<UserPreferenceV1Result> GetUserPreferenceV1([FromQuery] string keyName, [FromQuery] string userUid=null)
+    public async Task<UserPreferenceV1Result> GetUserPreferenceV1([FromQuery] string keyName, [FromQuery] Guid? userUid=null)
     {
       var methodName = $"{nameof(GetUserPreferenceV1)}";
 
       Logger.LogInformation(methodName);
 
-      if (string.IsNullOrEmpty(userUid))
-      {
-        userUid = GetUserId();
-      }
-      else
-      {
-        // Can only specify another user if application context. We can't allow one user to access the preferences of another user.
-        if (!IsApplication())
-        {
-          ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 8);
-        }
-      }
+      userUid = ValidateUserUid(userUid);    
 
-      var userPrefKey = await PreferenceRepo.GetUserPreference(userUid, keyName);
+      var userPrefKey = await PreferenceRepo.GetUserPreference(userUid.Value, keyName);
       var result = AutoMapperUtility.Automapper.Map<UserPreferenceV1Result>(userPrefKey);
 
       Logger.LogResult(methodName, $"keyName={keyName},userUid={userUid}", result);
@@ -162,7 +152,108 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
       return result;
     }
 
-  
+
+    /// <summary>
+    /// Create User Preference. If allowUpdate is true then does an upsert.
+    /// </summary>
+    [Route("user")]
+    [Route("targetuser")]
+    [HttpPost]
+    public async Task<UserPreferenceV1Result> CreateUserPreference([FromBody] UpsertUserPreferenceRequest request, [FromQuery] bool allowUpdate=false)
+    {
+      var methodName = $"{nameof(CreateUserPreference)}";
+
+      Logger.LogInformation($"{methodName} request: {0}", JsonConvert.SerializeObject(request));
+
+      request.TargetUserUID = ValidateUserUid(request.TargetUserUID);
+
+      UserPreferenceV1Result result = null;
+      var existing = await PreferenceRepo.GetUserPreference(request.TargetUserUID.Value, request.PreferenceKeyName);
+      if (existing == null)
+      {
+        result = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<CreateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
+              userId, customHeaders, PreferenceRepo)
+            .ProcessAsync(AutoMapperUtility.Automapper.Map<CreateUserPreferenceEvent>(request))
+        ) as UserPreferenceV1Result;
+      }
+      else if (allowUpdate)
+      {
+        result = await WithServiceExceptionTryExecuteAsync(() =>
+          RequestExecutorContainerFactory
+            .Build<UpdateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
+              userId, customHeaders, PreferenceRepo)
+            .ProcessAsync(AutoMapperUtility.Automapper.Map<UpdateUserPreferenceEvent>(request))
+        ) as UserPreferenceV1Result;
+
+      }
+      else
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 13);
+      }
+
+      Logger.LogResult(methodName, JsonConvert.SerializeObject(request), result);
+      return result;
+    }
+
+    /// <summary>
+    /// Update User Preference
+    /// </summary>
+    [Route("user")]
+    [Route("targetuser")]
+    [HttpPut]
+    public async Task<UserPreferenceV1Result> UpdateUserPreference([FromBody] UpsertUserPreferenceRequest request)
+    {
+      var methodName = $"{nameof(UpdateUserPreference)}";
+
+      Logger.LogInformation($"{methodName} request: {0}", JsonConvert.SerializeObject(request));
+
+      request.TargetUserUID = ValidateUserUid(request.TargetUserUID);
+
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<UpdateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
+            userId, customHeaders, PreferenceRepo)
+          .ProcessAsync(AutoMapperUtility.Automapper.Map<UpdateUserPreferenceEvent>(request))
+      ) as UserPreferenceV1Result;
+
+      Logger.LogResult(methodName, JsonConvert.SerializeObject(request), result);
+      return result;
+    }
+
+    /// <summary>
+    /// Delete User Preference
+    /// </summary>
+    [Route("user")]
+    [Route("targetuser")]
+    [HttpDelete]
+    public async Task<ContractExecutionResult> DeleteUserPreference(
+      string preferencekeyname, Guid? preferencekeyuid = null, Guid? userGuid = null)
+    {
+      var methodName = $"{nameof(DeleteUserPreference)}";
+
+      Logger.LogInformation($"{methodName} userGuid: {userGuid}, preferencekeyname: {preferencekeyname}, preferencekeyuid: {preferencekeyuid}");
+
+      userGuid = ValidateUserUid(userGuid);
+
+      var deleteEvent = new DeleteUserPreferenceEvent 
+      { 
+        UserUID = userGuid, 
+        PreferenceKeyName = 
+        preferencekeyname, PreferenceKeyUID = preferencekeyuid
+      };
+
+      var result = await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<DeleteUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
+            userId, customHeaders, PreferenceRepo)
+          .ProcessAsync(deleteEvent)
+      );
+
+      Logger.LogResult(methodName, $"userGuid: {userGuid}, preferencekeyname: {preferencekeyname}, preferencekeyuid: {preferencekeyuid}", result);
+      return result;
+    }
     #endregion
 
     #region preference keys
@@ -234,6 +325,40 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
       return result;
     }
 
+    #endregion
+
+    #region privates
+    /// <summary>
+    /// Validates the user UID. 
+    /// If the UID is specified and the context is a user then check the UID matches that in the context otherwise for an application any user is ok.
+    /// If the UID is not specified and the context is a user then get it from the context else for an application it's an error. 
+    /// </summary>
+    private Guid ValidateUserUid(Guid? userUid)
+    {
+      string userId = GetUserId();
+      var isUserContext = !IsApplication();
+
+      if (userUid.HasValue)
+      {
+        if (isUserContext)
+        {
+          //Don't let a user access another user's preferences
+          if (string.Compare(userId, userUid.Value.ToString(), StringComparison.InvariantCultureIgnoreCase) != 0)
+          {
+            ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 8);
+          }
+        }
+      }
+      else if (isUserContext)
+      {
+        userUid = Guid.Parse(userId);
+      }
+      else
+      {
+        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 9);
+      }
+      return userUid.Value;
+    }
     #endregion
   }
 }

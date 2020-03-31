@@ -3,6 +3,7 @@ using CCSS.Productivity3D.Preferences.Abstractions;
 using CCSS.Productivity3D.Preferences.Abstractions.Interfaces;
 using CCSS.Productivity3D.Preferences.Abstractions.ResultsHandling;
 using CCSS.Productivity3D.Preferences.Repository;
+using CSS.Productivity3D.Preferences.Common.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -50,7 +51,7 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
-      //AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
+      AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
 
     /// <inheritdoc />
@@ -61,10 +62,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IPreferenceRepository, PreferenceRepository>();
       services.AddTransient<IErrorCodesProvider, PreferenceErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
-
-      
+     
       //services.AddSingleton<CacheInvalidationService>();
 
       services.AddOpenTracing(builder =>

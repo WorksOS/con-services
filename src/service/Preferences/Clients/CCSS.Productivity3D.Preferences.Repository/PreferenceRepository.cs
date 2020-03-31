@@ -61,19 +61,21 @@ namespace CCSS.Productivity3D.Preferences.Repository
       {
         var prefEvent = (CreateUserPreferenceEvent)evt;
         upsertedCount = await UpsertUserPreference(PreferenceEventType.CreateUserPreferenceEvent, prefEvent.PreferenceKeyUID, prefEvent.PreferenceKeyName,
-          prefEvent.UserUID.ToString(), prefEvent.SchemaVersion, prefEvent.PreferenceJson);
+          prefEvent.UserUID, prefEvent.SchemaVersion, prefEvent.PreferenceJson);
       }
       else if (evt is UpdateUserPreferenceEvent)
       {
         var prefEvent = (UpdateUserPreferenceEvent)evt;
+        //Historical: Event types are from Kafka. we now create the events so the UserUID will always be set.
         upsertedCount = await UpsertUserPreference(PreferenceEventType.UpdateUserPreferenceEvent, prefEvent.PreferenceKeyUID, prefEvent.PreferenceKeyName,
-          prefEvent.UserUID.ToString(), prefEvent.SchemaVersion, prefEvent.PreferenceJson);
+          prefEvent.UserUID.Value, prefEvent.SchemaVersion, prefEvent.PreferenceJson);
       }
       else if (evt is DeleteUserPreferenceEvent)
       {
         var prefEvent = (DeleteUserPreferenceEvent)evt;
+        //Historical: Event types are from Kafka. we now create the events so the UserUID will always be set.
         upsertedCount = await UpsertUserPreference(PreferenceEventType.DeleteUserPreferenceEvent, prefEvent.PreferenceKeyUID, prefEvent.PreferenceKeyName,
-          prefEvent.UserUID.ToString());
+          prefEvent.UserUID.Value);
       }
       
       return upsertedCount;
@@ -193,7 +195,7 @@ namespace CCSS.Productivity3D.Preferences.Repository
     /// <summary>
     /// Create, update or delete a user preference.
     /// </summary>
-    private async Task<int> UpsertUserPreference(PreferenceEventType eventType, Guid? prefKeyUID, string prefKeyName, string userUID, string schemaVersion=null, string prefJson=null)
+    private async Task<int> UpsertUserPreference(PreferenceEventType eventType, Guid? prefKeyUID, string prefKeyName, Guid userUID, string schemaVersion=null, string prefJson=null)
     {
       // Look up the preference key to get the foreign key for user preferences
       var prefKey = await GetPreferenceKey(prefKeyUID, prefKeyName);
@@ -335,30 +337,39 @@ namespace CCSS.Productivity3D.Preferences.Repository
       return prefKey;
     }
 
-    public async Task<UserPrefDataModel> GetUserPreference(string userUID, long prefKeyID)
+    /// <summary>
+    /// Get a user preference by user Uid and key ID
+    /// </summary>
+    public async Task<UserPrefDataModel> GetUserPreference(Guid userUID, long prefKeyID)
     {
       var userPref = (await QueryWithAsyncPolicy<UserPrefDataModel>
       (@"SELECT UserPreferenceID, UserUID, fk_PreferenceKeyID AS PreferenceKeyID, Value, SchemaVersion
               FROM UserPreference
               WHERE fk_PreferenceKeyID = @PreferenceKeyID
                 AND UserUID = @UserUID",
-        new { PreferenceKeyID=prefKeyID, UserUID=userUID }
+        new { PreferenceKeyID=prefKeyID, UserUID=userUID.ToString() }
       )).FirstOrDefault();
       return userPref;
     }
 
-    public async Task<UserPrefKeyDataModel> GetUserPreference(string userUID, string prefKeyName)
+    /// <summary>
+    /// Get a user preference by user Uid and key name
+    /// </summary>
+    public async Task<UserPrefKeyDataModel> GetUserPreference(Guid userUID, string prefKeyName)
     {
       var userPrefKey = (await QueryWithAsyncPolicy<UserPrefKeyDataModel>
       (@"SELECT Value, SchemaVersion, KeyName, PreferenceKeyUID
               FROM UserPreference up 
               INNER JOIN PreferenceKey pk ON up.fk_PreferenceKeyID = pk.PreferenceKeyID
               WHERE UserUID = @UserUID AND KeyName = @KeyName",
-        new { UserUID = userUID, KeyName = prefKeyName }
+        new { UserUID = userUID.ToString(), KeyName = prefKeyName }
       )).FirstOrDefault();
       return userPrefKey;
     }
 
+    /// <summary>
+    /// Checks if there are any user preferencs for the given key UID
+    /// </summary>
     public async Task<bool> UserPreferenceExistsForKey(Guid prefKeyUID)
     {
       var userPrefKeys = (await QueryWithAsyncPolicy<UserPrefKeyDataModel>
