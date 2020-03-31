@@ -296,7 +296,7 @@ namespace VSS.MasterData.Repositories
     }
 
 
-    public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<Guid> assetUids)
+    public async Task<List<Asset>> GetAssets(IEnumerable<Guid> assetUids)
     {
       var assetsArray = assetUids.ToArray();
       return (await QueryWithAsyncPolicy<Asset>
@@ -369,7 +369,7 @@ namespace VSS.MasterData.Repositories
       return result;
     }
 
-    public async Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds)
+    public async Task<List<Asset>> GetAssets(IEnumerable<long> assetIds)
     {
       var assetsArray = assetIds.ToArray();
       return (await QueryWithAsyncPolicy<Asset>
