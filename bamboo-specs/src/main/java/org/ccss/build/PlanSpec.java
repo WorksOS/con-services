@@ -217,7 +217,7 @@ public class PlanSpec {
                                 .whenInactiveInRepositoryAfterDays(30)));
 
         Stage stage = new Stage("Sanity Builds");
-        createSanityJob(stage, "COMMON", "Common", "src/Common/Common.sln");
+//        createSanityJob(stage, "COMMON", "Common", "src/Common/Common.sln");
 //        createSanityJob(stage, "ASSETMGMT", "Asset Management", "src/service/3dAssetMgmt/VSS.Productivity3D.3DAssetMgmt.sln");
 //        createSanityJob(stage, "3DNOW", "3D Now", "src/service/3dNow/VSS.Productivity3D.3DNow.sln");
 //        createSanityJob(stage, "3DP", "3DP", "src/service/3DP/VSS.Productivity3D.Service.sln");
@@ -225,7 +225,7 @@ public class PlanSpec {
 //        createSanityJob(stage, "FILTER", "Filter", "src/service/Filter/VSS.Productivity3D.Filter.sln");
 //        // Has no tests
 ////        createSanityJob(stage, "MOCKAPI", "Mock Web API", "src/service/MockProjectWebApi/MockProjectWebApi.sln");
-//        createSanityJob(stage, "PROJECT", "Project", "src/service/Project/VSS.Visionlink.Project.sln");
+        createSanityJob(stage, "PROJECT", "Project", "src/service/Project/VSS.Visionlink.Project.sln");
 //        createSanityJob(stage, "PUSH", "Push", "src/service/Push/VSS.Productivity3D.Push.sln");
 //        createSanityJob(stage, "SCHEDULER", "Scheduler", "src/service/Scheduler/VSS.Productivity3D.Scheduler.sln");
 //        createSanityJob(stage, "TFA", "Tag File Auth", "src/service/TagFileAuth/VSS.TagFileAuth.Service.sln");
