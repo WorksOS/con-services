@@ -30,12 +30,13 @@ Scenario: Point
 	When I request a Thumbnail for geofence UID "ba35221d-cc46-48ce-970c-8b1509a0c737" 
 	Then The resulting thumbnail should match "Point" from the response repository within "3" percent
 
-Scenario: Good polygons
-  Given The geofence thumbnail URI is "/api/v1/geofencethumbnailsraw/base64" for operation "geojson"
-  And the expected request is in the "MultiGeofenceThumbnailRequest.json" respository
-  And the expected response is in the "MultiGeofenceThumbnailResponse.json" respository
-	When I request a Thumbnail for "GoodPolygons" from the request repository expecting "OK"  
-	Then The result should match "MultipleRaw" from the response repository
+# Disabled due to CCSSSCON-153
+#Scenario: Good polygons
+#  Given The geofence thumbnail URI is "/api/v1/geofencethumbnailsraw/base64" for operation "geojson"
+#  And the expected request is in the "MultiGeofenceThumbnailRequest.json" respository
+#  And the expected response is in the "MultiGeofenceThumbnailResponse.json" respository
+#	When I request a Thumbnail for "GoodPolygons" from the request repository expecting "OK"  
+#	Then The result should match "MultipleRaw" from the response repository
 
 Scenario: No polygons 
   Given The geofence thumbnail URI is "/api/v1/geofencethumbnailsraw/base64" for operation "geojson"
