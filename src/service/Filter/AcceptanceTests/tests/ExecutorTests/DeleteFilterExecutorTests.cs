@@ -48,10 +48,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,

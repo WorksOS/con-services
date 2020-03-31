@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.Filter.Repository
       if (evt is CreateGeofenceEvent)
       {
         var geofenceEvent = (CreateGeofenceEvent)evt;
-        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID;
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
         geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT);
@@ -50,8 +50,8 @@ namespace VSS.Productivity3D.Filter.Repository
         geofence.IsTransparent = geofenceEvent.IsTransparent;
         geofence.IsDeleted = false;
         geofence.Description = geofenceEvent.Description;
-        geofence.CustomerUID = geofenceEvent.CustomerUID.ToString();
-        geofence.UserUID = geofenceEvent.UserUID.ToString();
+        geofence.CustomerUID = geofenceEvent.CustomerUID;
+        geofence.UserUID = geofenceEvent.UserUID;
         geofence.LastActionedUTC = geofenceEvent.ActionUTC;
         geofence.AreaSqMeters = geofenceEvent.AreaSqMeters;
         eventType = "CreateGeofenceEvent";
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.Filter.Repository
       else if (evt is UpdateGeofenceEvent)
       {
         var geofenceEvent = (UpdateGeofenceEvent)evt;
-        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID;
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
         geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT);
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.Filter.Repository
         geofence.FillColor = geofenceEvent.FillColor;
         geofence.IsTransparent = geofenceEvent.IsTransparent;
         geofence.Description = geofenceEvent.Description;
-        geofence.UserUID = geofenceEvent.UserUID.ToString();
+        geofence.UserUID = geofenceEvent.UserUID;
         geofence.AreaSqMeters = geofenceEvent.AreaSqMeters;
         geofence.LastActionedUTC = geofenceEvent.ActionUTC;
         eventType = "UpdateGeofenceEvent";
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Filter.Repository
       else if (evt is DeleteGeofenceEvent)
       {
         var geofenceEvent = (DeleteGeofenceEvent)evt;
-        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID;
         geofence.LastActionedUTC = geofenceEvent.ActionUTC;
         eventType = "DeleteGeofenceEvent";
       }

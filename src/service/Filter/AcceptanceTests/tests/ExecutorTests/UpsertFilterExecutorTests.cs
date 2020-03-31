@@ -82,10 +82,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -149,10 +149,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -224,10 +224,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -262,10 +262,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -300,10 +300,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -340,10 +340,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -376,10 +376,10 @@ namespace ExecutorTests
 
       var filterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid1),
+        ProjectUID = projectUid,
+        FilterUID = filterUid1,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -389,7 +389,7 @@ namespace ExecutorTests
 
       WriteEventToDb(filterEvent);
 
-      filterEvent.FilterUID = Guid.Parse(filterUid2);
+      filterEvent.FilterUID = filterUid2;
       filterEvent.Name = "something else";
 
       WriteEventToDb(filterEvent);
@@ -418,10 +418,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = filterJson,

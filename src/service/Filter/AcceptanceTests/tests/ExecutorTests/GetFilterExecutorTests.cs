@@ -56,10 +56,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -111,10 +111,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -163,10 +163,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = "{\"dateRangeType\":0,\"elevationType\":null}",
@@ -197,10 +197,10 @@ namespace ExecutorTests
 
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
-        FilterUID = Guid.NewGuid(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        FilterUID = Guid.NewGuid().ToString(),
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
@@ -244,10 +244,10 @@ namespace ExecutorTests
 
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
-        FilterUID = Guid.NewGuid(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        FilterUID = Guid.NewGuid().ToString(),
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
@@ -308,10 +308,10 @@ namespace ExecutorTests
 
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
-        FilterUID = Guid.NewGuid(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        FilterUID = Guid.NewGuid().ToString(),
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",

@@ -97,7 +97,8 @@ namespace VSS.Productivity3D.Project.Repository
           ProjectType = projectEvent.ProjectType,
           EndDate = projectEvent.ProjectEndDate.Date,          
           ProjectTimeZone = projectEvent.ProjectTimezone,
-          ProjectTimeZoneIana = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone)
+          ProjectTimeZoneIana = PreferencesTimeZones.WindowsToIana(projectEvent.ProjectTimezone),
+          LastActionedUTC = projectEvent.ActionUTC
         };
 
         if (!string.IsNullOrEmpty(projectEvent.CoordinateSystemFileName))
@@ -114,7 +115,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (DeleteProjectEvent)evt;
         var project = new ProjectDataModel
         {
-          ProjectUID = projectEvent.ProjectUID.ToString()
+          ProjectUID = projectEvent.ProjectUID,
+          LastActionedUTC = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent", projectEvent.DeletePermanently);
       }
@@ -125,10 +127,10 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (CreateImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID.ToString(),
-          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          ProjectUid = projectEvent.ProjectUID,
+          ImportedFileUid = projectEvent.ImportedFileUID,
           ImportedFileId = projectEvent.ImportedFileID,
-          CustomerUid = projectEvent.CustomerUID.ToString(),
+          CustomerUid = projectEvent.CustomerUID,
           ImportedFileType = projectEvent.ImportedFileType,
           Name = projectEvent.Name,
           FileDescriptor = projectEvent.FileDescriptor,
@@ -150,8 +152,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (UpdateImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID.ToString(),
-          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          ProjectUid = projectEvent.ProjectUID,
+          ImportedFileUid = projectEvent.ImportedFileUID,
           FileDescriptor = projectEvent.FileDescriptor,
           FileCreatedUtc = projectEvent.FileCreatedUtc,
           FileUpdatedUtc = projectEvent.FileUpdatedUtc,
@@ -169,8 +171,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (DeleteImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID.ToString(),
-          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          ProjectUid = projectEvent.ProjectUID,
+          ImportedFileUid = projectEvent.ImportedFileUID,
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "DeleteImportedFileEvent",
@@ -181,8 +183,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (UndeleteImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID.ToString(),
-          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
+          ProjectUid = projectEvent.ProjectUID,
+          ImportedFileUid = projectEvent.ImportedFileUID,
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UndeleteImportedFileEvent");
@@ -192,7 +194,7 @@ namespace VSS.Productivity3D.Project.Repository
       {
         var projectSettings = new ProjectSettings
         {
-          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ProjectUid = projectEvent.ProjectUID,
           ProjectSettingsType = projectEvent.ProjectSettingsType,
           Settings = projectEvent.Settings,
           UserID = projectEvent.UserID,
@@ -207,7 +209,7 @@ namespace VSS.Productivity3D.Project.Repository
         var projectGeofenceEvent = (AssociateProjectGeofence)evt;
         var projectGeofence = new ProjectGeofence
         {
-          ProjectUID = projectGeofenceEvent.ProjectUID.ToString(),
+          ProjectUID = projectGeofenceEvent.ProjectUID,
           GeofenceUID = projectGeofenceEvent.GeofenceUID.ToString(),
           LastActionedUTC = projectGeofenceEvent.ActionUTC
         };
@@ -218,7 +220,7 @@ namespace VSS.Productivity3D.Project.Repository
         var projectGeofenceEvent = (DissociateProjectGeofence)evt;
         var projectGeofence = new ProjectGeofence
         {
-          ProjectUID = projectGeofenceEvent.ProjectUID.ToString(),
+          ProjectUID = projectGeofenceEvent.ProjectUID,
           GeofenceUID = projectGeofenceEvent.GeofenceUID.ToString(),
           LastActionedUTC = projectGeofenceEvent.ActionUTC
         };
@@ -300,6 +302,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         // this create could have the legit legacyProjectId
         project.ShortRaptorProjectId = existing.ShortRaptorProjectId;
+        project.CustomerUID = string.IsNullOrEmpty(existing.CustomerUID) ? project.CustomerUID : existing.CustomerUID;
 
         // leave more recent values
         project.Name = string.IsNullOrEmpty(existing.Name) ? project.Name : existing.Name;
@@ -343,6 +346,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         // this create could have the legit legacyProjectId
         project.ShortRaptorProjectId = existing.ShortRaptorProjectId;
+        project.CustomerUID = string.IsNullOrEmpty(existing.CustomerUID) ? project.CustomerUID : existing.CustomerUID;
 
         // leave more recent values
         project.Name = string.IsNullOrEmpty(existing.Name) ? project.Name : existing.Name;
@@ -399,6 +403,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (project.LastActionedUTC >= existing.LastActionedUTC)
         {
           project.ShortRaptorProjectId = existing.ShortRaptorProjectId;
+          project.CustomerUID = string.IsNullOrEmpty(project.CustomerUID) ? existing.CustomerUID : project.CustomerUID;
           project.Name = string.IsNullOrEmpty(project.Name) ? existing.Name : project.Name;
           project.Description = string.IsNullOrEmpty(project.Description) ? existing.Description : project.Description;
           project.ProjectTimeZone = string.IsNullOrEmpty(project.ProjectTimeZone)
@@ -572,7 +577,7 @@ namespace VSS.Productivity3D.Project.Repository
       if (project.ShortRaptorProjectId <= 0) // allow db autoincrement on legacyProjectID
       {
         return $@"UPDATE Project
-                SET 
+                SET CustomerUID = @CustomerUID,
                   Name = @Name, Description = @Description, fk_ProjectTypeID = @ProjectType,
                   StartDate = @StartDate, EndDate = @EndDate, 
                   ProjectTimeZone = @ProjectTimeZone, ProjectTimeZoneIana = @ProjectTimeZoneIana,
@@ -584,7 +589,7 @@ namespace VSS.Productivity3D.Project.Repository
       }
 
       return $@"UPDATE Project
-                SET ShortRaptorProjectId = @ShortRaptorProjectId, 
+                SET ShortRaptorProjectId = @ShortRaptorProjectId, CustomerUID = @CustomerUID,
                   Name = @Name, Description = @Description, fk_ProjectTypeID = @ProjectType,
                   StartDate = @StartDate, EndDate = @EndDate, 
                   ProjectTimeZone = @ProjectTimeZone, ProjectTimeZoneIana = @ProjectTimeZoneIana,
@@ -648,7 +653,7 @@ namespace VSS.Productivity3D.Project.Repository
               fk_ImportedFileTypeID as ImportedFileType, Name, 
               FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, 
               fk_DXFUnitsTypeID as DxfUnitsType, MinZoomLevel, MaxZoomLevel, Offset, fk_ReferenceImportedFileUID as ParentUID,
-              IsArchived, LastActionedUTC
+              IsDeleted, LastActionedUTC
             FROM ImportedFile
             WHERE ImportedFileUID = @ImportedFileUid", new { importedFile.ImportedFileUid }
       )).FirstOrDefault();
@@ -679,7 +684,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         var insert = string.Format(
           "INSERT ImportedFile " +
-          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID) " +
+          "    (fk_ProjectUID, ImportedFileUID, ImportedFileID, fk_CustomerUID, fk_ImportedFileTypeID, Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID, MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID) " +
           "  VALUES " +
           "    (@ProjectUid, @ImportedFileUid, @ImportedFileId, @CustomerUID, @ImportedFileType, @Name, @FileDescriptor, @FileCreatedUtc, @FileUpdatedUtc, @ImportedBy, @SurveyedUtc, @DxfUnitsType, @MinZoomLevel, @MaxZoomLevel, 0, @LastActionedUtc, @Offset, @ParentUid)");
 
@@ -795,18 +800,18 @@ namespace VSS.Productivity3D.Project.Repository
     {
       const string insert = @"INSERT INTO ProjectHistory
               ( ProjectUID, CustomerUID, ShortRaptorProjectID, Name, Description, 
-                fk_ProjectTypeID AS ProjectType, StartDate, EndDate, 
+                fk_ProjectTypeID, StartDate, EndDate, 
                 ProjectTimeZone, ProjectTimeZoneIana, 
-                ST_ASWKT(Boundary) AS Boundary,
+                Boundary,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC, 
                 IsArchived, LastActionedUTC)
               SELECT 
-                ProjectUID, CustomerUID, ShortRaptorProjectID, Name, Description, 
-                fk_ProjectTypeID AS ProjectType, StartDate, EndDate, 
-                ProjectTimeZone, ProjectTimeZoneIana, 
-                ST_ASWKT(Boundary) AS Boundary,
-                CoordinateSystemFileName, CoordinateSystemLastActionedUTC, 
-                IsArchived, LastActionedUTC
+                  ProjectUID, CustomerUID, ShortRaptorProjectID, Name, Description, 
+                  fk_ProjectTypeID, StartDate, EndDate, 
+                  ProjectTimeZone, ProjectTimeZoneIana, 
+                  Boundary,
+                  CoordinateSystemFileName, CoordinateSystemLastActionedUTC, 
+                  IsArchived, LastActionedUTC
                 FROM Project
                 WHERE ProjectUID = @ProjectUID;";
       var insertedCount = await ExecuteWithAsyncPolicy(insert, project);
@@ -887,7 +892,7 @@ namespace VSS.Productivity3D.Project.Repository
 
             const string update =
               @"UPDATE ImportedFile                               
-                SET IsArchived = 1,
+                SET IsDeleted = 1,
                     LastActionedUTC = @LastActionedUtc
                 WHERE ImportedFileUID = @ImportedFileUid";
 
@@ -920,7 +925,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         const string update =
           @"UPDATE ImportedFile                               
-                SET IsArchived = 0
+                SET IsDeleted = 0
               WHERE ImportedFileUID = @ImportedFileUid";
 
         upsertedCount = await ExecuteWithAsyncPolicy(update, importedFile);
@@ -1205,6 +1210,26 @@ namespace VSS.Productivity3D.Project.Repository
       );
     }
 
+    /// <summary>
+    ///    Gets a project by Uid, even if it is not archived
+    /// </summary>
+    /// <param name="projectUid"></param>
+    /// <returns></returns>
+    public async Task<ProjectDataModel> GetProject_UnitTests(string projectUid)
+    {
+      var project = (await QueryWithAsyncPolicy<ProjectDataModel>(@"SELECT 
+                ProjectUID, CustomerUID, ShortRaptorProjectID, Name, Description, 
+                fk_ProjectTypeID AS ProjectType, StartDate, EndDate, 
+                ProjectTimeZone, ProjectTimeZoneIana, 
+                ST_ASWKT(Boundary) AS Boundary,
+                CoordinateSystemFileName, CoordinateSystemLastActionedUTC, 
+                IsArchived, LastActionedUTC
+              FROM Project 
+              WHERE ProjectUID = @ProjectUID",
+        new { ProjectUID = projectUid })).FirstOrDefault();
+      return project;
+    }
+
     public async Task<IEnumerable<ProjectDataModel>> GetProjectHistory_UnitTests(string projectUid)
     {
       return await QueryWithAsyncPolicy<ProjectDataModel>
@@ -1215,7 +1240,7 @@ namespace VSS.Productivity3D.Project.Repository
                 ST_ASWKT(Boundary) AS Boundary,
                 CoordinateSystemFileName, CoordinateSystemLastActionedUTC, 
                 IsArchived, LastActionedUTC
-            FROM Project  
+            FROM ProjectHistory 
             WHERE ProjectUID = @ProjectUID",
         new { ProjectUID = projectUid }
       );
@@ -1279,7 +1304,7 @@ public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWk
       if (timeOfPosition != null)
       {
         var formattedDate = (timeOfPosition.Value.Date.ToString("yyyy-MM-dd"));
-        timeRangeString = $"  AND '{formattedDate}' BETWEEN p.StartDate AND p.EndDate ";
+        timeRangeString = $"  AND '{formattedDate}' BETWEEN StartDate AND EndDate ";
       }
 
       var select = "SELECT DISTINCT " +
@@ -1291,7 +1316,7 @@ public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWk
                    "     IsArchived, LastActionedUTC "+
                    "   FROM Project " +
                    "      WHERE IsArchived = 0 " +
-                   $"        AND cp.fk_CustomerUID = '{customerUid}' " +
+                   $"        AND CustomerUID = '{customerUid}' " +
                    $"       {timeRangeString} " +
                    $"        AND st_Intersects({point}, Boundary) = 1";
 
@@ -1352,7 +1377,7 @@ public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWk
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType, 
-            MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID
           FROM ImportedFile
             WHERE importedFileUID = @ImportedFileUid",
         new { ImportedFileUid = importedFileUid }
@@ -1376,10 +1401,10 @@ public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWk
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
-            MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
           FROM ImportedFile
             WHERE fk_ReferenceImportedFileUID = @ImportedFileUid
-              AND IsArchived = 0",
+              AND IsDeleted = 0",
         new { ImportedFileUid = importedFileUid }
       )).ToList();
 
@@ -1406,10 +1431,10 @@ public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWk
       (@"SELECT 
             fk_ProjectUID as ProjectUID, ImportedFileUID, ImportedFileID, LegacyImportedFileID, fk_CustomerUID as CustomerUID, fk_ImportedFileTypeID as ImportedFileType, 
             Name, FileDescriptor, FileCreatedUTC, FileUpdatedUTC, ImportedBy, SurveyedUTC, fk_DXFUnitsTypeID as DxfUnitsType,
-            MinZoomLevel, MaxZoomLevel, IsArchived, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
+            MinZoomLevel, MaxZoomLevel, IsDeleted, LastActionedUTC, Offset, fk_ReferenceImportedFileUID as ParentUID 
           FROM ImportedFile
             WHERE fk_ProjectUID = @ProjectUid
-              AND IsArchived = 0",
+              AND IsDeleted = 0",
         new { ProjectUid = projectUid }
       )).ToList();
 
@@ -1435,7 +1460,7 @@ public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWk
             FROM ImportedFile iff
               INNER JOIN ImportedFileHistory ifh ON ifh.fk_ImportedFileUID = iff.ImportedFileUID
             WHERE fk_ProjectUID = @projectUid
-              AND IsArchived = 0
+              AND IsDeleted = 0
               AND (@ImportedFileUid IS NULL OR ImportedFileUID = @ImportedFileUid)
             ORDER BY ImportedFileUID, ifh.FileUpdatedUTC",
         new { projectUid, ImportedFileUid = importedFileUid }
@@ -1471,8 +1496,12 @@ public async Task<bool> DoesPolygonOverlap(string customerUid, string geometryWk
     /// </summary>
     public async Task<IEnumerable<bool>> DoPolygonsOverlap(string projectGeometryWkt, IEnumerable<string> geometryWkts)
     {
-      var list = geometryWkts.ToList();
+      if (geometryWkts == null || !geometryWkts.Any())
+        return new List<bool>();
+
       var tasks = new List<Task<bool>>();
+      var list = geometryWkts.ToList();
+
       for (var i = 0; i < list.Count; i++)
       {
         tasks.Add(DoesPolygonOverlap(projectGeometryWkt, list[i]));

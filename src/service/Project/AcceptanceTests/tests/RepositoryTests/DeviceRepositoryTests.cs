@@ -40,8 +40,8 @@ namespace RepositoryTests
         g = await deviceRepository.GetDevice(deviceEvent.DeviceUID);
         Assert.NotNull(g);
         Assert.Equal(deviceEvent.DeviceUID, g.DeviceUID);
-        Assert.True(g.ShortRaptorAssetId > 0);
-        Assert.Equal(deviceEvent.ActionUTC, g.LastActionedUtc);
+        Assert.True(g.ShortRaptorAssetID > 0);
+        Assert.Equal(deviceEvent.ActionUTC, g.LastActionedUTC);
         return null;
       }).Wait();
     }
@@ -72,11 +72,11 @@ namespace RepositoryTests
 
         var firstDevice = await deviceRepository.GetDevice(deviceEvent.DeviceUID);
         Assert.Equal(deviceEvent.DeviceUID, firstDevice.DeviceUID);
-        Assert.True(firstDevice.ShortRaptorAssetId > 0);
+        Assert.True(firstDevice.ShortRaptorAssetID > 0);
 
         var secondDevice = await deviceRepository.GetDevice(deviceEvent2.DeviceUID);
-        Assert.Equal(deviceEvent.DeviceUID, secondDevice.DeviceUID);
-        Assert.True(secondDevice.ShortRaptorAssetId > firstDevice.ShortRaptorAssetId);
+        Assert.Equal(deviceEvent2.DeviceUID, secondDevice.DeviceUID);
+        Assert.True(secondDevice.ShortRaptorAssetID > firstDevice.ShortRaptorAssetID);
 
         return null;
       }).Wait();

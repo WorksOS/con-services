@@ -41,9 +41,7 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task UpdateProjectDetails(string projectUid, UpdateProjectDetailsRequestModel updateProjectDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
-      //  http://api-stg.trimble.com/cws-profilemanager-stg/1.0/projects/{projectId}/devices
-      // return await UpdateData<UpdateProjectDetailsRequestModel>($"/projects/{projectUid}", updateProjectDetailsRequest, null, customHeaders);
-      // todoMaverick return CallEndpoint<UpdateProjectDetailsRequestModel>($"/projects/{projectUid}", updateProjectDetailsRequest, HttpMethod.Put, customHeaders);
+      await UpdateData($"/projects/{projectUid}", updateProjectDetailsRequest, null, customHeaders);
     }
 
     /// <summary>
@@ -55,7 +53,7 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task UpdateProjectBoundary(string projectUid, ProjectBoundary projectBoundary, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick return CallEndpoint<ProjectBoundary>($"/projects/{projectUid}/boundary", projectBoundary, HttpMethod.Put, customHeaders);
+      await UpdateData($"/projects/{projectUid}/boundary", projectBoundary, null, customHeaders);
     }
   }
 }

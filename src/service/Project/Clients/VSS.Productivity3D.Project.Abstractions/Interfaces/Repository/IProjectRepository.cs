@@ -27,6 +27,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectsForCustomer(string customerUid);
 
+    Task<Models.DatabaseModels.Project> GetProject_UnitTests(string projectUid);
+
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectHistory_UnitTests(string projectUid);
 
     #endregion projects

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Dapper;
-using MySql.Data.MySqlClient;
 using RepositoryTests.Internal;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Repository;

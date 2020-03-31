@@ -22,7 +22,7 @@ namespace RepositoryTests
       const string tableName = "Device";
       var columnNames = new List<string>
           {
-            "ID", "DeviceUID", "ShortRaptorAssetId", "LastActionedUTC"
+            "DeviceUID", "ShortRaptorAssetID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -33,11 +33,21 @@ namespace RepositoryTests
       const string tableName = "Project";
       var columnNames = new List<string>
           {
-            "ProjectUID", "CustomerUID", "ShortRaptorProjectID", "ProjectName", "Description", "fk_ProjectTypeID", "StartDate", "EndDate", "ProjectTimeZone", "ProjectTimeZoneIana", "ProjectBoundary", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC", "IsArchived", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ProjectUID", "CustomerUID", "ShortRaptorProjectID", "Name", "Description", "fk_ProjectTypeID", "StartDate", "EndDate", "ProjectTimeZone", "ProjectTimeZoneIana", "Boundary", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC", "IsArchived", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
-       
+
+    [Fact]
+    public void ProjectHistorySchemaExists()
+    {
+      const string tableName = "ProjectHistory";
+      var columnNames = new List<string>
+          {
+            "ProjectUID", "CustomerUID", "ShortRaptorProjectID", "Name", "Description", "fk_ProjectTypeID", "StartDate", "EndDate", "ProjectTimeZone", "ProjectTimeZoneIana", "Boundary", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC", "IsArchived", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+          };
+      CheckSchema(tableName, columnNames);
+    }
 
     [Fact]
     public void ProjectSettingsSchemaExists()
@@ -80,7 +90,7 @@ namespace RepositoryTests
       const string tableName = "Geofence";
       var columnNames = new List<string>
           {
-            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "GeometryWKT", "PolygonST", "FillColor", "IsTransparent", "IsDeleted", "LastActionedUTC", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "InsertUTC", "UpdateUTC"
+            "ID", "GeofenceUID", "Name", "fk_GeofenceTypeID", "PolygonST", "FillColor", "IsTransparent", "IsDeleted", "Description", "AreaSqMeters", "fk_CustomerUID", "UserUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -91,7 +101,7 @@ namespace RepositoryTests
       const string tableName = "ProjectGeofence";
       var columnNames = new List<string>
           {
-            "fk_ProjectUID", "fk_GeofenceUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ID", "fk_ProjectUID", "fk_GeofenceUID", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -106,15 +116,15 @@ namespace RepositoryTests
 
           //Check table exists
           var table = connection.Query(GetQuery(tableName, true)).FirstOrDefault();
-          Assert.Null(table);
-          Assert.Equal(tableName, table.TABLE_NAME, "Wrong table name");
+          Assert.NotNull(table);
+          Assert.Equal(tableName, table.TABLE_NAME);
 
           //Check table columns exist
           var columns = connection.Query(GetQuery(tableName, false)).ToList();
-          Assert.Null(columns);
+          Assert.NotNull(columns);
           Assert.Equal(columnNames.Count, columns.Count());
           foreach (var columnName in columnNames)
-            Assert.Null(columns.Find(c => c.COLUMN_NAME == columnName));
+            Assert.NotNull(columns.Find(c => c.COLUMN_NAME == columnName));
         }
         finally
         {

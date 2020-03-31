@@ -390,7 +390,7 @@ namespace IntegrationTests
     {
       var request = GetProjectIdRequest.CreateGetProjectIdRequest(assetid,latitude,longitude, 0, timeOfPosition,tccOrgUid);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v1/project/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);
@@ -411,7 +411,7 @@ namespace IntegrationTests
       Thread.Sleep(500);
       var request = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(assetId, tagFileUtc);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v1/project/getBoundaries";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);

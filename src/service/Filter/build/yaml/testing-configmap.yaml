@@ -4,7 +4,7 @@ metadata:
   name: filterservice-testing
 data: 
   LOG_MAX_CHAR: "1000"
-  MYSQL_DATABASE_NAME: VSS-Productivity3D-Filter
+  MYSQL_DATABASE_NAME: CCSS-Filter
   MYSQL_PASSWORD_BUILD: abc123
   MYSQL_PORT: "3306"
   MYSQL_ROOT_PASSWORD: abc123

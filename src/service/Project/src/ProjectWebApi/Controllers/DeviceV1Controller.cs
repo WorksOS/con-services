@@ -57,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           DeviceName = deviceResponseModel.DeviceName, 
           SerialNumber = deviceResponseModel.SerialNumber,
           Status = deviceResponseModel.Status,  
-          ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetId
+          ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID
         }
       };
       return deviceDataResult;
@@ -88,7 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           DeviceName = deviceResponseModel.DeviceName,
           SerialNumber = deviceResponseModel.SerialNumber,
           Status = deviceResponseModel.Status, 
-          ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetId
+          ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID
         }
       };
       return deviceDataResult;

@@ -90,6 +90,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Repository", "..\..\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj", "{301BB3DF-7490-4766-A57F-482EFCE9645B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Filter.Repository", "..\Clients\VSS.Productivity3D.Filter.Repository\VSS.Productivity3D.Filter.Repository.csproj", "{F4BF4797-9934-4F51-BB79-2360DB087614}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -212,6 +214,10 @@ Global
 		{301BB3DF-7490-4766-A57F-482EFCE9645B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{301BB3DF-7490-4766-A57F-482EFCE9645B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{301BB3DF-7490-4766-A57F-482EFCE9645B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4BF4797-9934-4F51-BB79-2360DB087614}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4BF4797-9934-4F51-BB79-2360DB087614}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4BF4797-9934-4F51-BB79-2360DB087614}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4BF4797-9934-4F51-BB79-2360DB087614}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -251,6 +257,7 @@ Global
 		{32836DCA-37E0-4BDB-B8A4-465AE6CEBCC8} = {2B6B2182-37DE-4AD9-98CB-69423EAE0E14}
 		{E810F742-E936-420B-A1B4-DF20592FB2AB} = {2B6B2182-37DE-4AD9-98CB-69423EAE0E14}
 		{301BB3DF-7490-4766-A57F-482EFCE9645B} = {2B6B2182-37DE-4AD9-98CB-69423EAE0E14}
+		{F4BF4797-9934-4F51-BB79-2360DB087614} = {8C971052-2D17-4456-9ECB-EBA1FD3C07B7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0FA01801-9906-482F-8016-493112DB9267}

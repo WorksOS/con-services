@@ -115,7 +115,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
           cfg.CreateMap<DeviceResponseModel, CreateDeviceEvent>()
             .ForMember(dest => dest.DeviceUID, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.ShortRaptorAssetId, opt => opt.Ignore())
+            .ForMember(dest => dest.ShortRaptorAssetID, opt => opt.Ignore())
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow));
           // ProjectGeofenceAssociations
           cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();

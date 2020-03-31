@@ -19,7 +19,7 @@ namespace TestUtility
 {
   public class TestSupport
   {
-    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project";
+    private const string PROJECT_DB_SCHEMA_NAME = "CCSS-Project";
 
     public string AssetUid { get; set; }
     public DateTime FirstEventDate { get; set; }
@@ -448,7 +448,7 @@ namespace TestUtility
           {
             ActionUTC = eventObject.EventDate,            
             DeviceUID = eventObject.DeviceUID,
-            ShortRaptorAssetId = eventObject.ShortRaptorAssetId
+            ShortRaptorAssetID = eventObject.ShortRaptorAssetId
           };          
           jsonString = JsonConvert.SerializeObject(new { CreateDeviceEvent = createDeviceEvent }, JsonSettings);
           break;

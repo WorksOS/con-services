@@ -421,7 +421,7 @@ namespace WebApiTests
       Thread.Sleep(500);          
       var request = GetProjectBoundaryAtDateRequest.CreateGetProjectBoundaryAtDateRequest(projectId, tagFileUtc);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v1/project/getBoundary";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);

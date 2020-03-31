@@ -170,7 +170,7 @@ namespace WebApiTests
       Thread.Sleep(500);
       var request = new GetProjectAndAssetUidsRequest(projectUid, deviceType, radioSerial, ec520Serial, tccOrgUid, latitude, longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v2/project/getUids";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson, statusCode);

@@ -9,10 +9,11 @@ namespace RepositoryTests
 {
   public class ProjectSettingsTests : TestControllerBase
   {
-    ProjectRepository projectContext;
+    ProjectRepository projectRepo;
     public ProjectSettingsTests()
     {
       SetupLogging();
+      projectRepo = new ProjectRepository(configStore, loggerFactory);
     }
 
     /// <summary>
@@ -35,11 +36,11 @@ namespace RepositoryTests
         ActionUTC = actionUTC
       };
       
-      var s = projectContext.StoreEvent(createProjectSettingsEvent);
+      var s = projectRepo.StoreEvent(createProjectSettingsEvent);
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      var g = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
       g.Wait();
       Assert.NotNull(g.Result);
 
@@ -50,7 +51,7 @@ namespace RepositoryTests
       Assert.Equal(settings, projectSettingsList[0].Settings);
       Assert.Equal(createProjectSettingsEvent.UserID, projectSettingsList[0].UserID);
 
-      var single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
+      var single = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
       single.Wait();
       Assert.NotNull(single.Result);
 
@@ -59,11 +60,11 @@ namespace RepositoryTests
       Assert.Equal(settings, single.Result.Settings);
       Assert.Equal(createProjectSettingsEvent.UserID, single.Result.UserID);
 
-      single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Unknown);
+      single = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Unknown);
       single.Wait();
       Assert.Null(single.Result);
 
-      single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.ImportedFiles);
+      single = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.ImportedFiles);
       single.Wait();
       Assert.Null(single.Result);
     }
@@ -99,15 +100,15 @@ namespace RepositoryTests
         ActionUTC = actionUTC.AddMilliseconds(2)
       };
 
-      var s = projectContext.StoreEvent(createProjectSettingsEvent);
+      var s = projectRepo.StoreEvent(createProjectSettingsEvent);
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      s = projectContext.StoreEvent(updatedProjectSettingsEvent);
+      s = projectRepo.StoreEvent(updatedProjectSettingsEvent);
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      var g = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
       g.Wait();
       Assert.NotNull(g.Result);
 
@@ -150,15 +151,15 @@ namespace RepositoryTests
         ActionUTC = actionUTC.AddMilliseconds(2)
       };
 
-      var s = projectContext.StoreEvent(createProjectSettingsEvent);
+      var s = projectRepo.StoreEvent(createProjectSettingsEvent);
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      s = projectContext.StoreEvent(updatedProjectSettingsEvent);
+      s = projectRepo.StoreEvent(updatedProjectSettingsEvent);
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
+      var g = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
       g.Wait();
       Assert.NotNull(g.Result);
 
@@ -168,7 +169,7 @@ namespace RepositoryTests
       Assert.Equal(createProjectSettingsEvent.Settings, projectSettings.Settings);
       Assert.Equal(createProjectSettingsEvent.UserID, projectSettings.UserID);
 
-      var settingsList = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      var settingsList = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
       settingsList.Wait();
       Assert.NotNull(settingsList.Result);
 
@@ -196,18 +197,18 @@ namespace RepositoryTests
         ActionUTC = actionUTC
       };
 
-      var s = projectContext.StoreEvent(createProjectSettingsEvent);
+      var s = projectRepo.StoreEvent(createProjectSettingsEvent);
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
+      var g = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID);
       g.Wait();
       Assert.NotNull(g.Result);
 
       var projectSettingsList = g.Result.ToList();
       Assert.Single(projectSettingsList);
 
-      g = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), Guid.NewGuid().ToString());
+      g = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), Guid.NewGuid().ToString());
       g.Wait();
       Assert.NotNull(g.Result);
 
@@ -215,11 +216,11 @@ namespace RepositoryTests
       Assert.Empty(projectSettingsList);
 
 
-      var single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
+      var single = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), createProjectSettingsEvent.UserID, ProjectSettingsType.Targets);
       single.Wait();
       Assert.NotNull(single.Result);
 
-      single = projectContext.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), Guid.NewGuid().ToString(), ProjectSettingsType.Targets);
+      single = projectRepo.GetProjectSettings(createProjectSettingsEvent.ProjectUID.ToString(), Guid.NewGuid().ToString(), ProjectSettingsType.Targets);
       single.Wait();
       Assert.Null(single.Result);
 

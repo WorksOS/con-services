@@ -149,9 +149,9 @@ namespace TestUtility
           var createFilterEvent = new CreateFilterEvent
           {
             ActionUTC = EventDate,
-            FilterUID = new Guid(eventObject.FilterUID),
-            CustomerUID = new Guid(eventObject.CustomerUID),
-            ProjectUID = new Guid(eventObject.ProjectUID),
+            FilterUID = eventObject.FilterUID,
+            CustomerUID = eventObject.CustomerUID,
+            ProjectUID = eventObject.ProjectUID,
             UserID = eventObject.UserID,
             FilterJson = eventObject.FilterJson,
             FilterType = eventObject.FilterType
@@ -162,9 +162,9 @@ namespace TestUtility
           var updateFilterEvent = new UpdateFilterEvent
           {
             ActionUTC = EventDate,
-            FilterUID = new Guid(eventObject.FilterUID),
-            CustomerUID = new Guid(eventObject.CustomerUID),
-            ProjectUID = new Guid(eventObject.ProjectUID),
+            FilterUID = eventObject.FilterUID,
+            CustomerUID = eventObject.CustomerUID,
+            ProjectUID = eventObject.ProjectUID,
             UserID = eventObject.UserID,
             FilterJson = eventObject.FilterJson,
             FilterType = eventObject.FilterType
@@ -175,9 +175,9 @@ namespace TestUtility
           var deleteFilterEvent = new DeleteFilterEvent
           {
             ActionUTC = EventDate,
-            FilterUID = new Guid(eventObject.FilterUID),
-            CustomerUID = new Guid(eventObject.CustomerUID),
-            ProjectUID = new Guid(eventObject.ProjectUID),
+            FilterUID = eventObject.FilterUID,
+            CustomerUID = eventObject.CustomerUID,
+            ProjectUID = eventObject.ProjectUID,
             UserID = eventObject.UserID,
           };
           jsonString = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent }, JsonSettings);

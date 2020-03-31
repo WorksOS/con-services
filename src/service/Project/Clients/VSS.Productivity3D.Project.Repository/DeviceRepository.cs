@@ -35,8 +35,8 @@ namespace VSS.Productivity3D.Project.Repository
         var device = new Device();
         var deviceEvent = (CreateDeviceEvent)evt;
         device.DeviceUID = deviceEvent.DeviceUID.ToString();
-        device.ShortRaptorAssetId = -1;
-        device.LastActionedUtc = deviceEvent.ActionUTC;
+        device.ShortRaptorAssetID = -1;
+        device.LastActionedUTC = deviceEvent.ActionUTC;
         eventType = "CreateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
       }
@@ -61,7 +61,7 @@ namespace VSS.Productivity3D.Project.Repository
 
       var existing = (await QueryWithAsyncPolicy<Device>
       (@"SELECT 
-            DeviceUID, ShortRaptorAssetId, LastActionedUTC AS LastActionedUtc
+            DeviceUID, ShortRaptorAssetID, LastActionedUTC
           FROM Device
           WHERE DeviceUID = @DeviceUID"
         , new { device.DeviceUID }
@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.Project.Repository
           @"INSERT Device
                 (DeviceUID, LastActionedUTC )
               VALUES
-                (@DeviceUID, @LastActionedUtc)";
+                (@DeviceUID, @LastActionedUTC)";
         return await ExecuteWithAsyncPolicy(upsert, device);
       }
 
@@ -104,7 +104,7 @@ namespace VSS.Productivity3D.Project.Repository
     {
       return (await QueryWithAsyncPolicy<Device>
       (@"SELECT 
-              DeviceUID, ShortRaptorAssetId,  LastActionedUTC AS LastActionedUtc
+              DeviceUID, ShortRaptorAssetID,  LastActionedUTC
             FROM Device
             WHERE DeviceUID = @DeviceUID"
         , new { DeviceUID = deviceUid }
