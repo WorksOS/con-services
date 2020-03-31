@@ -91,8 +91,6 @@ namespace VSS.MasterData.Repositories
         {
           using (var connection = new MySqlConnection(_connectionString))
           {
-            Console.WriteLine($"Connection string for MySql is '{_connectionString}'");
-
             await connection.OpenAsync();
             if (Log.IsTraceEnabled())
               Log.LogTrace("Repository PollyAsync: db open (with connection reuse) was successful");
