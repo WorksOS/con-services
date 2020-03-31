@@ -25,12 +25,6 @@ namespace VSS.TRex.Volumes
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculationsAggregator>();
 
-    /// <summary>
-    /// Defines a sub grid full of null values to run through the volumes engine in cases when 
-    /// one of the two sub grids is not available to allow for correctly tracking of statistics
-    /// </summary>
-    private static readonly ClientHeightLeafSubGrid NullHeightSubGrid = new ClientHeightLeafSubGrid(null, null, 0, 0, 0);
-
     // CoverageMap maps the area of cells that we have considered and successfully
     // computed volume information from
     public readonly SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
@@ -41,7 +35,7 @@ namespace VSS.TRex.Volumes
     /// </summary>
     public IDesignWrapper ActiveDesign { get; set; }
 
-    // References necessary for correct summarization of aggregated state
+    // References necessary for correct calculation of aggregated state
     public ILiftParameters LiftParams { get; set; } = new LiftParameters();
 
     public Guid SiteModelID { get; set; } = Guid.Empty;
@@ -115,32 +109,6 @@ namespace VSS.TRex.Volumes
       TotalArea = CellsScanned * CellSize * CellSize;
       BoundingExtents = CoverageMap.ComputeCellsWorldExtents();
     }
-
-    /*
-     * procedure TICVolumesCalculationsAggregateState.Initialise(const Source : TICVolumesCalculationsAggregateState);
-        begin
-      if Assigned(Source) then
-        begin
-          FCellSize := Source.CellSize;
-          FDesignDescriptor := Source.DesignDescriptor;
-          FVolumeType := Source.VolumeType;
-          FBaseLevel := Source.BaseLevel;
-          FTopLevel := Source.TopLevel;
-
-          LiftBuildSettings := Source.LiftBuildSettings;
-          SiteModelID := Source.SiteModelID;
-          DesignProfilerService := Source.DesignProfilerService;
-
-          CutTolerance := Source.CutTolerance;
-          FillTolerance := Source.FillTolerance;
-        end;
-
-    //  FNoChangeMap := TSubGridTreeBitMask.Create(kSubGridTreeLevels, CellSize);
-
-      FNullHeightSubgrid := TICClientSubGridTreeLeaf_Height.Create(Nil, Nil, kSubGridTreeLevels, CellSize, 0); //cell size of datamodel in question
-      FNullHeightSubgrid.Clear;
-    end;
-    */
 
     protected async Task ProcessVolumeInformationForSubGrid(ClientHeightLeafSubGrid subGrid)
     {
