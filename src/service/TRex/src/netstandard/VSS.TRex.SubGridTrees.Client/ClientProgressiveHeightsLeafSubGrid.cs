@@ -32,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Client
         Heights = new List<float[,]>(_numberOfProgressions);
         for (var i = 0; i < _numberOfProgressions; i++)
         {
-          Heights[i] = GenericTwoDArrayCacheHelper<float>.Caches().Rent();
+          Heights.Add(GenericTwoDArrayCacheHelper<float>.Caches().Rent());
         }
 
         Clear();
