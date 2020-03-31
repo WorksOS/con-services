@@ -246,7 +246,7 @@ public class PlanSpec {
                 .inlineBody("dotnet test -r linux-x64 --logger \"nunit\" " + solutionPath)
                 .interpreterBinSh();
 
-        Artifact artifacts = new Artifact("Test Results")
+        Artifact artifacts = new Artifact(serviceName + "Test Results")
                 .location("./linux-x64/")
                 .copyPattern("**/*.xml")
                 .shared(true);
