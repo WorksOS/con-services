@@ -13,12 +13,15 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public override bool Equals(object obj)
     {
-      var otherImportedFileImport = obj as ImportedFileHistoryItem;
-      if (otherImportedFileImport == null) return false;
+      if (!(obj is ImportedFileHistoryItem otherImportedFileImport))
+      {
+        return false;
+      }
+
       return otherImportedFileImport.ImportedFileUid == ImportedFileUid
              && otherImportedFileImport.FileCreatedUtc == FileCreatedUtc
              && otherImportedFileImport.FileUpdatedUtc == FileUpdatedUtc
-             && otherImportedFileImport.ImportedBy == ImportedBy; 
+             && otherImportedFileImport.ImportedBy == ImportedBy;
     }
 
     public override int GetHashCode()
