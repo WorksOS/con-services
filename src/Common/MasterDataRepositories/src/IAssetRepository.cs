@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.MasterData.Repositories.DBModels;
@@ -14,8 +14,8 @@ namespace VSS.MasterData.Repositories
     Task<IEnumerable<Asset>> GetAssets();
     Task<IEnumerable<Asset>> GetAllAssetsInternal();
     Task<IEnumerable<Asset>> GetAssets(string[] productFamily);
-    Task<IEnumerable<Asset>> GetAssets(IEnumerable<Guid> assetUids);
-    Task<IEnumerable<Asset>> GetAssets(IEnumerable<long> assetIds);
+    Task<List<Asset>> GetAssets(IEnumerable<Guid> assetUids);
+    Task<List<Asset>> GetAssets(IEnumerable<long> assetIds);
     Task<int> StoreEvent(IAssetEvent filterEvent);
     Task<MatchingAssets> GetMatching3D2DAssets(MatchingAssets asset);
   }
