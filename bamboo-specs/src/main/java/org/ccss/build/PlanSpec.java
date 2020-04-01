@@ -366,7 +366,7 @@ public class PlanSpec {
     }
 
     VcsCheckoutTask checkoutCodeTask() {
-        return new VcsCheckoutTask().addCheckoutOfDefaultRepository();
+        return new VcsCheckoutTask().addCheckoutOfDefaultRepository().cleanCheckout(true);
     }
 
     CleanWorkingDirectoryTask cleanTask() {
