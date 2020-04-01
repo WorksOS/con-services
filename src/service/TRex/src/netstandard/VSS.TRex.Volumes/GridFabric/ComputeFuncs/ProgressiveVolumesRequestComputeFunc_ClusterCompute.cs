@@ -44,7 +44,10 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
           arg.TopDesign,
           arg.AdditionalSpatialFilter,
           arg.CutTolerance,
-          arg.FillTolerance);
+          arg.FillTolerance,
+          arg.StartDate,
+          arg.EndDate,
+          arg.Interval);
 
         Log.LogInformation("Executing volumes.ExecuteAsync()");
 

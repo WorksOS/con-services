@@ -83,6 +83,10 @@ namespace VSS.TRex.Volumes.Executors
     /// </summary>
     private readonly ILiftParameters _liftParams;
 
+    public readonly DateTime StartDate;
+    public readonly DateTime EndDate;
+    public readonly TimeSpan Interval;
+
     /// <summary>
     /// Performs functional initialization of ComputeVolumes state that is dependent on the initial state
     /// set via the constructor
@@ -130,6 +134,9 @@ namespace VSS.TRex.Volumes.Executors
     /// <summary>
     /// Constructor
     /// </summary>
+    /// <param name="startDate">The date at which to start calculating progressive sub grids</param>
+    /// <param name="endDate">The date beyond which no further progressive sub grids will be calculated</param>
+    /// <param name="interval">The time interval between successive calculations of progressive sub grids</param>
     public ComputeProgressiveVolumes_Coordinator(Guid siteModelId,
       ILiftParameters liftParams,
       VolumeComputationType volumeType,
@@ -138,7 +145,10 @@ namespace VSS.TRex.Volumes.Executors
       DesignOffset topDesign,
       ICombinedFilter additionalSpatialFilter,
       double cutTolerance,
-      double fillTolerance)
+      double fillTolerance,
+      DateTime startDate,
+      DateTime endDate,
+      TimeSpan interval)
     {
       SiteModelID = siteModelId;
       VolumeType = volumeType;
@@ -149,6 +159,9 @@ namespace VSS.TRex.Volumes.Executors
       CutTolerance = cutTolerance;
       FillTolerance = fillTolerance;
       _liftParams = liftParams;
+      StartDate = startDate;
+      EndDate = endDate;
+      Interval = interval;
     }
 
     /// <summary>
@@ -200,7 +213,10 @@ namespace VSS.TRex.Volumes.Executors
             Aggregator = Aggregator,
             Filter = Filter,
             VolumeType = VolumeType,
-            LiftParams = _liftParams
+            LiftParams = _liftParams,
+            StartDate = StartDate,
+            EndDate = EndDate,
+            Interval = Interval
           };
 
           InitialiseVolumesCalculator(computeVolumes);

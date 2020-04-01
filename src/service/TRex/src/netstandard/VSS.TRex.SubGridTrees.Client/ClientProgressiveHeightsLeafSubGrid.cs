@@ -15,9 +15,11 @@ namespace VSS.TRex.SubGridTrees.Client
   /// <summary>
   /// The content of each cell in a height client leaf sub grid. Each cell stores an elevation only.
   /// </summary>
-  public class ClientProgressiveHeightsLeafSubGrid : ClientLeafSubGrid, IDisposable
+  public class ClientProgressiveHeightsLeafSubGrid : ClientLeafSubGrid, IClientProgressiveHeightsLeafSubGrid, IDisposable
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
+
+    public const int MaxNumProgressions = 1000;
 
     public List<float[,]> Heights { get; set; }
 
@@ -28,6 +30,11 @@ namespace VSS.TRex.SubGridTrees.Client
       get => _numberOfProgressions;
       set
       {
+        if (value > MaxNumProgressions)
+        {
+          throw new ArgumentException($"No more than {MaxNumProgressions} progressions may be requested at one time");
+        }
+
         _numberOfProgressions = value;
         Heights = new List<float[,]>(_numberOfProgressions);
         for (var i = 0; i < _numberOfProgressions; i++)
@@ -72,18 +79,20 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="filteredValue"></param>
     /// <returns></returns>
     public override bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue) => filteredValue.FilteredPass.Height == Consts.NullHeight;
+    
+    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context)
+    { }
 
     /// <summary>
     /// Assign filtered height value from a filtered pass to a cell
     /// </summary>
+    /// <param name="heightIndex">The index of the height array in Heights to assign the elevation to</param>
     /// <param name="cellX"></param>
     /// <param name="cellY"></param>
-    /// <param name="Context"></param>
-    public override void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context)
+    /// <param name="height"></param>
+    public void AssignFilteredValue(int heightIndex, byte cellX, byte cellY, float height)
     {
-      throw new NotImplementedException();
-
-//      Cells[cellX, cellY] = Context.FilteredValue.FilteredPassData.FilteredPass.Height;
+      Heights[heightIndex][cellX, cellY] = height;
     }
 
     /// <summary>
@@ -95,7 +104,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
       for (var i = 0; i < NumberOfProgressions; i++)
       {
-        ForEach((x, y) => Heights[i][x, y] = i);
+        var ii = i;
+        ForEach((x, y) => Heights[ii][x, y] = ii);
       }
     }
 
@@ -108,10 +118,11 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       var result = true;
 
-      var _other = (ClientProgressiveHeightsLeafSubGrid)other;
+      var otherCopy = (ClientProgressiveHeightsLeafSubGrid)other;
       for (var i = 0; i < NumberOfProgressions; i++)
       {
-        ForEach((x, y) => result &= Heights[i][x, y] == _other.Heights[i][x, y]);
+        var ii = i;
+        ForEach((x, y) => result &= Heights[ii][x, y] == otherCopy.Heights[ii][x, y]);
       }
 
       return result;
