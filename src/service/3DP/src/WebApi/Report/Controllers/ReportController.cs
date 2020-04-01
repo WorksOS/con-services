@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -25,13 +24,9 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.TRex.Gateway.Common.Proxy;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
-  /// <summary>
-  /// 
-  /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ReportController : Controller, IReportSvc
   {
