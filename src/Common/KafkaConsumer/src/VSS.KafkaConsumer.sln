@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..\..\MasterDataModels\src\VSS.MasterData.Models.csproj", "{1F7BBE9E-6185-40F9-9BFC-629702C297FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{6B4CB450-6098-49AC-B3EB-E23743ECA6B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{6B4CB450-6098-49AC-B3EB-E23743ECA6B6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{CEAF8704-E460-4DF2-88BD-4729E15CB9FE}"
 EndProject
