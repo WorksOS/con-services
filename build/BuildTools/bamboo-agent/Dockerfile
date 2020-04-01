@@ -17,7 +17,7 @@ FROM atlassian/bamboo-agent-base
 USER root
 RUN apt-get update && \
     apt-get install git wget vim sudo dos2unix unzip -y && \
-    apt-get install python3.6 python3-pip nodejs -y 
+    apt-get install python3.6 python3-pip nodejs npm -y 
 
 # Python is used to run the Jenkins build script
 RUN pip3 install python-jenkins

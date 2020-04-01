@@ -240,12 +240,13 @@ public class PlanSpec {
     }
 
     void createSanityJob(Stage stage, String key, String serviceName, String solutionPath) {
+        String dotnetParms = "-r linux-x64 -p:AllowUnsafeBlocks=true";
         ScriptTask buildScript = new ScriptTask()
-                .inlineBody("dotnet build -r linux-x64 " + solutionPath)
+                .inlineBody("dotnet build " + dotnetParms + " " + solutionPath)
                 .interpreterBinSh();
 
         ScriptTask testScript = new ScriptTask()
-                .inlineBody("dotnet test -r linux-x64 --logger \"nunit\" " + solutionPath)
+                .inlineBody("dotnet test --logger \"nunit\" " + dotnetParms + " " + solutionPath)
                 .interpreterBinSh();
 
         TestParserTask testParserTask = TestParserTask.createNUnitParserTask()
