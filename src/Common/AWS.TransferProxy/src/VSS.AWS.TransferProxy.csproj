@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

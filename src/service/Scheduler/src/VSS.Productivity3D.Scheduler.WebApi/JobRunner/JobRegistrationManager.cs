@@ -105,7 +105,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.JobRunner
           {
             RegisterJob((Guid)v, jobClassType);
           }
-          catch (ServiceException se)
+          catch (ServiceException)
           {
             log.LogWarning($"Failed to load VSS job {v} from {jobClassType.Name}");
           }

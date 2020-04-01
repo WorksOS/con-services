@@ -113,7 +113,7 @@ namespace AssetMgmt.IntegrationTests.Controllers
       Assert.Equal("6cb6fa71-9800-4700-b7ff-c62014970deb", assetData.AssetUid.ToString());
       Assert.Equal("970DEB", assetData.AssetIdentifier);
       Assert.Equal("C62014", assetData.AssetSerialNumber);
-      Assert.Equal("30/03/2020 2:45:04 PM", assetData.LocationLastUpdatedUtc.ToString());
+      Assert.Equal(new DateTime(2020, 3, 30, 14, 45, 4).ToString(), assetData.LocationLastUpdatedUtc.ToString());
       Assert.Equal("Dump Truck", assetData.AssetType);
       Assert.Equal("Tonka Dump Truck", assetData.MachineName);
       Assert.Equal(0, assetData.Latitude);

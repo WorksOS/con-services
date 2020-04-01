@@ -83,7 +83,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="tRexCompactionDataProxy"></param>
