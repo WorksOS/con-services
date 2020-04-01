@@ -7,7 +7,6 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Interfaces;
@@ -20,6 +19,7 @@ using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Responses;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using Consts = VSS.TRex.Common.Consts;
 
 

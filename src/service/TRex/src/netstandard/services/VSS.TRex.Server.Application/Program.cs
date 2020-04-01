@@ -16,10 +16,8 @@ using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
@@ -34,12 +32,15 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Volumes.Executors.Tasks;
+using VSS.TRex.Volumes.GridFabric.Arguments;
 
 namespace VSS.TRex.Server.Application
 {
@@ -48,40 +49,29 @@ namespace VSS.TRex.Server.Application
 
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorPipelineStyle.DefaultAggregative:
-          return new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>();
-        case PipelineProcessorPipelineStyle.DefaultProgressive:
-          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
-        default:
-          return null;
-      }
+        PipelineProcessorPipelineStyle.DefaultAggregative => new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        PipelineProcessorPipelineStyle.ProgressiveVolumes => new SubGridPipelineProgressive<ProgressiveVolumesSubGridsRequestArgument, SubGridRequestsResponse>(),
+        _ => null
+      };
     }
 
     private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorTaskStyle.AggregatedPipelined:
-          return new AggregatedPipelinedSubGridTask();
-        case PipelineProcessorTaskStyle.PVMRendering:
-          return null; // Not responsible for rendering, this is in TileRendering service
-        case PipelineProcessorTaskStyle.PatchExport:
-          return new PatchTask();
-        case PipelineProcessorTaskStyle.SurfaceExport:
-          return new SurfaceTask();
-        case PipelineProcessorTaskStyle.GriddedReport:
-          return new GriddedReportTask();
-        case PipelineProcessorTaskStyle.CSVExport:
-          return new CSVExportTask();
-        case PipelineProcessorTaskStyle.SimpleVolumes: 
-          return new VolumesComputationTask();
-        case PipelineProcessorTaskStyle.ProgressiveVolumes:
-          return new VolumesComputationTask();
-        default:
-          return null;
-      }
+        PipelineProcessorTaskStyle.AggregatedPipelined => (ITRexTask) new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.PVMRendering => null, // Not responsible for rendering, this is in TileRendering service
+        PipelineProcessorTaskStyle.PatchExport => new PatchTask(),
+        PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
+        PipelineProcessorTaskStyle.GriddedReport => new GriddedReportTask(),
+        PipelineProcessorTaskStyle.CSVExport => new CSVExportTask(),
+        PipelineProcessorTaskStyle.SimpleVolumes => new VolumesComputationTask(),
+        PipelineProcessorTaskStyle.ProgressiveVolumes => new VolumesComputationTask(),
+        _ => null
+      };
     }
 
     private static void DependencyInjection()
@@ -153,7 +143,7 @@ namespace VSS.TRex.Server.Application
         typeof(VSS.TRex.Filters.CellPassAttributeFilter),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Machines.Machine),
-        typeof(VSS.TRex.Pipelines.PipelineProcessor),
+        typeof(VSS.TRex.Pipelines.PipelineProcessor<SubGridsRequestArgument>),
         typeof(VSS.TRex.Profiling.CellLiftBuilder),
         typeof(VSS.TRex.SubGrids.CutFillUtilities),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),

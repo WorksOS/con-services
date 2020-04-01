@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;
@@ -46,7 +47,8 @@ namespace VSS.TRex.SubGrids.Interfaces
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       IOverrideParameters overrides,
-      ILiftParameters liftParams
+      ILiftParameters liftParams,
+      Action<ISubGridRequestor, ISubGridRetriever> customInitializer
     );
   }
 }

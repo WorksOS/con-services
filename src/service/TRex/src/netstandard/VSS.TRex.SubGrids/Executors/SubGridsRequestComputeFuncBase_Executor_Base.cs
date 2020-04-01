@@ -19,11 +19,11 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Models;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -68,7 +68,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// </summary>
     private ISubGridTreeBitMask SurveyedSurfaceOnlyMask;
 
-    protected SubGridsRequestArgument localArg;
+    protected TSubGridsRequestArgument localArg;
 
     private ISiteModel siteModel;
 
@@ -218,7 +218,7 @@ namespace VSS.TRex.SubGrids.Executors
     /// to allow other methods to access it as local state.
     /// </summary>
     /// <param name="arg"></param>
-    public virtual void UnpackArgument(SubGridsRequestArgument arg)
+    public virtual void UnpackArgument(TSubGridsRequestArgument arg)
     {
       localArg = arg;
 

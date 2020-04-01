@@ -254,7 +254,7 @@ namespace VSS.TRex.SubGrids
 
     private bool _commonCellPassStackExaminationDone;
 
-    protected void SetupForCellPassStackExamination()
+    protected virtual void SetupForCellPassStackExamination()
     {
       if (!_commonCellPassStackExaminationDone)
       {
@@ -286,7 +286,14 @@ namespace VSS.TRex.SubGrids
       _segmentIterator.Directory = _subGridAsLeaf.Directory;
     }
 
-    public ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
+    /// <summary>
+    /// Orchestrates the mainline work of analyzing cell and cell pass information to create a client sub grid (heights, CMV, MDP etc)
+    /// based on filter and other information established in the class
+    /// </summary>
+    /// <param name="clientGrid"></param>
+    /// <param name="cellOverrideMask"></param>
+    /// <returns></returns>
+    public virtual ServerRequestResult RetrieveSubGrid(IClientLeafSubGrid clientGrid,
       SubGridTreeBitmapSubGridBits cellOverrideMask)
     {
       if (!Utilities.DerivedGridDataTypesAreCompatible(_gridDataType, clientGrid.GridDataType))

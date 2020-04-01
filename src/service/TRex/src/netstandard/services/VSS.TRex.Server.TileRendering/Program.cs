@@ -19,9 +19,7 @@ using VSS.TRex.DI;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.HttpClients;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
@@ -36,6 +34,8 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -45,7 +45,7 @@ namespace VSS.TRex.Server.TileRendering
 {
   class Program
   {
-    static private ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
+    private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
       return key switch
       {
@@ -54,7 +54,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    static private ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
+    private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
       return key switch
       {
@@ -63,7 +63,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    static private IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
+    private static IDataSmoother TileRenderingSmootherFactoryMethod(DisplayMode key)
     {
       var config = DIContext.Obtain<IConfigurationStore>();
 
@@ -85,7 +85,7 @@ namespace VSS.TRex.Server.TileRendering
       };
     }
 
-    static private void DependencyInjection() 
+    private static void DependencyInjection() 
     {
       DIBuilder
         .New()
@@ -143,7 +143,7 @@ namespace VSS.TRex.Server.TileRendering
     }
 
     // This static array ensures that all required assemblies are included into the artifacts by the linker
-    static private void EnsureAssemblyDependenciesAreLoaded()
+    private static void EnsureAssemblyDependenciesAreLoaded()
     {
       // This static array ensures that all required assemblies are included into the artifacts by the linker
       Type[] AssemblyDependencies =
@@ -161,7 +161,7 @@ namespace VSS.TRex.Server.TileRendering
         typeof(VSS.TRex.Filters.CellPassAttributeFilter),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Machines.Machine),
-        typeof(VSS.TRex.Pipelines.PipelineProcessor),
+        typeof(VSS.TRex.Pipelines.PipelineProcessor<SubGridsRequestArgument>),
         typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
         typeof(VSS.TRex.SubGrids.CutFillUtilities),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),
@@ -177,7 +177,7 @@ namespace VSS.TRex.Server.TileRendering
           Console.WriteLine($"Assembly for type {asmType} has not been loaded.");
     }
 
-    static private void DoServiceInitialisation()
+    private static void DoServiceInitialisation()
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();

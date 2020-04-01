@@ -15,6 +15,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.Volumes.GridFabric.Arguments;
 
 namespace VSS.TRex.Volumes
 {
@@ -50,6 +51,10 @@ namespace VSS.TRex.Volumes
     /// Parameters for lift analysis
     /// </summary>
     public ILiftParameters LiftParams { get; set; }
+
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public TimeSpan Interval { get; set; }
 
     /// <summary>
     ///  Default no-arg constructor
@@ -132,7 +137,9 @@ namespace VSS.TRex.Volumes
             }
           }
 
-          using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild
+          // Note: The execution context is on a compute cluster node already. However, the processor still performs the same function
+          // within the local context. TODO: Check this is a valid statement and we are not multiple dipping out to the whole compute cluster 'n' times
+          using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
           (requestDescriptor: RequestDescriptor,
             dataModelID: SiteModel.ID,
             gridDataType: GridDataType.Height,
@@ -140,7 +147,7 @@ namespace VSS.TRex.Volumes
             cutFillDesign: null,
             filters: new FilterSet(Filter),
             task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
-            pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.DefaultAggregative),
+            pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
             requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
             requestRequiresAccessToDesignFileExistenceMap: RefDesign != null || RefOriginal != null,
             requireSurveyedSurfaceInformation: UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
@@ -148,6 +155,11 @@ namespace VSS.TRex.Volumes
             liftParams: LiftParams
           ))
           {
+            if (processor is IPipelineProcessor<ProgressiveVolumesSubGridsRequestArgument> customProcesor)
+            {
+              customProcesor.CustomArgumentInitializer = (arg) => { };
+            }
+
             processor.Task.RequestDescriptor = RequestDescriptor;
             //processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
 

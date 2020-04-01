@@ -90,7 +90,8 @@ namespace VSS.TRex.SubGrids
                            ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
                            ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
                            IOverrideParameters overrides,
-                           ILiftParameters liftParams)
+                           ILiftParameters liftParams,
+                           Action<ISubGridRequestor, ISubGridRetriever> customRequestorInitializer)
     {
       SiteModel = siteModel;
       GridDataType = gridDataType;
@@ -113,6 +114,8 @@ namespace VSS.TRex.SubGrids
                                        subGridCacheContext,
                                        overrides,
                                        liftParams);
+
+      customRequestorInitializer?.Invoke(this, retriever);
 
       ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
       AreaControlSet = areaControlSet;

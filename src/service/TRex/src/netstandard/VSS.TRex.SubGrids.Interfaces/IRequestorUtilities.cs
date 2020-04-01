@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -39,6 +40,7 @@ namespace VSS.TRex.SubGrids.Interfaces
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
         ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
       AreaControlSet areaControlSet,
-      ISubGridTreeBitMask prodDataMask);
+      ISubGridTreeBitMask prodDataMask,
+      Action<ISubGridRequestor, ISubGridRetriever> customRequestorInitializer = null);
   }
 }

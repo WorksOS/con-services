@@ -24,6 +24,7 @@ using VSS.TRex.Common.Utilities;
 using VSS.TRex.Common;
 using System.Collections.Generic;
 using System.Diagnostics;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 
 namespace VSS.TRex.QuantizedMesh.Executors
 {
@@ -389,7 +390,7 @@ namespace VSS.TRex.QuantizedMesh.Executors
 
       // Setup Task
       task = DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.QuantizedMesh) as QuantizedMeshTask;
-      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(requestDescriptor: requestDescriptor,
+      processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(requestDescriptor: requestDescriptor,
         dataModelID: DataModelUid,
         gridDataType: GridDataType.Height,
         response: GriddedElevationsResponse,

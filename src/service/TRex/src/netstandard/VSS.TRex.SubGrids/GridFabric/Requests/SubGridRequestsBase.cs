@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Requests;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 
@@ -85,6 +85,11 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
         public AreaControlSet AreaControlSet { get; set; } = AreaControlSet.CreateAreaControlSet();
 
         /// <summary>
+        /// A lambda to provide custom initialization of specialist sub grids arguments used for different purposes
+        /// </summary>
+        public Action<TSubGridsRequestArgument> CustomArgumentInitializer { get; set; }
+
+        /// <summary>
         /// No arg constructor that establishes this request as a cache compute request. 
         /// of sub grid processing is returned as a set of partitioned results from the Broadcast() invocation.
         /// </summary>
@@ -115,7 +120,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                                    ISubGridTreeBitMask surveyedSurfaceOnlyMask,
                                    IFilterSet filters,
                                    DesignOffset referenceDesign,
-                                   AreaControlSet areaControlSet) : this()
+                                   AreaControlSet areaControlSet,
+                                   Action<TSubGridsRequestArgument> customArgumentInitializer) : this()
         {
             TRexTask = tRexTask;
             SiteModelID = siteModelID;
@@ -128,6 +134,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
             Filters = filters;
             ReferenceDesign = referenceDesign;
             AreaControlSet = areaControlSet;
+            CustomArgumentInitializer = customArgumentInitializer;
         }
 
         /// <summary>
@@ -152,6 +159,8 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet
             };
+
+            CustomArgumentInitializer?.Invoke(arg);
         }
 
         protected void CheckArguments()

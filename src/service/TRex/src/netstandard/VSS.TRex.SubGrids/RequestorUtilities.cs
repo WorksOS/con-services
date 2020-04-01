@@ -140,7 +140,9 @@ namespace VSS.TRex.SubGrids
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
         ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
       AreaControlSet areaControlSet,
-      ISubGridTreeBitMask prodDataMask)
+      ISubGridTreeBitMask prodDataMask,
+      Action<ISubGridRequestor, ISubGridRetriever> customRequestorInitializer = null
+      )
     {
       // Construct the resulting requestors
       return intermediaries.Select(x =>
@@ -162,7 +164,8 @@ namespace VSS.TRex.SubGrids
           x.surfaceElevationPatchRequest,
           x.surfaceElevationPatchArgument,
           overrides,
-          liftParams);
+          liftParams,
+          customRequestorInitializer);
 
         return requestor;
       }).ToArray();
