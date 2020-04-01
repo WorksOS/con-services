@@ -3,7 +3,6 @@ using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGrids.GridFabric.Arguments
@@ -11,7 +10,7 @@ namespace VSS.TRex.SubGrids.GridFabric.Arguments
   /// <summary>
   /// Contains all the parameters necessary to be sent for a generic sub grids request made to the compute cluster
   /// </summary>
-  public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument, ISubGridsRequestArgument
+  public class SubGridsRequestArgument : BaseApplicationServiceRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
 
