@@ -254,7 +254,7 @@ public class PlanSpec {
 
         Job buildJob = new Job(serviceName, "SAN"+key)
                 .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript, testParserTask)
-//                .finalTasks(cleanTask())
+                .finalTasks(cleanTask())
                 .requirements(new Requirement("team")
                         .matchType(Requirement.MatchType.EQUALS)
                         .matchValue("merino"));
