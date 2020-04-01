@@ -254,7 +254,7 @@ public class PlanSpec {
 
         Job buildJob = new Job(serviceName, "SAN"+key)
                 .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript, testParserTask)
-                .finalTasks(testParserTask)
+                .finalTasks(cleanTask())
                 .requirements(new Requirement("team")
                         .matchType(Requirement.MatchType.EQUALS)
                         .matchValue("merino"));
@@ -353,7 +353,9 @@ public class PlanSpec {
                 .artifacts(artifact());
 
         if(runAcceptanceTest)
-            buildJob.finalTasks(testCoverageTask());
+            buildJob.tasks(testCoverageTask());
+
+        buildJob.finalTasks(cleanTask());
 
         Stage jenkinsStage = new Stage("Build Jenkins")
                 .jobs(buildJob);
