@@ -1,8 +1,6 @@
 ﻿using System;
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
-using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.GridFabric.Interfaces;
 
 namespace VSS.TRex.Volumes.GridFabric.Responses
@@ -11,20 +9,29 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
   {
     private const byte VERSION_NUMBER = 1;
 
+    public ProgressiveVolumeResponseItem[] Volumes { get; set; }
+
     public ProgressiveVolumesResponse AggregateWith(ProgressiveVolumesResponse other)
     {
-      throw new NotImplementedException();
+      if ((Volumes?.Length ?? 0) != (other.Volumes?.Length ?? 0))
+      {
+        throw new ArgumentException($"Progressive volumes series should have same length: {Volumes?.Length ?? 0} versus {other.Volumes?.Length ?? 0}");
+      }
+
+      // Iterate over each progressive volume in turn and aggregate them together
+
+      for (var i = 0; i < Volumes.Length; i++)
+      {
+        if (Volumes[i].Date.CompareTo(other.Volumes[i].Date) != 0)
+        {
+          throw new ArgumentException($"Dates of aggregating progressive volume pair are not the same: {Volumes[i].Date} versus {other.Volumes[i].Date}");
+        }
+
+        Volumes[i].AggregateWith(other.Volumes[i]);
+      }
+
+      return this;
     }
-
-    /// <summary>
-    /// The bounding extent of the area covered by the volume computation expressed in the project site calibration/grid coordinate system
-    /// </summary>
-    public BoundingWorldExtent3D BoundingExtentGrid = BoundingWorldExtent3D.Null();
-
-    /// <summary>
-    /// The bounding extent of the area covered by the volume computation expressed in the WGS84 datum
-    /// </summary>
-    public BoundingWorldExtent3D BoundingExtentLLH = BoundingWorldExtent3D.Null();
 
     /// <summary>
     /// Serializes content to the writer
@@ -36,29 +43,12 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
 
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-/*      writer.WriteBoolean(Cut.HasValue);
-      if (Cut.HasValue)
-        writer.WriteDouble(Cut.Value);
-
-      writer.WriteBoolean(Fill.HasValue);
-      if (Fill.HasValue)
-        writer.WriteDouble(Fill.Value);
-
-      writer.WriteBoolean(TotalCoverageArea.HasValue);
-      if (TotalCoverageArea.HasValue)
-        writer.WriteDouble(TotalCoverageArea.Value);
-
-      writer.WriteBoolean(CutArea.HasValue);
-      if (CutArea.HasValue)
-        writer.WriteDouble(CutArea.Value);
-
-      writer.WriteBoolean(FillArea.HasValue);
-      if (FillArea.HasValue)
-        writer.WriteDouble(FillArea.Value);
- */
-
-      BoundingExtentGrid.ToBinary(writer);
-      BoundingExtentLLH.ToBinary(writer);
+      var count = Volumes?.Length ?? 0;
+      writer.WriteInt(count);
+      for (var i = 0; i < count; i++)
+      {
+        Volumes[i].ToBinary(writer);
+      }
     }
 
     /// <summary>
@@ -71,25 +61,12 @@ namespace VSS.TRex.Volumes.GridFabric.Responses
 
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
-      /*
-      if (reader.ReadBoolean())
-        Cut = reader.ReadDouble();
-
-      if (reader.ReadBoolean())
-        Fill = reader.ReadDouble();
-
-      if (reader.ReadBoolean())
-        TotalCoverageArea = reader.ReadDouble();
-
-      if (reader.ReadBoolean())
-        CutArea = reader.ReadDouble();
-
-      if (reader.ReadBoolean())
-        FillArea = reader.ReadDouble();
-      */
-
-      (BoundingExtentGrid ?? (BoundingExtentGrid = new BoundingWorldExtent3D())).FromBinary(reader);
-      (BoundingExtentLLH ?? (BoundingExtentLLH = new BoundingWorldExtent3D())).FromBinary(reader);
+      var count = reader.ReadInt();
+      Volumes = new ProgressiveVolumeResponseItem[count];
+      for (var i = 0; i < count; i++)
+      {
+        (Volumes[i] = new ProgressiveVolumeResponseItem()).FromBinary(reader);
+      }
     }
   }
 }
