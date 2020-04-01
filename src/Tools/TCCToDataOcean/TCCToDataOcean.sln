@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TCCFileAccess", "..\..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.DataOcean.Client", "..\..\Common\VSS.DataOcean.Client\src\VSS.DataOcean.Client.csproj", "{904BDD7F-DA6F-4A61-8327-8C30176EEF8E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{559FCBEC-E19D-420C-B877-829A4A754399}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{559FCBEC-E19D-420C-B877-829A4A754399}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{97EAC78E-FAFD-4B85-A435-ECDE0AAA7D37}"
 EndProject

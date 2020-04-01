@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{145F530F-CE85-498A-9D1F-D2B0C2F338E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{E4405223-D3A1-47D7-82DD-F32CE0DA4C85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{E4405223-D3A1-47D7-82DD-F32CE0DA4C85}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj", "{E987669D-F5A6-44BF-A55A-41554F5BF537}"
 EndProject

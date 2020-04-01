@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.ServiceDiscovery
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{7F08C944-4179-4EED-95E5-F1C2354DAD6A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{F71C3672-C186-40FE-89B7-250AFBD1947C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{F71C3672-C186-40FE-89B7-250AFBD1947C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{012362E5-AADD-4957-BD63-2CD970DF79E7}"
 EndProject

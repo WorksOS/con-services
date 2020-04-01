@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "..\..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Proxies", "..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj", "{3E64B211-47E4-4D94-BF34-8AF878A755B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{9FB6252D-6623-42BF-B9B7-E42BF0A375F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{9FB6252D-6623-42BF-B9B7-E42BF0A375F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{9851698F-28A4-441B-987C-FEF4602D5EB5}"
 EndProject

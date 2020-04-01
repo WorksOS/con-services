@@ -30,7 +30,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", "..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj", "{6B48ADF2-0E47-4C43-8758-F2FB89CC21C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{48844869-6C0C-4760-AE8C-DF09A60AD33D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{48844869-6C0C-4760-AE8C-DF09A60AD33D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{8753A0B0-2673-41B4-BA82-D21DA8496994}"
 EndProject
