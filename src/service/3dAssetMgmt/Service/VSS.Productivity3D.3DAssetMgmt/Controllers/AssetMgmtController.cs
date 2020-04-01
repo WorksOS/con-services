@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -8,6 +7,7 @@ using Newtonsoft.Json;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
+using VSS.Productivity3D.AssetMgmt3D.AssetStatus;
 using VSS.Productivity3D.AssetMgmt3D.Extensions;
 using VSS.Productivity3D.AssetMgmt3D.Models;
 
@@ -130,9 +130,9 @@ namespace VSS.Productivity3D.AssetMgmt3D.Controllers
       var assetUidDisplay = string.Join(", ", assetUids ?? new List<Guid>());
       Log.LogInformation($"Getting Asset location data for: {assetUidDisplay}");
 
-      var assets = await _assetRepository.GetAssets(assetUids);
+      var assets = MockAssetStatusRepository.GetAssets(assetUids);
 
-      var resultSet = new List<AssetLocationData>(assets.Count());
+      var resultSet = new List<AssetLocationData>(assets.Count);
 
       foreach (var asset in assets)
       {

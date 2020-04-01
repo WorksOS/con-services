@@ -7,24 +7,21 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
-using MoqExtensions;
 using Newtonsoft.Json;
 using VSS.Tpaas.Client.Clients;
 using VSS.Tpaas.Client.Models;
 using VSS.Tpaas.Client.Models.Responses;
 using VSS.Tpaas.Client.RequestHandlers;
+using VSS.Tpaas.Client.UnitTests.Extensions;
 using Xunit;
 
 namespace VSS.Tpaas.Client.UnitTests
 {
   public class TPaaSClientTests
   {
-
-
     /// <summary>
     /// TPaaSClient should cache a token until it expires
     /// </summary>
-    /// <returns></returns>
     [Fact]
     public async Task TestApplicationBearerTokenIsCached()
     {
@@ -46,8 +43,8 @@ namespace VSS.Tpaas.Client.UnitTests
          // prepare the expected response of the mocked http call
          .ReturnsAsync((HttpRequestMessage req, CancellationToken token) =>
          {
-           return new HttpResponseMessage()
-           {
+           return new HttpResponseMessage
+                  {
              StatusCode = HttpStatusCode.OK,
              Content = new StringContent(JsonConvert.SerializeObject(new TPaaSClientCredentialsRawResponse
              {

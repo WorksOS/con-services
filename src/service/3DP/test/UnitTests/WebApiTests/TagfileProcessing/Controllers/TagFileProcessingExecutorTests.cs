@@ -72,10 +72,6 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
         OrgId = string.Empty
       };
 
-      // We need to validate the tag file is uploaded correctly to both TCC and S3
-      const string expectedS3Filename = "Machine Name--whatever /Production-Data (Archived)/Machine Name--whatever --16/Machine Name--whatever --161230235959";
-      const string expectedTccFilename = "Machine Name--whatever --161230235959";
-      const string expectedTccPath = "/Machine Name--whatever /Production-Data (Archived)/Machine Name--whatever --16/";
       const string expectedTccFilespaceId = "abc123";
 
 #if RAPTOR
@@ -129,6 +125,11 @@ namespace VSS.Productivity3D.WebApiTests.TagfileProcessing.Controllers
       Assert.IsTrue(result.Message == ContractExecutionResult.DefaultMessage);
 
 #if RAPTOR
+      // We need to validate the tag file is uploaded correctly to both TCC and S3
+      const string expectedS3Filename = "Machine Name--whatever /Production-Data (Archived)/Machine Name--whatever --16/Machine Name--whatever --161230235959";
+      const string expectedTccFilename = "Machine Name--whatever --161230235959";
+      const string expectedTccPath = "/Machine Name--whatever /Production-Data (Archived)/Machine Name--whatever --16/";
+
       // We are only uploading files if we have the RAPTOR define
       // Ensure we have uploaded our file to S3, with the correct filename
       mockTransferProxy.Verify(m => m.Upload(It.IsAny<Stream>(), It.Is<string>(s => s == expectedS3Filename)), Times.Once);

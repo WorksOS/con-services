@@ -79,8 +79,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddOpenTracing();*/
 
       ConfigureApplicationServices(services);
-
-      
     }
 
     /// <inheritdoc />
