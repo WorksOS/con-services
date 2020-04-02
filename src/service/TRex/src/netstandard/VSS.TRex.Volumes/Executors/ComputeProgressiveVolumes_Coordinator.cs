@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
@@ -13,6 +14,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.SubGridTrees.Client;
 
 namespace VSS.TRex.Volumes.Executors
 {
@@ -193,8 +195,14 @@ namespace VSS.TRex.Volumes.Executors
           if (_siteModel == null)
             return volumesResult;
 
-          // Create and configure the aggregator that contains the business logic for the 
-          // underlying volume calculation
+          // Determine the number of progressions that are required and estalish the required aggregation states in the aggregator
+          var numProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks);
+          if (numProgressions > ClientProgressiveHeightsLeafSubGrid.MaxNumProgressions)
+          {
+            throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MaxNumProgressions} progressions may be requested at one time");
+          }
+
+          // Create and configure the aggregator that contains the business logic for the underlying volume calculation
           Aggregator = new ProgressiveVolumesCalculationsAggregator
           {
             SiteModelID = SiteModelID,
@@ -202,7 +210,18 @@ namespace VSS.TRex.Volumes.Executors
             CellSize = _siteModel.CellSize,
             VolumeType = VolumeType,
             CutTolerance = CutTolerance,
-            FillTolerance = FillTolerance
+            FillTolerance = FillTolerance,
+            AggregationStates = Enumerable
+              .Range(0, numProgressions)
+              .Select(x => StartDate + x * Interval)
+              .Select(d => new ProgressiveVolumeAggregationState
+            {
+                Date = d,
+                VolumeType = VolumeType,
+                CellSize = _siteModel.CellSize,,
+                CutTolerance = CutTolerance,
+                FillTolerance = FillTolerance
+              }).ToArray()
           };
 
           // Create and configure the volumes calculation engine
@@ -233,7 +252,7 @@ namespace VSS.TRex.Volumes.Executors
 
           if (resultStatus != RequestErrorStatus.OK)
           {
-            Log.LogInformation($"Summary volume result: Failure, error = {resultStatus}");
+            Log.LogInformation($"Progressive volume result: Failure, error = {resultStatus}");
 
             // Send the (empty) results back to the caller
             return volumesResult;
@@ -242,30 +261,39 @@ namespace VSS.TRex.Volumes.Executors
           // Instruct the Aggregator to perform any finalization logic before reading out the results
           Aggregator.Finalise();
 
-          Log.LogInformation($"#Result# Summary volume result: Cut={Aggregator.CutFillVolume.CutVolume:F3}, Fill={Aggregator.CutFillVolume.FillVolume:F3}, Area={Aggregator.CoverageArea:F3}");
-
-          if (!Aggregator.BoundingExtents.IsValidPlanExtent)
+          foreach (var aggregator in Aggregator.AggregationStates)
           {
-            if (Aggregator.CoverageArea == 0 && Aggregator.CutFillVolume.CutVolume == 0 && Aggregator.CutFillVolume.FillVolume == 0)
-              resultStatus = RequestErrorStatus.NoProductionDataFound;
-            else
-              resultStatus = RequestErrorStatus.InvalidPlanExtents;
+            Log.LogInformation($"#Result# Progressive volume result: Cut={aggregator.CutFillVolume.CutVolume:F3}, Fill={aggregator.CutFillVolume.FillVolume:F3}, Area={aggregator.CoverageArea:F3}");
 
-            Log.LogInformation($"Summary volume invalid plan extents or no data found: {resultStatus}");
+            if (!aggregator.BoundingExtents.IsValidPlanExtent)
+            {
+              if (aggregator.CoverageArea == 0 && aggregator.CutFillVolume.CutVolume == 0 && aggregator.CutFillVolume.FillVolume == 0)
+                resultStatus = RequestErrorStatus.NoProductionDataFound;
+              else
+                resultStatus = RequestErrorStatus.InvalidPlanExtents;
 
-            return volumesResult;
+              Log.LogInformation($"Progressive volume invalid plan extents or no data found: {resultStatus}");
+            }
           }
 
-          // Fill in the result object to pass back to the caller
-          /* todo
-          volumesResult.Cut = Aggregator.CutFillVolume.CutVolume;
-          volumesResult.Fill = Aggregator.CutFillVolume.FillVolume;
-          volumesResult.TotalCoverageArea = Aggregator.CoverageArea;
-          volumesResult.CutArea = Aggregator.CutArea;
-          volumesResult.FillArea = Aggregator.FillArea;
-          */
-          volumesResult.BoundingExtentGrid = Aggregator.BoundingExtents;
-          volumesResult.BoundingExtentLLH = resultBoundingExtents;
+          volumesResult.ResultStatus = resultStatus;
+          if (resultStatus != RequestErrorStatus.OK)
+          {
+            volumesResult.Volumes = Aggregator.AggregationStates.Select(aggregator => new ProgressiveVolumeResponseItem
+            {
+              Date = aggregator.Date,
+              Volume = new SimpleVolumesResponse
+              {
+                Cut = aggregator.CutFillVolume.CutVolume,
+                Fill = aggregator.CutFillVolume.FillVolume,
+                TotalCoverageArea = aggregator.CoverageArea,
+                CutArea = aggregator.CutArea,
+                FillArea = aggregator.FillArea,
+                BoundingExtentGrid = aggregator.BoundingExtents,
+                BoundingExtentLLH = resultBoundingExtents
+               }
+            }).ToArray();
+          }
         }
         finally
         {

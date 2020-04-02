@@ -12,6 +12,11 @@ namespace VSS.TRex.Volumes
     // computed volume information from
     public readonly SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
 
+    /// <summary>
+    /// The date for which this volume is being computed with in the progressive volume series
+    /// </summary>
+    public DateTime Date { get; set; }
+
     // CellsUsed records how many cells were used in the volume calculation
     public long CellsUsed { get; set; }
     public long CellsUsedCut { get; set; }

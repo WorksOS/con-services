@@ -19,31 +19,29 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
 
     private async Task<ProgressiveVolumesResponse> ConvertBoundaryFromGridToWGS84(Guid projectUid, ProgressiveVolumesResponse response)
     {
-      if (!response.BoundingExtentGrid.IsValidPlanExtent)
-        return response; // No conversion possible
+      var convertCoordinates = DIContext.Obtain<IConvertCoordinates>();
 
-      var NEECoords = new[]
+      if (response.Volumes != null)
       {
-        new XYZ(response.BoundingExtentGrid.MinX, response.BoundingExtentGrid.MinY),
-        new XYZ(response.BoundingExtentGrid.MaxX, response.BoundingExtentGrid.MaxY)
-      };
-
-      (var errorCode, var LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), NEECoords);
-
-      if (errorCode == RequestErrorStatus.OK)
-      {
-        response.BoundingExtentLLH = new BoundingWorldExtent3D
+        foreach (var aggregator in response.Volumes)
         {
-          MinX = MathUtilities.RadiansToDegrees(LLHCoords[0].X),
-          MinY = MathUtilities.RadiansToDegrees(LLHCoords[0].Y),
-          MaxX = MathUtilities.RadiansToDegrees(LLHCoords[1].X),
-          MaxY = MathUtilities.RadiansToDegrees(LLHCoords[1].Y)
-        };
-      }
-      else
-      {
-        Log.LogInformation("Progressive volume failure, could not convert bounding area from grid to WGS coordinates");
-        response.ResultStatus = errorCode;
+          if (!aggregator.Volume.BoundingExtentGrid.IsValidPlanExtent) // No conversion possible
+            continue;
+
+          var neeCoords = new[] {new XYZ(aggregator.Volume.BoundingExtentGrid.MinX, aggregator.Volume.BoundingExtentGrid.MinY), new XYZ(aggregator.Volume.BoundingExtentGrid.MaxX, aggregator.Volume.BoundingExtentGrid.MaxY)};
+
+          var (errorCode, llhCoords) = await convertCoordinates.NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), neeCoords);
+
+          if (errorCode == RequestErrorStatus.OK)
+          {
+            aggregator.Volume.BoundingExtentLLH = new BoundingWorldExtent3D {MinX = MathUtilities.RadiansToDegrees(llhCoords[0].X), MinY = MathUtilities.RadiansToDegrees(llhCoords[0].Y), MaxX = MathUtilities.RadiansToDegrees(llhCoords[1].X), MaxY = MathUtilities.RadiansToDegrees(llhCoords[1].Y)};
+          }
+          else
+          {
+            Log.LogInformation("Progressive volume failure, could not convert bounding area from grid to WGS coordinates");
+            response.ResultStatus = errorCode;
+          }
+        }
       }
 
       return response;

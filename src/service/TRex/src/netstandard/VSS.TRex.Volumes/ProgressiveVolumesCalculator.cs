@@ -125,79 +125,70 @@ namespace VSS.TRex.Volumes
     {
       try
       {
-        try
+        if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))
         {
-          if (ActiveDesign != null && (VolumeType == VolumeComputationType.BetweenFilterAndDesign || VolumeType == VolumeComputationType.BetweenDesignAndFilter))
+          if (ActiveDesign == null || ActiveDesign.Design.DesignDescriptor.IsNull)
           {
-            if (ActiveDesign == null || ActiveDesign.Design.DesignDescriptor.IsNull)
-            {
-              Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
-              VolumesRequestResponse.ResultStatus = RequestErrorStatus.NoDesignProvided;
-              return false;
-            }
-          }
-
-          // Note: The execution context is on a compute cluster node already. However, the processor still performs the same function
-          // within the local context. TODO: Check this is a valid statement and we are not multiple dipping out to the whole compute cluster 'n' times
-          using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
-          (requestDescriptor: RequestDescriptor,
-            dataModelID: SiteModel.ID,
-            gridDataType: GridDataType.Height,
-            response: VolumesRequestResponse,
-            cutFillDesign: null,
-            filters: new FilterSet(Filter),
-            task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
-            pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
-            requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-            requestRequiresAccessToDesignFileExistenceMap: RefDesign != null || RefOriginal != null,
-            requireSurveyedSurfaceInformation: UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
-            overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted(),
-            liftParams: LiftParams
-          ))
-          {
-            if (processor is IPipelineProcessor<ProgressiveVolumesSubGridsRequestArgument> customProcesor)
-            {
-              customProcesor.CustomArgumentInitializer = (arg) => { };
-            }
-
-            processor.Task.RequestDescriptor = RequestDescriptor;
-            //processor.Task.TRexNodeID = _CSVExportRequestArgument.TRexNodeID;
-
-            if (!await processor.BuildAsync())
-            {
-              Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
-              VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
-
-              return false;
-            }
-
-            processor.Process();
-
-            if (processor.Response.ResultStatus != RequestErrorStatus.OK)
-            {
-              Log.LogError($"Failed to compute progressive volumes data, for project: {SiteModel.ID}. response: {processor.Response.ResultStatus.ToString()}.");
-              VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
-              return false;
-            }
-
-            //        if (((CSVExportTask) processor.Task).DataRows.Count > 0)
-            //        {
-            //
-            //        }
-
-            return true;
+            Log.LogError($"No design provided to prod data/design volumes calc for datamodel {SiteModel.ID}");
+            VolumesRequestResponse.ResultStatus = RequestErrorStatus.NoDesignProvided;
+            return false;
           }
         }
-        catch (Exception e)
+
+        // Note: The execution context is on a compute cluster node already. However, the processor still performs the same function
+        // within the local context. TODO: Check this is a valid statement and we are not multiple dipping out to the whole compute cluster 'n' times
+        using var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
+        (requestDescriptor: RequestDescriptor,
+          dataModelID: SiteModel.ID,
+          gridDataType: GridDataType.Height,
+          response: VolumesRequestResponse,
+          cutFillDesign: null,
+          filters: new FilterSet(Filter),
+          task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
+          pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
+          requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
+          requestRequiresAccessToDesignFileExistenceMap: RefDesign != null || RefOriginal != null,
+          requireSurveyedSurfaceInformation: UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
+          overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted(),
+          liftParams: LiftParams
+        );
+
+        // Create the initialization lambda to be applied to the sub grid request argument creation in the sub grid
+        // pipeline processor execution context.
+        if (processor is IPipelineProcessor<ProgressiveVolumesSubGridsRequestArgument> customProcessor)
         {
-          Log.LogError(e, "Pipeline processor raised exception");
+          customProcessor.CustomArgumentInitializer = (arg) =>
+          {
+            arg.StartDate = StartDate;
+            arg.EndDate = EndDate;
+            arg.Interval = Interval;
+          };
+        }
+
+        processor.Task.RequestDescriptor = RequestDescriptor;
+
+        if (!await processor.BuildAsync())
+        {
+          Log.LogError($"Failed to build pipeline processor for request to model {SiteModel.ID}");
+          VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
+
+          return false;
+        }
+
+        processor.Process();
+
+        if (processor.Response.ResultStatus != RequestErrorStatus.OK)
+        {
+          Log.LogError($"Failed to compute progressive volumes data, for project: {SiteModel.ID}. response: {processor.Response.ResultStatus.ToString()}.");
+          VolumesRequestResponse.ResultStatus = processor.Response.ResultStatus;
+          return false;
         }
 
         return true;
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception");
+        Log.LogError(e, "Pipeline processor raised exception");
       }
 
       return false;

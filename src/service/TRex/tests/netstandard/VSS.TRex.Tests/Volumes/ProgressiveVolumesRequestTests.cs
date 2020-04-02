@@ -73,10 +73,10 @@ namespace VSS.TRex.Tests.Volumes
     {
       var arg = DefaultRequestArg(siteModel.ID);
 
-      var dateRange = siteModel.GetDateRange();
+      var (startUtc, endUtc) = siteModel.GetDateRange();
 
-      arg.StartDate = dateRange.startUtc;
-      arg.EndDate = dateRange.endUtc;
+      arg.StartDate = startUtc;
+      arg.EndDate = endUtc;
       arg.Interval = new TimeSpan((arg.EndDate.Ticks - arg.StartDate.Ticks) / 10);
 
       return arg;
@@ -85,8 +85,17 @@ namespace VSS.TRex.Tests.Volumes
     private void CheckResponseContainsNullValues(ProgressiveVolumesResponse response)
     {
       response.Should().NotBeNull();
-      response.BoundingExtentGrid.Should().BeEquivalentTo(BoundingWorldExtent3D.Null());
-      response.BoundingExtentLLH.Should().BeEquivalentTo(BoundingWorldExtent3D.Null());
+
+      if (response.Volumes == null)
+      {
+        return;
+      }
+
+      foreach (var volume in response.Volumes)
+      {
+        volume.Volume.BoundingExtentGrid.Should().BeEquivalentTo(BoundingWorldExtent3D.Null());
+        volume.Volume.BoundingExtentLLH.Should().BeEquivalentTo(BoundingWorldExtent3D.Null());
+      }
     }
 
     [Fact]

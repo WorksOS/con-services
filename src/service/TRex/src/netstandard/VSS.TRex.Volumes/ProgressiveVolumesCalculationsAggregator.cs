@@ -66,22 +66,6 @@ namespace VSS.TRex.Volumes
 
     protected async Task ProcessVolumeInformationForSubGrid(ClientProgressiveHeightsLeafSubGrid subGrid)
     {
-      // Todo: This could be a specific initialization step for simplicity
-      if (AggregationStates == null)
-      {
-        lock (_lockObj)
-        {
-          if (AggregationStates == null)
-          {
-            AggregationStates = new ProgressiveVolumeAggregationState[subGrid.NumberOfProgressions];
-            for (var i = 0; i < AggregationStates.Length; i++)
-            {
-              AggregationStates[i] = new ProgressiveVolumeAggregationState {VolumeType = VolumeType, CellSize = CellSize, CutTolerance = CutTolerance, FillTolerance = FillTolerance};
-            }
-          }
-        }
-      }
-
       // Compute the two planes of elevations to be compared and supply them to ProcessVolumeInformationForSubGrid
       // Iterate across all the Heights planes in the subGrid. If there is a design to be compared to them request the elevation
       // plane for that design just once
