@@ -7,10 +7,8 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.Interfaces;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
@@ -25,9 +23,13 @@ namespace VSS.TRex.Volumes
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ProgressiveVolumesCalculationsAggregator>();
 
-    // CoverageMap maps the area of cells that we have considered and successfully
-    // computed volume information from
-    public readonly SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
+    private readonly object _lockObj = new object();
+
+    public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
+
+    public double CellSize { get; set; }
+
+    public DesignDescriptor DesignDescriptor = DesignDescriptor.Null(); // no {get;set;} intentionally
 
     /// <summary>
     /// The design being used to compare heights derived from production data against to calculate per-cell volumes.
@@ -42,41 +44,10 @@ namespace VSS.TRex.Volumes
 
     // The sum of the aggregated summarized information relating to volumes summary based reports
 
-    // CellsUsed records how many cells were used in the volume calculation
-    public long CellsUsed { get; set; }
-    public long CellsUsedCut { get; set; }
-    public long CellsUsedFill { get; set; }
-
-    // CellsScanned records the total number of cells that were considered by
-    // the engine. This includes cells outside of reference design fence boundaries
-    // and cells where both base and top values may have been null.
-    public long CellsScanned { get; set; }
-
-    // CellsDiscarded records how many cells were discarded because filtered value was null
-    public long CellsDiscarded { get; set; }
-    public double CellSize { get; set; }
-
-    public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
-
-    // Volume is the calculated volume determined by simple difference between
-    // cells. It does not take into account cut/fill differences (see FCut|FillVolume)
-    // This volume is the sole output for operations that apply levels to the surfaces
-    public double Volume { get; set; }
-
-    // CutFillVolume is the calculated volume of material that has been 'cut' and 'filled' when the
-    // base surface is compared to the top surface. ie: If the top surface is below
-    // the base surface at a point then that point is in 'cut'.
-    public CutFillVolume CutFillVolume = new CutFillVolume(0, 0);
-
-    public DesignDescriptor DesignDescriptor = DesignDescriptor.Null(); // no {get;set;} intentionally
-
-    public double TopLevel { get; set; } = 0;
-    public double BaseLevel { get; set; } = 0;
-    public double CoverageArea { get; set; }
-    public double CutArea { get; set; }
-    public double FillArea { get; set; }
-    public double TotalArea { get; set; }
-    public BoundingWorldExtent3D BoundingExtents { get; set; } = BoundingWorldExtent3D.Inverted();
+    /// <summary>
+    /// The collection of all aggregation states holding progressive volume calculation results
+    /// </summary>
+    public ProgressiveVolumeAggregationState[] AggregationStates { get; set; }
 
     // CutTolerance determines the tolerance (in meters) that the 'From' surface
     // needs to be above the 'To' surface before the two surfaces are not
@@ -91,35 +62,74 @@ namespace VSS.TRex.Volumes
     public double FillTolerance { get; set; } = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
 
     public ProgressiveVolumesCalculationsAggregator()
-    {
-      // NOTE: This aggregator state is now single threaded in the context of processing sub grid
-      // information into it as the processing threads access independent sub-state aggregators which
-      // are aggregated together to form the final aggregation result. However, in contexts that do support
-      // threaded access to this structure the RequiresSerialisation flag should be set
+    { }
 
-      // if Assigned(Source) then
-      //    Initialise(Source);
-    }
-
-    public void Finalise()
+    protected async Task ProcessVolumeInformationForSubGrid(ClientProgressiveHeightsLeafSubGrid subGrid)
     {
-      CoverageArea = CellsUsed * CellSize * CellSize;
-      CutArea = CellsUsedCut * CellSize * CellSize;
-      FillArea = CellsUsedFill * CellSize * CellSize;
-      TotalArea = CellsScanned * CellSize * CellSize;
-      BoundingExtents = CoverageMap.ComputeCellsWorldExtents();
-    }
+      // Todo: This could be a specific initialization step for simplicity
+      if (AggregationStates == null)
+      {
+        lock (_lockObj)
+        {
+          if (AggregationStates == null)
+          {
+            AggregationStates = new ProgressiveVolumeAggregationState[subGrid.NumberOfProgressions];
+            for (var i = 0; i < AggregationStates.Length; i++)
+            {
+              AggregationStates[i] = new ProgressiveVolumeAggregationState {VolumeType = VolumeType, CellSize = CellSize, CutTolerance = CutTolerance, FillTolerance = FillTolerance};
+            }
+          }
+        }
+      }
 
-    protected async Task ProcessVolumeInformationForSubGrid(ClientHeightLeafSubGrid subGrid)
-    {
-      // TODO: This implementation will be different to 
+      // Compute the two planes of elevations to be compared and supply them to ProcessVolumeInformationForSubGrid
+      // Iterate across all the Heights planes in the subGrid. If there is a design to be compared to them request the elevation
+      // plane for that design just once
+      // DesignHeights represents all the valid spot elevations for the cells in the sub grid being processed
+      (IClientHeightLeafSubGrid designHeights, DesignProfilerRequestResult profilerRequestResult) getDesignHeightsResult = (null, DesignProfilerRequestResult.UnknownError);
+
+      // Query the patch of elevations from the surface model for this sub grid
+      if (ActiveDesign != null)
+      {
+        getDesignHeightsResult = await ActiveDesign.Design.GetDesignHeights(SiteModelID, ActiveDesign.Offset, subGrid.OriginAsCellAddress(), CellSize);
+
+        if (getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.OK &&
+            getDesignHeightsResult.profilerRequestResult != DesignProfilerRequestResult.NoElevationsInRequestedPatch)
+        {
+          Log.LogError($"Design profiler sub grid elevation request for {subGrid.OriginAsCellAddress()} failed with error {getDesignHeightsResult.profilerRequestResult}");
+          return;
+        }
+      }
+
+      var designHeights = getDesignHeightsResult.designHeights?.Cells ?? ClientHeightLeafSubGrid.NullCells;
+
+      lock (_lockObj)
+      {
+        switch (VolumeType)
+        {
+          case VolumeComputationType.Between2Filters:
+            for (var i = 0; i < subGrid.NumberOfProgressions - 1; i++)
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.Heights[i], subGrid.Heights[i + 1]);
+            break;
+          case VolumeComputationType.BetweenDesignAndFilter:
+            for (var i = 0; i < subGrid.NumberOfProgressions; i++)
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.Heights[i], designHeights);
+            break;
+          case VolumeComputationType.BetweenFilterAndDesign:
+            for (var i = 0; i < subGrid.NumberOfProgressions; i++)
+              AggregationStates[i].ProcessElevationInformationForSubGrid(designHeights, subGrid.Heights[i]);
+            break;
+          default:
+            throw new ArgumentException($"Unsupported volume type {VolumeType}");
+        }
+      }
     }
 
     /// <summary>
-    /// Summarises the client height grid derived from sub grid processing into the running volumes aggregation state
+    /// Summarizes the client height grid derived from sub grid processing into the running volumes aggregation state
     /// </summary>
     /// <param name="subGrids"></param>
-    public async Task SummariseSubgridResultAsync(IClientLeafSubGrid[][] subGrids)
+    public async Task SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
     {
       var taskList = new List<Task>(subGrids.Length);
 
@@ -130,10 +140,10 @@ namespace VSS.TRex.Volumes
           var baseSubGrid = subGridResult[0];
 
           if (baseSubGrid == null)
-            Log.LogWarning("#W# SummariseSubGridResult BaseSubGrid is null");
+            Log.LogWarning("#W# SummarizeSubGridResult BaseSubGrid is null");
           else
           {
-            taskList.Add(ProcessVolumeInformationForSubGrid(baseSubGrid as ClientHeightLeafSubGrid));
+            taskList.Add(ProcessVolumeInformationForSubGrid(baseSubGrid as ClientProgressiveHeightsLeafSubGrid));
           }
         }
       }
@@ -147,9 +157,7 @@ namespace VSS.TRex.Volumes
     /// <returns></returns>
     public override string ToString()
     {
-      return $"VolumeType:{VolumeType}, CellSize:{CellSize}, CoverageArea:{CoverageArea}, Bounding:{BoundingExtents}, " +
-          $"Volume:{Volume}, Cut:{CutFillVolume.CutVolume}, Fill:{CutFillVolume.FillVolume}, " +
-          $"Cells Used/Discarded/Scanned:{CellsUsed}/{CellsDiscarded}/{CellsScanned}, ReferenceDesign:{DesignDescriptor}";
+      return $"VolumeType:{VolumeType}, CellSize:{CellSize}, ReferenceDesign:{DesignDescriptor}";
     }
 
     /// <summary>
@@ -158,23 +166,15 @@ namespace VSS.TRex.Volumes
     /// <param name="other"></param>
     public ProgressiveVolumesCalculationsAggregator AggregateWith(ProgressiveVolumesCalculationsAggregator other)
     {
-      //  SIGLogMessage.PublishNoODS(Self, Format('Aggregating From:%s', [Source.ToString]), slmcDebug);
-      //  SIGLogMessage.PublishNoODS(Self, Format('Into:%s', [ToString]), slmcDebug);
+      if ((AggregationStates?.Length ?? 0) != (other.AggregationStates?.Length ?? 0))
+      {
+        throw new ArgumentException($"Progressive volumes aggregator collections should have same length: {AggregationStates?.Length ?? 0} versus {other.AggregationStates?.Length ?? 0}");
+      }
 
-      CellsUsed += other.CellsUsed;
-      CellsUsedCut += other.CellsUsedCut;
-      CellsUsedFill += other.CellsUsedFill;
-      CellsScanned += other.CellsScanned;
-      CellsDiscarded += other.CellsDiscarded;
-
-      CoverageArea += other.CoverageArea;
-      CutArea += other.CutArea;
-      FillArea += other.FillArea;
-      TotalArea += other.TotalArea;
-      BoundingExtents.Include(other.BoundingExtents);
-
-      Volume += other.Volume;
-      CutFillVolume.AddCutFillVolume(other.CutFillVolume.CutVolume, other.CutFillVolume.FillVolume);
+      for (var i = 0; i < AggregationStates.Length; i++)
+      {
+        AggregationStates[i].AggregateWith(other.AggregationStates[i]);
+      }
 
       return this;
     }
@@ -185,7 +185,15 @@ namespace VSS.TRex.Volumes
     /// <param name="subGrids"></param>
     public void ProcessSubGridResult(IClientLeafSubGrid[][] subGrids)
     {
-      SummariseSubgridResultAsync(subGrids).WaitAndUnwrapException();
+      SummarizeSubGridResultAsync(subGrids).WaitAndUnwrapException();
+    }
+
+    public void Finalise()
+    {
+      foreach (var aggregator in AggregationStates)
+      {
+        aggregator.Finalise();
+      }
     }
   }
 }
