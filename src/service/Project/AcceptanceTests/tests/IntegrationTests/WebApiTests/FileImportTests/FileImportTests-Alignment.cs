@@ -11,6 +11,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
 {
   public class FileImportTests_Alignment : WebApiTestsBase
   {
+     /*
+    // todoMaverick
     [Theory]
     [InlineData("api/v4/importedfile")]
     [InlineData("api/v4/importedfile/direct")]
@@ -20,7 +22,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       Msg.Title(testName, "Create standard project and customer then upload svl file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
+      var shortRaptorProjectId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -44,7 +46,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
        "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+      $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {shortRaptorProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {shortRaptorProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
       var importFileArray = new[] {
        "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
@@ -63,7 +65,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       Msg.Title(testName, "Create standard project and customer then upload two alignment files");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
+      var shortRaptorProjectId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -84,7 +86,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
+       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {shortRaptorProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {shortRaptorProjectId} | false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
 
       var importFilename1 = TestFileResolver.File(TestFile.TestAlignment1);
@@ -119,7 +121,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       Msg.Title(testName, "Create standard project then upload a new alignment file. Then update alignment file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
+      var shortRaptorProjectId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -140,7 +142,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
-       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
+       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {shortRaptorProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {shortRaptorProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -171,7 +173,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       Msg.Title(testName, "Create standard project then upload a new alignment file. Then delete alignment file");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
+      var ShortRaptorProjectId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -192,7 +194,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType           | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
-        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
+        $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {ShortRaptorProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {ShortRaptorProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -217,62 +219,13 @@ namespace IntegrationTests.WebApiTests.FileImportTests
     [Theory]
     [InlineData("api/v4/importedfile")]
     [InlineData("api/v4/importedfile/direct")]
-    public async Task KafkaConsumeTestImportANewAlignmentFile(string uriRoot)
-    {
-      const string testName = "File Import 15";
-      Msg.Title(testName, "Kafka Consume Test Create standard project then upload a new alignment file.");
-      var ts = new TestSupport();
-      var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
-      var projectUid = Guid.NewGuid().ToString();
-      var customerUid = Guid.NewGuid();
-      var tccOrg = Guid.NewGuid();
-      var subscriptionUid = Guid.NewGuid();
-      var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
-      var startDate = startDateTime.ToString("yyyy-MM-dd");
-      var endDate = endDateTime.ToString("yyyy-MM-dd");
-
-      var eventsArray = new[] {
-        "| TableName           | EventDate   | CustomerUID   | Name       | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
-        $"| Customer            | 0d+09:00:00 | {customerUid} | {testName} | 1                 |                   |                |                  |             |                |               |          |                    |",
-        $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |            |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-        $"| Subscription        | 0d+09:10:00 |               |            |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-        $"| ProjectSubscription | 0d+09:20:00 |               |            |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-      await ts.PublishEventCollection(eventsArray);
-
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-        "| EventType           | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
-       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyProjectId} |false      | BootCampDimensions.dc | {testName}  |"};
-      await ts.PublishEventCollection(projectEventArray);
-
-      var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
-      var fullFilePath = TestFileResolver.GetFullPath(importFilename);
-
-      var importFileArray = new[]
-      {
-        "| EventType              | ProjectUid   | CustomerUid   | Name           | ImportedFileType | FileCreatedUtc  | FileUpdatedUtc             | ImportedBy                 | IsActivated | MinZoomLevel | MaxZoomLevel |",
-       $"| ImportedFileDescriptor | {projectUid} | {customerUid} | {fullFilePath} | 3                | {startDateTime} | {startDateTime.AddDays(5)} | testProjectMDM@trimble.com | true        | 15           | 19           |"
-      };
-      var filesResult = await importFile.SendRequestToFileImportV4(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
-      var expectedResult1 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      ts.CompareTheActualImportFileWithExpected(filesResult.ImportedFileDescriptor, expectedResult1, true);
-      importFile.ImportedFileUid = filesResult.ImportedFileDescriptor.ImportedFileUid;
-
-      MySqlHelper.VerifyTestResultDatabaseRecordCount("ImportedFile", "fk_ProjectUID", 1, new Guid(projectUid));
-    }
-
-    [Theory]
-    [InlineData("api/v4/importedfile")]
-    [InlineData("api/v4/importedfile/direct")]
     public async Task TestImportTheSameFileTwice(string uriRoot)
     {
       const string testName = "File Import 8";
       Msg.Title(testName, "Create standard project then upload two alignment files that are the same name and content");
       var ts = new TestSupport();
       var importFile = new ImportFile(uriRoot);
-      var legacyProjectId = TestSupport.GenerateLegacyProjectId();
+      var ShortRaptorProjectId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -293,7 +246,7 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
         "| EventType          | EventDate   | ProjectUID   | ProjectID         | ProjectName | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description |",
-       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {legacyProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | 1                 |false      | BootCampDimensions.dc | {testName}  |"};
+       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {ShortRaptorProjectId} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | 1                 |false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -315,5 +268,6 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       ts.CompareTheActualImportFileWithExpectedV4(importFileList.ImportedFileDescriptors[0], expectedResult1, true);
       Assert.Single(filesResult.ImportedFileDescriptor.ImportedFileHistory);
     }
+    */
   }
 }

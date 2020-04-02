@@ -48,8 +48,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
         var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
-        if (response != null) 
+        if (response != null && !string.IsNullOrEmpty(response.Id))
           createProjectEvent.ProjectUID = response.Id;
+        else
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7); // todoMaverick eception for bad return
         // todoMaverick what about exception/other error
       }
       catch (Exception e)
@@ -61,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //  order changes to minimize rollback
       //    if CreateProjectInDb fails then nothing is done
       //    if CreateCoordSystem fails then project is deleted
-      //    if AssociateProjectSubscription fails ditto
+      //    if AssociateProjectSubscription fails ditto      
       createProjectEvent = await CreateProjectInDb(createProjectEvent).ConfigureAwait(false);
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,

@@ -58,15 +58,13 @@ namespace MockProjectWebApi
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
       services.AddSingleton<IProjectService, ProjectService>();      
     }
-    
+
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
-      app.UseRouting();
-
+      //Enable CORS before TID so OPTIONS works without authentication
+      app.UseCommon("VSS");
       app.UseExceptionDummyPostMiddleware();
-      app.UseEndpoints(endpoints => {
-        endpoints.MapControllers();
-      });
+      app.UseMvc();
     }
   }
 }

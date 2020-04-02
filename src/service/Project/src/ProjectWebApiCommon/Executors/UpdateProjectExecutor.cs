@@ -141,6 +141,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
           // todoMaverick what are errors?
         }
+        // todoMaverick what about exception/other error
+        return updateProjectEvent.ProjectUID;
       }
       return null;
     }

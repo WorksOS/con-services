@@ -60,7 +60,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task CreateProjectV2Executor_GetTCCFile()
+    public async Task CreateProjectV5Executor_GetTCCFile()
     {
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var fileRepo = new Mock<IFileRepository>();
@@ -79,15 +79,15 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task CreateProjectV2Executor_HappyPath()
+    public async Task CreateProjectV5Executor_HappyPath()
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
 
-      var request = CreateProjectV5Request.CreateACreateProjectV2Request
+      var request = CreateProjectV5Request.CreateACreateProjectV5Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
-      var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
+      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid);
       Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);
       var coordSystemFileContent = "Some dummy content";
       createProjectEvent.CoordinateSystemFileContent = System.Text.Encoding.ASCII.GetBytes(coordSystemFileContent);

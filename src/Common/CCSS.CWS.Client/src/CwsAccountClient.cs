@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -39,16 +37,19 @@ namespace CCSS.CWS.Client
     ///                 what response fields are required?
     ///   CCSSCON-122
     /// </summary>
-    public Task<AccountListResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null)
-    {
-      throw new NotImplementedException();
+    public async Task<AccountListResponseModel> GetAccountsForUser(string userId, IDictionary<string, string> customHeaders = null)
+    { 
+      var queryParameters = new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>( "userId", userId)};
+      return await GetData<AccountListResponseModel>("/users/me/accounts", null, userId, queryParameters, customHeaders);
     }
 
     public async Task<AccountResponseModel> GetAccountForUser(string userId, string accountId, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick call GetAccountsForUser() when ready
-      var myAccounts = await GetData<AccountListResponseModel>("/users/me/accounts", null, userId, null, customHeaders);
-      return myAccounts.Accounts.Where(a => a.Id == accountId).FirstOrDefault();
+      var queryParameters = new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>( "userId", userId),
+         new KeyValuePair<string, string>( "accountId", accountId )
+        };
+
+      return await GetData<AccountResponseModel>("/users/me/account", null, userId, queryParameters, customHeaders);
     }
 
     /// <summary>

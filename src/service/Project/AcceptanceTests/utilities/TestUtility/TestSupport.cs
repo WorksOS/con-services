@@ -24,7 +24,6 @@ namespace TestUtility
     public string AssetUid { get; set; }
     public DateTime FirstEventDate { get; set; }
     public DateTime LastEventDate { get; set; }    
-    public ProjectSubscription MockProjectSubscription { get; set; }
     public Guid ProjectUid { get; set; }
     public Guid CustomerUid { get; set; }
     public Guid GeofenceUid { get; set; }
@@ -45,22 +44,22 @@ namespace TestUtility
     private const char SEPARATOR = '|';
 
     private static readonly TestConfig _testConfig;
-    private static readonly object _legacyIdLock = new object();
+    private static readonly object _shortRaptorProjectIDLock = new object();
 
-    private static int _currentLegacyProjectId;
+    private static int _currentShortRaptorProjectID;
 
     static TestSupport()
     {
       _testConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
 
-      const string query = "SELECT max(LegacyProjectID) FROM Project WHERE LegacyProjectID < 100000;";
+      const string query = "SELECT max(ShortRaptorProjectID) FROM Project;";
 
       var result = MySqlHelper.ExecuteRead(query);
       var index = string.IsNullOrEmpty(result)
         ? 1000
         : Convert.ToInt32(result);
 
-      _currentLegacyProjectId = Math.Max(index, _currentLegacyProjectId);
+      _currentShortRaptorProjectID = Math.Max(index, _currentShortRaptorProjectID);
     }
 
     public TestSupport()
@@ -73,13 +72,13 @@ namespace TestUtility
       SetGeofenceUid();
     }
 
-    public static int GenerateLegacyProjectId()
+    public static int GenerateShortRaptorProjectID()
     {
-      lock (_legacyIdLock)
+      lock (_shortRaptorProjectIDLock)
       {
-        _currentLegacyProjectId += 1;
+        _currentShortRaptorProjectID += 1;
 
-        return _currentLegacyProjectId;
+        return _currentShortRaptorProjectID;
       }
     }
 
@@ -204,7 +203,7 @@ namespace TestUtility
     /// </summary>
     public Task<string> CreateProjectViaWebApiV5TBC(string name, DateTime startDate, DateTime endDate, string timezone, ProjectType projectType, List<TBCPoint> boundary)
     {
-      var createProjectV2Request = CreateProjectV5Request.CreateACreateProjectV2Request(
+      var createProjectV2Request = CreateProjectV5Request.CreateACreateProjectV5Request(
       projectType, startDate, endDate, name, timezone, boundary,
         new BusinessCenterFile { FileSpaceId = "u3bdc38d-1afe-470e-8c1c-fc241d4c5e01", Name = "CTCTSITECAL.dc", Path = "/BC Data/Sites/Chch Test Site" }
       );
@@ -251,11 +250,11 @@ namespace TestUtility
    
    
     /// <summary>
-    /// Call web api version 4 
+    /// Call web api version 6 
     /// </summary>
-    public async Task GetProjectsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
+    public async Task GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
     {
-      var response = await CallProjectWebApi("api/v4/project/", HttpMethod.Get, null, customerUid.ToString());
+      var response = await CallProjectWebApi("api/v6/project/", HttpMethod.Get, null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         if (expectedResultsArray.Length == 0)
@@ -279,7 +278,7 @@ namespace TestUtility
     /// <summary>
     /// Get project details for one project
     /// </summary>
-    public async Task GetProjectDetailsViaWebApiV4AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
+    public async Task GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string projectUid, string[] expectedResultsArray, bool ignoreZeros)
     {
       var response = await CallProjectWebApi("api/v6/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
@@ -296,7 +295,7 @@ namespace TestUtility
     /// <summary>
     /// Get project details for one project
     /// </summary>
-    public async Task<ProjectV6Descriptor> GetProjectDetailsViaWebApiV4(Guid customerUid, string projectUid, HttpStatusCode statusCode)
+    public async Task<ProjectV6Descriptor> GetProjectDetailsViaWebApiV6(Guid customerUid, string projectUid, HttpStatusCode statusCode)
     {
       var response = await CallProjectWebApi("api/v6/project/" + projectUid, HttpMethod.Get, null, customerUid.ToString(), statusCode: statusCode);
       
@@ -491,7 +490,7 @@ namespace TestUtility
         case "CreateProjectRequest":
           string cpProjectUid = null;
           string cpCustomerUid = null;
-          var createProjectRequest = new CreateProjectEvent()
+          createProjectEvent = new CreateProjectEvent()
           {
             ActionUTC = eventObject.EventDate,
             ReceivedUTC = eventObject.EventDate,
@@ -504,32 +503,33 @@ namespace TestUtility
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
-            createProjectRequest.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            createProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
+            createProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
+            createProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
           if (HasProperty(eventObject, "ShortRaptorProjectId"))
           {
-            createProjectRequest.ShortRaptorProjectId = int.Parse(eventObject.ShortRaptorProjectId);
+            createProjectEvent.ShortRaptorProjectId = int.Parse(eventObject.ShortRaptorProjectId);
           }
           if (HasProperty(eventObject, "ProjectUID"))
           {
             cpProjectUid = eventObject.ProjectUID;
           }
-          if (HasProperty(eventObject, "ProjectUID"))
+          if (HasProperty(eventObject, "CustomerUID"))
           {
             cpCustomerUid = eventObject.CustomerUID;
           }
           if (HasProperty(eventObject, "Description"))
           {
-            createProjectRequest.Description = eventObject.Description;
+            createProjectEvent.Description = eventObject.Description;
           }
           var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpProjectUid,
-            cpCustomerUid, createProjectRequest.ProjectType,
-            createProjectRequest.ProjectName, createProjectRequest.Description, createProjectRequest.ProjectStartDate,
-            createProjectRequest.ProjectEndDate, createProjectRequest.ProjectTimezone,
-            createProjectRequest.ProjectBoundary, 
-            createProjectRequest.CoordinateSystemFileName, createProjectRequest.CoordinateSystemFileContent);
+            cpCustomerUid, createProjectEvent.ProjectType,
+            createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectStartDate,
+            createProjectEvent.ProjectEndDate, createProjectEvent.ProjectTimezone,
+            createProjectEvent.ProjectBoundary, 
+            createProjectEvent.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileContent);
           jsonString = JsonConvert.SerializeObject(cprequest, JsonSettings);
+          // var test = JsonConvert.DeserializeObject<CreateProjectRequest>(jsonString);
           break;
         case "UpdateProjectEvent":
           var updateProjectEvent = new UpdateProjectEvent()

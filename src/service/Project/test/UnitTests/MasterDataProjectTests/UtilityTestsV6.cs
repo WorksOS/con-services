@@ -12,9 +12,9 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests
 {
-  public class UtilityTestsV3
+  public class UtilityTestsV6
   {
-    public UtilityTestsV3()
+    public UtilityTestsV6()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }

@@ -15,7 +15,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The unique ID of the project. if null, then one will be generated.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectUID", Required = Required.Default)]
-    public string ProjectUID { get; set; } = null;
+    public Guid? ProjectUID { get; set; } = null;
 
     
     /// <summary>
@@ -23,7 +23,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// if null, then the customer from the header will be used.
     /// </summary>
     [JsonProperty(PropertyName = "CustomerUID", Required = Required.Default)]
-    public string CustomerUID { get; set; } = null;
+    public Guid? CustomerUID { get; set; } = null;
 
     /// <summary>
     /// The type of the project.
@@ -107,8 +107,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     {
       return new CreateProjectRequest
       {
-        ProjectUID = projectUid,
-        CustomerUID = customerUid,
+        ProjectUID = string.IsNullOrEmpty(projectUid) ? (Guid?) null : new Guid(projectUid),
+        CustomerUID = string.IsNullOrEmpty(customerUid) ? (Guid?)null : new Guid(customerUid),
         ProjectType = projectType,
         ProjectName = projectName,
         Description = description,

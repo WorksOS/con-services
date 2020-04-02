@@ -1,8 +1,8 @@
-CREATE TABLE IF NOT EXISTS `ProjectSettingsTypeEnum` (
-  `ID` int(11) NOT NULL,
-  `Description` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `UIX_ProjectSettingsTypeEnum_ID` (`ID`)
+CREATE TABLE IF NOT EXISTS ProjectSettingsTypeEnum (
+  ID int(11) NOT NULL,
+  Description varchar(20) NOT NULL,
+  PRIMARY KEY (ID),
+  UNIQUE KEY UIX_ProjectSettingsTypeEnum_ID (ID)
 ) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;
 
 INSERT IGNORE ProjectSettingsTypeEnum

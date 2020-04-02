@@ -10,6 +10,6 @@ INSERT IGNORE GeofenceTypeEnum
 INSERT IGNORE GeofenceTypeEnum
   (ID,Description) VALUES (1, 'Project');
 INSERT IGNORE GeofenceTypeEnum
-  (ID,Description) VALUES (11, 'Filter');  
+  (ID,Description) VALUES (11, 'Filter');   
 
 

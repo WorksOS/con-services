@@ -84,7 +84,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// <param name="serviceExceptionHandler"></param>
     public static void Validate(IProjectEvent evt, IProjectRepository repo, IServiceExceptionHandler serviceExceptionHandler)
     {
-      IProjectRepository projectRepo = repo;
+      var projectRepo = repo;
       if (projectRepo == null)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
@@ -97,25 +97,23 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(4),
             projectErrorCodesProvider.FirstNameWithOffset(4)));
       }
-      if (string.IsNullOrEmpty(evt.ProjectUID))
-      {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(5),
-            projectErrorCodesProvider.FirstNameWithOffset(5)));
-      }
+
       //Note: don't check if project exists for associate events.
       //We don't know the workflow for NG so associate may come before project creation.
       bool checkExists = evt is CreateProjectEvent || evt is UpdateProjectEvent || evt is DeleteProjectEvent;
       if (checkExists)
       {
-        bool exists = projectRepo.ProjectExists(evt.ProjectUID.ToString()).Result;
         bool isCreate = evt is CreateProjectEvent;
-        if ((isCreate && exists) || (!isCreate && !exists))
+        if (!string.IsNullOrEmpty(evt.ProjectUID))
         {
-          var messageId = isCreate ? 6 : 7;
-          throw new ServiceException(HttpStatusCode.BadRequest,
-            new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(messageId),
-              projectErrorCodesProvider.FirstNameWithOffset(messageId)));
+          bool exists = projectRepo.ProjectExists(evt.ProjectUID).Result;
+          if ((isCreate && exists) || (!isCreate && !exists))
+          {
+            var messageId = isCreate ? 6 : 7;
+            throw new ServiceException(HttpStatusCode.BadRequest,
+              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(messageId),
+                projectErrorCodesProvider.FirstNameWithOffset(messageId)));
+          }
         }
         if (isCreate)
         {
