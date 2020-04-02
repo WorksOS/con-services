@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
