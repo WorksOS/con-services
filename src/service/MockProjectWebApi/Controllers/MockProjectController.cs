@@ -26,8 +26,8 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4")]
-    [Route("api/v4/project")]
+    [Route("api/v6")]
+    [Route("api/v6/project")]
     [HttpGet]
     public ProjectDataResult GetMockProjects()
     {
@@ -42,15 +42,15 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4/{projectUid}")]
-    [Route("api/v4/project/{projectUid}")]
+    [Route("api/v6/{projectUid}")]
+    [Route("api/v6/project/{projectUid}")]
     [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockProject)}: projectUid={projectUid}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Logger.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUid == projectUid.ToString()) };
+      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUID == projectUid.ToString()) };
     }
 
     /// <summary>

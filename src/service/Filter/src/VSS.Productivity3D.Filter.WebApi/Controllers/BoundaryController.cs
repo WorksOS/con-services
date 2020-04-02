@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -11,17 +10,16 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -69,8 +67,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       requestFull.Validate(ServiceExceptionHandler);
       requestFull.Request.BoundaryPolygonWKT = GeofenceValidation.MakeGoodWkt(requestFull.Request.BoundaryPolygonWKT);
-      requestFull.SendKafkaMessages = false;
-
+      
       var getResult = await BoundaryHelper.GetProjectBoundaries(
         Log, ServiceExceptionHandler,
         projectUid, _projectRepository, _geofenceRepository).ConfigureAwait(false);
@@ -106,7 +103,6 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
         boundaryUid);
 
       requestFull.Validate(ServiceExceptionHandler);
-      requestFull.SendKafkaMessages = false;
 
       var executor = RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger,
         ServiceExceptionHandler, _geofenceRepository, _projectRepository, ProjectProxy);
@@ -125,9 +121,10 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [Route("api/v1/boundaries/{ProjectUid}")]
     [HttpGet]
     public async Task<GeofenceDataListResult> GetProjectBoundaries(
-      string projectUid,
-      [FromServices] IGeofenceProxy geofenceProxy,
-      [FromServices] IUnifiedProductivityProxy unifiedProductivityProxy)
+      string projectUid
+      /*,    [FromServices] IGeofenceProxy geofenceProxy,
+      [FromServices] IUnifiedProductivityProxy unifiedProductivityProxy*/
+      )
     {
       Log.LogInformation(
         $"{ToString()}.GetProjectBoundaries: CustomerUID={CustomerUid} IsApplication={IsApplication} UserUid={GetUserId} ProjectUid: {projectUid}");
@@ -142,8 +139,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(ConfigStore, Logger, ServiceExceptionHandler,
-        _geofenceRepository, _projectRepository, ProjectProxy, 
-        geofenceProxy: geofenceProxy, unifiedProductivityProxy: unifiedProductivityProxy);
+        _geofenceRepository, _projectRepository, ProjectProxy
+        /* ,  geofenceProxy: geofenceProxy, unifiedProductivityProxy: unifiedProductivityProxy */ );
 
       var result = await executor.ProcessAsync(requestFull);
 

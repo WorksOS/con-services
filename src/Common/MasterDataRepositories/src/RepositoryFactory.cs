@@ -4,7 +4,6 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Serilog.Extensions;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Repositories
 {
@@ -13,7 +12,7 @@ namespace VSS.MasterData.Repositories
     private static readonly Dictionary<Type, object> container = new Dictionary<Type, object>();
     private readonly ILogger log;
 
-    public RepositoryFactory(IRepository<IAssetEvent> assetRepository, IRepository<IDeviceEvent> deviceRepository,
+    public RepositoryFactory(IRepository<IDeviceEvent> deviceRepository,
       IRepository<IProjectEvent> projRepository, IRepository<IFilterEvent> filterRepository,
       ILoggerFactory logger)
     {
@@ -23,7 +22,6 @@ namespace VSS.MasterData.Repositories
       if (log.IsTraceEnabled())
         log.LogTrace("Registering repositories");
 
-      container.Add(typeof(IAssetEvent), assetRepository);
       container.Add(typeof(IDeviceEvent), deviceRepository);
       container.Add(typeof(IProjectEvent), projRepository);
       container.Add(typeof(IFilterEvent), filterRepository);

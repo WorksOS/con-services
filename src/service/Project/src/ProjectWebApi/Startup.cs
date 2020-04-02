@@ -22,7 +22,6 @@ using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.MasterData.Project.WebAPI.Middleware;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
@@ -102,7 +101,11 @@ namespace VSS.MasterData.Project.WebAPI
         });
       });
 
-      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
+      // todoMaverick
+      //services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); todoMaverick 
+      services.AddTransient<IWebRequest, GracefulWebRequest>();
+      // endof todoMaverick
+
       services.AddSingleton<CacheInvalidationService>();
       services.AddTransient<ImportedFileUpdateService>();
 
@@ -140,7 +143,6 @@ namespace VSS.MasterData.Project.WebAPI
         HttpRequestRewindExtensions.EnableBuffering(context.Request);
         return next(context);
       });
-      app.UseMvc();
       serviceProvider = ServiceProvider;
     }
 

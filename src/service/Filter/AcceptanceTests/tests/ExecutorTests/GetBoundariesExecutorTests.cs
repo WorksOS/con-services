@@ -8,7 +8,8 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -33,17 +34,18 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_no_boundaries_when_none_exist()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(
-        ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
+        ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
+
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(2, result.GeofenceData.Count, "Should be two overlapping favorite or associated geofences returned");
+      Assert.AreEqual(0, result.GeofenceData.Count, "Should be no boundaries");
       var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
       Assert.AreEqual(0, boundaries.Count, "Shouldn't be any boundaries returned");
     }
@@ -51,10 +53,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_all_boundaries_for_a_given_Project_when_Project_exists()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
-      var boundaryUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -81,7 +83,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(
-          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
+          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       var boundaryToTest = new GeofenceDataSingleResult(
@@ -115,10 +117,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_expected_Geofence_When_using_case_insensitive_keys()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
-      var boundaryUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -145,7 +147,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(
-          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
+          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
@@ -153,12 +155,12 @@ namespace ExecutorTests
       Assert.AreEqual(1, boundaries.Count);
     }
 
-    private BaseRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId, string projectGeometryWKT)
+    private BaseRequestFull CreateAndValidateRequest(string custUid, string projectUid, string userId, string projectGeometryWKT)
     {
       var request = BaseRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUid = projectUid.ToString(), ProjectGeofenceWKT = projectGeometryWKT},
+        new ProjectData() { ProjectUID = projectUid.ToString(), GeometryWKT = projectGeometryWKT},
         userId.ToString(), null);
       request.Validate(ServiceExceptionHandler);
       return request;

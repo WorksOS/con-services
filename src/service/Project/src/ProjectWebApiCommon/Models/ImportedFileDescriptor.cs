@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -139,7 +139,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// The UID of the design file that the reference surface is based off.
     /// </summary>
-    public Guid? ParentUid { get; set; }
+    public string ParentUid { get; set; }
 
     /// <summary>
     /// The offset in meters for the reference surface.

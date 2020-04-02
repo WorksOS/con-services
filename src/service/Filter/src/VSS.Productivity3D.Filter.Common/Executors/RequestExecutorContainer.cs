@@ -59,9 +59,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
     /// </summary>
     protected RepositoryBase auxRepository;
 
-    protected IGeofenceProxy GeofenceProxy;
+    //protected IGeofenceProxy GeofenceProxy;
 
-    protected IUnifiedProductivityProxy UnifiedProductivityProxy;
+    //protected IUnifiedProductivityProxy UnifiedProductivityProxy;
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -144,7 +144,7 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
       IFileImportProxy fileImportProxy, RepositoryBase repository,
-      RepositoryBase auxRepository, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy) : this()
+      RepositoryBase auxRepository /*, IGeofenceProxy geofenceProxy, IUnifiedProductivityProxy unifiedProductivityProxy */) : this()
     {
       this.configStore = configStore;
       if (logger != null)
@@ -156,8 +156,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       Repository = repository;
       this.auxRepository = auxRepository;
       this.fileImportProxy = fileImportProxy;
-      GeofenceProxy = geofenceProxy;
-      UnifiedProductivityProxy = unifiedProductivityProxy;
+      //GeofenceProxy = geofenceProxy;
+      //UnifiedProductivityProxy = unifiedProductivityProxy;
     }
 
     /// <summary>
@@ -179,8 +179,9 @@ namespace VSS.Productivity3D.Filter.Common.Executors
       RepositoryBase repository, RepositoryBase auxRepository,
       IProjectProxy projectProxy = null,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
-      IFileImportProxy fileImportProxy = null, IGeofenceProxy geofenceProxy = null,
-      IUnifiedProductivityProxy unifiedProductivityProxy = null)
+      IFileImportProxy fileImportProxy = null /*, IGeofenceProxy geofenceProxy = null,
+      IUnifiedProductivityProxy unifiedProductivityProxy = null  */
+      )
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor
@@ -194,8 +195,8 @@ namespace VSS.Productivity3D.Filter.Common.Executors
         fileImportProxy = fileImportProxy,
         Repository = repository,
         auxRepository = auxRepository,
-        GeofenceProxy = geofenceProxy,
-        UnifiedProductivityProxy = unifiedProductivityProxy
+        //GeofenceProxy = geofenceProxy,
+        //UnifiedProductivityProxy = unifiedProductivityProxy
       };
 
       return executor;

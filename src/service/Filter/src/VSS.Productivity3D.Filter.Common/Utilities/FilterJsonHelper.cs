@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       var filterObj = JsonConvert.DeserializeObject<Abstractions.Models.Filter>(filterJson);
 
       // date timezone changes
-      filterObj.ApplyDateRange(project?.ProjectTimeZone);
+      filterObj.ApplyDateRange(project?.ProjectTimeZoneIana);
 
       if (filterObj.DateRangeType == DateRangeType.ProjectExtents)
       {

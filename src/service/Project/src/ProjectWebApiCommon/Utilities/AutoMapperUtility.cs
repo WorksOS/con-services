@@ -4,12 +4,11 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 //using ImportedFileHistoryItem = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.ImportedFileHistoryItem;
-using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
@@ -54,6 +53,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
+            .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore());
@@ -61,7 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.ProjectStartDate))
             .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.ProjectEndDate))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
-            .ForMember(dest => dest.GeometryWKT, opt => opt.MapFrom(src => src.ProjectBoundary))
+            .ForMember(dest => dest.Boundary, opt => opt.MapFrom(src => src.ProjectBoundary))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
             .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
             .ForMember(dest => dest.ProjectTimeZoneIana, opt => opt.Ignore())
@@ -74,7 +74,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
           cfg.CreateMap<ProjectDatabaseModel, ProjectV6Descriptor>()
-            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.GeometryWKT))
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.Boundary))
             .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.ProjectTimeZoneIana))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
             .ForMember(dest => dest.IsArchived, opt => opt.MapFrom(src => src.IsArchived))
@@ -116,6 +116,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));
           cfg.CreateMap<DeviceResponseModel, CreateDeviceEvent>()
             .ForMember(dest => dest.DeviceUID, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ShortRaptorAssetID, opt => opt.Ignore())
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow));
           // ProjectGeofenceAssociations
           cfg.CreateMap<GeofenceWithAssociation, GeofenceV4Descriptor>();
@@ -137,7 +138,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<AccountResponseModel, CustomerData>()
             .ForMember(dest => dest.uid, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.type, opt => opt.MapFrom(src => CustomerType.Customer.ToString()))
+            .ForMember(dest => dest.type, opt => opt.Ignore())
             ;
         }
       );

@@ -99,7 +99,7 @@ namespace WebApiTests
       Thread.Sleep(500);
       var request = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(assetId,tagFileName, (int) errorNum);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v1/notification/tagFileProcessingError";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);

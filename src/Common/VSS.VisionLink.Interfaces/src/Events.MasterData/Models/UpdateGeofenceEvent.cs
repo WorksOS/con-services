@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class UpdateGeofenceEvent : IGeofenceEvent
   {
@@ -11,8 +11,8 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public string GeometryWKT { get; set; }
     public int? FillColor { get; set; }
     public bool? IsTransparent { get; set; }
-    public Guid GeofenceUID { get; set; }
-    public Guid UserUID { get; set; }
+    public string GeofenceUID { get; set; }
+    public string UserUID { get; set; }
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }
     public DateTime? EndDate { get; set; }

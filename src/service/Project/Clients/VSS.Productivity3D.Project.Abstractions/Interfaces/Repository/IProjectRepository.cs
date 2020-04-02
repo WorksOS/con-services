@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 {
@@ -15,7 +15,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 
     #endregion projectstore
 
-    #region projects
+    #region projectsov
 
     Task<Models.DatabaseModels.Project> GetProject(string projectUid);
     
@@ -27,10 +27,14 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 
     Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectsForCustomer(string customerUid);
 
+    Task<Models.DatabaseModels.Project> GetProject_UnitTests(string projectUid);
+
+    Task<IEnumerable<Models.DatabaseModels.Project>> GetProjectHistory_UnitTests(string projectUid);
+
     #endregion projects
 
     #region projectSpatial
-    
+
     Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
       DateTime endDate, string excludeProjectUid = "");
     
@@ -57,7 +61,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 
     #endregion importedFiles
 
-    #region geofenceForFilters  // todoMaverick not needed anymore for FilterSvc?
+    // this geofence code is used by projectSvc and FilterSvc and wll refer to database within the service
+    #region geofenceForFilters  
 
     Task<IEnumerable<ProjectGeofence>> GetAssociatedGeofences(string projectUid);
 

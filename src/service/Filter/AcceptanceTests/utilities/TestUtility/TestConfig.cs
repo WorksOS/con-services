@@ -11,7 +11,6 @@ namespace TestUtility
     public string mySqlUser = Environment.GetEnvironmentVariable("MYSQL_USERNAME");
     public string mySqlPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD");
     public string mySqlPort = Environment.GetEnvironmentVariable("MYSQL_PORT");
-    public string kafkaServer = Environment.GetEnvironmentVariable("KAFKA_URI") + ":" + Environment.GetEnvironmentVariable("KAFKA_PORT");
     public string dbSchema;
     public string webApiUri = Environment.GetEnvironmentVariable("WEBAPI_URI");
     public string debugWebApiUri = Environment.GetEnvironmentVariable("WEBAPI_DEBUG_URI");

@@ -222,7 +222,7 @@ namespace WebApiTests
       Thread.Sleep(500);
       var request = new GetProjectAndAssetUidsEarthWorksRequest(ecSerial, radioSerial, tccOrgId, latitude,longitude, timeOfPosition);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v2/project/getUidsEarthWorks";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson, statusCode);

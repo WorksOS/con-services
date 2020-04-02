@@ -4,7 +4,6 @@ using System.Net;
 using VSS.MasterData.Models.Handlers;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -21,11 +20,6 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public string ProjectUid { get; set; }
 
     public IDictionary<string, string> CustomHeaders { get; set; }
-
-    /// <summary>
-    /// Determines whether CRUD operations should result in a Kafka message being sent.
-    /// </summary>
-    public bool SendKafkaMessages;
     
     public static FilterRequestFull Create(IDictionary<string, string> customHeaders, string customerUid, bool isApplicationContext, string userId, ProjectData projectData, FilterRequest request = null)
     {
@@ -35,7 +29,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         HierarchicFilterUids = request?.HierarchicFilterUids,
         Name = request?.Name ?? string.Empty,
         FilterJson = request?.FilterJson ?? string.Empty,
-        FilterType = request?.FilterType ?? FilterType.Transient,
+        FilterType = request?.FilterType ?? VSS.Visionlink.Interfaces.Core.Events.MasterData.Models.FilterType.Transient,
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,

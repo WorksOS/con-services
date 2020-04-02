@@ -19,13 +19,13 @@ namespace CCSS.CWS.Client
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)
     {
     }
-    
+
     /// <summary>
     /// POST https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/projects
     ///   user token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
-    ///   CCSSCON- available              
+    ///   todoMaaverick ProjectSvc v6 and v5TBC
+    ///                 ProjectTRN
+    ///   CCSSCON-141 available but needs updating to allow description. Note (26 March) that start/end dates will no longer be entered by UI.             
     /// </summary>
     public Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
     {
@@ -35,27 +35,25 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// PUT https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/projects/{projectUid}
     ///   user token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
-    ///   CCSSCON-???                
+    ///   todoMaaverick ProjectSvc v6 and v5TBC
+    ///                 response code
+    ///   CCSSCON-14 available but needs updating to allow description. Note (26 March) that start/end dates will no longer be entered by UI.             
     /// </summary>
     public async Task UpdateProjectDetails(string projectUid, UpdateProjectDetailsRequestModel updateProjectDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
-      //  http://api-stg.trimble.com/cws-profilemanager-stg/1.0/projects/{projectId}/devices
-      // return await UpdateData<UpdateProjectDetailsRequestModel>($"/projects/{projectUid}", updateProjectDetailsRequest, null, customHeaders);
-      // todoMaverick return CallEndpoint<UpdateProjectDetailsRequestModel>($"/projects/{projectUid}", updateProjectDetailsRequest, HttpMethod.Put, customHeaders);
+      await UpdateData($"/projects/{projectUid}", updateProjectDetailsRequest, null, customHeaders);
     }
 
     /// <summary>
     /// PUT https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/projects/{projectUid}/boundary
     ///   user token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
-    ///   CCSSCON-???                
+    ///   todoMaaverick ProjectSvc v6 and v5TBC
+    ///                 response code
+    ///   CCSSCON-142 available but needs updating to include timeZone?                
     /// </summary>
     public async Task UpdateProjectBoundary(string projectUid, ProjectBoundary projectBoundary, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick return CallEndpoint<ProjectBoundary>($"/projects/{projectUid}/boundary", projectBoundary, HttpMethod.Put, customHeaders);
+      await UpdateData($"/projects/{projectUid}/boundary", projectBoundary, null, customHeaders);
     }
   }
 }

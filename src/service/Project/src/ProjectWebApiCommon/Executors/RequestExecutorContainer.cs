@@ -11,7 +11,6 @@ using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories;
 using VSS.Pegasus.Client;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
@@ -21,6 +20,7 @@ using VSS.WebApi.Common;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Productivity3D.Project.Repository;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -89,11 +89,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     /// Repository factory used for accessing files in TCC (at present)
     /// </summary>
     protected IFileRepository fileRepo;
-
-    /// <summary>
-    /// Repository factory used for Customer db
-    /// </summary>
-    protected ICustomerRepository customerRepo;
 
     /// <summary>
     /// Context of the API call
@@ -182,7 +177,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
       ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, IDeviceRepository deviceRepo = null,
-      IFileRepository fileRepo = null, ICustomerRepository customerRepo = null, IHttpContextAccessor httpContextAccessor = null,
+      IFileRepository fileRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
       ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null)
@@ -202,8 +197,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
       this.deviceRepo = deviceRepo;
-      this.fileRepo = fileRepo;
-      this.customerRepo = customerRepo;
+      this.fileRepo = fileRepo;    
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
       this.authn = authn;

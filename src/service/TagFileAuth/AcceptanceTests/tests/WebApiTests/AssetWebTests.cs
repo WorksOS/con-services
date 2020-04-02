@@ -330,7 +330,7 @@ namespace WebApiTests
 
       var request = GetAssetIdRequest.CreateGetAssetIdRequest(0,6,"");
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson, System.Net.HttpStatusCode.BadRequest);
@@ -364,7 +364,7 @@ namespace WebApiTests
 
       var request = GetAssetIdRequest.CreateGetAssetIdRequest(legacyProjectId,1500, "AAA");
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson, System.Net.HttpStatusCode.BadRequest);
@@ -387,7 +387,7 @@ namespace WebApiTests
       Thread.Sleep(500);
       var request = GetAssetIdRequest.CreateGetAssetIdRequest(projectId,deviceType, radioSerial);
       var requestJson = JsonConvert.SerializeObject(request, ts.jsonSettings);
-      var restClient = new RestClient();
+      var restClient = new RestClientUtil();
       var uri = ts.GetBaseUri() + "api/v1/asset/getId";
       var method = HttpMethod.Post.ToString();
       var response = restClient.DoHttpRequest(uri, method, requestJson);

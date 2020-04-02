@@ -6,45 +6,35 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
   public class Project
   {
     public string ProjectUID { get; set; }
+
     public string CustomerUID { get; set; }
 
     // legacy ProjectID in Gen2 is a bigint. However Raptor can't handle one, and we're unlikely to need to get that big.
     public int ShortRaptorProjectId { get; set; }
 
-    public ProjectType ProjectType { get; set; }
-
     public string Name { get; set; }
+
     public string Description { get; set; }
 
-    public string ProjectTimeZone { get; set; }
-
-    // This should really be named ProjectTimeZoneIana.
-    //     It is required for all projects, not just landfill.
-    //     ProjectTimeZone is in Windows StandardTime name,
-    //         which the UI,and ProjectSvc limit to a known set (contained in PreferencesTimeZones.cs).
-    public string ProjectTimeZoneIana { get; set; }
+    public ProjectType ProjectType { get; set; }
 
     // start and end are actually only date with no time component. However C# has no date-only.
     public DateTime StartDate { get; set; }
 
     public DateTime EndDate { get; set; }
 
+    public string ProjectTimeZone { get; set; }
+     
+    public string ProjectTimeZoneIana { get; set; }
 
-    // todoMaverick, what is this for?
-    //// legacy CustomerID in Gen2 is a bigint. Unlike LegacyProjectID, this is passed around as a long. I don't know why.
-    //public long LegacyCustomerID { get; set; }
-    // ProjectTimeZoneIana, ShortRaptorProjectId IsArchived renamed
-    //public string SubscriptionUID { get; set; }
-    //public DateTime? SubscriptionStartDate { get; set; }
-    //public DateTime? SubscriptionEndDate { get; set; }
-    //public int ServiceTypeID { get; set; } = 0;
-
-    public string GeometryWKT { get; set; }
+    public string Boundary { get; set; }
 
     public string CoordinateSystemFileName { get; set; }
+
     public DateTime? CoordinateSystemLastActionedUTC { get; set; }
 
     public bool IsArchived { get; set; }
+
     public DateTime LastActionedUTC { get; set; }
 
     public override bool Equals(object obj)
@@ -55,20 +45,19 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
       }
 
       return otherProject.ProjectUID == ProjectUID
+        && otherProject.CustomerUID == CustomerUID
         && otherProject.ShortRaptorProjectId == ShortRaptorProjectId
-        && otherProject.ProjectType == ProjectType
         && otherProject.Name == Name
         && otherProject.Description == Description
-        && otherProject.ProjectTimeZone == ProjectTimeZone
-        && otherProject.ProjectTimeZoneIana == ProjectTimeZoneIana
+        && otherProject.ProjectType == ProjectType
         && otherProject.StartDate == StartDate
         && otherProject.EndDate == EndDate
-        && otherProject.CustomerUID == CustomerUID
-        && otherProject.GeometryWKT == GeometryWKT
+        && otherProject.ProjectTimeZone == ProjectTimeZone
+        && otherProject.ProjectTimeZoneIana == ProjectTimeZoneIana        
+        && otherProject.Boundary == Boundary
         && otherProject.CoordinateSystemFileName == CoordinateSystemFileName
         && otherProject.CoordinateSystemLastActionedUTC == CoordinateSystemLastActionedUTC
-        && otherProject.IsArchived == IsArchived
-        && otherProject.LastActionedUTC == LastActionedUTC;
+        && otherProject.IsArchived == IsArchived;
     }
 
     public override int GetHashCode()

@@ -8,12 +8,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Internal;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -55,10 +55,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
@@ -116,10 +116,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid1),
+        ProjectUID = projectUid,
+        FilterUID = filterUid1,
         Name = name1,
         FilterType = filterType,
         FilterJson = filterJson1,
@@ -129,10 +129,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid2),
+        ProjectUID = projectUid,
+        FilterUID = filterUid2,
         Name = name2,
         FilterType = filterType,
         FilterJson = filterJson2,
@@ -199,10 +199,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid1),
+        ProjectUID = projectUid,
+        FilterUID = filterUid1,
         Name = name1,
         FilterType = filterType,
         FilterJson = filterJson1,
@@ -212,10 +212,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid2),
+        ProjectUID = projectUid,
+        FilterUID = filterUid2,
         Name = name2,
         FilterType = filterType,
         FilterJson = filterJson2,
@@ -270,10 +270,10 @@ namespace ExecutorTests
     {
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
-        FilterUID = Guid.NewGuid(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        FilterUID = Guid.NewGuid().ToString(),
         Name = $"dateRangeType={dateRangeType},asAtDate={asAtDate}",
         FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
@@ -285,13 +285,13 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString());
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorListResult;
 
@@ -308,7 +308,7 @@ namespace ExecutorTests
     [DataRow(DateRangeType.Custom, false)]
     public async Task GetFiltersExecutor_Should_not_alter_existing_start_end_dates(int dateRangeType, bool asAtDate)
     {
-      var customerUid = Guid.NewGuid();
+      var customerUid = Guid.NewGuid().ToString();
       const string startDate = "2017-12-10T08:00:00Z";
       const string endDate = "2017-12-10T20:09:59.108671Z";
 
@@ -317,8 +317,8 @@ namespace ExecutorTests
         {
           CustomerUID = customerUid,
           UserID = TestUtility.UIDs.JWT_USER_ID,
-          ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
-          FilterUID = Guid.NewGuid(),
+          ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+          FilterUID = Guid.NewGuid().ToString(),
           Name = $"dateRangeType={dateRangeType},asAtDate={asAtDate}",
           FilterType = FilterType.Persistent,
           FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
@@ -330,8 +330,8 @@ namespace ExecutorTests
         {
           CustomerUID = customerUid,
           UserID = TestUtility.UIDs.JWT_USER_ID,
-          ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
-          FilterUID = Guid.NewGuid(),
+          ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+          FilterUID = Guid.NewGuid().ToString(),
           Name = $"dateRangeType={dateRangeType}",
           FilterType = FilterType.Persistent,
           FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}}}",
@@ -344,13 +344,13 @@ namespace ExecutorTests
 
       var request = CreateAndValidateRequest(customerUid: events[0].CustomerUID.ToString(), userId: events[0].UserID, projectUid: events[0].ProjectUID.ToString(), filterUid: events[0].FilterUID.ToString());
 
-      var projectData = new ProjectData { ProjectUid = events[0].ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = events[0].ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(events[0].CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(events[0].CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorListResult;
 
@@ -394,10 +394,10 @@ namespace ExecutorTests
     {
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid().ToString(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
-        FilterUID = Guid.NewGuid(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        FilterUID = Guid.NewGuid().ToString(),
         Name = $"dateRangeType={dateRangeType},asAtDate={asAtDate}",
         FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
@@ -407,7 +407,7 @@ namespace ExecutorTests
 
       WriteEventToDb(filterCreateEvent);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectData: projectData, filterUid: filterCreateEvent.FilterUID.ToString());
     
@@ -415,7 +415,7 @@ namespace ExecutorTests
       tcs.SetResult(new List<ProjectData> {projectData});
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFiltersExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorListResult;
 

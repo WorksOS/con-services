@@ -7,11 +7,12 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using Serilog;
 using VSS.Serilog.Extensions;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Filter.Repository;
 
 namespace VSS.Productivity3D.Filter.Cleanup
 {

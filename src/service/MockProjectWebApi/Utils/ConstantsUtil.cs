@@ -20,8 +20,8 @@
     public const int GOLDEN_DATA_DIMENSIONS_PROJECT_ID_2 = 1007778;
     public const string GOLDEN_DATA_DIMENSIONS_PROJECT_UID_2 = "86a42bbf-9d0e-4079-850f-835496d715c5";
 
-    public const int LANDFILL_PROJECT_ID = 385;
-    public const string LANDFILL_PROJECT_UID = "e1f85c4d-04eb-463c-9a5b-9644c96e75ca";
+    //public const int LANDFILL_PROJECT_ID = 385;
+    //public const string LANDFILL_PROJECT_UID = "e1f85c4d-04eb-463c-9a5b-9644c96e75ca";
 
     //Used for Minimum elevation mode tests
     public const int KETTLEWELL_DRIVE_PROJECT_ID = 1000589;

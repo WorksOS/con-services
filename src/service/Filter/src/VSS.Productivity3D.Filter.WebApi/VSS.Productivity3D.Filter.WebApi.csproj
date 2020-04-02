@@ -13,13 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Deploy\**" />
+    <Compile Remove="deploy\**" />
     <Compile Remove="logs\**" />
-    <Content Remove="Deploy\**" />
+    <Content Remove="deploy\**" />
     <Content Remove="logs\**" />
-    <EmbeddedResource Remove="Deploy\**" />
+    <EmbeddedResource Remove="deploy\**" />
     <EmbeddedResource Remove="logs\**" />
-    <None Remove="Deploy\**" />
+    <None Remove="deploy\**" />
     <None Remove="logs\**" />
   </ItemGroup>
 
@@ -50,6 +50,7 @@
     <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj" />
+    <ProjectReference Include="..\..\Clients\VSS.Productivity3D.Filter.Repository\VSS.Productivity3D.Filter.Repository.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
   </ItemGroup>
 

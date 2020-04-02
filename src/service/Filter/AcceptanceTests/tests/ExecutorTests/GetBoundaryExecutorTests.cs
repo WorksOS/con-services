@@ -8,7 +8,8 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -32,10 +33,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_throw_When_object_doesnt_exist_in_database()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
-      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid());
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid().ToString());
 
       var executor = RequestExecutorContainer.Build<GetBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
@@ -47,10 +48,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_expected_boundary_When_object_exists_in_database()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
-      var boundaryUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -108,10 +109,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_expected_boundary_When_using_case_insensitive_keys()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
-      var projectUid = Guid.NewGuid();
-      var boundaryUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid().ToString();
+      var boundaryUid = Guid.NewGuid().ToString();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -149,11 +150,11 @@ namespace ExecutorTests
     [TestMethod]
     public async Task GetBoundaryExecutor_BelongsToAnotherProject_NotAllowed()
     {
-      var custUid = Guid.NewGuid();
-      var userId = Guid.NewGuid();
-      var projectUid1 = Guid.NewGuid();
-      var projectUid2 = Guid.NewGuid();
-      var boundaryUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var projectUid1 = Guid.NewGuid().ToString();
+      var projectUid2 = Guid.NewGuid().ToString();
+      var boundaryUid = Guid.NewGuid().ToString();
 
       WriteEventToDb(new CreateGeofenceEvent
       {
@@ -185,14 +186,14 @@ namespace ExecutorTests
       Assert.IsTrue(serviceException.GetContent.Contains("GetBoundary By BoundaryUid. The requested Boundary does not exist, or does not belong to the requesting project or filter."));
     }
 
-    private BoundaryUidRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId, Guid boundaryUid)
+    private BoundaryUidRequestFull CreateAndValidateRequest(string custUid, string projectUid, string userId, string boundaryUid)
     {
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUid = projectUid.ToString() },
+        new ProjectData() { ProjectUID = projectUid.ToString() },
         userId.ToString(),
-        boundaryUid.ToString());
+        boundaryUid);
       request.Validate(ServiceExceptionHandler);
       return request;
     }

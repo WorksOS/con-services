@@ -23,7 +23,7 @@ namespace TestUtility
       httpClient.DefaultRequestHeaders.Add("X-VisionLink-ClearCache", "true");
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
 
-      var _testConfig = new TestConfig("VSS-MasterData-Project");
+      var _testConfig = new TestConfig("CCSS-Project");
 
       if (Debugger.IsAttached || _testConfig.operatingSystem == "Windows_NT")
       {
