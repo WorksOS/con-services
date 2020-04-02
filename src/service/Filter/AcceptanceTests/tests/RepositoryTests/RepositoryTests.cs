@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
@@ -628,7 +629,7 @@ namespace RepositoryTests
       g.Wait();
       Assert.IsNull(g.Result, "Should not be able to retrieve deleted filter from filterRepo");
 
-      g = this.FilterRepo.GetFilterForUnitTest(deleteFilterEvent.FilterUID.ToString());
+      g = ((FilterRepository)this.FilterRepo).GetFilterForUnitTest(deleteFilterEvent.FilterUID.ToString());
       g.Wait();
       Assert.IsNotNull(g.Result, "Should be able to retrieve deleted filter from filterRepo");
     }

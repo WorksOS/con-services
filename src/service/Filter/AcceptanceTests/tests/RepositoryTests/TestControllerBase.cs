@@ -8,6 +8,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Cache.MemoryCache;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
@@ -19,7 +20,7 @@ namespace RepositoryTests
   {
     protected IServiceProvider ServiceProvider;
     protected IConfigurationStore ConfigStore;
-    protected FilterRepository FilterRepo;
+    protected IFilterRepository FilterRepo;
     protected ProjectRepository ProjectRepo;
     protected GeofenceRepository GeofenceRepo;
 
