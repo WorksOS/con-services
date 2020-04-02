@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace RepositoryTests
@@ -37,15 +38,15 @@ namespace RepositoryTests
     [TestMethod]
     public void GetFiltersForProject_PersistentOnly()
     {
-      var custUid = "f57e30d2-ad64-452a-8d6c-0afd790eab6c";
+      var custUid = new Guid("f57e30d2-ad64-452a-8d6c-0afd790eab6c");
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createTransientFilterEvent1 = new CreateFilterEvent
       {
         CustomerUID = custUid,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah1",
@@ -55,9 +56,9 @@ namespace RepositoryTests
       var createTransientFilterEvent2 = new CreateFilterEvent
       {
         CustomerUID = custUid,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "Transient 2",
         FilterType = FilterType.Transient,
         FilterJson = "blah2",
@@ -68,9 +69,9 @@ namespace RepositoryTests
       var createPersistentFilterEvent1 = new CreateFilterEvent
       {
         CustomerUID = custUid,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = "6396c4b0-3ed4-40fa-afed-035457252463".ToString(),
+        FilterUID = new Guid("6396c4b0-3ed4-40fa-afed-035457252463"),
         Name = "dateRangeType=Today with polygonLL",
         FilterType = FilterType.Persistent,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":0,\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
@@ -81,9 +82,9 @@ namespace RepositoryTests
       var createPersistentFilterEvent2 = new CreateFilterEvent
       {
         CustomerUID = custUid,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = "59e28218-0164-417b-8de0-9ed8f96d6ed2".ToString(),
+        FilterUID = new Guid("59e28218-0164-417b-8de0-9ed8f96d6ed2"),
         Name = "dateRangeType=Yesterday with polygonLL",
         FilterType = FilterType.Persistent,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":1,\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
@@ -94,9 +95,9 @@ namespace RepositoryTests
       var createReportFilterEvent1 = new CreateFilterEvent
       {
         CustomerUID = custUid,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "dateRangeType=Today with polygonLL",//match a peristent filter name on purpose
         FilterType = FilterType.Report,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":0,\"asAtDate\":\"false\",\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
@@ -107,9 +108,9 @@ namespace RepositoryTests
       var createReportFilterEvent2 = new CreateFilterEvent
       {
         CustomerUID = custUid,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "Report 2",
         FilterType = FilterType.Report,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":1,\"asAtDate\":\"true\",\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
@@ -176,10 +177,10 @@ namespace RepositoryTests
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        FilterUID = Guid.NewGuid(),
         Name = filterName,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
@@ -223,8 +224,8 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateTransientFilter_DuplicateBlankNamesAreValid()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var projUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createTransientFilterEvent1 = new CreateFilterEvent
@@ -232,7 +233,7 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = projUid,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah1",
@@ -245,7 +246,7 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = projUid,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah2",
@@ -264,8 +265,8 @@ namespace RepositoryTests
     [TestMethod]
     public void CreatePeristantFilter_DuplicateNamesNotValid()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var projUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createPersistentFilterEvent1 = new CreateFilterEvent
@@ -273,7 +274,7 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = projUid,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "HasAName",
         FilterType = FilterType.Persistent,
         FilterJson = "blah1",
@@ -286,7 +287,7 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = projUid,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "HasAName",
         FilterType = FilterType.Persistent,
         FilterJson = "blah2",
@@ -306,8 +307,8 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateReportFilter_DuplicateNamesAreValid()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var projUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var projUid = Guid.NewGuid();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createReportFilterEvent1 = new CreateFilterEvent
@@ -315,7 +316,7 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = projUid,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "HasAName",
         FilterType = FilterType.Report,
         FilterJson = "blah1",
@@ -328,7 +329,7 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = projUid,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "HasAName",
         FilterType = FilterType.Report,
         FilterJson = "blah2",
@@ -350,10 +351,10 @@ namespace RepositoryTests
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
@@ -404,10 +405,10 @@ namespace RepositoryTests
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
@@ -461,10 +462,10 @@ namespace RepositoryTests
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "persistent",
         FilterType = filterType,
         FilterJson = "blah",
@@ -517,10 +518,10 @@ namespace RepositoryTests
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "persistent",
         FilterType = filterType,
         FilterJson = "blah",
@@ -571,10 +572,10 @@ namespace RepositoryTests
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
@@ -613,10 +614,10 @@ namespace RepositoryTests
 
       var deleteFilterEvent = new DeleteFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUtc.AddMinutes(2),
         ReceivedUTC = firstCreatedUtc
       };
@@ -643,10 +644,10 @@ namespace RepositoryTests
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createFilterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        ProjectUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        FilterUID = Guid.NewGuid(),
         Name = "hasOne",
         FilterType = filterType,
         FilterJson = "blah",
@@ -702,20 +703,20 @@ namespace RepositoryTests
     [TestMethod]
     public void GetAssociatedProjectGeofences()
     {
-      var projUid = Guid.NewGuid().ToString();
+      var projUid = Guid.NewGuid();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createAssociateEvent1 = new AssociateProjectGeofence
       {
         ProjectUID = projUid,
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
       var createAssociateEvent2 = new AssociateProjectGeofence
       {
         ProjectUID = projUid,
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -730,13 +731,13 @@ namespace RepositoryTests
     [TestMethod]
     public void CreateAssociatedProjectGeofence_HappyPath()
     {
-      var projUid = Guid.NewGuid().ToString();
+      var projUid = Guid.NewGuid();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createAssociateEvent = new AssociateProjectGeofence
       {
         ProjectUID = projUid,
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         ActionUTC = firstCreatedUtc,
         ReceivedUTC = firstCreatedUtc
       };
@@ -749,11 +750,11 @@ namespace RepositoryTests
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var geofenceType = GeofenceType.Filter;
-      var geofenceUid = Guid.NewGuid().ToString();
+      var geofenceUid = Guid.NewGuid();
       var createGeofenceEvent = new CreateGeofenceEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
         GeofenceUID = geofenceUid,
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
@@ -772,8 +773,8 @@ namespace RepositoryTests
     [TestMethod]
     public void GetGeofences_HappyPath()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var geofenceType = GeofenceType.Filter.ToString();
@@ -782,7 +783,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         UserUID = userId,
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
@@ -793,7 +794,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         UserUID = userId,
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Boundary two",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((81.257874 13.677856,80.856873 14.039345,81.375977 14.443052,81.257874 13.677856))",
@@ -804,7 +805,7 @@ namespace RepositoryTests
       {
         CustomerUID = custUid,
         UserUID = userId,
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Boundary three",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((82.257874 14.677856,81.856873 15.039345,82.375977 15.443052,82.257874 14.677856))",
@@ -843,9 +844,9 @@ namespace RepositoryTests
       var geofenceType = GeofenceType.Filter;
       var createGeofenceEvent = new CreateGeofenceEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
-        UserUID = Guid.NewGuid().ToString(),
-        GeofenceUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
@@ -882,12 +883,12 @@ namespace RepositoryTests
     public void DeleteGeofence_HappyPath()
     {
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var geofenceUid = Guid.NewGuid().ToString();
-      var userUid = Guid.NewGuid().ToString();
+      var geofenceUid = Guid.NewGuid();
+      var userUid = Guid.NewGuid();
       var geofenceType = GeofenceType.Filter;
       var createGeofenceEvent = new CreateGeofenceEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         UserUID = userUid,
         GeofenceUID = geofenceUid,
         GeofenceName = "Boundary one",

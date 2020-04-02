@@ -54,8 +54,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (CreateProjectEvent)evt;
         var project = new ProjectDataModel
         {
-          ProjectUID = projectEvent.ProjectUID,
-          CustomerUID = projectEvent.CustomerUID,
+          ProjectUID = projectEvent.ProjectUID.ToString(),
+          CustomerUID = projectEvent.CustomerUID.ToString(),
           ShortRaptorProjectId = projectEvent.ShortRaptorProjectId,
           Name = projectEvent.ProjectName,
           Description = projectEvent.Description,
@@ -90,8 +90,7 @@ namespace VSS.Productivity3D.Project.Repository
 
         var project = new ProjectDataModel
         {
-          ProjectUID = projectEvent.ProjectUID,
-          CustomerUID = projectEvent.CustomerUID,
+          ProjectUID = projectEvent.ProjectUID.ToString(),          
           Name = projectEvent.ProjectName,
           Description = projectEvent.Description,
           ProjectType = projectEvent.ProjectType,
@@ -115,7 +114,7 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (DeleteProjectEvent)evt;
         var project = new ProjectDataModel
         {
-          ProjectUID = projectEvent.ProjectUID,
+          ProjectUID = projectEvent.ProjectUID.ToString(),
           LastActionedUTC = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertProjectDetail(project, "DeleteProjectEvent", projectEvent.DeletePermanently);
@@ -127,10 +126,10 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (CreateImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID,
-          ImportedFileUid = projectEvent.ImportedFileUID,
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
           ImportedFileId = projectEvent.ImportedFileID,
-          CustomerUid = projectEvent.CustomerUID,
+          CustomerUid = projectEvent.CustomerUID.ToString(),
           ImportedFileType = projectEvent.ImportedFileType,
           Name = projectEvent.Name,
           FileDescriptor = projectEvent.FileDescriptor,
@@ -152,8 +151,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (UpdateImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID,
-          ImportedFileUid = projectEvent.ImportedFileUID,
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
           FileDescriptor = projectEvent.FileDescriptor,
           FileCreatedUtc = projectEvent.FileCreatedUtc,
           FileUpdatedUtc = projectEvent.FileUpdatedUtc,
@@ -171,8 +170,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (DeleteImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID,
-          ImportedFileUid = projectEvent.ImportedFileUID,
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "DeleteImportedFileEvent",
@@ -183,8 +182,8 @@ namespace VSS.Productivity3D.Project.Repository
         var projectEvent = (UndeleteImportedFileEvent)evt;
         var importedFile = new ImportedFile
         {
-          ProjectUid = projectEvent.ProjectUID,
-          ImportedFileUid = projectEvent.ImportedFileUID,
+          ProjectUid = projectEvent.ProjectUID.ToString(),
+          ImportedFileUid = projectEvent.ImportedFileUID.ToString(),
           LastActionedUtc = projectEvent.ActionUTC
         };
         upsertedCount = await UpsertImportedFile(importedFile, "UndeleteImportedFileEvent");
@@ -194,7 +193,7 @@ namespace VSS.Productivity3D.Project.Repository
       {
         var projectSettings = new ProjectSettings
         {
-          ProjectUid = projectEvent.ProjectUID,
+          ProjectUid = projectEvent.ProjectUID.ToString(),
           ProjectSettingsType = projectEvent.ProjectSettingsType,
           Settings = projectEvent.Settings,
           UserID = projectEvent.UserID,
@@ -209,7 +208,7 @@ namespace VSS.Productivity3D.Project.Repository
         var projectGeofenceEvent = (AssociateProjectGeofence)evt;
         var projectGeofence = new ProjectGeofence
         {
-          ProjectUID = projectGeofenceEvent.ProjectUID,
+          ProjectUID = projectGeofenceEvent.ProjectUID.ToString(),
           GeofenceUID = projectGeofenceEvent.GeofenceUID.ToString(),
           LastActionedUTC = projectGeofenceEvent.ActionUTC
         };
@@ -220,7 +219,7 @@ namespace VSS.Productivity3D.Project.Repository
         var projectGeofenceEvent = (DissociateProjectGeofence)evt;
         var projectGeofence = new ProjectGeofence
         {
-          ProjectUID = projectGeofenceEvent.ProjectUID,
+          ProjectUID = projectGeofenceEvent.ProjectUID.ToString(),
           GeofenceUID = projectGeofenceEvent.GeofenceUID.ToString(),
           LastActionedUTC = projectGeofenceEvent.ActionUTC
         };

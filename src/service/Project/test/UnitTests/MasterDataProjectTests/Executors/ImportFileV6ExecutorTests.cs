@@ -29,7 +29,6 @@ using VSS.Productivity3D.Scheduler.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -38,8 +37,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 {
   public class ImportFilev6ExecutorTestsDiFixture : UnitTestsDIFixture<ImportFilev6ExecutorTestsDiFixture>
   {
-    private static string _customerUid;
-    private static string _projectUid;
+    private static Guid _customerUid;
+    private static Guid _projectUid;
     private static string _userId;
     private static string _userEmailAddress;
     private static long _shortRaptorProjectId;
@@ -48,8 +47,8 @@ namespace VSS.MasterData.ProjectTests.Executors
     public ImportFilev6ExecutorTestsDiFixture()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
-      _customerUid = Guid.NewGuid().ToString();
-      _projectUid = Guid.NewGuid().ToString();
+      _customerUid = Guid.NewGuid();
+      _projectUid = Guid.NewGuid();
       _userId = "sdf870789sdf0";
       _userEmailAddress = "someone@whatever.com";
       _shortRaptorProjectId = 111;
@@ -75,7 +74,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       fileRepo.Setup(fr => fr.CopyFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(true);
 
       await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
-        _customerUid, Guid.NewGuid().ToString(), "f9sdg0sf9",
+        _customerUid.ToString(), Guid.NewGuid().ToString(), "f9sdg0sf9",
         Log, serviceExceptionHandler, fileRepo.Object).ConfigureAwait(false);
     }
 
@@ -88,7 +87,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
@@ -97,8 +96,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var newImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid,
+        ProjectUid = _projectUid.ToString(),
+        ImportedFileUid = importedFileUid.ToString(),
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
@@ -127,9 +126,9 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid.ToString(), "some file");
 
-      var project = new ProjectDatabaseModel { CustomerUID = _customerUid, ProjectUID = _projectUid, ShortRaptorProjectId = (int)_shortRaptorProjectId };
+      var project = new ProjectDatabaseModel { CustomerUID = _customerUid.ToString(), ProjectUID = _projectUid.ToString(), ShortRaptorProjectId = (int)_shortRaptorProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -157,7 +156,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
           customHeaders, 
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object,
           productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
@@ -166,7 +165,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
       Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
@@ -179,7 +178,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -187,7 +186,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var existingImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
+        ProjectUid = _projectUid.ToString(),
         ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
@@ -196,10 +195,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       _projectUid, _shortRaptorProjectId, ImportedFileType.DesignSurface,
+       _projectUid.ToString(), _shortRaptorProjectId, ImportedFileType.DesignSurface,
        null, DxfUnitsType.Meters,
        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44),
-       fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
+       fileDescriptor, importedFileUid.ToString(), importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -224,14 +223,14 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
           customHeaders, 
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
       Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
@@ -239,7 +238,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     public async Task DeleteImportedFile_RaptorHappyPath()
     {
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -247,7 +246,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var existingImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
+        ProjectUid = _projectUid.ToString(),
         ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
@@ -297,7 +296,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
           customHeaders, 
           productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, filterServiceProxy: filterServiceProxy.Object,
           projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -313,7 +312,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.tif";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
@@ -323,8 +322,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var newImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid,
+        ProjectUid = _projectUid.ToString(),
+        ImportedFileUid = importedFileUid.ToString(),
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.GeoTiff,
@@ -354,7 +353,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
-        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid, "some file");
+        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid.ToString(), "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -362,7 +361,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
      
-      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid, ProjectUID = _projectUid, ShortRaptorProjectId = (int)_shortRaptorProjectId };
+      var project = new ProjectDatabaseModel() { CustomerUID = _customerUid.ToString(), ProjectUID = _projectUid.ToString(), ShortRaptorProjectId = (int)_shortRaptorProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -376,13 +375,13 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
           projectRepo: projectRepo.Object, schedulerProxy: scheduler.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
       Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
@@ -395,7 +394,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
       var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
@@ -404,7 +403,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var newImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
+        ProjectUid = _projectUid.ToString(),
         ImportedFileUid = importedFileUid.ToString(),
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
@@ -434,7 +433,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid.ToString(), "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -453,13 +452,13 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.NotNull(result);
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
       Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
@@ -467,7 +466,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     public async Task UpdateImportedFile_TRexHappyPath_DesignSurface()
     {
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -475,7 +474,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var existingImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
+        ProjectUid = _projectUid.ToString(),
         ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
@@ -484,8 +483,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       _projectUid, _shortRaptorProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
+       _projectUid.ToString(), _shortRaptorProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid.ToString(), importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -504,12 +503,12 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
       Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
     }
 
@@ -522,7 +521,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -530,8 +529,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var existingImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid,
+        ProjectUid = _projectUid.ToString(),
+        ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
         Name = fileName,
@@ -578,7 +577,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
           customHeaders, 
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -594,8 +593,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
-      var parentUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
+      var parentUid = Guid.NewGuid();
       var offset = 1.5;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
       var fileName = "MoundRoad.ttm";
@@ -605,89 +604,8 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var newImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid,
-        ImportedFileId = 999,
-        LegacyImportedFileId = 200000,
-        ImportedFileType = ImportedFileType.ReferenceSurface,
-        Name = fileDescriptor.FileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
-        Offset = offset,
-        ParentUid = parentUid
-      };
-
-      _ = new CreateImportedFileEvent
-      {
-        CustomerUID = _customerUid,
-        ProjectUID = _projectUid,
-        ImportedFileUID = importedFileUid,
-        ImportedFileType = ImportedFileType.ReferenceSurface,
-        DxfUnitsType = DxfUnitsType.Meters,
-        Name = fileDescriptor.FileName,
-        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
-        FileCreatedUtc = fileCreatedUtc,
-        FileUpdatedUtc = fileUpdatedUtc,
-        ImportedBy = string.Empty,
-        SurveyedUTC = null,
-        ParentUID = parentUid,
-        Offset = offset,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
-      };
-
-      var createImportedFile = new CreateImportedFile(
-        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
-
-      var importedFilesList = new List<ImportedFile> { newImportedFile };
-      var mockConfigStore = new Mock<IConfigurationStore>();
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
-      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-      var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
-      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
-      var projectRepo = new Mock<IProjectRepository>();
-      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
-      projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
-      projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
-
-      var executor = RequestExecutorContainerFactory
-        .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
-          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
-      var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
-      Assert.NotNull(result);
-      Assert.Equal(0, result.Code);
-      Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
-      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
-    }
-
-    [Fact]
-    public async Task CreateImportedFile_TRex_ReferenceSurface_NoParentDesign()
-    {
-      // FlowFile uploads the file from client (possibly as a background task via scheduler)
-      // Controller uploads file to TCC and/or S3
-      //    V2 Note: BCC file has already put the file on TCC.
-      //          the controller a) copies within TCC to client project (raptor)
-      //                         b) copies locally and hence to S3. (TRex)
-      var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
-      var parentUid = Guid.NewGuid().ToString();
-      var offset = 1.5;
-      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
-      var fileName = "MoundRoad.ttm";
-      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
-      var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
-      var fileUpdatedUtc = fileCreatedUtc;
-
-      var newImportedFile = new ImportedFile
-      {
-        ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid,
+        ProjectUid = _projectUid.ToString(),
+        ImportedFileUid = importedFileUid.ToString(),
         ImportedFileId = 999,
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.ReferenceSurface,
@@ -718,7 +636,88 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid.ToString(), "some file");
+
+      var importedFilesList = new List<ImportedFile> { newImportedFile };
+      var mockConfigStore = new Mock<IConfigurationStore>();
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT")).Returns("true");
+      mockConfigStore.Setup(x => x.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT")).Returns("false");
+
+      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+
+      var tRexImportFileProxy = new Mock<ITRexImportFileProxy>();
+      tRexImportFileProxy.Setup(tr => tr.AddFile(It.IsAny<DesignRequest>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(new ContractExecutionResult());
+      var projectRepo = new Mock<IProjectRepository>();
+      projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
+      projectRepo.Setup(pr => pr.GetImportedFile(It.IsAny<string>())).ReturnsAsync(newImportedFile);
+      projectRepo.Setup(pr => pr.GetImportedFiles(It.IsAny<string>())).ReturnsAsync(importedFilesList);
+
+      var executor = RequestExecutorContainerFactory
+        .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
+          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
+          tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
+      var result = await executor.ProcessAsync(createImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
+      Assert.NotNull(result);
+      Assert.Equal(0, result.Code);
+      Assert.NotNull(result.ImportedFileDescriptor);
+      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
+    }
+
+    [Fact]
+    public async Task CreateImportedFile_TRex_ReferenceSurface_NoParentDesign()
+    {
+      // FlowFile uploads the file from client (possibly as a background task via scheduler)
+      // Controller uploads file to TCC and/or S3
+      //    V2 Note: BCC file has already put the file on TCC.
+      //          the controller a) copies within TCC to client project (raptor)
+      //                         b) copies locally and hence to S3. (TRex)
+      var customHeaders = new Dictionary<string, string>();
+      var importedFileUid = Guid.NewGuid();
+      var parentUid = Guid.NewGuid();
+      var offset = 1.5;
+      var TCCFilePath = "/BC Data/Sites/Chch Test Site";
+      var fileName = "MoundRoad.ttm";
+      var fileDescriptor = FileDescriptor.CreateFileDescriptor(_fileSpaceId, TCCFilePath, fileName);
+      var fileCreatedUtc = DateTime.UtcNow.AddHours(-45);
+      var fileUpdatedUtc = fileCreatedUtc;
+
+      var newImportedFile = new ImportedFile
+      {
+        ProjectUid = _projectUid.ToString(),
+        ImportedFileUid = importedFileUid.ToString(),
+        ImportedFileId = 999,
+        LegacyImportedFileId = 200000,
+        ImportedFileType = ImportedFileType.ReferenceSurface,
+        Name = fileDescriptor.FileName,
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        Offset = offset,
+        ParentUid = parentUid.ToString()
+      };
+
+      _ = new CreateImportedFileEvent
+      {
+        CustomerUID = _customerUid,
+        ProjectUID = _projectUid,
+        ImportedFileUID = importedFileUid,
+        ImportedFileType = ImportedFileType.ReferenceSurface,
+        DxfUnitsType = DxfUnitsType.Meters,
+        Name = fileDescriptor.FileName,
+        FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
+        FileCreatedUtc = fileCreatedUtc,
+        FileUpdatedUtc = fileUpdatedUtc,
+        ImportedBy = string.Empty,
+        SurveyedUTC = null,
+        ParentUID = parentUid,
+        Offset = offset,
+        ActionUTC = DateTime.UtcNow,
+        ReceivedUTC = DateTime.UtcNow
+      };
+
+      var createImportedFile = new CreateImportedFile(
+        _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid.ToString(), "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -738,7 +737,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<CreateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       await Assert.ThrowsAsync<ServiceException>(async () =>
        await executor.ProcessAsync(createImportedFile).ConfigureAwait(false));
@@ -748,8 +747,8 @@ namespace VSS.MasterData.ProjectTests.Executors
     public async Task UpdateImportedFile_TRexHappyPath_ReferenceSurface()
     {
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
-      var parentUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
+      var parentUid = Guid.NewGuid();
       var oldOffset = 1.5;
       var newOffset = 1.5;
       var importedFileId = 9999;
@@ -759,19 +758,19 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var existingImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid,
+        ProjectUid = _projectUid.ToString(),
+        ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.ReferenceSurface,
         Name = fileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
         Offset = oldOffset,
-        ParentUid = parentUid
+        ParentUid = parentUid.ToString()
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       _projectUid, _shortRaptorProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset, "some file"
+       _projectUid.ToString(), _shortRaptorProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid.ToString(), importedFileId, "some folder", newOffset, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -790,12 +789,12 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<UpdateImportedFileExecutor>(logger, mockConfigStore.Object, serviceExceptionHandler,
-          _customerUid, _userId, _userEmailAddress, customHeaders,
+          _customerUid.ToString(), _userId, _userEmailAddress, customHeaders,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object);
       var result = await executor.ProcessAsync(updateImportedFile).ConfigureAwait(false) as ImportedFileDescriptorSingleResult;
       Assert.Equal(0, result.Code);
       Assert.NotNull(result.ImportedFileDescriptor);
-      Assert.Equal(_projectUid, result.ImportedFileDescriptor.ProjectUid);
+      Assert.Equal(_projectUid.ToString(), result.ImportedFileDescriptor.ProjectUid);
       Assert.Equal(fileDescriptor.FileName, result.ImportedFileDescriptor.Name);
       Assert.Equal(newOffset, result.ImportedFileDescriptor.Offset);
     }
@@ -809,8 +808,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
-      var parentUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
+      var parentUid = Guid.NewGuid();
       var offset = 1.5;
       var importedFileId = 9999;
       var TCCFilePath = "/BC Data/Sites/Chch Test Site";
@@ -819,13 +818,13 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var existingImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
-        ImportedFileUid = importedFileUid,
+        ProjectUid = _projectUid.ToString(),
+        ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.ReferenceSurface,
         Name = fileName,
         FileDescriptor = JsonConvert.SerializeObject(fileDescriptor),
-        ParentUid = parentUid,
+        ParentUid = parentUid.ToString(),
         Offset = offset
       };
 
@@ -867,7 +866,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
           customHeaders, 
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);
@@ -883,7 +882,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       //          the controller a) copies within TCC to client project (raptor)
       //                         b) copies locally and hence to S3. (TRex)
       var customHeaders = new Dictionary<string, string>();
-      var importedFileUid = Guid.NewGuid().ToString();
+      var importedFileUid = Guid.NewGuid();
       var parentUid = Guid.NewGuid();
       var offset = 1.5;
       var importedFileId = 9999;
@@ -893,7 +892,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var referenceImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
+        ProjectUid = _projectUid.ToString(),
         ImportedFileUid = importedFileUid.ToString(),
         LegacyImportedFileId = 200000,
         ImportedFileType = ImportedFileType.DesignSurface,
@@ -903,7 +902,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var parentImportedFile = new ImportedFile
       {
-        ProjectUid = _projectUid,
+        ProjectUid = _projectUid.ToString(),
         ImportedFileUid = parentUid.ToString(),
         ImportedFileId = 998,
         LegacyImportedFileId = 200001,
@@ -954,7 +953,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var executor = RequestExecutorContainerFactory
         .Build<DeleteImportedFileExecutor>(
-          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid, _userId, _userEmailAddress,
+          logger, mockConfigStore.Object, serviceExceptionHandler, _customerUid.ToString(), _userId, _userEmailAddress,
           customHeaders, 
           filterServiceProxy: filterServiceProxy.Object,
           tRexImportFileProxy: tRexImportFileProxy.Object, projectRepo: projectRepo.Object, fileRepo: fileRepo.Object, dataOceanClient: dataOceanClient.Object, authn: authn.Object, pegasusClient: pegasusClient.Object);

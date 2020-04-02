@@ -67,7 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// Create instance of CreateProjectV2Request
     /// </summary>
-    public static CreateProjectV5Request CreateACreateProjectV2Request(
+    public static CreateProjectV5Request CreateACreateProjectV5Request(
       ProjectType projectType, DateTime projectStartDate, DateTime projectEndDate, string projectName, 
       string projectTimezone, List<TBCPoint> boundaryLL,
       BusinessCenterFile coordinateSystem

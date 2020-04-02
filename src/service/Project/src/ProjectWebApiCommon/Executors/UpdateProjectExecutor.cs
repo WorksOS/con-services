@@ -54,9 +54,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       // create/update in Cws
       try
       {
-        var projectTRN = await UpdateCwsAsync(existing, updateProjectEvent);
+        var projectTRN = await UpdateCws(existing, updateProjectEvent);
         if (!string.IsNullOrEmpty(projectTRN)) // no error, may have been a create project
-          updateProjectEvent.ProjectUID = projectTRN;
+          updateProjectEvent.ProjectUID = new Guid(projectTRN);
         // todoMaverick what kind of errors?
       }
       catch (Exception e)
@@ -72,7 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (!string.IsNullOrEmpty(updateProjectEvent.CoordinateSystemFileName))
       {
         // don't bother rolling this back
-        await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID,
+        await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID.ToString(),
           existing.ShortRaptorProjectId,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
@@ -100,7 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     }
 
     // todoMaverick if actually creating, then need to write to WM first to obtain the ProjectUid for our DB 
-    private async Task<string> UpdateCwsAsync(ProjectDatabaseModel existing, UpdateProjectEvent updateProjectEvent)
+    private async Task<string> UpdateCws(ProjectDatabaseModel existing, UpdateProjectEvent updateProjectEvent)
     {
       if (existing == null)
       {
@@ -114,7 +114,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
           if (response != null)
           {
-            updateProjectEvent.ProjectUID = response.Id;
+            updateProjectEvent.ProjectUID = new Guid(response.Id);
             return response.Id;
             // todoMaverick what about exception/other error
           }
@@ -141,6 +141,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
           // todoMaverick what are errors?
         }
+        // todoMaverick what about exception/other error
+        return updateProjectEvent.ProjectUID.ToString();
       }
       return null;
     }

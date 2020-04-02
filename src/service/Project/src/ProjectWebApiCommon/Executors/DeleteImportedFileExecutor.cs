@@ -50,16 +50,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       DeleteImportedFileEvent deleteImportedFileEvent = null;
       if (useTrexGatewayDesignImport && deleteImportedFile.IsDesignFileType)
       {
-        await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid,
+        await ImportedFileRequestHelper.NotifyTRexDeleteFile(deleteImportedFile.ProjectUid.ToString(),
           deleteImportedFile.ImportedFileType, deleteImportedFile.FileDescriptor.FileName,
-          deleteImportedFile.ImportedFileUid,
+          deleteImportedFile.ImportedFileUid.ToString(),
           deleteImportedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy).ConfigureAwait(false);
 
         // DB change must be made before productivity3dV2ProxyNotification.DeleteFile is called as it calls back here to get list of Active files
         deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
-          (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
+          (deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(), serviceExceptionHandler, projectRepo)
           .ConfigureAwait(false);
       }
 
@@ -69,13 +69,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (deleteImportedFileEvent == null)
         {
           deleteImportedFileEvent = await ImportedFileRequestDatabaseHelper.DeleteImportedFileInDb
-            (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
+            (deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(), serviceExceptionHandler, projectRepo)
             .ConfigureAwait(false);
         }
 
         var importedFileInternalResult = await ImportedFileRequestHelper.NotifyRaptorDeleteFile
-          (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileType,
-            deleteImportedFile.ImportedFileUid, deleteImportedFile.FileDescriptor,
+          (deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileType,
+            deleteImportedFile.ImportedFileUid.ToString(), deleteImportedFile.FileDescriptor,
             deleteImportedFile.ImportedFileId, deleteImportedFile.LegacyImportedFileId,
             log, customHeaders, productivity3dV2ProxyNotification)
           .ConfigureAwait(false);
@@ -85,17 +85,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           if (deleteImportedFile.ImportedFileType != ImportedFileType.ReferenceSurface)
           {
             await TccHelper.DeleteFileFromTCCRepository
-              (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
+              (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(),
                 log, serviceExceptionHandler, fileRepo)
               .ConfigureAwait(false);
 
             var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(deleteImportedFile.FileDescriptor.FileName,
               deleteImportedFile.ImportedFileType == ImportedFileType.SurveyedSurface || deleteImportedFile.ImportedFileType == ImportedFileType.GeoTiff,
-              deleteImportedFile.ImportedFileUid, deleteImportedFile.SurveyedUtc);
+              deleteImportedFile.ImportedFileUid.ToString(), deleteImportedFile.SurveyedUtc);
 
             importedFileInternalResult = await DataOceanHelper.DeleteFileFromDataOcean(
               dataOceanFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
-              deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, log, dataOceanClient, authn, configStore);
+              deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(), log, dataOceanClient, authn, configStore);
 
             if (deleteImportedFile.ImportedFileType == ImportedFileType.Alignment ||
                 deleteImportedFile.ImportedFileType == ImportedFileType.Linework ||
@@ -113,7 +113,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
                 //Do we care if deleting generated DXF file fails?
                 tasks.Add(DataOceanHelper.DeleteFileFromDataOcean(
                   dxfFileName, deleteImportedFile.DataOceanRootFolder, customerUid,
-                  deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, log, dataOceanClient, authn, configStore));
+                  deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(), log, dataOceanClient, authn, configStore));
               }
               await Task.WhenAll(tasks);
             }
@@ -123,7 +123,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (importedFileInternalResult != null)
         {
           await ImportedFileRequestDatabaseHelper.UndeleteImportedFile
-            (deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid, serviceExceptionHandler, projectRepo)
+            (deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(), serviceExceptionHandler, projectRepo)
             .ConfigureAwait(false);
           serviceExceptionHandler.ThrowServiceException(importedFileInternalResult.StatusCode, importedFileInternalResult.ErrorNumber, importedFileInternalResult.ResultCode, importedFileInternalResult.ErrorMessage1);
         }
@@ -141,7 +141,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       if (deleteImportedFile.IsDesignFileType)
       {
-        var filters = await ImportedFileRequestDatabaseHelper.GetFilters(deleteImportedFile.ProjectUid, customHeaders, filterServiceProxy);
+        var filters = await ImportedFileRequestDatabaseHelper.GetFilters(deleteImportedFile.ProjectUid.ToString(), customHeaders, filterServiceProxy);
         if (filters != null && filters.Any())
         {
           var fileUidStr = deleteImportedFile.ImportedFileUid.ToString();

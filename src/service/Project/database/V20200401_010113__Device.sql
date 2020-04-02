@@ -1,6 +1,5 @@
-CREATE TABLE IF NOT EXISTS  Device
- (  
-  DeviceUID varchar(80) NOT NULL,
+CREATE TABLE IF NOT EXISTS  Device (  
+  DeviceUID varchar(100) NOT NULL,
   ShortRaptorAssetID int(20) unsigned NOT NULL AUTO_INCREMENT, 
   LastActionedUTC datetime(6) DEFAULT NULL,  
   InsertUTC datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),

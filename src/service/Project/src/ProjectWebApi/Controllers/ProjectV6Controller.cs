@@ -20,7 +20,6 @@ using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -189,7 +188,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
-      if (string.IsNullOrEmpty(projectRequest.CustomerUID)) projectRequest.CustomerUID = customerUid;
+      if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = new Guid(customerUid);
       
       // todoMaverick, no, we need the trn from WM
       //if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid().ToString();
@@ -197,7 +196,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ReceivedUTC = createProjectEvent.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
-      if (createProjectEvent.CustomerUID != customerUid)
+      if (createProjectEvent.CustomerUID.ToString() != customerUid)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
 
       // ProjectUID won't be filled yet
@@ -218,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
-      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID));
+      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value.ToString()));
 
       Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
@@ -279,8 +278,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       Logger.LogInformation("UpdateProjectV6. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
-      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
-      project.CustomerUID = customerUid;
+      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);      
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
@@ -299,7 +297,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation("UpdateProjectV6. Invalidating 3D PM cache");
-      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
+      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID.ToString()));
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
@@ -365,7 +363,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("ArchiveProjectV6", projectUid);
       var project = new DeleteProjectEvent
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         DeletePermanently = false,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow

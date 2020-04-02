@@ -8,6 +8,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
 using VSS.Common.ServiceDiscovery;
+using VSS.Common.Abstractions.Clients.CWS.Utilities;
 
 namespace CCSS.CWS.Client.UnitTests.Staging
 {
@@ -31,10 +32,10 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     }
 
     [TestMethod]
-    public async Task Test_GetMyAccounts()
+    public async Task GetMyAccountsTest()
     {
       var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
-      var result = await client.GetMyAccounts(userId, CustomHeaders());
+      var result = await client.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
 
       Assert.IsNotNull(result, "No result from getting my accounts");
       Assert.IsNotNull(result.Accounts);
@@ -42,27 +43,29 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     }
 
     [TestMethod]
-    [Ignore]
-    public async Task Test_GetAccountsForUser()
+    [Ignore("Implement test when we have the endpoint in cws")]
+    public async Task GetAccountsForUserTest()
     {
       throw new NotImplementedException();
     }
 
     [TestMethod]
-    [Ignore]
-    public async Task Test_GetAccountForUser()
+    [Ignore("Implement test when we have the endpoint in cws")]
+    public async Task GetAccountForUserTest()
     {
       throw new NotImplementedException();
     }
 
     [TestMethod]
-    public async Task Test_GetDeviceAccounts()
+    public async Task GetDeviceAccountsTest()
     {
       var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
       var headers = CustomHeaders();
-      var accountsResult = await client.GetMyAccounts(userId, headers);
-      var result = await client.GetDeviceLicenses(accountsResult.Accounts[0].Id, headers);
+      var accountsResult = await client.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, headers);
+      Assert.IsNotNull(accountsResult);
+      Assert.IsTrue(accountsResult.Accounts.Count > 0);
 
+      var result = await client.GetDeviceLicenses(new Guid(accountsResult.Accounts[0].Id), headers);
       Assert.IsNotNull(result, "No result from getting device licenses");
       Assert.AreEqual(DeviceLicenseResponseModel.FREE_DEVICE_LICENSE, result.Total);
     }

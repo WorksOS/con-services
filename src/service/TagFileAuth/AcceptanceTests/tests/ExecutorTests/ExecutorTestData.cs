@@ -5,14 +5,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
-using RdKafkaDriver = VSS.KafkaConsumer.Kafka.RdKafkaDriver;
 
 namespace ExecutorTests
 {
@@ -22,14 +18,8 @@ namespace ExecutorTests
     protected ILogger logger;
     protected IConfigurationStore configStore;
 
-    protected AssetRepository assetRepo;
     protected DeviceRepository deviceRepo;
-    protected CustomerRepository customerRepo;
     protected ProjectRepository projectRepo;
-    protected SubscriptionRepository subscriptionRepo;
-
-    protected IKafka producer;
-    protected string kafkaTopicName;
 
     [TestInitialize]
     public virtual void InitTest()

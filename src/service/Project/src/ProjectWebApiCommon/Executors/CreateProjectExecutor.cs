@@ -35,8 +35,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
-      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID,
-        createProjectEvent.ProjectUID,
+      await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
+        createProjectEvent.ProjectUID.ToString(),
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary,
         log, serviceExceptionHandler, projectRepo);
 
@@ -48,8 +48,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
         var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
-        if (response != null) 
-          createProjectEvent.ProjectUID = response.Id;
+        if (response != null && !string.IsNullOrEmpty(response.Id))
+          createProjectEvent.ProjectUID = new Guid(response.Id);
+        else
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7); // todoMaverick eception for bad return
         // todoMaverick what about exception/other error
       }
       catch (Exception e)
@@ -61,10 +63,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //  order changes to minimize rollback
       //    if CreateProjectInDb fails then nothing is done
       //    if CreateCoordSystem fails then project is deleted
-      //    if AssociateProjectSubscription fails ditto
+      //    if AssociateProjectSubscription fails ditto      
       createProjectEvent = await CreateProjectInDb(createProjectEvent).ConfigureAwait(false);
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
-        createProjectEvent.ProjectUID, createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
         projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");

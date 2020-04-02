@@ -12,9 +12,9 @@ using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.Data
 
 namespace VSS.MasterData.ProjectTests
 {
-  public class UtilityTestsV3
+  public class UtilityTestsV6
   {
-    public UtilityTestsV3()
+    public UtilityTestsV6()
     {
       AutoMapperUtility.AutomapperConfiguration.AssertConfigurationIsValid();
     }
@@ -29,20 +29,20 @@ namespace VSS.MasterData.ProjectTests
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
        null, null);
 
-      var kafkaEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      Assert.Equal(request.ProjectUID, kafkaEvent.ProjectUID);
-      Assert.Equal(request.ProjectType, kafkaEvent.ProjectType);
-      Assert.Equal(request.ProjectName, kafkaEvent.ProjectName);
-      Assert.Equal(request.Description, kafkaEvent.Description);
-      Assert.Equal(request.ProjectStartDate, kafkaEvent.ProjectStartDate);
-      Assert.Equal(request.ProjectEndDate, kafkaEvent.ProjectEndDate);
-      Assert.Equal(request.ProjectTimezone, kafkaEvent.ProjectTimezone);
-      Assert.Equal(request.ProjectBoundary, kafkaEvent.ProjectBoundary);
-      Assert.Equal(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName);
-      Assert.Equal(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent);
+      var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
+      Assert.Equal(request.ProjectUID, createProjectEvent.ProjectUID);
+      Assert.Equal(request.ProjectType, createProjectEvent.ProjectType);
+      Assert.Equal(request.ProjectName, createProjectEvent.ProjectName);
+      Assert.Equal(request.Description, createProjectEvent.Description);
+      Assert.Equal(request.ProjectStartDate, createProjectEvent.ProjectStartDate);
+      Assert.Equal(request.ProjectEndDate, createProjectEvent.ProjectEndDate);
+      Assert.Equal(request.ProjectTimezone, createProjectEvent.ProjectTimezone);
+      Assert.Equal(request.ProjectBoundary, createProjectEvent.ProjectBoundary);
+      Assert.Equal(request.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileName);
+      Assert.Equal(request.CoordinateSystemFileContent, createProjectEvent.CoordinateSystemFileContent);
 
-      Assert.Equal(DateTime.MinValue, kafkaEvent.ActionUTC);
-      Assert.Equal(DateTime.MinValue, kafkaEvent.ReceivedUTC);
+      Assert.Equal(DateTime.MinValue, createProjectEvent.ActionUTC);
+      Assert.Equal(DateTime.MinValue, createProjectEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<CreateProjectRequest>(request);
@@ -54,20 +54,20 @@ namespace VSS.MasterData.ProjectTests
     public void MapUpdateProjectRequestToEvent()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid().ToString(), ProjectType.Standard, "projectName", "this is the description",
+      (Guid.NewGuid(), ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 02, 15), "csName", new byte[] { 1, 2, 3 }, null);
 
-      var kafkaEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
-      Assert.Equal(request.ProjectUid, kafkaEvent.ProjectUID);
-      Assert.Equal(request.ProjectType, kafkaEvent.ProjectType);
-      Assert.Equal(request.ProjectName, kafkaEvent.ProjectName);
-      Assert.Equal(request.Description, kafkaEvent.Description);
-      Assert.Equal(request.ProjectEndDate, kafkaEvent.ProjectEndDate);
-      Assert.Equal(request.CoordinateSystemFileName, kafkaEvent.CoordinateSystemFileName);
-      Assert.Equal(request.CoordinateSystemFileContent, kafkaEvent.CoordinateSystemFileContent);
+      var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
+      Assert.Equal(request.ProjectUid, updateProjectEvent.ProjectUID);
+      Assert.Equal(request.ProjectType, updateProjectEvent.ProjectType);
+      Assert.Equal(request.ProjectName, updateProjectEvent.ProjectName);
+      Assert.Equal(request.Description, updateProjectEvent.Description);
+      Assert.Equal(request.ProjectEndDate, updateProjectEvent.ProjectEndDate);
+      Assert.Equal(request.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileName);
+      Assert.Equal(request.CoordinateSystemFileContent, updateProjectEvent.CoordinateSystemFileContent);
 
-      Assert.Equal(DateTime.MinValue, kafkaEvent.ActionUTC);
-      Assert.Equal(DateTime.MinValue, kafkaEvent.ReceivedUTC);
+      Assert.Equal(DateTime.MinValue, updateProjectEvent.ActionUTC);
+      Assert.Equal(DateTime.MinValue, updateProjectEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<UpdateProjectRequest>(request);

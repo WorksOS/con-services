@@ -23,10 +23,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task DeleteBoundaryExecutor_NoExistingBoundary()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
-      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid().ToString());
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid());
 
       var executor =
         RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy);
@@ -39,14 +39,14 @@ namespace ExecutorTests
     [TestMethod]
     public async Task DeleteBoundaryExecutor_ExistingBoundary()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid();
 
       WriteEventToDb(new CreateGeofenceEvent
       {
-        GeofenceUID = boundaryUid.ToString(),
+        GeofenceUID = boundaryUid,
         GeofenceType = GeofenceType.Filter.ToString(),
         CustomerUID = custUid,
         UserUID = userId,
@@ -59,7 +59,7 @@ namespace ExecutorTests
       WriteEventToDb(new AssociateProjectGeofence
       {
         ProjectUID = projectUid,
-        GeofenceUID = boundaryUid.ToString(),
+        GeofenceUID = boundaryUid,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       });
@@ -78,11 +78,11 @@ namespace ExecutorTests
     [TestMethod]
     public async Task DeleteBoundaryExecutor_BelongsToAnotherProject_NotAllowed()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid1 = Guid.NewGuid().ToString();
-      var projectUid2 = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid1 = Guid.NewGuid();
+      var projectUid2 = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid();
 
       WriteEventToDb(new CreateGeofenceEvent
       {
@@ -99,7 +99,7 @@ namespace ExecutorTests
       WriteEventToDb(new AssociateProjectGeofence
       {
         ProjectUID = projectUid1,
-        GeofenceUID = boundaryUid.ToString(),
+        GeofenceUID = boundaryUid,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow
       });
@@ -114,14 +114,14 @@ namespace ExecutorTests
       Assert.IsTrue(serviceException.GetContent.Contains("GetBoundary By BoundaryUid. The requested Boundary does not exist, or does not belong to the requesting project or filter."));
     }
 
-    private BoundaryUidRequestFull CreateAndValidateRequest(string custUid, string projectUid, string userId, string boundaryUid)
+    private BoundaryUidRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId, Guid boundaryUid)
     {
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUID = projectUid },
+        new ProjectData() { ProjectUID = projectUid.ToString() },
         userId.ToString(),
-        boundaryUid);
+        boundaryUid.ToString());
       request.Validate(ServiceExceptionHandler);
       return request;
     }

@@ -73,6 +73,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.Proxy", "..\..\Project\Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj", "{880A980E-4836-4393-8786-B4788EF940E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -179,6 +181,10 @@ Global
 		{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B262044-2CB7-4CD9-AAE0-CEA6714A954E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{880A980E-4836-4393-8786-B4788EF940E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{880A980E-4836-4393-8786-B4788EF940E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{880A980E-4836-4393-8786-B4788EF940E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{880A980E-4836-4393-8786-B4788EF940E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -212,6 +218,7 @@ Global
 		{ECB3967D-1DA1-4E1A-A01F-C90D84986195} = {309C06B7-E8A5-452C-9976-75DDD9AC4BD7}
 		{C828A819-F13C-42FE-9A7C-B5C3AA7EAA41} = {87C29EE9-8781-43FF-8B72-34D8665CB20A}
 		{11B141B3-B2AD-4C22-BDFC-0101EBA9B639} = {87C29EE9-8781-43FF-8B72-34D8665CB20A}
+		{880A980E-4836-4393-8786-B4788EF940E5} = {87C29EE9-8781-43FF-8B72-34D8665CB20A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C6AEAF3B-79E5-4717-B4BC-BDB9DB46CC53}

@@ -14,7 +14,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The unique ID of the project. if null, then one will be generated.
     /// </summary>
     [JsonProperty(PropertyName = "ProjectUID", Required = Required.Always)]
-    public string ProjectUid { get; set; }
+    public Guid ProjectUid { get; set; }
 
     /// <summary>
     /// The type of the project.
@@ -70,7 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// Create instance of CreateProjectRequest
     /// </summary>
-    public static UpdateProjectRequest CreateUpdateProjectRequest(string projectUid, 
+    public static UpdateProjectRequest CreateUpdateProjectRequest(Guid projectUid, 
       ProjectType projectType, string projectName, string description,
       DateTime projectEndDate, 
       string coordinateSystemFileName, byte[] coordinateSystemFileContent, string projectBoundary

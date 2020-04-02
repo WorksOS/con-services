@@ -5,9 +5,9 @@ namespace VSS.MasterData.Repositories.ExtendedModels
 {
   public class UndeleteImportedFileEvent : IProjectEvent
   {
-    public string ImportedFileUID { get; set; }
+    public Guid ImportedFileUID { get; set; }
 
-    public string ProjectUID { get; set; }
+    public Guid ProjectUID { get; set; }
 
     public DateTime ActionUTC { get; set; }
 

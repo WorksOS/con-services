@@ -1,7 +1,6 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -11,7 +10,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public DxfUnitsType DxfUnitsTypeId { get; set; }
     public DateTime FileCreatedUtc { get; set; }
     public DateTime FileUpdatedUtc { get; set; }
-    public string ImportedFileUid { get; set; }
+    public Guid ImportedFileUid { get; set; }
     public long ImportedFileId { get; set; }
     public double? Offset { get; set; }
 
@@ -29,7 +28,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       FileDescriptor fileDescriptor, string importedFileUid, long importedFileId,
       string dataOceanRootFolder, double? offset, string dataOceanFileName)
     {
-      ProjectUid = projectUid;
+      ProjectUid = new Guid(projectUid);
       ShortRaptorProjectId = shortRaptorProjectId;
       ImportedFileType = importedFileTypeId;
       SurveyedUtc = surveyedUtc;
@@ -37,7 +36,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       FileCreatedUtc = fileCreatedUtc;
       FileUpdatedUtc = fileUpdatedUtc;
       FileDescriptor = fileDescriptor;
-      ImportedFileUid = importedFileUid;
+      ImportedFileUid = new Guid(importedFileUid);
       ImportedFileId = importedFileId;
       DataOceanRootFolder = dataOceanRootFolder;
       Offset = offset;

@@ -61,7 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation($"CreateProjectV2. projectRequest: {JsonConvert.SerializeObject(projectRequest)}");
 
-      var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(projectRequest, customerUid);
+      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(projectRequest, customerUid);
 
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
 

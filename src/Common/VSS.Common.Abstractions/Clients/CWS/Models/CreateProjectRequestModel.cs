@@ -20,9 +20,12 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 
     /// <summary>
     /// cws example = "America/Denver"
+    ///    this field is optional. We should never set it.
+    ///    cws has its own set which it uses internally, and calculates off the boundary
+    ///    3dp has a different set, so we'll just use our own
     /// </summary>
-    [JsonProperty("timezone")]
-    public string timezone { get; set; }
+    //[JsonProperty("timezone")]
+    //public string timezone { get; set; }
 
     /// <summary>
     /// 3dp supports what types?

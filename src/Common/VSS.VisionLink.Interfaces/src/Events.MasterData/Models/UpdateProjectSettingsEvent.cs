@@ -5,7 +5,7 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class UpdateProjectSettingsEvent : IProjectEvent
   {
-    public string ProjectUID { get; set; }
+    public Guid ProjectUID { get; set; }
     public ProjectSettingsType ProjectSettingsType { get; set; }
     public string Settings { get; set; }
 

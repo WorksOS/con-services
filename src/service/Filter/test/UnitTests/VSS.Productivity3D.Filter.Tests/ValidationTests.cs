@@ -15,6 +15,7 @@ using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Validators;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using Xunit;
 

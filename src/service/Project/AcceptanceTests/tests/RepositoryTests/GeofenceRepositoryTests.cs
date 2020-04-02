@@ -37,15 +37,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -73,15 +73,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = null,
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -109,15 +109,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -147,15 +147,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -169,7 +169,7 @@ namespace RepositoryTests
         FillColor = 56666,
         IsTransparent = false,
         GeometryWKT = "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
-        UserUID = Guid.NewGuid().ToString(),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 5,
         ActionUTC = actionUtc.AddMinutes(2)
       };
@@ -206,15 +206,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -259,15 +259,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -302,15 +302,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -348,15 +348,15 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -400,22 +400,22 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
       var associateProjectGeofenceEvent = new AssociateProjectGeofence()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         GeofenceUID = createGeofenceEvent.GeofenceUID,
         ActionUTC = actionUtc.AddDays(1)
       };
@@ -444,22 +444,22 @@ namespace RepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = GeometryWKT,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
       var associateProjectGeofenceEvent = new AssociateProjectGeofence()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         GeofenceUID = createGeofenceEvent.GeofenceUID,
         ActionUTC = actionUtc.AddDays(1)
       };

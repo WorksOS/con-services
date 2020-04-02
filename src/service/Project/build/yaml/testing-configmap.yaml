@@ -6,8 +6,7 @@ data:
   ASSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
-  CREATEGEOFENCE_API_URL: http://localhost:5001/dummy/
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/Customers/me
+  cws_profilemanager_public_v1=http://localhost:5001/api/v1
   CUSTOMER_CACHE_LIFE: 00:30:00
   DATA_OCEAN_ROOT_FOLDER_ID: a3f51fdf-69e4-4d80-b734-e72e4f9b36d9
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"

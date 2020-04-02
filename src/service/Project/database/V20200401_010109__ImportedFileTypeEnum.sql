@@ -1,8 +1,8 @@
-CREATE TABLE IF NOT EXISTS `ImportedFileTypeEnum` (
-  `ID` int(11) NOT NULL,
-  `Description` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `UIX_ImportedFileTypeEnum_ID` (`ID`)
+CREATE TABLE IF NOT EXISTS ImportedFileTypeEnum (
+  ID int(11) NOT NULL,
+  Description varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (ID),
+  UNIQUE KEY UIX_ImportedFileTypeEnum_ID (ID)
 ) ENGINE=InnoDB CHARSET = DEFAULT COLLATE = DEFAULT;
 
 INSERT IGNORE ImportedFileTypeEnum

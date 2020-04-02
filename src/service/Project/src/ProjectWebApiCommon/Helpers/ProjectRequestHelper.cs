@@ -290,7 +290,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
       var deleteProjectEvent = new DeleteProjectEvent
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         DeletePermanently = true,
         ActionUTC = DateTime.UtcNow
       };

@@ -1,6 +1,5 @@
 ﻿using System;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 {

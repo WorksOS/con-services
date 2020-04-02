@@ -102,7 +102,7 @@ namespace VSS.MasterData.Project.WebAPI
       });
 
       // todoMaverick
-      //services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); todoMaverick 
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); 
       services.AddTransient<IWebRequest, GracefulWebRequest>();
       // endof todoMaverick
 

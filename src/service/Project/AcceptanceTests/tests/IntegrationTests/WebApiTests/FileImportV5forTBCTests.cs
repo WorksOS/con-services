@@ -14,6 +14,9 @@ namespace IntegrationTests.WebApiTests
 {
   public class FileImportV5forTBCTests : WebApiTestsBase
   {
+     /*
+    // todoMaverick
+
     [Fact]
     public async Task TestImportV2ForTbcSvlFile_AlignmentType_OK()
     {
@@ -21,7 +24,7 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
       var ts = new TestSupport();
       var importFile = new ImportFile();
-      var legacyCustomerId = TestSupport.GenerateLegacyProjectId();
+      var legacyCustomerId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -45,7 +48,7 @@ namespace IntegrationTests.WebApiTests
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyCustomerId} | false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
 
-      var project = await ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid, HttpStatusCode.OK);
+      var project = await ts.GetProjectDetailsViaWebApiV6(customerUid, projectUid, HttpStatusCode.OK);
       Assert.NotNull(project);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -74,7 +77,7 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
       var ts = new TestSupport();
       var importFile = new ImportFile();
-      var legacyCustomerId = TestSupport.GenerateLegacyProjectId();
+      var legacyCustomerId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -98,7 +101,7 @@ namespace IntegrationTests.WebApiTests
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyCustomerId} | false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
 
-      var project = await ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid, HttpStatusCode.OK);
+      var project = await ts.GetProjectDetailsViaWebApiV6(customerUid, projectUid, HttpStatusCode.OK);
       Assert.NotNull(project);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -120,7 +123,7 @@ namespace IntegrationTests.WebApiTests
       Msg.Title(testName, "Create standard project and customer then upload svl file via TBC V2 API");
       var ts = new TestSupport();
       var importFile = new ImportFile();
-      var legacyCustomerId = TestSupport.GenerateLegacyProjectId();
+      var legacyCustomerId = TestSupport.GenerateShortRaptorProjectID();
       var projectUid = Guid.NewGuid().ToString();
       var customerUid = Guid.NewGuid();
       var tccOrg = Guid.NewGuid();
@@ -144,7 +147,7 @@ namespace IntegrationTests.WebApiTests
       $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | {testName}  | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | {legacyCustomerId} | false      | BootCampDimensions.dc | {testName}  |"};
       await ts.PublishEventCollection(projectEventArray);
 
-      var project = await ts.GetProjectDetailsViaWebApiV4(customerUid, projectUid, HttpStatusCode.OK);
+      var project = await ts.GetProjectDetailsViaWebApiV6(customerUid, projectUid, HttpStatusCode.OK);
       Assert.NotNull(project);
 
       var importFilename = TestFileResolver.File(TestFile.TestAlignment1);
@@ -158,5 +161,6 @@ namespace IntegrationTests.WebApiTests
       Assert.NotEqual(HttpStatusCode.OK, importFileV2Result.Code);
       Assert.Equal(0, importFileV2Result.Id);
     }
+    */
   }
 }

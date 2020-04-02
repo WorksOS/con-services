@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -50,7 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<CustomerV1ListResult> GetCustomersForUser(string userUid)
     {
       Logger.LogInformation($"{nameof(GetCustomersForUser)}");
-      var customers = await cwsAccountClient.GetAccountsForUser(userUid);
+      var customers = await cwsAccountClient.GetAccountsForUser(new Guid(userUid));
       var customerDataResult = new CustomerDataResult();
      
       return new CustomerV1ListResult
@@ -69,7 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<CustomerV1SingleResult> GetCustomerForUser(string userUid, string customerUid)
     {
       Logger.LogInformation($"{nameof(GetCustomerForUser)}");
-      var customers = await cwsAccountClient.GetAccountsForUser(userUid);
+      var customers = await cwsAccountClient.GetAccountsForUser(new Guid(userUid));
       var customerDataResult = new CustomerDataResult();
       var foundIt = customers.Accounts.Where(c => c.Id == customerUid).FirstOrDefault();
             
@@ -86,7 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<CustomerV1DeviceLicenseResult> GetCustomerDeviceLicense(string customerUid)
     {
       Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)}");
-      var deviceLicenses = await cwsAccountClient.GetDeviceLicenses(customerUid);
+      var deviceLicenses = await cwsAccountClient.GetDeviceLicenses(new Guid(customerUid));
 
       // todoMaverick may want to move this, and into executor
       //  Which endpoint does the UI use to actually select the project. 
@@ -94,7 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //     These need to be loaded into the localDB device table so that shortRaptorAssetIds can be generated.
       //     The user, after adding devices must login to WorksOS to trigger this process,
       //        so that when tag files are loaded, the new deviceTRN+shortRaptorAssetId will be available
-      var deviceList = await CwsDeviceClient.GetDevicesForAccount(customerUid);
+      var deviceList = await CwsDeviceClient.GetDevicesForAccount(new Guid(customerUid));
       foreach (var device in deviceList.Devices)
       {
         // if it exists, does nothing but return a count of 0

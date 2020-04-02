@@ -5,7 +5,7 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class UpdateFilterEvent : IFilterEvent
   {
-    public string FilterUID { get; set; }
+    public Guid FilterUID { get; set; }
     public string Name { get; set; }
     public string FilterJson { get; set; }
     public FilterType FilterType { get; set; }
@@ -14,12 +14,12 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 
     // the following are not updateable. 
     //   They are provided to allow for insert where the update arrives from old kafka before the Create.
-    public string CustomerUID { get; set; }
+    public Guid CustomerUID { get; set; }
     [Obsolete]
-    public string UserUID { get; set; }
+    public Guid UserUID { get; set; }
 
     // UserID will include either a UserUID (GUID) or ApplicationID (string)
     public string UserID { get; set; }
-    public string ProjectUID { get; set; }
+    public Guid ProjectUID { get; set; }
   }
 }

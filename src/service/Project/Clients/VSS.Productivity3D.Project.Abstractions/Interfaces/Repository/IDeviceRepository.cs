@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository

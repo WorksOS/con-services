@@ -132,7 +132,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ImportedFileDescriptorSingleResult importedFile;
         if (creating)
         {
-          var createImportedFile = new CreateImportedFile(project.ProjectUID, importedFileTbc.Name,
+          var createImportedFile = new CreateImportedFile(new Guid(project.ProjectUID), importedFileTbc.Name,
             fileDescriptor,
             importedFileTbc.ImportedFileTypeId,
             importedFileTbc.SurfaceFile?.SurveyedUtc,

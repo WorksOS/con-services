@@ -7,13 +7,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 
   public class DeleteImportedFile : ImportedFileBase
   {
-    public string ImportedFileUid { get; set; }
+    public Guid ImportedFileUid { get; set; }
     public long ImportedFileId { get; set; }
     public long? LegacyImportedFileId { get; set; }
 
     public DeleteImportedFile(
-      string projectUid, ImportedFileType importedFileTypeId,
-      FileDescriptor fileDescriptor, string importedFileUid, long importedFileId,
+      Guid projectUid, ImportedFileType importedFileTypeId,
+      FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
       long? legacyImportedFileId, string dataOceanRootFolder, DateTime? surveyedUtc)
     {
       ProjectUid = projectUid;

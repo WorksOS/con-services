@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
+    <ProjectReference Include="..\..\..\..\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\..\src\WebApiModels\VSS.Productivity3D.TagFileAuth.WebAPI.Models.csproj" />
     <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.csproj" />
   </ItemGroup>

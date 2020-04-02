@@ -31,10 +31,10 @@ namespace RepositoryTests
 
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
         FileDescriptor = "fd",
@@ -82,10 +82,10 @@ namespace RepositoryTests
 
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         ImportedFileType = ImportedFileType.Alignment,
         Name = "Test alignment type.svl",
         FileDescriptor = "fd",
@@ -129,10 +129,10 @@ namespace RepositoryTests
       //Create the parent design first
       var createImportedFileEvent1 = new CreateImportedFileEvent()
       {
-        ProjectUID = projectUid,
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = new Guid(projectUid),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = customerUid,
+        CustomerUID = new Guid(customerUid),
         ImportedFileType = ImportedFileType.DesignSurface,
         Name = "Test design type.ttm",
         FileDescriptor = "fd",
@@ -145,10 +145,10 @@ namespace RepositoryTests
       //Create reference surface
       var createImportedFileEvent2 = new CreateImportedFileEvent()
       {
-        ProjectUID = projectUid,
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = new Guid(projectUid),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = customerUid,
+        CustomerUID = new Guid(customerUid),
         ImportedFileType = ImportedFileType.ReferenceSurface,
         Name = "Test reference type.ttm",
         FileDescriptor = "fd",
@@ -197,10 +197,10 @@ namespace RepositoryTests
 
       var createImportedFileEventP1_1 = new CreateImportedFileEvent()
       {
-        ProjectUID = project1,
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = new Guid(project1),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = customerUid,
+        CustomerUID = new Guid(customerUid),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
         FileDescriptor = "fd",
@@ -215,10 +215,10 @@ namespace RepositoryTests
 
       var createImportedFileEventP1_2 = new CreateImportedFileEvent()
       {
-        ProjectUID = project1,
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = new Guid(project1),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999) + 1,
-        CustomerUID = customerUid,
+        CustomerUID = new Guid(customerUid),
         ImportedFileType = ImportedFileType.Alignment,
         Name = "Test alginment type.svl",
         FileDescriptor = "fd",
@@ -233,10 +233,10 @@ namespace RepositoryTests
 
       var createImportedFileEventP2_1 = new CreateImportedFileEvent()
       {
-        ProjectUID = project2,
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = new Guid(project2),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999) + 2,
-        CustomerUID = customerUid,
+        CustomerUID = new Guid(customerUid),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
         FileDescriptor = "fd",
@@ -292,10 +292,10 @@ namespace RepositoryTests
 
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
         FileDescriptor = "fd",
@@ -355,10 +355,10 @@ namespace RepositoryTests
 
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
         FileDescriptor = "fd",
@@ -413,10 +413,10 @@ namespace RepositoryTests
 
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
         FileDescriptor = "fd",
@@ -458,10 +458,10 @@ namespace RepositoryTests
 
       var createImportedFileEvent = new CreateImportedFileEvent()
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ImportedFileUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        ImportedFileUID = Guid.NewGuid(),
         ImportedFileID = new Random().Next(1, 1999999),
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         ImportedFileType = ImportedFileType.SurveyedSurface,
         Name = "Test SS type.ttm",
         FileDescriptor = "fd",

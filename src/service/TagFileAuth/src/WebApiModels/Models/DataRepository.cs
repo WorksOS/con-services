@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         if (!string.IsNullOrEmpty(customerUid))
-          deviceLicenseResponseModel = await _cwsAccountClient.GetDeviceLicenses(customerUid);
+          deviceLicenseResponseModel = await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid));
       }
       catch (Exception e)
       {

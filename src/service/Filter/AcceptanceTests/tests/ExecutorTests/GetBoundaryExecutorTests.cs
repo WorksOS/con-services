@@ -33,10 +33,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_throw_When_object_doesnt_exist_in_database()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
-      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid().ToString());
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid());
 
       var executor = RequestExecutorContainer.Build<GetBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
@@ -48,10 +48,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_expected_boundary_When_object_exists_in_database()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -83,13 +83,13 @@ namespace ExecutorTests
       var filterToTest = new GeofenceDataSingleResult(
         new GeofenceData
         {
-          GeofenceUID = boundaryUid,
+          GeofenceUID = boundaryUid.ToString(),
           Description = null,
           GeofenceName = name,
-          UserUID = userId,
+          UserUID = userId.ToString(),
           GeometryWKT = boundaryPolygon,
           GeofenceType = GeofenceType.Filter.ToString(),
-          CustomerUID = custUid,
+          CustomerUID = custUid.ToString(),
           FillColor = 0,
           IsTransparent = false
         });
@@ -109,10 +109,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_expected_boundary_When_using_case_insensitive_keys()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -150,11 +150,11 @@ namespace ExecutorTests
     [TestMethod]
     public async Task GetBoundaryExecutor_BelongsToAnotherProject_NotAllowed()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid1 = Guid.NewGuid().ToString();
-      var projectUid2 = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid1 = Guid.NewGuid();
+      var projectUid2 = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid();
 
       WriteEventToDb(new CreateGeofenceEvent
       {
@@ -186,14 +186,14 @@ namespace ExecutorTests
       Assert.IsTrue(serviceException.GetContent.Contains("GetBoundary By BoundaryUid. The requested Boundary does not exist, or does not belong to the requesting project or filter."));
     }
 
-    private BoundaryUidRequestFull CreateAndValidateRequest(string custUid, string projectUid, string userId, string boundaryUid)
+    private BoundaryUidRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId, Guid boundaryUid)
     {
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
         new ProjectData() { ProjectUID = projectUid.ToString() },
         userId.ToString(),
-        boundaryUid);
+        boundaryUid.ToString());
       request.Validate(ServiceExceptionHandler);
       return request;
     }
