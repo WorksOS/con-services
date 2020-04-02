@@ -195,8 +195,13 @@ namespace VSS.TRex.Volumes.Executors
           if (_siteModel == null)
             return volumesResult;
 
-          // Determine the number of progressions that are required and estalish the required aggregation states in the aggregator
-          var numProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks);
+          // Determine the number of progressions that are required and establish the required aggregation states in the aggregator
+          var numProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks) + 1;
+          if ((EndDate.Ticks - StartDate.Ticks) % Interval.Ticks == 0)
+          {
+            numProgressions++;
+          }
+
           if (numProgressions > ClientProgressiveHeightsLeafSubGrid.MaxNumProgressions)
           {
             throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MaxNumProgressions} progressions may be requested at one time");
@@ -218,7 +223,7 @@ namespace VSS.TRex.Volumes.Executors
             {
                 Date = d,
                 VolumeType = VolumeType,
-                CellSize = _siteModel.CellSize,,
+                CellSize = _siteModel.CellSize,
                 CutTolerance = CutTolerance,
                 FillTolerance = FillTolerance
               }).ToArray()

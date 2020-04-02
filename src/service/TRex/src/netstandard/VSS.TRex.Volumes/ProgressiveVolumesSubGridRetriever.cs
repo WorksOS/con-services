@@ -132,7 +132,14 @@ namespace VSS.TRex.Volumes
       }
 
       _progressiveClientSubGrid = subGrid;
-      _progressiveClientSubGrid.NumberOfProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks);
+
+      var numProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks) + 1;
+      if ((EndDate.Ticks - StartDate.Ticks) % Interval.Ticks == 0)
+      {
+        numProgressions++;
+      }
+
+      _progressiveClientSubGrid.NumberOfProgressions = numProgressions;
 
       return base.RetrieveSubGrid(clientGrid, cellOverrideMask);
     }
