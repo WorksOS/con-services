@@ -101,7 +101,7 @@ namespace CCSS.Productivity3D.Preferences.Repository
       var prefKey = new PrefKeyDataModel
       {
         KeyName = prefKeyName,
-        PreferenceKeyUID = prefKeyUID?.ToString(),
+        PreferenceKeyUID = prefKeyUID,
         PreferenceKeyID = existing?.PreferenceKeyID ?? 0
       };
 

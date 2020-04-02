@@ -3,7 +3,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
@@ -27,19 +26,10 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
     /// </summary>
     protected IServiceExceptionHandler serviceExceptionHandler;
 
-    protected string userId;
-
-    protected IDictionary<string, string> customHeaders;
-
     /// <summary>
     /// Repository factory used extensively for project DB
     /// </summary>
     protected IPreferenceRepository preferenceRepo;
-
-    /// <summary>
-    /// Context of the API call
-    /// </summary>
-    protected IHttpContextAccessor httpContextAccessor;
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -109,16 +99,11 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
     /// </summary>
     public void Initialise(ILogger logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      string userId = null,
-      IDictionary<string, string> headers = null,
-      IPreferenceRepository preferenceRepo = null, IHttpContextAccessor httpContextAccessor = null)
+      IPreferenceRepository preferenceRepo = null)
     {
       log = logger;
       this.serviceExceptionHandler = serviceExceptionHandler;
-      this.userId = userId;
-      this.customHeaders = headers;
       this.preferenceRepo = preferenceRepo;
-      this.httpContextAccessor = httpContextAccessor;
     }
 
     /// <summary>

@@ -21,13 +21,13 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
       // Check name is unique
       if (await preferenceRepo.GetPreferenceKey(prefKeyName: createPrefKeyEvent.PreferenceKeyName) != null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 4, createPrefKeyEvent.PreferenceKeyName);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4, createPrefKeyEvent.PreferenceKeyName);
       }
 
       // Check UID is unique
       if (await preferenceRepo.GetPreferenceKey(createPrefKeyEvent.PreferenceKeyUID) != null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 5, createPrefKeyEvent.PreferenceKeyUID.ToString());
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 5, createPrefKeyEvent.PreferenceKeyUID.ToString());
       }
 
       var isCreated = 0;

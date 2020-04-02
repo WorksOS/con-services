@@ -21,7 +21,7 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
       // Check no user preferences for this key
       if (await preferenceRepo.UserPreferenceExistsForKey(deletePrefKeyEvent.PreferenceKeyUID))
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 6, deletePrefKeyEvent.PreferenceKeyUID.ToString());
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 6, deletePrefKeyEvent.PreferenceKeyUID.ToString());
       }
 
       var isDeleted = 0;

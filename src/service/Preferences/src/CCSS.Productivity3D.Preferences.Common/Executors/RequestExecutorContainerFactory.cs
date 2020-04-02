@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using CCSS.Productivity3D.Preferences.Abstractions.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using CCSS.Productivity3D.Preferences.Abstractions.Interfaces;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Handlers;
 namespace CCSS.Productivity3D.Preferences.Common.Executors
@@ -11,11 +9,9 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
     /// Builds this instance for specified executor type.
     /// </summary>
     /// <typeparam name="TExecutor">The type of the executor.</typeparam>
-    /// <returns></returns>
     public static TExecutor Build<TExecutor>(
       ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
-      string userId = null, IDictionary<string, string> headers = null,
-      IPreferenceRepository preferenceRepo = null, IHttpContextAccessor httpContextAccessor = null
+      IPreferenceRepository preferenceRepo = null
       )
       where TExecutor : RequestExecutorContainer, new()
     {
@@ -28,7 +24,7 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
       var executor = new TExecutor();
 
       executor.Initialise(
-        log, serviceExceptionHandler, userId, headers, preferenceRepo, httpContextAccessor);
+        log, serviceExceptionHandler, preferenceRepo);
 
       return executor;
     }

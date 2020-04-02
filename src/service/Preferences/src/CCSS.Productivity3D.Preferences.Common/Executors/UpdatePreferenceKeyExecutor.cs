@@ -12,7 +12,7 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
   public class UpdatePreferenceKeyExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Processes the UpdatePreferenceKeyEvent
+    /// Processes the UpdatePreferenceKeyEvent. The preference key UID is used to update the preference key name.
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -21,7 +21,7 @@ namespace CCSS.Productivity3D.Preferences.Common.Executors
       // Check name is unique
       if (await preferenceRepo.GetPreferenceKey(prefKeyName: updatePrefKeyEvent.PreferenceKeyName) != null)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 4, updatePrefKeyEvent.PreferenceKeyName);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 4, updatePrefKeyEvent.PreferenceKeyName);
       }
 
       var isUpdated = 0;

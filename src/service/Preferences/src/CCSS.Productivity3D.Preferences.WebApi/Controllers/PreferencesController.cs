@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Security.Principal;
@@ -16,7 +15,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
 using Microsoft.Extensions.DependencyInjection;
-using VSS.MasterData.Proxies;
 using VSS.VisionLink.Interfaces.Events.Preference;
 using CCSS.Productivity3D.Preferences.Common.Executors;
 using CSS.Productivity3D.Preferences.Common.Utilities;
@@ -33,7 +31,6 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
     /// <summary> base message number for Preference service </summary>
     private readonly int customErrorMessageOffset = 2000;
 
-    private readonly IHttpContextAccessor HttpContextAccessor;
     private ILogger<PreferencesController> _logger;
     private ILoggerFactory _loggerFactory;
     private IServiceExceptionHandler _serviceExceptionHandler;
@@ -52,11 +49,6 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
     protected IPreferenceRepository PreferenceRepo => _prefRepo ?? (_prefRepo = HttpContext.RequestServices.GetService<IPreferenceRepository>());
 
     /// <summary>
-    /// Gets the custom customHeaders for the request.
-    /// </summary>
-    private IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
-
-    /// <summary>
     /// Gets the user id from the current context
     /// </summary>
     private string userId => GetUserId();
@@ -64,10 +56,8 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public PreferencesController(IHttpContextAccessor httpContextAccessor)
-    {
-      this.HttpContextAccessor = httpContextAccessor;
-    }
+    public PreferencesController()
+    { }
 
     /// <summary>
     /// With the service exception try execute.
@@ -173,8 +163,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
       {
         result = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<CreateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
-              userId, customHeaders, PreferenceRepo)
+            .Build<CreateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
             .ProcessAsync(AutoMapperUtility.Automapper.Map<CreateUserPreferenceEvent>(request))
         ) as UserPreferenceV1Result;
       }
@@ -182,8 +171,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
       {
         result = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory
-            .Build<UpdateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
-              userId, customHeaders, PreferenceRepo)
+            .Build<UpdateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
             .ProcessAsync(AutoMapperUtility.Automapper.Map<UpdateUserPreferenceEvent>(request))
         ) as UserPreferenceV1Result;
 
@@ -213,8 +201,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpdateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
-            userId, customHeaders, PreferenceRepo)
+          .Build<UpdateUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
           .ProcessAsync(AutoMapperUtility.Automapper.Map<UpdateUserPreferenceEvent>(request))
       ) as UserPreferenceV1Result;
 
@@ -240,15 +227,14 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
       var deleteEvent = new DeleteUserPreferenceEvent 
       { 
         UserUID = userGuid, 
-        PreferenceKeyName = 
-        preferencekeyname, PreferenceKeyUID = preferencekeyuid
+        PreferenceKeyName = preferencekeyname, 
+        PreferenceKeyUID = preferencekeyuid
       };
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<DeleteUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler,
-            userId, customHeaders, PreferenceRepo)
-          .ProcessAsync(deleteEvent)
+          .Build<DeleteUserPreferenceExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
+          .ProcessAsync(deleteEvent) 
       );
 
       Logger.LogResult(methodName, $"userGuid: {userGuid}, preferencekeyname: {preferencekeyname}, preferencekeyuid: {preferencekeyuid}", result);
@@ -271,8 +257,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreatePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler,
-            userId, customHeaders, PreferenceRepo)
+          .Build<CreatePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
           .ProcessAsync(preferenceEvent)
       ) as PreferenceKeyV1Result;
 
@@ -294,8 +279,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<UpdatePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler,
-            userId, customHeaders, PreferenceRepo)
+          .Build<UpdatePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
           .ProcessAsync(preferenceEvent)
       ) as PreferenceKeyV1Result;
 
@@ -316,8 +300,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreatePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler,
-            userId, customHeaders, PreferenceRepo)
+          .Build<CreatePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
           .ProcessAsync(preferenceEvent)
       );
 
