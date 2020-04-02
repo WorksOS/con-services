@@ -131,9 +131,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var nowUtc = DateTime.UtcNow;
       var createImportedFileEvent = new CreateImportedFileEvent
       {
-        CustomerUID = customerUid,
-        ProjectUID = projectUid,
-        ImportedFileUID = importedFileUid,
+        CustomerUID = new Guid(customerUid),
+        ProjectUID = new Guid(projectUid),
+        ImportedFileUID = new Guid(importedFileUid),
         ImportedFileType = importedFileType,
         DxfUnitsType = dxfUnitsType,
         Name = filename,
@@ -144,7 +144,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         SurveyedUTC = surveyedUtc,
         ActionUTC = nowUtc, // aka importedUtc
         ReceivedUTC = nowUtc,
-        ParentUID = parentUid,
+        ParentUID = string.IsNullOrEmpty(parentUid) ? (Guid?)null : new Guid(parentUid),
         Offset = offset ?? 0
       };
 
@@ -162,7 +162,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (existing != null && existing.ImportedFileId > 0)
       {
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
-        createImportedFileEvent.ImportedFileUID = existing.ImportedFileUid; // for unit tests
+        createImportedFileEvent.ImportedFileUID = new Guid(existing.ImportedFileUid); // for unit tests
       }
       else
       {
@@ -184,8 +184,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var nowUtc = DateTime.UtcNow;
       var deleteImportedFileEvent = new DeleteImportedFileEvent
       {
-        ProjectUID = projectUid,
-        ImportedFileUID = importedFileUid,
+        ProjectUID = new Guid(projectUid),
+        ImportedFileUID = new Guid(importedFileUid),
         DeletePermanently = deletePermanently,
         ActionUTC = nowUtc, // aka importedDate
         ReceivedUTC = nowUtc
@@ -252,8 +252,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var nowUtc = DateTime.UtcNow;
       var undeleteImportedFileEvent = new UndeleteImportedFileEvent
       {
-        ProjectUID = projectUid,
-        ImportedFileUID = importedFileUid,
+        ProjectUID = new Guid(projectUid),
+        ImportedFileUID = new Guid(importedFileUid),
         ActionUTC = nowUtc,
         ReceivedUTC = nowUtc
       };

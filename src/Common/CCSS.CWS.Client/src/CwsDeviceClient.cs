@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS.Utilities;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
@@ -29,7 +31,12 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
-      return await GetData<DeviceResponseModel>($"/devices/{serialNumber}", null, null, null, customHeaders);
+      var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/{serialNumber}", null, null, null, customHeaders);
+      // todoMaveric what if error?
+      deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
+      deviceResponseModel.AccountId = TRNHelper.ExtractGuidAsString(deviceResponseModel.AccountId);
+
+      return deviceResponseModel;
     }
 
     /// <summary>
@@ -39,9 +46,15 @@ namespace CCSS.CWS.Client
     ///                 response fields: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
     ///   CCSSCON-114
     /// </summary>
-    public async Task<DeviceResponseModel> GetDeviceByDeviceUid(string deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
-      return await GetData<DeviceResponseModel>($"/devices/{deviceUid}", deviceUid, null, null, customHeaders); 
+      var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
+
+      var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/{deviceTrn}", deviceUid.ToString(), null, null, customHeaders);
+      // todoMaveric what if error?
+      deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
+      deviceResponseModel.AccountId = TRNHelper.ExtractGuidAsString(deviceResponseModel.AccountId);
+      return deviceResponseModel;
     }
 
     /// <summary>
@@ -52,10 +65,19 @@ namespace CCSS.CWS.Client
     ///                 response fields: DeviceTRN
     ///   CCSSCON-136
     /// </summary>
-    public async Task<DeviceListResponseModel> GetDevicesForAccount(string accountUid, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IDictionary<string, string> customHeaders = null)
     {
-      return await GetData<DeviceListResponseModel>($"/accounts/{accountUid}/devices", accountUid, null, null, customHeaders); 
+      var accountTrn = TRNHelper.MakeTRN(accountUid, TRNHelper.TRN_ACCOUNT);
+      var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices", accountUid.ToString(), null, null, customHeaders);
       //  parameters: &includeTccRegistrationStatus=true
+      // todoMaveric what if error?
+
+      foreach (var device in deviceListResponseModel.Devices)
+      {
+        device.Id = TRNHelper.ExtractGuidAsString(device.Id);
+        device.AccountId = TRNHelper.ExtractGuidAsString(device.AccountId);
+      }
+      return deviceListResponseModel;
     }
 
     /// <summary>
@@ -65,9 +87,16 @@ namespace CCSS.CWS.Client
     ///                 response fields: ProjectTRN
     ///   CCSSCON-113
     /// </summary>
-    public async Task<ProjectListResponseModel> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
+    public async Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
-      return await GetData<ProjectListResponseModel>($"/device/{deviceUid}/projects", deviceUid, null, null, customHeaders);
+      var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
+      var projectListResponse = await GetData<ProjectListResponseModel>($"/device/{deviceTrn}/projects", deviceUid.ToString(), null, null, customHeaders);
+      foreach (var project in projectListResponse.Projects)
+      {
+        project.accountId = TRNHelper.ExtractGuidAsString(project.accountId);
+        project.projectId = TRNHelper.ExtractGuidAsString(project.projectId);
+      }
+      return projectListResponse;
     }
 
   }

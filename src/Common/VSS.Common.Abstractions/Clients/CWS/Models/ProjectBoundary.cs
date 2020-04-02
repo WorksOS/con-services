@@ -9,7 +9,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// e.g. Polygon
     /// </summary>
     [JsonProperty("type")]
-    public string type { get; set; }
+    public string type { get; set; } = "POLYGON";
 
     /// <summary>
     /// long, lat

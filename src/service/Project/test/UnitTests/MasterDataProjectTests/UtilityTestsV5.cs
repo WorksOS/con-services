@@ -50,7 +50,7 @@ namespace VSS.MasterData.ProjectTests
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
       var creatProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid);
 
-      Assert.Null(creatProjectEvent.ProjectUID);
+      Assert.Equal(Guid.Empty, creatProjectEvent.ProjectUID);
       Guid.TryParse(creatProjectEvent.CustomerUID.ToString(), out var customerUidOut);
       Assert.Equal(_customerUid, customerUidOut.ToString());
       Assert.Equal(expectedProjectType, creatProjectEvent.ProjectType);

@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.MasterData.Repositories.Extensions;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.Filter.Repository
       if (evt is CreateGeofenceEvent)
       {
         var geofenceEvent = (CreateGeofenceEvent)evt;
-        geofence.GeofenceUID = geofenceEvent.GeofenceUID;
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
         geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT);
@@ -50,8 +50,8 @@ namespace VSS.Productivity3D.Filter.Repository
         geofence.IsTransparent = geofenceEvent.IsTransparent;
         geofence.IsDeleted = false;
         geofence.Description = geofenceEvent.Description;
-        geofence.CustomerUID = geofenceEvent.CustomerUID;
-        geofence.UserUID = geofenceEvent.UserUID;
+        geofence.CustomerUID = geofenceEvent.CustomerUID.ToString();
+        geofence.UserUID = geofenceEvent.UserUID.ToString();
         geofence.LastActionedUTC = geofenceEvent.ActionUTC;
         geofence.AreaSqMeters = geofenceEvent.AreaSqMeters;
         eventType = "CreateGeofenceEvent";
@@ -59,7 +59,7 @@ namespace VSS.Productivity3D.Filter.Repository
       else if (evt is UpdateGeofenceEvent)
       {
         var geofenceEvent = (UpdateGeofenceEvent)evt;
-        geofence.GeofenceUID = geofenceEvent.GeofenceUID;
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.Name = geofenceEvent.GeofenceName;
         geofence.GeofenceType = geofenceType;
         geofence.GeometryWKT = RepositoryHelper.GetPolygonWKT(geofenceEvent.GeometryWKT);
@@ -67,7 +67,7 @@ namespace VSS.Productivity3D.Filter.Repository
         geofence.FillColor = geofenceEvent.FillColor;
         geofence.IsTransparent = geofenceEvent.IsTransparent;
         geofence.Description = geofenceEvent.Description;
-        geofence.UserUID = geofenceEvent.UserUID;
+        geofence.UserUID = geofenceEvent.UserUID.ToString();
         geofence.AreaSqMeters = geofenceEvent.AreaSqMeters;
         geofence.LastActionedUTC = geofenceEvent.ActionUTC;
         eventType = "UpdateGeofenceEvent";
@@ -75,7 +75,7 @@ namespace VSS.Productivity3D.Filter.Repository
       else if (evt is DeleteGeofenceEvent)
       {
         var geofenceEvent = (DeleteGeofenceEvent)evt;
-        geofence.GeofenceUID = geofenceEvent.GeofenceUID;
+        geofence.GeofenceUID = geofenceEvent.GeofenceUID.ToString();
         geofence.LastActionedUTC = geofenceEvent.ActionUTC;
         eventType = "DeleteGeofenceEvent";
       }

@@ -84,7 +84,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync(deviceData);
-      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
+      cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
       var projects = 
         new List<ProjectData>()
         {
@@ -113,7 +113,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync(deviceData);
-      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
+      cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), null)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>()
           { new ProjectData() {
               ProjectUID = _projectUidToBeDiscovered,
@@ -140,7 +140,7 @@ namespace WebApiTests.Executors
       // device whose account has licenses
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 2 };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), null)).ReturnsAsync(deviceData);
-      cwsAccountClient.Setup(a => a.GetDeviceLicenses(deviceData.CustomerUID, null)).ReturnsAsync(deviceLicenseResponseModel);
+      cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), null)).ReturnsAsync(deviceLicenseResponseModel);
       var projects = new List<ProjectData>
       {
         new ProjectData

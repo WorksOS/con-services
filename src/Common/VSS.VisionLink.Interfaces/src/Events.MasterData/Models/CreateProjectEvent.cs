@@ -5,8 +5,8 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class CreateProjectEvent : IProjectEvent
   {
-    public string ProjectUID { get; set; }
-    public string CustomerUID { get; set; }
+    public Guid ProjectUID { get; set; }
+    public Guid CustomerUID { get; set; }
     public int ShortRaptorProjectId { get; set; }
     public string ProjectName { get; set; }
     public string Description { get; set; }

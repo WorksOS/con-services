@@ -39,17 +39,17 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task DeleteFilterExecutor_ExistingFilter(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "blah";
       string filterJson = "theJsonString";
 
       WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = custUid,
-        UserID = userId,
+        UserID = userId.ToString(),
         ProjectUID = projectUid,
         FilterUID = filterUid,
         Name = name,
@@ -59,7 +59,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = CreateAndValidateRequest(name: name, customerUid: custUid, userId: userId, projectUid: projectUid, filterUid: filterUid, filterType: filterType, onlyFilterUid: true);
+      var request = CreateAndValidateRequest(name: name, customerUid: custUid.ToString(), userId: userId.ToString(), projectUid: projectUid.ToString(), filterUid: filterUid.ToString(), filterType: filterType, onlyFilterUid: true);
 
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectProxy,

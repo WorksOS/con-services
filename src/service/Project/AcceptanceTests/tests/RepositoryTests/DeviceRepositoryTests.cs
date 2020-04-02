@@ -27,19 +27,19 @@ namespace RepositoryTests
         var firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
         var deviceEvent = new CreateDeviceEvent()
         {
-          DeviceUID = Guid.NewGuid().ToString(),
+          DeviceUID = Guid.NewGuid(),
           ActionUTC = firstCreatedUTC
         };
 
-        var g = await deviceRepository.GetDevice(deviceEvent.DeviceUID);
+        var g = await deviceRepository.GetDevice(deviceEvent.DeviceUID.ToString());
         Assert.Null(g);
 
         var s = await deviceRepository.StoreEvent(deviceEvent);
         Assert.Equal(1, s);
 
-        g = await deviceRepository.GetDevice(deviceEvent.DeviceUID);
+        g = await deviceRepository.GetDevice(deviceEvent.DeviceUID.ToString());
         Assert.NotNull(g);
-        Assert.Equal(deviceEvent.DeviceUID, g.DeviceUID);
+        Assert.Equal(deviceEvent.DeviceUID.ToString(), g.DeviceUID);
         Assert.True(g.ShortRaptorAssetID > 0);
         Assert.Equal(deviceEvent.ActionUTC, g.LastActionedUTC);
         return null;
@@ -57,25 +57,25 @@ namespace RepositoryTests
         var firstCreatedUTC = new DateTime(2015, 1, 1, 2, 30, 3);
         var deviceEvent = new CreateDeviceEvent()
         {
-          DeviceUID = Guid.NewGuid().ToString(),
+          DeviceUID = Guid.NewGuid(),
           ActionUTC = firstCreatedUTC
         };
 
         var deviceEvent2 = new CreateDeviceEvent()
         {
-          DeviceUID = Guid.NewGuid().ToString(),
+          DeviceUID = Guid.NewGuid(),
           ActionUTC = firstCreatedUTC.AddDays(1)
         };
 
         await deviceRepository.StoreEvent(deviceEvent);
         await deviceRepository.StoreEvent(deviceEvent2);
 
-        var firstDevice = await deviceRepository.GetDevice(deviceEvent.DeviceUID);
-        Assert.Equal(deviceEvent.DeviceUID, firstDevice.DeviceUID);
+        var firstDevice = await deviceRepository.GetDevice(deviceEvent.DeviceUID.ToString());
+        Assert.Equal(deviceEvent.DeviceUID.ToString(), firstDevice.DeviceUID);
         Assert.True(firstDevice.ShortRaptorAssetID > 0);
 
-        var secondDevice = await deviceRepository.GetDevice(deviceEvent2.DeviceUID);
-        Assert.Equal(deviceEvent2.DeviceUID, secondDevice.DeviceUID);
+        var secondDevice = await deviceRepository.GetDevice(deviceEvent2.DeviceUID.ToString());
+        Assert.Equal(deviceEvent2.DeviceUID.ToString(), secondDevice.DeviceUID);
         Assert.True(secondDevice.ShortRaptorAssetID > firstDevice.ShortRaptorAssetID);
 
         return null;

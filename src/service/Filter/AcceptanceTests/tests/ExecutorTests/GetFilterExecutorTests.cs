@@ -47,17 +47,17 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task GetFilterExecutor_ExistingFilter(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "blah";
       string filterJson = "{\"dateRangeType\":1,\"elevationType\":null}";
 
       WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = custUid,
-        UserID = userId,
+        UserID = userId.ToString(),
         ProjectUID = projectUid,
         FilterUID = filterUid,
         Name = name,
@@ -67,7 +67,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId,  new ProjectData() { ProjectUID = projectUid }, new FilterRequest {FilterUid = filterUid, FilterType = filterType});
+      var request = FilterRequestFull.Create(null, custUid.ToString(), false, userId.ToString(),  new ProjectData() { ProjectUID = projectUid.ToString() }, new FilterRequest {FilterUid = filterUid.ToString(), FilterType = filterType});
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -76,7 +76,7 @@ namespace ExecutorTests
       var filterToTest = new FilterDescriptorSingleResult(
         new FilterDescriptor
         {
-          FilterUid = filterUid,
+          FilterUid = filterUid.ToString(),
           Name = name,
           FilterType = filterType,
           FilterJson = filterJson
@@ -102,17 +102,17 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task GetFilterExecutor_ExistingFilterApplicationContext(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "blah";
       string filterJson = "{\"dateRangeType\":1,\"elevationType\":null}";
 
       WriteEventToDb(new CreateFilterEvent
       {
         CustomerUID = custUid,
-        UserID = userId,
+        UserID = userId.ToString(),
         ProjectUID = projectUid,
         FilterUID = filterUid,
         Name = name,
@@ -122,7 +122,7 @@ namespace ExecutorTests
         ReceivedUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, true, "0", new ProjectData() { ProjectUID = projectUid }, new FilterRequest { FilterUid = filterUid, FilterType = filterType });
+      var request = FilterRequestFull.Create(null, custUid.ToString(), true, "0", new ProjectData() { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), FilterType = filterType });
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -131,7 +131,7 @@ namespace ExecutorTests
       var filterToTest = new FilterDescriptorSingleResult(
         new FilterDescriptor
         {
-          FilterUid = filterUid,
+          FilterUid = filterUid.ToString(),
           Name = name,
           FilterType = filterType,
           FilterJson = filterJson
@@ -163,10 +163,10 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = custUid,
+        CustomerUID = new Guid(custUid),
         UserID = userId,
-        ProjectUID = projectUid,
-        FilterUID = filterUid,
+        ProjectUID = new Guid(projectUid),
+        FilterUID = new Guid(filterUid),
         Name = name,
         FilterType = filterType,
         FilterJson = "{\"dateRangeType\":0,\"elevationType\":null}",
@@ -197,10 +197,10 @@ namespace ExecutorTests
 
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
+        FilterUID = Guid.NewGuid(),
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
@@ -244,10 +244,10 @@ namespace ExecutorTests
 
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
+        FilterUID = Guid.NewGuid(),
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
@@ -308,10 +308,10 @@ namespace ExecutorTests
 
       var filterCreateEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString(),
-        FilterUID = Guid.NewGuid().ToString(),
+        ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
+        FilterUID = Guid.NewGuid(),
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",

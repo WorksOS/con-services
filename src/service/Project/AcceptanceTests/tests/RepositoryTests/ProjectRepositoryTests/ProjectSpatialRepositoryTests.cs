@@ -30,8 +30,8 @@ namespace RepositoryTests
       
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -44,7 +44,7 @@ namespace RepositoryTests
 
       projectRepo.StoreEvent(createProjectEvent).Wait();
      
-      var g = projectRepo.GetIntersectingProjects(createProjectEvent.CustomerUID, 15, 180, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
+      var g = projectRepo.GetIntersectingProjects(createProjectEvent.CustomerUID.ToString(), 15, 180, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
       var projects = g.Result;
       Assert.NotNull(g.Result);
       Assert.Single(g.Result);
@@ -63,8 +63,8 @@ namespace RepositoryTests
            
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -77,7 +77,7 @@ namespace RepositoryTests
       
       projectRepo.StoreEvent(createProjectEvent).Wait();      
 
-      var g = projectRepo.GetIntersectingProjects(createProjectEvent.CustomerUID, 50, 180, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
+      var g = projectRepo.GetIntersectingProjects(createProjectEvent.CustomerUID.ToString(), 50, 180, createProjectEvent.ProjectStartDate.AddDays(1)); g.Wait();
       Assert.NotNull(g.Result);
       Assert.Empty(g.Result);
     }
@@ -94,8 +94,8 @@ namespace RepositoryTests
       
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -127,8 +127,8 @@ namespace RepositoryTests
       
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -161,8 +161,8 @@ namespace RepositoryTests
       
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -196,8 +196,8 @@ namespace RepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -230,8 +230,8 @@ namespace RepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -264,8 +264,8 @@ namespace RepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -298,8 +298,8 @@ namespace RepositoryTests
       
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -332,8 +332,8 @@ namespace RepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -366,8 +366,8 @@ namespace RepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,

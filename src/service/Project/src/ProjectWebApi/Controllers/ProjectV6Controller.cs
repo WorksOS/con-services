@@ -196,11 +196,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ReceivedUTC = createProjectEvent.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
-      if (createProjectEvent.CustomerUID != customerUid)
+      if (createProjectEvent.CustomerUID.ToString() != customerUid)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
 
       // ProjectUID won't be filled yet
-      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID, Logger, ServiceExceptionHandler, ProjectRepo);
+      await ProjectDataValidator.ValidateProjectName(customerUid, createProjectEvent.ProjectName, createProjectEvent.ProjectUID.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
 
       await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
@@ -278,8 +278,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       }
 
       Logger.LogInformation("UpdateProjectV6. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
-      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
-      project.CustomerUID = customerUid;
+      var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);      
       project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
@@ -298,7 +297,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation("UpdateProjectV6. Invalidating 3D PM cache");
-      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
+      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID.ToString()));
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
@@ -364,7 +363,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       LogCustomerDetails("ArchiveProjectV6", projectUid);
       var project = new DeleteProjectEvent
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         DeletePermanently = false,
         ActionUTC = DateTime.UtcNow,
         ReceivedUTC = DateTime.UtcNow

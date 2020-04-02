@@ -34,9 +34,9 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_no_boundaries_when_none_exist()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
@@ -53,10 +53,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_all_boundaries_for_a_given_Project_when_Project_exists()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -89,12 +89,12 @@ namespace ExecutorTests
       var boundaryToTest = new GeofenceDataSingleResult(
         new GeofenceData
         {
-          GeofenceUID = boundaryUid,
+          GeofenceUID = boundaryUid.ToString(),
           GeofenceName = name,
-          UserUID = userId,
+          UserUID = userId.ToString(),
           GeometryWKT = boundaryPolygon,
           GeofenceType = GeofenceType.Filter.ToString(),
-          CustomerUID = custUid,
+          CustomerUID = custUid.ToString(),
           FillColor = 0,
           IsTransparent = false,
           Description = null
@@ -117,10 +117,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task Should_return_expected_Geofence_When_using_case_insensitive_keys()
     {
-      var custUid = Guid.NewGuid().ToString();
-      var userId = Guid.NewGuid().ToString();
-      var projectUid = Guid.NewGuid().ToString();
-      var boundaryUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var boundaryUid = Guid.NewGuid();
       var name = "name";
 
       WriteEventToDb(new CreateGeofenceEvent
@@ -155,7 +155,7 @@ namespace ExecutorTests
       Assert.AreEqual(1, boundaries.Count);
     }
 
-    private BaseRequestFull CreateAndValidateRequest(string custUid, string projectUid, string userId, string projectGeometryWKT)
+    private BaseRequestFull CreateAndValidateRequest(Guid custUid, Guid projectUid, Guid userId, string projectGeometryWKT)
     {
       var request = BaseRequestFull.Create(
         custUid.ToString(),

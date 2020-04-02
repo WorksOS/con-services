@@ -29,7 +29,7 @@ namespace RepositoryTests
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
         UserID = Guid.NewGuid().ToString(),
@@ -84,7 +84,7 @@ namespace RepositoryTests
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
         UserID = Guid.NewGuid().ToString(),
@@ -93,7 +93,7 @@ namespace RepositoryTests
 
       var updatedProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         ProjectSettingsType = createProjectSettingsEvent.ProjectSettingsType, 
         Settings = settingsupdated,
         UserID = createProjectSettingsEvent.UserID,
@@ -135,7 +135,7 @@ namespace RepositoryTests
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
         UserID = Guid.NewGuid().ToString(),
@@ -144,7 +144,7 @@ namespace RepositoryTests
 
       var updatedProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         ProjectSettingsType = ProjectSettingsType.ImportedFiles,
         Settings = settingsupdated,
         UserID = createProjectSettingsEvent.UserID,
@@ -190,7 +190,7 @@ namespace RepositoryTests
 
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         ProjectSettingsType = ProjectSettingsType.Targets,
         Settings = settings,
         UserID = Guid.NewGuid().ToString(),

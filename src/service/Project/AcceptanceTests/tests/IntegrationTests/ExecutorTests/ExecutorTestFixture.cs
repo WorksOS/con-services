@@ -86,8 +86,8 @@ namespace IntegrationTests.ExecutorTests
 
       var createProjectEvent = new CreateProjectEvent()
       {
-        CustomerUID = customerUid,
-        ProjectUID = projectUid,
+        CustomerUID = new Guid(customerUid),
+        ProjectUID = new Guid(projectUid),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         Description = "the Description",
@@ -112,7 +112,7 @@ namespace IntegrationTests.ExecutorTests
       var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);     
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         UserID = userId,
         Settings = settings,
         ProjectSettingsType = settingsType,

@@ -10,6 +10,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
 using VSS.Common.ServiceDiscovery;
+using VSS.Common.Abstractions.Clients.CWS.Utilities;
 
 namespace CCSS.CWS.Client.UnitTests.Staging
 {
@@ -36,10 +37,10 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     [TestMethod]
     [Ignore] // todoMaverick this fails as don't have a good user name to get token, but don't want to insert projects all the time anyway
              // (requires a user token. This is ok as will have one via from ProjectSvc) 
-    public async Task Test_CreateProject()
+    public async Task CreateProjectTest()
     {
       var accountClient = ServiceProvider.GetRequiredService<ICwsAccountClient>();
-      var accountListResponseModel = await accountClient.GetMyAccounts(userId, CustomHeaders());
+      var accountListResponseModel = await accountClient.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
       Assert.IsNotNull(accountListResponseModel, "No result from getting my accounts");
       Assert.IsTrue(accountListResponseModel.Accounts.Count > 0);
 
@@ -48,7 +49,6 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       {             
         accountId = accountListResponseModel.Accounts[0].Id,
         projectName = $"Merino test project {Guid.NewGuid()}",
-        timezone = "America/Denver",
         boundary = new ProjectBoundary()
         {
           type = "POLYGON",
@@ -63,6 +63,20 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       Assert.IsNotNull(result, "No result from creating my project");
       Assert.IsNotNull(result.Id);
     }
-       
-  }
+
+    [TestMethod]
+    [Ignore("Implement test when we have the endpoint in cws")]
+    public void UpdateProjectDetailsTest()
+    {
+      throw new NotImplementedException();
+    }
+
+    [TestMethod]
+    [Ignore("Implement test when we have the endpoint in cws")]
+    public void UpdateProjectBoundaryTest()
+    {
+      throw new NotImplementedException();
+    }
+
+    }
 }

@@ -195,8 +195,8 @@ namespace WebApiTests.Executors
       string expectedMessageResult
     )
     {
-      cwsAccountClient.Setup(d => d.GetDeviceLicenses(projectAccountUid, null)).ReturnsAsync(projectDeviceLicenseResponseModel);
-      cwsAccountClient.Setup(d => d.GetDeviceLicenses(deviceAccountUid, null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
+      cwsAccountClient.Setup(d => d.GetDeviceLicenses(new Guid(projectAccountUid), null)).ReturnsAsync(projectDeviceLicenseResponseModel);
+      cwsAccountClient.Setup(d => d.GetDeviceLicenses(new Guid(deviceAccountUid), null)).ReturnsAsync(deviceDeviceLicenseResponseModel);
       
       projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(deviceAccountUid, It.IsAny<double>(), It.IsAny<double>(), It.IsAny<string>(), It.IsAny<DateTime>(), null))
         .ReturnsAsync(new List<ProjectData> { projectOfInterest });

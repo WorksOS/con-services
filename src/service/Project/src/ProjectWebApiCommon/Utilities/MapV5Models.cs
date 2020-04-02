@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -17,8 +18,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(source);
 
       // project identity must come from profileX now
-      //createProjectEvent.ProjectUID = Guid.NewGuid();
-      createProjectEvent.CustomerUID = customerUid;
+      createProjectEvent.CustomerUID = new Guid(customerUid);
 
       var internalPoints = AutoMapperUtility.Automapper.Map<List<Point>>(source.BoundaryLL);
       createProjectEvent.ProjectBoundary =

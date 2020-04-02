@@ -68,9 +68,9 @@ namespace VSS.MasterData.ProjectTests.Executors
       _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
       _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
-      var projectUid = Guid.NewGuid().ToString();
+      var projectUid = Guid.NewGuid();
       var projectType = ProjectType.Standard;
-      var existingProject = await CreateProject(projectUid, projectType);
+      var existingProject = await CreateProject(projectUid.ToString(), projectType);
 
       if (existingProject.ProjectUID != null)
       {
@@ -121,11 +121,11 @@ namespace VSS.MasterData.ProjectTests.Executors
     {
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         ProjectType = projectType,
         CoordinateSystemFileName = coordinateSystemFileName,
         CoordinateSystemFileContent = coordinateSystemFileContent,
-        CustomerUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
         ProjectName = "projectName",
         Description = "this is the description",
         ProjectStartDate = new DateTime(2017, 01, 20),

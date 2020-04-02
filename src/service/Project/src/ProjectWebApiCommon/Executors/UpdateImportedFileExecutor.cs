@@ -47,8 +47,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useTrexGatewayDesignImport && importedFile.IsDesignFileType)
       {
-        await ImportedFileRequestHelper.NotifyTRexUpdateFile(importedFile.ProjectUid,
-          importedFile.ImportedFileType, importedFile.FileDescriptor.FileName, importedFile.ImportedFileUid,
+        await ImportedFileRequestHelper.NotifyTRexUpdateFile(importedFile.ProjectUid.ToString(),
+          importedFile.ImportedFileType, importedFile.FileDescriptor.FileName, importedFile.ImportedFileUid.ToString(),
           importedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy);
@@ -60,10 +60,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             importedFile.ImportedFileType == ImportedFileType.SurveyedSurface)
         {
           await ImportedFileRequestHelper.NotifyRaptorAddFile(
-            importedFile.ShortRaptorProjectId, importedFile.ProjectUid,
+            importedFile.ShortRaptorProjectId, importedFile.ProjectUid.ToString(),
             importedFile.ImportedFileType, importedFile.DxfUnitsTypeId,
             importedFile.FileDescriptor, importedFile.ImportedFileId,
-            importedFile.ImportedFileUid, false, log, customHeaders,
+            importedFile.ImportedFileUid.ToString(), false, log, customHeaders,
             serviceExceptionHandler, productivity3dV2ProxyNotification,
             projectRepo);
         }
@@ -73,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, importedFile.ProjectUid, importedFile.ImportedFileUid, productivity3dV2ProxyCompaction, customHeaders, log,
+            customerUid, importedFile.ProjectUid.ToString(), importedFile.ImportedFileUid.ToString(), productivity3dV2ProxyCompaction, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, importedFile.DataOceanFileName, importedFile.DataOceanRootFolder);
         }
 

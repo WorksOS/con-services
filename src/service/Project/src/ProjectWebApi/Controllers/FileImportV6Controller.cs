@@ -388,8 +388,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       ImportedFileUtils.ValidateEnvironmentVariables(existing.ImportedFileType, ConfigStore, ServiceExceptionHandler);
 
       var deleteImportedFile = new DeleteImportedFile(
-        projectUid, existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor),
-        existing.ImportedFileUid, existing.ImportedFileId, existing.LegacyImportedFileId,
+        new Guid(projectUid), existing.ImportedFileType, JsonConvert.DeserializeObject<FileDescriptor>(existing.FileDescriptor),
+        new Guid(existing.ImportedFileUid), existing.ImportedFileId, existing.LegacyImportedFileId,
         DataOceanRootFolderId, existing.SurveyedUtc);
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
@@ -540,8 +540,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (creating)
       {
         var createImportedFile = new CreateImportedFile(
-          projectUid, filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType,
-          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolderId, parentUid, offset, importedFileUid, dataOceanFileName);
+          new Guid(projectUid), filename, fileDescriptor, importedFileType, surveyedUtc, dxfUnitsType,
+          fileCreatedUtc, fileUpdatedUtc, DataOceanRootFolderId, 
+          string.IsNullOrEmpty(parentUid) ? (Guid?) null : new Guid(parentUid), offset, importedFileUid, dataOceanFileName);
 
         importedFile = await WithServiceExceptionTryExecuteAsync(() =>
           RequestExecutorContainerFactory

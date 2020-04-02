@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -398,7 +399,7 @@ namespace ExecutorTests
       Guid customerUID = owningCustomerUID.Value;
       CreateCustomer(customerUID, "");
       isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUID,
-        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill);
+        ProjectType.Standard);
       Assert.IsTrue(isCreatedOk, "created project");
 
       isCreatedOk = CreateAssetSub(assetUID, owningCustomerUID.Value, "3D Project Monitoring");
@@ -441,7 +442,7 @@ namespace ExecutorTests
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       CreateCustomer(customerUid.Value, "");
       isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUid.Value,
-        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill);
+        ProjectType.Standard);
       Assert.IsTrue(isCreatedOk, "created project");
 
       Guid? dealerCustomerUID = Guid.NewGuid();
@@ -488,7 +489,7 @@ namespace ExecutorTests
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       CreateCustomer(customerUid.Value, "");
       isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUid.Value,
-        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill);
+        ProjectType.Standard);
       Assert.IsTrue(isCreatedOk, "created project");
 
       isCreatedOk = CreateAssetSub(assetUID, customerUid.Value, "3D Project Monitoring");
@@ -532,7 +533,7 @@ namespace ExecutorTests
       int legacyProjectId = new Random().Next(0, int.MaxValue);
       CreateCustomer(customerUid.Value, "");
       isCreatedOk = CreateProject(projectUID, legacyProjectId, customerUid.Value,
-        VSS.VisionLink.Interfaces.Events.MasterData.Models.ProjectType.LandFill);
+        ProjectType.Standard);
       Assert.IsTrue(isCreatedOk, "created project");
 
       Guid? dealerCustomerUID = Guid.NewGuid();

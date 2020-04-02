@@ -37,8 +37,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         Description = "the Description",
@@ -53,7 +53,7 @@ namespace RepositoryTests.ProjectRepositoryTests
         CoordinateSystemFileName = "thisLocation\\this.cs"
       };
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
@@ -61,18 +61,18 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result, 
-        createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
         createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType, 
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
            
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 1);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
 
-      var pg = projectRepo.GetAssociatedGeofences(createProjectEvent.ProjectUID);
+      var pg = projectRepo.GetAssociatedGeofences(createProjectEvent.ProjectUID.ToString());
       pg.Wait();
       Assert.NotNull(pg.Result);
       var projectGeofenceList = pg.Result.ToList();
@@ -90,8 +90,8 @@ namespace RepositoryTests.ProjectRepositoryTests
             
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name(株)城内組　二見地区築堤護岸工事",
         Description = "the Description(株)城内組　二見地区築堤護岸工事",
@@ -110,16 +110,16 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-       createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+       createProjectEvent.ProjectUID.ToString().ToString(), createProjectEvent.CustomerUID.ToString(), 0,
        createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
        createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
        createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 1);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
     }
 
     /// <summary>
@@ -133,8 +133,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = 0,
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -150,16 +150,16 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-        createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
         createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
          createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
          createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
       
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 1);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
     }
 
     /// <summary>
@@ -173,8 +173,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent1 = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -188,8 +188,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent2 = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = createProjectEvent1.ShortRaptorProjectId,
         ProjectName = "The Project Name 2",
         ProjectType = createProjectEvent1.ProjectType,
@@ -210,8 +210,8 @@ namespace RepositoryTests.ProjectRepositoryTests
       s2.Wait();
       Assert.Equal(0, s2.Result);
 
-      CheckProjectHistoryCount(createProjectEvent1.ProjectUID, 1);
-      CheckProjectHistoryCount(createProjectEvent2.ProjectUID, 0);
+      CheckProjectHistoryCount(createProjectEvent1.ProjectUID.ToString(), 1);
+      CheckProjectHistoryCount(createProjectEvent2.ProjectUID.ToString(), 0);
     }
 
     /// <summary>
@@ -225,8 +225,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -239,7 +239,7 @@ namespace RepositoryTests.ProjectRepositoryTests
         ActionUTC = actionUtc
       };
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
@@ -251,16 +251,16 @@ namespace RepositoryTests.ProjectRepositoryTests
       createProjectEvent.ActionUTC = createProjectEvent.ActionUTC.AddMinutes(-2);
       projectRepo.StoreEvent(createProjectEvent).Wait();
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-        createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
         createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 2);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);
     }
 
     /// <summary>
@@ -274,8 +274,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -303,7 +303,7 @@ namespace RepositoryTests.ProjectRepositoryTests
         ActionUTC = actionUtc.AddHours(1)
       };
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
@@ -314,15 +314,15 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);     
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       CompareProject(g.Result,
-        createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
         updateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
         createProjectEvent.ProjectStartDate, updateProjectEvent.ProjectEndDate,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, updateProjectEvent.ActionUTC, updateProjectEvent.CoordinateSystemFileName);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 2);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);
     }
 
     /// <summary>
@@ -335,8 +335,8 @@ namespace RepositoryTests.ProjectRepositoryTests
       
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -365,16 +365,16 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-        createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
         createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, updateProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 2);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);
     }
 
     /// <summary>
@@ -388,8 +388,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -413,7 +413,7 @@ namespace RepositoryTests.ProjectRepositoryTests
         ActionUTC = actionUtc.AddHours(-1)
       };
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
@@ -426,16 +426,16 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(0, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-             createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+             createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
              createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
              createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
              createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
              createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 1);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
     }
 
     /// <summary>
@@ -448,8 +448,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -465,7 +465,6 @@ namespace RepositoryTests.ProjectRepositoryTests
       var updateProjectEvent = new UpdateProjectEvent
       {
         ProjectUID = createProjectEvent.ProjectUID,
-        CustomerUID = createProjectEvent.CustomerUID,
         ProjectName = "The NEW Project Name",
         ProjectType = createProjectEvent.ProjectType,
         ProjectTimezone = createProjectEvent.ProjectTimezone,
@@ -483,15 +482,15 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
            
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       CompareProject(g.Result,
-         createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
          updateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
          createProjectEvent.ProjectStartDate, updateProjectEvent.ProjectEndDate,
          createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
          createProjectEvent.ProjectBoundary, updateProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 2);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);
     }
 
     /// <summary>
@@ -504,8 +503,8 @@ namespace RepositoryTests.ProjectRepositoryTests
           
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -536,10 +535,10 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-        createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
         updateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
         createProjectEvent.ProjectStartDate, updateProjectEvent.ProjectEndDate,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
@@ -562,8 +561,8 @@ namespace RepositoryTests.ProjectRepositoryTests
      
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -616,7 +615,7 @@ namespace RepositoryTests.ProjectRepositoryTests
         ActionUTC = actionUtc.AddHours(3)
       };
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
@@ -628,10 +627,10 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-       createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+       createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
        firstUpdateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
        createProjectEvent.ProjectStartDate, firstUpdateProjectEvent.ProjectEndDate,
        createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
@@ -641,7 +640,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.NotNull(g.Result);
       Assert.Equal(firstUpdateProjectEvent.ProjectBoundary, g.Result.Boundary);
@@ -650,12 +649,12 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.NotNull(g.Result);
       Assert.Equal(firstUpdateProjectEvent.ProjectBoundary, g.Result.Boundary);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 4);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 4);
     }
 
 
@@ -669,8 +668,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -697,11 +696,11 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
             
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 2);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);
     }
 
     /// <summary>
@@ -714,8 +713,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -734,7 +733,7 @@ namespace RepositoryTests.ProjectRepositoryTests
         ActionUTC = createProjectEvent.ActionUTC.AddHours(1)
       };
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
@@ -746,16 +745,16 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
       // this one ignores the IsArchived flag in DB
-      g = projectRepo.GetProject_UnitTests(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject_UnitTests(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.NotNull(g.Result);
       
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 2);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 2);
     }
 
     /// <summary>
@@ -768,8 +767,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -792,7 +791,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       projectRepo.StoreEvent(createProjectEvent).Wait();
     
       // this one ignores the IsArchived flag in DB
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.NotNull(g.Result);
       Assert.False(g.Result.IsArchived);
@@ -801,11 +800,11 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(1, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 1);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
     }
 
     /// <summary>
@@ -819,8 +818,8 @@ namespace RepositoryTests.ProjectRepositoryTests
            
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -839,7 +838,7 @@ namespace RepositoryTests.ProjectRepositoryTests
         ActionUTC = ActionUTC.AddHours(-1)
       };
 
-      var g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.Null(g.Result);
 
@@ -851,16 +850,16 @@ namespace RepositoryTests.ProjectRepositoryTests
       s.Wait();
       Assert.Equal(0, s.Result);
 
-      g = projectRepo.GetProject(createProjectEvent.ProjectUID);
+      g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       CompareProject(g.Result,
-        createProjectEvent.ProjectUID, createProjectEvent.CustomerUID, 0,
+        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
         createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
-      CheckProjectHistoryCount(createProjectEvent.ProjectUID, 1);
+      CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
     }
 
     #endregion Projects
@@ -881,8 +880,8 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createProjectEvent = new CreateProjectEvent
       {
-        ProjectUID = Guid.NewGuid().ToString(),
-        CustomerUID = Guid.NewGuid().ToString(),
+        ProjectUID = Guid.NewGuid(),
+        CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
@@ -896,15 +895,15 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Project.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = boundary,
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
@@ -930,13 +929,13 @@ namespace RepositoryTests.ProjectRepositoryTests
       pg.Wait();
       Assert.Equal(1, pg.Result);
 
-      var g = projectRepo.GetAssociatedGeofences(createProjectEvent.ProjectUID);
+      var g = projectRepo.GetAssociatedGeofences(createProjectEvent.ProjectUID.ToString());
       g.Wait();
       Assert.NotNull(g.Result);
       Assert.Single(g.Result);
       var retrievedPg = g.Result.FirstOrDefault();
       Assert.NotNull(retrievedPg);
-      Assert.Equal(createProjectEvent.ProjectUID, retrievedPg.ProjectUID);
+      Assert.Equal(createProjectEvent.ProjectUID.ToString(), retrievedPg.ProjectUID);
       Assert.Equal(createGeofenceEvent.GeofenceUID.ToString(), retrievedPg.GeofenceUID);
       Assert.Equal(createGeofenceEvent.GeofenceType, retrievedPg.GeofenceType.ToString());
     }
@@ -953,22 +952,22 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var createGeofenceEvent = new CreateGeofenceEvent()
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "Test Geofence",
         Description = "Testing 123",
         GeofenceType = GeofenceType.Borrow.ToString(),
         FillColor = 16744448,
         IsTransparent = true,
         GeometryWKT = "POLYGON((172.68231141046 -43.6277661929154,172.692096108947 -43.6213045879588,172.701537484681 -43.6285117180247,172.698104257136 -43.6328604301996,172.689349526916 -43.6336058921214,172.682998055965 -43.6303754903428,172.68231141046 -43.6277661929154,172.68231141046 -43.6277661929154))",
-        CustomerUID = customerUid,
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = new Guid(customerUid),
+        UserUID = Guid.NewGuid(),
         AreaSqMeters = 123.456,
         ActionUTC = actionUtc
       };
 
       var associateProjectGeofenceEvent = new AssociateProjectGeofence()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         GeofenceUID = createGeofenceEvent.GeofenceUID,
         ActionUTC = actionUtc.AddDays(1)
       };
@@ -984,7 +983,7 @@ namespace RepositoryTests.ProjectRepositoryTests
 
       var dissociateProjectGeofenceEvent = new DissociateProjectGeofence()
       {
-        ProjectUID = projectUid,
+        ProjectUID = new Guid(projectUid),
         GeofenceUID = createGeofenceEvent.GeofenceUID,
         ActionUTC = actionUtc.AddDays(2)
       };

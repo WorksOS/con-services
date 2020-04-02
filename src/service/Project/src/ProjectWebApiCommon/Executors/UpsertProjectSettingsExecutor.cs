@@ -37,7 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = request.projectUid,
+        ProjectUID = new Guid(request.projectUid),
         UserID = userId,
         ProjectSettingsType = request.ProjectSettingsType,
         Settings = request.Settings,

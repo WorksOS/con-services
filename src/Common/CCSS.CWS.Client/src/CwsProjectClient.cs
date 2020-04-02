@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS.Utilities;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
@@ -12,6 +14,7 @@ namespace CCSS.CWS.Client
 {
   /// <summary>
   /// These use the cws cws-profilemanager controller
+  ///   See comments in CwsAccountClient re TRN/Guid conversions
   /// </summary>
   public class CwsProjectClient : CwsProfileManagerClient, ICwsProjectClient
   {
@@ -27,9 +30,12 @@ namespace CCSS.CWS.Client
     ///                 ProjectTRN
     ///   CCSSCON-141 available but needs updating to allow description. Note (26 March) that start/end dates will no longer be entered by UI.             
     /// </summary>
-    public Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
+    public async Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
     {
-      return PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
+      createProjectRequest.accountId = TRNHelper.MakeTRN(createProjectRequest.accountId, TRNHelper.TRN_PROJECT);
+      var response = await PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
+      response.Id = TRNHelper.ExtractGuidAsString(response.Id);
+      return response;
     }
 
     /// <summary>
@@ -39,9 +45,10 @@ namespace CCSS.CWS.Client
     ///                 response code
     ///   CCSSCON-14 available but needs updating to allow description. Note (26 March) that start/end dates will no longer be entered by UI.             
     /// </summary>
-    public async Task UpdateProjectDetails(string projectUid, UpdateProjectDetailsRequestModel updateProjectDetailsRequest, IDictionary<string, string> customHeaders = null)
+    public async Task UpdateProjectDetails(Guid projectUid, UpdateProjectDetailsRequestModel updateProjectDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
-      await UpdateData($"/projects/{projectUid}", updateProjectDetailsRequest, null, customHeaders);
+      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      await UpdateData($"/projects/{projectTrn}", updateProjectDetailsRequest, null, customHeaders);
     }
 
     /// <summary>
@@ -51,9 +58,10 @@ namespace CCSS.CWS.Client
     ///                 response code
     ///   CCSSCON-142 available but needs updating to include timeZone?                
     /// </summary>
-    public async Task UpdateProjectBoundary(string projectUid, ProjectBoundary projectBoundary, IDictionary<string, string> customHeaders = null)
+    public async Task UpdateProjectBoundary(Guid projectUid, ProjectBoundary projectBoundary, IDictionary<string, string> customHeaders = null)
     {
-      await UpdateData($"/projects/{projectUid}/boundary", projectBoundary, null, customHeaders);
+      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      await UpdateData($"/projects/{projectTrn}/boundary", projectBoundary, null, customHeaders);
     }
   }
 }

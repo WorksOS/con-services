@@ -74,7 +74,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // todoMaverick executor and validation
       var deviceFromRepo = await DeviceRepo.GetDevice(shortRaptorAssetId); 
       
-      var deviceResponseModel = await cwsDeviceClient.GetDeviceByDeviceUid(deviceFromRepo.DeviceUID);
+      var deviceResponseModel = await cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID));
       if (deviceResponseModel == null)
         throw new NotImplementedException();
 
@@ -104,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(GetProjectsForDevice)}");
 
       // todoMaverick executor and validation
-      var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(deviceUid);
+      var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid));
       if (cwsDeviceClient == null)
         throw new NotImplementedException();
 

@@ -5,7 +5,7 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
 {
   public class DeleteProjectEvent : IProjectEvent 
   {
-    public string ProjectUID { get; set; }
+    public Guid ProjectUID { get; set; }
     public bool DeletePermanently { get; set; }
     public DateTime ActionUTC { get; set; }
     public DateTime ReceivedUTC { get; set; }
