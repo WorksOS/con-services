@@ -14,7 +14,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.10.2" />
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
     <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
@@ -27,7 +27,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\VSS.Common.Abstractions.csproj" />
   </ItemGroup>
 
 

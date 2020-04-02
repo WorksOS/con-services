@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Microsoft.AspNetCore.Routing.Constraints;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Common;
@@ -225,10 +226,10 @@ namespace VSS.TRex.Gateway.Common.Converters.Profiles
     {
       CreateMap<FilterResult, CombinedFilter>()
         .ForMember(x => x.AttributeFilter,
-        opt => opt.ResolveUsing<CustomCellPassAttributeFilterResolver>())
+        opt => opt.MapFrom<CustomCellPassAttributeFilterResolver>())
 
       .ForMember(x => x.SpatialFilter,
-          opt => opt.ResolveUsing<CustomCellSpatialFilterResolver>());
+          opt => opt.MapFrom<CustomCellSpatialFilterResolver>());
     }
    
   }

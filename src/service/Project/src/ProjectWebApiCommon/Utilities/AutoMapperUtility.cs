@@ -8,7 +8,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using ImportedFileHistoryItem = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.ImportedFileHistoryItem;
+//using ImportedFileHistoryItem = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.ImportedFileHistoryItem;
 using ProjectDatabaseModel=VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
@@ -85,7 +85,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId))
             .ForMember(dest => dest.ImportedFileHistory, opt => opt.MapFrom(src => src.ImportedFileHistory.ImportedFileHistoryItems))
             .ForMember(dest => dest.IsActivated, opt => opt.MapFrom(x => true));
-          cfg.CreateMap<ImportedFileHistoryItem, ImportedFileHistoryItem>()
+          cfg.CreateMap<Productivity3D.Project.Abstractions.Models.DatabaseModels.ImportedFileHistoryItem, MasterData.Project.WebAPI.Common.Models.ImportedFileHistoryItem>()
             .ForMember(dest => dest.FileCreatedUtc, opt => opt.MapFrom(src => src.FileCreatedUtc))
             .ForMember(dest => dest.FileUpdatedUtc, opt => opt.MapFrom(src => src.FileUpdatedUtc));
           cfg.CreateMap<ImportedFile, UpdateImportedFileEvent>()

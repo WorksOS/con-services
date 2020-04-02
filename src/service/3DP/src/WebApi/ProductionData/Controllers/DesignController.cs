@@ -63,7 +63,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">LoggerFactory</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="fileImportProxy">File list proxy</param>

@@ -53,7 +53,7 @@ namespace MegalodonSvc
     private Task ScanAndUpload()
     {
       return Task.WhenAll(GetFilenames().Select(f => UploadFile(f).ContinueWith(t => {
-        if (!t.IsFaulted)
+        if (!t.IsFaulted && t.Result != null)
         {
           if (t.Result.Code == 0)
           {
@@ -72,9 +72,12 @@ namespace MegalodonSvc
     private Task<ContractExecutionResult> UploadFile(string filename)
     {
       _log.LogInformation($"Uploading file {filename}");
+
+      var fileData = File.ReadAllBytes(filename);
       var compactionTagFileRequest = new CompactionTagFileRequest
       {
-        FileName = filename
+        FileName = Path.GetFileName(filename),
+        Data = fileData
       };
 
       try

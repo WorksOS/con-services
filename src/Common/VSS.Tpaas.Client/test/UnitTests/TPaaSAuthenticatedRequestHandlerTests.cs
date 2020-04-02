@@ -15,8 +15,6 @@ namespace VSS.Tpaas.Client.UnitTests
 {
   public class TPaaSAuthenticatedRequestHandlerTests
   {
-
-
     [Fact]
     public async Task TestTPaaSAuthHeaderIsAdded_Get()
     {

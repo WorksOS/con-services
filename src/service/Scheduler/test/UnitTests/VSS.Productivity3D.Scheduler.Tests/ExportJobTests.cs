@@ -4,18 +4,17 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Logging = Microsoft.Extensions.Logging;
-using Moq;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Http;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Scheduler.Jobs.ExportJob;
 using VSS.Productivity3D.Scheduler.WebAPI.ExportJobs;
+using Logging = Microsoft.Extensions.Logging;
 
 namespace VSS.Productivity3D.Scheduler.Tests
 {

@@ -7,29 +7,42 @@ using MockProjectWebApi.Services;
 using MockProjectWebApi.Utils;
 using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
-using VSS.MasterData.Models.FIlters;
+using VSS.WebApi.Common;
 
 namespace MockProjectWebApi
 {
-  public class Startup
+  public class Startup : BaseStartup
   {
-    public Startup(IHostingEnvironment env)
+    /// <inheritdoc />
+    public override string ServiceName => "Filter Service API";
+
+    /// <inheritdoc />
+    public override string ServiceDescription => "A service to manage Filter related CRUD requests within the 3DP service architecture.";
+
+    /// <inheritdoc />
+    public override string ServiceVersion => "v1";
+
+    /// <summary>
+    /// Gets the configuration.
+    /// </summary>
+    public new IConfigurationRoot Configuration { get; }
+
+    /// <inheritdoc />
+    public Startup(IWebHostEnvironment env)
     {
       var builder = new ConfigurationBuilder()
-          .SetBasePath(env.ContentRootPath)
-          .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-          .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                    .SetBasePath(env.ContentRootPath)
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+                    .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
       builder.AddEnvironmentVariables();
       Configuration = builder.Build();
     }
 
-    public IConfigurationRoot Configuration { get; }
-
     /// <summary>
     /// This method gets called by the runtime. Use this method to add services to the container
     /// </summary>
-    public void ConfigureServices(IServiceCollection services)
+    protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
       services.AddCors(options =>
       {
@@ -46,16 +59,12 @@ namespace MockProjectWebApi
       services.AddSingleton<IProjectService, ProjectService>();
       services.AddSingleton<IGeofenceservice, GeofenceService>();
     }
-
-    /// <summary>
-    /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-    /// </summary>
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+    
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
-      app.UseExceptionTrap();
-      app.UseCors("VSS");
+      //Enable CORS before TID so OPTIONS works without authentication
+      app.UseCommon("VSS");
       app.UseExceptionDummyPostMiddleware();
-
       app.UseMvc();
     }
   }

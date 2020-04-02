@@ -26,7 +26,7 @@ namespace VSS.MasterData.Proxies
       AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
     };
 
-    ///TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
+    //TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
     private static readonly HttpClient httpClient = new HttpClient(_handler) { Timeout = TimeSpan.FromMinutes(30) };
 
     //Any 200 code is ok.
