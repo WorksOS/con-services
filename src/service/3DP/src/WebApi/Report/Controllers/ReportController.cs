@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -25,13 +24,9 @@ using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Productivity3D.WebApi.Models.Report.Models;
 using VSS.Productivity3D.WebApi.Models.Report.ResultHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.TRex.Gateway.Common.Proxy;
 
 namespace VSS.Productivity3D.WebApi.Report.Controllers
 {
-  /// <summary>
-  /// 
-  /// </summary>
   [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
   public class ReportController : Controller, IReportSvc
   {
@@ -83,7 +78,6 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="logger">Logger</param>
     /// <param name="configStore">Configuration store</param>
     /// <param name="tRexCompactionDataProxy"></param>

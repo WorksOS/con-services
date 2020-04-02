@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{42
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{8C0036E3-C05C-4197-BCDE-B5E3F3A53AD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{DFCCE1E6-5888-4C0C-9234-6C0700AC12EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{DFCCE1E6-5888-4C0C-9234-6C0700AC12EE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{158DD8A5-A18C-4057-A368-A59547B6CE2C}"
 	ProjectSection(SolutionItems) = preProject

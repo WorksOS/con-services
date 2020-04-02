@@ -48,7 +48,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{F8C30A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filter Service", "Filter Service", "{8C971052-2D17-4456-9ECB-EBA1FD3C07B7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{DF47FD4C-29DC-4CC4-89DA-D244765E739A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{DF47FD4C-29DC-4CC4-89DA-D244765E739A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{06CEFE72-5656-4B57-92E4-3890B56F9937}"
 EndProject

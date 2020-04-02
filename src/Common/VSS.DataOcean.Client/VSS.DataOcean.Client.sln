@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.DataOcean.Client.UnitTests", "test\UnitTests\VSS.DataOcean.Client.UnitTests.csproj", "{9C44C0AC-A4EE-4727-AAFB-945A5B983312}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{FC2DD7E4-5EA0-4489-BEC6-826922B97F9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{FC2DD7E4-5EA0-4489-BEC6-826922B97F9D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{677DC72E-A1F5-4101-80C9-2C7FB6229F7B}"
 EndProject

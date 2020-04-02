@@ -37,7 +37,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity.Push.Model
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{997D953A-DA04-47FD-B958-9B7B4F1C6295}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{FF241D2A-2399-481C-974C-17950F87CD1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{FF241D2A-2399-481C-974C-17950F87CD1B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{F077C52D-518D-41BE-9D38-B5917FE472F7}"
 EndProject

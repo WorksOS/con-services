@@ -3,6 +3,7 @@ package org.ccss.build;
 import com.atlassian.bamboo.specs.api.BambooSpec;
 import com.atlassian.bamboo.specs.api.builders.Variable;
 
+import com.atlassian.bamboo.specs.api.builders.applink.ApplicationLink;
 import com.atlassian.bamboo.specs.api.builders.deployment.Deployment;
 import com.atlassian.bamboo.specs.api.builders.deployment.Environment;
 import com.atlassian.bamboo.specs.api.builders.deployment.ReleaseNaming;
@@ -13,12 +14,20 @@ import com.atlassian.bamboo.specs.api.builders.plan.PlanIdentifier;
 import com.atlassian.bamboo.specs.api.builders.plan.branches.BranchCleanup;
 import com.atlassian.bamboo.specs.api.builders.plan.branches.PlanBranchManagement;
 import com.atlassian.bamboo.specs.api.builders.project.Project;
+import com.atlassian.bamboo.specs.api.builders.repository.VcsChangeDetection;
+import com.atlassian.bamboo.specs.api.builders.requirement.Requirement;
+import com.atlassian.bamboo.specs.builders.repository.bitbucket.cloud.BitbucketCloudRepository;
+import com.atlassian.bamboo.specs.builders.repository.bitbucket.server.BitbucketServerRepository;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.builders.trigger.AfterSuccessfulBuildPlanTrigger;
+import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
 import com.atlassian.bamboo.specs.api.builders.plan.Stage;
 import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
+
+import java.time.LocalTime;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -29,6 +38,9 @@ import com.atlassian.bamboo.specs.api.builders.plan.artifact.Artifact;
 @BambooSpec
 public class PlanSpec {
 
+    // Encrypted via Bitbucket
+    private static String SshPrivateKey = "BAMSCRT@0@0@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";
+    private static String SshPublicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3XbV9df9/4/By1NeThiPAh8yF83gHNQx374iJ3XUS2blNNxXaGiimpMFrV2vmRXul35PY8645fJfiYDzHNPo8LzyMpkXNu0K5FZJoPixhShyj5nM7RUtvXmVXzteJnVhbqkIS2VmRCzJRda9krB/rgKf+z5Dk2xasTg6FU6rmO3D3qXPoplMYSqUTklHK5ghFjrrUcfHjwOBmPQ/Pk6zG1VZt6JrooFRdETfpr1fLpp+yZ+yun4wFACzuI6sSFD4edgX+hw+19W65mw9/Og9LXn/OrNlrAeI7cVFxD/oYB75He9hFTO+xDXBARsC/jvifWy3PcbsbmQQpNIJRyvCZ bitbucket-builds\n";
     /**
      * Run 'main' to publish your plan.
      */
@@ -76,6 +88,11 @@ public class PlanSpec {
 
 
     void publishPlans(BambooServer bambooServer) {
+
+        // Sanity build - no deployment
+        createSanityPlan(bambooServer);
+
+
         // Names must match what bamboo/jenkins has
         // Asset Management Service
         createPlan(bambooServer,"Asset Management Service", "ASSET",
@@ -150,8 +167,27 @@ public class PlanSpec {
 
     void createPlan(BambooServer bambooServer, String name, String key, String service, String servicePath,
                     String serviceDiscoveryName, boolean buildDb, boolean runAcceptanceTest, boolean runUnitTests) {
+
+        String regex = "^.*" + servicePath.replace("/", "\\/") + "\\/.*";
         Plan plan = new Plan(project(), name, key)
-                .linkedRepositories("con-services")
+                .planRepositories(new BitbucketServerRepository()
+                        .name("code")
+                        .server(new ApplicationLink()
+                                .name("E-Tools Bitbucket"))
+                        .projectKey("CIV")
+                        .repositorySlug("con-services")
+                        .branch("master")
+                        .sshCloneUrl("ssh://git@bitbucket.trimble.tools/civ/con-services.git")
+                        .sshPublicKey(SshPublicKey)
+                        .sshPrivateKey(SshPrivateKey)
+                        .shallowClonesEnabled(true)
+                        .fetchWholeRepository(false)
+                        .changeDetection(new VcsChangeDetection()
+                            .quietPeriodEnabled(true)
+                            .filterFilePatternOption(VcsChangeDetection.FileFilteringOption.INCLUDE_ONLY)
+                            .filterFilePatternRegex(regex)))
+//                .linkedRepositories("con-services")
+
                 .description("Plan created from Bamboo Java Specs")
                 .notifications(new EmptyNotificationsList())
                 .variables(
@@ -166,16 +202,18 @@ public class PlanSpec {
                         new Variable("run_acceptance_tests", runAcceptanceTest ? "true" : "false"),
                         new Variable("run_unit_tests", runUnitTests ? "true" : "false")
                         )
+//                .triggers(new RepositoryPollingTrigger()
+//                        .pollEvery(10, TimeUnit.MINUTES))
                 .planBranchManagement(new PlanBranchManagement()
-                        .createForVcsBranchMatching("feature/.*")
+                        .createForVcsBranchMatching("feature/.*") // Don't monitor feature branches
                         .notificationForCommitters()
 //                        .branchIntegration(new BranchIntegration()
 //                                .integrationBranchKey("MASTER")
 //                                .gatekeeper(true)
 //                                .pushOnSuccessfulBuild(true))
-                        .triggerBuildsLikeParentPlan()
                         .delete(new BranchCleanup()
-                                .whenInactiveInRepositoryAfterDays(30)));
+                                .whenRemovedFromRepository(true)
+                                .whenInactiveInRepositoryAfterDays(7)));
 
 
         addPlanStages(plan, runAcceptanceTest);
@@ -188,6 +226,66 @@ public class PlanSpec {
 
         bambooServer.publish(deployment);
         bambooServer.publish(plan);
+    }
+
+    void createSanityPlan(BambooServer bambooServer) {
+        Plan plan = new Plan(project(), "Services Sanity Build", "SANITY")
+                .linkedRepositories("con-services")
+                .description("Plan created from Bamboo Java Specs")
+                .notifications(new EmptyNotificationsList())
+//                .triggers(new RepositoryPollingTrigger()
+//                        .pollEvery(1, TimeUnit.MINUTES))
+                .planBranchManagement(new PlanBranchManagement()
+                        .createForVcsBranchMatching("feature/.*")
+                        .notificationForCommitters()
+                        .delete(new BranchCleanup()
+                                .whenRemovedFromRepository(true)
+                                .whenInactiveInRepositoryAfterDays(7)));
+
+        Stage stage = new Stage("Sanity Builds");
+        createSanityJob(stage, "COMMON", "Common", "src/Common/Common.sln");
+        createSanityJob(stage, "ASSETMGMT", "Asset Management", "src/service/3dAssetMgmt/VSS.Productivity3D.3DAssetMgmt.sln");
+//        createSanityJob(stage, "3DNOW", "3D Now", "src/service/3dNow/VSS.Productivity3D.3DNow.sln");
+        createSanityJob(stage, "3DP", "3DP", "src/service/3DP/VSS.Productivity3D.Service.sln");
+        createSanityJob(stage, "FILEACCESS", "File Access", "src/service/FileAccess/VSS.Productivity3D.FileAccess.Service.sln");
+        createSanityJob(stage, "FILTER", "Filter", "src/service/Filter/VSS.Productivity3D.Filter.sln");
+        // Has no tests
+//        createSanityJob(stage, "MOCKAPI", "Mock Web API", "src/service/MockProjectWebApi/MockProjectWebApi.sln");
+        createSanityJob(stage, "PROJECT", "Project", "src/service/Project/VSS.Visionlink.Project.sln");
+        createSanityJob(stage, "PUSH", "Push", "src/service/Push/VSS.Productivity3D.Push.sln");
+        createSanityJob(stage, "SCHEDULER", "Scheduler", "src/service/Scheduler/VSS.Productivity3D.Scheduler.sln");
+        createSanityJob(stage, "TFA", "Tag File Auth", "src/service/TagFileAuth/VSS.TagFileAuth.Service.sln");
+        createSanityJob(stage, "TILE", "Tile", "src/service/TileService/VSS.Tile.Service.sln");
+        createSanityJob(stage, "TREX", "TRex", "src/service/TRex/TRex.netstandard.sln");
+
+        plan.stages(stage);
+
+        PlanPermissions planPermission = PlanSpec.createPlanPermission(plan.getIdentifier());
+        bambooServer.publish(planPermission);
+        bambooServer.publish(plan);
+    }
+
+    void createSanityJob(Stage stage, String key, String serviceName, String solutionPath) {
+        String dotnetParms = "-r linux-x64 -p:AllowUnsafeBlocks=true";
+        ScriptTask buildScript = new ScriptTask()
+                .inlineBody("dotnet build " + dotnetParms + " " + solutionPath)
+                .interpreterBinSh();
+
+        ScriptTask testScript = new ScriptTask()
+                .inlineBody("dotnet test --logger \"nunit\" " + dotnetParms + " " + solutionPath)
+                .interpreterBinSh();
+
+        TestParserTask testParserTask = TestParserTask.createNUnitParserTask()
+                .resultDirectories("linux-x64/*.xml");
+
+        Job buildJob = new Job(serviceName, "SAN"+key)
+                .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript, testParserTask)
+                .finalTasks(cleanTask());
+//                .requirements(new Requirement("team")
+//                        .matchType(Requirement.MatchType.EQUALS)
+//                        .matchValue("merino"));
+
+        stage.jobs(buildJob);
     }
 
     Deployment createDeployment(BambooServer bambooServer, String key, String name)
@@ -275,10 +373,15 @@ public class PlanSpec {
     Plan addPlanStages(Plan plan,  boolean runAcceptanceTest) {
         Job buildJob = new Job("Build", "JOB1")
                 .tasks(cleanTask(), checkoutCodeTask(), chmodScript(), runJenkinsScript())
+//                .requirements(new Requirement("team")
+//                        .matchType(Requirement.MatchType.EQUALS)
+//                        .matchValue("merino"))
                 .artifacts(artifact());
 
         if(runAcceptanceTest)
-            buildJob.finalTasks(testCoverageTask());
+            buildJob.tasks(testCoverageTask());
+
+        buildJob.finalTasks(cleanTask());
 
         Stage jenkinsStage = new Stage("Build Jenkins")
                 .jobs(buildJob);
@@ -288,8 +391,10 @@ public class PlanSpec {
         return plan;
     }
 
+
+
     VcsCheckoutTask checkoutCodeTask() {
-        return new VcsCheckoutTask().addCheckoutOfDefaultRepository();
+        return new VcsCheckoutTask().addCheckoutOfDefaultRepository().cleanCheckout(true);
     }
 
     CleanWorkingDirectoryTask cleanTask() {

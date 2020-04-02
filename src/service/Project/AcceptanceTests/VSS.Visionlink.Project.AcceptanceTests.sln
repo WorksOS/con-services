@@ -41,7 +41,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.DataOcean.Client", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\..\..\Common\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{902B7DF2-2B2D-433A-BF59-B5D6D0A2F01E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{FDDD85E3-6BE2-4864-933F-0A039C0A3A47}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{FDDD85E3-6BE2-4864-933F-0A039C0A3A47}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\..\..\Common\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{52B62343-B0EF-44E9-80B6-DFF4A655037C}"
 EndProject

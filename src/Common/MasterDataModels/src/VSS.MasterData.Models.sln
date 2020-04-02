@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "VS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models.UnitTests", "..\test\UnitTests\VSS.MasterData.Models.UnitTests.csproj", "{2D15648F-4D22-493D-BDE3-FB62940D5096}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{47F4364F-5368-4932-8900-3387AC04AFB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{47F4364F-5368-4932-8900-3387AC04AFB1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9996D264-C001-4F01-A4E3-43A130DF42C9}"
 	ProjectSection(SolutionItems) = preProject
