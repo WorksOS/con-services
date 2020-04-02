@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{1E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{AD5162FA-10C5-4FB4-A77C-C3FDB71FEA21}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj", "{323EAFE0-822F-48B0-BC7B-CA78770B29D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{323EAFE0-822F-48B0-BC7B-CA78770B29D2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Kubernetes", "..\VSS.Common.Kubernetes\VSS.Common.Kubernetes.csproj", "{B02D3E49-7D01-4203-A621-F5150855B109}"
 EndProject
