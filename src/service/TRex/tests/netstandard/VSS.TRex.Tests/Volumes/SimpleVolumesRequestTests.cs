@@ -10,8 +10,6 @@ using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
-using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes.GridFabric.Arguments;
@@ -81,7 +79,6 @@ namespace VSS.TRex.Tests.Volumes
     private void AddClusterComputeGridRouting()
     {
       IgniteMock.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
     [Fact]

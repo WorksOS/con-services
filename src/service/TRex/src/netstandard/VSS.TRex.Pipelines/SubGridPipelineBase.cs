@@ -209,7 +209,7 @@ namespace VSS.TRex.Pipelines
             // Send the sub grid request mask to the grid fabric layer for processing
             if (RequestAnalyser.TotalNumberOfSubGridsToRequest > 0)
             {
-              using (var requestor = new TSubGridRequestor
+              using var requestor = new TSubGridRequestor
               {
                 TRexTask = PipelineTask,
                 SiteModelID = DataModelID,
@@ -223,19 +223,18 @@ namespace VSS.TRex.Pipelines
                 ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet,
                 CustomArgumentInitializer = subGridArg => {}
-               })
-              {
-                var Response = requestor.Execute();
-                if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
-                {
-                  Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
-                  return false;
-                }
+              };
 
-                Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
-                TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
-                return true;
+              var Response = requestor.Execute();
+              if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
+              {
+                Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
+                return false;
               }
+
+              Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
+              TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
+              return true;
             }
             else
             {

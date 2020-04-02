@@ -67,6 +67,13 @@ namespace VSS.TRex.Volumes
 
     protected async Task ProcessVolumeInformationForSubGrid(ClientProgressiveHeightsLeafSubGrid subGrid)
     {
+      if (subGrid == null)
+      {
+        // This is kind of a bad thing, make a note of it for now
+        Log.LogDebug("Sub grid passed to ProcessVolumeInformationForSubGrid is null, ignoring");
+        return;
+      }
+
       // Compute the two planes of elevations to be compared and supply them to ProcessVolumeInformationForSubGrid
       // Iterate across all the Heights planes in the subGrid. If there is a design to be compared to them request the elevation
       // plane for that design just once

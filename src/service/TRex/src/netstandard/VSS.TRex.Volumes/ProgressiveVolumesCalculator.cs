@@ -15,6 +15,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 
 namespace VSS.TRex.Volumes
@@ -152,6 +153,14 @@ namespace VSS.TRex.Volumes
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted(),
           liftParams: LiftParams
         );
+
+        // Assign the aggregator into the volumes computation task
+        if (!(processor.Task is VolumesComputationTask volumesComputationTask))
+        {
+          throw new ArgumentException($"Processor task for progressive volumes is not a {nameof(VolumesComputationTask)}, if is {processor.Task}");
+        }
+
+        volumesComputationTask.Aggregator = Aggregator;
 
         // Create the initialization lambda to be applied to the sub grid request argument creation in the sub grid
         // pipeline processor execution context.

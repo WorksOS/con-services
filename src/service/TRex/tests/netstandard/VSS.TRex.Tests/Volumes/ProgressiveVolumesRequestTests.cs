@@ -9,8 +9,6 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
-using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -33,7 +31,6 @@ namespace VSS.TRex.Tests.Volumes
     private void AddClusterComputeGridRouting()
     {
       IgniteMock.AddClusterComputeGridRouting<ProgressiveVolumesRequestComputeFunc_ClusterCompute, ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
     [Fact]

@@ -53,7 +53,7 @@ namespace VSS.TRex.Server.Application
       {
         PipelineProcessorPipelineStyle.DefaultAggregative => new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
         PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
-        PipelineProcessorPipelineStyle.ProgressiveVolumes => new SubGridPipelineProgressive<ProgressiveVolumesSubGridsRequestArgument, SubGridRequestsResponse>(),
+        PipelineProcessorPipelineStyle.ProgressiveVolumes => new SubGridPipelineAggregative<ProgressiveVolumesSubGridsRequestArgument, SubGridRequestsResponse>(),
         _ => null
       };
     }

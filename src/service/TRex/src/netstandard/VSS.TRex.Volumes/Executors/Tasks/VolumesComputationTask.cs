@@ -42,7 +42,9 @@ namespace VSS.TRex.Volumes.Executors.Tasks
             if (base.TransferResponse(response))
             {
               if (Aggregator == null)
+              {
                 throw new TRexException("Aggregator not defined in VolumesComputationTask");
+              }
 
               if (!(response is IClientLeafSubGrid[][] responseSubGrids))
               {
