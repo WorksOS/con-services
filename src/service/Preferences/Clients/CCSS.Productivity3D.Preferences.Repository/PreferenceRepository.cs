@@ -340,7 +340,7 @@ namespace CCSS.Productivity3D.Preferences.Repository
     /// <summary>
     /// Get a user preference by user Uid and key ID
     /// </summary>
-    public async Task<UserPrefDataModel> GetUserPreference(Guid userUID, long prefKeyID)
+    private async Task<UserPrefDataModel> GetUserPreference(Guid userUID, long prefKeyID)
     {
       var userPref = (await QueryWithAsyncPolicy<UserPrefDataModel>
       (@"SELECT UserPreferenceID, UserUID, fk_PreferenceKeyID AS PreferenceKeyID, Value, SchemaVersion

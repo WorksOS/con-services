@@ -35,8 +35,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCach
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.CWS.Client", "..\..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj", "{709D078D-2D57-44E3-8222-2AD5A24F946F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions.Clients.CWS", "..\..\..\Common\VSS.Common.Abstractions\Clients\CWS\VSS.Common.Abstractions.Clients.CWS.csproj", "{4F76B87F-05E3-449F-B0C0-7DC87CF96AAA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,10 +93,6 @@ Global
 		{709D078D-2D57-44E3-8222-2AD5A24F946F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{709D078D-2D57-44E3-8222-2AD5A24F946F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{709D078D-2D57-44E3-8222-2AD5A24F946F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F76B87F-05E3-449F-B0C0-7DC87CF96AAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F76B87F-05E3-449F-B0C0-7DC87CF96AAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F76B87F-05E3-449F-B0C0-7DC87CF96AAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F76B87F-05E3-449F-B0C0-7DC87CF96AAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -117,7 +111,6 @@ Global
 		{60A18CFE-417D-46D8-9B2F-25AE1EBBA08D} = {B8436E29-05E2-4202-86A7-D172E1AFF58B}
 		{7549AA45-DAE4-4B14-B44F-88890F038546} = {B8436E29-05E2-4202-86A7-D172E1AFF58B}
 		{709D078D-2D57-44E3-8222-2AD5A24F946F} = {B8436E29-05E2-4202-86A7-D172E1AFF58B}
-		{4F76B87F-05E3-449F-B0C0-7DC87CF96AAA} = {B8436E29-05E2-4202-86A7-D172E1AFF58B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8548F6BE-0435-4618-B5F2-4118B2FFB42E}

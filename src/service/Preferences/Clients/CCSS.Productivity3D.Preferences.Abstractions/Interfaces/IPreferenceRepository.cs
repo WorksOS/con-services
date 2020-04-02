@@ -12,7 +12,6 @@ namespace CCSS.Productivity3D.Preferences.Abstractions.Interfaces
     Task<int> StoreEvent(IPreferenceEvent evt);
 
     Task<PrefKeyDataModel> GetPreferenceKey(Guid? prefKeyUID = null, string prefKeyName = null);
-    Task<UserPrefDataModel> GetUserPreference(Guid userUID, long prefKeyID);
     Task<UserPrefKeyDataModel> GetUserPreference(Guid userUID, string prefKeyName);
     Task<bool> UserPreferenceExistsForKey(Guid prefKeyUID);
   }
