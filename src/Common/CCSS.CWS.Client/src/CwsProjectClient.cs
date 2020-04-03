@@ -32,7 +32,7 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
     {
-      createProjectRequest.accountId = TRNHelper.MakeTRN(createProjectRequest.accountId, TRNHelper.TRN_PROJECT);
+      createProjectRequest.accountId = TRNHelper.MakeTRN(createProjectRequest.accountId, TRNHelper.TRN_ACCOUNT);
       var response = await PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
       response.Id = TRNHelper.ExtractGuidAsString(response.Id);
       return response;

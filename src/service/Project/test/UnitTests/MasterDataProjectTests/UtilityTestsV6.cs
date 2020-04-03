@@ -23,14 +23,13 @@ namespace VSS.MasterData.ProjectTests
     public void MapCreateProjectRequestToEvent()
     {
       var request = CreateProjectRequest.CreateACreateProjectRequest
-      (Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
+      (Guid.NewGuid().ToString(),
         ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
        null, null);
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      Assert.Equal(request.ProjectUID, createProjectEvent.ProjectUID);
       Assert.Equal(request.ProjectType, createProjectEvent.ProjectType);
       Assert.Equal(request.ProjectName, createProjectEvent.ProjectName);
       Assert.Equal(request.Description, createProjectEvent.Description);
@@ -46,7 +45,6 @@ namespace VSS.MasterData.ProjectTests
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<CreateProjectRequest>(request);
-      Assert.Equal(request.ProjectUID, copyOfRequest.ProjectUID);
       Assert.Equal(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName);
     }
 

@@ -209,7 +209,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient)
+            cwsProjectClient: CwsProjectClient)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -291,7 +291,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
-            dataOceanClient: DataOceanClient, authn: Authorization)
+            dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(project)
       );
 
@@ -374,6 +374,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var isDeleted = await ProjectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
+
+      // todoMaverick archive in cws
 
       if (!string.IsNullOrEmpty(customerUid))
         await notificationHubClient.Notify(new CustomerChangedNotification(customerUid));

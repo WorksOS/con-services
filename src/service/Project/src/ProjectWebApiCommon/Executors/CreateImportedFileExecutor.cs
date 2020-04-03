@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       var importedFile = CastRequestObjectTo<CreateImportedFile>(item, errorCode: 68);
 
-      await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(importedFile.ImportedFileType, importedFile.ParentUid.Value.ToString(), serviceExceptionHandler, projectRepo);
+      await ImportedFileRequestDatabaseHelper.CheckIfParentSurfaceExistsAsync(importedFile.ImportedFileType, importedFile.ParentUid, serviceExceptionHandler, projectRepo);
 
       bool.TryParse(configStore.GetValueString("ENABLE_TREX_GATEWAY_DESIGNIMPORT"), out var useTrexGatewayDesignImport);
       bool.TryParse(configStore.GetValueString("ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT"),

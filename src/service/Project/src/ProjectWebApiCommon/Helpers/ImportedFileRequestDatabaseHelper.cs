@@ -283,12 +283,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Check if parent design exists for a reference surface
     /// </summary>
-    public static async Task<ImportedFile> CheckIfParentSurfaceExistsAsync(ImportedFileType importedFileType, string parentUid, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    public static async Task<ImportedFile> CheckIfParentSurfaceExistsAsync(ImportedFileType importedFileType, Guid? parentUid, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       //Check parent exists for a reference design
       if (importedFileType == ImportedFileType.ReferenceSurface)
       {
-        var parent = await projectRepo.GetImportedFile(parentUid);
+        var parent = await projectRepo.GetImportedFile(parentUid?.ToString());
         if (parent == null)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 120);

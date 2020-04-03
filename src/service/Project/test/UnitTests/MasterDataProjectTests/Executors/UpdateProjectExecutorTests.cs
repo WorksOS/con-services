@@ -145,7 +145,7 @@ namespace VSS.MasterData.ProjectTests.Executors
             It.IsAny<string>()))
         .ReturnsAsync(false);
 
-      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
 

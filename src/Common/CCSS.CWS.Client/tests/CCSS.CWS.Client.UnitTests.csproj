@@ -34,6 +34,12 @@
     <ProjectReference Include="..\src\CCSS.CWS.Client.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="VSS.Common.Abstractions">
+      <HintPath>..\..\VSS.Common.Abstractions\src\bin\Debug\netcoreapp3.1\VSS.Common.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 
   <ItemGroup>
     <None Update="appsettings.json">

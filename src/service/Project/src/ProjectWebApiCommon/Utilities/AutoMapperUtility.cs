@@ -5,8 +5,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-//using ImportedFileHistoryItem = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.ImportedFileHistoryItem;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
@@ -52,6 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
+            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore()) // will come from cws
             .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())

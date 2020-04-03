@@ -96,13 +96,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return projects;
     }
 
-    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
+    public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, DateTime projectStartDate,
       DateTime projectEndDate, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var overlaps =
         await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate, projectUid);
+          projectStartDate, projectEndDate, projectUid == Guid.Empty ? string.Empty : projectUid.ToString());
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
