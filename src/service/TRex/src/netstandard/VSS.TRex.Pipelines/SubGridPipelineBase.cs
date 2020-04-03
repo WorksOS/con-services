@@ -19,7 +19,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Derived from SVO SubGridPipelineBase
     /// </summary>
-    public abstract class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase
+    public abstract class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase, ISubGridPipelineBase<TSubGridsRequestArgument>
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
         where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable, new() 
@@ -222,7 +222,7 @@ namespace VSS.TRex.Pipelines
                 Filters = FilterSet,
                 ReferenceDesign = ReferenceDesign,
                 AreaControlSet = AreaControlSet,
-                CustomArgumentInitializer = subGridArg => {}
+                CustomArgumentInitializer = CustomArgumentInitializer
               };
 
               var Response = requestor.Execute();

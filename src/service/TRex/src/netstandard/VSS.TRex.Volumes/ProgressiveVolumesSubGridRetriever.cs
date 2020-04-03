@@ -25,9 +25,9 @@ namespace VSS.TRex.Volumes
    */
   public class ProgressiveVolumesSubGridRetriever : SubGridRetrieverBase, ISubGridRetriever
   {
-    public readonly DateTime StartDate;
-    public readonly DateTime EndDate;
-    public readonly TimeSpan Interval;
+    public DateTime StartDate { get; set; }
+    public DateTime EndDate { get; set; }
+    public TimeSpan Interval { get; set; }
 
     private IClientProgressiveHeightsLeafSubGrid _progressiveClientSubGrid;
 
@@ -157,12 +157,14 @@ namespace VSS.TRex.Volumes
         // If this cell is not included in the scan mask then prune execution here for the cell
         // For pass attributes that are maintained on a historical last pass basis (meaning their values bubble up through cell passes where the values of
         // those attributes are null), check the global latest pass version of those values. If they are null, then no further work needs to be done
-        if (!_aggregatedCellScanMap.BitSet(stripeIndex, j)/* || LatestCellPassAttributeIsNull(stripeIndex, j)*/)
+        if (!_aggregatedCellScanMap.BitSet(stripeIndex, j) /* || LatestCellPassAttributeIsNull(stripeIndex, j)*/)
+        {
           continue;
+        }
 
         /*
          * For each cell:
-         * 1. Use filter to establish time range sampled cell passes can come from
+         * 1. Establish time range sampled cell passes can come from
          * 2. Use 'as at' logic to determine current ground for earliest sampled elevation (ie: this may be before the
          * starting time of the sampled range).
          * 3. Construct a vector of time samples for the cell where each sample is the measured elevation at the sample time as
@@ -170,7 +172,7 @@ namespace VSS.TRex.Volumes
          * pass according to the standard minimum elevation mode selection logic used in the mainline sub grid retriever
          *
          * CAVEATS:
-         * 1. This logic currently does not cater for minimum elevation mode. This should be relatively easy to track on a forwards basis as
+         * 1. [Todo] This logic currently does not cater for minimum elevation mode. This should be relatively easy to track on a forwards basis as
          * the cell passes are being traversed
          */
 

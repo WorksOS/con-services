@@ -20,6 +20,7 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -378,7 +379,7 @@ namespace VSS.TRex.Tests.SubGrids
       IFilterSet filterSet = new FilterSet(filters);
       
       var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
-      var requestors = ru.ConstructRequestors(mockSiteModel.Object, new OverrideParameters(), new LiftParameters(), intermediaries, AreaControlSet.CreateAreaControlSet(), null);
+      var requestors = ru.ConstructRequestors(new SubGridsRequestArgument(), mockSiteModel.Object, new OverrideParameters(), new LiftParameters(), intermediaries, AreaControlSet.CreateAreaControlSet(), null);
 
       requestors.Length.Should().Be(filters.Length);
 

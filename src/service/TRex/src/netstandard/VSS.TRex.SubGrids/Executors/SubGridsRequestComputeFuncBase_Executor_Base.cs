@@ -41,6 +41,8 @@ namespace VSS.TRex.SubGrids.Executors
 
     private readonly int _addressBucketSize = DIContext.Obtain<IConfigurationStore>().GetValueInt(SUB_GRIDS_REQUEST_ADDRESS_BUCKET_SIZE, 50);
 
+    private readonly IRequestorUtilities _requestorUtilities = DIContext.Obtain<IRequestorUtilities>();
+
     // ReSharper disable once StaticMemberInGenericType
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SubGridsRequestComputeFuncBase_Executor_Base<TSubGridsRequestArgument, TSubGridRequestsResponse>>();
 
@@ -350,7 +352,7 @@ namespace VSS.TRex.SubGrids.Executors
         return;
 
       // Construct the set of requester objects to be used for the filters present in the request
-      var requestors = DIContext.Obtain<IRequestorUtilities>().ConstructRequestors(
+      var requestors = _requestorUtilities.ConstructRequestors(localArg,
         siteModel, localArg.Overrides, localArg.LiftParams, RequestorIntermediaries, localArg.AreaControlSet, ProdDataMask);
 
       //Log.LogInformation("Sending {0} sub grids to caller for processing", count);
@@ -438,7 +440,7 @@ namespace VSS.TRex.SubGrids.Executors
       addresses = new SubGridCellAddress[_addressBucketSize];
 
       // Obtain the primary partition map to allow this request to determine the elements it needs to process
-      bool[] primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();
+      var primaryPartitionMap = ImmutableSpatialAffinityPartitionMap.Instance().PrimaryPartitions();
 
       // Request production data only, or hybrid production data and surveyed surface data sub grids
       ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
@@ -498,18 +500,18 @@ namespace VSS.TRex.SubGrids.Executors
     {
       var numProdDataSubGrids = ProdDataMask?.CountBits() ?? 0;
       var numSurveyedSurfaceSubGrids = SurveyedSurfaceOnlyMask?.CountBits() ?? 0;
-      long NumSubGridsToBeExamined = numProdDataSubGrids + numSurveyedSurfaceSubGrids;
+      var numSubGridsToBeExamined = numProdDataSubGrids + numSurveyedSurfaceSubGrids;
 
-      Log.LogInformation($"Num sub grids present in request = {NumSubGridsToBeExamined} [All divisions], {numProdDataSubGrids} prod data (plus surveyed surface), {numSurveyedSurfaceSubGrids} surveyed surface only");
+      Log.LogInformation($"Num sub grids present in request = {numSubGridsToBeExamined} [All divisions], {numProdDataSubGrids} prod data (plus surveyed surface), {numSurveyedSurfaceSubGrids} surveyed surface only");
 
       if (!EstablishRequiredIgniteContext(out var contextEstablishmentResponse))
         return new TSubGridRequestsResponse {ResponseCode = contextEstablishmentResponse};
 
-      RequestorIntermediaries = DIContext.Obtain<IRequestorUtilities>().ConstructRequestorIntermediaries
+      RequestorIntermediaries = _requestorUtilities.ConstructRequestorIntermediaries
         (siteModel, localArg.Filters, localArg.IncludeSurveyedSurfaceInformation, localArg.GridDataType);
 
       var result = PerformSubGridRequests();
-      result.NumSubgridsExamined = NumSubGridsToBeExamined;
+      result.NumSubgridsExamined = numSubGridsToBeExamined;
 
       //TODO: Map the actual response code into this
       result.ResponseCode = SubGridRequestsResponseResult.OK;

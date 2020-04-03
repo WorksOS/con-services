@@ -74,7 +74,8 @@ namespace VSS.TRex.SubGrids
     /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
     /// and initializes the requester state ready to start processing individual sub grid requests.
     /// </summary>
-    public void Initialize(ISiteModel siteModel,
+    public void Initialize(ISubGridsRequestArgument subGridsRequestArgument,
+                           ISiteModel siteModel,
                            GridDataType gridDataType,
                            IStorageProxy storageProxy,
                            ICombinedFilter filter,
@@ -90,8 +91,7 @@ namespace VSS.TRex.SubGrids
                            ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
                            ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
                            IOverrideParameters overrides,
-                           ILiftParameters liftParams,
-                           Action<ISubGridRequestor, ISubGridRetriever> customRequestorInitializer)
+                           ILiftParameters liftParams)
     {
       SiteModel = siteModel;
       GridDataType = gridDataType;
@@ -100,7 +100,8 @@ namespace VSS.TRex.SubGrids
       HasOverrideSpatialCellRestriction = hasOverrideSpatialCellRestriction;
       OverrideSpatialCellRestriction = overrideSpatialCellRestriction;
 
-      retriever = DIContext.Obtain<ISubGridRetrieverFactory>().Instance(siteModel,
+      retriever = DIContext.Obtain<ISubGridRetrieverFactory>().Instance(subGridsRequestArgument,
+                                      siteModel,
                                        gridDataType,
                                        storageProxy,
                                        filter,
@@ -114,8 +115,6 @@ namespace VSS.TRex.SubGrids
                                        subGridCacheContext,
                                        overrides,
                                        liftParams);
-
-      customRequestorInitializer?.Invoke(this, retriever);
 
       ReturnEarliestFilteredCellPass = Filter.AttributeFilter.ReturnEarliestFilteredCellPass;
       AreaControlSet = areaControlSet;

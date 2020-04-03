@@ -25,14 +25,14 @@ namespace VSS.TRex.SubGrids
   /// </summary>
   public class RequestorUtilities : IRequestorUtilities
   {
-    private static readonly bool _enableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
+    private static readonly bool EnableGeneralSubGridResultCaching = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_GENERAL_SUBGRID_RESULT_CACHING", Consts.ENABLE_GENERAL_SUBGRID_RESULT_CACHING);
 
     private ITRexSpatialMemoryCache _subGridCache;
 
     /// <summary>
     /// The DI injected TRex spatial memory cache for general sub grid results
     /// </summary>
-    private ITRexSpatialMemoryCache SubGridCache => _subGridCache ?? (_subGridCache = DIContext.Obtain<ITRexSpatialMemoryCache>());
+    private ITRexSpatialMemoryCache SubGridCache => _subGridCache ??= DIContext.Obtain<ITRexSpatialMemoryCache>();
      
     /// <summary>
     /// The DI injected factory to create requestor instances
@@ -94,7 +94,7 @@ namespace VSS.TRex.SubGrids
         // Get a caching context for the sub grids returned by this requester, but only if the requested grid data type supports it
         ITRexSpatialMemoryCacheContext SubGridCacheContext = null;
 
-        if (_enableGeneralSubGridResultCaching &&
+        if (EnableGeneralSubGridResultCaching &&
             ClientLeafSubGrid.SupportsAssignationFromCachedPreProcessedClientSubGrid[(int)gridDataType])
         {
           SubGridCacheContext = SubGridCache.LocateOrCreateContext(siteModel.ID, SpatialCacheFingerprint.ConstructFingerprint(siteModel.ID, gridDataType, filter, FilteredSurveyedSurfacesAsArray));
@@ -130,6 +130,7 @@ namespace VSS.TRex.SubGrids
     /// Constructs the set of requestors, one per filter, required to query the data stacks
     /// </summary>
     public ISubGridRequestor[] ConstructRequestors(
+      ISubGridsRequestArgument subGridsRequestArgument,
       ISiteModel siteModel,
       IOverrideParameters overrides,
       ILiftParameters liftParams,
@@ -140,15 +141,16 @@ namespace VSS.TRex.SubGrids
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
         ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
       AreaControlSet areaControlSet,
-      ISubGridTreeBitMask prodDataMask,
-      Action<ISubGridRequestor, ISubGridRetriever> customRequestorInitializer = null
+      ISubGridTreeBitMask prodDataMask
       )
     {
       // Construct the resulting requestors
       return intermediaries.Select(x =>
       {
         var requestor = SubGridRequestorFactory();
-        requestor.Initialize(siteModel,
+        requestor.Initialize(
+          subGridsRequestArgument,
+          siteModel,
           x.GridDataType,
           siteModel.PrimaryStorageProxy,
           x.Filter,
@@ -164,8 +166,7 @@ namespace VSS.TRex.SubGrids
           x.surfaceElevationPatchRequest,
           x.surfaceElevationPatchArgument,
           overrides,
-          liftParams,
-          customRequestorInitializer);
+          liftParams);
 
         return requestor;
       }).ToArray();

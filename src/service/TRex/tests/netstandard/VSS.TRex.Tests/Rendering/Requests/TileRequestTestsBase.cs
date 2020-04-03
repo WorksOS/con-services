@@ -107,7 +107,7 @@ namespace VSS.TRex.Tests.Rendering.Requests
         bmp.Should().NotBeNull();
         bmp.Height.Should().Be(256);
         bmp.Width.Should().Be(256);
-
+        
         if (!string.IsNullOrEmpty(fileName))
         {
           bmp.Save(fileName);

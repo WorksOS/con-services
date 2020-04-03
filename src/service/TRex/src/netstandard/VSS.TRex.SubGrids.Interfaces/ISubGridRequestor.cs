@@ -31,7 +31,9 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// Constructor that accepts the common parameters around a set of sub grids the requester will be asked to process
     /// and initializes the requester state ready to start processing individual sub grid requests.
     /// </summary>
-    void Initialize(ISiteModel siteModel,
+    void Initialize(
+      ISubGridsRequestArgument subGridsRequestArgument,
+      ISiteModel siteModel,
       GridDataType gridDataType,
       IStorageProxy storageProxy,
       ICombinedFilter filter,
@@ -47,8 +49,7 @@ namespace VSS.TRex.SubGrids.Interfaces
       ISurfaceElevationPatchRequest surfaceElevationPatchRequest,
       ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
       IOverrideParameters overrides,
-      ILiftParameters liftParams,
-      Action<ISubGridRequestor, ISubGridRetriever> customInitializer
+      ILiftParameters liftParams
     );
   }
 }

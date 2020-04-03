@@ -2,14 +2,17 @@
 using Apache.Ignite.Core.Binary;
 using VSS.TRex.Common;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.Volumes.Interfaces;
 
 namespace VSS.TRex.Volumes.GridFabric.Arguments
 {
-  public class ProgressiveVolumesSubGridsRequestArgument : SubGridsRequestArgument
+  public class ProgressiveVolumesSubGridsRequestArgument : SubGridsRequestArgument, IProgressiveVolumesSubGridsRequestArgument
   {
     private const byte VERSION_NUMBER = 1;
 
     public DateTime StartDate { get; set; }
+
     public DateTime EndDate { get; set; }
 
     public TimeSpan Interval { get; set; }

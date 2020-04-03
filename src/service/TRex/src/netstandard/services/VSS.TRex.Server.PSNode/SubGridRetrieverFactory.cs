@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -9,6 +10,7 @@ using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
 using VSS.TRex.Volumes;
+using VSS.TRex.Volumes.Interfaces;
 
 namespace VSS.TRex.Server.PSNode
 {
@@ -17,7 +19,8 @@ namespace VSS.TRex.Server.PSNode
   /// </summary>
   public class SubGridRetrieverFactory : ISubGridRetrieverFactory
   {
-    public ISubGridRetriever Instance(ISiteModel siteModel,
+    public ISubGridRetriever Instance(ISubGridsRequestArgument subGridsRequestArgument,
+      ISiteModel siteModel,
       GridDataType gridDataType,
       IStorageProxy storageProxy,
       ICombinedFilter filter,
@@ -34,7 +37,7 @@ namespace VSS.TRex.Server.PSNode
     {
       if (gridDataType == GridDataType.ProgressiveVolumes)
       {
-        return new ProgressiveVolumesSubGridRetriever(siteModel,
+        var retriever = new ProgressiveVolumesSubGridRetriever(siteModel,
           gridDataType,
           storageProxy,
           filter,
@@ -48,10 +51,23 @@ namespace VSS.TRex.Server.PSNode
           pdExistenceMap,
           overrides,
           liftParams);
+
+        if (subGridsRequestArgument is IProgressiveVolumesSubGridsRequestArgument argument)
+        {
+          retriever.StartDate = argument.StartDate;
+          retriever.EndDate = argument.EndDate;
+          retriever.Interval = argument.Interval;
+        }
+        else
+        {
+          throw new ArgumentException($"Argument passed to sub grid retriever factory for progressive volumes retriever construction is not an expected type: {subGridsRequestArgument.GetType()}");
+        }
+
+        return retriever;
       }
       else
       {
-        return new SubGridRetriever(siteModel,
+        var retriever = new SubGridRetriever(siteModel,
           gridDataType,
           storageProxy,
           filter,
@@ -65,6 +81,8 @@ namespace VSS.TRex.Server.PSNode
           pdExistenceMap,
           overrides,
           liftParams);
+
+        return retriever;
       }
     }
   }

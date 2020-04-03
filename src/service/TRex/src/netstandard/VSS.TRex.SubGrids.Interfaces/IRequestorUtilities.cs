@@ -30,7 +30,9 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// Constructs the set of requestors, one per filter, required to query the data stacks
     /// </summary>
     /// <returns></returns>
-    ISubGridRequestor[] ConstructRequestors(ISiteModel siteModel,
+    ISubGridRequestor[] ConstructRequestors(
+      ISubGridsRequestArgument subGridsRequestArgument, 
+      ISiteModel siteModel,
       IOverrideParameters overrides,
       ILiftParameters liftParams,
       (GridDataType GridDataType,
@@ -40,7 +42,6 @@ namespace VSS.TRex.SubGrids.Interfaces
         ISurfaceElevationPatchArgument surfaceElevationPatchArgument,
         ITRexSpatialMemoryCacheContext CacheContext)[] intermediaries,
       AreaControlSet areaControlSet,
-      ISubGridTreeBitMask prodDataMask,
-      Action<ISubGridRequestor, ISubGridRetriever> customRequestorInitializer = null);
+      ISubGridTreeBitMask prodDataMask);
   }
 }

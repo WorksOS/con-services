@@ -204,6 +204,8 @@ namespace VSS.TRex.Pipelines
       Pipeline.PipelineTask = Task;
       Task.PipeLine = Pipeline;
 
+      (Pipeline as ISubGridPipelineBase<TSubGridsRequestArgument>).CustomArgumentInitializer = CustomArgumentInitializer;
+
       // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
       foreach (var filter in Filters.Filters)
       {

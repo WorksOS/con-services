@@ -11,7 +11,8 @@ namespace VSS.TRex.SubGrids.Interfaces
 {
   public interface ISubGridRetrieverFactory
   {
-    ISubGridRetriever Instance(ISiteModel siteModel,
+    ISubGridRetriever Instance(ISubGridsRequestArgument subGridRequestArgument,
+      ISiteModel siteModel,
       GridDataType gridDataType,
       IStorageProxy storageProxy,
       ICombinedFilter filter,

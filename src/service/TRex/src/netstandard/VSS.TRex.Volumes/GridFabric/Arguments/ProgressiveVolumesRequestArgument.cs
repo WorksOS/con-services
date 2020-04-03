@@ -5,6 +5,7 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Interfaces;
 
 namespace VSS.TRex.Volumes.GridFabric.Arguments
 {
