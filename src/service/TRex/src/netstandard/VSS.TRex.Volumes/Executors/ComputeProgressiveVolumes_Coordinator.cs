@@ -97,23 +97,9 @@ namespace VSS.TRex.Volumes.Executors
     private void InitialiseVolumesCalculator(ProgressiveVolumesCalculator computeVolumes)
     {
       // Set up the volumes calc parameters
-      switch (VolumeType)
-      {
-        case VolumeComputationType.Between2Filters:
-          computeVolumes.FromSelectionType = ProdReportSelectionType.Filter;
-          computeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-          break;
-
-        case VolumeComputationType.BetweenFilterAndDesign:
-          computeVolumes.FromSelectionType = ProdReportSelectionType.Filter;
-          computeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-          break;
-
-        case VolumeComputationType.BetweenDesignAndFilter:
-          computeVolumes.FromSelectionType = ProdReportSelectionType.Surface;
-          computeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-          break;
-      }
+      VolumesUtilities.SetProdReportSelectionType(VolumeType, out var fromSelectionType, out var toSelectionType);
+      computeVolumes.FromSelectionType = fromSelectionType;
+      computeVolumes.ToSelectionType = toSelectionType;
 
       computeVolumes.RefOriginal = _baseDesign == null || _baseDesign.DesignID == Guid.Empty ? null : _siteModel.Designs.Locate(_baseDesign.DesignID);
       computeVolumes.RefDesign = _topDesign == null || _topDesign.DesignID == Guid.Empty ? null : _siteModel.Designs.Locate(_topDesign.DesignID);
@@ -196,15 +182,22 @@ namespace VSS.TRex.Volumes.Executors
             return volumesResult;
 
           // Determine the number of progressions that are required and establish the required aggregation states in the aggregator
-          var numProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks) + 1;
+          var numProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks);
           if ((EndDate.Ticks - StartDate.Ticks) % Interval.Ticks == 0)
           {
             numProgressions++;
           }
 
-          if (numProgressions > ClientProgressiveHeightsLeafSubGrid.MaxNumProgressions)
+          if (VolumeType == VolumeComputationType.Between2Filters)
           {
-            throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MaxNumProgressions} progressions may be requested at one time");
+            // One fewer progressions will be calculated as each volume in the progression is computed across the interval of two
+            // surfaces derived from production data.
+            numProgressions--;
+          }
+
+          if (numProgressions > ClientProgressiveHeightsLeafSubGrid.MaxNumberOfHeightLayers)
+          {
+            throw new ArgumentException($"No more than {ClientProgressiveHeightsLeafSubGrid.MaxNumberOfHeightLayers} height layer may be requested at one time");
           }
 
           // Create and configure the aggregator that contains the business logic for the underlying volume calculation

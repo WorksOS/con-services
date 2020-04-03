@@ -66,12 +66,13 @@ namespace VSS.TRex.Tests.Volumes
       };
     }
 
-    private ProgressiveVolumesRequestArgument DefaultRequestArgFromModel(ISiteModel siteModel)
+    private ProgressiveVolumesRequestArgument DefaultRequestArgFromModel(ISiteModel siteModel, VolumeComputationType volumeType)
     {
       var arg = DefaultRequestArg(siteModel.ID);
 
       var (startUtc, endUtc) = siteModel.GetDateRange();
 
+      arg.VolumeType = volumeType;
       arg.StartDate = startUtc;
       arg.EndDate = endUtc;
       arg.Interval = new TimeSpan((arg.EndDate.Ticks - arg.StartDate.Ticks) / 10);
@@ -127,6 +128,9 @@ namespace VSS.TRex.Tests.Volumes
       const double EPSILON = 0.000001;
       response.Should().NotBeNull();
 
+      response.Volumes.Should().NotBeNull();
+      response.Volumes.Length.Should().Be(11);
+
       // todo: Complete this
 /*      response.BoundingExtentGrid.MinX.Should().BeApproximately(537669.2, EPSILON);
       response.BoundingExtentGrid.MinY.Should().BeApproximately(5427391.44, EPSILON);
@@ -136,8 +140,11 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);*/
     }
 
-    [Fact]
-    public async Task ClusterCompute_DefaultFilterToFilter_Execute_SingleTAGFile()
+    [Theory]
+    [InlineData(VolumeComputationType.Between2Filters, 10)]
+    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 11)]
+    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 11)]
+    public async Task ClusterCompute_DefaultFilterToFilter_Execute_SingleTAGFile(VolumeComputationType volumeType, int expectNumProgoressions)
     {
       AddClusterComputeGridRouting();
 
@@ -149,13 +156,21 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new ProgressiveVolumesRequest_ClusterCompute();
-      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel));
+      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, volumeType));
 
-      CheckDefaultFilterToFilterSingleTAGFileResponse(response);
+      response.Should().NotBeNull();
+
+      response.Volumes.Should().NotBeNull();
+      response.Volumes.Length.Should().Be(expectNumProgoressions);
+      
+//      CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
-    [Fact]
-    public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleTAGFile()
+    [Theory]
+    [InlineData(VolumeComputationType.Between2Filters, 10)]
+    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 11)]
+    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 11)]
+    public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleTAGFile(VolumeComputationType volumeType, int expectNumProgressions)
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -168,9 +183,14 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new ProgressiveVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel));
+      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, volumeType));
 
-      CheckDefaultFilterToFilterSingleTAGFileResponse(response);
+      response.Should().NotBeNull();
+
+      response.Volumes.Should().NotBeNull();
+      response.Volumes.Length.Should().Be(expectNumProgressions);
+
+      //CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
     private void CheckDefaultSingleCellAtOriginResponse(ProgressiveVolumesResponse response)
@@ -222,7 +242,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
 
       var request = new ProgressiveVolumesRequest_ClusterCompute();
-      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel));
+      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, VolumeComputationType.Between2Filters));
 
       CheckDefaultSingleCellAtOriginResponse(response);
     }
@@ -236,7 +256,7 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
 
       var request = new ProgressiveVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel));
+      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, VolumeComputationType.Between2Filters));
 
       CheckDefaultSingleCellAtOriginResponse(response);
     }

@@ -141,7 +141,7 @@ namespace VSS.TRex.Volumes
         using var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<ProgressiveVolumesSubGridsRequestArgument>
         (requestDescriptor: RequestDescriptor,
           dataModelID: SiteModel.ID,
-          gridDataType: GridDataType.Height,
+          gridDataType: GridDataType.ProgressiveVolumes,
           response: VolumesRequestResponse,
           cutFillDesign: null,
           filters: new FilterSet(Filter),

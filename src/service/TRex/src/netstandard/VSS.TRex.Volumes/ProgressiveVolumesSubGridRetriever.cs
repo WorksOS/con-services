@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml;
+using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;
@@ -133,13 +135,13 @@ namespace VSS.TRex.Volumes
 
       _progressiveClientSubGrid = subGrid;
 
-      var numProgressions = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks) + 1;
+      var numHeightLayers = (int)((EndDate.Ticks - StartDate.Ticks) / Interval.Ticks);
       if ((EndDate.Ticks - StartDate.Ticks) % Interval.Ticks == 0)
       {
-        numProgressions++;
+        numHeightLayers++;
       }
 
-      _progressiveClientSubGrid.NumberOfProgressions = numProgressions;
+      _progressiveClientSubGrid.NumberOfHeightLayers = numHeightLayers; 
 
       return base.RetrieveSubGrid(clientGrid, cellOverrideMask);
     }
@@ -203,7 +205,7 @@ namespace VSS.TRex.Volumes
         if (!haveFirstCellPass)
         {
           // There are further cell passes. If there is a prior cell pass then all further progressive heights are the same value
-          for (var i = 1; i < _progressiveClientSubGrid.NumberOfProgressions; i++)
+          for (var i = 1; i < _progressiveClientSubGrid.NumberOfHeightLayers; i++)
           {
             _progressiveClientSubGrid.AssignFilteredValue(i, stripeIndex, j, _priorToFirstCellPass.Height);
           }
@@ -211,7 +213,7 @@ namespace VSS.TRex.Volumes
           continue;
         }
 
-        if (_progressiveClientSubGrid.NumberOfProgressions < 2)
+        if (_progressiveClientSubGrid.NumberOfHeightLayers < 2)
         {
           continue; // Nothing more to do in this cell
         }
@@ -237,13 +239,13 @@ namespace VSS.TRex.Volumes
           marchingIndex++;
           marchingDate += Interval;
 
-          if (marchingIndex >= _progressiveClientSubGrid.NumberOfProgressions)
+          if (marchingIndex >= _progressiveClientSubGrid.NumberOfHeightLayers)
           {
             break; // There is no more work to do
           }
 
           // Fill in any progression dates beyond the last cell pass extracted
-          for (var i = marchingIndex; i < _progressiveClientSubGrid.NumberOfProgressions; i++)
+          for (var i = marchingIndex; i < _progressiveClientSubGrid.NumberOfHeightLayers; i++)
           {
             _progressiveClientSubGrid.AssignFilteredValue(i, stripeIndex, j, _currentCellPass.Height);
           }

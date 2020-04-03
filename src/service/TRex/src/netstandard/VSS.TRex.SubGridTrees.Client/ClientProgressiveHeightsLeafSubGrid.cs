@@ -19,25 +19,25 @@ namespace VSS.TRex.SubGridTrees.Client
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
 
-    public const int MaxNumProgressions = 1000;
+    public const int MaxNumberOfHeightLayers = 1000;
 
     public List<float[,]> Heights { get; set; }
 
-    private int _numberOfProgressions;
+    private int _numberOfHeightLayers;
 
-    public int NumberOfProgressions
+    public int NumberOfHeightLayers
     {
-      get => _numberOfProgressions;
+      get => _numberOfHeightLayers;
       set
       {
-        if (value > MaxNumProgressions)
+        if (value > MaxNumberOfHeightLayers)
         {
-          throw new ArgumentException($"No more than {MaxNumProgressions} progressions may be requested at one time");
+          throw new ArgumentException($"No more than {MaxNumberOfHeightLayers} progressions may be requested at one time");
         }
 
-        _numberOfProgressions = value;
-        Heights = new List<float[,]>(_numberOfProgressions);
-        for (var i = 0; i < _numberOfProgressions; i++)
+        _numberOfHeightLayers = value;
+        Heights = new List<float[,]>(_numberOfHeightLayers);
+        for (var i = 0; i < _numberOfHeightLayers; i++)
         {
           Heights.Add(GenericTwoDArrayCacheHelper<float>.Caches().Rent());
         }
@@ -100,9 +100,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public override void FillWithTestPattern()
     {
-      NumberOfProgressions = 2;
+      NumberOfHeightLayers = 2;
 
-      for (var i = 0; i < NumberOfProgressions; i++)
+      for (var i = 0; i < _numberOfHeightLayers; i++)
       {
         var ii = i;
         ForEach((x, y) => Heights[ii][x, y] = ii);
@@ -119,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Client
       var result = true;
 
       var otherCopy = (ClientProgressiveHeightsLeafSubGrid)other;
-      for (var i = 0; i < NumberOfProgressions; i++)
+      for (var i = 0; i < _numberOfHeightLayers; i++)
       {
         var ii = i;
         ForEach((x, y) => result &= Heights[ii][x, y] == otherCopy.Heights[ii][x, y]);
@@ -155,7 +155,7 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Clear();
 
-      for (var i = 0; i < _numberOfProgressions; i++)
+      for (var i = 0; i < _numberOfHeightLayers; i++)
       {
         Array.Copy(ClientHeightLeafSubGrid.NullCells, 0, Heights[i], 0, SubGridTreeConsts.SubGridTreeCellsPerSubGrid);
       }
@@ -166,7 +166,7 @@ namespace VSS.TRex.SubGridTrees.Client
       Log.LogDebug(title);
       Log.LogDebug($"Number of layers: {Heights.Count}");
 
-      for (var i = 0; i < NumberOfProgressions; i++)
+      for (var i = 0; i < _numberOfHeightLayers; i++)
       {
         Log.LogDebug("Height layer {i}");
 
@@ -199,14 +199,14 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer);
 
-      writer.Write(NumberOfProgressions);
+      writer.Write(_numberOfHeightLayers);
 
       const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
       var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        for (var i = 0; i < NumberOfProgressions; i++)
+        for (var i = 0; i < _numberOfHeightLayers; i++)
         {
           Buffer.BlockCopy(Heights[i], 0, buffer, 0, bufferSize);
           writer.Write(buffer, 0, bufferSize);
@@ -228,14 +228,14 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader);
 
-      NumberOfProgressions = reader.ReadInt32();
+      NumberOfHeightLayers = reader.ReadInt32();
 
       const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
 
       var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        for (var i = 0; i < NumberOfProgressions; i++)
+        for (var i = 0; i < _numberOfHeightLayers; i++)
         {
           reader.Read(buffer, 0, bufferSize);
           Buffer.BlockCopy(buffer, 0, Heights[i], 0, bufferSize);
@@ -254,12 +254,12 @@ namespace VSS.TRex.SubGridTrees.Client
     public override int IndicativeSizeInBytes()
     {
       return base.IndicativeSizeInBytes() +
-             _numberOfProgressions * SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
+             _numberOfHeightLayers * SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(float);
     }
 
     private void ReleaseHeightsRental()
     {
-      for (var i = 0; i < _numberOfProgressions; i++)
+      for (var i = 0; i < _numberOfHeightLayers; i++)
       {
         var tmp = Heights[i];
         GenericTwoDArrayCacheHelper<float>.Caches().Return(ref tmp);

@@ -100,15 +100,15 @@ namespace VSS.TRex.Volumes
         switch (VolumeType)
         {
           case VolumeComputationType.Between2Filters:
-            for (var i = 0; i < subGrid.NumberOfProgressions - 1; i++)
+            for (var i = 0; i < subGrid.NumberOfHeightLayers - 1; i++)
               AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.Heights[i], subGrid.Heights[i + 1]);
             break;
           case VolumeComputationType.BetweenDesignAndFilter:
-            for (var i = 0; i < subGrid.NumberOfProgressions; i++)
+            for (var i = 0; i < subGrid.NumberOfHeightLayers; i++)
               AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.Heights[i], designHeights);
             break;
           case VolumeComputationType.BetweenFilterAndDesign:
-            for (var i = 0; i < subGrid.NumberOfProgressions; i++)
+            for (var i = 0; i < subGrid.NumberOfHeightLayers; i++)
               AggregationStates[i].ProcessElevationInformationForSubGrid(designHeights, subGrid.Heights[i]);
             break;
           default:
