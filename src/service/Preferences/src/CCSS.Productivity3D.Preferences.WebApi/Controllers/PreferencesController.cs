@@ -26,6 +26,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
   /// <summary>
   /// API endpoints for preferences. CRUD for preference keys and user preferences.
   /// </summary>
+  [Route("api/v1")]
   public class PreferencesController : Controller
   {
     /// <summary> base message number for Preference service </summary>
@@ -124,7 +125,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
     /// <summary>
     /// Gets user preferences for a user. 
     /// </summary>
-    [Route("api/v1/user")]
+    [Route("user")]
     [HttpGet]
     public async Task<UserPreferenceV1Result> GetUserPreferenceV1([FromQuery] string keyName, [FromQuery] Guid? userUid=null)
     {
