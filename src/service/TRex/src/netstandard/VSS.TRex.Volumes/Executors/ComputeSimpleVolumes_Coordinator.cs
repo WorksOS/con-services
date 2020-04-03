@@ -96,46 +96,32 @@ namespace VSS.TRex.Volumes.Executors
         /// Performs functional initialization of ComputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
-        /// <param name="ComputeVolumes"></param>
-        private void InitialiseVolumesCalculator(VolumesCalculator ComputeVolumes)
+        /// <param name="computeVolumes"></param>
+        private void InitialiseVolumesCalculator(VolumesCalculator computeVolumes)
         {
             // Set up the volumes calc parameters
-            switch (VolumeType)
+            VolumesUtilities.SetProdReportSelectionType(VolumeType, out var fromSelectionType, out var toSelectionType);
+            computeVolumes.FromSelectionType = fromSelectionType;
+            computeVolumes.ToSelectionType = toSelectionType;
+
+            computeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
+
+            computeVolumes.RefOriginal = BaseDesign == null || BaseDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(BaseDesign.DesignID);
+            computeVolumes.RefDesign = TopDesign == null || TopDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesign.DesignID);
+
+            if (computeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
             {
-                case VolumeComputationType.Between2Filters:
-                    ComputeVolumes.FromSelectionType = ProdReportSelectionType.Filter;
-                    ComputeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-                    break;
-
-                case VolumeComputationType.BetweenFilterAndDesign:
-                    ComputeVolumes.FromSelectionType = ProdReportSelectionType.Filter;
-                    ComputeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-                    break;
-
-                case VolumeComputationType.BetweenDesignAndFilter:
-                    ComputeVolumes.FromSelectionType = ProdReportSelectionType.Surface;
-                    ComputeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-                    break;
-            }
-
-            ComputeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
-
-            ComputeVolumes.RefOriginal = BaseDesign == null || BaseDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(BaseDesign.DesignID);
-            ComputeVolumes.RefDesign = TopDesign == null || TopDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesign.DesignID);
-
-            if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
-            {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal != null ? new DesignWrapper(BaseDesign, ComputeVolumes.RefOriginal) : null;
+              computeVolumes.ActiveDesign = computeVolumes.RefOriginal != null ? new DesignWrapper(BaseDesign, computeVolumes.RefOriginal) : null;
             }
             else
             {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface && ComputeVolumes.RefDesign != null
-                ? new DesignWrapper(TopDesign, ComputeVolumes.RefDesign) 
+              computeVolumes.ActiveDesign = computeVolumes.ToSelectionType == ProdReportSelectionType.Surface && computeVolumes.RefDesign != null
+                ? new DesignWrapper(TopDesign, computeVolumes.RefDesign) 
                 : null;
             }
 
             // Assign the active design into the aggregator for use
-            Aggregator.ActiveDesign = ComputeVolumes.ActiveDesign;
+            Aggregator.ActiveDesign = computeVolumes.ActiveDesign;
         }
 
         /// <summary>
