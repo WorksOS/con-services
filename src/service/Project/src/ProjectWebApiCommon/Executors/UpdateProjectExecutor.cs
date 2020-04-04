@@ -73,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (!string.IsNullOrEmpty(updateProjectEvent.CoordinateSystemFileName))
       {
         // don't bother rolling this back
-        await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID.ToString(),
+        await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID,
           existing.ShortRaptorProjectId,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,

@@ -163,9 +163,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ? notificationHubClient.Notify(new UserChangedNotification(u))
         : Task.CompletedTask;
 
-      var projectTask = string.IsNullOrEmpty(projectUid)
-        ? Task.CompletedTask
-        : notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+      var projectTask = Guid.TryParse(projectUid, out var p)
+        ? notificationHubClient.Notify(new ProjectChangedNotification(p))
+        : Task.CompletedTask;
 
       return Task.WhenAll(userTask, projectTask);
     }

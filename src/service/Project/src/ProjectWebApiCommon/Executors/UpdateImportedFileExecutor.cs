@@ -47,8 +47,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       if (useTrexGatewayDesignImport && importedFile.IsDesignFileType)
       {
-        await ImportedFileRequestHelper.NotifyTRexUpdateFile(importedFile.ProjectUid.ToString(),
-          importedFile.ImportedFileType, importedFile.FileDescriptor.FileName, importedFile.ImportedFileUid.ToString(),
+        await ImportedFileRequestHelper.NotifyTRexUpdateFile(importedFile.ProjectUid,
+          importedFile.ImportedFileType, importedFile.FileDescriptor.FileName, importedFile.ImportedFileUid,
           importedFile.SurveyedUtc,
           log, customHeaders, serviceExceptionHandler,
           tRexImportFileProxy);
@@ -60,10 +60,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             importedFile.ImportedFileType == ImportedFileType.SurveyedSurface)
         {
           await ImportedFileRequestHelper.NotifyRaptorAddFile(
-            importedFile.ShortRaptorProjectId, importedFile.ProjectUid.ToString(),
+            importedFile.ShortRaptorProjectId, importedFile.ProjectUid,
             importedFile.ImportedFileType, importedFile.DxfUnitsTypeId,
             importedFile.FileDescriptor, importedFile.ImportedFileId,
-            importedFile.ImportedFileUid.ToString(), false, log, customHeaders,
+            importedFile.ImportedFileUid, false, log, customHeaders,
             serviceExceptionHandler, productivity3dV2ProxyNotification,
             projectRepo);
         }
@@ -73,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           //Create DXF file for alignment center line
           dxfFileName = await ImportedFileRequestHelper.CreateGeneratedDxfFile(
-            customerUid, importedFile.ProjectUid.ToString(), importedFile.ImportedFileUid.ToString(), productivity3dV2ProxyCompaction, customHeaders, log,
+            customerUid, importedFile.ProjectUid, importedFile.ImportedFileUid, productivity3dV2ProxyCompaction, customHeaders, log,
             serviceExceptionHandler, authn, dataOceanClient, configStore, importedFile.DataOceanFileName, importedFile.DataOceanRootFolder);
         }
 
@@ -90,7 +90,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             existingImportedFile.ImportedFileUid,
             importedFile.DataOceanRootFolder,
             dxfFileName,
-            DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, projectTask.ProjectUID, null),
+            DataOceanFileUtil.DataOceanFileName(projectTask.CoordinateSystemFileName, false, Guid.Parse(projectTask.ProjectUID), null),
             importedFile.DxfUnitsTypeId,
             importedFile.SurveyedUtc);
           await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);

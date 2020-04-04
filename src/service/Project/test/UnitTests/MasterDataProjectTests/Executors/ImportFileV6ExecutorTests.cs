@@ -126,7 +126,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid.ToString(), "some file");
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var project = new ProjectDatabaseModel { CustomerUID = _customerUid.ToString(), ProjectUID = _projectUid.ToString(), ShortRaptorProjectId = (int)_shortRaptorProjectId };
       var projectList = new List<ProjectDatabaseModel> { project };
@@ -141,7 +141,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<string>(), It.IsAny<ImportedFileType>(), It.IsAny<string>(),
+      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<CreateImportedFileEvent>())).ReturnsAsync(1);
@@ -195,10 +195,10 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       _projectUid.ToString(), _shortRaptorProjectId, ImportedFileType.DesignSurface,
+       _projectUid, _shortRaptorProjectId, ImportedFileType.DesignSurface,
        null, DxfUnitsType.Meters,
        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44),
-       fileDescriptor, importedFileUid.ToString(), importedFileId, "some folder", 0, "some file"
+       fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -211,7 +211,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       var productivity3dV2ProxyCompaction = new Mock<IProductivity3dV2ProxyCompaction>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorAddFileResult = new AddFileResult(ContractExecutionStatesEnum.ExecutedSuccessfully, ContractExecutionResult.DefaultMessage);
-      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<string>(), It.IsAny<ImportedFileType>(), It.IsAny<string>(),
+      productivity3dV2ProxyNotification.Setup(p => p.AddFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(), It.IsAny<Guid>(),
         It.IsAny<string>(), It.IsAny<long>(), It.IsAny<DxfUnitsType>(), It.IsAny<IDictionary<string, string>>())).ReturnsAsync(raptorAddFileResult);
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(pr => pr.StoreEvent(It.IsAny<UpdateImportedFileEvent>())).ReturnsAsync(1);
@@ -270,8 +270,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
       var raptorDeleteFileResult = new BaseMasterDataResult { Code = 0 };
-      productivity3dV2ProxyNotification.Setup(p => p.DeleteFile(It.IsAny<string>(), It.IsAny<ImportedFileType>(),
-        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<IDictionary<string, string>>()))
+      productivity3dV2ProxyNotification.Setup(p => p.DeleteFile(It.IsAny<Guid>(), It.IsAny<ImportedFileType>(),
+        It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<long>(), It.IsAny<long>(), It.IsAny<IDictionary<string, string>>()))
        .ReturnsAsync(raptorDeleteFileResult);
 
       var filterServiceProxy = new Mock<IFilterServiceProxy>();
@@ -353,7 +353,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.GeoTiff, surveyedUtc, DxfUnitsType.Meters,
-        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid.ToString(), "some file");
+        fileCreatedUtc, fileUpdatedUtc, "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -433,7 +433,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid.ToString(), "some file");
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", null, 0, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -483,8 +483,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       _projectUid.ToString(), _shortRaptorProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid.ToString(), importedFileId, "some folder", 0, "some file"
+       _projectUid, _shortRaptorProjectId, ImportedFileType.DesignSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", 0, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -636,7 +636,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid.ToString(), "some file");
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -717,7 +717,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createImportedFile = new CreateImportedFile(
         _projectUid, fileDescriptor.FileName, fileDescriptor, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters,
-        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid.ToString(), "some file");
+        DateTime.UtcNow.AddHours(-45), DateTime.UtcNow.AddHours(-44), "some folder", parentUid, offset, importedFileUid, "some file");
 
       var importedFilesList = new List<ImportedFile> { newImportedFile };
       var mockConfigStore = new Mock<IConfigurationStore>();
@@ -769,8 +769,8 @@ namespace VSS.MasterData.ProjectTests.Executors
       };
       var importedFilesList = new List<ImportedFile> { existingImportedFile };
       var updateImportedFile = new UpdateImportedFile(
-       _projectUid.ToString(), _shortRaptorProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
-       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid.ToString(), importedFileId, "some folder", newOffset, "some file"
+       _projectUid, _shortRaptorProjectId, ImportedFileType.ReferenceSurface, null, DxfUnitsType.Meters, DateTime.UtcNow.AddHours(-45),
+       DateTime.UtcNow.AddHours(-44), fileDescriptor, importedFileUid, importedFileId, "some folder", newOffset, "some file"
       );
 
       var mockConfigStore = new Mock<IConfigurationStore>();

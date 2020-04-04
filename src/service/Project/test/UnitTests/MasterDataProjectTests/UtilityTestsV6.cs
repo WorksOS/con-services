@@ -147,7 +147,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.FileUpdatedUtc, importedFileDescriptor.FileUpdatedUtc);
       Assert.Equal(request.ImportedBy, importedFileDescriptor.ImportedBy);
       Assert.Equal(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc);
-      Assert.Equal(request.ParentUid, !string.IsNullOrEmpty(importedFileDescriptor.ParentUid) ? "Fail assertion" : null);
+      Assert.Equal(request.ParentUid, importedFileDescriptor.ParentUid.HasValue ? "Fail assertion" : null);
       Assert.Equal(request.Offset, importedFileDescriptor.Offset);
       Assert.Equal(request.LastActionedUtc, importedFileDescriptor.ImportedUtc);
       Assert.True(importedFileDescriptor.IsActivated);

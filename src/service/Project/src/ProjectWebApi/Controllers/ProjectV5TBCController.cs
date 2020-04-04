@@ -52,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates existing project</remarks>
     [Route("api/v5/projects")]
     [HttpPost]
-    public async Task<ReturnLongV5Result> CreateProjectV2([FromBody] CreateProjectV5Request projectRequest)
+    public async Task<ReturnLongV5Result> CreateProjectV5TBC([FromBody] CreateProjectV5Request projectRequest)
     {
       if (projectRequest == null)
       {

@@ -81,7 +81,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Notify raptor of an updated import file (used for activations, not file import).
     /// </summary>
-    protected async Task NotifyRaptorUpdateFile(string projectUid, IEnumerable<string> updatedFileUids)
+    protected async Task NotifyRaptorUpdateFile(Guid projectUid, IEnumerable<Guid> updatedFileUids)
     {
       var notificationResult = await Productivity3dV2ProxyNotification.UpdateFiles(projectUid, updatedFileUids, Request.Headers.GetCustomHeaders());
 
@@ -97,14 +97,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Sets activated state for imported files.
     /// </summary>
-    protected async Task<IEnumerable<string>> SetFileActivatedState(string projectUid, Dictionary<string, bool> fileUids)
+    protected async Task<IEnumerable<Guid>> SetFileActivatedState(string projectUid, Dictionary<Guid, bool> fileUids)
     {
       Logger.LogDebug($"SetFileActivatedState: projectUid={projectUid}, {fileUids.Keys.Count} files with changed state");
 
       var deactivatedFileList = await ImportedFileRequestDatabaseHelper.GetImportedFileProjectSettings(projectUid, userId, ProjectRepo).ConfigureAwait(false) ?? new List<ActivatedFileDescriptor>();
       Logger.LogDebug($"SetFileActivatedState: originally {deactivatedFileList.Count} deactivated files");
 
-      var missingUids = new List<string>();
+      var missingUids = new List<Guid>();
       foreach (var key in fileUids.Keys)
       {
         //fileUids contains only uids of files whose state has changed.

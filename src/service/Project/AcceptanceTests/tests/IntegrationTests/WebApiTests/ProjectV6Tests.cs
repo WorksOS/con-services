@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using IntegrationTests.UtilityClasses;
 using TestUtility;
+using VSS.MasterData.Models.Internal;
 using Xunit;
 
 namespace IntegrationTests.WebApiTests
@@ -10,10 +11,10 @@ namespace IntegrationTests.WebApiTests
   public class ProjectV6Tests : WebApiTestsBase
   {
     [Fact]
-    public async Task CreateStandardProjectAndGetProjectListV6()
+    public async Task CreateStandardProject()
     {
       var testText = "Project v6 test 1";
-      Msg.Title(testText, "Create standard project then read the project list.");
+      Msg.Title(testText, "Create standard project.");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
@@ -28,9 +29,27 @@ namespace IntegrationTests.WebApiTests
     }
 
     [Fact]
-    public async Task CreateStandardProjectWithCoordinateSystemAndGetProjectList()
+    public async Task CreateStandardProjectWithNoCustomerUid()
     {
       var testText = "Project v6 test 2";
+      Msg.Title(testText, "Create standard project with no customerUid.");
+      var ts = new TestSupport();
+      ts.SetCustomerUid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | " };
+      var response = await ts.PublishEventToWebApi(projectEventArray);
+      Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, projectEventArray, true);
+    }
+
+    [Fact]
+    public async Task CreateStandardProjectWithCoordinateSystem()
+    {
+      var testText = "Project v6 test 3";
       Msg.Title(testText, "Create standard project with CoordinateSystem.");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
@@ -48,7 +67,7 @@ namespace IntegrationTests.WebApiTests
     [Fact]
     public async Task CreateStandardProjectThenUpdateCoordinateSystem()
     {
-      var testText = "Project v6 test 3";
+      var testText = "Project v6 test 4";
       Msg.Title(testText, "Create standard project then update, change name and add CoordinateSystem.");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
@@ -81,7 +100,7 @@ namespace IntegrationTests.WebApiTests
     [Fact]
     public async Task CreateStandardProjectThenUpdateBoundary()
     {
-      var testText = "Project v6 test 4";
+      var testText = "Project v6 test 5";
       Msg.Title(testText, "Create standard project then update, change boundary.");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
@@ -110,284 +129,217 @@ namespace IntegrationTests.WebApiTests
       await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArrayCombined, true);
     }
 
+    [Fact]
+    public async Task CreateStandardProjectThenDelete()
+    {
+      var testText = "Project v6 test 6";
+      Msg.Title(testText, "Create standard project then delete.");
+      var ts = new TestSupport();
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | " };
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
 
-    //[Fact]
-    //public async Task CreateStandardProjectWithNoCustomerUidAndGetProjectListV4()
-    //{
-    //  Msg.Title("Project v4 test 27", "Create standard project and customer then read the project list. No customer id and no project id");
-    //  var ts = new TestSupport();
-    //  ts.SetCustomerUid();
-    //  var startDateTime = ts.FirstEventDate;
-    //  var endDateTime = new DateTime(9999, 12, 31);
+      // project deletion sets the ProjectEndDate to now, in the projects timezone.
+      //    this may cause the endDate to be a day earlier/later than 'NowUtc',
+      //    depending on when this test is run.
+      // note that only projectUID is passed from this array to the ProjectSvc endpoint,
+      //    the others are simply used for comparison
+      var endDateTime2Reset = DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland")?.Date;
+      ts.FirstEventDate = DateTime.UtcNow;
 
-    //  var customerEventArray = new[] {
-    //   "| TableName | EventDate   | Name             | fk_CustomerTypeID | CustomerUID   |",
-    //  $"| Customer  | 0d+09:00:00 | Boundary Test 25 | 1                 | {ts.CustomerUid} |"};
-    //  await ts.PublishEventCollection(customerEventArray);
-    //  ts.IsPublishToWebApi = true;
-    //  var projectEventArray = new[] {
-    //   "| EventType            | EventDate   | ProjectName    | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | ",
-    //  $"| CreateProjectRequest | 0d+09:00:00 | No Customer ID | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | " };
-    //  var response = await ts.PublishEventToWebApi(projectEventArray);
-    //  Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, ts.CustomerUid, projectEventArray, true);
-    //}   
+      var projectEventArray2 = new[] {
+         "| EventType          | EventDate   | ProjectUID      | ProjectEndDate                                   | ",
+        $"| DeleteProjectEvent | 1d+09:00:00 | {ts.ProjectUid} | {endDateTime2Reset:yyyy-MM-ddTHH:mm:ss.fffffff}  | " };
+      var response = await ts.PublishEventToWebApi(projectEventArray2);
+      Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
+    }
 
-    //[Fact]
-    //public async Task CreateStandardProjectThenDelete()
-    //{
-    //  Msg.Title("Project v4 test 23", "Create standard project and customer then update coordinate system then archive");
-    //  var ts = new TestSupport();
-    //  var projectUid = Guid.NewGuid().ToString();
-    //  var customerUid = Guid.NewGuid();
-    //  var tccOrg = Guid.NewGuid();
-    //  var subscriptionUid = Guid.NewGuid();
-    //  var startDateTime = ts.FirstEventDate;
-    //  var endDateTime = new DateTime(9999, 12, 31);
-    //  var endDateTime2 = DateTime.UtcNow.Date.AddYears(2);
-    //  var startDate = startDateTime.ToString("yyyy-MM-dd");
-    //  var endDate = endDateTime.ToString("yyyy-MM-dd");
+    [Fact]
+    public async Task Create2StandardProjectsThenUpdateBoundary_Overlapping()
+    {
+      var testText = "Project v6 test 7";
+      Msg.Title(testText, "Create 2 standard project2 then update with overlapping boundary.");
+      var ts = new TestSupport();
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      ts.IsPublishToWebApi = true;
+      const string updatedGeometryWkt = "POLYGON((-12 3,-12.3 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary        | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt}   | {customerUid} | " };
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
 
-    //  var eventsArray = new[] {
-    //   "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
-    //  $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
-    //  $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-    //  $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-    //  $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-    //  await ts.PublishEventCollection(eventsArray);
-    //  ts.IsPublishToWebApi = true;
-    //  var projectEventArray = new[] {
-    //   "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived |",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | 1 | false      |"};
-    //  await ts.PublishEventCollection(projectEventArray);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-    //  await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray, true);
+      testText += "_2ndProject";
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | " };
+      await ts.PublishEventCollection(projectEventArray2);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray2, true);
 
-    //  var projectEventArray2 = new[] {
-    //   "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | Description |",
-    //  $"| UpdateProjectRequest | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | 1 | false      | BootCampDimensions.dc | description |" };
-    //  await ts.PublishEventToWebApi(projectEventArray2);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray2, true);
-    //  await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray2, true);
+      testText += "_Updated";
+      var projectEventArray3 = new[] {
+       "| EventType            | EventDate   | ProjectUID                 | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary        | CustomerUID   | ",
+      $"| UpdateProjectRequest | 0d+09:00:00 | {ts.ProjectUid.ToString()} | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt}   | {customerUid} | " };
+      var response = await ts.PublishEventToWebApi(projectEventArray3, HttpStatusCode.BadRequest);
+      Assert.True(response == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should fail with overlap. Response: " + response);
+    }
 
-    //  ts.FirstEventDate = DateTime.UtcNow;
-    //  ts.ProjectUid = new Guid(projectUid);
+    [Fact]
+    public async Task CreateStandardProjectThenUpdateBoundary_OverlappingSelf_OK()
+    {
+      var testText = "Project v6 test 8";
+      Msg.Title(testText, "Create standard project then update with overlapping boundary for self (OK).");
+      var ts = new TestSupport();
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      ts.IsPublishToWebApi = true;
+      const string geometryWkt =        "POLYGON((-12 3,-12.3 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
+      const string overlapGeometryWkt = "POLYGON((-12 3,-12.34 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt}    | {customerUid} | " };
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
 
-    //  // project deletion sets the ProjectEndDate to now, in the projects timezone.
-    //  //    this may cause the endDate to be a day earlier/later than 'NowUtc',
-    //  //    depending on when this test is run.
-    //  // note that only projectUID is passed from this array to the ProjectSvc endpoint,
-    //  //    the others are simply used for comparison
-    //  var endDateTime2Reset = DateTime.UtcNow.ToLocalDateTime("Pacific/Auckland")?.Date;
+      testText += "_Updated";
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectUID                 | ProjectName | ProjectType | ProjectEndDate                             | ProjectBoundary      | CustomerUID   | ",
+      $"| UpdateProjectRequest | 0d+09:00:00 | {ts.ProjectUid.ToString()} | {testText}  | Standard    | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {overlapGeometryWkt} | {customerUid} |" };
+      var response = await ts.PublishEventToWebApi(projectEventArray2);
+      
+      var projectEventArrayCombined = new[] {
+       "| EventType            | EventDate   | ProjectUID                 | ProjectName | ProjectType | ProjectEndDate                             | ProjectBoundary        | CustomerUID   | ProjectTimezone           | ProjectStartDate                           | ",
+      $"| UpdateProjectRequest | 0d+09:00:00 | {ts.ProjectUid.ToString()} | {testText}  | Standard    | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {overlapGeometryWkt}   | {customerUid} | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} |" };
+      
+      Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArrayCombined, true);
+    }
 
-    //  var projectEventArray3 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        | IsArchived | CoordinateSystem      | ",
-    //  $"| DeleteProjectEvent | 1d+09:00:00 | {projectUid} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2Reset:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} | 1 | true       | BootCampDimensions.dc |" };
-    //  var response = await ts.PublishEventToWebApi(projectEventArray3);
-    //  Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray3, true);
-    //  await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid, projectEventArray3, true);
-    //}
+    [Fact]
+    public async Task Create2StandardProjectsWithAdjacentBoundarys()
+    {
+      var testText = "Project v6 test 9";
+      Msg.Title(testText, "Create 2 standard projects with adjacent boundaries.");
+      var ts = new TestSupport();
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | " };
+      var response1 = await ts.PublishEventToWebApi(projectEventArray);
+      Assert.True(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
+ 
+      testText += "_Updated";
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary        | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary4} | {customerUid} | " };
+      var response2 = await ts.PublishEventToWebApi(projectEventArray2);
+      Assert.True(response2 == "success", "Response is unexpected. Should be a success. Response: " + response2);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray2, true);
+    }
 
+    [Fact]
+    public async Task Create2StandardProjectsWithOverlappingBoundarys()
+    {
+      var testText = "Project v6 test 10";
+      Msg.Title(testText, "Create 2 standard projects with overlapping boundaries.");
+      var ts = new TestSupport();
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | " };
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
+      var projectUid_firstCreate = ts.ProjectUid;
 
+      testText += "_Updated";
+      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | " };
+      var response2 = await ts.PublishEventToWebApi(projectEventArray2, HttpStatusCode.BadRequest);
+      Assert.True(response2 == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should be a success. Response: " + response2);
 
-    //[Fact]
-    //public async Task CreateStandardProjectsThenUpdateProjectBoundary_Overlapping()
-    //{
-    //  Msg.Title("Project v4 test 25", "Create 2standard projects, 2nd with boundary to be updated then update 1st projectBoundary");
-    //  var ts = new TestSupport();
-    //  var projectUid = Guid.NewGuid().ToString();
-    //  var projectUid2 = Guid.NewGuid().ToString();
-    //  var customerUid = Guid.NewGuid();
-    //  var tccOrg = Guid.NewGuid();
-    //  var subscriptionUid = Guid.NewGuid();
-    //  var startDateTime = ts.FirstEventDate;
-    //  var startDateTime2 = startDateTime.AddDays(1);
-    //  var endDateTime = new DateTime(9999, 12, 31);
-    //  var endDateTime2 = endDateTime;
-    //  var startDate = startDateTime.ToString("yyyy-MM-dd");
-    //  var endDate = endDateTime.ToString("yyyy-MM-dd");
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid_firstCreate.ToString(), projectEventArray, true);
+    }
 
-    //  const string updatedGeometryWkt = "POLYGON((-12 3,-12.3 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
-    //  var eventsArray = new[] {
-    //   "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
-    //  $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
-    //  $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-    //  $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-    //  $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-    //  await ts.PublishEventCollection(eventsArray);
-    //  ts.IsPublishToWebApi = true;
-    //  var projectEventArray = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                             | ProjectEndDate                              | ProjectBoundary        | CustomerUID   | CustomerID        |IsArchived | Description                  |",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid}  | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}   | {Boundaries.Boundary1}          | {customerUid} | 1 |false      | Boundary Test 22 description |",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 23 | Standard    | New Zealand Standard Time | {startDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt}   | {customerUid} | 1 |false      | Boundary Test 22 description |"};
-    //  await ts.PublishEventCollection(projectEventArray);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+    [Fact]
+    public async Task Create2StandardProjectsWithSameNames()
+    {
+      var testText = "Project v6 test 11";
+      Msg.Title(testText, "Create 2 standard projects with same names.");
+      var ts = new TestSupport();
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = new DateTime(9999, 12, 31);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | " };
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
+      var projectUid_firstCreate = ts.ProjectUid;
 
-    //  var projectEventArray2 = new[] {
-    //   "| EventType            | EventDate   | ProjectUID   | ProjectName      | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description        |",
-    //  $"| UpdateProjectRequest | 0d+09:00:00 | {projectUid} | Boundary Test 22 | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {updatedGeometryWkt}   | {customerUid} | 1 |false      | BootCampDimensions.dc | Change description |"};
-    //  var response = await ts.PublishEventToWebApi(projectEventArray2, HttpStatusCode.BadRequest);
+      const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | " };
+      var response2 = await ts.PublishEventToWebApi(projectEventArray2, HttpStatusCode.BadRequest);
+      Assert.True(response2 == $"UpsertProject Not allowed duplicate, active projectnames: Count:1 projectUid: {projectUid_firstCreate.ToString()}.", "Response is unexpected. Should be a success. Response: " + response2);
 
-    //  Assert.True(response == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should fail with overlap. Response: " + response);
-    //}
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid_firstCreate.ToString(), projectEventArray, true);
+    }
 
-    //[Fact]
-    //public async Task CreateStandardProjectThenUpdateProjectBoundary_OverlappingSelf_OK()
-    //{
-    //  var msgNumber = "25a";
-    //  Msg.Title($"Project v4 test {msgNumber}", "Create standard project, then update with overlapping projectBoundary");
-    //  var ts = new TestSupport();
-    //  var projectUid = Guid.NewGuid().ToString();
-    //  var customerUid = Guid.NewGuid();
-    //  var tccOrg = Guid.NewGuid();
-    //  var subscriptionUid = Guid.NewGuid();
-    //  var startDateTime = ts.FirstEventDate;
-    //  var endDateTime = new DateTime(9999, 12, 31);
-    //  var endDateTime2 = endDateTime;
-    //  var startDate = startDateTime.ToString("yyyy-MM-dd");
-    //  var endDate = endDateTime.ToString("yyyy-MM-dd");
-    //  const string geometryWkt = "POLYGON((-12 3,-12.3 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
-    //  const string overlapGeometryWkt = "POLYGON((-12 3.0,-12.3 3,-12.3 4,-12.3 4,-12.8 4,-12 3))";
-    //  var eventsArray = new[] {
-    //   "| TableName           | EventDate   | CustomerUID   | Name      | fk_CustomerTypeID | SubscriptionUID   | fk_CustomerUID | fk_ServiceTypeID | StartDate   | EndDate        | fk_ProjectUID | TCCOrgID | fk_SubscriptionUID |",
-    //  $"| Customer            | 0d+09:00:00 | {customerUid} | CustName  | 1                 |                   |                |                  |             |                |               |          |                    |",
-    //  $"| CustomerTccOrg      | 0d+09:00:00 | {customerUid} |           |                   |                   |                |                  |             |                |               | {tccOrg} |                    |",
-    //  $"| Subscription        | 0d+09:10:00 |               |           |                   | {subscriptionUid} | {customerUid}  | 19               | {startDate} | {endDate}      |               |          |                    |",
-    //  $"| ProjectSubscription | 0d+09:20:00 |               |           |                   |                   |                |                  | {startDate} |                | {projectUid}  |          | {subscriptionUid}  |"};
-    //  await ts.PublishEventCollection(eventsArray);
-    //  ts.IsPublishToWebApi = true;
-    //  var projectName = $"Boundary Test {msgNumber}";
-    //  var projectEventArray = new[]
-    //  {
-    //     "| EventType          | EventDate   | ProjectUID    | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                             | ProjectEndDate                              | ProjectBoundary        | CustomerUID   | CustomerID        |IsArchived | Description                  |",
-    //    $"| CreateProjectEvent | 0d+09:00:00 | {projectUid}  | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}   | {geometryWkt}          | {customerUid} | 1 |false      | Boundary Test 22 description |"};
+    [Fact]
+    public async Task Create2StandardProjectsWithOverlappingBoundarysButNotTimes()
+    {
+      var testText = "Project v6 test 12";
+      Msg.Title(testText, "Create 2 standard projects with overlapping boundaries but not times.");
+      var ts = new TestSupport();
+      var customerUid = Guid.NewGuid();
+      var startDateTime = ts.FirstEventDate;
+      var endDateTime = DateTime.UtcNow.Date.AddMonths(2);
+      var startDateTime2 = DateTime.UtcNow.Date.AddMonths(3);
+      var endDateTime2 = DateTime.UtcNow.Date.AddMonths(9);
+      ts.IsPublishToWebApi = true;
+      var projectEventArray = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | " };
+      await ts.PublishEventCollection(projectEventArray);
+      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
 
-    //  await ts.PublishEventCollection(projectEventArray);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-
-    //  var projectEventArray2 = new[] {
-    //   "| EventType            | EventDate   | ProjectUID   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary | CustomerUID   | CustomerID        |IsArchived | CoordinateSystem      | Description        |",
-    //  $"| UpdateProjectRequest | 0d+09:00:00 | {projectUid} | {projectName} | Standard    | New Zealand Standard Time | {startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff} | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {overlapGeometryWkt}   | {customerUid} | 1 |false      | BootCampDimensions.dc | Change description |"};
-    //  var response = await ts.PublishEventToWebApi(projectEventArray2);
-    //  Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-    //}
-
-
-    //[Fact]
-    //public async Task Create2StandardProjectsWithAdjacentBoundarys()
-    //{
-    //  Msg.Title("Project v4 test 9", "Create standard project and customer with adjacent boundarys");
-    //  var ts = new TestSupport();
-    //  var ShortRaptorProjectId1 = TestSupport.GenerateShortRaptorProjectID();
-    //  var ShortRaptorProjectId2 = TestSupport.GenerateShortRaptorProjectID();
-    //  var projectUid1 = Guid.NewGuid().ToString();
-    //  var projectUid2 = Guid.NewGuid().ToString();
-    //  var customerUid = Guid.NewGuid();
-    //  var startDateTime = ts.FirstEventDate;
-    //  var endDateTime = new DateTime(9999, 12, 31);
-
-    //  var customerEventArray = new[] {
-    //   "| TableName | EventDate   | Name            | fk_CustomerTypeID | CustomerUID   |",
-    //  $"| Customer  | 0d+09:00:00 | Boundary Test 1 | 1                 | {customerUid} |"};
-    //  await ts.PublishEventCollection(customerEventArray);
-    //  ts.IsPublishToWebApi = true;
-    //  var projectEventArray1 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 9-1 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | {ShortRaptorProjectId1} |false      |" };
-    //  var response1 = await ts.PublishEventToWebApi(projectEventArray1);
-    //  Assert.True(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
-
-    //  var projectEventArray2 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 9-2 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary4}   | {customerUid} | {ShortRaptorProjectId2} |false      |" };
-    //  var response2 = await ts.PublishEventToWebApi(projectEventArray2);
-    //  Assert.True(response2 == "success", "Response is unexpected. Should be a success. Response: " + response2);
-
-    //  var projectEventArray3 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 9-1 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | {ShortRaptorProjectId1} |false      |" ,
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 9-2 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary4}   | {customerUid} | {ShortRaptorProjectId2} |false      |" };
-
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray3, true);
-    //  await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid2, projectEventArray2, true);
-    //}
-
-    //[Fact]
-    //public async Task Create2StandardProjectsWithOverLappingBoundarys()
-    //{
-    //  Msg.Title("Project v4 test 10", "Create standard project and customer with overlapping boundarys");
-    //  var ts = new TestSupport();
-    //  var ShortRaptorProjectId1 = TestSupport.GenerateShortRaptorProjectID();
-    //  var ShortRaptorProjectId2 = TestSupport.GenerateShortRaptorProjectID();
-    //  var projectUid1 = Guid.NewGuid().ToString();
-    //  var projectUid2 = Guid.NewGuid().ToString();
-    //  var customerUid = Guid.NewGuid();
-    //  var startDateTime = ts.FirstEventDate;
-    //  var endDateTime = new DateTime(9999, 12, 31);
-
-    //  const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
-    //  var customerEventArray = new[] {
-    //   "| TableName | EventDate   | Name            | fk_CustomerTypeID | CustomerUID   |",
-    //  $"| Customer  | 0d+09:00:00 | Boundary Test 1 | 1                 | {customerUid} |"};
-    //  await ts.PublishEventCollection(customerEventArray);
-    //  ts.IsPublishToWebApi = true;
-    //  var projectEventArray1 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 9-1 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | {ShortRaptorProjectId1} |false      |" };
-    //  var response1 = await ts.PublishEventToWebApi(projectEventArray1);
-    //  Assert.True(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
-
-    //  var projectEventArray2 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName       | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 9-2 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {geometryWkt2}   | {customerUid} | {ShortRaptorProjectId2} |false      |" };
-    //  var response2 = await ts.PublishEventToWebApi(projectEventArray2, HttpStatusCode.BadRequest);
-    //  Assert.True(response2 == "Project boundary overlaps another project, for this customer and time span.", "Response is unexpected. Should be a success. Response: " + response2);
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray1, true);
-    //  await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid1, projectEventArray1, true);
-    //}
-
-    //[Fact]
-    //public async Task Create2StandardProjectsWithOverlappingBoundarysButProjectDatesArent()
-    //{
-    //  Msg.Title("Project v4 test 11", "Create standard project and customer with overlapping boundarys but project dates aren't");
-    //  var ts = new TestSupport();
-    //  var ShortRaptorProjectId1 = TestSupport.GenerateShortRaptorProjectID();
-    //  var ShortRaptorProjectId2 = TestSupport.GenerateShortRaptorProjectID();
-    //  var projectUid1 = Guid.NewGuid().ToString();
-    //  var projectUid2 = Guid.NewGuid().ToString();
-    //  var customerUid = Guid.NewGuid();
-    //  var startDateTime = ts.FirstEventDate;
-    //  var endDateTime = DateTime.UtcNow.Date.AddMonths(2);
-    //  var startDateTime2 = DateTime.UtcNow.Date.AddMonths(3);
-    //  var endDateTime2 = DateTime.UtcNow.Date.AddMonths(9);
-
-    //  const string geometryWkt2 = "POLYGON((172.595071 -43.542112,172.595562 -43.543218,172.59766 -43.542353,172.595071 -43.542112))";
-    //  var customerEventArray = new[] {
-    //   "| TableName | EventDate   | Name             | fk_CustomerTypeID | CustomerUID   |",
-    //  $"| Customer  | 0d+09:00:00 | Boundary Test 11 | 1                 | {customerUid} |"};
-    //  await ts.PublishEventCollection(customerEventArray);
-    //  ts.IsPublishToWebApi = true;
-    //  var projectEventArray1 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName        | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 11-1 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | {ShortRaptorProjectId1} |false      |" };
-    //  var response1 = await ts.PublishEventToWebApi(projectEventArray1);
-    //  Assert.True(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
-
-    //  var projectEventArray2 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName        | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 11-2 | Standard    | New Zealand Standard Time |{startDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff} | {geometryWkt2}   | {customerUid} | {ShortRaptorProjectId2} |false      |" };
-    //  var response2 = await ts.PublishEventToWebApi(projectEventArray2);
-    //  Assert.True(response2 == "success", "Response is unexpected. Should be a success. Response: " + response2);
-
-    //  var projectEventArray3 = new[] {
-    //   "| EventType          | EventDate   | ProjectUID    | ProjectName        | ProjectType | ProjectTimezone           | ProjectStartDate                             | ProjectEndDate                             | ProjectBoundary  | CustomerUID   | CustomerID         |IsArchived | ",
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid1} | Boundary Test 11-1 | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}   | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary3}   | {customerUid} | {ShortRaptorProjectId1} |false      |" ,
-    //  $"| CreateProjectEvent | 0d+09:00:00 | {projectUid2} | Boundary Test 11-2 | Standard    | New Zealand Standard Time |{startDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff} | {geometryWkt2}   | {customerUid} | {ShortRaptorProjectId2} |false      |" };
-
-    //  await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray3, true);
-    //  await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid2, projectEventArray2, true);
-    //}    
+      testText += "_Updated";
+      var projectEventArray2 = new[] {
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                              | ProjectBoundary          | CustomerUID   | ",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime2:yyyy-MM-ddTHH:mm:ss.fffffff} | {Boundaries.Boundary3}   | {customerUid} | " };
+      var response2 = await ts.PublishEventToWebApi(projectEventArray2);
+      Assert.True(response2 == "success", "Response is unexpected. Should be a success. Response: " + response2);
+      
+      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray2, true);
+    }
   }
 }

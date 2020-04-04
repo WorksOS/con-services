@@ -48,28 +48,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets a list of projects for a customer. The list includes projects of all project types,
-    ///    and both active and archived projects.
-    /// </summary>
-    /// <param name="includeLandfill">Obsolete</param>
-    /// <returns>A list of projects</returns>
-    [Route("api/v6/project")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6([FromQuery] bool? includeLandfill)
-    {
-      // Note: includeLandfill is obsolete, but not worth the grief up creating a new endpoint.
-
-      return await GetAllProjectsV6();
-    }
-
-    /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
     ///        and both active and archived projects.
     /// </summary>
-    /// <returns>A list of projects</returns>
-    [Route("api/v6/project/all")]
+    [Route("api/v6/project")]
     [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetAllProjectsV6()
+    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6()
     {
       Logger.LogInformation("GetAllProjectsV6");
 
@@ -297,7 +281,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation("UpdateProjectV6. Invalidating 3D PM cache");
-      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID.ToString()));
+      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(

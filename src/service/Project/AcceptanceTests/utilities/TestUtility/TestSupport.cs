@@ -216,6 +216,20 @@ namespace TestUtility
     }
 
     /// <summary>
+    /// Validate the TBC orgShortName for this customer via the web api. 
+    /// </summary>
+    public Task<string> ValidateTbcOrgIdApiV2(string orgShortName)
+    {
+      var validateTccAuthorizationRequest = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest(orgShortName);
+
+      var requestJson = validateTccAuthorizationRequest == null
+        ? null
+        : JsonConvert.SerializeObject(validateTccAuthorizationRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+      return CallProjectWebApi("api/v5/preferences/tcc", HttpMethod.Post, requestJson, CustomerUid.ToString());
+    }
+
+    /// <summary>
     /// Call the version 4 of the project master data
     /// </summary>
     private async Task<string> CallWebApiWithProject(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode)
@@ -399,7 +413,7 @@ namespace TestUtility
       }
     }
 
-    public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
+    public void CompareTheActualImportFileWithExpectedV6(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
       CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);
     }

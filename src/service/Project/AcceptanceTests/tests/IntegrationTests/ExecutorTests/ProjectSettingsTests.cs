@@ -180,9 +180,9 @@ namespace IntegrationTests.ExecutorTests
     }
 
     [Theory]
-    //[InlineData(ProjectSettingsType.Targets)] todoMaverick
+    [InlineData(ProjectSettingsType.Targets)]
     [InlineData(ProjectSettingsType.ImportedFiles)]
-    //[InlineData(ProjectSettingsType.Colors)] todoMaverick
+    [InlineData(ProjectSettingsType.Colors)]
     public async Task UpsertProjectSettingsExecutor_NoProjectSettingsExists(ProjectSettingsType settingsType)
     {
       var customerUid = Guid.NewGuid().ToString();
@@ -223,56 +223,55 @@ namespace IntegrationTests.ExecutorTests
       }
     }
 
-    // todoMaverick
-    //    [Theory]
-    //    [InlineData(ProjectSettingsType.Targets)]
-    //    [InlineData(ProjectSettingsType.ImportedFiles)]
-    //    [InlineData(ProjectSettingsType.Colors)]
-    //    public async Task UpsertProjectSettingsExecutor_Exists(ProjectSettingsType settingsType)
-    //    {
-    //      var customerUid = Guid.NewGuid().ToString();
-    //      var userId = Guid.NewGuid().ToString();
-    //      var userEmailAddress = "whatever@here.there.com";
-    //      var projectUid = Guid.NewGuid();
-    //      var settings = "blah";
-    //      //string settingsUpdated = "blah Is Updated";
-    //      var settingsUpdated = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
+    [Theory]
+    [InlineData(ProjectSettingsType.Targets)]
+    [InlineData(ProjectSettingsType.ImportedFiles)]
+    [InlineData(ProjectSettingsType.Colors)]
+    public async Task UpsertProjectSettingsExecutor_Exists(ProjectSettingsType settingsType)
+    {
+      var customerUid = Guid.NewGuid().ToString();
+      var userId = Guid.NewGuid().ToString();
+      var userEmailAddress = "whatever@here.there.com";
+      var projectUid = Guid.NewGuid();
+      var settings = "blah";
+      //string settingsUpdated = "blah Is Updated";
+      var settingsUpdated = settingsType != ProjectSettingsType.ImportedFiles ? @"{firstValue: 10, lastValue: 20}" : @"[{firstValue: 10, lastValue: 20}, {firstValue: 20, lastValue: 40}]";
 
-    //      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid.ToString());
-    //      Assert.True(isCreatedOk, "unable to create project for Customer");
+      var isCreatedOk = _fixture.CreateCustomerProject(customerUid, projectUid.ToString());
+      Assert.True(isCreatedOk, "unable to create project for Customer");
 
-    //      isCreatedOk = _fixture.CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
-    //      Assert.True(isCreatedOk, "created projectSettings");
+      isCreatedOk = _fixture.CreateProjectSettings(projectUid.ToString(), userId, settings, settingsType);
+      Assert.True(isCreatedOk, "created projectSettings");
 
-    //      var projectSettingsRequest =
-    //        ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
+      var projectSettingsRequest =
+        ProjectSettingsRequest.CreateProjectSettingsRequest(projectUid.ToString(), settingsUpdated, settingsType);
 
-    //      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
-    //      (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
-    //        customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
-    //        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
-    //      var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
-    //      Assert.NotNull(result);
-    //      Assert.Equal(projectUid.ToString(), result.projectUid);
-    //      Assert.Equal(settingsType, result.projectSettingsType);
+      var executor = RequestExecutorContainerFactory.Build<UpsertProjectSettingsExecutor>
+      (_fixture.Logger, _fixture.ConfigStore, _fixture.ServiceExceptionHandler,
+        customerUid, userId, userEmailAddress, _fixture.CustomHeaders(customerUid),
+        productivity3dV2ProxyCompaction: _fixture.Productivity3dV2ProxyCompaction, projectRepo: _fixture.ProjectRepo);
+      var result = await executor.ProcessAsync(projectSettingsRequest) as ProjectSettingsResult;
+      Assert.NotNull(result);
+      Assert.Equal(projectUid.ToString(), result.projectUid);
+      Assert.Equal(settingsType, result.projectSettingsType);
 
-    //      if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
-    //      {
-    //        var tempSettings = JsonConvert.DeserializeObject<JObject>(settingsUpdated);
+      if (settingsType == ProjectSettingsType.Targets || settingsType == ProjectSettingsType.Colors)
+      {
+        var tempSettings = JsonConvert.DeserializeObject<JObject>(settingsUpdated);
 
-    //        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
-    //        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
-    //      }
-    //      else
-    //      {
-    //        var tempObj = JsonConvert.DeserializeObject<JArray>(settingsUpdated);
-    //        var tempJObject = new JObject { ["importedFiles"] = tempObj };
+        Assert.Equal(tempSettings["firstValue"], result.settings["firstValue"]);
+        Assert.Equal(tempSettings["lastValue"], result.settings["lastValue"]);
+      }
+      else
+      {
+        var tempObj = JsonConvert.DeserializeObject<JArray>(settingsUpdated);
+        var tempJObject = new JObject { ["importedFiles"] = tempObj };
 
-    //        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
-    //        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
-    //        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
-    //        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
-    //      }
-    //    }
+        Assert.Equal(tempJObject["importedFiles"][0]["firstValue"], result.settings["importedFiles"][0]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][0]["lastValue"], result.settings["importedFiles"][0]["lastValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["firstValue"], result.settings["importedFiles"][1]["firstValue"]);
+        Assert.Equal(tempJObject["importedFiles"][1]["lastValue"], result.settings["importedFiles"][1]["lastValue"]);
+      }
+    }
   }
 }

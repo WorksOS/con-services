@@ -16,7 +16,6 @@ using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -75,7 +74,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     public static async Task<ImportedFile> GetImportedFileForProject
       (string projectUid, string fileName, ImportedFileType importedFileType, DateTime? surveyedUtc,
-      ILogger log, IProjectRepository projectRepo, double? offset, string parentUid)
+      ILogger log, IProjectRepository projectRepo, double? offset, Guid? parentUid)
     {
       var importedFiles = await ImportedFileRequestDatabaseHelper.GetImportedFiles(projectUid, log, projectRepo).ConfigureAwait(false);
       ImportedFile existing = null;
@@ -85,7 +84,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         {
           existing = importedFiles.FirstOrDefault
           (f => f.ImportedFileType == ImportedFileType.ReferenceSurface &&
-                f.ParentUid == parentUid &&
+                f.ParentUid == parentUid.ToString() &&
                 f.Offset.EqualsToNearestMillimeter(offset));
         }
         else
@@ -103,8 +102,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return existing;
     }
 
-  public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid,
-      string userId, IProjectRepository projectRepo)
+    public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid,
+        string userId, IProjectRepository projectRepo)
     {
       List<ActivatedFileDescriptor> deactivatedFileList = null;
       var importFileSettings = await projectRepo
@@ -121,19 +120,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Creates an imported file in Db.
     /// </summary>
     /// <returns />
-    public static async Task<CreateImportedFileEvent> CreateImportedFileinDb(string customerUid, string projectUid,
+    public static async Task<CreateImportedFileEvent> CreateImportedFileinDb(Guid customerUid, Guid projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, string filename, DateTime? surveyedUtc,
       string fileDescriptor, DateTime fileCreatedUtc, DateTime fileUpdatedUtc, string importedBy,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
-      string parentUid, double? offset, string importedFileUid)
+      Guid? parentUid, double? offset, Guid importedFileUid)
     {
       log.LogDebug($"Creating the ImportedFile {filename} for project {projectUid}.");
       var nowUtc = DateTime.UtcNow;
       var createImportedFileEvent = new CreateImportedFileEvent
       {
-        CustomerUID = new Guid(customerUid),
-        ProjectUID = new Guid(projectUid),
-        ImportedFileUID = new Guid(importedFileUid),
+        CustomerUID = customerUid,
+        ProjectUID = projectUid,
+        ImportedFileUID = importedFileUid,
         ImportedFileType = importedFileType,
         DxfUnitsType = dxfUnitsType,
         Name = filename,
@@ -144,7 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         SurveyedUTC = surveyedUtc,
         ActionUTC = nowUtc, // aka importedUtc
         ReceivedUTC = nowUtc,
-        ParentUID = string.IsNullOrEmpty(parentUid) ? (Guid?)null : new Guid(parentUid),
+        ParentUID = parentUid,
         Offset = offset ?? 0
       };
 
@@ -162,7 +161,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (existing != null && existing.ImportedFileId > 0)
       {
         createImportedFileEvent.ImportedFileID = existing.ImportedFileId;
-        createImportedFileEvent.ImportedFileUID = new Guid(existing.ImportedFileUid); // for unit tests
+        createImportedFileEvent.ImportedFileUID = Guid.Parse(existing.ImportedFileUid); // for unit tests
       }
       else
       {
@@ -178,14 +177,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes imported file from the Db.
     /// </summary>
     /// <returns />
-    public static async Task<DeleteImportedFileEvent> DeleteImportedFileInDb(string projectUid, string importedFileUid,
+    public static async Task<DeleteImportedFileEvent> DeleteImportedFileInDb(Guid projectUid, Guid importedFileUid,
       IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo, bool deletePermanently = false)
     {
       var nowUtc = DateTime.UtcNow;
       var deleteImportedFileEvent = new DeleteImportedFileEvent
       {
-        ProjectUID = new Guid(projectUid),
-        ImportedFileUID = new Guid(importedFileUid),
+        ProjectUID = projectUid,
+        ImportedFileUID = importedFileUid,
         DeletePermanently = deletePermanently,
         ActionUTC = nowUtc, // aka importedDate
         ReceivedUTC = nowUtc
@@ -246,14 +245,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Used solely for rollback and is never inserted in the kafka que.
     /// </summary>
     /// <returns />
-    public static async Task UndeleteImportedFile(string projectUid, string importedFileUid,
+    public static async Task UndeleteImportedFile(Guid projectUid, Guid importedFileUid,
       IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var nowUtc = DateTime.UtcNow;
       var undeleteImportedFileEvent = new UndeleteImportedFileEvent
       {
-        ProjectUID = new Guid(projectUid),
-        ImportedFileUID = new Guid(importedFileUid),
+        ProjectUID = projectUid,
+        ImportedFileUID = importedFileUid,
         ActionUTC = nowUtc,
         ReceivedUTC = nowUtc
       };
@@ -268,10 +267,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    public static async Task<List<Filter>> GetFilters(string projectUid, 
+    public static async Task<List<Filter>> GetFilters(Guid projectUid,
       IDictionary<string, string> customHeaders, IFilterServiceProxy filterServiceProxy)
     {
-      var filterDescriptors = await filterServiceProxy.GetFilters(projectUid, customHeaders);
+      var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);
       if (filterDescriptors == null || filterDescriptors.Count == 0)
       {
         return null;

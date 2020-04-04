@@ -22,13 +22,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// It's presence here is to prevent calling into Raptor on file upsert and not generate extra files, e.g. .prg.
     /// </remarks>
     public UpdateImportedFile(
-      string projectUid, long shortRaptorProjectId, ImportedFileType importedFileTypeId,
+      Guid projectUid, long shortRaptorProjectId, ImportedFileType importedFileTypeId,
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
-      FileDescriptor fileDescriptor, string importedFileUid, long importedFileId,
+      FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
       string dataOceanRootFolder, double? offset, string dataOceanFileName)
     {
-      ProjectUid = new Guid(projectUid);
+      ProjectUid = projectUid;
       ShortRaptorProjectId = shortRaptorProjectId;
       ImportedFileType = importedFileTypeId;
       SurveyedUtc = surveyedUtc;
@@ -36,7 +36,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       FileCreatedUtc = fileCreatedUtc;
       FileUpdatedUtc = fileUpdatedUtc;
       FileDescriptor = fileDescriptor;
-      ImportedFileUid = new Guid(importedFileUid);
+      ImportedFileUid = importedFileUid;
       ImportedFileId = importedFileId;
       DataOceanRootFolder = dataOceanRootFolder;
       Offset = offset;

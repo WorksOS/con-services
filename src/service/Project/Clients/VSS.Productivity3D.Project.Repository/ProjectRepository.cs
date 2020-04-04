@@ -21,20 +21,10 @@ namespace VSS.Productivity3D.Project.Repository
 {
   public class ProjectRepository : RepositoryBase, IRepository<IProjectEvent>, IProjectRepository
   {
-    // The landfill Service requires the existance of a Geofence representing the Projects Boundary.
-    // Its type is ProjectType and it must be associated with a ProjectGeofence 
-    // todoMaverick remove this?
-    //private static bool _isProjectTypeGeofenceRequired = false;
-
     public ProjectRepository(IConfigurationStore configurationStore, ILoggerFactory logger) : base(configurationStore,
       logger)
     {
       Log = logger.CreateLogger<ProjectRepository>();
-      //if (!bool.TryParse(configurationStore.GetValueString("ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED"),
-      //    out _isProjectTypeGeofenceRequired))
-      //{
-      //  _isProjectTypeGeofenceRequired = false;
-      //}
     }
 
     #region projectstore
@@ -287,7 +277,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          //await UpsertProjectTypeGeofence("CreatedProject", project);
+          await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -375,7 +365,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          //await UpsertProjectTypeGeofence("UpdatedProject", project);
+          await UpsertProjectTypeGeofence("UpdatedProject", project);
         }
 
         return upsertedCount;
@@ -431,7 +421,7 @@ namespace VSS.Productivity3D.Project.Repository
           if (upsertedCount > 0)
           {
             upsertedCount = await InsertProjectHistory(project);
-            //await UpsertProjectTypeGeofence("UpdatedProject", project);
+            await UpsertProjectTypeGeofence("UpdatedProject", project);
           }
 
           return upsertedCount;
@@ -454,7 +444,7 @@ namespace VSS.Productivity3D.Project.Repository
         if (upsertedCount > 0)
         {
           upsertedCount = await InsertProjectHistory(project);
-          //await UpsertProjectTypeGeofence("CreatedProject", project);
+          await UpsertProjectTypeGeofence("CreatedProject", project);
         }
 
         return upsertedCount;
@@ -1020,38 +1010,34 @@ namespace VSS.Productivity3D.Project.Repository
 
       return upsertedCount;
     }
-    
-    // this was for landfill only
-    //private async Task UpsertProjectTypeGeofence(string upsertType, ProjectDataModel project)
-    //{
-    //  if (!_isProjectTypeGeofenceRequired)
-    //    return;
 
-    //  if (string.IsNullOrEmpty(project.Boundary))
-    //  {
-    //    Log.LogInformation(
-    //      $"ProjectRepository/UpsertProjectTypeGeofence: Unable to Upsert GeofenceBoundary as boundary not available. UpsertType {upsertType}. project={project.ProjectUID}.");
-    //    return;
-    //  }
+    private async Task UpsertProjectTypeGeofence(string upsertType, ProjectDataModel project)
+    {
+      if (string.IsNullOrEmpty(project.Boundary))
+      {
+        Log.LogInformation(
+          $"ProjectRepository/UpsertProjectTypeGeofence: Unable to Upsert GeofenceBoundary as boundary not available. UpsertType {upsertType}. project={project.ProjectUID}.");
+        return;
+      }
 
-    //  // may be an existing one if this create comes from a replay of kafka que.
-    //  var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, " +
-    //               "     FillColor, IsTransparent, IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
-    //               "     AreaSqMeters, g.LastActionedUTC " +
-    //               "  FROM ProjectGeofence pg " +
-    //               "   INNER JOIN Geofence g ON g.GeofenceUID = pg.fk_GeofenceUID " +
-    //               $" WHERE fk_ProjectUID = '{project.ProjectUID}' " +
-    //               $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
-    //  var existingGeofence = (await QueryWithAsyncPolicy<Geofence>(select)).FirstOrDefault();
+      // may be an existing one if this create comes from a replay of kafka que.
+      var select = "SELECT GeofenceUID, Name, fk_GeofenceTypeID AS GeofenceType, ST_ASWKT(PolygonST) AS GeometryWKT, " +
+                   "     FillColor, IsTransparent, IsDeleted, Description, fk_CustomerUID AS CustomerUID, UserUID, " +
+                   "     AreaSqMeters, g.LastActionedUTC " +
+                   "  FROM ProjectGeofence pg " +
+                   "   INNER JOIN Geofence g ON g.GeofenceUID = pg.fk_GeofenceUID " +
+                   $" WHERE fk_ProjectUID = '{project.ProjectUID}' " +
+                   $"  AND fk_GeofenceTypeID = {(int)GeofenceType.Project}; ";
+      var existingGeofence = (await QueryWithAsyncPolicy<Geofence>(select)).FirstOrDefault();
 
-    //  Log.LogDebug(
-    //    $"ProjectRepository/UpsertProjectTypeGeofence: going to upsert. upsertType {upsertType}. project={project.ProjectUID} existingGeofence? {existingGeofence}");
+      Log.LogDebug(
+        $"ProjectRepository/UpsertProjectTypeGeofence: going to upsert. upsertType {upsertType}. project={project.ProjectUID} existingGeofence? {existingGeofence}");
 
-    //  if (existingGeofence == null)
-    //    await CreateGeofenceAndAssociation(project);
-    //  else
-    //    await UpdateGeofence(project, existingGeofence);
-    //}
+      if (existingGeofence == null)
+        await CreateGeofenceAndAssociation(project);
+      else
+        await UpdateGeofence(project, existingGeofence);
+    }
 
     private async Task<int> CreateGeofenceAndAssociation(ProjectDataModel project)
     {
@@ -1060,8 +1046,9 @@ namespace VSS.Productivity3D.Project.Repository
       geofence.Name = project.Name;
       geofence.GeofenceType = GeofenceType.Project;
       geofence.GeometryWKT = project.Boundary;
-      geofence.CustomerUID = ""; // we don't know this from a Project Kafka event
-      geofence.AreaSqMeters = GeofenceValidation.CalculateAreaSqMeters(project.Boundary);
+      geofence.CustomerUID = project.CustomerUID;
+      var area = GeofenceValidation.CalculateAreaSqMeters(project.Boundary);
+      geofence.AreaSqMeters = area > 1000000000 ? 0 : area;
       geofence.IsDeleted = false;
       geofence.LastActionedUTC = DateTime.UtcNow;
 

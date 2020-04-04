@@ -34,10 +34,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
 
     public string CustomerUID { get; set; }
 
-    // todoMaverick, what is this for?
-    //// legacy CustomerID in Gen2 is a bigint. Unlike LegacyProjectID, this is passed around as a long. I don't know why.
-    //public long LegacyCustomerID { get; set; }
-
     public string GeometryWKT { get; set; }
 
     public string CoordinateSystemFileName { get; set; }

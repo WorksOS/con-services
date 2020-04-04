@@ -134,55 +134,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The Customer UID.
     /// </value>
     public string CustomerUid { get; set; }
-
-    // todoMaverick obsolete
-    ///// <summary>
-    ///// Gets or sets the customer Id from legacy VisionLink
-    ///// </summary>
-    ///// <value>
-    ///// The legacy Customer Id.
-    ///// </value>
-    //public string LegacyCustomerId { get; set; }
-
-    ///// <summary>
-    ///// Gets or sets the SubscriptionUID which the project is associated with
-    ///// </summary>
-    ///// <value>
-    ///// The subscription UID.
-    ///// </value>
-    //public string SubscriptionUid { get; set; }
-    
-    ///// <summary>
-    ///// Gets or sets the Subscription start date.
-    ///// </summary>
-    ///// <value>
-    ///// The Subscription start date.
-    ///// </value>
-    //public string SubscriptionStartDate { get; set; }
-
-    ///// <summary>
-    ///// Gets or sets the Subscription end date.
-    ///// </summary>
-    ///// <value>
-    ///// The Subscription end date.
-    ///// </value>
-    //public string SubscriptionEndDate { get; set; }
-    
-    ///// <summary>
-    ///// Gets or sets the type of the subscription.
-    ///// </summary>
-    ///// <value>
-    ///// The type of the subscription.
-    ///// </value>
-    //public ServiceTypeEnum ServiceType { get; set; }
-
-    ///// <summary>
-    ///// Gets the name of the subscription type.
-    ///// </summary>
-    ///// <value>
-    ///// The name of the subscription type.
-    ///// </value>
-    //public string ServiceTypeName => this.ServiceType.ToString();
+     
 
     /// <summary>
     /// Gets or sets the project geofence.
@@ -223,13 +175,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
              && otherProject.StartDate == this.StartDate
              && otherProject.EndDate == this.EndDate
              && otherProject.CustomerUid == this.CustomerUid
-             //&& otherProject.LegacyCustomerId == this.LegacyCustomerId
-
-             //&& otherProject.SubscriptionUid == this.SubscriptionUid
-             //&& otherProject.SubscriptionStartDate == this.SubscriptionStartDate
-             //&& otherProject.SubscriptionEndDate == this.SubscriptionEndDate
-             //&& otherProject.ServiceType == this.ServiceType
-
              && otherProject.ProjectGeofenceWKT == this.ProjectGeofenceWKT
              && otherProject.CoordinateSystemFileName == this.CoordinateSystemFileName
              && otherProject.IsArchived == this.IsArchived

@@ -11,7 +11,7 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
 {
   public interface IProductivity3dV2ProxyCompaction : IProductivity3dV2Proxy
   {
-    Task<Stream> GetLineworkFromAlignment(string projectUid, string alignmentUid,
+    Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid,
       IDictionary<string, string> customHeaders);
 
     Task<ProjectStatisticsResult> GetProjectStatistics(Guid projectUid,
