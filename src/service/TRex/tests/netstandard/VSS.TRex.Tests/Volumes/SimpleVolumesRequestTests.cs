@@ -9,6 +9,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Types;
@@ -190,7 +191,8 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
-      var cellPasses = Enumerable.Range(0, 10).Select(x =>
+      const int numCellPasses = 10;
+      var cellPasses = Enumerable.Range(0, numCellPasses).Select(x =>
         new CellPass
         {
           InternalSiteModelMachineIndex = bulldozerMachineIndex,
@@ -198,6 +200,10 @@ namespace VSS.TRex.Tests.Volumes
           Height = baseHeight + x * heightIncrement,
           PassType = PassType.Front
         });
+
+      // Ensure the machine the cell passes are being added to has start and stop evens bracketing the cell passes
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime, ProductionEventType.StartEvent);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime.AddMinutes(numCellPasses - 1), ProductionEventType.StartEvent);
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Count());
