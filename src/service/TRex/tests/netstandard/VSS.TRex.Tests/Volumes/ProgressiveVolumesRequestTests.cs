@@ -49,14 +49,14 @@ namespace VSS.TRex.Tests.Volumes
       Assert.NotNull(request);
     }
 
-    private ProgressiveVolumesRequestArgument DefaultRequestArg(Guid ProjectUid)
+    private ProgressiveVolumesRequestArgument DefaultRequestArg(Guid projectUid)
     {
       return new ProgressiveVolumesRequestArgument
       {
         Interval = new TimeSpan(1, 0, 0, 0),
         StartDate = new DateTime(2000, 1, 1, 1, 1, 1),
         EndDate = new DateTime(2020, 1, 1, 1, 1, 1),
-        ProjectID = ProjectUid,
+        ProjectID = projectUid,
         VolumeType = VolumeComputationType.Between2Filters,
         Filters = new FilterSet(new CombinedFilter()),
         BaseDesign = new DesignOffset(),
@@ -122,6 +122,30 @@ namespace VSS.TRex.Tests.Volumes
       CheckResponseContainsNullValues(response);
     }
 
+    [Theory]
+    [InlineData(VolumeComputationType.BetweenDesignAndFilter)]
+    [InlineData(VolumeComputationType.BetweenFilterAndDesign)]
+    public async Task FailWithNoDefinedBaseOrTopSurfaceDesign(VolumeComputationType volumeType)
+    {
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+
+      var request = new ProgressiveVolumesRequest_ApplicationService();
+      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, volumeType));
+
+      response.Should().NotBeNull();
+
+      response.Volumes.Should().BeNull();
+      response.ResultStatus.Should().NotBe(RequestErrorStatus.OK);
+    }
+
     private void CheckDefaultFilterToFilterSingleTAGFileResponse(ProgressiveVolumesResponse response)
     {
       //Was, response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
@@ -140,11 +164,8 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);*/
     }
 
-    [Theory]
-    [InlineData(VolumeComputationType.Between2Filters, 10)]
-    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 11)]
-    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 11)]
-    public async Task ClusterCompute_DefaultFilterToFilter_Execute_SingleTAGFile(VolumeComputationType volumeType, int expectNumProgoressions)
+    [Fact]
+    public async Task ClusterCompute_DefaultFilterToFilter_Execute_SingleTAGFile()
     {
       AddClusterComputeGridRouting();
 
@@ -156,21 +177,18 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new ProgressiveVolumesRequest_ClusterCompute();
-      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, volumeType));
+      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, VolumeComputationType.Between2Filters));
 
       response.Should().NotBeNull();
 
       response.Volumes.Should().NotBeNull();
-      response.Volumes.Length.Should().Be(expectNumProgoressions);
+      response.Volumes.Length.Should().Be(10);
       
 //      CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
-    [Theory]
-    [InlineData(VolumeComputationType.Between2Filters, 10)]
-    [InlineData(VolumeComputationType.BetweenDesignAndFilter, 11)]
-    [InlineData(VolumeComputationType.BetweenFilterAndDesign, 11)]
-    public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleTAGFile(VolumeComputationType volumeType, int expectNumProgressions)
+    [Fact]
+    public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleTAGFile()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
@@ -183,12 +201,12 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
 
       var request = new ProgressiveVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, volumeType));
+      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, VolumeComputationType.Between2Filters));
 
       response.Should().NotBeNull();
 
       response.Volumes.Should().NotBeNull();
-      response.Volumes.Length.Should().Be(expectNumProgressions);
+      response.Volumes.Length.Should().Be(10);
 
       //CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }

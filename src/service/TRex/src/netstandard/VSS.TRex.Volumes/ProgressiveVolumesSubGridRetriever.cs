@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Xml;
-using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;

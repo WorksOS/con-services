@@ -48,7 +48,7 @@ namespace VSS.TRex.SubGridTrees.Client
 
     private void Initialise()
     {
-      _gridDataType = TRex.Types.GridDataType.Height;
+      _gridDataType = TRex.Types.GridDataType.ProgressiveVolumes;
     }
 
     /// <summary>
