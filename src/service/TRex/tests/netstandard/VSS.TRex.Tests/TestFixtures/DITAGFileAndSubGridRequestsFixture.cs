@@ -178,10 +178,10 @@ namespace VSS.TRex.Tests.TestFixtures
       // Add the leaf to the site model existence map
       siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
 
-      CellPass[] _passes = passes.ToArray();
+      var _passes = passes.ToArray();
 
-      byte subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
-      byte subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
+      var subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
+      var subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
       foreach (var pass in _passes)
         leaf.AddPass(subGridX, subGridY, pass);

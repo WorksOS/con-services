@@ -148,10 +148,10 @@ namespace VSS.TRex.Volumes
           task: DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.ProgressiveVolumes),
           pipeline: DIContext.Obtain<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>()(PipelineProcessorPipelineStyle.ProgressiveVolumes),
           requestAnalyser: DIContext.Obtain<IRequestAnalyser>(),
-          requestRequiresAccessToDesignFileExistenceMap: RefDesign != null || RefOriginal != null,
-          requireSurveyedSurfaceInformation: UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
+          requestRequiresAccessToDesignFileExistenceMap: false, // Note: RefDesign != null || RefOriginal != null,
+          requireSurveyedSurfaceInformation: false, //UseSurveyedSurfaces, //_filteredSurveyedSurfaces.Count > 0,
           overrideSpatialCellRestriction: BoundingIntegerExtent2D.Inverted(),
-          liftParams: LiftParams
+          liftParams: null //LiftParams
         );
 
         // Assign the aggregator into the volumes computation task

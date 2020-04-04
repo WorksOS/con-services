@@ -5,7 +5,11 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.Designs.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.ComputeFuncs;
+using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
@@ -32,6 +36,10 @@ namespace VSS.TRex.Tests.Volumes
     {
       IgniteMock.AddClusterComputeGridRouting<ProgressiveVolumesRequestComputeFunc_ClusterCompute, ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>();
     }
+
+    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+      <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
+
 
     [Fact]
     public void Creation1()
@@ -236,7 +244,8 @@ namespace VSS.TRex.Tests.Volumes
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
-      var cellPasses = Enumerable.Range(0, 10).Select(x =>
+      const int numCellPasses = 10;
+      var cellPasses = Enumerable.Range(0, numCellPasses).Select(x =>
         new CellPass
         {
           InternalSiteModelMachineIndex = bulldozerMachineIndex,
@@ -244,6 +253,10 @@ namespace VSS.TRex.Tests.Volumes
           Height = baseHeight + x * heightIncrement,
           PassType = PassType.Front
         });
+
+      // Ensure the machine the cell passes are being added to has start and stop evens bracketing the cell passes
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime, ProductionEventType.StartEvent);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime.AddMinutes(numCellPasses - 1), ProductionEventType.StartEvent);
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Count());
@@ -277,6 +290,50 @@ namespace VSS.TRex.Tests.Volumes
       var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, VolumeComputationType.Between2Filters));
 
       CheckDefaultSingleCellAtOriginResponse(response);
+    }
+
+    [Fact]
+    public async Task ClusterCompute_DefaultFilterToSurface_Execute_SingleCell()
+    {
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
+      var request = new ProgressiveVolumesRequest_ClusterCompute();
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0.0f);
+
+      var arg = DefaultRequestArgFromModel(siteModel, VolumeComputationType.BetweenFilterAndDesign);
+      arg.TopDesign = new DesignOffset(designUid, 0);
+
+      var response = await request.ExecuteAsync(arg);
+
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      response.Volumes.Length.Should().Be(11);
+
+      //CheckDefaultSingleCellAtOriginResponse(response);
+    }
+
+    [Fact]
+    public async Task ClusterCompute_SurfaceToDefaultFilter_Execute_SingleCell()
+    {
+      AddClusterComputeGridRouting();
+      AddDesignProfilerGridRouting();
+
+      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
+      var request = new ProgressiveVolumesRequest_ClusterCompute();
+      var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0.0f);
+
+      var arg = DefaultRequestArgFromModel(siteModel, VolumeComputationType.BetweenFilterAndDesign);
+      arg.BaseDesign = new DesignOffset(designUid, 0);
+
+      var response = await request.ExecuteAsync(arg);
+
+      response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
+      response.Volumes.Length.Should().Be(11);
+
+      //CheckDefaultSingleCellAtOriginResponse(response);
     }
   }
 }
