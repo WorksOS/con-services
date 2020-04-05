@@ -83,13 +83,13 @@ namespace ExecutorTests
       var filterToTest = new GeofenceDataSingleResult(
         new GeofenceData
         {
-          GeofenceUID = boundaryUid.ToString(),
+          GeofenceUID = boundaryUid,
           Description = null,
           GeofenceName = name,
-          UserUID = userId.ToString(),
+          UserUID = userId,
           GeometryWKT = boundaryPolygon,
           GeofenceType = GeofenceType.Filter.ToString(),
-          CustomerUID = custUid.ToString(),
+          CustomerUID = custUid,
           FillColor = 0,
           IsTransparent = false
         });

@@ -27,9 +27,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     public string ProjectTimeZoneIana { get; set; }
 
     // start and end are actually only date with no time component. However C# has no date-only.
-    public DateTime StartDate { get; set; }
+    public string StartDate { get; set; }
 
-    public DateTime EndDate { get; set; }
+    public string EndDate { get; set; }
 
 
     public string CustomerUID { get; set; }

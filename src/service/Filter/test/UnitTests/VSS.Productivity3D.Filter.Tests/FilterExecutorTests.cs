@@ -218,7 +218,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var projectProxy = new Mock<IProjectProxy>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filters = new List<MasterData.Repositories.DBModels.Filter>
@@ -273,7 +273,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filters = new List<MasterData.Repositories.DBModels.Filter>
@@ -353,7 +353,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filter = new MasterData.Repositories.DBModels.Filter
@@ -442,7 +442,7 @@ namespace VSS.Productivity3D.Filter.Tests
       var logger = serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var fileImportProxy = new Mock<IFileImportProxy>();
       fileImportProxy.Setup(x => x.GetFiles(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync
@@ -564,7 +564,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
       var projectProxy = new Mock<IProjectProxy>();
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var filterRepo = new Mock<FilterRepository>(configStore, logger);
       var filters = new List<MasterData.Repositories.DBModels.Filter>

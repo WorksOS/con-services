@@ -70,7 +70,7 @@ namespace ExecutorTests.Internal
         //.AddSingleton<IGeofenceProxy, GeofenceProxy>()
         //.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>()  
         .AddSingleton<IProjectProxy, ProjectV6Proxy>()   
-        .AddSingleton<IFileImportProxy, FileImportV4Proxy>()
+        .AddSingleton<IFileImportProxy, FileImportV6Proxy>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();

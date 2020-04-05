@@ -89,12 +89,12 @@ namespace ExecutorTests
       var boundaryToTest = new GeofenceDataSingleResult(
         new GeofenceData
         {
-          GeofenceUID = boundaryUid.ToString(),
+          GeofenceUID = boundaryUid,
           GeofenceName = name,
-          UserUID = userId.ToString(),
+          UserUID = userId,
           GeometryWKT = boundaryPolygon,
           GeofenceType = GeofenceType.Filter.ToString(),
-          CustomerUID = custUid.ToString(),
+          CustomerUID = custUid,
           FillColor = 0,
           IsTransparent = false,
           Description = null

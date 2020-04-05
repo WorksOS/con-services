@@ -156,59 +156,62 @@ namespace WebApiTests
       Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
     }
 
-    [TestMethod]
-    [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Transient)]
-    [DataRow(FilterType.Report)]
-    public void CreateFilterWithFavoriteGeofence(FilterType filterType)
-    {
-      ts.DeleteAllBoundariesAndAssociations();
+    // favorite and assoicated geofences N/A and geofenceSvc not available to ccss
+    //[TestMethod]
+    //[DataRow(FilterType.Persistent)]
+    //[DataRow(FilterType.Transient)]
+    //[DataRow(FilterType.Report)]
+    //public void CreateFilterWithFavoriteGeofence(FilterType filterType)
+    //{
+    //  ts.DeleteAllBoundariesAndAssociations();
 
-      const string filterName = "Filter Web test 4b";
-      Msg.Title(filterName, $"Create {filterType } filter with favorite geofence in json string");
+    //  const string filterName = "Filter Web test 4b";
+    //  Msg.Title(filterName, $"Create {filterType } filter with favorite geofence in json string");
 
-      var filterJson = CreateTestFilter(polygonUid: SouthernMotorWayFavoriteGeofenceUid.ToString(), polygonType: SouthernMotorWayFavoriteType);
-      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
-      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
-      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var hydratedFilterJson = CreateTestFilter(polygonUid: SouthernMotorWayFavoriteGeofenceUid.ToString(), polygonName: SouthernMotorWayFavoriteName, polygonPoints: GetPointsFromWkt(SouthernMotorWayFavoriteGeometryWKT), polygonType: SouthernMotorWayFavoriteType);
-      Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
-      Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
-      var filterUid = filterResponse.FilterDescriptor.FilterUid;
-      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}?filterUid={filterUid}", "GET");
-      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterRequest.Name, filterResponseGet.FilterDescriptor.Name, "Filter name doesn't match for GET request");
-      Assert.AreEqual(hydratedFilterJson, filterResponseGet.FilterDescriptor.FilterJson, "JSON Filter doesn't match for GET request");
-      Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
-    }
+    //  var filterJson = CreateTestFilter(polygonUid: SouthernMotorWayFavoriteGeofenceUid.ToString(), polygonType: SouthernMotorWayFavoriteType);
+    //  var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
+    //  var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //  var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
+    //  var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //  var hydratedFilterJson = CreateTestFilter(polygonUid: SouthernMotorWayFavoriteGeofenceUid.ToString(), polygonName: SouthernMotorWayFavoriteName, polygonPoints: GetPointsFromWkt(SouthernMotorWayFavoriteGeometryWKT), polygonType: SouthernMotorWayFavoriteType);
+    //  Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
+    //  Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
+    //  var filterUid = filterResponse.FilterDescriptor.FilterUid;
+    //  var responseGet = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}?filterUid={filterUid}", "GET");
+    //  var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //  Assert.AreEqual(filterRequest.Name, filterResponseGet.FilterDescriptor.Name, "Filter name doesn't match for GET request");
+    //  Assert.AreEqual(hydratedFilterJson, filterResponseGet.FilterDescriptor.FilterJson, "JSON Filter doesn't match for GET request");
+    //  Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
+    //}
 
-    [TestMethod]
-    [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Transient)]
-    [DataRow(FilterType.Report)]
-    public void CreateFilterWithAssociatedGeofence(FilterType filterType)
-    {
-      ts.DeleteAllBoundariesAndAssociations();
+    // favorite and assoicated geofences N/A and geofenceSvc not available to ccss
+    // 
+    //[TestMethod]
+    //[DataRow(FilterType.Persistent)]
+    //[DataRow(FilterType.Transient)]
+    //[DataRow(FilterType.Report)]
+    //public void CreateFilterWithAssociatedGeofence(FilterType filterType)
+    //{
+    //  ts.DeleteAllBoundariesAndAssociations();
 
-      const string filterName = "Filter Web test 4c";
-      Msg.Title(filterName, $"Create {filterType } filter with associated geofence in json string");
+    //  const string filterName = "Filter Web test 4c";
+    //  Msg.Title(filterName, $"Create {filterType } filter with associated geofence in json string");
 
-      var filterJson = CreateTestFilter(polygonUid: EOP13AssociatedGeofenceUid.ToString(), polygonType: EOP13AssociatedType);
-      var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
-      var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
-      var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var hydratedFilterJson = CreateTestFilter(polygonUid: EOP13AssociatedGeofenceUid.ToString(), polygonName: EOP13AssociatedName, polygonPoints: GetPointsFromWkt(EOP13AssociatedGeometryWKT), polygonType: EOP13AssociatedType);
-      Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
-      Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
-      var filterUid = filterResponse.FilterDescriptor.FilterUid;
-      var responseGet = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}?filterUid={filterUid}", "GET");
-      var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      Assert.AreEqual(filterRequest.Name, filterResponseGet.FilterDescriptor.Name, "Filter name doesn't match for GET request");
-      Assert.AreEqual(hydratedFilterJson, filterResponseGet.FilterDescriptor.FilterJson, "JSON Filter doesn't match for GET request");
-      Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
-    }
+    //  var filterJson = CreateTestFilter(polygonUid: EOP13AssociatedGeofenceUid.ToString(), polygonType: EOP13AssociatedType);
+    //  var filterRequest = FilterRequest.Create(string.Empty, filterName, filterJson, filterType);
+    //  var filter = JsonConvert.SerializeObject(filterRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //  var responseCreate = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}", "PUT", filter);
+    //  var filterResponse = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //  var hydratedFilterJson = CreateTestFilter(polygonUid: EOP13AssociatedGeofenceUid.ToString(), polygonName: EOP13AssociatedName, polygonPoints: GetPointsFromWkt(EOP13AssociatedGeometryWKT), polygonType: EOP13AssociatedType);
+    //  Assert.AreEqual(filterRequest.Name, filterResponse.FilterDescriptor.Name, "Filter name doesn't match for PUT request");
+    //  Assert.AreEqual(hydratedFilterJson, filterResponse.FilterDescriptor.FilterJson, "JSON Filter doesn't match for PUT request");
+    //  var filterUid = filterResponse.FilterDescriptor.FilterUid;
+    //  var responseGet = ts.CallFilterWebApi($"api/v1/filter/{ProjectUid}?filterUid={filterUid}", "GET");
+    //  var filterResponseGet = JsonConvert.DeserializeObject<FilterDescriptorSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+    //  Assert.AreEqual(filterRequest.Name, filterResponseGet.FilterDescriptor.Name, "Filter name doesn't match for GET request");
+    //  Assert.AreEqual(hydratedFilterJson, filterResponseGet.FilterDescriptor.FilterJson, "JSON Filter doesn't match for GET request");
+    //  Assert.AreEqual(filterRequest.FilterType, filterResponseGet.FilterDescriptor.FilterType, "Filter type doesn't match for GET request");
+    //}
 
     [TestMethod]
     [DataRow(FilterType.Persistent)]

@@ -429,7 +429,7 @@ namespace VSS.Productivity3D.Filter.Tests
       projectRepo.As<IProjectRepository>().Setup(p => p.StoreEvent(It.IsAny<AssociateProjectGeofence>())).ReturnsAsync(1);
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
 
       var request = BoundaryRequestFull.Create
       (
@@ -482,8 +482,8 @@ namespace VSS.Productivity3D.Filter.Tests
       projectRepo.As<IProjectRepository>().Setup(p => p.GetAssociatedGeofences(It.IsAny<string>())).ReturnsAsync(new List<ProjectGeofence> { projectGeofence });
 
       var productivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<string>(), It.IsAny<string>(), null)).ReturnsAsync(new BaseMasterDataResult());
-      
+      productivity3dV2ProxyNotification.Setup(ps => ps.NotifyFilterChange(It.IsAny<Guid>(), It.IsAny<Guid>(), null)).ReturnsAsync(new BaseMasterDataResult());
+
       var request = BoundaryUidRequestFull.Create
       (
         custUid,

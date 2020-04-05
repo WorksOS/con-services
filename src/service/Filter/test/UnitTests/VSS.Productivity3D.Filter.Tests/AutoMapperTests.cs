@@ -316,12 +316,12 @@ namespace VSS.Productivity3D.Filter.Tests
     {
       var geofenceData = new GeofenceData
       {
-        GeofenceUID = Guid.NewGuid().ToString(),
+        GeofenceUID = Guid.NewGuid(),
         GeofenceName = "whatever",
         GeofenceType = GeofenceType.CutZone.ToString(),
         GeometryWKT = "blah",
-        CustomerUID = Guid.NewGuid().ToString(),
-        UserUID = Guid.NewGuid().ToString(),
+        CustomerUID = Guid.NewGuid(),
+        UserUID = Guid.NewGuid(),
         IsTransparent = true,
         Description = null,
         AreaSqMeters = 1.234,
