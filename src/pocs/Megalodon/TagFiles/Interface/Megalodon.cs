@@ -25,6 +25,7 @@ namespace TagFiles.Interface
     private readonly ILogger _log;
     private DateTime lastLogfileCheckTime = DateTime.MinValue;
     private string _logPath;
+    private bool _DebugTraceToLog = false;
 
     /// <summary>
     /// Configure Megalodon
@@ -94,6 +95,13 @@ namespace TagFiles.Interface
 
       tagFile.SendTagFilesDirect = configStore.GetValueBool("SendTagFilesDirect") ?? false;
 
+      var _transmissionProtocol = configStore.GetValueString("TransmissionProtocol");
+      if (!string.IsNullOrEmpty(_transmissionProtocol))
+        tagFile.TransmissionProtocol = Convert.ToByte(_transmissionProtocol);
+      else
+        tagFile.TransmissionProtocol = 1;
+      tagFile.Parser.TransmissionProtocol = tagFile.TransmissionProtocol;
+
       var fBOG = configStore.GetValueBool("ForceBOG") ?? false;
       tagFile.Parser.ForceBOG = fBOG;
 
@@ -106,6 +114,9 @@ namespace TagFiles.Interface
       {
         tagFile.TagFileIntervalMilliSecs = Convert.ToInt32(_TagFileIntervalSecs) * 1000;
       }
+
+      _DebugTraceToLog = configStore.GetValueBool("DebugTraceToLog") ?? false;
+      tagFile.Parser.DebugTraceToLog = _DebugTraceToLog;
 
     }
 
@@ -209,7 +220,6 @@ namespace TagFiles.Interface
         }
         lastLogfileCheckTime = DateTime.Now;
       }
-
     }
 
     /// <summary>
@@ -222,6 +232,13 @@ namespace TagFiles.Interface
       if (mode == TagConstants.CALLBACK_PARSE_PACKET)
       {
         tagFile.ParseText(packet);
+
+        // Before resonding check if tagfile needs writing to disk
+        if (tagFile.ReadyToWrite)
+        {
+          tagFile.CutOffTagFile();
+          _socketManager.LogStartup = true;
+        }
         _socketManager.HeaderRequired = tagFile.Parser.HeaderRequired;
       }
       else if (mode == TagConstants.CALLBACK_CONNECTION_MADE)
