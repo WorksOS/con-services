@@ -95,11 +95,7 @@ namespace TagFiles.Interface
 
       tagFile.SendTagFilesDirect = configStore.GetValueBool("SendTagFilesDirect") ?? false;
 
-      var _transmissionProtocol = configStore.GetValueString("TransmissionProtocol");
-      if (!string.IsNullOrEmpty(_transmissionProtocol))
-        tagFile.TransmissionProtocol = Convert.ToByte(_transmissionProtocol);
-      else
-        tagFile.TransmissionProtocol = 1;
+      tagFile.TransmissionProtocol = Convert.ToByte(configStore.GetValueString("TransmissionProtocol", "1"));
       tagFile.Parser.TransmissionProtocol = tagFile.TransmissionProtocol;
 
       var fBOG = configStore.GetValueBool("ForceBOG") ?? false;
