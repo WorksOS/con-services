@@ -60,17 +60,18 @@ while getopts ":s:p:c:d" opts; do
     esac
 done
 
-# Does the service exist? And it's path?
-if [ -z "$SERVICE" ] || [ -z "$SERVICE_PATH" ]; then
-    print_help
-    exit 1
-fi
-
 SERVICE_PATH=$(echo ${SERVICE_PATHS[$SERVICE]} | cut -f1 -d:)
 RUN_TESTS=$(echo ${SERVICE_PATHS[$SERVICE]} | cut -f2 -d:)
 RUN_DB_BUILD=$(echo ${SERVICE_PATHS[$SERVICE]} | cut -f3 -d:)
 RUN_AT=$(echo ${SERVICE_PATHS[$SERVICE]} | cut -f4 -d:)
 TEST_FOLDER=$(echo ${SERVICE_PATHS[$SERVICE]} | cut -f5 -d:)
+
+# Does the service exist? And it's path?
+if [ -z "$SERVICE" ] || [ -z "$SERVICE_PATH" ]; then
+    echo >&2 "No service defined $SERVICE"
+    print_help
+    exit 1
+fi
 
 BUILD_DOCKER_FILE=$(pwd)/$SERVICE_PATH/build/Dockerfile.build
 RUNTIME_DOCKER_FILE=$(pwd)/$SERVICE_PATH/build/Dockerfile
