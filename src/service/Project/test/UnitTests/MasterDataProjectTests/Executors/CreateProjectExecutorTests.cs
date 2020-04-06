@@ -155,7 +155,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         null, null);
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      createProjectEvent.ActionUTC = createProjectEvent.ReceivedUTC = DateTime.UtcNow;
+      createProjectEvent.ActionUTC = DateTime.UtcNow;
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();

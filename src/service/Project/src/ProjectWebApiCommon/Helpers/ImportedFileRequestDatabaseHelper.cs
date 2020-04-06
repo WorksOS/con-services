@@ -141,8 +141,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         FileUpdatedUtc = fileUpdatedUtc,
         ImportedBy = importedBy,
         SurveyedUTC = surveyedUtc,
-        ActionUTC = nowUtc, // aka importedUtc
-        ReceivedUTC = nowUtc,
+        ActionUTC = nowUtc, 
         ParentUID = parentUid,
         Offset = offset ?? 0
       };
@@ -186,8 +185,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         ProjectUID = projectUid,
         ImportedFileUID = importedFileUid,
         DeletePermanently = deletePermanently,
-        ActionUTC = nowUtc, // aka importedDate
-        ReceivedUTC = nowUtc
+        ActionUTC = nowUtc
       };
 
       if (await projectRepo.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
@@ -228,7 +226,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       updateImportedFileEvent.FileUpdatedUtc = fileUpdatedUtc;
       updateImportedFileEvent.ImportedBy = importedBy;
       updateImportedFileEvent.ActionUTC = nowUtc;
-      updateImportedFileEvent.ReceivedUTC = nowUtc;
 
       log.LogInformation(
         $"UpdateImportedFileInDb. UpdateImportedFileEvent: {JsonConvert.SerializeObject(updateImportedFileEvent)}");
@@ -253,8 +250,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         ProjectUID = projectUid,
         ImportedFileUID = importedFileUid,
-        ActionUTC = nowUtc,
-        ReceivedUTC = nowUtc
+        ActionUTC = nowUtc
       };
 
       if (await projectRepo.StoreEvent(undeleteImportedFileEvent).ConfigureAwait(false) == 1)

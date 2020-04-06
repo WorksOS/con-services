@@ -80,7 +80,7 @@ namespace VSS.MasterData.ProjectTests.Executors
           null, null,
           _updatedBoundaryString);
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
-        updateProjectEvent.ActionUTC = updateProjectEvent.ReceivedUTC = DateTime.UtcNow;
+        updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
         // todoMaverick need to send update to cws only if boundary/name changed
         //var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
@@ -132,8 +132,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         ProjectEndDate = new DateTime(2017, 02, 15),
         ProjectTimezone = "NZ whatsup",
         ProjectBoundary = _boundaryString,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       var projectRepo = new Mock<IProjectRepository>();

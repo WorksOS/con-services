@@ -120,8 +120,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         SurveyedUTC = null,
         ParentUID = null,
         Offset = 0,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       var createImportedFile = new CreateImportedFile(
@@ -347,8 +346,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         SurveyedUTC = surveyedUtc,
         ParentUID = null,
         Offset = 0,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       var createImportedFile = new CreateImportedFile(
@@ -427,8 +425,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         SurveyedUTC = null,
         ParentUID = null,
         Offset = 0,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       var createImportedFile = new CreateImportedFile(
@@ -630,8 +627,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         SurveyedUTC = null,
         ParentUID = parentUid,
         Offset = offset,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       var createImportedFile = new CreateImportedFile(
@@ -711,8 +707,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         SurveyedUTC = null,
         ParentUID = parentUid,
         Offset = offset,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       var createImportedFile = new CreateImportedFile(

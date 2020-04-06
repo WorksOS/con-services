@@ -55,8 +55,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(name: name, customerUid: custUid.ToString(), userId: userId.ToString(), projectUid: projectUid.ToString(), filterUid: filterUid.ToString(), filterType: filterType, onlyFilterUid: true);

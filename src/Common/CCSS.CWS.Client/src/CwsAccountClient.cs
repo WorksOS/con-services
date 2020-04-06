@@ -28,9 +28,6 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me/accounts
     ///   user token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
-    ///   CCSSCON- available
     /// </summary>
     public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
     {

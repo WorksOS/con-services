@@ -29,7 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\src\CCSS.CWS.Client.csproj" />
   </ItemGroup>

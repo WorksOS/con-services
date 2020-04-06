@@ -41,7 +41,6 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.CoordinateSystemFileContent, createProjectEvent.CoordinateSystemFileContent);
 
       Assert.Equal(DateTime.MinValue, createProjectEvent.ActionUTC);
-      Assert.Equal(DateTime.MinValue, createProjectEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<CreateProjectRequest>(request);
@@ -65,7 +64,6 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.CoordinateSystemFileContent, updateProjectEvent.CoordinateSystemFileContent);
 
       Assert.Equal(DateTime.MinValue, updateProjectEvent.ActionUTC);
-      Assert.Equal(DateTime.MinValue, updateProjectEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<UpdateProjectRequest>(request);
@@ -187,7 +185,6 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.ImportedBy, updateImportedFileEvent.ImportedBy);
       Assert.Equal(request.ImportedFileUid, updateImportedFileEvent.ImportedFileUID.ToString());
       Assert.Equal(request.ProjectUid, updateImportedFileEvent.ProjectUID.ToString());
-      Assert.Equal(request.LastActionedUtc, updateImportedFileEvent.ReceivedUTC);
       Assert.Equal(request.SurveyedUtc, updateImportedFileEvent.SurveyedUtc);
 
       // just make a copy file descriptor is only in the source file, not the destination

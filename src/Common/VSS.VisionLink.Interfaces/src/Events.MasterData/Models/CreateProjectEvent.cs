@@ -18,7 +18,6 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
     public string CoordinateSystemFileName { get; set; }
     public byte[] CoordinateSystemFileContent { get; set; }
     public DateTime ActionUTC { get; set; }
-    public DateTime ReceivedUTC { get; set; }
   }
 
 }

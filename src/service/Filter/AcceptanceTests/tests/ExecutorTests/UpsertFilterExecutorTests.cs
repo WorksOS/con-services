@@ -89,8 +89,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -156,8 +155,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -231,8 +229,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -269,8 +266,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = nameUpdated, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -307,8 +303,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       // try to update a filter with same name but upper case (allowed!)
@@ -347,8 +342,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -383,8 +377,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterEvent);
@@ -425,8 +418,7 @@ namespace ExecutorTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });

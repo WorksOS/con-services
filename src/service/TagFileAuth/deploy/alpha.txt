@@ -1,5 +1,3 @@
 MYSQL_DATABASE_NAME: Alpha-TagFileAuth
-KAFKA_GROUP_NAME: TagFileAuth--Consumer-Alpha
-KAFKA_TOPICS: CCSS.Interfaces.Events.MasterData.ICustomerEvent,CCSS.Interfaces.Events.MasterData.IProjectEvent,CCSS.Interfaces.Events.MasterData.ISubscriptionEvent,CCSS.Interfaces.Events.MasterData.IAssetEvent,CCSS.Interfaces.Events.MasterData.IDeviceEvent
 JAEGER_SERVICE_NAME: Alpha TagFileAuth Service API
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"

@@ -52,7 +52,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
         boundary = new ProjectBoundary()
         {
           type = "POLYGON",
-          coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.3 }, { 150.3, 1.2 } } } }
+          coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } }
         }
       };
       var payload = JsonConvert.SerializeObject(createProjectRequestModel);

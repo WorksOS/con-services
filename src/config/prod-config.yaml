@@ -22,24 +22,15 @@ data:
   MYSQL_SERVER_NAME_ReadVSPDB: vss-masterdata.caeli9f4iehl.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
 #Kafka configuration
-#  KAFKA_URI: kafka1.services.myvisionlink.com,kafka2.services.myvisionlink.com,kafka3.services.myvisionlink.com
-#  KAFKA_PORT: "9092"
-#  KAFKA_OFFSET: latest
-#  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent.V2
 #Service references  
-#  ASSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/associateprojectsubscription
-#  DISSOCIATESUBSPROJECT_API_URL: https://api.trimble.com/t/trimble.com/vss-subscriptionservice/1.0/project/dissociateprojectsubscription
-#  CUSTOMERSERVICE_API_URL:  https://api.trimble.com/t/trimble.com/vss-customerservice/1.0/Customers/me
   cws_profilemanager_public_v1:
   https://api-trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
-#  GEOFENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-geofenceservice/1.0
   PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0 
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-unifiedfleet/1.0
   assetsummary_public_v1: https://unifiedfleet.myvisionlink.com/t/trimble.com/vss-assetutilization/1.1
-#  unifiedproductivity_public_v1: https://api.trimble.com/t/trimble.com/vss-unifiedproductivity/1.0
   productivity3d_service_public_v1: https://api.trimble.com/t/trimble.com/vss-3dproductivity/1.0
   productivity3d_service_public_v2: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
 #TPaaS
@@ -48,7 +39,6 @@ data:
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"
   TILE_RENDER_WAIT_INTERVAL: "2000"
-  CUSTOM_INIT_SCRIPT: zookeeper_check.sh
   LOG_MAX_CHAR: "1000"
   SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES: "720"
   DOWNLOAD_FOLDER: C:/temp/
@@ -94,8 +84,6 @@ data:
   CUSTOMER_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
-#  GEOFENCE_CACHE_LIFE: 00:00:03
-#  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:00:03
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00

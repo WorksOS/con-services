@@ -62,8 +62,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(customerUid: custUid, userId: userId, projectUid: projectUid, filterJson: filterJson, filterType: filterType, name: name);
@@ -123,8 +122,7 @@ namespace ExecutorTests
         Name = name1,
         FilterType = filterType,
         FilterJson = filterJson1,
-        ActionUTC = DateTime.UtcNow.AddMinutes(-5),
-        ReceivedUTC = DateTime.UtcNow.AddMinutes(-5)
+        ActionUTC = DateTime.UtcNow.AddMinutes(-5)
       });
 
       WriteEventToDb(new CreateFilterEvent
@@ -136,8 +134,7 @@ namespace ExecutorTests
         Name = name2,
         FilterType = filterType,
         FilterJson = filterJson2,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(customerUid: custUid, userId: userId, projectUid: projectUid);
@@ -206,8 +203,7 @@ namespace ExecutorTests
         Name = name1,
         FilterType = filterType,
         FilterJson = filterJson1,
-        ActionUTC = DateTime.UtcNow.AddMinutes(-5),
-        ReceivedUTC = DateTime.UtcNow.AddMinutes(-5)
+        ActionUTC = DateTime.UtcNow.AddMinutes(-5)
       });
 
       WriteEventToDb(new CreateFilterEvent
@@ -219,8 +215,7 @@ namespace ExecutorTests
         Name = name2,
         FilterType = filterType,
         FilterJson = filterJson2,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(customerUid: custUid, isApplicationContext: true, projectUid: projectUid);
@@ -277,8 +272,7 @@ namespace ExecutorTests
         Name = $"dateRangeType={dateRangeType},asAtDate={asAtDate}",
         FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterCreateEvent);
@@ -322,8 +316,7 @@ namespace ExecutorTests
           Name = $"dateRangeType={dateRangeType},asAtDate={asAtDate}",
           FilterType = FilterType.Persistent,
           FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
-          ActionUTC = DateTime.UtcNow,
-          ReceivedUTC = DateTime.UtcNow
+          ActionUTC = DateTime.UtcNow
         },
 
         new CreateFilterEvent
@@ -335,8 +328,7 @@ namespace ExecutorTests
           Name = $"dateRangeType={dateRangeType}",
           FilterType = FilterType.Persistent,
           FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}}}",
-          ActionUTC = DateTime.UtcNow,
-          ReceivedUTC = DateTime.UtcNow
+          ActionUTC = DateTime.UtcNow
         }};
 
       WriteEventToDb(events[0]);
@@ -401,8 +393,7 @@ namespace ExecutorTests
         Name = $"dateRangeType={dateRangeType},asAtDate={asAtDate}",
         FilterType = FilterType.Persistent,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterCreateEvent);

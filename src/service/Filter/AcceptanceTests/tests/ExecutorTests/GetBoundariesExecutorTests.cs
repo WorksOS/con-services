@@ -66,7 +66,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null,
@@ -75,8 +74,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
@@ -130,7 +128,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null
@@ -139,8 +136,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);

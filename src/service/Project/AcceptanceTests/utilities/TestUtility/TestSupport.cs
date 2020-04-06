@@ -521,7 +521,6 @@ namespace TestUtility
           var associateProjectGeofence = new AssociateProjectGeofence()
           {
             ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate,
             ProjectUID = eventObject.ProjectUID,
             GeofenceUID = eventObject.GeofenceUID
           };

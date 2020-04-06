@@ -912,7 +912,6 @@ namespace RepositoryTests.ProjectRepositoryTests
       {
         ProjectUID = createProjectEvent.ProjectUID,
         GeofenceUID = createGeofenceEvent.GeofenceUID,
-        ReceivedUTC = actionUtc,
         ActionUTC = actionUtc
       };
 

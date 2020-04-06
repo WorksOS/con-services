@@ -15,6 +15,5 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
     public string FilterJson { get; set; }
     public FilterType FilterType { get; set; }
     public DateTime ActionUTC { get; set; }
-    public DateTime ReceivedUTC { get; set; }
   }
 }
