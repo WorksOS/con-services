@@ -10,7 +10,7 @@ using TagFiles.Utils;
 using VSS.Common.Abstractions.Configuration;
 
 
-namespace TagFiles.Interface
+namespace TagFiles
 {
   /// <summary>
   /// Megalodon controller started via as a windows service
