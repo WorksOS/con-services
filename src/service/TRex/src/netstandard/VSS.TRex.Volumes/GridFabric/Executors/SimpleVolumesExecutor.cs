@@ -29,7 +29,7 @@ namespace VSS.TRex.Volumes.GridFabric.Executors
         new XYZ(response.BoundingExtentGrid.MaxX, response.BoundingExtentGrid.MaxY)
       };
 
-      (var errorCode, XYZ[] LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), NEECoords);
+      (var errorCode, var LLHCoords) = await DIContext.Obtain<IConvertCoordinates>().NEEToLLH(DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid).CSIB(), NEECoords);
 
       if (errorCode == RequestErrorStatus.OK)
       {

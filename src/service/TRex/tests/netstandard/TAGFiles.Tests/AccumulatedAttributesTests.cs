@@ -3,12 +3,13 @@ using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Classes.ValueMatcher;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-  public class AccumulatedAttributesTests
+  public class AccumulatedAttributesTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_AccumulatedAttributes_Creation()

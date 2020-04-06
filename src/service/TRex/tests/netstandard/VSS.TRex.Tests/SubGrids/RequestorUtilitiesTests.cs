@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.TRex.Caching.Interfaces;
@@ -19,7 +20,9 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
@@ -35,15 +38,15 @@ namespace VSS.TRex.Tests.SubGrids
     public RequestorUtilitiesTestsLoggingFixture()
     {
       // Provide the surveyed surface request mock
-      Mock<ISurfaceElevationPatchRequest> surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
-      surfaceElevationPatchRequest.Setup(x => x.Execute(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(new ClientHeightAndTimeLeafSubGrid());
+      var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
+      surfaceElevationPatchRequest.Setup(x => x.ExecuteAsync(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(Task.FromResult(new ClientHeightAndTimeLeafSubGrid() as IClientLeafSubGrid));
       SurfaceElevationPatchRequest = surfaceElevationPatchRequest.Object;
 
       // Provide the mocks for spatial caching
-      Mock<ITRexSpatialMemoryCacheContext> tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
+      var tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
       TRexSpatialMemoryCacheContext = tRexSpatialMemoryCacheContext.Object;
 
-      Mock<ITRexSpatialMemoryCache> tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
+      var tRexSpatialMemoryCache = new Mock<ITRexSpatialMemoryCache>();
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>())).Returns(TRexSpatialMemoryCacheContext);
       tRexSpatialMemoryCache.Setup(x => x.LocateOrCreateContext(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<TimeSpan>())).Returns(TRexSpatialMemoryCacheContext);
 
@@ -61,6 +64,8 @@ namespace VSS.TRex.Tests.SubGrids
 
         .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<Func<ISubGridRequestor>>(factory => () => new SubGridRequestor()))
+
+        .Add(x => x.AddSingleton<ISubGridRetrieverFactory>(new SubGridRetrieverFactory()))
 
         .Complete();
     }
@@ -374,7 +379,7 @@ namespace VSS.TRex.Tests.SubGrids
       IFilterSet filterSet = new FilterSet(filters);
       
       var intermediaries = ru.ConstructRequestorIntermediaries(mockSiteModel.Object, filterSet, true, GridDataType.Height);
-      var requestors = ru.ConstructRequestors(mockSiteModel.Object, new OverrideParameters(), new LiftParameters(), intermediaries, AreaControlSet.CreateAreaControlSet(), null);
+      var requestors = ru.ConstructRequestors(new SubGridsRequestArgument(), mockSiteModel.Object, new OverrideParameters(), new LiftParameters(), intermediaries, AreaControlSet.CreateAreaControlSet(), null);
 
       requestors.Length.Should().Be(filters.Length);
 

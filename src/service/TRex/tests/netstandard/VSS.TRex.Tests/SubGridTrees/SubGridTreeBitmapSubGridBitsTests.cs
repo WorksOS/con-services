@@ -7,12 +7,13 @@ using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridTreeBitmapSubGridBitsTests
-    {
+        public class SubGridTreeBitmapSubGridBitsTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_SubGridTreeBitmapSubGridBitsTests_Creation()
         {

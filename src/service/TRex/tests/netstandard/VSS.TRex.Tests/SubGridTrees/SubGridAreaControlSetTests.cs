@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Security.Cryptography.X509Certificates;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class SubGridAreaControlSetTests
+  public class SubGridAreaControlSetTests : IClassFixture<DILoggingFixture>
   {
     #region ComputeSieveBitmaskInteger
 

@@ -6,12 +6,13 @@ using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Types;
 using VSS.TRex.Geometry;
 using VSS.TRex.TAGFiles.Classes.States;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests
 {
-  public class TAGProcessorStateBaseTests
+  public class TAGProcessorStateBaseTests : IClassFixture<DILoggingFixture>
   {
     [Fact()]
     public void Test_TAGProcessorStateBase_Creation()

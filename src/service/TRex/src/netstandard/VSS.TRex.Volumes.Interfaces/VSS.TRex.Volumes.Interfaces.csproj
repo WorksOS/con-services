@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VSS.TRex.SubGrids.Interfaces\VSS.TRex.SubGrids.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

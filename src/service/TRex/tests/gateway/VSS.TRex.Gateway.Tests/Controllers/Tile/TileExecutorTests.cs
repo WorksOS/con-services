@@ -14,15 +14,15 @@ using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Executors;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Rendering.Abstractions;
 using VSS.TRex.Rendering.GridFabric.Arguments;
 using VSS.TRex.Rendering.GridFabric.ComputeFuncs;
 using VSS.TRex.Rendering.GridFabric.Responses;
 using VSS.TRex.Rendering.Implementations.Core2;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 

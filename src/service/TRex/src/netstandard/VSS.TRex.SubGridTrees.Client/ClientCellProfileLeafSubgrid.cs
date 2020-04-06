@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Models.Enums;
@@ -12,6 +13,7 @@ using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Client.Types;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -281,6 +283,91 @@ namespace VSS.TRex.SubGridTrees.Client
       base.Read(reader);
 
       SubGridUtilities.SubGridDimensionalIterator((x, y) => Cells[x, y].Read(reader));
+    }
+
+    public override bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass)
+    {
+      if (!(filteredSurveyedSurfaces is ISurveyedSurfaces surveyedSurfaces))
+      {
+        return false;
+      }
+
+      processingMap.Assign(FilterMap);
+
+      // If we're interested in a particular cell, but we don't have any
+      // surveyed surfaces later (or earlier) than the cell production data
+      // pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
+      // then there's no point in asking the Design Profiler service for an elevation
+      processingMap.ForEachSetBit((x, y) =>
+        {
+          if (Cells[x, y].Height == Consts.NullHeight)
+            return;
+
+          if (returnEarliestFilteredCellPass)
+          {
+            if (!surveyedSurfaces.HasSurfaceEarlierThan(Cells[x, y].LastPassTime))
+              processingMap.ClearBit(x, y);
+          }
+          else
+          {
+            if (!surveyedSurfaces.HasSurfaceLaterThan(Cells[x, y].LastPassTime))
+              processingMap.ClearBit(x, y);
+          }
+        });
+
+      return true;
+    }
+
+    public bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+  IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilterLambda)
+    {
+      if (!(surfaceElevationsSource is ClientHeightAndTimeLeafSubGrid surfaceElevations))
+      {
+        return false;
+      }
+
+      // For all cells we wanted to request a surveyed surface elevation for,
+      // update the cell elevation if a non null surveyed surface of appropriate time was computed
+      // Note: The surveyed surface will return all cells in the requested sub grid, not just the ones indicated in the processing map
+      // IE: It is unsafe to test for null top indicate not-filtered, use the processing map iterators to cover only those cells required
+      processingMap.ForEachSetBit((x, y) =>
+      {
+        var surveyedSurfaceCellHeight = surfaceElevations.Cells[x, y];
+
+        if (surveyedSurfaceCellHeight == Consts.NullHeight)
+        {
+          return;
+        }
+
+        // If we got back a surveyed surface elevation...
+        var surveyedSurfaceCellTime = surfaceElevations.Times[x, y];
+        var prodHeight = Cells[x, y].Height;
+        var prodTime = Cells[x, y].LastPassTime.Ticks;
+
+        // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
+        // the relative age of the measured surveyed surface elevation compared with a non-null production data height
+        if (!(prodHeight == Consts.NullHeight || (returnEarliestFilteredCellPass ? surveyedSurfaceCellTime < prodTime : surveyedSurfaceCellTime > prodTime)))
+        {
+          // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
+          processingMap.ClearBit(x, y);
+          return;
+        }
+
+        // Check if there is an elevation range filter in effect and whether the surveyed surface elevation data matches it
+        if (elevationRangeFilterLambda != null)
+        {
+          if (!(elevationRangeFilterLambda(x, y, surveyedSurfaceCellHeight)))
+          {
+            // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
+            processingMap.ClearBit(x, y);
+            return;
+          }
+        }
+
+        Cells[x, y].Height = surveyedSurfaceCellHeight;
+      });
+
+      return true;
     }
   }
 }

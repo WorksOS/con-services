@@ -1,6 +1,5 @@
 ﻿using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
-using System.Reflection;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.Volumes.Executors;
@@ -15,7 +14,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
     /// </summary>
     public class SimpleVolumesRequestComputeFunc_ClusterCompute : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<SimpleVolumesRequestComputeFunc_ClusterCompute>();
 
         /// <summary>
         /// Default no-arg constructor that orients the request to the available servers on the immutable grid projection
@@ -35,7 +34,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 
             try
             {
-                ComputeSimpleVolumes_Coordinator simpleVolumes = new ComputeSimpleVolumes_Coordinator
+                var simpleVolumes = new ComputeSimpleVolumes_Coordinator
                     (arg.ProjectID,
                      arg.LiftParams,
                      arg.VolumeType,

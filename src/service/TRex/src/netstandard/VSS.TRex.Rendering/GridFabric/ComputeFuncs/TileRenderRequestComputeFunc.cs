@@ -70,8 +70,8 @@ namespace VSS.TRex.Rendering.GridFabric.ComputeFuncs
           }
 
           // Get the rendering factory from the DI context
-          var RenderingFactory = DIContext.Obtain<IRenderingFactory>();
-          var response = RenderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
+          var renderingFactory = DIContext.Obtain<IRenderingFactory>();
+          var response = renderingFactory.CreateTileRenderResponse(bmp?.GetBitmap()) as TileRenderResponse;
 
           if (response != null)
             response.ResultStatus = render.ResultStatus;

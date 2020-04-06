@@ -18,9 +18,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -39,6 +37,8 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Exports.CSV.Executors.Tasks;
 using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 
@@ -48,26 +48,21 @@ namespace VSS.TRex.Server.Reports
   {
     private static ISubGridPipelineBase SubGridPipelineFactoryMethod(PipelineProcessorPipelineStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorPipelineStyle.DefaultProgressive:
-          return new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>();
-        default:
-          return null;
-      }
+        PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        _ => null
+      };
     }
 
     private static ITRexTask SubGridTaskFactoryMethod(PipelineProcessorTaskStyle key)
     {
-      switch (key)
+      return key switch
       {
-        case PipelineProcessorTaskStyle.GriddedReport:
-          return new GriddedReportTask();
-        case PipelineProcessorTaskStyle.CSVExport:
-          return new CSVExportTask();
-        default:
-          return null;
-      }
+        PipelineProcessorTaskStyle.GriddedReport => (ITRexTask) new GriddedReportTask(),
+        PipelineProcessorTaskStyle.CSVExport => new CSVExportTask(),
+        _ => null
+      };
     }
 
     private static void DependencyInjection()
@@ -139,7 +134,7 @@ namespace VSS.TRex.Server.Reports
         typeof(CellPassAttributeFilter),
         typeof(GridFabric.BaseIgniteClass),
         typeof(Machines.Machine),
-        typeof(PipelineProcessor),
+        typeof(PipelineProcessor<SubGridsRequestArgument>),
         typeof(Profiling.CellLiftBuilder),
         typeof(Rendering.PlanViewTileRenderer),
         typeof(SubGrids.CutFillUtilities),

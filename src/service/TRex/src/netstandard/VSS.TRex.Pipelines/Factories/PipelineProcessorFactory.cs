@@ -22,7 +22,7 @@ namespace VSS.TRex.Pipelines.Factories
     /// of pipelined requests
     /// </summary>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    public async Task<IPipelineProcessor> NewInstance(Guid requestDescriptor,
+    public async Task<IPipelineProcessor> NewInstance<TSubGridsRequestArgument>(Guid requestDescriptor,
       Guid dataModelID,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
@@ -36,7 +36,7 @@ namespace VSS.TRex.Pipelines.Factories
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
       ILiftParameters liftParams)
     {
-      var pipelineProcessor = NewInstanceNoBuild
+      var pipelineProcessor = NewInstanceNoBuild<TSubGridsRequestArgument>
         (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesign, 
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
         overrideSpatialCellRestriction, liftParams);
@@ -47,7 +47,7 @@ namespace VSS.TRex.Pipelines.Factories
         pipelineProcessor = null;
       }
 
-      return pipelineProcessor;
+      return pipelineProcessor as IPipelineProcessor;
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ namespace VSS.TRex.Pipelines.Factories
     /// of pipelined requests, but does not perform the build action on the pipeline processor
     /// </summary>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    public IPipelineProcessor NewInstanceNoBuild(Guid requestDescriptor,
+    public IPipelineProcessor NewInstanceNoBuild<TSubGridsRequestArgument>(Guid requestDescriptor,
       Guid dataModelID,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
@@ -69,10 +69,10 @@ namespace VSS.TRex.Pipelines.Factories
       BoundingIntegerExtent2D overrideSpatialCellRestriction,
       ILiftParameters liftParams)
     {
-      return new PipelineProcessor
+      return new PipelineProcessor<TSubGridsRequestArgument>
         (requestDescriptor, dataModelID, gridDataType, response, filters, cutFillDesign,
         task, pipeline, requestAnalyser, requireSurveyedSurfaceInformation, requestRequiresAccessToDesignFileExistenceMap,
-        overrideSpatialCellRestriction, liftParams);
+        overrideSpatialCellRestriction, liftParams) as IPipelineProcessor;
     }
   }
 }

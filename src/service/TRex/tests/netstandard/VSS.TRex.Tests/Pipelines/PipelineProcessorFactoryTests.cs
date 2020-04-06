@@ -10,6 +10,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -31,7 +32,7 @@ namespace VSS.TRex.Tests.Pipelines
     {
       var factory = new PipelineProcessorFactory();
 
-      var processor = factory.NewInstanceNoBuild(
+      var processor = factory.NewInstanceNoBuild<SubGridsRequestArgument>(
         Guid.NewGuid(), 
         Guid.NewGuid(), 
         GridDataType.Height,
@@ -54,7 +55,7 @@ namespace VSS.TRex.Tests.Pipelines
     {
       var factory = new PipelineProcessorFactory();
 
-      var processor = await factory.NewInstance(
+      var processor = await factory.NewInstance<SubGridsRequestArgument>(
         Guid.NewGuid(),
         Guid.NewGuid(),
         GridDataType.Height,

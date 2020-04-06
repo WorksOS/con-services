@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Apache.Ignite.Core.Cache;
 using Apache.Ignite.Core.Transactions;
 using VSS.TRex.Storage.Interfaces;
@@ -54,13 +55,23 @@ namespace VSS.TRex.Storage
 
         public virtual TV Get(TK key) => Cache.Get(key);
 
+        public virtual Task<TV> GetAsync(TK key) => Cache.GetAsync(key);
+        public bool TryGet(TK key, out TV value) => Cache.TryGet(key, out value);
+
+        public Task<CacheResult<TV>> TryGetAsync(TK key) => Cache.TryGetAsync(key);
+
         public virtual bool Remove(TK key) => Cache.Remove(key);
+        public Task<bool> RemoveAsync(TK key) => Cache.RemoveAsync(key);
 
         public virtual void RemoveAll(IEnumerable<TK> keys) => Cache.RemoveAll(keys);
+        public Task RemoveAllAsync(IEnumerable<TK> keys) => Cache.RemoveAllAsync(keys);
+
+        public virtual Task PutAsync(TK key, TV value) => Cache.PutAsync(key, value);
 
         public virtual void Put(TK key, TV value) => Cache.Put(key, value);
 
         public virtual void PutAll(IEnumerable<KeyValuePair<TK, TV>> values) => Cache.PutAll(values);
+        public Task PutAllAsync(IEnumerable<KeyValuePair<TK, TV>> vals) => Cache.PutAllAsync(vals);
 
         public virtual ICacheLock Lock(TK key) => Cache.Lock(key);
     }

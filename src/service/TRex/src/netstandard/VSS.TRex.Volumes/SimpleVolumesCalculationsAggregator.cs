@@ -254,8 +254,6 @@ namespace VSS.TRex.Volumes
                     //  Note the fact we have processed this cell in the coverage map
                     bits.SetBit(i, j);
 
-                    // FCoverageMap.Cells[BaseScanSubGrid.OriginX + I, BaseScanSubGrid.OriginY + J] := True;
-
                     bool CellUsedInVolumeCalc = (topZ - baseZ >= FillTolerance) || (baseZ - topZ >= CutTolerance);
 
                     // Accumulate volumes
@@ -293,7 +291,7 @@ namespace VSS.TRex.Volumes
                 break;
 
               default:
-                Log.LogError($"Unknown volume type {VolumeType} in ProcessVolumeInformationForSubgrid()");
+                Log.LogError($"Unknown volume type {VolumeType} in ProcessVolumeInformationForSubGrid()");
                 break;
             }
           }
@@ -316,7 +314,7 @@ namespace VSS.TRex.Volumes
               if (baseZ != Consts.NullHeight || topZ != Consts.NullHeight)
                   CellsScanned++;
 
-                  //Test if we don't have NULL values and carry on
+              //Test if we don't have NULL values and carry on
               if (baseZ != Consts.NullHeight && topZ != Consts.NullHeight)
               {
                   bits.SetBit(I, J);
@@ -344,8 +342,8 @@ namespace VSS.TRex.Volumes
           Monitor.Enter(CoverageMap);
         try
         {
-          ISubGrid CoverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
-          ((SubGridTreeLeafBitmapSubGrid)CoverageMapSubgrid).Bits = bits;
+          var coverageMapSubgrid = CoverageMap.ConstructPathToCell(BaseScanSubGrid.OriginX, BaseScanSubGrid.OriginY, SubGridPathConstructionType.CreateLeaf);
+          ((SubGridTreeLeafBitmapSubGrid)coverageMapSubgrid).Bits = bits;
         }
         finally
         {

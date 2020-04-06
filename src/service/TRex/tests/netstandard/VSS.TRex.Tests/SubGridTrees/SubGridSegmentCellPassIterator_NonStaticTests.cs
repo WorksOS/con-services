@@ -29,7 +29,7 @@ namespace VSS.TRex.Tests.SubGridTrees
     {
       SubGridSegmentCellPassIterator_NonStatic iterator = new SubGridSegmentCellPassIterator_NonStatic();
 
-      iterator.SetCellCoordinatesInSubgrid(12, 23);
+      iterator.SetCellCoordinatesInSubGrid(12, 23);
 
       Assert.True(iterator.CellX == 12 && iterator.CellY == 23, "CellX/Y not set correctly");
     }

@@ -10,6 +10,8 @@
     GriddedReport,
     CSVExport,
     PassCountExport,
-    QuantizedMesh
+    QuantizedMesh,
+    SimpleVolumes,
+    ProgressiveVolumes
   }
 }

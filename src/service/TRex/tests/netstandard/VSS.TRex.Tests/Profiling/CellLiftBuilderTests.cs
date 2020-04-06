@@ -1,6 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using VSS.TRex.Cells;
 using VSS.TRex.Common.Models;
 using VSS.TRex.DI;
@@ -9,11 +8,9 @@ using VSS.TRex.Filters;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Profiling;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
-using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Iterators;
 using VSS.TRex.Tests.TestFixtures;

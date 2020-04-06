@@ -94,4 +94,9 @@ namespace VSS.TRex.Pipelines.Interfaces
     ISubGridTreeBitMask OverallExistenceMap { get; set; }
     ISubGridTreeBitMask DesignSubGridOverlayMap { get; set; }
   }
+
+  public interface IPipelineProcessor<TSubGridsRequestArgument> : IPipelineProcessor
+  {
+    Action<TSubGridsRequestArgument> CustomArgumentInitializer { get; set; }
+  }
 }

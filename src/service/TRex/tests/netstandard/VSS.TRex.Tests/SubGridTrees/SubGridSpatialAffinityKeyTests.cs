@@ -2,12 +2,13 @@
 using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGridTrees;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridSpatialAffinityKeyTests
-    {
+        public class SubGridSpatialAffinityKeyTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_SubGridSpatialAffinityKey_NullConstructor()
         {

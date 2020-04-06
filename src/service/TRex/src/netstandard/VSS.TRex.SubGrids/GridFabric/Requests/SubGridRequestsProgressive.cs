@@ -6,12 +6,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.DI;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
+using VSS.TRex.SubGrids.Responses;
 
 namespace VSS.TRex.SubGrids.GridFabric.Requests
 {
