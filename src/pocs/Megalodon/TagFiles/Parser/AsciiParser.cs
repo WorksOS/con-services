@@ -19,17 +19,20 @@ namespace TagFiles.Parser
     private bool HaveValue = false;
     private int HeaderRecordCount = 0;
     private bool tmpNR = false;
+    private bool packetIsHeader = false;
     private DateTime prevEpochTime = DateTime.MinValue;
     public bool HeaderRequired = true;
     public bool HeaderUpdated = false; // has there been a time epoch for header
+    public bool DebugTraceToLog = false;
 
     public bool TrailerRequired = false;
-    private EpochRecord _PrevTagFile_EpochRec; // poch record beloging to last tagfile
-    public EpochRecord _Prev_EpochRec; // previous epoch record
+    private EpochRecord _PrevTagFile_EpochRec; // previous epoch belonging to the last tagfile
+    public EpochRecord _Prev_EpochRec; // previous epoch record in current tagfile
     public EpochRecord EpochRec = new EpochRecord(); // current epoch record
     public TagContentList TagContent; // tagfile data content
     public ILogger Log;
     public bool NotSeenNewPosition = true;
+    public byte TransmissionProtocolVersion = TagConstants.Version1;
 
     // hacks
     public bool ForceBOG = false;
@@ -81,13 +84,19 @@ namespace TagFiles.Parser
     /// <summary>
     /// Checks we have enough input data to create a tagfile epoch
     /// </summary>
-    public void UpdateTagContentList(ref EpochRecord eRecord, ref bool newHeader)
+    public void UpdateTagContentList(ref EpochRecord eRecord, ref bool newHeader, TagConstants.UpdateReason reason)
     {
+      if (DebugTraceToLog)
+        Log.LogInformation($"* UpdateTagContentList * {reason}"); 
+
       newHeader = false;
       var timeAdded = false;
 
       if (!HeaderUpdated & !eRecord.HasMTP) // dont process any epoch before recieving a header
+      {
+        Log.LogWarning("Epoch ignored before recieving header record"); // should not happen 
         return;
+      }
 
       if (!HeaderUpdated)
       {
@@ -155,7 +164,10 @@ namespace TagFiles.Parser
         eRecord.HasUTM = false;
       }
 
-      HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
+      if (TransmissionProtocolVersion < TagConstants.Version1) 
+        HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
+      else 
+        HeaderRequired = !eRecord.HasHeader;
 
       if (eRecord.HasTime & !timeAdded)
       {
@@ -397,6 +409,15 @@ namespace TagFiles.Parser
               EpochRec.UTM = Convert.ToByte(TagValue);
               break;
             }
+          case TagConstants.HDR:
+            {
+              if (Convert.ToByte(TagValue) == TagConstants.HEADER_RECORD)
+              {
+                EpochRec.HasHeader = true;
+                packetIsHeader = true;
+              }
+              break;
+            }
           default:
             Log.LogWarning($"ProcessField. Unknown TagName:{TagName} Value:{TagValue}");
             break;
@@ -439,6 +460,9 @@ namespace TagFiles.Parser
     {
       // Note STX and ETX, ENQ, ACK, NAK should not enter here as a rule. 
 
+      packetIsHeader = false;
+
+      // If debugging (causing a ide delay) this can be commented out
       if (prevEpochTime != DateTime.MinValue)
       {
         // this check is here to prevent two epochs seprated by a min time interval being stitched together
@@ -452,6 +476,7 @@ namespace TagFiles.Parser
             _PrevTagFile_EpochRec = null;
         }
       }
+
       prevEpochTime = DateTime.Now;
 
       try
@@ -515,31 +540,28 @@ namespace TagFiles.Parser
         // finally process all fields picked out of the datapacket
         var newHeader = false;
 
-        if (_Prev_EpochRec != null)
+        if (_Prev_EpochRec != null) // test needed
         {
           // Check if its the same position and elevation
-          if (EpochRec.HasLAT) // if header
-            UpdateTagContentList(ref EpochRec, ref newHeader);
-          else if (EpochRec.NotEpochSamePosition(ref _Prev_EpochRec))
+          if (packetIsHeader) // if header record
+            UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.NewHeader);
+          else if (EpochRec.NotSamePosition(ref _Prev_EpochRec))
           {
-            UpdateTagContentList(ref EpochRec, ref newHeader);
+            UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.ChangeRecord);
             NotSeenNewPosition = false;
           }
         }
         else
-          UpdateTagContentList(ref EpochRec, ref newHeader);
+          UpdateTagContentList(ref EpochRec, ref newHeader, TagConstants.UpdateReason.FirstRecord);
 
-        if (newHeader)
+        if (newHeader) // Is this the start of a new tagfile
         {
           if (_PrevTagFile_EpochRec != null) // epoch from last tagfile
           {
             if (_PrevTagFile_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
-              UpdateTagContentList(ref _PrevTagFile_EpochRec, ref tmpNR);
+              UpdateTagContentList(ref _PrevTagFile_EpochRec, ref tmpNR, TagConstants.UpdateReason.LastTagFileEpoch);
             _PrevTagFile_EpochRec = null;
           }
-          if (_Prev_EpochRec != null) // epoch missed to SOH request
-            if (_Prev_EpochRec.IsFullPositionEpoch()) // if it is a new tagfile we use last known epoch to start new tagfile
-              UpdateTagContentList(ref _Prev_EpochRec, ref tmpNR);
         }
 
         _Prev_EpochRec = new EpochRecord();
