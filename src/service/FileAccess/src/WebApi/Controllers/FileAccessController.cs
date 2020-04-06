@@ -1,11 +1,9 @@
 ﻿using System.IO;
-using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Http;
-using VSS.Common.Exceptions;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.Executors;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.Models;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling;
@@ -18,24 +16,10 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
   /// </summary>
   public class FileAccessController : Controller
   {
-    /// <summary>
-    /// Logger for logging
-    /// </summary>
     private readonly ILogger log;
-
-    /// <summary>
-    /// Logger factory for use by executor
-    /// </summary>
     private readonly ILoggerFactory logger;
-
-    /// <summary>
-    /// Used to get a service provider
-    /// </summary>
     private readonly IFileRepository fileAccess;
 
-    /// <summary>
-    /// Constructor with injected raptor client, logger and authenticated projects
-    /// </summary>
     public FileAccessController(ILoggerFactory logger, IFileRepository fileAccess)
     {
       this.logger = logger;
@@ -44,11 +28,10 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets requested file from TCC.
+    /// Gets requested file from the injected repository.
     /// </summary>
-    [Route("api/v1/rawfiles")]
-    [HttpPost]
-    public FileResult PostRaw([FromBody] FileDescriptor request)
+    [HttpPost("api/v1/rawfiles")]
+    public async Task<IActionResult> GetFile([FromBody] FileDescriptor request)
     {
       log.LogInformation($"Get file from TCC: {JsonConvert.SerializeObject(request)}");
 
@@ -56,14 +39,13 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
       {
         request.Validate();
 
-        if (RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess).Process(request) is RawFileAccessResult result)
+        if (RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess)
+                                    .Process(request) is RawFileAccessResult downloadResult && downloadResult.Success)
         {
-          return new FileStreamResult(new MemoryStream(result.fileContents), ContentTypeConstants.ApplicationOctetStream);
+          return Ok(new FileStreamResult(new MemoryStream(downloadResult.fileContents), ContentTypeConstants.ApplicationOctetStream));
         }
 
-        throw new ServiceException(HttpStatusCode.NoContent,
-            new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
-                $"Failed to return a file '{request.FilespaceId}/{request.FileName}'"));
+        return NoContent();
       }
       finally
       {

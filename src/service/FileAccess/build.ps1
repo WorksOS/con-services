@@ -1,19 +1,13 @@
-param ()
+Write-Host "Building solution" -ForegroundColor "darkgray"
 
-$artifactsDir = "$PSScriptRoot/artifacts/WebApi/"
+$artifactsDir = "$PSScriptRoot/artifacts/"
 
-# Tidy up old artifacts.
-Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
-
-if (Test-Path -path $artifactsDir) {
-    Remove-Item -Force -Recurse -Path $artifactsDir 
+if (Test-Path -path "$artifactsDir/WebApi/") {
+    Write-Host "Removing existing build artifacts..." -ForegroundColor "darkgray"
+    Get-ChildItem $artifactsDir -Recurse | Remove-Item -Recurse
 }
+
+New-Item -itemtype directory "$artifactsDir/WebApi/"
 
 Write-Host "Publishing WebApi project..." -ForegroundColor "darkgray"
-Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/WebApi -o ../../artifacts/WebApi -f netcoreapp3.1 -c Docker"
-if ($LastExitCode -ne 0) {
-    throw "Publish of web api project **** Failed ****"
-}
-
-# Compress build artifacts.
-Write-Host "Compressing build artifacts..." -ForegroundColor "darkgray"
+Invoke-Expression "dotnet publish /nowarn:CS1591 ./src/WebApi -o ./artifacts/WebApi -f netcoreapp3.1 -c Docker"
