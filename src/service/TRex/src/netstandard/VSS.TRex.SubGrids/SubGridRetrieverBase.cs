@@ -162,8 +162,6 @@ namespace VSS.TRex.SubGrids
           cellPass.CCA = _globalLatestCells.ReadCCA(x, y);
           break;
         case GridDataType.Temperature:
-          cellPass.MaterialTemperature = _globalLatestCells.ReadTemperature(x, y);
-          break;
         case GridDataType.TemperatureDetail:
           cellPass.MaterialTemperature = _globalLatestCells.ReadTemperature(x, y);
           break;
