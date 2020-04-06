@@ -90,7 +90,7 @@ public class PlanSpec {
     void publishPlans(BambooServer bambooServer) {
 
         // Sanity build - no deployment
-        createSanityPlan(bambooServer);
+//        createSanityPlan(bambooServer);
 
 
         // Names must match what bamboo/jenkins has
