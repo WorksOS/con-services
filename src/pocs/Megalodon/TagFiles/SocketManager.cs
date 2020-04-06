@@ -19,7 +19,7 @@ namespace TagFiles
     private string tcip = "127.0.0.1";
     private int logEntries = 10;
 
-    public bool _PortRestartNeeded = false;
+    private bool _PortRestartNeeded = false;
     public bool PortRestartNeeded 
     {
       get => _PortRestartNeeded;
@@ -33,7 +33,7 @@ namespace TagFiles
       set => _HeaderRequired = value;
     }
 
-    public bool _LogStartup = true;
+    private bool _LogStartup = true;
     public bool LogStartup  
     {
       get => _LogStartup;
@@ -287,7 +287,7 @@ namespace TagFiles
         {
           content += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-          if (LogStartup)
+          if (_LogStartup)
           { // record first 5 entries for possible trouble shooting
             epochsSeen++;
             if (epochsSeen == 1)
@@ -295,7 +295,7 @@ namespace TagFiles
             _log.LogInformation(FormatTrace(content));
             if (epochsSeen >= logEntries)
             {
-              LogStartup = false; // This will get restart on new tagfile
+              _LogStartup = false; // This will get restart on new tagfile
               logEntries = 2;
               epochsSeen = 0;
             }

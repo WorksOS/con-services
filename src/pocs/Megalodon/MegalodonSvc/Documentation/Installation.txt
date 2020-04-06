@@ -8,7 +8,7 @@ Trimble Tagfile Service settings are held in the appsettings.json file located i
   "TagFileIntervalSecs": "60", Interavl a tagfile will be written
   "InstallFolder": "c:\\Trimble", where this service was installed. Change if different
   "SendTagFilesDirect": true, tagfiles are moved from ToSend folder to one folder up and directly sent via FTP to VL
-  "TransmissionProtocol": "1",  Versioning of the transmission protocol. 
+  "TransmissionProtocolVersion": "1",  Versioning of the transmission protocol. 
    
    * The following keys are for use in tagfile DirectSend *
   "productivity3d-service-public-v2": "https://api.trimble.com/t/trimble.com/ccss-tagfile-gateway/1.0",

@@ -74,6 +74,6 @@
     public const ushort DEFAULT_VALID_POSITION = 1;
 
     public const byte HEADER_RECORD = 1;
-    public const byte APRIL_2020 = 1;
+    public const byte Version1 = 1;
   }
 }

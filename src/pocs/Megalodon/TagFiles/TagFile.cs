@@ -33,7 +33,7 @@ namespace TagFiles
     public double SeedLat = 0;
     public double SeedLon = 0;
     public double TagFileIntervalMilliSecs = 60000; // default 60 seconds
-    public byte TransmissionProtocol = 1; // versioning of transmission protocol
+    public byte TransmissionProtocolVersion = TagConstants.Version1; 
     public ILogger Log;
 
     /// <summary>
@@ -49,7 +49,7 @@ namespace TagFiles
         TagTimer.Enabled = value;
         if (value)
         {
-          TagTimer.Interval = TagFileIntervalMilliSecs; //TagConstants.NEW_TAG_FILE_INTERVAL_MSECS;
+          TagTimer.Interval = TagFileIntervalMilliSecs; 
           TagTimer.Start();
         }
       }
@@ -126,21 +126,20 @@ namespace TagFiles
     /// </summary>
     public void WriteTagFileToDisk()
     {
-      // string newFilename;
 
       if (Parser.HeaderRequired)
       {
-        Log.LogDebug($"WriteTagFileToDisk. No header record recieved.");
+        Log.LogDebug($"{nameof(WriteTagFileToDisk)}. No header record recieved.");
         return;
       }
 
       if (Parser.NotSeenNewPosition)
       {
-        Log.LogInformation($"WriteTagFileToDisk. No new blade positions reported.");
+        Log.LogInformation($"{nameof(WriteTagFileToDisk)}. No new blade positions reported.");
         return;
       }
 
-      Log.LogInformation($"WriteTagFileToDisk. Start.");
+      Log.LogInformation($"{nameof(WriteTagFileToDisk)}. Start.");
 
       Parser.TrailerRequired = true;
       Parser.CloneLastEpoch(); // used as first epoc in new tagfile. Helps prevents gaps when processing tagfiles 
@@ -180,13 +179,12 @@ namespace TagFiles
       {
         if (Write(outStream)) // write tagfile to stream
         {
-          //  _NewTagfileStarted = true;
           Parser.Reset();
           tagFileCount++;
-          Log.LogInformation($"WriteTagFileToDisk. End. {toSendFilePath} successfully written to disk. Total Tagfiles:{tagFileCount}");
+          Log.LogInformation($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} successfully written to disk. Total Tagfiles:{tagFileCount}");
         }
         else
-          Log.LogWarning($"WriteTagFileToDisk. End. {toSendFilePath} failed to write to disk.");
+          Log.LogWarning($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} failed to write to disk.");
         ReadyToWrite = false;
       }
       finally

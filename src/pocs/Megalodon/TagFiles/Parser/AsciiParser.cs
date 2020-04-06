@@ -32,7 +32,7 @@ namespace TagFiles.Parser
     public TagContentList TagContent; // tagfile data content
     public ILogger Log;
     public bool NotSeenNewPosition = true;
-    public byte TransmissionProtocol = 1;
+    public byte TransmissionProtocolVersion = TagConstants.Version1;
 
     // hacks
     public bool ForceBOG = false;
@@ -164,7 +164,7 @@ namespace TagFiles.Parser
         eRecord.HasUTM = false;
       }
 
-      if (TransmissionProtocol < TagConstants.APRIL_2020) // Pre April 2020  
+      if (TransmissionProtocolVersion < TagConstants.Version1) 
         HeaderRequired = HeaderRecordCount < 3; // do we have the key main header values
       else 
         HeaderRequired = !eRecord.HasHeader;
