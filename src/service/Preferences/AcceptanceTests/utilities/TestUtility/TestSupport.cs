@@ -48,8 +48,9 @@ namespace TestUtility
     /// <summary>
     /// Publish events to web api from string array
     /// </summary>
-    public async Task PublishEventCollection(string[] eventArray, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public async Task<string> PublishEventCollection(string[] eventArray, string queryParams=null, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
+      string jsonString = null;
       try
       {     
         Msg.DisplayEventsToConsoleWeb(eventArray);
@@ -59,8 +60,8 @@ namespace TestUtility
           var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
           dynamic dynEvt = ConvertToExpando(allColumnNames, eventRow);
         
-          var jsonString = BuildEventIntoObject(dynEvt);
-          await CallPreferenceWebApi(jsonString, dynEvt.EventType, dynEvt.CustomerUID, statusCode);           
+          jsonString = BuildEventIntoObject(dynEvt);
+          await CallPreferenceWebApi(jsonString, dynEvt.EventType, dynEvt.CustomerUID, statusCode, queryParams);           
         }
       }
       catch (Exception ex)
@@ -68,12 +69,13 @@ namespace TestUtility
         Msg.DisplayException(ex.Message);
         throw;
       }
+      return jsonString;
     }
 
     /// <summary>
     /// Publish event to web api
     /// </summary>
-    public async Task<string> PublishEventToWebApi(string[] eventArray, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public async Task<string> PublishEventToWebApi(string[] eventArray, string queryParams=null, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
       try
       {
@@ -85,11 +87,11 @@ namespace TestUtility
         string response;
         try
         {
-          response = await CallPreferenceWebApi(jsonString, eventObject.EventType, eventObject.CustomerUID, statusCode);
+          response = await CallPreferenceWebApi(jsonString, eventObject.EventType, eventObject.CustomerUID, statusCode, queryParams);
         }
         catch (RuntimeBinderException)
         {
-          response = await CallPreferenceWebApi(jsonString, eventObject.EventType, CustomerUid.ToString(), statusCode);
+          response = await CallPreferenceWebApi(jsonString, eventObject.EventType, CustomerUid.ToString(), statusCode, queryParams);
         }
         return response;
       }
@@ -103,29 +105,29 @@ namespace TestUtility
     /// <summary>
     /// Call the preference service web api
     /// </summary>
-    private async Task<string> CallPreferenceWebApi<TRes>(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode) where TRes : ContractExecutionResult
+    private async Task<string> CallPreferenceWebApi<TRes>(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode, string queryParams=null) where TRes : ContractExecutionResult
     {
       var response = string.Empty;
 
       switch (eventType)
       {
         case "CreateUserPreferenceRequest":
-          response = await CallWebApi("api/v1/user/", HttpMethod.Post, jsonString, customerUid, statusCode: statusCode);
+          response = await CallWebApi($"api/v1/user{queryParams}", HttpMethod.Post, jsonString, customerUid, statusCode: statusCode);
           break;
         case "UpdateUserPreferenceRequest":
-          response = await CallWebApi("api/v1/user/", HttpMethod.Put, jsonString, customerUid, statusCode: statusCode);
+          response = await CallWebApi("api/v1/user", HttpMethod.Put, jsonString, customerUid, statusCode: statusCode);
           break;
         case "DeleteUserPreferenceRequest":
-          response = await CallWebApi("api/v1/user/", HttpMethod.Delete, string.Empty, customerUid, statusCode: statusCode);
+          response = await CallWebApi($"api/v1/user{queryParams}", HttpMethod.Delete, string.Empty, customerUid, statusCode: statusCode);
           break;
         case "CreatePreferenceKeyEvent":
-          response = await CallWebApi("api/v1/user/key/", HttpMethod.Post, jsonString, customerUid, statusCode: statusCode);
+          response = await CallWebApi("api/v1/user/key", HttpMethod.Post, jsonString, customerUid, statusCode: statusCode);
           break;
         case "UpdatePreferenceKeyEvent":
-          response = await CallWebApi("api/v1/user/key/", HttpMethod.Put, jsonString, customerUid, statusCode: statusCode);
+          response = await CallWebApi("api/v1/user/key", HttpMethod.Put, jsonString, customerUid, statusCode: statusCode);
           break;
         case "DeletePreferenceKeyEvent":
-          response = await CallWebApi("api/v1/user/key/", HttpMethod.Delete, string.Empty, customerUid, statusCode: statusCode);
+          response = await CallWebApi("api/v1/user/key", HttpMethod.Delete, string.Empty, customerUid, statusCode: statusCode);
           break;
       }
 
@@ -135,26 +137,19 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Call preference web api and check result 
+    /// Call user preference web api and check result. 
+    /// Note: no 'get preference key' api so cannot use this method for preference keys only user preferences.
     /// </summary>
-    public async Task GetPreferenceViaWebApiAndCompareActualWithExpected<TReq, TRes>(HttpStatusCode statusCode, Guid customerUid, string[] expectedResultsArray, bool ignoreZeros)
-      where TRes : ContractExecutionResult, new()
+    public async Task GetUserPreferenceViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string request, bool ignoreZeros)
     {
-      var response = await CallWebApi("api/v1/user/", HttpMethod.Get, null, customerUid.ToString());
+      var response = await CallWebApi("api/v1/user", HttpMethod.Get, null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
-        if (expectedResultsArray == null || expectedResultsArray.Length == 0 ||  string.IsNullOrEmpty(expectedResultsArray[1]))
-        {      
-          Assert.True(string.IsNullOrEmpty(response), "There should not be any preference");
-        }
-        else
-        {
-          var actualPref = JsonConvert.DeserializeObject<TRes>(response);
-          var expectedPref = ConvertExpectedToModel<TReq>(expectedResultsArray);
-          Msg.DisplayResults($"Expected preference: {JsonConvert.SerializeObject(expectedPref)}", $"Actual from WebApi: {response}");
+        var actualPref = JsonConvert.DeserializeObject<UserPreferenceV1Result>(response);
+        var expectedPref = ConstructExpectedResult(JsonConvert.DeserializeObject<UpsertUserPreferenceRequest>(request));
+        Msg.DisplayResults($"Expected preference: {JsonConvert.SerializeObject(expectedPref)}", $"Actual from WebApi: {response}");
           
-          CompareTheActualWithExpected<T>(actualPref, expectedPref, ignoreZeros);
-        }
+        CompareTheActualWithExpected(actualPref, expectedPref, ignoreZeros);
       }
     }
 
@@ -205,6 +200,10 @@ namespace TestUtility
           if (HasProperty(eventObject, "SchemaVersion"))
           {
             request.SchemaVersion = eventObject.SchemaVersion;
+          }
+          if (HasProperty(eventObject, "PreferenceJson"))
+          {
+            request.PreferenceJson = eventObject.PreferenceJson;
           }
           if (HasProperty(eventObject, "PreferenceKeyName"))
           {
@@ -301,46 +300,16 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Convert the expected result into a dynamic object
+    /// Use the request to construct the expected result
     /// </summary>
-    private T ConvertExpectedToModel<T>(string[] eventArray) where T : ContractExecutionResult, new()
+    private UserPreferenceV1Result ConstructExpectedResult(UpsertUserPreferenceRequest request)
     {
-      T expected = null;
-      try
-      {
-        // The first row is the column names.
-        // Currently handles only one 'event'.
-        if (eventArray.Length != 2)
-        {
-          throw new ArgumentException("Only one 'event' at a time is supported");
-        }
-        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
-        {
-          var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
-          dynamic eventObject = ConvertToExpando(allColumnNames, eventRow);
-
-          expected = new T();
-          if (expected is PreferenceKeyV1Result)
-          {
-            var expectedPrefKey = expected as PreferenceKeyV1Result;
-            expectedPrefKey.PreferenceKeyName = eventObject.KeyName;
-            expectedPrefKey.PreferenceKeyUID = eventObject.KeyUid;
-          }
-          if (expected is UserPreferenceV1Result)
-          {
-            var expectedUserPref = expected as UserPreferenceV1Result;
-            expectedUserPref.PreferenceJson = eventObject.Json;
-            expectedUserPref.SchemaVersion = eventObject.SchemaVersion;
-          }
-        }
-      }
-      catch (Exception ex)
-      {
-        Msg.DisplayException(ex.Message);
-        throw;
-      }
-      return expected;
+      var expectedUserPref = new UserPreferenceV1Result();
+      expectedUserPref.PreferenceKeyName = request.PreferenceKeyName;
+      expectedUserPref.PreferenceKeyUID = request.PreferenceKeyUID.Value;
+      expectedUserPref.SchemaVersion = request.SchemaVersion;
+      expectedUserPref.PreferenceJson = request.PreferenceJson;
+      return expectedUserPref;
     }
 
     public Task<string> CallWebApi(string routeSuffix, HttpMethod method, string configJson, string customerUid = null, string jwt = null, HttpStatusCode statusCode = HttpStatusCode.OK)
