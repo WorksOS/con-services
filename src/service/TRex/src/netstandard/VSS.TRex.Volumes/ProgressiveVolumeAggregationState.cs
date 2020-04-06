@@ -3,6 +3,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Types;
 
 namespace VSS.TRex.Volumes
 {
@@ -10,7 +11,7 @@ namespace VSS.TRex.Volumes
   {
     // CoverageMap maps the area of cells that we have considered and successfully
     // computed volume information from
-    public readonly SubGridTreeBitMask CoverageMap = new SubGridTreeBitMask();
+    public readonly SubGridTreeBitMask CoverageMap;
 
     /// <summary>
     /// The date for which this volume is being computed with in the progressive volume series
@@ -29,7 +30,7 @@ namespace VSS.TRex.Volumes
 
     // CellsDiscarded records how many cells were discarded because filtered value was null
     public long CellsDiscarded { get; set; }
-    public double CellSize { get; set; }
+    public readonly double CellSize;
 
     public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
 
@@ -61,6 +62,12 @@ namespace VSS.TRex.Volumes
     // be cut
     public double FillTolerance { get; set; } = VolumesConsts.DEFAULT_CELL_VOLUME_FILL_TOLERANCE;
 
+    public ProgressiveVolumeAggregationState(double cellSize)
+    {
+      CellSize = cellSize;
+      CoverageMap = new SubGridTreeBitMask(cellSize);
+    }
+
     public void Finalise()
     {
       CoverageArea = CellsUsed * CellSize * CellSize;
@@ -70,7 +77,7 @@ namespace VSS.TRex.Volumes
       BoundingExtents = CoverageMap.ComputeCellsWorldExtents();
     }
 
-    public void ProcessElevationInformationForSubGrid(float[,] baseSubGrid, float[,] topSubGrid)
+    public void ProcessElevationInformationForSubGrid(int cellOriginX, int cellOriginY, float[,] baseSubGrid, float[,] topSubGrid)
     {
       // FCellArea is a handy place to store the cell area, rather than calculate it all the time (value wont change);
       var cellArea = CellSize * CellSize;
@@ -92,8 +99,6 @@ namespace VSS.TRex.Volumes
 
             //  Note the fact we have processed this cell in the coverage map
             bits.SetBit(i, j);
-
-            // FCoverageMap.Cells[BaseScanSubGrid.OriginX + I, BaseScanSubGrid.OriginY + J] := True;
 
             var cellUsedInVolumeCalc = (topZ - baseZ >= FillTolerance) || (baseZ - topZ >= CutTolerance);
 
@@ -129,6 +134,14 @@ namespace VSS.TRex.Volumes
             CellsDiscarded++;
           }
         }
+      }
+
+      // Record the bits for this sub grid in the coverage map by requesting the whole sub grid
+      // of bits from the leaf level and setting it in one operation under an exclusive lock
+      if (!bits.IsEmpty())
+      {
+        var coverageMapSubGrid = CoverageMap.ConstructPathToCell(cellOriginX, cellOriginY, SubGridPathConstructionType.CreateLeaf);
+        ((SubGridTreeLeafBitmapSubGrid)coverageMapSubGrid).Bits = bits;
       }
     }
 

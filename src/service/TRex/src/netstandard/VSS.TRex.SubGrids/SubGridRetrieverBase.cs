@@ -284,6 +284,13 @@ namespace VSS.TRex.SubGrids
 
       _segmentIterator.SubGrid = _subGridAsLeaf;
       _segmentIterator.Directory = _subGridAsLeaf.Directory;
+
+      // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
+      if (_clientGrid.WantsLiftProcessingResults())
+      {
+        _segmentIterator.IterationDirection = IterationDirection.Forwards;
+        _cellPassIterator.MaxNumberOfPassesToReturn = _maxNumberOfPassesToReturn;
+      }
     }
 
     /// <summary>
@@ -414,13 +421,6 @@ namespace VSS.TRex.SubGrids
         // SIGLogMessage.PublishNoODS(Nil, Format('Setup for stripe iteration at %dx%d', [clientGrid.OriginX, clientGrid.OriginY]));
 
         SetupForCellPassStackExamination();
-
-        // Some display types require lift processing to be able to select the appropriate cell pass containing the filtered value required.
-        if (_clientGrid.WantsLiftProcessingResults())
-        {
-          _segmentIterator.IterationDirection = IterationDirection.Forwards;
-          _cellPassIterator.MaxNumberOfPassesToReturn = _maxNumberOfPassesToReturn;
-        }
 
         // Determine if a sieve filter is required for the sub grid where the sieve matches
         // the X and Y pixel world size (used for WMS tile computation)

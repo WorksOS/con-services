@@ -10,6 +10,44 @@ namespace VSS.TRex.Tests.SubGridTrees
   public class SubGridTreeBitMaskTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
+    public void Creation()
+    {
+      var mask = new SubGridTreeBitMask();
+      mask.Should().NotBeNull();
+
+      mask.CellSize.Should().Be(SubGridTreeConsts.DefaultCellSize);
+    }
+
+    [Fact]
+    public void Creation2()
+    {
+      const double cellSize = 0.50d;
+
+      var mask = new SubGridTreeBitMask(cellSize);
+      mask.Should().NotBeNull();
+
+      mask.CellSize.Should().Be(cellSize);
+    }
+
+    [Theory]
+    [InlineData(1)]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    public void Creation3(byte numLevels)
+    {
+      const double cellSize = 0.50d;
+
+      var mask = new SubGridTreeBitMask(numLevels, cellSize);
+      mask.Should().NotBeNull();
+
+      mask.NumLevels.Should().Be(numLevels);
+      mask.CellSize.Should().Be(cellSize);
+    }
+
+    [Fact]
     public void Test_SubGridTreeBitMask_SubGridTreeBitMask()
     {
       var mask = new SubGridTreeBitMask();

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
@@ -101,15 +100,15 @@ namespace VSS.TRex.Volumes
         {
           case VolumeComputationType.Between2Filters:
             for (var i = 0; i < subGrid.NumberOfHeightLayers - 1; i++)
-              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.Heights[i], subGrid.Heights[i + 1]);
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, subGrid.Heights[i], subGrid.Heights[i + 1]);
             break;
           case VolumeComputationType.BetweenDesignAndFilter:
             for (var i = 0; i < subGrid.NumberOfHeightLayers; i++)
-              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.Heights[i], designHeights);
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, subGrid.Heights[i], designHeights);
             break;
           case VolumeComputationType.BetweenFilterAndDesign:
             for (var i = 0; i < subGrid.NumberOfHeightLayers; i++)
-              AggregationStates[i].ProcessElevationInformationForSubGrid(designHeights, subGrid.Heights[i]);
+              AggregationStates[i].ProcessElevationInformationForSubGrid(subGrid.OriginX, subGrid.OriginY, designHeights, subGrid.Heights[i]);
             break;
           default:
             throw new ArgumentException($"Unsupported volume type {VolumeType}");
@@ -163,9 +162,12 @@ namespace VSS.TRex.Volumes
         throw new ArgumentException($"Progressive volumes aggregator collections should have same length: {AggregationStates?.Length ?? 0} versus {other.AggregationStates?.Length ?? 0}");
       }
 
-      for (var i = 0; i < AggregationStates.Length; i++)
+      if (AggregationStates != null && other != null)
       {
-        AggregationStates[i].AggregateWith(other.AggregationStates[i]);
+        for (var i = 0; i < AggregationStates.Length; i++)
+        {
+          AggregationStates[i].AggregateWith(other.AggregationStates[i]);
+        }
       }
 
       return this;

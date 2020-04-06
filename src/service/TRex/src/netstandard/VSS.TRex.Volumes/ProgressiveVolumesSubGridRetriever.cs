@@ -112,6 +112,8 @@ namespace VSS.TRex.Volumes
         _commonCellPassStackExaminationDone = true;
       }
 
+      _segmentIterator.IterationDirection = IterationDirection.Forwards;
+
       _reversingSegmentIterator.SubGrid = _subGridAsLeaf;
       _reversingSegmentIterator.Directory = _subGridAsLeaf.Directory;
     }
@@ -143,7 +145,6 @@ namespace VSS.TRex.Volumes
 
       return base.RetrieveSubGrid(clientGrid, cellOverrideMask);
     }
-
 
     /// <summary>
     /// Custom implementation for retrieving stripes of progressive volume cells

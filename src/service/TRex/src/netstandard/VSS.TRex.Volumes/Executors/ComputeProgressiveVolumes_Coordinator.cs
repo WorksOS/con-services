@@ -212,11 +212,10 @@ namespace VSS.TRex.Volumes.Executors
             AggregationStates = Enumerable
               .Range(0, numProgressions)
               .Select(x => StartDate + x * Interval)
-              .Select(d => new ProgressiveVolumeAggregationState
+              .Select(d => new ProgressiveVolumeAggregationState(_siteModel.CellSize)
             {
                 Date = d,
                 VolumeType = VolumeType,
-                CellSize = _siteModel.CellSize,
                 CutTolerance = CutTolerance,
                 FillTolerance = FillTolerance
               }).ToArray()
@@ -259,13 +258,13 @@ namespace VSS.TRex.Volumes.Executors
           // Instruct the Aggregator to perform any finalization logic before reading out the results
           Aggregator.Finalise();
 
-          foreach (var aggregator in Aggregator.AggregationStates)
+          foreach (var state in Aggregator.AggregationStates)
           {
-            Log.LogInformation($"#Result# Progressive volume result: Cut={aggregator.CutFillVolume.CutVolume:F3}, Fill={aggregator.CutFillVolume.FillVolume:F3}, Area={aggregator.CoverageArea:F3}");
+            Log.LogInformation($"#Result# Progressive volume result: Cut={state.CutFillVolume.CutVolume:F3}, Fill={state.CutFillVolume.FillVolume:F3}, Area={state.CoverageArea:F3}");
 
-            if (!aggregator.BoundingExtents.IsValidPlanExtent)
+            if (!state.BoundingExtents.IsValidPlanExtent)
             {
-              if (aggregator.CoverageArea == 0 && aggregator.CutFillVolume.CutVolume == 0 && aggregator.CutFillVolume.FillVolume == 0)
+              if (state.CoverageArea == 0 && state.CutFillVolume.CutVolume == 0 && state.CutFillVolume.FillVolume == 0)
                 resultStatus = RequestErrorStatus.NoProductionDataFound;
               else
                 resultStatus = RequestErrorStatus.InvalidPlanExtents;
@@ -275,7 +274,8 @@ namespace VSS.TRex.Volumes.Executors
           }
 
           volumesResult.ResultStatus = resultStatus;
-          if (resultStatus != RequestErrorStatus.OK)
+
+          if (resultStatus == RequestErrorStatus.OK)
           {
             volumesResult.Volumes = Aggregator.AggregationStates.Select(aggregator => new ProgressiveVolumeResponseItem
             {

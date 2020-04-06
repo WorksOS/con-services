@@ -3,12 +3,16 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using VSS.TRex.Cells;
 using VSS.TRex.Common;
+using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
@@ -189,6 +193,7 @@ namespace VSS.TRex.Tests.Volumes
 
       response.Should().NotBeNull();
 
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
       response.Volumes.Should().NotBeNull();
       response.Volumes.Length.Should().Be(10);
       
@@ -200,6 +205,20 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
+
+      var csMock = new Mock<IConvertCoordinates>();
+      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>()))
+        .Returns(() => {
+        return Task.FromResult((RequestErrorStatus.OK, new XYZ[2]
+        {
+          new XYZ(0, 0, 1),
+          new XYZ(1, 1, 0)
+        }));
+      });
+
+      DIBuilder.Continue()
+        .Add(x => x.AddSingleton(csMock.Object))
+        .Complete();
 
       var tagFiles = new[]
       {
@@ -213,6 +232,7 @@ namespace VSS.TRex.Tests.Volumes
 
       response.Should().NotBeNull();
 
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
       response.Volumes.Should().NotBeNull();
       response.Volumes.Length.Should().Be(10);
 
@@ -224,16 +244,17 @@ namespace VSS.TRex.Tests.Volumes
       const double EPSILON = 0.000001;
 
       response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       // todo: Complete this
-/*
-      response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
-      response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
-      response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
-      response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
-      response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
-      response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
-      */
+      /*
+            response.BoundingExtentGrid.MinX.Should().BeApproximately(0, EPSILON);
+            response.BoundingExtentGrid.MinY.Should().BeApproximately(0, EPSILON);
+            response.BoundingExtentGrid.MaxX.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+            response.BoundingExtentGrid.MaxY.Should().BeApproximately(SubGridTreeConsts.DefaultCellSize, EPSILON);
+            response.BoundingExtentGrid.MinZ.Should().Be(Consts.NullDouble);
+            response.BoundingExtentGrid.MaxZ.Should().Be(Consts.NullDouble);
+            */
     }
 
     private ISiteModel BuildModelForSingleCellSummaryVolume(float heightIncrement)
@@ -284,6 +305,20 @@ namespace VSS.TRex.Tests.Volumes
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
+      var csMock = new Mock<IConvertCoordinates>();
+      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>()))
+        .Returns(() => {
+          return Task.FromResult((RequestErrorStatus.OK, new XYZ[2]
+          {
+            new XYZ(0, 0, 1),
+            new XYZ(1, 1, 0)
+          }));
+        });
+
+      DIBuilder.Continue()
+        .Add(x => x.AddSingleton(csMock.Object))
+        .Complete();
+
       var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
 
       var request = new ProgressiveVolumesRequest_ApplicationService();
@@ -324,7 +359,7 @@ namespace VSS.TRex.Tests.Volumes
       var request = new ProgressiveVolumesRequest_ClusterCompute();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0.0f);
 
-      var arg = DefaultRequestArgFromModel(siteModel, VolumeComputationType.BetweenFilterAndDesign);
+      var arg = DefaultRequestArgFromModel(siteModel, VolumeComputationType.BetweenDesignAndFilter);
       arg.BaseDesign = new DesignOffset(designUid, 0);
 
       var response = await request.ExecuteAsync(arg);

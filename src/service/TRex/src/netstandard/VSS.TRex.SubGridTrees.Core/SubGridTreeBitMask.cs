@@ -18,9 +18,14 @@ namespace VSS.TRex.SubGridTrees
         /// <summary>
         /// Constructor that defaults levels, cell size and sub grid factory 
         /// </summary>
-        public SubGridTreeBitMask() : base(SubGridTreeConsts.SubGridTreeLevels,
-                                           SubGridTreeConsts.DefaultCellSize, 
-                                           new SubGridFactory<SubGridTreeNodeBitmapSubGrid, SubGridTreeLeafBitmapSubGrid>())
+        public SubGridTreeBitMask() : this(SubGridTreeConsts.DefaultCellSize)
+        {          
+        }
+
+        /// <summary>
+        /// Constructor that defaults levels, cell size and sub grid factory 
+        /// </summary>
+        public SubGridTreeBitMask(double cellSize) : this(SubGridTreeConsts.SubGridTreeLevels, cellSize)
         {          
         }
 
