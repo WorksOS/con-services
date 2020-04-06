@@ -1,10 +1,11 @@
 ﻿using VSS.TRex.Types.CellPasses;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class SubGridCellPassDataPassCountEntryRecordTests
+  public class SubGridCellPassDataPassCountEntryRecordTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_SubGridCellPassDataPassCountEntryRecord_CreationDefault()

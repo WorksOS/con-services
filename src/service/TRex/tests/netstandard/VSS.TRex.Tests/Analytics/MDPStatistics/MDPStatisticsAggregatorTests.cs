@@ -6,12 +6,13 @@ using VSS.TRex.Common.Records;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.MDPStatistics
 {
-  public class MDPStatisticsAggregatorTests
+  public class MDPStatisticsAggregatorTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_MDPAggregator_Creation()

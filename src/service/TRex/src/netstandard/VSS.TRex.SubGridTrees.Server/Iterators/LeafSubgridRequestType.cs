@@ -1,12 +1,12 @@
 ﻿namespace VSS.TRex.SubGridTrees.Server.Iterators
 {
     /// <summary>
-    /// Controls the manner in which a leaf subgrid should be presented to a consumer of the scanner output
+    /// Controls the manner in which a leaf sub grid should be presented to a consumer of the scanner output
     /// </summary>
-    public enum LeafSubgridRequestType
+    public enum LeafSubGridRequestType
     {
         FullFromServer,
-        TransientSubgrid,
-        SubgridAddressOnly
+        TrasientSubGrid,
+        SubGridAddressOnly
     }
 }

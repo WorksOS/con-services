@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 
 namespace VSS.TRex.Rendering.Executors
 {
@@ -501,7 +502,7 @@ namespace VSS.TRex.Rendering.Executors
           CellExtents.Expand(1);
 
           // Construct PipelineProcessor
-          using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+          using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
             RequestDescriptor,
             DataModelID,
             GridDataFromModeConverter.Convert(Mode),

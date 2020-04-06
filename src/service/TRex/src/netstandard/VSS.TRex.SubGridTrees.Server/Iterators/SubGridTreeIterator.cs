@@ -27,15 +27,15 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
     // IterationState records the progress of the iteration by recording the path through
     // the sub grid tree which marks the progress of the iteration
-    private readonly SubGridTreeIteratorStateIndex[] iterationState = new SubGridTreeIteratorStateIndex[SubGridTreeConsts.SubGridTreeLevels];
+    private readonly SubGridTreeIteratorStateIndex[] _iterationState = new SubGridTreeIteratorStateIndex[SubGridTreeConsts.SubGridTreeLevels];
 
-    private readonly IStorageProxy StorageProxy;
+    private readonly IStorageProxy _storageProxy;
 
     // SubGridsInServerDiskStore indicates that the sub grid tree we are iterating
     // over is persistently stored on disk. In this case we must use the server
     // interface for accessing these sub grids. If this property is false then the
     // sub grid tree is completely self-contained
-    private readonly bool SubGridsInServerDiskStore;
+    private readonly bool _subGridsInServerDiskStore;
 
     // ReturnCachedItemsOnly allows the caller of the iterator to restrict the
     // iteration to the items that are currently in the cache.
@@ -45,14 +45,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     // has been returned to the caller.
     public bool ReturnedFirstItemInIteration;
 
-    //    FDataStoreCache: TICDataStoreCache;
-
     protected void InitialiseIterator()
     {
-      for (int I = 1; I < SubGridTreeConsts.SubGridTreeLevels; I++)
-        iterationState[I].Initialise();
+      for (var I = 1; I < SubGridTreeConsts.SubGridTreeLevels; I++)
+        _iterationState[I].Initialise();
 
-      iterationState[1].SubGrid = Grid?.Root ?? throw new TRexSubGridProcessingException("Sub grid iterators require either a scanner or a grid to work from");
+      _iterationState[1].SubGrid = Grid?.Root ?? throw new TRexSubGridProcessingException("Sub grid iterators require either a scanner or a grid to work from");
     }
 
     public SubGridTreeIterator(IStorageProxy storageProxy,
@@ -60,72 +58,71 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
     {
       // FDataStoreCache = ADataStoreCache;
 
-      SubGridsInServerDiskStore = subGridsInServerDiskStore;
-      StorageProxy = storageProxy;
+      _subGridsInServerDiskStore = subGridsInServerDiskStore;
+      _storageProxy = storageProxy;
     }
 
     protected ISubGrid LocateNextSubGridInIteration()
     {
-      int LevelIdx = 1;
+      var levelIdx = 1;
 
-      if (iterationState[1].SubGrid == null)
+      if (_iterationState[1].SubGrid == null)
         throw new TRexSubGridProcessingException("No root sub grid node assigned to iteration state");
 
       // Scan the levels in the iteration state until we find the lowest one we are up to
       // (This is identified by a null sub grid reference.
 
-      while (LevelIdx < SubGridTreeConsts.SubGridTreeLevels && iterationState[LevelIdx].SubGrid != null)
-        LevelIdx++;
+      while (levelIdx < SubGridTreeConsts.SubGridTreeLevels && _iterationState[levelIdx].SubGrid != null)
+        levelIdx++;
 
       // Pop up to the previous level as that is the level from which we can choose a sub grid to descend into
-      LevelIdx--;
+      levelIdx--;
 
       // Locate the next sub grid node...
       do
       {
-        while (iterationState[LevelIdx].NextCell()) // do
+        while (_iterationState[levelIdx].NextCell()) 
         {
-          ISubGrid SubGrid;
-          if (LevelIdx == SubGridTreeConsts.SubGridTreeLevels - 1 && SubGridsInServerDiskStore)
+          ISubGrid subGrid;
+          if (levelIdx == SubGridTreeConsts.SubGridTreeLevels - 1 && _subGridsInServerDiskStore)
           {
             // It's a leaf sub grid we are looking for
             if (returnCachedItemsOnly)
             {
-              SubGrid = iterationState[LevelIdx].SubGrid.GetSubGrid((byte) iterationState[LevelIdx].XIdx, (byte) iterationState[LevelIdx].YIdx);
+              subGrid = _iterationState[levelIdx].SubGrid.GetSubGrid((byte) _iterationState[levelIdx].XIdx, (byte) _iterationState[levelIdx].YIdx);
             }
             else
             {
-              int CellX = iterationState[LevelIdx].SubGrid.OriginX + iterationState[LevelIdx].XIdx * SubGridTreeConsts.SubGridTreeDimension;
-              int CellY = iterationState[LevelIdx].SubGrid.OriginY + iterationState[LevelIdx].YIdx * SubGridTreeConsts.SubGridTreeDimension;
+              var cellX = _iterationState[levelIdx].SubGrid.OriginX + _iterationState[levelIdx].XIdx * SubGridTreeConsts.SubGridTreeDimension;
+              var cellY = _iterationState[levelIdx].SubGrid.OriginY + _iterationState[levelIdx].YIdx * SubGridTreeConsts.SubGridTreeDimension;
 
-              SubGrid = Utilities.SubGridUtilities.LocateSubGridContaining
-              (StorageProxy,
-                iterationState[LevelIdx].SubGrid.Owner as ServerSubGridTree,
-                //null, //FDataStoreCache,
-                CellX, CellY,
+              subGrid = Utilities.SubGridUtilities.LocateSubGridContaining
+              (_storageProxy,
+                _iterationState[levelIdx].SubGrid.Owner as ServerSubGridTree,
+                cellX, cellY,
                 SubGridTreeConsts.SubGridTreeLevels,
                 false, false);
             }
           }
           else
           {
-            SubGrid = iterationState[LevelIdx].SubGrid.GetSubGrid((byte) iterationState[LevelIdx].XIdx, (byte) iterationState[LevelIdx].YIdx);
+            subGrid = _iterationState[levelIdx].SubGrid.GetSubGrid((byte) _iterationState[levelIdx].XIdx, (byte) _iterationState[levelIdx].YIdx);
           }
 
-          if (SubGrid != null)
+          if (subGrid != null)
           {
             // Are we allowed to do anything with it?
-            if (SubGrid.IsLeafSubGrid()) // It's a leaf sub grid - so use it            
-              return SubGrid;
+            if (subGrid.IsLeafSubGrid()) // It's a leaf sub grid - so use it            
+              return subGrid;
 
             // It's a node sub grid that contains other node sub grids or leaf sub grids - descend into it
-            LevelIdx++;
-            iterationState[LevelIdx].SubGrid = SubGrid;
+            levelIdx++;
+            _iterationState[levelIdx].SubGrid = subGrid;
           }
         }
 
-        LevelIdx--;
-      } while (LevelIdx > 0);
+        levelIdx--;
+      } while (levelIdx > 0);
 
       return null;
     }

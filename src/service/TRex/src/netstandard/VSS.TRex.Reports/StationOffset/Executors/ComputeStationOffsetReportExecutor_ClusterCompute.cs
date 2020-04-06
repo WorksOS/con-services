@@ -101,7 +101,7 @@ namespace VSS.TRex.Reports.StationOffset.Executors
 
       var existenceMap = siteModel.ExistenceMap;
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var requestors = utilities.ConstructRequestors(siteModel, requestArgument.Overrides, requestArgument.LiftParams,
+      var requestors = utilities.ConstructRequestors(null, siteModel, requestArgument.Overrides, requestArgument.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, true, GridDataType.CellProfile),
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 

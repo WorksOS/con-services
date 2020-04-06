@@ -13,6 +13,7 @@ using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.Designs.Models;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.Patches.Executors
@@ -90,7 +91,7 @@ namespace VSS.TRex.Exports.Patches.Executors
 
       Guid RequestDescriptor = Guid.NewGuid();
 
-      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
         RequestDescriptor,
         DataModelID,
         // Patch requests always want time with height information

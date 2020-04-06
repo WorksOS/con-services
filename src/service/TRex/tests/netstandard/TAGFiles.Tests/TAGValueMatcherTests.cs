@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using FluentAssertions;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Classes;
@@ -26,12 +25,13 @@ using VSS.TRex.TAGFiles.Classes.ValueMatcher.Time;
 using VSS.TRex.TAGFiles.Types;
 using VSS.TRex.Common.Time;
 using VSS.TRex.Common.Types;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-  public class TAGProcessorStateBase_Test : TAGProcessorStateBase
+  public class TAGProcessorStateBase_Test : TAGProcessorStateBase, IClassFixture<DILoggingFixture>
   {
     public EpochStateEvent TriggeredEpochStateEvent = EpochStateEvent.Unknown;
 

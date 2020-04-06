@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
@@ -29,7 +30,9 @@ namespace VSS.TRex.SubGrids.Interfaces
     /// Constructs the set of requestors, one per filter, required to query the data stacks
     /// </summary>
     /// <returns></returns>
-    ISubGridRequestor[] ConstructRequestors(ISiteModel siteModel,
+    ISubGridRequestor[] ConstructRequestors(
+      ISubGridsRequestArgument subGridsRequestArgument, 
+      ISiteModel siteModel,
       IOverrideParameters overrides,
       ILiftParameters liftParams,
       (GridDataType GridDataType,

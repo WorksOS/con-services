@@ -1,6 +1,5 @@
 ﻿using System;
 using FluentAssertions;
-using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Events;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;

@@ -1,11 +1,10 @@
 ﻿using System;
 using FluentAssertions;
-using Force.DeepCloner;
 using VSS.TRex.Filters;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;

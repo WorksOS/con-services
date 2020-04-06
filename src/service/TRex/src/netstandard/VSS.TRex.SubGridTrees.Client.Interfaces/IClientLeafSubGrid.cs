@@ -1,4 +1,6 @@
-﻿using VSS.TRex.Caching.Interfaces;
+﻿using System;
+using System.Collections;
+using VSS.TRex.Caching.Interfaces;
 using VSS.TRex.Events.Models;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.Geometry;
@@ -26,7 +28,7 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
 
     bool AssignableFilteredValueIsNull(ref FilteredPassData filteredValue);
 
-    void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext Context);
+    void AssignFilteredValue(byte cellX, byte cellY, FilteredValueAssignmentContext context);
 
     bool TopLayerOnly { get; set; }
 
@@ -42,9 +44,9 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     /// <returns></returns>
     bool LeafContentEquals(IClientLeafSubGrid other);
 
-    void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source);
+    void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source);
 
-    void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
+    void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
     SubGridTreeBitmapSubGridBits ProdDataMap { get; }
 
@@ -60,5 +62,10 @@ namespace VSS.TRex.SubGridTrees.Client.Interfaces
     BoundingWorldExtent3D WorldExtents();
 
     void DumpToLog();
+
+    bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass);
+
+    bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+      IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilter);
   }
 }

@@ -24,9 +24,9 @@ namespace VSS.TRex.Pipelines
   /// Supports construction and configuration of a sub grid request pipeline that mediates and orchestrates
   /// sub grid based queries
   /// </summary>
-  public class PipelineProcessor : IPipelineProcessor
+  public class PipelineProcessor<TSubGridsRequestArgument> : IPipelineProcessor<TSubGridsRequestArgument>
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor>();
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<PipelineProcessor<TSubGridsRequestArgument>>();
 
     private IExistenceMaps _existenceMaps;
     private IExistenceMaps GetExistenceMaps() => _existenceMaps ?? (_existenceMaps = DIContext.Obtain<IExistenceMaps>());
@@ -136,6 +136,8 @@ namespace VSS.TRex.Pipelines
     /// </summary>
     public BoundingIntegerExtent2D OverrideSpatialCellRestriction { get; set; }
 
+    public Action<TSubGridsRequestArgument> CustomArgumentInitializer { get; set; }
+
     /// <summary>
     /// Constructs the context of a pipelined processor based on the project, filters and other common criteria
     /// of pipelined requests
@@ -201,6 +203,8 @@ namespace VSS.TRex.Pipelines
       // Introduce the task and the pipeline to each other
       Pipeline.PipelineTask = Task;
       Task.PipeLine = Pipeline;
+
+      (Pipeline as ISubGridPipelineBase<TSubGridsRequestArgument>).CustomArgumentInitializer = CustomArgumentInitializer;
 
       // Construct an aggregated set of excluded surveyed surfaces for the filters used in the query
       foreach (var filter in Filters.Filters)

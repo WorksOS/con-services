@@ -7,11 +7,11 @@ using VSS.TRex.Designs.Models;
 using VSS.TRex.GridFabric.Models;
 using VSS.TRex.Types;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.Requests;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.Pipelines
@@ -19,7 +19,7 @@ namespace VSS.TRex.Pipelines
     /// <summary>
     /// Derived from SVO SubGridPipelineBase
     /// </summary>
-    public abstract class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase
+    public abstract class SubGridPipelineBase<TSubGridsRequestArgument, TSubGridRequestsResponse, TSubGridRequestor> : ISubGridPipelineBase, ISubGridPipelineBase<TSubGridsRequestArgument>
         where TSubGridsRequestArgument : SubGridsRequestArgument, new()
         where TSubGridRequestsResponse : SubGridRequestsResponse, new()
         where TSubGridRequestor : SubGridRequestsBase<TSubGridsRequestArgument, TSubGridRequestsResponse>, IDisposable, new() 
@@ -124,6 +124,11 @@ namespace VSS.TRex.Pipelines
         /// </summary>
         public IRequestAnalyser RequestAnalyser { get; set; }
 
+        /// <summary>
+        /// A lambda to provide custom initialization of specialist sub grids arguments used for different purposes
+        /// </summary>
+        public Action<TSubGridsRequestArgument> CustomArgumentInitializer { get; set; }
+
         private void AllSubgridsProcessed()
         {
             if (PipelineSignalEvent.CurrentCount == 0)
@@ -204,7 +209,7 @@ namespace VSS.TRex.Pipelines
             // Send the sub grid request mask to the grid fabric layer for processing
             if (RequestAnalyser.TotalNumberOfSubGridsToRequest > 0)
             {
-              using (var requestor = new TSubGridRequestor
+              using var requestor = new TSubGridRequestor
               {
                 TRexTask = PipelineTask,
                 SiteModelID = DataModelID,
@@ -216,20 +221,20 @@ namespace VSS.TRex.Pipelines
                 SurveyedSurfaceOnlyMask = RequestAnalyser.SurveyedSurfaceOnlyMask,
                 Filters = FilterSet,
                 ReferenceDesign = ReferenceDesign,
-                AreaControlSet = AreaControlSet
-              })
-              {
-                var Response = requestor.Execute();
-                if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
-                {
-                  Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
-                  return false;
-                }
+                AreaControlSet = AreaControlSet,
+                CustomArgumentInitializer = CustomArgumentInitializer
+              };
 
-                Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
-                TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
-                return true;
+              var Response = requestor.Execute();
+              if (Response.ResponseCode != SubGridRequestsResponseResult.OK)
+              {
+                Log.LogWarning($"Sub Grid Task failed with error {Response.ResponseCode}");
+                return false;
               }
+
+              Log.LogInformation($"COMPLETED: Request for {RequestAnalyser.TotalNumberOfSubGridsToRequest} sub grids");
+              TotalSubGridsToProcess = RequestAnalyser.TotalNumberOfSubGridsToRequest;
+              return true;
             }
             else
             {

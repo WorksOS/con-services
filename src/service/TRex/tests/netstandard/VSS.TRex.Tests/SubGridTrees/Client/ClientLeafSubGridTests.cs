@@ -1,11 +1,12 @@
 ﻿using System;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class ClientLeafSubGridTests
+  public class ClientLeafSubGridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_ClientLeafSubGridTests_SubGridCacheAssignationArraySize()

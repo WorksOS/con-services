@@ -16,9 +16,7 @@ using VSS.TRex.Exports.Servers.Client;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Filters;
 using VSS.TRex.Filters.Interfaces;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -28,6 +26,8 @@ using VSS.TRex.SiteModels.GridFabric.Events;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
@@ -145,7 +145,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
         typeof(VSS.TRex.Filters.CellPassAttributeFilter),
         typeof(VSS.TRex.GridFabric.BaseIgniteClass),
         typeof(VSS.TRex.Machines.Machine),
-        typeof(VSS.TRex.Pipelines.PipelineProcessor),
+        typeof(VSS.TRex.Pipelines.PipelineProcessor<SubGridsRequestArgument>),
         typeof(VSS.TRex.Rendering.PlanViewTileRenderer),
         typeof(VSS.TRex.SubGrids.CutFillUtilities),
         typeof(VSS.TRex.SubGridTrees.Client.ClientCMVLeafSubGrid),

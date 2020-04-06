@@ -231,7 +231,7 @@ namespace VSS.TRex.Profiling
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      Requestors = utilities.ConstructRequestors(SiteModel, Overrides, LiftParams,
+      Requestors = utilities.ConstructRequestors(null, SiteModel, Overrides, LiftParams,
         utilities.ConstructRequestorIntermediaries(SiteModel, ConstructFilters(), true, GridDataType.HeightAndTime),
         AreaControlSet.CreateAreaControlSet(), PDExistenceMap);
 

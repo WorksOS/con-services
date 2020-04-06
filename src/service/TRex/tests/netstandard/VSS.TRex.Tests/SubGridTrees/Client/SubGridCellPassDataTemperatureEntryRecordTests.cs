@@ -2,12 +2,12 @@
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.Common.Records;
 using VSS.TRex.SubGridTrees.Client.Types;
-using VSS.TRex.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class SubGridCellPassDataTemperatureEntryRecordTests
+  public class SubGridCellPassDataTemperatureEntryRecordTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Creation()

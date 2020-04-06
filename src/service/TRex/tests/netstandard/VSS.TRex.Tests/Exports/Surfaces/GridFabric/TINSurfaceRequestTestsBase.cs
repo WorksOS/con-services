@@ -3,10 +3,10 @@ using VSS.TRex.Designs.GridFabric.ComputeFuncs;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Exports.Surfaces;
 using VSS.TRex.Exports.Surfaces.GridFabric;
-using VSS.TRex.GridFabric.Arguments;
-using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric

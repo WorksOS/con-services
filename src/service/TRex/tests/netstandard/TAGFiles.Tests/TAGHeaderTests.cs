@@ -1,11 +1,12 @@
 ﻿using System.IO;
 using VSS.TRex.TAGFiles.Classes.Processors;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-        public class TAGHeaderTests
-    {
+        public class TAGHeaderTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_TAGHeader_Creation()
         {
