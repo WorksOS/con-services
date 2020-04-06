@@ -57,13 +57,19 @@ namespace MegalodonSvc
         {
           if (t.Result.Code == 0)
           {
-            _log.LogInformation($"Deleting file {f}");
+            _log.LogInformation($"Tagfile successfully sent. Deleting Tagfile {f}");
             File.Delete(f);
           }
         }
         else
         {
-          _log.LogInformation($"Can't submit file {f}");
+          if (t.Result == null)
+          {
+            _log.LogInformation($"(NullResult) Tagfile successfully sent. Deleting Tagfile {f}");
+            File.Delete(f);
+          }
+          else
+            _log.LogInformation($"Can not submit Tagfile {f}");
         }
       })));
     }
