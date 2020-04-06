@@ -135,8 +135,8 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
 
       userUid = ValidateUserUid(userUid);    
 
-      var userPrefKey = await PreferenceRepo.GetUserPreference(userUid.Value, keyName);
-      var result = AutoMapperUtility.Automapper.Map<UserPreferenceV1Result>(userPrefKey);
+      var userPref = await PreferenceRepo.GetUserPreference(userUid.Value, keyName);
+      var result = AutoMapperUtility.Automapper.Map<UserPreferenceV1Result>(userPref);
 
       Logger.LogResult(methodName, $"keyName={keyName},userUid={userUid}", result);
 

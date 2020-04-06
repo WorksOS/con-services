@@ -63,7 +63,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.Productivity3D.Prefere
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{7D565EC6-B050-4D43-AB33-66C1481D1120}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.Productivity3D.Preferences.Tests", "test\CCSS.Productivity3D.Preferences.Tests.csproj", "{5CD01873-C833-44B4-9A2C-7E5107426D92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.Productivity3D.Preferences.Tests", "test\UnitTests\CCSS.Productivity3D.Preferences.Tests.csproj", "{5CD01873-C833-44B4-9A2C-7E5107426D92}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Abstractions", "..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj", "{3A00344F-A6C7-448C-A403-D37EE4EC1D4F}"
 EndProject
