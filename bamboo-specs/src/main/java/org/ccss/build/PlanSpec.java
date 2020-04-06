@@ -46,7 +46,7 @@ public class PlanSpec {
      */
     public static void main(String[] args) throws Exception {
         // by default credentials are read from the '.credentials' file
-        BambooServer bambooServer = new BambooServer("http://localhost:8085");
+        BambooServer bambooServer = new BambooServer("https://bamboo.trimble.tools");
 
         new PlanSpec().publishPlans(bambooServer);
     }
@@ -247,7 +247,7 @@ public class PlanSpec {
                 .description("Plan created from Bamboo Java Specs")
                 .notifications(new EmptyNotificationsList())
                 .triggers(new RepositoryPollingTrigger()
-                        .pollEvery(1, TimeUnit.MINUTES))
+                        .pollEvery(10, TimeUnit.MINUTES))
                 .planBranchManagement(new PlanBranchManagement()
                         .createForVcsBranchMatching("feature/.*")
                         .notificationForCommitters()
@@ -406,7 +406,7 @@ public class PlanSpec {
         if(runAcceptanceTest)
             buildJob.tasks(testCoverageTask());
 
-        buildJob.finalTasks(cleanTask());
+        buildJob.finalTasks();
 
         Stage jenkinsStage = new Stage("Build Jenkins")
                 .jobs(buildJob);
