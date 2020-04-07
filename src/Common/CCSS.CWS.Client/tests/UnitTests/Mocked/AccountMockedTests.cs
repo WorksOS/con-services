@@ -58,17 +58,18 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       });
     }
 
-    [Fact(Skip = "Not implemented")]
-    public void GetAccountsForUserTest()
-    {
-      throw new NotImplementedException();
-    }
+    // todoMaverick, not needed?
+    //[Fact(Skip = "Not implemented")]
+    //public void GetAccountsForUserTest()
+    //{
+    //  throw new NotImplementedException();
+    //}
 
-    [Fact(Skip = "Not implemented")]
-    public void GetAccountForUserTest()
-    {
-      throw new NotImplementedException();
-    }
+    //[Fact(Skip = "Not implemented")]
+    //public void GetAccountForUserTest()
+    //{
+    //  throw new NotImplementedException();
+    //}
 
     [Fact]
     public void GetDeviceLicensesTest()

@@ -30,7 +30,7 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
-      var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/{serialNumber}", null, null, null, customHeaders);
+      var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/serialnumber/{serialNumber}", null, null, null, customHeaders);
       // todoMaveric what if error?
       deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
       deviceResponseModel.AccountId = TRNHelper.ExtractGuidAsString(deviceResponseModel.AccountId);
