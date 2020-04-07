@@ -17,9 +17,9 @@ namespace TagFiles
 
     private int port = 1500;
     private string tcip = "127.0.0.1";
-    private int logEntries = 100;
+    private int logEntries = 10;
 
-    public bool _PortRestartNeeded = false;
+    private bool _PortRestartNeeded = false;
     public bool PortRestartNeeded 
     {
       get => _PortRestartNeeded;
@@ -31,6 +31,13 @@ namespace TagFiles
     {
       get => _HeaderRequired;
       set => _HeaderRequired = value;
+    }
+
+    private bool _LogStartup = true;
+    public bool LogStartup  
+    {
+      get => _LogStartup;
+      set => _LogStartup = value;
     }
 
     private bool _DebugTraceToLog = false;
@@ -49,7 +56,6 @@ namespace TagFiles
 
     private readonly ILogger _log;
     private readonly IConfigurationStore _config;
-    private bool logStartup = true;
     private uint epochsSeen = 0;
     public delegate void CallbackEventHandler(string something, int mode);
     public event CallbackEventHandler Callback;
@@ -281,14 +287,18 @@ namespace TagFiles
         {
           content += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-          if (logStartup)
+          if (_LogStartup)
           { // record first 5 entries for possible trouble shooting
             epochsSeen++;
             if (epochsSeen == 1)
               _log.LogInformation($"** Logging first {logEntries} datapackets **");
             _log.LogInformation(FormatTrace(content));
-            if (epochsSeen > logEntries)
-              logStartup = false; 
+            if (epochsSeen >= logEntries)
+            {
+              _LogStartup = false; // This will get restart on new tagfile
+              logEntries = 2;
+              epochsSeen = 0;
+            }
           }
           else if (_DebugTraceToLog)
           { // write content to log for debugging
@@ -300,7 +310,7 @@ namespace TagFiles
           if (bytesRead == 1 | content.IndexOf(TagConstants.CHAR_ETX) > -1)
           {
 
-            if (bytesRead == 1)
+            if (bytesRead == 1) // most likely an enquiry from client
             {
               byte cb = buffer[0]; // control byte coming from client 
 
@@ -336,14 +346,14 @@ namespace TagFiles
               }
             }
             else
-            {
+            { // Client has sent either a header or change record
               keepListening = true;
               // Convert byte array to string
               string str = content.Substring(0, content.LastIndexOf(TagConstants.CHAR_ETX));
               str = str.Trim(TagConstants.CHAR_STX);
               if (Callback != null)
               {
-                Callback(str, TagConstants.CALLBACK_PARSE_PACKET); // process datapacket
+                Callback(str, TagConstants.CALLBACK_PARSE_PACKET); // process datapacket in Megalodon.SocketManagerCallback
                 if (_HeaderRequired) // Prepare the reply message 
                 {
                   byteData[0] = TagConstants.SOH;

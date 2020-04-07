@@ -1,11 +1,11 @@
 ﻿using Apache.Ignite.Core.Compute;
 using System;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.GridFabric.Models;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.SubGrids.Executors;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
 
 namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
 {
@@ -43,20 +43,20 @@ namespace VSS.TRex.SubGrids.GridFabric.ComputeFuncs
       {
         try
         {
-          var Executor = GetExecutor();
+          var executor = GetExecutor();
 
-          Executor.UnpackArgument(arg);
+          executor.UnpackArgument(arg);
 
-          result = Executor.Execute();
+          result = executor.Execute();
         }
         finally
         {
           Log.LogInformation("Out SubGridsRequestComputeFunc.invoke()");
         }
       }
-      catch (Exception E)
+      catch (Exception e)
       {
-        Log.LogError(E, "Exception occurred:");
+        Log.LogError(e, "Exception occurred:");
 
         return new TSubGridRequestsResponse {ResponseCode = SubGridRequestsResponseResult.Unknown};
       }

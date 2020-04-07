@@ -16,6 +16,7 @@ using VSS.TRex.Reports.Gridded.Executors.Tasks;
 using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Common.RequestStatistics;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -63,7 +64,7 @@ namespace VSS.TRex.Reports.Gridded.Executors
 
       var task = DIContext.Obtain<Func<PipelineProcessorTaskStyle, ITRexTask>>()(PipelineProcessorTaskStyle.GriddedReport) as GriddedReportTask;
 
-      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
         requestDescriptor,
         _griddedReportRequestArgument.ProjectID,
         GridDataType.CellProfile,

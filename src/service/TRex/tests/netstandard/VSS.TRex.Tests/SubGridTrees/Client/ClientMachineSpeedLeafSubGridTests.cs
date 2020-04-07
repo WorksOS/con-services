@@ -12,7 +12,7 @@ using Xunit;
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   /// <summary>
-  /// Includes tests not covered in GenericClientLeafSubgridTests
+  /// Includes tests not covered in GenericClientLeafSubGridTests
   /// </summary>
   public class ClientMachineSpeedLeafSubGridTests : IClassFixture<DILoggingFixture>
   {

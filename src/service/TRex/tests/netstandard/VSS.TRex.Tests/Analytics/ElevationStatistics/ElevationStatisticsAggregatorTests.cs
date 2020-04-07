@@ -4,12 +4,13 @@ using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.ElevationStatistics
 {
-  public class ElevationStatisticsAggregatorTests
+  public class ElevationStatisticsAggregatorTests : IClassFixture<DILoggingFixture>
   {
     private const byte MAX_ELEVATION = 62;
 

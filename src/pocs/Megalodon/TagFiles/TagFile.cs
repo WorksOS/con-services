@@ -19,7 +19,7 @@ namespace TagFiles
     private readonly object updateLock = new object();
     private readonly TAGDictionary Dictionary = new TAGDictionary();
     private Timer TagTimer = new System.Timers.Timer();
-    private bool readyToWrite = false;
+    public bool ReadyToWrite = false;
     private ulong tagFileCount = 0;
     private ulong epochCount = 0;
     private bool tmpNR = false;
@@ -33,6 +33,7 @@ namespace TagFiles
     public double SeedLat = 0;
     public double SeedLon = 0;
     public double TagFileIntervalMilliSecs = 60000; // default 60 seconds
+    public byte TransmissionProtocolVersion = TagConstants.Version1; 
     public ILogger Log;
 
     /// <summary>
@@ -42,15 +43,16 @@ namespace TagFiles
     public bool EnableTagFileCreationTimer  // read-write instance property
     {
       get => _EnableTagFileCreationTimer;
-      set {
-            _EnableTagFileCreationTimer = value;
-            TagTimer.Enabled = value;
-            if (value)
-            {
-              TagTimer.Interval = TagFileIntervalMilliSecs; //TagConstants.NEW_TAG_FILE_INTERVAL_MSECS;
-              TagTimer.Start();
-            }
-          }
+      set
+      {
+        _EnableTagFileCreationTimer = value;
+        TagTimer.Enabled = value;
+        if (value)
+        {
+          TagTimer.Interval = TagFileIntervalMilliSecs; 
+          TagTimer.Start();
+        }
+      }
     }
 
     public TagFile()
@@ -60,7 +62,6 @@ namespace TagFiles
       TagTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
     }
 
-
     public void SetupLog(ILogger log)
     {
       Log = log;
@@ -68,28 +69,41 @@ namespace TagFiles
     }
 
     /// <summary>
-    /// Timer event for closing off tagfile
+    /// Timer event for closing off tagfiles
     /// </summary>
     /// <param name="source"></param>
     /// <param name="e"></param>
     private void OnTimedEvent(object source, ElapsedEventArgs e)
     {
-
-      if (!readyToWrite)
+      if (!ReadyToWrite)
+        ReadyToWrite = true;
+      else
       {
-        var hertz = 0.0;
+        // Check if we need to force a write to end last broadcasted epoch
         if (epochCount > 0)
-          hertz =  epochCount / (TagTimer.Interval / 1000);
-        Log.LogInformation($"TimerInterval:{(TagTimer.Interval / 1000)}s, Epochs:{epochCount}, Hertz:{hertz.ToString("#.#")}");
-        epochCount = 0;
-        readyToWrite = true;
-        lock (updateLock)
-        {
-          WriteTagFileToDisk();
-          readyToWrite = false;
-        }
+          CutOffTagFile();
       }
     }
+
+    /// <summary>
+    /// Timer event has indicated it time to close the tagfile
+    /// </summary>
+    public void CutOffTagFile()
+    {
+      var hertz = 0.0;
+      if (epochCount > 0)
+        hertz = epochCount / (TagTimer.Interval / 1000);
+      Log.LogInformation($"TimerInterval:{(TagTimer.Interval / 1000)}s, Epochs:{epochCount}, Hertz:{hertz.ToString("#.#")}");
+      epochCount = 0;
+      ReadyToWrite = true;
+      lock (updateLock)
+      {
+        WriteTagFileToDisk();
+        ReadyToWrite = false;
+        Parser.HeaderRequired = true;
+      }
+    }
+
 
     /// <summary>
     /// Shut down tagfile and write to disk
@@ -97,7 +111,7 @@ namespace TagFiles
     public void ShutDown()
     {
       if (epochCount > 0)
-      { 
+      {
         lock (updateLock)
         {
           WriteTagFileToDisk();
@@ -107,33 +121,33 @@ namespace TagFiles
       }
     }
 
-
     /// <summary>
     /// Outputs current tagfile in memory to disk
     /// </summary>
     public void WriteTagFileToDisk()
     {
-     // string newFilename;
 
       if (Parser.HeaderRequired)
       {
-        Log.LogDebug($"WriteTagFileToDisk. No header record recieved.");
+        Log.LogDebug($"{nameof(WriteTagFileToDisk)}. No header record recieved.");
         return;
       }
 
       if (Parser.NotSeenNewPosition)
       {
-        Log.LogInformation($"WriteTagFileToDisk. No new positions reported.");
+        Log.LogInformation($"{nameof(WriteTagFileToDisk)}. No new blade positions reported.");
         return;
       }
 
+      Log.LogInformation($"{nameof(WriteTagFileToDisk)}. Start.");
+
       Parser.TrailerRequired = true;
-      Parser.CloneLastEpoch(); // used in new tagfile
+      Parser.CloneLastEpoch(); // used as first epoc in new tagfile. Helps prevents gaps when processing tagfiles 
 
       if (Parser._Prev_EpochRec != null)
       {
-        if (Parser.EpochRec.NotEpochSamePosition(ref Parser._Prev_EpochRec))
-          Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR);
+        if (Parser.EpochRec.NotSamePosition(ref Parser._Prev_EpochRec))
+          Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR, TagConstants.UpdateReason.CutOffLastEpoch); // save epoch to tagfile before writing
         else
         {
           // dont report a position change for trailer record 
@@ -143,15 +157,15 @@ namespace TagFiles
           Parser.EpochRec.HasREB = false;
           Parser.EpochRec.HasRNB = false;
           Parser.EpochRec.HasRHB = false;
-          Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR);
+          Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR, TagConstants.UpdateReason.CutOffNoChange);
         }
       }
       else
-        Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR);
+        Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR, TagConstants.UpdateReason.CutOffSoloLastEpoch);
 
       var serial = Parser.EpochRec.Serial == string.Empty ? MachineSerial : Parser.EpochRec.Serial;
       var mid = Parser.EpochRec.MID == string.Empty ? MachineID : Parser.EpochRec.MID;
-      Header.UpdateTagfileName(serial,mid);
+      Header.UpdateTagfileName(serial, mid);
       // Make sure folder exists
       Directory.CreateDirectory(TagFileFolder);
 
@@ -165,14 +179,13 @@ namespace TagFiles
       {
         if (Write(outStream)) // write tagfile to stream
         {
-        //  _NewTagfileStarted = true;
           Parser.Reset();
           tagFileCount++;
-          Log.LogInformation($"{toSendFilePath} successfully written to disk. Total Tagfiles:{tagFileCount}");
-          readyToWrite = false;
+          Log.LogInformation($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} successfully written to disk. Total Tagfiles:{tagFileCount}");
         }
         else
-          Log.LogWarning($"{toSendFilePath} failed to write to disk.");
+          Log.LogWarning($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} failed to write to disk.");
+        ReadyToWrite = false;
       }
       finally
       {
@@ -186,9 +199,7 @@ namespace TagFiles
             f.MoveTo(directFilePath); // move tagfile up one folder for direct send
           }
         }
-
       }
-
     }
 
     /// <summary>
@@ -208,7 +219,6 @@ namespace TagFiles
           return false;
         }
       }
-
       return true;
     }
 
@@ -261,7 +271,7 @@ namespace TagFiles
       Parser.EpochRec.MappingMode = 1;
       // vss supplied
       Parser.EpochRec.RadioType = "torch";
-      
+
       // handy code
       Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 
@@ -281,7 +291,7 @@ namespace TagFiles
       // this would normally be read from socket
       ParseText(rs + timeStamp +
         rs + "GPM3" +
-        rs +  "DESPlanB" +
+        rs + "DESPlanB" +
         rs + "LAT-0.759971" +
         rs + "LON3.012268" +
         rs + "HGT-37.600" +
@@ -301,7 +311,7 @@ namespace TagFiles
       ParseText(rs + timeStamp +
         rs + "LEB504383.841" + rs + "LNB7043871.371" + rs + "LHB-20.882" +
         rs + "LEB504383.841" + rs + "REB504384.745" + rs + "RNB7043869.853" +
-        rs + "RHB-20.899" +  rs + "BOG1" + rs + "MSD0.2" + rs + "HDG93");
+        rs + "RHB-20.899" + rs + "BOG1" + rs + "MSD0.2" + rs + "HDG93");
 
 
       unixTimestamp += 100;
@@ -341,7 +351,5 @@ namespace TagFiles
 
       return true;
     }
-
-
   }
 }

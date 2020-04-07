@@ -19,6 +19,7 @@
     <ProjectReference Include="..\VSS.TRex.Pipelines\VSS.TRex.Pipelines.csproj" />
     <ProjectReference Include="..\VSS.TRex.SubGridTrees.Client\VSS.TRex.SubGridTrees.Client.csproj" />
     <ProjectReference Include="..\VSS.TRex.Types\VSS.TRex.Types.csproj" />
+    <ProjectReference Include="..\VSS.TRex.Volumes.Interfaces\VSS.TRex.Volumes.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

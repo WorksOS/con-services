@@ -512,13 +512,14 @@ namespace TagFiles.Parser
       BOG = eRec.BOG;
       HDG = eRec.HDG;
       MSD = eRec.MSD;
+      HasHeader = eRec.HasHeader;
     }
 
     /// <summary>
     /// is this the same epoch update
     /// </summary>
     /// <param name="eRec"></param>
-    public bool NotEpochSamePosition(ref EpochRecord eRec)
+    public bool NotSamePosition(ref EpochRecord eRec)
     {
       if (IsFullPositionEpoch() & eRec.IsFullPositionEpoch())
         return !(LEB == eRec.LEB & LNB == eRec.LNB & LHB == eRec.LHB & REB == eRec.REB & RNB == eRec.RNB & RHB == eRec.RHB);

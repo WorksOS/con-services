@@ -2,10 +2,8 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -17,6 +15,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGridTrees;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
@@ -124,7 +123,7 @@ namespace VSS.TRex.Exports.Surfaces.Executors
 
         // Provide the processor with a customised request analyser configured to return a set of sub grids. These sub grids
         // are the feed stock for the generated TIN surface
-        using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+        using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
           requestDescriptor,
           _dataModelId,
           GridDataFromModeConverter.Convert(DisplayMode.Height),

@@ -1,14 +1,15 @@
 ﻿using System;
 using VSS.TRex.Common;
 using VSS.TRex.SubGridTrees.Client.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
   /// <summary>
-  /// Includes tests not covered in GenericClientLeafSubgridTests
+  /// Includes tests not covered in GenericClientLeafSubGridTests
   /// </summary>
-  public class SubGridCellCompositeHeightsRecordTests
+  public class SubGridCellCompositeHeightsRecordTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_SubGridCellCompositeHeightsRecord_Creation()

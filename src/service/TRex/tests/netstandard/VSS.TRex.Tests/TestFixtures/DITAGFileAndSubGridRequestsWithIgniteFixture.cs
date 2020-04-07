@@ -19,9 +19,7 @@ using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.Exports.Patches.Executors.Tasks;
 using VSS.TRex.Exports.Surfaces.Executors.Tasks;
 using VSS.TRex.Geometry;
-using VSS.TRex.GridFabric.Arguments;
 using VSS.TRex.GridFabric.Grids;
-using VSS.TRex.GridFabric.Responses;
 using VSS.TRex.Pipelines;
 using VSS.TRex.Pipelines.Factories;
 using VSS.TRex.Pipelines.Interfaces;
@@ -38,6 +36,10 @@ using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
 using VSS.TRex.QuantizedMesh.Executors.Tasks;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
+using VSS.TRex.SubGrids.Responses;
+using VSS.TRex.Volumes.Executors.Tasks;
+using VSS.TRex.Volumes.GridFabric.Arguments;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -52,8 +54,9 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       return key switch
       {
-        PipelineProcessorPipelineStyle.DefaultAggregative => (ISubGridPipelineBase) new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        PipelineProcessorPipelineStyle.DefaultAggregative => new SubGridPipelineAggregative<SubGridsRequestArgument, SubGridRequestsResponse>(),
         PipelineProcessorPipelineStyle.DefaultProgressive => new SubGridPipelineProgressive<SubGridsRequestArgument, SubGridRequestsResponse>(),
+        PipelineProcessorPipelineStyle.ProgressiveVolumes => new SubGridPipelineAggregative<ProgressiveVolumesSubGridsRequestArgument, SubGridRequestsResponse>(),
         _ => null
       };
     }
@@ -62,13 +65,16 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       return key switch
       {
-        PipelineProcessorTaskStyle.AggregatedPipelined => (ITRexTask) new AggregatedPipelinedSubGridTask(),
+        PipelineProcessorTaskStyle.AggregatedPipelined => new AggregatedPipelinedSubGridTask(),
         PipelineProcessorTaskStyle.PatchExport => new PatchTask(),
         PipelineProcessorTaskStyle.SurfaceExport => new SurfaceTask(),
         PipelineProcessorTaskStyle.GriddedReport => new GriddedReportTask(),
         PipelineProcessorTaskStyle.PVMRendering => new PVMRenderingTask(),
         PipelineProcessorTaskStyle.CSVExport => new CSVExportTask(),
         PipelineProcessorTaskStyle.QuantizedMesh => new QuantizedMeshTask(),
+        PipelineProcessorTaskStyle.SimpleVolumes => new VolumesComputationTask(),
+        PipelineProcessorTaskStyle.ProgressiveVolumes => new VolumesComputationTask(),
+
         _ => null
       };
     }

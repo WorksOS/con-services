@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections;
+using System.IO;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities.Interfaces;
@@ -30,7 +32,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public GridDataType GridDataType => _gridDataType;
 
-    private double cellSize;
+    private double _cellSize;
 
     /// <summary>
     /// CellSize is a copy of the cell size from the parent sub grid. It is replicated here
@@ -38,11 +40,11 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public double CellSize
     {
-      get => cellSize;
-      set => cellSize = value;
+      get => _cellSize;
+      set => _cellSize = value;
     }
 
-    private int indexOriginOffset;
+    private int _indexOriginOffset;
 
     /// <summary>
     /// IndexOriginOffset is a copy of the IndexOriginOffset from the parent sub grid. It is replicated here
@@ -50,8 +52,8 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     public int IndexOriginOffset
     {
-      get => indexOriginOffset;
-      set => indexOriginOffset = value;
+      get => _indexOriginOffset;
+      set => _indexOriginOffset = value;
     }
 
     /// <summary>
@@ -111,6 +113,8 @@ namespace VSS.TRex.SubGridTrees.Client
       // general sub grid result cache along with HeightAndTime results that are derived from production data
       // and SurveyedSurfaceHeightAndTime results
       true, // SurveyedSurfaceHeightAndTime = 0x0000001C
+
+      false // Progressing volumes = = 0x0000001D
     };
 
     /// <summary>
@@ -129,10 +133,10 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <returns></returns>
     public BoundingWorldExtent3D WorldExtents()
     {
-      var WOx = (originX - indexOriginOffset) * cellSize;
-      var WOy = (originY - indexOriginOffset) * cellSize;
+      var wOx = (originX - _indexOriginOffset) * _cellSize;
+      var wOy = (originY - _indexOriginOffset) * _cellSize;
 
-      return new BoundingWorldExtent3D(WOx, WOy, WOx + SubGridTreeConsts.SubGridTreeDimension * cellSize, WOy + SubGridTreeConsts.SubGridTreeDimension * cellSize);
+      return new BoundingWorldExtent3D(wOx, wOy, wOx + SubGridTreeConsts.SubGridTreeDimension * _cellSize, wOy + SubGridTreeConsts.SubGridTreeDimension * _cellSize);
     }
 
     /// <summary>
@@ -145,14 +149,14 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="level"></param>
     /// <param name="cellSize"></param>
     /// <param name="indexOriginOffset"></param>
-    public ClientLeafSubGrid(ISubGridTree owner,
+    protected ClientLeafSubGrid(ISubGridTree owner,
       ISubGrid parent,
       byte level,
       double cellSize,
       int indexOriginOffset) : base(owner, parent, level)
     {
-      this.cellSize = cellSize;
-      this.indexOriginOffset = indexOriginOffset;
+      _cellSize = cellSize;
+      _indexOriginOffset = indexOriginOffset;
 
       _gridDataType = GridDataType.All; // Default to 'all', descendant specialized classes will set appropriately
 
@@ -188,13 +192,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// This uses the local cell size and index origin offset information to perform the 
     /// calculation locally without the need for a reference sub grid tree.
     /// </summary>
-    /// <param name="WorldOriginX"></param>
-    /// <param name="WorldOriginY"></param>
-    public override void CalculateWorldOrigin(out double WorldOriginX,
-      out double WorldOriginY)
+    /// <param name="worldOriginX"></param>
+    /// <param name="worldOriginY"></param>
+    public override void CalculateWorldOrigin(out double worldOriginX,
+      out double worldOriginY)
     {
-      WorldOriginX = (originX - indexOriginOffset) * cellSize;
-      WorldOriginY = (originY - indexOriginOffset) * cellSize;
+      worldOriginX = (originX - _indexOriginOffset) * _cellSize;
+      worldOriginY = (originY - _indexOriginOffset) * _cellSize;
     }
 
     /// <summary>
@@ -203,7 +207,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
-    public abstract void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source);
+    public abstract void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source);
 
     /// <summary>
     /// Assign cell information from a previously cached result held in the general sub grid result cache
@@ -212,7 +216,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="source"></param>
     /// <param name="map"></param>
-    public abstract void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
+    public abstract void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map);
 
     /// <summary>
     /// Assigns the state of one client leaf sub grid to this client leaf sub grid
@@ -228,8 +232,8 @@ namespace VSS.TRex.SubGridTrees.Client
       // Grid data type is never assigned from one client grid to another...
       //GridDataType = source.GridDataType;
 
-      cellSize = source.CellSize;
-      indexOriginOffset = source.IndexOriginOffset;
+      _cellSize = source.CellSize;
+      _indexOriginOffset = source.IndexOriginOffset;
       ProdDataMap.Assign(source.ProdDataMap);
       FilterMap.Assign(source.FilterMap);
     }
@@ -244,14 +248,13 @@ namespace VSS.TRex.SubGridTrees.Client
     /// Write the contents of the Items array using the supplied writer
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="buffer"></param>
     public override void Write(BinaryWriter writer)
     {
       base.Write(writer);
 
       writer.Write((int) GridDataType);
-      writer.Write(cellSize);
-      writer.Write(indexOriginOffset);
+      writer.Write(_cellSize);
+      writer.Write(_indexOriginOffset);
 
       ProdDataMap.Write(writer);
       FilterMap.Write(writer);
@@ -268,8 +271,8 @@ namespace VSS.TRex.SubGridTrees.Client
       if ((GridDataType) reader.ReadInt32() != GridDataType)
         throw new TRexSubGridIOException("GridDataType in stream does not match GridDataType of local sub grid instance");
 
-      cellSize = reader.ReadDouble();
-      indexOriginOffset = reader.ReadInt32();
+      _cellSize = reader.ReadDouble();
+      _indexOriginOffset = reader.ReadInt32();
 
       ProdDataMap.Read(reader);
       FilterMap.Read(reader);
@@ -282,8 +285,8 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public virtual int IndicativeSizeInBytes()
     {
-      int filterMapSize = FilterMap?.IndicativeSizeInBytes() ?? 0;
-      int prodDataMapSize = ProdDataMap?.IndicativeSizeInBytes() ?? 0;
+      var filterMapSize = FilterMap?.IndicativeSizeInBytes() ?? 0;
+      var prodDataMapSize = ProdDataMap?.IndicativeSizeInBytes() ?? 0;
 
       return filterMapSize + prodDataMapSize;
     }
@@ -300,6 +303,17 @@ namespace VSS.TRex.SubGridTrees.Client
 
     public virtual void DumpToLog()
     {
+    }
+
+    public virtual bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass)
+    {
+      return false;
+    }
+
+    public virtual bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+      IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilter)
+    {
+      return false;
     }
   }
 }

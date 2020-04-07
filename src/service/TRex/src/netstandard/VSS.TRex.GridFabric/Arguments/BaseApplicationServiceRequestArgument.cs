@@ -32,7 +32,7 @@ namespace VSS.TRex.GridFabric.Arguments
     public IFilterSet Filters { get; set; }
 
     /// <summary>
-    /// The design to be used in cases of cut/fill or DesignHeights sub grid requests  together with its offset for a reference surface.
+    /// The design to be used in cases of cut/fill or DesignHeights sub grid requests together with its offset for a reference surface.
     /// </summary>
     public DesignOffset ReferenceDesign { get; set; } = new DesignOffset();
 

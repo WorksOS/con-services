@@ -10,7 +10,7 @@ namespace VSS.TRex.Volumes.GridFabric.ComputeFuncs
 {
     /// <summary>
     /// This compute func operates in the context of an application server that reaches out to the compute cluster to 
-    /// perform subgrid processing.
+    /// perform sub grid processing.
     /// </summary>
     public class SimpleVolumesRequestComputeFunc_ApplicationService : BaseComputeFunc, IComputeFunc<SimpleVolumesRequestArgument, SimpleVolumesResponse>
     {

@@ -1,10 +1,11 @@
 ﻿using Xunit;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-        public class SubGridTreeUtilitiesTests
-    {
+        public class SubGridTreeUtilitiesTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_SubGridTreeUtilities_GetOTGLeafSubGridCellIndex()
         {

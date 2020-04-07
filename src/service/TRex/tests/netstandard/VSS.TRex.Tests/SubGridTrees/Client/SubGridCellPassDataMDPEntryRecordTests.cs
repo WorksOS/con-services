@@ -3,11 +3,12 @@ using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.SubGridTrees.Client.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees.Client
 {
-  public class SubGridCellPassDataMDPEntryRecordTests
+  public class SubGridCellPassDataMDPEntryRecordTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_SubGridCellPassDataMDPEntryRecord_Creation()

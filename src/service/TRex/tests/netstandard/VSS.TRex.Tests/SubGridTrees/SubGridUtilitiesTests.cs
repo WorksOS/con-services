@@ -1,10 +1,11 @@
 ﻿using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class SubGridUtilitiesTests
+  public class SubGridUtilitiesTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_SubGridDimensionalIterator_ActionFunctor()

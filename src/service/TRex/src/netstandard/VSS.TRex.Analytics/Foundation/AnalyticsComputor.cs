@@ -12,6 +12,7 @@ using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Analytics.Foundation
@@ -68,7 +69,7 @@ namespace VSS.TRex.Analytics.Foundation
     /// <returns></returns>
     public async Task<bool> ComputeAnalytics(BaseAnalyticsResponse response)
     {
-      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+      using (var processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
         RequestDescriptor,
         SiteModel.ID,
         RequestedGridDataType,

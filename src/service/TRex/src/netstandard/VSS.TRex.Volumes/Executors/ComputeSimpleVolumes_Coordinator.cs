@@ -22,15 +22,13 @@ namespace VSS.TRex.Volumes.Executors
     /// </summary>
     public class ComputeSimpleVolumes_Coordinator
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(nameof(ComputeSimpleVolumes_Coordinator));
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<ComputeSimpleVolumes_Coordinator>();
 
         /// <summary>
         /// The ID of the site model the volume is being calculated for 
         /// </summary>
         public Guid SiteModelID;
        
-        //ExternalDescriptor : TASNodeRequestDescriptor;
-
         /// <summary>
         /// The volume computation method to use when calculating volume information
         /// </summary>
@@ -98,53 +96,38 @@ namespace VSS.TRex.Volumes.Executors
         /// Performs functional initialization of ComputeVolumes state that is dependent on the initial state
         /// set via the constructor
         /// </summary>
-        /// <param name="ComputeVolumes"></param>
-        private void InitialiseVolumesCalculator(VolumesCalculator ComputeVolumes)
+        /// <param name="computeVolumes"></param>
+        private void InitialiseVolumesCalculator(VolumesCalculator computeVolumes)
         {
             // Set up the volumes calc parameters
-            switch (VolumeType)
+            VolumesUtilities.SetProdReportSelectionType(VolumeType, out var fromSelectionType, out var toSelectionType);
+            computeVolumes.FromSelectionType = fromSelectionType;
+            computeVolumes.ToSelectionType = toSelectionType;
+
+            computeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
+
+            computeVolumes.RefOriginal = BaseDesign == null || BaseDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(BaseDesign.DesignID);
+            computeVolumes.RefDesign = TopDesign == null || TopDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesign.DesignID);
+
+            if (computeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
             {
-                case VolumeComputationType.Between2Filters:
-                    ComputeVolumes.FromSelectionType = ProdReportSelectionType.Filter;
-                    ComputeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-                    break;
-
-                case VolumeComputationType.BetweenFilterAndDesign:
-                    ComputeVolumes.FromSelectionType = ProdReportSelectionType.Filter;
-                    ComputeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-                    break;
-
-                case VolumeComputationType.BetweenDesignAndFilter:
-                    ComputeVolumes.FromSelectionType = ProdReportSelectionType.Surface;
-                    ComputeVolumes.ToSelectionType = ProdReportSelectionType.Filter;
-                    break;
-            }
-
-            ComputeVolumes.UseEarliestData = BaseFilter.AttributeFilter.ReturnEarliestFilteredCellPass;
-
-            ComputeVolumes.RefOriginal = BaseDesign == null || BaseDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(BaseDesign.DesignID);
-            ComputeVolumes.RefDesign = TopDesign == null || TopDesign.DesignID == Guid.Empty ? null : siteModel.Designs.Locate(TopDesign.DesignID);
-
-            if (ComputeVolumes.FromSelectionType == ProdReportSelectionType.Surface)
-            {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.RefOriginal != null ? new DesignWrapper(BaseDesign, ComputeVolumes.RefOriginal) : null;
+              computeVolumes.ActiveDesign = computeVolumes.RefOriginal != null ? new DesignWrapper(BaseDesign, computeVolumes.RefOriginal) : null;
             }
             else
             {
-              ComputeVolumes.ActiveDesign = ComputeVolumes.ToSelectionType == ProdReportSelectionType.Surface && ComputeVolumes.RefDesign != null
-                ? new DesignWrapper(TopDesign, ComputeVolumes.RefDesign) 
+              computeVolumes.ActiveDesign = computeVolumes.ToSelectionType == ProdReportSelectionType.Surface && computeVolumes.RefDesign != null
+                ? new DesignWrapper(TopDesign, computeVolumes.RefDesign) 
                 : null;
             }
 
             // Assign the active design into the aggregator for use
-            Aggregator.ActiveDesign = ComputeVolumes.ActiveDesign;
+            Aggregator.ActiveDesign = computeVolumes.ActiveDesign;
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
         public ComputeSimpleVolumes_Coordinator(Guid siteModelID,
-                                    //ExternalDescriptor : TASNodeRequestDescriptor;
                                     ILiftParameters liftParams,
                                     VolumeComputationType volumeType,
                                     ICombinedFilter baseFilter,
@@ -174,11 +157,7 @@ namespace VSS.TRex.Volumes.Executors
         public async Task<SimpleVolumesResponse> ExecuteAsync()
         {
             var volumesResult = new SimpleVolumesResponse();
-
             var resultBoundingExtents = BoundingWorldExtent3D.Null();
-//            BoundingWorldExtent3D SpatialExtent = BoundingWorldExtent3D.Null();
-//            long[] SurveyedSurfaceExclusionList = new long[0];
-
             var requestDescriptor = Guid.NewGuid(); // TODO ASNodeImplInstance.NextDescriptor;
 
             Log.LogInformation($"#In# Performing {nameof(ComputeSimpleVolumes_Coordinator)}.Execute for DataModel:{SiteModelID}");
@@ -187,27 +166,7 @@ namespace VSS.TRex.Volumes.Executors
             {
                 try
                 {
-                    /*
-                     if Assigned(ASNodeImplInstance.RequestCancellations) and
-                         ASNodeImplInstance.RequestCancellations.IsRequestCancelled(FExternalDescriptor) then
-                         begin
-                            SIGLogMessage.PublishNoODS(Self, 'Request cancelled: ' + FExternalDescriptor.ToString, slmcDebug);
-                            ResultStatus:= asneRequestHasBeenCancelled;
-                            Exit;
-                         end;
-
-                        ScheduledWithGovernor:= ASNodeImplInstance.Governor.Schedule(FExternalDescriptor, Self, gqVolumes, ResultStatus);
-                        if not ScheduledWithGovernor then
-                          Exit;
-
-                        if ASNodeImplInstance.PSLoadBalancer.LoadBalancedPSService.GetDataModelSpatialExtents(FDataModelID, SurveyedSurfaceExclusionList, SpatialExtent, CellSize, IndexOriginOffset) <> icsrrNoError then
-                          begin
-                            ResultStatus:= asneFailedToRequestDatamodelStatistics;
-                            Exit;
-                          end;
-                    */
-
-                    ApplicationServiceRequestStatistics.Instance.NumVolumeRequests.Increment();
+                    ApplicationServiceRequestStatistics.Instance.NumSimpleVolumeRequests.Increment();
 
                     // Prepare filters for use in the request
                     var resultStatus = await FilterUtilities.PrepareFiltersForUse(new [] { BaseFilter, TopFilter, AdditionalSpatialFilter }, SiteModelID);
@@ -292,9 +251,9 @@ namespace VSS.TRex.Volumes.Executors
                 }
                 finally
                 {
-                    ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsCompleted.Increment();
+                    ApplicationServiceRequestStatistics.Instance.NumSimpleVolumeRequestsCompleted.Increment();
                     if (volumesResult.ResponseCode != SubGridRequestsResponseResult.OK)
-                        ApplicationServiceRequestStatistics.Instance.NumVolumeRequestsFailed.Increment();
+                        ApplicationServiceRequestStatistics.Instance.NumSimpleVolumeRequestsFailed.Increment();
                 }
             }
             catch (Exception e)

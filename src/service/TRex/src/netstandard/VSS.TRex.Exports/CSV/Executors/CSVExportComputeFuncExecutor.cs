@@ -10,6 +10,7 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Geometry;
 using VSS.TRex.Pipelines.Interfaces;
 using VSS.TRex.Pipelines.Interfaces.Tasks;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Exports.CSV.Executors
@@ -48,7 +49,7 @@ namespace VSS.TRex.Exports.CSV.Executors
           ? GridDataType.CellProfile
           : GridDataType.CellPasses;
 
-        using (var _processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild(
+        using (var _processor = DIContext.Obtain<IPipelineProcessorFactory>().NewInstanceNoBuild<SubGridsRequestArgument>(
           requestDescriptor,
           _CSVExportRequestArgument.ProjectID,
           gridDataType,
