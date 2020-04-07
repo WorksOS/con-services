@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.SubGrids.Responses;
 using Xunit;
 
 namespace VSS.TRex.Tests.GridFabric.Responses

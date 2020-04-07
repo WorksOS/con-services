@@ -5,6 +5,19 @@
   /// </summary>
   public static class TagConstants
   {
+
+    public enum UpdateReason
+    {
+      NewHeader,
+      ChangeRecord,
+      FirstRecord,
+      LastTagFileEpoch,
+      CutOffLastEpoch,
+      CutOffNoChange,
+      CutOffSoloLastEpoch
+    }
+
+
     public const short CALLBACK_PARSE_PACKET = 0;
     public const short CALLBACK_CONNECTION_MADE = 1;
     public const int TAG_NAME_LENGHT = 3;
@@ -47,6 +60,7 @@
     public const string HEADING = "HDG";
     public const string SERIAL = "SER";
     public const string UTM = "UTM";
+    public const string HDR = "HDR";
 
     public const string TAGFILE_FOLDER = "Tagfiles";
     public const string TAGFILE_FOLDER_TOSEND = "ToSend";
@@ -59,5 +73,7 @@
     public const string DEFAULT_APPVERSION = "1";
     public const ushort DEFAULT_VALID_POSITION = 1;
 
+    public const byte HEADER_RECORD = 1;
+    public const byte Version1 = 1;
   }
 }

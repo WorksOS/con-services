@@ -157,7 +157,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
+    public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source)
     {
       // Composite height sub grids don't define a caching behaviour
     }
@@ -169,7 +169,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="source"></param>
     /// <param name="map"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
+    public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
     {
       // Composite height sub grids don't define a caching behaviour
     }

@@ -380,7 +380,7 @@ namespace VSS.TRex.Tests.Exports.CSV
       var utilities = DIContext.Obtain<IRequestorUtilities>();
       var gridDataType = outputType == OutputTypes.PassCountLastPass || outputType == OutputTypes.VedaFinalPass
         ? GridDataType.CellProfile : GridDataType.CellPasses;
-      var requestors = utilities.ConstructRequestors(siteModel, requestArgument.Overrides, requestArgument.LiftParams,
+      var requestors = utilities.ConstructRequestors(null, siteModel, requestArgument.Overrides, requestArgument.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, requestArgument.Filters, false, gridDataType),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
       requestors.Should().NotBeNull();

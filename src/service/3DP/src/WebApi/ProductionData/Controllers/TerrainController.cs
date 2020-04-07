@@ -11,7 +11,6 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.WebApi.Compaction.Controllers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
-using VSS.TRex.Gateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {
@@ -26,7 +25,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Constructor with injection
     /// </summary>
-    /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
     public TerrainController(ILoggerFactory logger, IConfigurationStore configStore, ICompactionSettingsManager settingsManager, IFileImportProxy fileImportProxy) : base (configStore,fileImportProxy,settingsManager)
     { }
 

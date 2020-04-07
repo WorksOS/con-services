@@ -23,6 +23,12 @@ namespace TagFiles
       set;
     }
 
+    bool LogStartup
+    {
+      get;
+      set;
+    }
+
     void CreateSocket();
     void ListenOnPort();
     event CallbackEventHandler Callback;

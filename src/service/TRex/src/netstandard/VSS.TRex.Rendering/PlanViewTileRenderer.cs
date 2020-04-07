@@ -11,6 +11,7 @@ using VSS.TRex.Rendering.Displayers;
 using VSS.TRex.Rendering.Executors.Tasks;
 using VSS.TRex.Rendering.Palettes;
 using VSS.TRex.Rendering.Palettes.Interfaces;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Rendering

@@ -1,8 +1,0 @@
-version: '2'
-services:
-  webapi:
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-raptor-fileaccess:latest
-    env_file:
-     - docker-compose-dev.env
-    ports:
-     - "11111:80"

@@ -43,6 +43,8 @@
     /// general sub grid result cache along with HeightAndTime results that are derived from production data
     /// and SurveyedSurfaceHeightAndTime results
     /// </summary>
-    SurveyedSurfaceHeightAndTime = 0x0000001C
+    SurveyedSurfaceHeightAndTime = 0x0000001C,
+
+    ProgressiveVolumes = 0x0000001D
   }
 }

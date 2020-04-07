@@ -5,12 +5,13 @@ using VSS.TRex.Types.CellPasses;
 using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.Tests.Analytics.Common;
+using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
 
 namespace VSS.TRex.Tests.Analytics.CCAStatistics
 {
-  public class CCAStatisticsAggregatorTests
+  public class CCAStatisticsAggregatorTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_CCAStatisticsAggregator_Creation()

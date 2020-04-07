@@ -109,4 +109,9 @@ namespace VSS.TRex.Pipelines.Interfaces
 
         int MaxNumberOfPassesToReturn { get; set; }
   }
+
+    public interface ISubGridPipelineBase<TSubGridsRequestArgument>
+    {
+      public Action<TSubGridsRequestArgument> CustomArgumentInitializer { get; set; }
+    }
 }

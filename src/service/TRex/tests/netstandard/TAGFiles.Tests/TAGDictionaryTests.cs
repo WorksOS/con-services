@@ -1,11 +1,12 @@
 ﻿using VSS.TRex.TAGFiles.Classes;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-        public class TAGDictionaryTests
-    {
+        public class TAGDictionaryTests : IClassFixture<DILoggingFixture>
+  {
         [Fact]
         public void Test_TAGDictionary_Item_Creation()
         {

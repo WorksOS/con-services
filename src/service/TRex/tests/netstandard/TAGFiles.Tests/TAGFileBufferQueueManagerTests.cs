@@ -4,12 +4,13 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Models.Servers;
 using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-    public class TAGFileBufferQueueManagerTests
-    {
+    public class TAGFileBufferQueueManagerTests : IClassFixture<DILoggingFixture>
+  {
         private static MutableClientServer TAGClientServer;
 
         private static void EnsureServer()

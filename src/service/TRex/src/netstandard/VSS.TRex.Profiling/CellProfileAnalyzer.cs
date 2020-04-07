@@ -477,7 +477,7 @@ namespace VSS.TRex.Profiling
             SurfaceElevationPatchArg.SetOTGBottomLeftLocation(_subGridAsLeaf.OriginX, _subGridAsLeaf.OriginY);
             SurfaceElevationPatchArg.ProcessingMap.Assign(FilterMask);
 
-            CompositeHeightsGridIntf = SurfaceElevationPatchRequest.Execute(SurfaceElevationPatchArg);
+            CompositeHeightsGridIntf = await SurfaceElevationPatchRequest.ExecuteAsync(SurfaceElevationPatchArg);
             CompositeHeightsGrid = CompositeHeightsGridIntf as ClientCompositeHeightsLeafSubgrid;
 
             if (CompositeHeightsGrid == null)
@@ -516,7 +516,7 @@ namespace VSS.TRex.Profiling
           }
 
           // get cell address relative to sub grid and SetCellCoordinatesInSubGrid
-          cellPassIterator.SetCellCoordinatesInSubgrid(
+          cellPassIterator.SetCellCoordinatesInSubGrid(
             (byte) (profileCells[i].OTGCellX & SubGridTreeConsts.SubGridLocalKeyMask),
             (byte) (profileCells[i].OTGCellY & SubGridTreeConsts.SubGridLocalKeyMask));
           PassFilterAnnex.InitializeFilteringForCell(PassFilter, cellPassIterator.CellX, cellPassIterator.CellY);

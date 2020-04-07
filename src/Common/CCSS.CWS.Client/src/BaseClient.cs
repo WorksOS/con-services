@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -29,11 +30,11 @@ namespace CCSS.CWS.Client
     }
 
     // NOTE: must have a uid or userId for cache key
-    protected Task<TRes> GetData<TRes>(string route, string uid, string userId,
+    protected Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
       IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
     {
-      var result = GetMasterDataItemServiceDiscovery<TRes>(route, uid, userId,
+      var result = GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
         customHeaders, parameters);
       return result;
     }

@@ -27,7 +27,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         }
 
         /// <summary>
-        /// Provides non-static cell pass specific initialisation for the next segment
+        /// Provides non-static cell pass specific initialization for the next segment
         /// </summary>
         /// <param name="direction"></param>
         protected override void InitialiseForNewSegment(IterationDirection direction)
@@ -35,13 +35,13 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             if (SegmentIterator.IterationDirection == IterationDirection.Forwards)
             {
                 cellInSegmentIndex = -1;
-                finishCellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(CellX, CellY);
+                finishCellInSegmentIndex = SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(CellX, CellY);
 
                 cellPassIterationDirectionIncrement = 1;
             }
             else
             {
-                cellInSegmentIndex = (int)SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(CellX, CellY);
+                cellInSegmentIndex = SegmentIterator.CurrentSubGridSegment.PassesData.PassCount(CellX, CellY);
                 finishCellInSegmentIndex = -1;
 
                 cellPassIterationDirectionIncrement = -1;

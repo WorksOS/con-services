@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -26,6 +27,7 @@ using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGridTrees.Client;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
@@ -43,12 +45,11 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       SetupFixture();
     }
-
     public new void SetupFixture()
     {
       // Provide the surveyed surface request mock
       var surfaceElevationPatchRequest = new Mock<ISurfaceElevationPatchRequest>();
-      surfaceElevationPatchRequest.Setup(x => x.Execute(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(new ClientHeightAndTimeLeafSubGrid());
+      surfaceElevationPatchRequest.Setup(x => x.ExecuteAsync(It.IsAny<ISurfaceElevationPatchArgument>())).Returns(Task.FromResult(new ClientHeightAndTimeLeafSubGrid() as IClientLeafSubGrid));
 
       // Provide the mocks for spatial caching
       var tRexSpatialMemoryCacheContext = new Mock<ITRexSpatialMemoryCacheContext>();
@@ -68,6 +69,7 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<ITRexSpatialMemoryCache>(tRexSpatialMemoryCache.Object))
         .Build()
         .Add(x => x.AddSingleton<IRequestorUtilities>(new RequestorUtilities()))
+        .Add(x => x.AddSingleton<ISubGridRetrieverFactory>(new SubGridRetrieverFactory()))
         .Add(x => x.AddSingleton(ClientLeafSubGridFactoryFactory.CreateClientSubGridFactory()))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
@@ -176,10 +178,10 @@ namespace VSS.TRex.Tests.TestFixtures
       // Add the leaf to the site model existence map
       siteModel.ExistenceMap[leaf.OriginX >> SubGridTreeConsts.SubGridIndexBitsPerLevel, leaf.OriginY >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
 
-      CellPass[] _passes = passes.ToArray();
+      var _passes = passes.ToArray();
 
-      byte subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
-      byte subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
+      var subGridX = (byte)(cellX & SubGridTreeConsts.SubGridLocalKeyMask);
+      var subGridY = (byte)(cellY & SubGridTreeConsts.SubGridLocalKeyMask);
 
       foreach (var pass in _passes)
         leaf.AddPass(subGridX, subGridY, pass);

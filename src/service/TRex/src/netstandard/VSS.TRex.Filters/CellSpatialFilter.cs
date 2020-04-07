@@ -174,7 +174,7 @@ namespace VSS.TRex.Filters
         {
             if (IsSpatial) // Just a polygonal fence
             {
-                Fence.GetExtents(out double MinX, out double MinY, out double MaxX, out double MaxY);
+                Fence.GetExtents(out var MinX, out var MinY, out var MaxX, out var MaxY);
                 Extents.Intersect(MinX, MinY, MaxX, MaxY);
             }
 

@@ -71,7 +71,7 @@ namespace VSS.TRex.CellDatum.Executors
       var existenceMap = siteModel.ExistenceMap;
 
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var requestors = utilities.ConstructRequestors(siteModel, arg.Overrides, arg.LiftParams,
+      var requestors = utilities.ConstructRequestors(null, siteModel, arg.Overrides, arg.LiftParams,
         utilities.ConstructRequestorIntermediaries(siteModel, arg.Filters, true, GridDataType.CellProfile),
         AreaControlSet.CreateAreaControlSet(), existenceMap);
 

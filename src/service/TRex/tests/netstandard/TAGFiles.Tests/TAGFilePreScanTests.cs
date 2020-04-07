@@ -3,11 +3,12 @@ using FluentAssertions;
 using VSS.TRex.Types.CellPasses;
 using VSS.TRex.TAGFiles.Executors;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-  public class TAGFilePreScanTests
+  public class TAGFilePreScanTests : IClassFixture<DITagFileFixture>
   {
     [Fact()]
     public void Test_TAGFilePreScan_Creation()

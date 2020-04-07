@@ -104,7 +104,7 @@ namespace VSS.TRex.Tests.Cells
         }
 
         /// <summary>
-        /// Test setting fields for vide stae off crrect resets the appropriate fields
+        /// Test setting fields for vibe staye off correct resets the appropriate fields
         /// </summary>
         [Fact]
         public void Test_CellPass_SetFieldsFroVibeStateOff()
@@ -139,7 +139,7 @@ namespace VSS.TRex.Tests.Cells
         }
 
         /// <summary>
-        /// Test the Equality comparer funcions as expected
+        /// Test the Equality comparer functions as expected
         /// </summary>
         [Fact]
         public void Test_CellPass_EqualityCheck()
@@ -156,7 +156,7 @@ namespace VSS.TRex.Tests.Cells
         }
 
         /// <summary>
-        /// Test the Equality comparer funcions as expected
+        /// Test the Equality comparer functions as expected
         /// </summary>
         [Fact]
         public void Test_CellPass_AssignCellPasses()

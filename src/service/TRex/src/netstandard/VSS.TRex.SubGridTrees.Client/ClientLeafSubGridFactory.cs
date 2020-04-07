@@ -12,7 +12,7 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <summary>
     /// Simple array to hold client leaf sub grid type constructor map
     /// </summary>
-    private static readonly Func<IClientLeafSubGrid>[] typeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
+    private static readonly Func<IClientLeafSubGrid>[] TypeMap = new Func<IClientLeafSubGrid>[Enum.GetNames(typeof(GridDataType)).Length];
 
     /// <summary>
     /// Stores of cached client grids to reduce the object instantiation and garbage collection overhead
@@ -31,10 +31,10 @@ namespace VSS.TRex.SubGridTrees.Client
     /// <param name="constructor"></param>
     public void RegisterClientLeafSubGridType(GridDataType gridDataType, Func<IClientLeafSubGrid> constructor)
     {
-      if ((int) gridDataType > typeMap.Length)
+      if ((int) gridDataType > TypeMap.Length)
         throw new ArgumentException("Unknown grid data type in RegisterClientLeafSubGridType", nameof(gridDataType));
 
-      typeMap[(int) gridDataType] = constructor;
+      TypeMap[(int) gridDataType] = constructor;
     }
 
     /// <summary>
@@ -52,8 +52,8 @@ namespace VSS.TRex.SubGridTrees.Client
       //* TODO: Don't use repatriated sub grids for now...
       //    if (!ClientLeaves[(int) gridDataType].TryTake(out IClientLeafSubGrid result))
       //    {
-            if (typeMap[(int) gridDataType] != null)
-              result = typeMap[(int) gridDataType]();
+            if (TypeMap[(int) gridDataType] != null)
+              result = TypeMap[(int) gridDataType]();
       //    }
 
       result?.Clear();
@@ -119,7 +119,7 @@ namespace VSS.TRex.SubGridTrees.Client
       if (count < 0 || count > clientGrids.Length)
         throw new ArgumentException("Invalid count of sub grids to return", nameof(count));
 
-      for (int i = 0; i < count; i++)
+      for (var i = 0; i < count; i++)
         ReturnClientSubGrid(ref clientGrids[i]);
     }
 
@@ -133,9 +133,9 @@ namespace VSS.TRex.SubGridTrees.Client
       if (count < 0 || count > clientGrids.Length)
         throw new ArgumentException("Invalid count of sub grids to return", nameof(count));
 
-      for (int i = 0; i < count; i++)
+      for (var i = 0; i < count; i++)
       {
-        for (int j = 0; j < clientGrids[i]?.Length; j++)
+        for (var j = 0; j < clientGrids[i]?.Length; j++)
           ReturnClientSubGrid(ref clientGrids[i][j]);
       }
     }

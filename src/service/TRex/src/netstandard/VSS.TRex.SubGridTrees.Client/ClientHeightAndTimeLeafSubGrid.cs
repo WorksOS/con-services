@@ -1,10 +1,14 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
+using System.Collections;
 using System.IO;
+using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
+using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Client
 {
@@ -95,13 +99,13 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Write(writer);
 
-      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
+      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        Buffer.BlockCopy(Times, 0, buffer, 0, BUFFER_SIZE);
-        writer.Write(buffer, 0, BUFFER_SIZE);
+        Buffer.BlockCopy(Times, 0, buffer, 0, bufferSize);
+        writer.Write(buffer, 0, bufferSize);
       }
       finally
       {
@@ -117,13 +121,13 @@ namespace VSS.TRex.SubGridTrees.Client
     {
       base.Read(reader);
 
-      const int BUFFER_SIZE = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
+      const int bufferSize = SubGridTreeConsts.SubGridTreeCellsPerSubGrid * sizeof(long);
 
-      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(BUFFER_SIZE);
+      var buffer = GenericArrayPoolCacheHelper<byte>.Caches().Rent(bufferSize);
       try
       {
-        reader.Read(buffer, 0, BUFFER_SIZE);
-        Buffer.BlockCopy(buffer, 0, Times, 0, BUFFER_SIZE);
+        reader.Read(buffer, 0, bufferSize);
+        Buffer.BlockCopy(buffer, 0, Times, 0, bufferSize);
       }
       finally
       {
@@ -137,9 +141,9 @@ namespace VSS.TRex.SubGridTrees.Client
     /// client leaf sub grid
     /// </summary>
     /// <param name="source"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source)
+    public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source)
     {
-      base.AssignFromCachedPreProcessedClientSubgrid(source);
+      base.AssignFromCachedPreProcessedClientSubGrid(source);
       Array.Copy(((ClientHeightAndTimeLeafSubGrid)source).Times, Times, SubGridTreeConsts.CellsPerSubGrid);
 
       //SurveyedSurfaceMap.Assign(((ClientHeightAndTimeLeafSubGrid)source).SurveyedSurfaceMap);
@@ -153,15 +157,93 @@ namespace VSS.TRex.SubGridTrees.Client
     /// </summary>
     /// <param name="source"></param>
     /// <param name="map"></param>
-    public override void AssignFromCachedPreProcessedClientSubgrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
+    public override void AssignFromCachedPreProcessedClientSubGrid(ISubGrid source, SubGridTreeBitmapSubGridBits map)
     {
-      base.AssignFromCachedPreProcessedClientSubgrid(source, map);
+      base.AssignFromCachedPreProcessedClientSubGrid(source, map);
 
       // Copy all of the times as the nullity (or not) of the elevation is the determinator of a value being present
       Array.Copy(((ClientHeightAndTimeLeafSubGrid)source).Times, Times, SubGridTreeConsts.CellsPerSubGrid);
 
       //SurveyedSurfaceMap.Assign(((ClientHeightLeafSubGrid)source).SurveyedSurfaceMap);
       //SurveyedSurfaceMap.AndWith(map);
+    }
+
+    public override bool UpdateProcessingMapForSurveyedSurfaces(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass)
+    {
+      if (!(filteredSurveyedSurfaces is ISurveyedSurfaces surveyedSurfaces))
+      {
+        return false;
+      }
+
+      processingMap.Assign(FilterMap);
+
+      // If we're interested in a particular cell, but we don't have any surveyed surfaces later (or earlier)
+      // than the cell production data pass time (depending on PassFilter.ReturnEarliestFilteredCellPass)
+      // then there's no point in asking the Design Profiler service for an elevation
+
+      processingMap.ForEachSetBit((x, y) =>
+      {
+        if (Cells[x, y] != Consts.NullHeight &&
+            !(returnEarliestFilteredCellPass ? surveyedSurfaces.HasSurfaceEarlierThan(Times[x, y]) : surveyedSurfaces.HasSurfaceLaterThan(Times[x, y])))
+          processingMap.ClearBit(x, y);
+      });
+
+      return true;
+    }
+
+    public bool PerformHeightAnnotation(SubGridTreeBitmapSubGridBits processingMap, IList filteredSurveyedSurfaces, bool returnEarliestFilteredCellPass,
+      IClientLeafSubGrid surfaceElevationsSource, Func<int, int, float, bool> elevationRangeFilterLambda)
+    {
+      if (!(surfaceElevationsSource is ClientHeightAndTimeLeafSubGrid surfaceElevations))
+      {
+        return false;
+      }
+
+      // For all cells we wanted to request a surveyed surface elevation for,
+      // update the cell elevation if a non null surveyed surface of appropriate time was computed
+      // Note: The surveyed surface will return all cells in the requested sub grid, not just the ones indicated in the processing map
+      // IE: It is unsafe to test for null top indicate not-filtered, use the processing map iterators to cover only those cells required
+      processingMap.ForEachSetBit((x, y) =>
+      {
+        var surveyedSurfaceCellHeight = surfaceElevations.Cells[x, y];
+
+        if (surveyedSurfaceCellHeight == Consts.NullHeight)
+        {
+          return;
+        }
+
+        // If we got back a surveyed surface elevation...
+        var surveyedSurfaceCellTime = surfaceElevations.Times[x, y];
+        var prodHeight = Cells[x, y];
+        var prodTime = Times[x, y];
+
+        // Determine if the elevation from the surveyed surface data is required based on the production data elevation being null, and
+        // the relative age of the measured surveyed surface elevation compared with a non-null production data height
+        if (!(prodHeight == Consts.NullHeight || (returnEarliestFilteredCellPass ? surveyedSurfaceCellTime < prodTime : surveyedSurfaceCellTime > prodTime)))
+        {
+          // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
+          processingMap.ClearBit(x, y);
+          return;
+        }
+
+        // Check if there is an elevation range filter in effect and whether the surveyed surface elevation data matches it
+        if (elevationRangeFilterLambda != null)
+        {
+          if (!(elevationRangeFilterLambda(x, y, surveyedSurfaceCellHeight)))
+          {
+            // We didn't get a surveyed surface elevation, so clear the bit in the processing map to indicate there is no surveyed surface information present for it
+            processingMap.ClearBit(x, y);
+            return;
+          }
+        }
+
+        Cells[x, y] = surveyedSurfaceCellHeight;
+        Times[x, y] = surveyedSurfaceCellTime;
+      });
+
+      //        if (ClientGrid_is_TICClientSubGridTreeLeaf_HeightAndTime)
+      //          ClientGridAsHeightAndTime.SurveyedSurfaceMap.Assign(ProcessingMap);
+      return true;
     }
   }
 }
