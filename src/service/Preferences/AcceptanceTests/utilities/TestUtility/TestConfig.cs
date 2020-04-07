@@ -23,8 +23,6 @@ namespace TestUtility
         ? databaseSchemaName
         : Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME");
 
-      dbSchema = "CCSS-Project";
-
       mySqlServer = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
 
       UpdateConnectionString();

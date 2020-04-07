@@ -7,7 +7,7 @@ namespace TestUtility
 {
   public static class MySqlHelper
   {
-    public const string PREFERENCE_DB_SCHEMA_NAME = "CCSS-Preference";
+    public const string PREFERENCE_DB_SCHEMA_NAME = "Preference-ccss";
     private static readonly TestConfig _appConfig = new TestConfig(PREFERENCE_DB_SCHEMA_NAME);
 
     /*

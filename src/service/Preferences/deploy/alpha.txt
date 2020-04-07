@@ -1,2 +1,2 @@
-MYSQL_DATABASE_NAME: CCSS-Preference-Alpha
+MYSQL_DATABASE_NAME: Alpha-Preference-ccss
 JAEGER_SERVICE_NAME: Alpha Preference Service API
