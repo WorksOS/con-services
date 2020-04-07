@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -10,11 +9,10 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
 using VSS.Common.ServiceDiscovery;
-using VSS.Common.Abstractions.Clients.CWS.Utilities;
+using Xunit;
 
 namespace CCSS.CWS.Client.UnitTests.Staging
 {
-  [TestClass]
   public class ProjectStagingTests : BaseTestClass
   {
     protected override IServiceCollection SetupTestServices(IServiceCollection services)
@@ -34,15 +32,15 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       return CheckTPaaS();
     }
 
-    [TestMethod]
-    [Ignore] // todoMaverick this fails as don't have a good user name to get token, but don't want to insert projects all the time anyway
-             // (requires a user token. This is ok as will have one via from ProjectSvc) 
+    [Fact(Skip= "todoMaverick")]
+    // todoMaverick this fails as don't have a good user name to get token, but don't want to insert projects all the time anyway
+    // (requires a user token. This is ok as will have one via from ProjectSvc) 
     public async Task CreateProjectTest()
     {
       var accountClient = ServiceProvider.GetRequiredService<ICwsAccountClient>();
       var accountListResponseModel = await accountClient.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
-      Assert.IsNotNull(accountListResponseModel, "No result from getting my accounts");
-      Assert.IsTrue(accountListResponseModel.Accounts.Count > 0);
+      Assert.NotNull(accountListResponseModel);
+      Assert.True(accountListResponseModel.Accounts.Count > 0);
 
       var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
       var createProjectRequestModel = new CreateProjectRequestModel
@@ -60,19 +58,17 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       // Forbidden {"status":403,"code":9054,"message":"Forbidden","moreInfo":"Please provide this id to support, while contacting, TraceId 5e7066605642c452c5c580f512629fd1","timestamp":1584424545815} ---> VSS.Common.Exceptions.ServiceException: Forbidden
       var result = await client.CreateProject(createProjectRequestModel, CustomHeaders());
 
-      Assert.IsNotNull(result, "No result from creating my project");
-      Assert.IsNotNull(result.Id);
+      Assert.NotNull(result);
+      Assert.NotNull(result.Id);
     }
 
-    [TestMethod]
-    [Ignore("Implement test when we have the endpoint in cws")]
+    [Fact(Skip = "Implement test when we have the endpoint in cws")]
     public void UpdateProjectDetailsTest()
     {
       throw new NotImplementedException();
     }
 
-    [TestMethod]
-    [Ignore("Implement test when we have the endpoint in cws")]
+    [Fact(Skip = "Implement test when we have the endpoint in cws")]
     public void UpdateProjectBoundaryTest()
     {
       throw new NotImplementedException();

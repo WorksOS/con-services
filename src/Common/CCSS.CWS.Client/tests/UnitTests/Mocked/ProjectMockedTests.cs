@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using Xunit;
 
 namespace CCSS.CWS.Client.UnitTests.Mocked
 {
-  [TestClass]
   public class ProjectMockedTests : BaseTestClass
   {
     protected override IServiceCollection SetupTestServices(IServiceCollection services)
@@ -23,13 +22,13 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       return services;
     }
 
-    [TestMethod]
+    [Fact]
     public void CreateProjectTest()
     {
       var customerUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
       //var accountTrn = "trn::profilex:us-west-2:account:{customerUid}";
       string expectedProjectUid = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
-      string expectedProjectTrn = $"trn::profilex:us-west-2:project:{expectedProjectUid}";
+      string expectedProjectTrn = TRNHelper.MakeTRN(expectedProjectUid, TRNHelper.TRN_PROJECT);
       
       var createProjectRequestModel = new CreateProjectRequestModel
       {
@@ -56,19 +55,19 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
         var result = await client.CreateProject(createProjectRequestModel);
 
-        Assert.IsNotNull(result, "No result from posting my project");
-        Assert.AreEqual(expectedProjectUid, result.Id);
+        Assert.NotNull(result);
+        Assert.Equal(expectedProjectUid, result.Id);
         return true;
       });
     }
 
-    [TestMethod]
+    [Fact]
     public void UpdateProjectDetailsTest()
     {
       var customerUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
       //var accountTrn = "trn::profilex:us-west-2:account:{customerUid}";
       string projectUid = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
-      string projectTrn = $"trn::profilex:us-west-2:project:{projectUid}";
+      string projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
 
       var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel
       {        
@@ -89,13 +88,13 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       });
     }
 
-    [TestMethod]
+    [Fact]
     public void UpdateProjectBoundaryTest()
     {
       var customerUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
       //var accountTrn = "trn::profilex:us-west-2:account:{customerUid}";
       string projectUid = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
-      string projectTrn = $"trn::profilex:us-west-2:project:{projectUid}";
+      string projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
 
       var projectBoundary = new ProjectBoundary()
       {

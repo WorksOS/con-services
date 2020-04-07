@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -15,11 +14,11 @@ using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Serilog.Extensions;
 using VSS.WebApi.Common;
+using Xunit;
 using ILogger = Serilog.ILogger;
 
 namespace CCSS.CWS.Client.UnitTests
 {
-  [TestClass]
   public abstract class BaseTestClass
   {
     protected string baseUrl = "http://nowhere.really";
@@ -35,8 +34,7 @@ namespace CCSS.CWS.Client.UnitTests
 
     protected string userId;
 
-    [TestInitialize]
-    public void SetupServices()
+    public BaseTestClass()
     {
       var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure($"Tests::{ GetType().Name}.log"));
       serviceCollection = new ServiceCollection();
@@ -53,7 +51,7 @@ namespace CCSS.CWS.Client.UnitTests
       var pretest = PretestChecks();
       if (!pretest)
       {
-        Assert.Inconclusive("Pretest checks for test failed");
+        throw new Exception("Pretest checks for test failed");
       }
     }
 
