@@ -32,8 +32,6 @@ namespace VSS.TRex.Volumes
     public long CellsDiscarded { get; set; }
     public readonly double CellSize;
 
-    public VolumeComputationType VolumeType { get; set; } = VolumeComputationType.None;
-
     // Volume is the calculated volume determined by simple difference between
     // cells. It does not take into account cut/fill differences (see FCut|FillVolume)
     // This volume is the sole output for operations that apply levels to the surfaces
@@ -174,7 +172,7 @@ namespace VSS.TRex.Volumes
     /// <returns></returns>
     public override string ToString()
     {
-      return $"VolumeType:{VolumeType}, CellSize:{CellSize}, CoverageArea:{CoverageArea}, Bounding:{BoundingExtents}, " +
+      return $"CellSize:{CellSize}, CoverageArea:{CoverageArea}, Bounding:{BoundingExtents}, " +
              $"Volume:{Volume}, Cut:{CutFillVolume.CutVolume}, Fill:{CutFillVolume.FillVolume}, " +
              $"Cells Used/Discarded/Scanned:{CellsUsed}/{CellsDiscarded}/{CellsScanned}";
     }

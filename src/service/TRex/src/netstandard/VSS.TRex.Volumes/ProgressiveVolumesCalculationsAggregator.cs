@@ -64,7 +64,7 @@ namespace VSS.TRex.Volumes
     public ProgressiveVolumesCalculationsAggregator()
     { }
 
-    protected async Task ProcessVolumeInformationForSubGrid(ClientProgressiveHeightsLeafSubGrid subGrid)
+    private async Task ProcessVolumeInformationForSubGrid(ClientProgressiveHeightsLeafSubGrid subGrid)
     {
       if (subGrid == null)
       {
@@ -120,7 +120,7 @@ namespace VSS.TRex.Volumes
     /// Summarizes the client height grid derived from sub grid processing into the running volumes aggregation state
     /// </summary>
     /// <param name="subGrids"></param>
-    public async Task SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
+    private async Task SummarizeSubGridResultAsync(IClientLeafSubGrid[][] subGrids)
     {
       var taskList = new List<Task>(subGrids.Length);
 
@@ -182,11 +182,17 @@ namespace VSS.TRex.Volumes
       SummarizeSubGridResultAsync(subGrids).WaitAndUnwrapException();
     }
 
+    /// <summary>
+    /// Instructs each individual aggregator in the progressive set of volumes to finalise itself
+    /// </summary>
     public void Finalise()
     {
-      foreach (var aggregator in AggregationStates)
+      if (AggregationStates != null)
       {
-        aggregator.Finalise();
+        foreach (var aggregator in AggregationStates)
+        {
+          aggregator.Finalise();
+        }
       }
     }
   }

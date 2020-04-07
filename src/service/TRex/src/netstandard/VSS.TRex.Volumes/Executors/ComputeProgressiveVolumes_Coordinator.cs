@@ -215,7 +215,6 @@ namespace VSS.TRex.Volumes.Executors
               .Select(d => new ProgressiveVolumeAggregationState(_siteModel.CellSize)
             {
                 Date = d,
-                VolumeType = VolumeType,
                 CutTolerance = CutTolerance,
                 FillTolerance = FillTolerance
               }).ToArray()
