@@ -243,7 +243,7 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Publish results') {
-	    if (currentBuild.result=='SUCCESS') { 
+	    if (currentBuild.result=='SUCCESS' && branchName == "master") { 
 			sh "docker tag ${container} ${finalImage}"
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker push ${finalImage}"
