@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.Executors
       }
       catch (Exception ex)
       {
-        log.LogError(null, ex, "***ERROR*** FileAccessExecutor: Failed on getting {0} file from TCC!", request.FileName);
+        log.LogError(ex, $"Failed on getting {request.FileName} file from TCC!");
       }
 
       return RawFileAccessResult.Create(data);
