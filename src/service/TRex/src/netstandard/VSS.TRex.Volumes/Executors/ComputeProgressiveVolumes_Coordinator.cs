@@ -210,7 +210,7 @@ namespace VSS.TRex.Volumes.Executors
             CutTolerance = CutTolerance,
             FillTolerance = FillTolerance,
             AggregationStates = Enumerable
-              .Range(0, numProgressions)
+              .Range(VolumeType == VolumeComputationType.Between2Filters ? 1 : 0, numProgressions)
               .Select(x => StartDate + x * Interval)
               .Select(d => new ProgressiveVolumeAggregationState(_siteModel.CellSize)
             {

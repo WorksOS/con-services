@@ -161,11 +161,11 @@ namespace VSS.TRex.Tests.Volumes
     private void CheckDefaultFilterToFilterSingleTAGFileResponse(ProgressiveVolumesResponse response)
     {
       //Was, response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
-      const double EPSILON = 0.000001;
+     // const double EPSILON = 0.000001;
       response.Should().NotBeNull();
 
       response.Volumes.Should().NotBeNull();
-      response.Volumes.Length.Should().Be(11);
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       // todo: Complete this
 /*      response.BoundingExtentGrid.MinX.Should().BeApproximately(537669.2, EPSILON);
@@ -193,11 +193,9 @@ namespace VSS.TRex.Tests.Volumes
 
       response.Should().NotBeNull();
 
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      response.Volumes.Should().NotBeNull();
+      CheckDefaultFilterToFilterSingleTAGFileResponse(response);
+
       response.Volumes.Length.Should().Be(10);
-      
-//      CheckDefaultFilterToFilterSingleTAGFileResponse(response);
     }
 
     [Fact]
@@ -232,16 +230,14 @@ namespace VSS.TRex.Tests.Volumes
 
       response.Should().NotBeNull();
 
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      response.Volumes.Should().NotBeNull();
-      response.Volumes.Length.Should().Be(10);
+      CheckDefaultFilterToFilterSingleTAGFileResponse(response);
 
-      //CheckDefaultFilterToFilterSingleTAGFileResponse(response);
+      response.Volumes.Length.Should().Be(10);
     }
 
     private void CheckDefaultSingleCellAtOriginResponse(ProgressiveVolumesResponse response)
     {
-      const double EPSILON = 0.000001;
+     // const double EPSILON = 0.000001;
 
       response.Should().NotBeNull();
       response.ResultStatus.Should().Be(RequestErrorStatus.OK);
@@ -257,27 +253,23 @@ namespace VSS.TRex.Tests.Volumes
             */
     }
 
-    private ISiteModel BuildModelForSingleCellSummaryVolume(float heightIncrement)
+    private ISiteModel BuildModelForSingleCellProgressiveVolume(int numCellPasses, DateTime baseTime, TimeSpan timeIncrement, float baseHeight, float heightIncrement)
     {
-      var baseTime = DateTime.UtcNow;
-      var baseHeight = 1.0f;
-
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
-      const int numCellPasses = 10;
       var cellPasses = Enumerable.Range(0, numCellPasses).Select(x =>
         new CellPass
         {
           InternalSiteModelMachineIndex = bulldozerMachineIndex,
-          Time = baseTime.AddMinutes(x),
+          Time = baseTime + x * timeIncrement,
           Height = baseHeight + x * heightIncrement,
           PassType = PassType.Front
         });
 
       // Ensure the machine the cell passes are being added to has start and stop evens bracketing the cell passes
       siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime, ProductionEventType.StartEvent);
-      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime.AddMinutes(numCellPasses - 1), ProductionEventType.EndEvent);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime + (numCellPasses - 1) * timeIncrement, ProductionEventType.EndEvent);
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Count());
@@ -291,7 +283,8 @@ namespace VSS.TRex.Tests.Volumes
     {
       AddClusterComputeGridRouting();
 
-      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
+      var baseTime = DateTime.UtcNow;
+      var siteModel = BuildModelForSingleCellProgressiveVolume(10, baseTime, new TimeSpan(0, 1, 0), 1.0f, ELEVATION_INCREMENT_0_5);
 
       var request = new ProgressiveVolumesRequest_ClusterCompute();
       var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, VolumeComputationType.Between2Filters));
@@ -302,6 +295,8 @@ namespace VSS.TRex.Tests.Volumes
     [Fact]
     public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleCell()
     {
+      const int numProgressiveVolumes = 10;
+
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
 
@@ -319,12 +314,35 @@ namespace VSS.TRex.Tests.Volumes
         .Add(x => x.AddSingleton(csMock.Object))
         .Complete();
 
-      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
+      var baseTime = DateTime.UtcNow;
+      var timeIncrement = new TimeSpan(0, 1, 0);
+
+      var siteModel = BuildModelForSingleCellProgressiveVolume(numProgressiveVolumes + 1, baseTime, timeIncrement, 1.0f, ELEVATION_INCREMENT_0_5);
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+
+      startUtc.Should().Be(baseTime);
+      endUtc.Should().Be(baseTime + (10 - 1) * timeIncrement);
 
       var request = new ProgressiveVolumesRequest_ApplicationService();
-      var response = await request.ExecuteAsync(DefaultRequestArgFromModel(siteModel, VolumeComputationType.Between2Filters));
+      var arg = new ProgressiveVolumesRequestArgument
+      {
+        StartDate = startUtc,
+        EndDate = endUtc,
+        Interval = new TimeSpan((endUtc.Ticks - startUtc.Ticks) / numProgressiveVolumes),
+        ProjectID = siteModel.ID,
+        VolumeType = VolumeComputationType.Between2Filters,
+        Filters = new FilterSet(new CombinedFilter()),
+        BaseDesign = new DesignOffset(),
+        TopDesign = new DesignOffset(),
+        CutTolerance = 0.001,
+        FillTolerance = 0.001
+      };
+
+      var response = await request.ExecuteAsync(arg);
 
       CheckDefaultSingleCellAtOriginResponse(response);
+
+      response.Volumes[0].Date.Should().Be(baseTime + timeIncrement);
     }
 
     [Fact]
@@ -333,7 +351,10 @@ namespace VSS.TRex.Tests.Volumes
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
 
-      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
+      var baseTime = DateTime.UtcNow;
+      var timeIncrement = new TimeSpan(0, 1, 0);
+
+      var siteModel = BuildModelForSingleCellProgressiveVolume(10, baseTime, timeIncrement, 1.0f, ELEVATION_INCREMENT_0_5);
       var request = new ProgressiveVolumesRequest_ClusterCompute();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0.0f);
 
@@ -342,11 +363,9 @@ namespace VSS.TRex.Tests.Volumes
 
       var response = await request.ExecuteAsync(arg);
 
-      response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      response.Volumes.Length.Should().Be(11);
+      CheckDefaultSingleCellAtOriginResponse(response);
 
-      //CheckDefaultSingleCellAtOriginResponse(response);
+      response.Volumes.Length.Should().Be(11);
     }
 
     [Fact]
@@ -355,7 +374,10 @@ namespace VSS.TRex.Tests.Volumes
       AddClusterComputeGridRouting();
       AddDesignProfilerGridRouting();
 
-      var siteModel = BuildModelForSingleCellSummaryVolume(ELEVATION_INCREMENT_0_5);
+      var baseTime = DateTime.UtcNow;
+      var timeIncrement = new TimeSpan(0, 1, 0);
+
+      var siteModel = BuildModelForSingleCellProgressiveVolume(10, baseTime, timeIncrement, 1.0f, ELEVATION_INCREMENT_0_5);
       var request = new ProgressiveVolumesRequest_ClusterCompute();
       var designUid = DITAGFileAndSubGridRequestsWithIgniteFixture.ConstructSingleFlatTriangleDesignAboutOrigin(ref siteModel, 0.0f);
 
@@ -364,11 +386,9 @@ namespace VSS.TRex.Tests.Volumes
 
       var response = await request.ExecuteAsync(arg);
 
-      response.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
-      response.Volumes.Length.Should().Be(11);
+      CheckDefaultSingleCellAtOriginResponse(response);
 
-      //CheckDefaultSingleCellAtOriginResponse(response);
+      response.Volumes.Length.Should().Be(11);
     }
   }
 }
