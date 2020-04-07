@@ -4,11 +4,12 @@ using FluentAssertions;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace VSS.TRex.Tests.SubGridTrees
 {
-  public class SubGridTreeLeafBitmapSubGridTests
+  public class SubGridTreeLeafBitmapSubGridTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_SubGridTreeLeafBitmapSubGrid_Creation_OwnerParentLevel()

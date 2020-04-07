@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Reflection;
-using Org.BouncyCastle.Crypto.Engines;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Interfaces;
 using VSS.TRex.Pipelines.Tasks;
@@ -16,7 +13,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
     /// </summary>
     public class VolumesComputationTask : PipelinedSubGridTask
     {
-        private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+        private static readonly ILogger Log = Logging.Logger.CreateLogger<VolumesComputationTask>();
 
         /// <summary>
         /// The aggregator performing volumes computation operations
@@ -32,7 +29,7 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         }
 
         /// <summary>
-        /// Receives a pair of sub grids from the sub grid compute engine and passes them to the simple volumes aggregator for summarisation
+        /// Receives a pair of sub grids from the sub grid compute engine and passes them to the volumes aggregator for summation
         /// </summary>
         /// <param name="response"></param>
         /// <returns></returns>
@@ -40,21 +37,23 @@ namespace VSS.TRex.Volumes.Executors.Tasks
         {
             // Log.InfoFormat("Received a SubGrid to be processed: {0}", (response as IClientLeafSubGrid).Moniker());
 
-            bool result = false;
+            var result = false;
 
             if (base.TransferResponse(response))
             {
               if (Aggregator == null)
-                throw new TRexException("Aggregator not defined in SimpleVolumesComputationTask");
+              {
+                throw new TRexException("Aggregator not defined in VolumesComputationTask");
+              }
 
-              if (!(response is IClientLeafSubGrid[][]))
+              if (!(response is IClientLeafSubGrid[][] responseSubGrids))
               {
                 Log.LogError($"Response is not a IClientLeafSubGrid[][], --> {response}");
               }
               else
               {
                 // Include this sub grid result into the aggregated volumes result
-                Aggregator.ProcessSubGridResult(response as IClientLeafSubGrid[][]);
+                Aggregator.ProcessSubGridResult(responseSubGrids);
                 result = true;
               }
             }

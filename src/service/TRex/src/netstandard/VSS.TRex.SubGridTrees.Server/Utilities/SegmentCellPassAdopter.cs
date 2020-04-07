@@ -24,7 +24,7 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         if (passes.Count == 0)
           return;
 
-        int countInCell = 0;
+        var countInCell = 0;
         var elements = passes.Elements;
 
         for (int cpi = passes.Offset, limit = passes.OffsetPlusCount; cpi < limit; cpi++)
@@ -41,8 +41,8 @@ namespace VSS.TRex.SubGridTrees.Server.Utilities
         var adoptedPassCount = passes.Count - countInCell;
         if (adoptedPassCount > 0)
         {
-          segment.Integrate(i, j, sourceSegmentPasses, countInCell, passes.Count - 1, out int AddedCount, out _);
-          segment.SegmentPassCount += AddedCount;
+          segment.Integrate(i, j, sourceSegmentPasses, countInCell, passes.Count - 1, out var addedCount, out _);
+          segment.SegmentPassCount += addedCount;
 
           sourceSegment.SegmentPassCount -= adoptedPassCount;
           sourceSegment.TrimPassCount(i, j, countInCell);

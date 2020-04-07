@@ -14,7 +14,7 @@ namespace VSS.TRex.GridFabric.Interfaces
   /// <typeparam name="TResponse"></typeparam>
   public interface IBaseRequest<in TArgument, TResponse> : IBaseRequest
   {
-    TResponse Execute(TArgument arg);
+//    TResponse Execute(TArgument arg);
     Task<TResponse> ExecuteAsync(TArgument arg);
   }
 }

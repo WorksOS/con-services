@@ -3,7 +3,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Geometry;
 using VSS.TRex.GridFabric.ExtensionMethods;
 using VSS.TRex.GridFabric.Interfaces;
-using VSS.TRex.GridFabric.Responses;
+using VSS.TRex.SubGrids.Responses;
 
 namespace VSS.TRex.Volumes.GridFabric.Responses
 {

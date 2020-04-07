@@ -19,29 +19,29 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public IServerLeafSubGrid SubGrid { get; set; }
 
-        private ISubGridDirectory _Directory;
+        private ISubGridDirectory _directory;
 
         public ISubGridDirectory Directory
         {
-            get => _Directory;
+            get => _directory;
             
             set
             {
-                _Directory = value;
+                _directory = value;
 
-                if (_Directory != null)
+                if (_directory != null)
                 {
-                    InitialNumberOfSegments = _Directory.SegmentDirectory.Count;
+                    _initialNumberOfSegments = _directory.SegmentDirectory.Count;
                 }
             }
         }
 
-        private int InitialNumberOfSegments;
+        private int _initialNumberOfSegments;
 
         public double MinIterationElevation { get; set; } = Consts.NullDouble;
         public double MaxIterationElevation { get; set; } = Consts.NullDouble;
 
-        private bool RestrictSegmentIterationBasedOnElevationRange;
+        private bool _restrictSegmentIterationBasedOnElevationRange;
 
         // The current index of the segment at this point in the iteration
         public int Idx { get; set; }
@@ -54,46 +54,46 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
 
         public void Initialise()
         {
-            InitialNumberOfSegments = _Directory.SegmentDirectory.Count;
+            _initialNumberOfSegments = _directory.SegmentDirectory.Count;
 
-            Idx = IterationDirection == IterationDirection.Forwards ? -1 : InitialNumberOfSegments;
+            Idx = IterationDirection == IterationDirection.Forwards ? -1 : _initialNumberOfSegments;
         }
 
         public bool NextSegment()
         {
-            bool Result;
+            bool result;
 
-            if (InitialNumberOfSegments != _Directory.SegmentDirectory.Count)
-                throw new TRexSubGridProcessingException("Number of segments in sub grid has changed since the iterator was initialised");
+            if (_initialNumberOfSegments != _directory.SegmentDirectory.Count)
+                throw new TRexSubGridProcessingException("Number of segments in sub grid has changed since the iterator was initialized");
 
             do
             {
                 Idx = IterationDirection == IterationDirection.Forwards ? ++Idx : --Idx;
-                bool SegmentIndexInRange = Range.InRange(Idx, 0, _Directory.SegmentDirectory.Count - 1);
+                var segmentIndexInRange = Range.InRange(Idx, 0, _directory.SegmentDirectory.Count - 1);
 
-                if (!SegmentIndexInRange)
+                if (!segmentIndexInRange)
                   return false;
 
-                var SegmentInfo = _Directory.SegmentDirectory[Idx];
+                var segmentInfo = _directory.SegmentDirectory[Idx];
 
-                Result = Range.InRange(SegmentInfo.StartTime, StartSegmentTime, EndSegmentTime) ||
-                         Range.InRange(SegmentInfo.EndTime, StartSegmentTime, EndSegmentTime) ||
-                         Range.InRange(StartSegmentTime, SegmentInfo.StartTime, SegmentInfo.EndTime) ||
-                         Range.InRange(EndSegmentTime, SegmentInfo.StartTime, SegmentInfo.EndTime);
+                result = Range.InRange(segmentInfo.StartTime, StartSegmentTime, EndSegmentTime) ||
+                         Range.InRange(segmentInfo.EndTime, StartSegmentTime, EndSegmentTime) ||
+                         Range.InRange(StartSegmentTime, segmentInfo.StartTime, segmentInfo.EndTime) ||
+                         Range.InRange(EndSegmentTime, segmentInfo.StartTime, segmentInfo.EndTime);
 
                 // If there is an elevation range restriction is place then check to see if the
                 // segment contains any cell passes in the elevation range
-                if (Result && RestrictSegmentIterationBasedOnElevationRange)
+                if (result && _restrictSegmentIterationBasedOnElevationRange)
                 {
-                  if (SegmentInfo.MinElevation != Consts.NullDouble && SegmentInfo.MaxElevation != Consts.NullDouble)
+                  if (segmentInfo.MinElevation != Consts.NullDouble && segmentInfo.MaxElevation != Consts.NullDouble)
                   {
-                    Result = Range.InRange(SegmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
-                             Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
-                             Range.InRange(MinIterationElevation, SegmentInfo.MinElevation,
-                               SegmentInfo.MaxElevation) ||
-                             Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
+                    result = Range.InRange(segmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
+                             Range.InRange(segmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
+                             Range.InRange(MinIterationElevation, segmentInfo.MinElevation,
+                               segmentInfo.MaxElevation) ||
+                             Range.InRange(MaxIterationElevation, segmentInfo.MinElevation, segmentInfo.MaxElevation);
                   }
-                  else if (SegmentInfo.Segment?.PassesData != null)
+                  else if (segmentInfo.Segment?.PassesData != null)
                   {
                     // The elevation range information we use here is accessed via
                     // the entropic compression information used to compress the attributes held
@@ -104,48 +104,47 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                     // if there is any need to extract cell passes from this segment. If not, just move
                     // to the next segment
 
-                    SegmentInfo.Segment.PassesData.GetSegmentElevationRange(out double SegmentMinElev,
-                      out double SegmentMaxElev);
-                    if (SegmentMinElev != Consts.NullDouble && SegmentMaxElev != Consts.NullDouble)
+                    segmentInfo.Segment.PassesData.GetSegmentElevationRange(out var segmentMinElev, out var segmentMaxElev);
+                    if (segmentMinElev != Consts.NullDouble && segmentMaxElev != Consts.NullDouble)
                     {
                       // Save the computed elevation range values for this segment
-                      SegmentInfo.MinElevation = SegmentMinElev;
-                      SegmentInfo.MaxElevation = SegmentMaxElev;
+                      segmentInfo.MinElevation = segmentMinElev;
+                      segmentInfo.MaxElevation = segmentMaxElev;
 
-                      Result =
-                        Range.InRange(SegmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
-                        Range.InRange(SegmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
-                        Range.InRange(MinIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation) ||
-                        Range.InRange(MaxIterationElevation, SegmentInfo.MinElevation, SegmentInfo.MaxElevation);
+                      result =
+                        Range.InRange(segmentInfo.MinElevation, MinIterationElevation, MaxIterationElevation) ||
+                        Range.InRange(segmentInfo.MaxElevation, MinIterationElevation, MaxIterationElevation) ||
+                        Range.InRange(MinIterationElevation, segmentInfo.MinElevation, segmentInfo.MaxElevation) ||
+                        Range.InRange(MaxIterationElevation, segmentInfo.MinElevation, segmentInfo.MaxElevation);
                     }
                     else
                     {
-                      Result = false;
+                      result = false;
                     }
                   }
 
-                  if (Result && HasMachineRestriction && SegmentInfo.Segment?.PassesData != null)
+                  if (result && HasMachineRestriction && segmentInfo.Segment?.PassesData != null)
                   {
                     // Check to see if this segment has any machines that match the
                     // machine restriction. If not, advance to the next segment
-                    bool HasMachinesOfInterest = false;
-                    var segmentMachineIDSet = SegmentInfo.Segment.PassesData.GetMachineIDSet();
+                    var hasMachinesOfInterest = false;
+                    var segmentMachineIdSet = segmentInfo.Segment.PassesData.GetMachineIDSet();
 
-                    if (segmentMachineIDSet != null)
+                    if (segmentMachineIdSet != null)
                     {
-                      for (int i = 0; i < MachineIDSet.Count; i++)
+                      for (var i = 0; i < MachineIDSet.Count; i++)
                       {
-                        HasMachinesOfInterest = MachineIDSet[i] && segmentMachineIDSet[i];
-                        if (HasMachinesOfInterest)
+                        hasMachinesOfInterest = MachineIDSet[i] && segmentMachineIdSet[i];
+                        if (hasMachinesOfInterest)
                           break;
                       }
 
-                      Result = HasMachinesOfInterest;
+                      result = hasMachinesOfInterest;
                     }
                   }
                 }
             }
-            while (!Result);
+            while (!result);
 
             return true;
         }
@@ -154,8 +153,8 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
         {
             if (IterationDirection == IterationDirection.Forwards)
             {
-                return (Idx >= _Directory.SegmentDirectory.Count - 1) ||
-                         (_Directory.SegmentDirectory[Idx + 1].StartTime > EndSegmentTime);
+                return (Idx >= _directory.SegmentDirectory.Count - 1) ||
+                         (_directory.SegmentDirectory[Idx + 1].StartTime > EndSegmentTime);
             }
 
             return (Idx <= 0) || (Directory.SegmentDirectory[Idx - 1].EndTime <= StartSegmentTime);
@@ -172,12 +171,12 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
             MinIterationElevation = minIterationElevation;
             MaxIterationElevation = maxIterationElevation;
 
-            RestrictSegmentIterationBasedOnElevationRange = (minIterationElevation != Consts.NullDouble) && (MaxIterationElevation != Consts.NullDouble);
+            _restrictSegmentIterationBasedOnElevationRange = (minIterationElevation != Consts.NullDouble) && (MaxIterationElevation != Consts.NullDouble);
         }
 
-        public void SetMachineRestriction(BitArray machineIDSet)
+        public void SetMachineRestriction(BitArray machineIdSet)
         {
-            MachineIDSet = machineIDSet;
+            MachineIDSet = machineIdSet;
         }
 
         public void SegmentListExtended()
@@ -186,7 +185,7 @@ namespace VSS.TRex.SubGridTrees.Server.Iterators
                 throw new TRexSubGridProcessingException("Extension of segment list only valid if iterator is traveling forwards through the list");
 
             // Reset the number of segments now expected in the segment.
-            InitialNumberOfSegments = _Directory.SegmentDirectory.Count;
+            _initialNumberOfSegments = _directory.SegmentDirectory.Count;
         }
     }
 }

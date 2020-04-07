@@ -1,9 +1,8 @@
 ﻿using System;
 using VSS.TRex.Common.Models;
-using VSS.TRex.Common.Types;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Filters;
-using VSS.TRex.GridFabric.Arguments;
+using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.Tests.BinarizableSerialization.Analytics;
 using VSS.TRex.Types;
 using Xunit;

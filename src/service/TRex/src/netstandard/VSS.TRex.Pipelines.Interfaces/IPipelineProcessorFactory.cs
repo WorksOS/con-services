@@ -17,7 +17,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// of pipelined requests
     /// </summary>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    Task<IPipelineProcessor> NewInstance(Guid requestDescriptor,
+    Task<IPipelineProcessor> NewInstance<TSubGridsRequestArgument>(Guid requestDescriptor,
       Guid dataModelID,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,
@@ -36,7 +36,7 @@ namespace VSS.TRex.Pipelines.Interfaces
     /// of pipelined requests, but does not perform the build action on the pipeline processor
     /// </summary>
     /// <param name="overrideSpatialCellRestriction">A restriction on the cells that are returned via the query that intersects with the spatial selection filtering and criteria</param>
-    IPipelineProcessor NewInstanceNoBuild(Guid requestDescriptor,
+    IPipelineProcessor NewInstanceNoBuild<TSubGridsRequestArgument>(Guid requestDescriptor,
       Guid dataModelID,
       GridDataType gridDataType,
       ISubGridsPipelinedReponseBase response,

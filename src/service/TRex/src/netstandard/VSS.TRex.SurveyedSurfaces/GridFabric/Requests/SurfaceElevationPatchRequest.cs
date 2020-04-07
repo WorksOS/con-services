@@ -56,7 +56,7 @@ namespace VSS.TRex.SurveyedSurfaces.GridFabric.Requests
         var resultItem = ClientLeafSubGridFactory.GetSubGridEx
           (arg.SurveyedSurfacePatchType == SurveyedSurfacePatchType.CompositeElevations ? GridDataType.CompositeHeights : GridDataType.HeightAndTime,
           cachedItem.CellSize, cachedItem.Level, cachedItem.OriginX, cachedItem.OriginY);
-        resultItem.AssignFromCachedPreProcessedClientSubgrid(cachedItem, map);
+        resultItem.AssignFromCachedPreProcessedClientSubGrid(cachedItem, map);
 
         return resultItem;
       }

@@ -11,12 +11,13 @@ using VSS.TRex.GridFabric.Servers.Client;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-    public class TAGFileBufferQueueTests
-    {
+    public class TAGFileBufferQueueTests : IClassFixture<DILoggingFixture>
+  {
         private static MutableClientServer TAGClientServer;
         private static IIgnite ignite;
 

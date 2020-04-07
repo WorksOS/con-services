@@ -10,6 +10,12 @@
     /// <summary>
     /// Uses a derivative of SubGridPipelineAggregative to orchestrate the sub grid query pipeline
     /// </summary>
-    DefaultAggregative
+    DefaultAggregative,
+
+    /// <summary>
+    /// An aggregating sub grid pipeline processor oriented towards progressive volume calculations that
+    /// require custom parameters in the sub grids request argument
+    /// </summary>
+    ProgressiveVolumes
   }
 }

@@ -9,6 +9,8 @@ namespace VSS.TRex.IO
   /// </summary>
   public class GenericArrayPoolCaches<T> : IGenericArrayPoolCaches<T>
   {
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericArrayPoolCaches<T>>();
+
     private readonly object _lock = new object();
 
     public static readonly int[] DEFAULT_POOL_CACHE_SIZES =
@@ -37,8 +39,6 @@ namespace VSS.TRex.IO
     };
 
     public const int MAX_BUFFER_SIZE_CACHED = 1 << NumExponentialPoolsToProvide; // ~1 million items
-
-    private static readonly ILogger Log = Logging.Logger.CreateLogger<GenericArrayPoolCaches<T>>();
 
     /// <summary>
     /// The number of different power-of-2 sized buffer pools to rent buffers from

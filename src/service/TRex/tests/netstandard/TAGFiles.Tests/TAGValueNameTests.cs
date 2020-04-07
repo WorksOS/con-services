@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using VSS.TRex.TAGFiles.Classes.Sinks;
 using VSS.TRex.TAGFiles.Types;
+using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
 namespace TAGFiles.Tests
 {
-  public class TAGValueNameTests
+  public class TAGValueNameTests : IClassFixture<DILoggingFixture>
   {
     [Fact]
     public void Test_TAGValueNames_GetTAGValueNames()

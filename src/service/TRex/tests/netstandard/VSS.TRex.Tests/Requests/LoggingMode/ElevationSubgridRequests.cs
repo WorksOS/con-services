@@ -50,7 +50,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
 
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var Requestors = utilities.ConstructRequestors(siteModel, new OverrideParameters(), new LiftParameters(), 
+      var Requestors = utilities.ConstructRequestors(null, siteModel, new OverrideParameters(), new LiftParameters(), 
         utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(new CombinedFilter()), true, GridDataType.Height),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
 
@@ -77,7 +77,7 @@ namespace VSS.TRex.Tests.Requests.LoggingMode
     {
       // Construct the set of requestors to query elevation sub grids needed for the summary volume calculations.
       var utilities = DIContext.Obtain<IRequestorUtilities>();
-      var Requestors = utilities.ConstructRequestors(siteModel, new OverrideParameters(), new LiftParameters(), 
+      var Requestors = utilities.ConstructRequestors(null, siteModel, new OverrideParameters(), new LiftParameters(), 
         utilities.ConstructRequestorIntermediaries(siteModel, new FilterSet(filters), true, gridDataType),
         AreaControlSet.CreateAreaControlSet(), siteModel.ExistenceMap);
 

@@ -10,9 +10,12 @@
     /// </summary>
     public static ApplicationServiceRequestStatistics Instance = new ApplicationServiceRequestStatistics();
 
-    public StatisticsElement NumVolumeRequests = new StatisticsElement();
-    public StatisticsElement NumVolumeRequestsFailed = new StatisticsElement();
-    public StatisticsElement NumVolumeRequestsCompleted = new StatisticsElement();
+    public StatisticsElement NumSimpleVolumeRequests = new StatisticsElement();
+    public StatisticsElement NumSimpleVolumeRequestsFailed = new StatisticsElement();
+    public StatisticsElement NumSimpleVolumeRequestsCompleted = new StatisticsElement();
+    public StatisticsElement NumProgressiveVolumeRequests = new StatisticsElement();
+    public StatisticsElement NumProgressiveVolumeRequestsFailed = new StatisticsElement();
+    public StatisticsElement NumProgressiveVolumeRequestsCompleted = new StatisticsElement();
     public StatisticsElement NumMapTileRequests = new StatisticsElement();
     public StatisticsElement NumMapTileRequestsFailed = new StatisticsElement();
     public StatisticsElement NumMapTileRequestsCompleted = new StatisticsElement();

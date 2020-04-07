@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using App.Metrics.AspNetCore.Health;
 using FluentAssertions;
 using VSS.TRex.Cells;
 using Xunit;
