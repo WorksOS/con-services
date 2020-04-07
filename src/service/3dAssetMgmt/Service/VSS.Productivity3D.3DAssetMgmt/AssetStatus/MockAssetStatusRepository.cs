@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using VSS.MasterData.Repositories.DBModels;
 
 namespace VSS.Productivity3D.AssetMgmt3D.AssetStatus
 {

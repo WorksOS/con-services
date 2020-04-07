@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using CCSS.CWS.Client;
 using Hangfire;
 using Hangfire.MySql;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
@@ -76,7 +78,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, SchedulerErrorCodesProvider>();
@@ -96,7 +98,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
-      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<IProjectProxy, ProjectV6Proxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
       services.AddTransient<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITpaasEmailProxy, TpaasEmailProxy>();

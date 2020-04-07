@@ -12,7 +12,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
     public string ProjectUid { get; set; }
 
     /// <summary>
-    /// The Uid of the asset. could be empty/-1/-2?
+    /// The Uid of the asset. Currently Trex thinks this is an AssetUid
     /// </summary>
     public string DeviceUid { get; set; }
 

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;

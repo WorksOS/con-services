@@ -11,8 +11,10 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
+using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
@@ -63,7 +65,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.MachinePassesExportJob
       headers = authn.CustomHeadersJWTAndBearer();
       headers.AppendOrOverwriteCustomerHeader(customerUid);
       log.LogDebug($"Requesting projects for customer {customerUid}");
-      customerProjects = (await projects.GetProjectsV4(customerUid, headers)).Where(p => !p.IsArchived).ToList();
+      customerProjects = (await projects.GetProjects(customerUid, headers)).Where(p => !p.IsArchived).ToList();
       log.LogDebug($"Recieved {customerProjects.Count} projects for customer {customerUid}");
     }
 
@@ -81,14 +83,14 @@ namespace VSS.Productivity3D.Scheduler.Jobs.MachinePassesExportJob
         {
           log.LogInformation($"Processing project {project.Name}");
           // Create a relevant filter
-          var filter = await filters.CreateFilter(project.ProjectUid, new FilterRequest() { FilterType = FilterType.Transient, FilterJson = FILTER_JSON }, headers);
+          var filter = await filters.CreateFilter(project.ProjectUID, new FilterRequest() { FilterType = FilterType.Transient, FilterJson = FILTER_JSON }, headers);
           log.LogDebug($"Created filter {filter.FilterDescriptor.FilterUid}");
           //generate filename
           var generatedFilename = $"{project.Name + " " + DateTime.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss")}";
           log.LogDebug($"Generated filename {generatedFilename}");
           //generate uri
           var baseUri = await serviceResolution.ResolveService("productivity3dinternal_service_public_v2");
-          var requestUri = $"{baseUri.Endpoint}/api/v2/export/machinepasses?projectUid={project.ProjectUid}&filename={generatedFilename}&filterUid={filter.FilterDescriptor.FilterUid}&coordType=0&outputType=0&restrictOutput=False&rawDataOutput=False";
+          var requestUri = $"{baseUri.Endpoint}/api/v2/export/machinepasses?projectUid={project.ProjectUID}&filename={generatedFilename}&filterUid={filter.FilterDescriptor.FilterUid}&coordType=0&outputType=0&restrictOutput=False&rawDataOutput=False";
           log.LogDebug($"Export request url {requestUri}");
           var jobExportRequest = new ScheduleJobRequest() { Url = requestUri, Timeout = 9000000, Filename = generatedFilename };
           jobRequest = new JobRequest() { JobUid = Guid.Parse("c3cbb048-05c1-4961-a799-70434cb2f162"), SetupParameters = jobExportRequest, RunParameters = headers, AttributeFilters = SpecialFilters.ExportFilter };
