@@ -13,7 +13,7 @@ using VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling;
 using VSS.TCCFileAccess;
 using Xunit;
 
-namespace WebApiTests.Executors
+namespace FileAccess.UnitTests.Executors
 {
   public class RawFileAccessExecutorTests : IClassFixture<ExecutorBaseTests>
   {
@@ -42,9 +42,9 @@ namespace WebApiTests.Executors
       var logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore);
-      var ex = Assert.Throws<ServiceException>(() => executor.Process(request));
-      Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("Failed to download file from TCC", StringComparison.Ordinal));
+      var result = executor.Process(request) as RawFileAccessResult;
+
+      Assert.False(result.Success);
     }
 
     [Fact]
@@ -60,8 +60,7 @@ namespace WebApiTests.Executors
       byte[] buffer = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3 };
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync(new MemoryStream(buffer));
 
-      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore,
-        fileRepo.Object);
+      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore, fileRepo.Object);
       var result = executor.Process(request) as RawFileAccessResult;
 
       Assert.NotNull(result);
@@ -81,11 +80,10 @@ namespace WebApiTests.Executors
       var fileRepo = new Mock<IFileRepository>();
       fileRepo.Setup(fr => fr.GetFile(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>())).ReturnsAsync((MemoryStream)null);
 
-      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore,
-        fileRepo.Object);
-      var ex = Assert.Throws<ServiceException>(() => executor.Process(request));
-      Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("Failed to download file from TCC", StringComparison.Ordinal));
+      var executor = RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, _configStore, fileRepo.Object);
+      var result = executor.Process(request) as RawFileAccessResult;
+
+      Assert.False(result.Success);
     }
   }
 }

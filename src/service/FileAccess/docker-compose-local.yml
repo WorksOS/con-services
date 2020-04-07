@@ -1,18 +1,12 @@
-version: '2'
+version: "3"
 services:
   webapi:
-    build: ./artifacts/WebApi
+    build:
+      context: ./artifacts/WebApi
+      dockerfile: ../../build/Dockerfile.build
     env_file:
-     - docker-compose-local.env
+      - docker-compose-local.env
     volumes:
       - ./artifacts/logs:/app/logs
     ports:
-     - "3001:80"
-  accepttest:
-    build: ./AcceptanceTests/deploy
-    env_file:
-     - docker-compose-local.env
-    volumes:
-      - ./AcceptanceTests/deploy/testresults:/app/testresults
-    depends_on:
-      - webapi
+      - "3001:80"

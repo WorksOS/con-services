@@ -7,7 +7,7 @@ using VSS.ConfigurationStore;
 using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 
-namespace WebApiTests.Executors
+namespace FileAccess.UnitTests.Executors
 {
   public class ExecutorBaseTests : IDisposable
   {
@@ -18,7 +18,7 @@ namespace WebApiTests.Executors
     {
       serviceProvider = new ServiceCollection()
         .AddLogging()
-        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.FileAccess.UnitTests.log")))
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("FileAccess.UnitTests.log")))
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddSingleton<IFileRepository, FileRepository>()
         .BuildServiceProvider();
