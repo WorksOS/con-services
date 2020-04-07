@@ -20,6 +20,7 @@ import com.atlassian.bamboo.specs.builders.repository.bitbucket.cloud.BitbucketC
 import com.atlassian.bamboo.specs.builders.repository.bitbucket.server.BitbucketServerRepository;
 import com.atlassian.bamboo.specs.builders.task.*;
 import com.atlassian.bamboo.specs.builders.trigger.AfterSuccessfulBuildPlanTrigger;
+import com.atlassian.bamboo.specs.builders.trigger.RemoteTrigger;
 import com.atlassian.bamboo.specs.builders.trigger.RepositoryPollingTrigger;
 import com.atlassian.bamboo.specs.util.BambooServer;
 import com.atlassian.bamboo.specs.api.builders.plan.Job;
@@ -202,8 +203,7 @@ public class PlanSpec {
                         new Variable("run_acceptance_tests", runAcceptanceTest ? "true" : "false"),
                         new Variable("run_unit_tests", runUnitTests ? "true" : "false")
                         )
-                .triggers(new RepositoryPollingTrigger()
-                        .pollEvery(10, TimeUnit.MINUTES))
+                .triggers(new RemoteTrigger())
                 .planBranchManagement(new PlanBranchManagement()
                         .createForVcsBranchMatching("feature/.*") // Don't monitor feature branches
                         .notificationForCommitters()
@@ -212,7 +212,7 @@ public class PlanSpec {
 //                                .gatekeeper(true)
 //                                .pushOnSuccessfulBuild(true))
                         .delete(new BranchCleanup()
-                                .whenRemovedFromRepository(true)
+                                .whenRemovedFromRepositoryAfterDays(0)
                                 .whenInactiveInRepositoryAfterDays(7)));
 
 
@@ -246,13 +246,12 @@ public class PlanSpec {
                                 .quietPeriodEnabled(true)))
                 .description("Plan created from Bamboo Java Specs")
                 .notifications(new EmptyNotificationsList())
-                .triggers(new RepositoryPollingTrigger()
-                        .pollEvery(10, TimeUnit.MINUTES))
+                .triggers(new RemoteTrigger())
                 .planBranchManagement(new PlanBranchManagement()
                         .createForVcsBranchMatching("feature/.*")
                         .notificationForCommitters()
                         .delete(new BranchCleanup()
-                                .whenRemovedFromRepository(true)
+                                .whenRemovedFromRepositoryAfterDays(0)
                                 .whenInactiveInRepositoryAfterDays(7)));
 
         Stage stage = new Stage("Sanity Builds");
@@ -343,7 +342,7 @@ public class PlanSpec {
         String deployCommand =
                 // Remove the prefix from a branch name
                 // i.e feature/test -> test
-                "IMAGETAG=$(echo ${bamboo.planRepository.branchName} | sed -e 's/.\\///')\n"+
+                "IMAGETAG=$(basename ${bamboo.planRepository.branchName})\n"+
                 "helm upgrade " +
                 "--install " +
                 "${bamboo.deploy.environment}-${bamboo.service} " +

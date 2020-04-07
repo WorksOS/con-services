@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
           .ConfigureWebHostDefaults(webBuilder =>
           {
             webBuilder.UseKestrel()
-                      .UseLibuv(opts => { opts.ThreadCount = 32; })
+                      .UseLibuv(opts => opts.ThreadCount = 32)
                       .BuildKestrelWebHost()
                       .UseStartup<Startup>();
           });

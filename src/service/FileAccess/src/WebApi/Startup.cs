@@ -30,10 +30,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI
     {
       services.AddSingleton<IConfigurationStore, GenericConfiguration>()
               .AddTransient<IFileRepository, FileRepository>()
-              .AddOpenTracing(builder =>
-              {
-                builder.ConfigureAspNetCore(options => options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping"));
-              });
+              .AddOpenTracing(builder => builder.ConfigureAspNetCore(options => options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping")));
     }
 
     /// <inheritdoc />
