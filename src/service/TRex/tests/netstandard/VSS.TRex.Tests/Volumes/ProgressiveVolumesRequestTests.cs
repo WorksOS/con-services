@@ -198,25 +198,29 @@ namespace VSS.TRex.Tests.Volumes
       response.Volumes.Length.Should().Be(10);
     }
 
+    private void AddSimpleNEEToLLHConversionMock()
+    {
+      var csMock = new Mock<IConvertCoordinates>();
+      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>()))
+        .Returns(() => {
+          return Task.FromResult((RequestErrorStatus.OK, new XYZ[2]
+          {
+            new XYZ(0, 0, 1),
+            new XYZ(1, 1, 0)
+          }));
+        });
+
+      DIBuilder.Continue()
+        .Add(x => x.AddSingleton(csMock.Object))
+        .Complete();
+    }
+
     [Fact]
     public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleTAGFile()
     {
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
-
-      var csMock = new Mock<IConvertCoordinates>();
-      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>()))
-        .Returns(() => {
-        return Task.FromResult((RequestErrorStatus.OK, new XYZ[2]
-        {
-          new XYZ(0, 0, 1),
-          new XYZ(1, 1, 0)
-        }));
-      });
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(csMock.Object))
-        .Complete();
+      AddSimpleNEEToLLHConversionMock();
 
       var tagFiles = new[]
       {
@@ -259,13 +263,7 @@ namespace VSS.TRex.Tests.Volumes
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
 
       var cellPasses = Enumerable.Range(0, numCellPasses).Select(x =>
-        new CellPass
-        {
-          InternalSiteModelMachineIndex = bulldozerMachineIndex,
-          Time = baseTime + x * timeIncrement,
-          Height = baseHeight + x * heightIncrement,
-          PassType = PassType.Front
-        });
+        new CellPass {InternalSiteModelMachineIndex = bulldozerMachineIndex, Time = baseTime + x * timeIncrement, Height = baseHeight + x * heightIncrement, PassType = PassType.Front}).ToList();
 
       // Ensure the machine the cell passes are being added to has start and stop evens bracketing the cell passes
       siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime, ProductionEventType.StartEvent);
@@ -293,35 +291,23 @@ namespace VSS.TRex.Tests.Volumes
     }
 
     [Fact]
-    public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleCell()
+    public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleCell_FillOnly()
     {
       const int numProgressiveVolumes = 10;
 
       AddApplicationGridRouting();
       AddClusterComputeGridRouting();
-
-      var csMock = new Mock<IConvertCoordinates>();
-      csMock.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>()))
-        .Returns(() => {
-          return Task.FromResult((RequestErrorStatus.OK, new XYZ[2]
-          {
-            new XYZ(0, 0, 1),
-            new XYZ(1, 1, 0)
-          }));
-        });
-
-      DIBuilder.Continue()
-        .Add(x => x.AddSingleton(csMock.Object))
-        .Complete();
+      AddSimpleNEEToLLHConversionMock();
 
       var baseTime = DateTime.UtcNow;
       var timeIncrement = new TimeSpan(0, 1, 0);
+      var cellPassHeightIncrement = ELEVATION_INCREMENT_0_5;
 
-      var siteModel = BuildModelForSingleCellProgressiveVolume(numProgressiveVolumes + 1, baseTime, timeIncrement, 1.0f, ELEVATION_INCREMENT_0_5);
+      var siteModel = BuildModelForSingleCellProgressiveVolume(numProgressiveVolumes + 1, baseTime, timeIncrement, 1.0f, cellPassHeightIncrement);
       var (startUtc, endUtc) = siteModel.GetDateRange();
 
       startUtc.Should().Be(baseTime);
-      endUtc.Should().Be(baseTime + (10 - 1) * timeIncrement);
+      endUtc.Should().Be(baseTime + numProgressiveVolumes * timeIncrement);
 
       var request = new ProgressiveVolumesRequest_ApplicationService();
       var arg = new ProgressiveVolumesRequestArgument
@@ -342,7 +328,80 @@ namespace VSS.TRex.Tests.Volumes
 
       CheckDefaultSingleCellAtOriginResponse(response);
 
-      response.Volumes[0].Date.Should().Be(baseTime + timeIncrement);
+      response.Volumes.Length.Should().Be(numProgressiveVolumes);
+
+      for (var i = 0; i < response.Volumes.Length - 1; i++)
+      {
+        response.Volumes[i].Date.Should().BeBefore(response.Volumes[i + 1].Date);
+      }
+
+      for (var i = 0; i < response.Volumes.Length; i++)
+      {
+        response.Volumes[i].Date.Should().Be(baseTime + (i + 1) * timeIncrement);
+        response.Volumes[i].Volume.TotalCoverageArea.Should().Be( SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
+        response.Volumes[i].Volume.Fill.Should().Be(cellPassHeightIncrement * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
+        response.Volumes[i].Volume.Cut.Should().Be(0);
+
+        response.Volumes[i].Volume.FillArea.Should().Be(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
+        response.Volumes[i].Volume.CutArea.Should().Be(0);
+      }
+    }
+
+    [Fact]
+    public async Task ApplicationService_DefaultFilterToFilter_Execute_SingleCell_CutOnly()
+    {
+      const int numProgressiveVolumes = 10;
+
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+      AddSimpleNEEToLLHConversionMock();
+
+      var baseTime = DateTime.UtcNow;
+      var timeIncrement = new TimeSpan(0, 1, 0);
+      var cellPassHeightIncrement = -ELEVATION_INCREMENT_0_5;
+
+      var siteModel = BuildModelForSingleCellProgressiveVolume(numProgressiveVolumes + 1, baseTime, timeIncrement, 1.0f, cellPassHeightIncrement);
+      var (startUtc, endUtc) = siteModel.GetDateRange();
+
+      startUtc.Should().Be(baseTime);
+      endUtc.Should().Be(baseTime + numProgressiveVolumes * timeIncrement);
+
+      var request = new ProgressiveVolumesRequest_ApplicationService();
+      var arg = new ProgressiveVolumesRequestArgument
+      {
+        StartDate = startUtc,
+        EndDate = endUtc,
+        Interval = new TimeSpan((endUtc.Ticks - startUtc.Ticks) / numProgressiveVolumes),
+        ProjectID = siteModel.ID,
+        VolumeType = VolumeComputationType.Between2Filters,
+        Filters = new FilterSet(new CombinedFilter()),
+        BaseDesign = new DesignOffset(),
+        TopDesign = new DesignOffset(),
+        CutTolerance = 0.001,
+        FillTolerance = 0.001
+      };
+
+      var response = await request.ExecuteAsync(arg);
+
+      CheckDefaultSingleCellAtOriginResponse(response);
+
+      response.Volumes.Length.Should().Be(numProgressiveVolumes);
+
+      for (var i = 0; i < response.Volumes.Length - 1; i++)
+      {
+        response.Volumes[i].Date.Should().BeBefore(response.Volumes[i + 1].Date);
+      }
+
+      for (var i = 0; i < response.Volumes.Length; i++)
+      {
+        response.Volumes[i].Date.Should().Be(baseTime + (i + 1) * timeIncrement);
+        response.Volumes[i].Volume.TotalCoverageArea.Should().Be(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
+        response.Volumes[i].Volume.Fill.Should().Be(0);
+        response.Volumes[i].Volume.Cut.Should().Be(- (cellPassHeightIncrement * SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize));
+
+        response.Volumes[i].Volume.FillArea.Should().Be(0);
+        response.Volumes[i].Volume.CutArea.Should().Be(SubGridTreeConsts.DefaultCellSize * SubGridTreeConsts.DefaultCellSize);
+      }
     }
 
     [Fact]
