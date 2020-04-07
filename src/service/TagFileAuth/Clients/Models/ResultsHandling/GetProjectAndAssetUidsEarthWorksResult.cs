@@ -2,7 +2,7 @@
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.TagFileAuth.Models
+namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
 {
   public class GetProjectAndAssetUidsEarthWorksResult : ContractExecutionResult, IMasterDataModel
   {
@@ -45,14 +45,14 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     }
 
     public static GetProjectAndAssetUidsEarthWorksResult FormatResult(string projectUid = "", string assetUid = "", string customerUid = "", bool hasValidSub = false, int uniqueCode = 0)
-    { 
+    {
       var contractExecutionStatesEnum = new ContractExecutionStatesEnum();
       return new GetProjectAndAssetUidsEarthWorksResult(projectUid, assetUid, customerUid, hasValidSub,
-        (uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode)),
-        (uniqueCode == 0 ? ContractExecutionResult.DefaultMessage :
-          (uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)))));
+        uniqueCode <= 0 ? uniqueCode : contractExecutionStatesEnum.GetErrorNumberwithOffset(uniqueCode),
+        uniqueCode == 0 ? DefaultMessage :
+          uniqueCode < 0 ? string.Empty : string.Format(contractExecutionStatesEnum.FirstNameWithOffset(uniqueCode)));
     }
 
-    public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>(){ ProjectUid };
+    public List<string> GetIdentifiers() => string.IsNullOrEmpty(ProjectUid) ? new List<string>() : new List<string>() { ProjectUid };
   }
 }

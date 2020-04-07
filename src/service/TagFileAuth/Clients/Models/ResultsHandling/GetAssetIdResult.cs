@@ -8,7 +8,7 @@
     /// <summary>
     /// The id of the asset. -1 if unknown. 
     /// </summary>
-    public long assetId { get; set; }
+    public long shortRaptorAssetId { get; set; }
 
     /// <summary>
     /// The subscription level of the asset. 
@@ -19,14 +19,14 @@
     /// <summary>
     /// Create instance of GetAssetIdResult
     /// </summary>
-    public static GetAssetIdResult CreateGetAssetIdResult(bool result, long assetId, int machineLevel,
+    public static GetAssetIdResult CreateGetAssetIdResult(bool result, long shortRaptorAssetId, int machineLevel,
       int code = 0,
       int customCode = 0, string errorMessage1 = null, string errorMessage2 = null)
     {
       return new GetAssetIdResult
       {
         Result = result,
-        assetId = assetId,
+        shortRaptorAssetId = shortRaptorAssetId,
         machineLevel = machineLevel,
         Code = code,
         Message = code == 0 ? DefaultMessage : string.Format(_contractExecutionStatesEnum.FirstNameWithOffset(customCode), errorMessage1 ?? "null", errorMessage2 ?? "null")

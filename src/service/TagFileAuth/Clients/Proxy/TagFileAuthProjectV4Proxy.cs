@@ -13,12 +13,13 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.TagFileAuth.Proxy
 {
-  public class TagFileAuthProjectV2Proxy : BaseServiceDiscoveryProxy, ITagFileAuthProjectProxy
+  public class TagFileAuthProjectV4Proxy : BaseServiceDiscoveryProxy, ITagFileAuthProjectProxy
   {
-    public TagFileAuthProjectV2Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
+    public TagFileAuthProjectV4Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
@@ -29,7 +30,7 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
 
     public override string ExternalServiceName => null;
 
-    public override ApiVersion Version => ApiVersion.V2;
+    public override ApiVersion Version => ApiVersion.V4;
 
     public override ApiType Type => ApiType.Public;
 

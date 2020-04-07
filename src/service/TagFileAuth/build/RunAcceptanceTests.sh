@@ -16,5 +16,3 @@ dotnet test VSS.TagFileAuth.Service.AcceptanceTests.sln --logger \"nunit;LogFile
 echo " "
 echo " All acceptance tests completed"
 echo " "
-#echo " Wait for 300"
-#sleep 300s

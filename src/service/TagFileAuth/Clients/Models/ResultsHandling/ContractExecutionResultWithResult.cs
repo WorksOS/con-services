@@ -1,6 +1,6 @@
 ﻿using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.TagFileAuth.Models
+namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
 {
   public class ContractExecutionResultWithResult : ContractExecutionResult
   {

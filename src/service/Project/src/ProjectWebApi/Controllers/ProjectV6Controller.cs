@@ -91,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(GetProjectUidApplicationContextV6)}");
 
-      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+      var project = await ProjectRequestHelper.GetProjectOnly(projectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
     }
 
@@ -135,22 +135,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
            .ToImmutableList()
       };
     }
-
-    ///// <summary>
-    ///// Gets projects which this device has access to, from cws
-    /////   applicationContext i.e. no customer. 
-    /////   Could have TFA go direct to cwsProjectClient
-    ///// </summary>
-    ///// <returns>A project data</returns>
-    //[Route("api/v6/project/applicationcontext/{shortRaptorProjectId}")]
-    //[HttpGet]
-    //public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
-    //{
-    //  Logger.LogInformation($"{nameof(GetProjectShortIdApplicationContextV6)}");
-
-    //  var project = await ProjectRequestHelper.GetProject(shortRaptorProjectId, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-    //  return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
-    //}
 
     // POST: api/project
     /// <summary>

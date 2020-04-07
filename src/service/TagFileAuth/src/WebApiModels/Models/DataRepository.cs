@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -41,7 +40,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     {
       _log = logger;
       _configStore = configStore;
-      _cwsAccountClient = cwsAccountClient; 
+      _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
     }
@@ -50,20 +49,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     public async Task<int> GetDeviceLicenses(string customerUid)
     {
-      DeviceLicenseResponseModel deviceLicenseResponseModel = null;
+      if (string.IsNullOrEmpty(customerUid))
+        return 0;
+
       try
       {
-        if (!string.IsNullOrEmpty(customerUid))
-          deviceLicenseResponseModel = await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid));
+        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid)))?.Total ?? 0;
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "cwsAccount", e.Message));
       }
-
-      return deviceLicenseResponseModel?.Total ?? 0;
     }
 
     #endregion account
@@ -73,114 +71,115 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     public async Task<ProjectData> GetProject(long shortRaptorProjectId)
     {
-      ProjectData project = null;
+      if (shortRaptorProjectId < 1)
+        return null;
       try
       {
-        if (shortRaptorProjectId > 0)
-          project = await _projectProxy.GetProjectApplicationContext(shortRaptorProjectId);
+        return await _projectProxy.GetProjectApplicationContext(shortRaptorProjectId);
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
       }
-
-      return project;
     }
 
     public async Task<ProjectData> GetProject(string projectUid)
     {
-      ProjectData project = null;
+      if (string.IsNullOrEmpty(projectUid))
+        return null;
       try
       {
-        if (!string.IsNullOrEmpty(projectUid))
-          project = await _projectProxy.GetProjectApplicationContext(projectUid);
+        return await _projectProxy.GetProjectApplicationContext(projectUid);
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
       }
-
-      return project;
     }
 
     public async Task<List<ProjectData>> GetProjects(string customerUid, DateTime validAtDate)
     {
-      var projects = new List<ProjectData>();
+      if (string.IsNullOrEmpty(customerUid))
+        return null;
       try
       {
-        if (!string.IsNullOrEmpty(customerUid))
+        var p = await _projectProxy.GetProjects(customerUid);
+        if (p != null)
         {
-          var p = await _projectProxy.GetProjects(customerUid);
-
-          if (p != null)
-          {
-            projects = p
-              .Where(x => x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsArchived)
+          // todoMaverick, what should be the marketing requirements for dates here?
+          return p
+              .Where(x => DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)
               .ToList();
-          }
         }
+        return null;
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
       }
-
-      return projects;
     }
 
     public async Task<List<ProjectData>> GetProjectsAssociatedWithDevice(string customerUid, string deviceUid, DateTime validAtDate)
     {
-      var projects = new List<ProjectData>();
+      if (string.IsNullOrEmpty(customerUid) || string.IsNullOrEmpty(deviceUid))
+        return null;
       try
       {
-        if (!string.IsNullOrEmpty(customerUid))
+        var p = await _deviceProxy.GetProjectsForDevice(deviceUid);
+        if (p != null)
         {
-          var p = await _deviceProxy.GetProjectsForDevice(deviceUid);
-          if (p != null)
-          {
-            projects = p
-              .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) &&
-              x.StartDate <= validAtDate.Date && validAtDate.Date <= x.EndDate && !x.IsArchived)
-              .ToList();
-          }
+          // todoMaverick, what should be the marketing requirements for dates here?
+          return p
+            .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) &&
+                DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)
+            .ToList();
         }
+        return null;
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
       }
-
-      return projects;
     }
 
     // manual import, no time, optional device
-    public async Task<List<ProjectData>> CheckManualProjectIntersection(ProjectData project, double latitude, double longitude,
+    public async Task<List<ProjectData>> GetIntersectingProjectsForManual(ProjectData project, double latitude, double longitude,
       DeviceData device = null)
     {
       var accountProjects = new List<ProjectData>();
-      
+      if (project == null || string.IsNullOrEmpty(project.ProjectUID))
+        return accountProjects;
+
       try
       {
-        if (project != null && !string.IsNullOrEmpty(project.ProjectUID))
-          accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(project.CustomerUID, latitude, longitude, project.ProjectUID));
-
-        if (accountProjects == null || !accountProjects.Any())
+        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(project.CustomerUID, latitude, longitude, project.ProjectUID));
+        // should not be possible to get > 1 as call was limited by the projectUid       
+        if (accountProjects == null || accountProjects.Count() != 1)
           return accountProjects;
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
+      }
 
-        if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
-        {
-          var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
-          if (projectsAssociatedWithDevice.Any())
-            return projectsAssociatedWithDevice.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
-        }
+      if (device == null || string.IsNullOrEmpty(device.DeviceUID))
+        return accountProjects;
+
+      try
+      {
+        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
+        if (projectsAssociatedWithDevice.Any())
+          return projectsAssociatedWithDevice.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
 
         return accountProjects;
       }
@@ -188,31 +187,43 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
       }
     }
 
-    public async Task<List<ProjectData>> CheckDeviceProjectIntersection(DeviceData device,
+    public async Task<List<ProjectData>> GetIntersectingProjectsForDevice(DeviceData device,
       double latitude, double longitude, DateTime timeOfPosition)
     {
       var accountProjects = new List<ProjectData>();
+      if (device == null || string.IsNullOrEmpty(device.CustomerUID) || string.IsNullOrEmpty(device.DeviceUID))
+        return accountProjects;
 
+      // what projects does this customer have which intersect the lat/long?
       try
       {
-        if (device != null && !string.IsNullOrEmpty(device.DeviceUID))
-          accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
-
+        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
         if (!accountProjects.Any())
           return accountProjects;
-
-        var projectsAssociatedWithProjects = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
-        return projectsAssociatedWithProjects.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "project", e.Message));
+      }
+
+      // what projects does this device have visibility to?
+      try
+      {
+        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
+        var intersection = projectsAssociatedWithDevice.Select(dp => dp.ProjectUID).Intersect(accountProjects.Select(ap => ap.ProjectUID));
+        return projectsAssociatedWithDevice.Where(p => intersection.Contains(p.ProjectUID)).ToList();
+      }
+      catch (Exception e)
+      {
+        throw new ServiceException(HttpStatusCode.InternalServerError,
+          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
+          ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
       }
     }
 
@@ -225,38 +236,34 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     // and shortRaptorAssetId(localDB)
     public async Task<DeviceData> GetDevice(string serialNumber)
     {
-      DeviceData device = null;
+      if (string.IsNullOrEmpty(serialNumber))
+        return null;
       try
       {
-        if (!string.IsNullOrEmpty(serialNumber))
-          device = await _deviceProxy.GetDevice(serialNumber);
+        return await _deviceProxy.GetDevice(serialNumber);
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
       }
-
-      return device;
     }
 
     public async Task<DeviceData> GetDevice(int shortRaptorAssetId)
     {
-      DeviceData device = null;
+      if (shortRaptorAssetId < 1)
+        return null;
       try
       {
-        if (shortRaptorAssetId > 0)
-          device = await _deviceProxy.GetDevice(shortRaptorAssetId);
+        return await _deviceProxy.GetDevice(shortRaptorAssetId);
       }
       catch (Exception e)
       {
         throw new ServiceException(HttpStatusCode.InternalServerError,
           TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 28, e.Message));
+            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
       }
-
-      return device;
     }
 
     #endregion device

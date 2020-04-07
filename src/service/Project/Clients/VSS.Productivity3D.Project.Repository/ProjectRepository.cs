@@ -1141,7 +1141,7 @@ namespace VSS.Productivity3D.Project.Repository
     }
 
     /// <summary>
-    ///     Gets the specified project without linked data like customer and subscription.
+    ///     Gets the specified project even if archived
     /// </summary>
     /// <param name="projectUid"></param>
     /// <returns>The project</returns>
