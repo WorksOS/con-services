@@ -8,17 +8,9 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling
   public class RawFileAccessResult : ContractExecutionResult
   {
     public byte[] fileContents { get; private set; }
+    public bool Success => fileContents?.Length > 0;
 
-    /// <summary>
-    /// Private constructor
-    /// </summary>
-    private RawFileAccessResult()
-    { }
-
-    /// <summary>
-    /// Create instance of RawFileAccessResult
-    /// </summary>
-    public static RawFileAccessResult CreateRawFileAccessResult(byte[] fileContents)
+    public static RawFileAccessResult Create(byte[] fileContents = null)
     {
       return new RawFileAccessResult
       {
