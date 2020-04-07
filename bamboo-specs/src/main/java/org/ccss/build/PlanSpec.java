@@ -342,7 +342,7 @@ public class PlanSpec {
         String deployCommand =
                 // Remove the prefix from a branch name
                 // i.e feature/test -> test
-                "IMAGETAG=$(echo ${bamboo.planRepository.branchName} | sed -e 's/.\\///')\n"+
+                "IMAGETAG=$(basename ${bamboo.planRepository.branchName})\n"+
                 "helm upgrade " +
                 "--install " +
                 "${bamboo.deploy.environment}-${bamboo.service} " +
