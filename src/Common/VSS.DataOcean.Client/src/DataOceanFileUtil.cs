@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.DataOcean.Client
 {
@@ -22,7 +21,7 @@ namespace VSS.DataOcean.Client
     public string GeneratedTilesFolder => TilesFolderWithSuffix();
 
     public DataOceanFileUtil(string fullFileName)
-    { 
+    {
       FileName = Path.GetFileName(fullFileName);
       FilePath = Path.GetDirectoryName(fullFileName)
                      ?.Replace(Path.DirectorySeparatorChar, DataOceanUtil.PathSeparator);
@@ -124,7 +123,7 @@ namespace VSS.DataOcean.Client
     /// <summary>
     /// Constructs the file name that the file is stored with in DataOcean
     /// </summary>
-    public static string DataOceanFileName(string fileName, bool includeSurveyedUtc, string fileUid, DateTime? surveyedUtc)
+    public static string DataOceanFileName(string fileName, bool includeSurveyedUtc, Guid fileUid, DateTime? surveyedUtc)
     {
       //DataOcean doesn't handle Japanese characters so use fileUid as file name.
       //Coordinate system files use the projectUid and generated files for alignment center lines use alignmentUid

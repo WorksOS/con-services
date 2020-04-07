@@ -19,11 +19,11 @@ namespace VSS.MasterData.ProjectTests
     private const string IMPORTED_BY = "JoeSmoe";
 
     private static readonly ProjectErrorCodesProvider projectErrorCodesProvider;
-    private static readonly string projectUid = Guid.NewGuid().ToString();
+    private static readonly Guid projectUid = Guid.NewGuid();
     private static readonly DateTime? surfaceUtc = DateTime.UtcNow;
     private static readonly DateTime fileCreatedUtc = DateTime.UtcNow;
     private static readonly DateTime fileUpdatedUtc = DateTime.UtcNow;
-    private static readonly string parentUid = Guid.NewGuid().ToString();
+    private static readonly Guid? parentUid = Guid.NewGuid();
     private static readonly double? offset = 1.5;
 
     static ImportFileV6ValidationTests()
@@ -78,7 +78,7 @@ namespace VSS.MasterData.ProjectTests
       var file = new FlowFile { path = "blahblah", flowFilename = "deblah" };
 
       var ex = Assert.Throws<ServiceException>(
-        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, string.Empty, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
+        () => FlowJsFileImportDataValidator.ValidateUpsertImportedFileRequest(file, Guid.Empty, ImportedFileType.MassHaulPlan, DxfUnitsType.ImperialFeet,
           fileCreatedUtc, fileUpdatedUtc, IMPORTED_BY, surfaceUtc, parentUid, offset));
       Assert.NotEqual(-1, ex.GetContent.IndexOf(projectErrorCodesProvider.FirstNameWithOffset(5)));
     }

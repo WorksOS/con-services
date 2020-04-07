@@ -23,14 +23,13 @@ namespace VSS.MasterData.ProjectTests
     public void MapCreateProjectRequestToEvent()
     {
       var request = CreateProjectRequest.CreateACreateProjectRequest
-      (Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
+      (Guid.NewGuid().ToString(),
         ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
        null, null);
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      Assert.Equal(request.ProjectUID, createProjectEvent.ProjectUID);
       Assert.Equal(request.ProjectType, createProjectEvent.ProjectType);
       Assert.Equal(request.ProjectName, createProjectEvent.ProjectName);
       Assert.Equal(request.Description, createProjectEvent.Description);
@@ -42,11 +41,9 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.CoordinateSystemFileContent, createProjectEvent.CoordinateSystemFileContent);
 
       Assert.Equal(DateTime.MinValue, createProjectEvent.ActionUTC);
-      Assert.Equal(DateTime.MinValue, createProjectEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<CreateProjectRequest>(request);
-      Assert.Equal(request.ProjectUID, copyOfRequest.ProjectUID);
       Assert.Equal(request.CoordinateSystemFileName, copyOfRequest.CoordinateSystemFileName);
     }
 
@@ -67,7 +64,6 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.CoordinateSystemFileContent, updateProjectEvent.CoordinateSystemFileContent);
 
       Assert.Equal(DateTime.MinValue, updateProjectEvent.ActionUTC);
-      Assert.Equal(DateTime.MinValue, updateProjectEvent.ReceivedUTC);
 
       // just make a copy
       var copyOfRequest = AutoMapperUtility.Automapper.Map<UpdateProjectRequest>(request);
@@ -149,7 +145,7 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.FileUpdatedUtc, importedFileDescriptor.FileUpdatedUtc);
       Assert.Equal(request.ImportedBy, importedFileDescriptor.ImportedBy);
       Assert.Equal(request.SurveyedUtc, importedFileDescriptor.SurveyedUtc);
-      Assert.Equal(request.ParentUid, !string.IsNullOrEmpty(importedFileDescriptor.ParentUid) ? "Fail assertion" : null);
+      Assert.Equal(request.ParentUid, importedFileDescriptor.ParentUid.HasValue ? "Fail assertion" : null);
       Assert.Equal(request.Offset, importedFileDescriptor.Offset);
       Assert.Equal(request.LastActionedUtc, importedFileDescriptor.ImportedUtc);
       Assert.True(importedFileDescriptor.IsActivated);
@@ -189,7 +185,6 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(request.ImportedBy, updateImportedFileEvent.ImportedBy);
       Assert.Equal(request.ImportedFileUid, updateImportedFileEvent.ImportedFileUID.ToString());
       Assert.Equal(request.ProjectUid, updateImportedFileEvent.ProjectUID.ToString());
-      Assert.Equal(request.LastActionedUtc, updateImportedFileEvent.ReceivedUTC);
       Assert.Equal(request.SurveyedUtc, updateImportedFileEvent.SurveyedUtc);
 
       // just make a copy file descriptor is only in the source file, not the destination

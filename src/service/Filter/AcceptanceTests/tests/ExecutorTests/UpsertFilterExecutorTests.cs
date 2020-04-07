@@ -89,8 +89,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -156,8 +155,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -214,25 +212,24 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored(FilterType filterType)
     {
-      var custUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
       var userId = UIDs.JWT_USER_ID;
-      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID;
-      var filterUid = Guid.NewGuid();
+      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      var filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
       string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = custUid,
+        CustomerUID = Guid.Parse(custUid),
         UserID = userId,
-        ProjectUID = projectUid,
-        FilterUID = filterUid,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid),
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -251,10 +248,10 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName(FilterType filterType)
     {
-      var custUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
       string userId = UIDs.JWT_USER_ID;
-      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID;
-      var filterUid = Guid.NewGuid();
+      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      var filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = "theName updated";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
@@ -262,15 +259,14 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = custUid,
+        CustomerUID = Guid.Parse(custUid),
         UserID = userId,
-        ProjectUID = projectUid,
-        FilterUID = filterUid,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid),
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = nameUpdated, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -286,13 +282,13 @@ namespace ExecutorTests
 
     [TestMethod]
     [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Report)]
+    //[DataRow(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive(FilterType filterType)
     {
-      var custUid = Guid.NewGuid();
+      var custUid = Guid.NewGuid().ToString();
       var userId = UIDs.JWT_USER_ID;
-      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID;
-      var filterUid = Guid.NewGuid();
+      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      var filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = name.ToUpper();
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
@@ -300,15 +296,14 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = custUid,
+        CustomerUID = Guid.Parse(custUid),
         UserID = userId,
-        ProjectUID = projectUid,
-        FilterUID = filterUid,
+        ProjectUID = Guid.Parse(projectUid),
+        FilterUID = Guid.Parse(filterUid),
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       // try to update a filter with same name but upper case (allowed!)
@@ -347,8 +342,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
@@ -383,8 +377,7 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterEvent);
@@ -425,8 +418,7 @@ namespace ExecutorTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });

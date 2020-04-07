@@ -216,6 +216,20 @@ namespace TestUtility
     }
 
     /// <summary>
+    /// Validate the TBC orgShortName for this customer via the web api. 
+    /// </summary>
+    public Task<string> ValidateTbcOrgIdApiV2(string orgShortName)
+    {
+      var validateTccAuthorizationRequest = ValidateTccAuthorizationRequest.CreateValidateTccAuthorizationRequest(orgShortName);
+
+      var requestJson = validateTccAuthorizationRequest == null
+        ? null
+        : JsonConvert.SerializeObject(validateTccAuthorizationRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
+
+      return CallProjectWebApi("api/v5/preferences/tcc", HttpMethod.Post, requestJson, CustomerUid.ToString());
+    }
+
+    /// <summary>
     /// Call the version 4 of the project master data
     /// </summary>
     private async Task<string> CallWebApiWithProject(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode)
@@ -399,7 +413,7 @@ namespace TestUtility
       }
     }
 
-    public void CompareTheActualImportFileWithExpectedV4(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
+    public void CompareTheActualImportFileWithExpectedV6(ImportedFileDescriptor actualFile, ImportedFileDescriptor expectedFile, bool ignoreZeros)
     {
       CompareTheActualImportFileWithExpected(actualFile, expectedFile, ignoreZeros);
     }
@@ -441,134 +455,37 @@ namespace TestUtility
       var jsonString = string.Empty;
       string eventType = eventObject.EventType;
       switch (eventType)
-      {              
-        case "CreateDeviceEvent":
-          var createDeviceEvent = new CreateDeviceEvent()
-          {
-            ActionUTC = eventObject.EventDate,            
-            DeviceUID = eventObject.DeviceUID,
-            ShortRaptorAssetID = eventObject.ShortRaptorAssetId
-          };          
-          jsonString = JsonConvert.SerializeObject(new { CreateDeviceEvent = createDeviceEvent }, JsonSettings);
-          break;
-              
-        case "CreateProjectEvent":
-          var createProjectEvent = new CreateProjectEvent()
-          {
-            ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate,
-            ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
-            ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
-            ProjectName = eventObject.ProjectName,
-            ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectBoundary = eventObject.ProjectBoundary
-          };
-          if (HasProperty(eventObject, "CoordinateSystem"))
-          {
-            createProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            createProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
-          }
-          if (HasProperty(eventObject, "ProjectID"))
-          {
-            createProjectEvent.ShortRaptorProjectId = int.Parse(eventObject.ShortRaptorProjectId);
-          }
-          if (HasProperty(eventObject, "ProjectUID"))
-          {
-            createProjectEvent.ProjectUID = eventObject.ProjectUID;
-          }
-          if (HasProperty(eventObject, "CustomerUID"))
-          {
-            createProjectEvent.CustomerUID = eventObject.CustomerUID;
-          }
-          if (HasProperty(eventObject, "Description"))
-          {
-            createProjectEvent.Description = eventObject.Description;
-          }          
-          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(createProjectEvent, JsonSettings) : JsonConvert.SerializeObject(new { CreateProjectEvent = createProjectEvent }, JsonSettings);
-          break;
+      { 
         case "CreateProjectRequest":
-          string cpProjectUid = null;
           string cpCustomerUid = null;
-          createProjectEvent = new CreateProjectEvent()
-          {
-            ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate,
-            ProjectStartDate = DateTime.Parse(eventObject.ProjectStartDate),
-            ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate),
-            ProjectName = eventObject.ProjectName,
-            ProjectTimezone = eventObject.ProjectTimezone,
-            ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            ProjectBoundary = eventObject.ProjectBoundary
-          };
+          string cpDescription = null;
+          string cpCoordinateSystemFileName = null;
+          byte[] cpCoordinateSystemFileContent = null;
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
-            createProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            createProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
+            cpCoordinateSystemFileName = eventObject.CoordinateSystem;
+            cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
-          if (HasProperty(eventObject, "ShortRaptorProjectId"))
-          {
-            createProjectEvent.ShortRaptorProjectId = int.Parse(eventObject.ShortRaptorProjectId);
-          }
-          if (HasProperty(eventObject, "ProjectUID"))
-          {
-            cpProjectUid = eventObject.ProjectUID;
-          }
+           
           if (HasProperty(eventObject, "CustomerUID"))
           {
             cpCustomerUid = eventObject.CustomerUID;
           }
           if (HasProperty(eventObject, "Description"))
           {
-            createProjectEvent.Description = eventObject.Description;
+            cpDescription = eventObject.Description;
           }
-          var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpProjectUid,
-            cpCustomerUid, createProjectEvent.ProjectType,
-            createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectStartDate,
-            createProjectEvent.ProjectEndDate, createProjectEvent.ProjectTimezone,
-            createProjectEvent.ProjectBoundary, 
-            createProjectEvent.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileContent);
+          var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpCustomerUid,
+            (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
+            eventObject.ProjectName, cpDescription, DateTime.Parse(eventObject.ProjectStartDate),
+            DateTime.Parse(eventObject.ProjectEndDate), eventObject.ProjectTimezone,
+            eventObject.ProjectBoundary, cpCoordinateSystemFileName, cpCoordinateSystemFileContent);
           jsonString = JsonConvert.SerializeObject(cprequest, JsonSettings);
-          // var test = JsonConvert.DeserializeObject<CreateProjectRequest>(jsonString);
-          break;
-        case "UpdateProjectEvent":
-          var updateProjectEvent = new UpdateProjectEvent()
-          {
-            ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate,
-            ProjectUID = eventObject.ProjectUID,
-          };
-          if (HasProperty(eventObject, "CoordinateSystem"))
-          {
-            updateProjectEvent.CoordinateSystemFileName = eventObject.CoordinateSystem;
-            updateProjectEvent.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
-          }
-          if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
-          {
-            updateProjectEvent.ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate);
-          }
-          if (HasProperty(eventObject, "ProjectTimezone"))
-          {
-            updateProjectEvent.ProjectTimezone = eventObject.ProjectTimezone;
-          }
-          if (HasProperty(eventObject, "ProjectName"))
-          {
-            updateProjectEvent.ProjectName = eventObject.ProjectName;
-          }
-          if (HasProperty(eventObject, "ProjectType"))
-          {
-            updateProjectEvent.ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
-          }
-          if (HasProperty(eventObject, "Description"))
-          {
-            updateProjectEvent.Description = eventObject.Description;
-          }
-          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(updateProjectEvent, JsonSettings) : JsonConvert.SerializeObject(new { UpdateProjectEvent = updateProjectEvent }, JsonSettings);
-          break;
-        case "UpdateProjectRequest":
+          break;        
+        case "UpdateProjectRequest":        
           var updateProjectRequest = new UpdateProjectEvent()
           {
-            ProjectUID = eventObject.ProjectUID,
+            ProjectUID = new Guid(eventObject.ProjectUID),
           };
           if (HasProperty(eventObject, "CoordinateSystem"))
           {
@@ -595,47 +512,20 @@ namespace TestUtility
           {
             updateProjectRequest.ProjectBoundary = eventObject.ProjectBoundary;
           }
+
           var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName, updateProjectRequest.Description,
                                               updateProjectRequest.ProjectEndDate, updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent, updateProjectRequest.ProjectBoundary);
           jsonString = JsonConvert.SerializeObject(request, JsonSettings);
-          break;
-        case "DeleteProjectEvent":
-          var deleteProjectEvent = new DeleteProjectEvent()
-          {
-            ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate,
-            ProjectUID = eventObject.ProjectUID
-          };
-          jsonString = IsPublishToWebApi ? JsonConvert.SerializeObject(deleteProjectEvent, JsonSettings) : JsonConvert.SerializeObject(new { DeleteProjectEvent = deleteProjectEvent }, JsonSettings);
-          break;
+          break;        
         case "AssociateProjectGeofence":          
           var associateProjectGeofence = new AssociateProjectGeofence()
           {
             ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate,
             ProjectUID = eventObject.ProjectUID,
             GeofenceUID = eventObject.GeofenceUID
           };
           jsonString = JsonConvert.SerializeObject(new { AssociateProjectGeofence = associateProjectGeofence }, JsonSettings);
           break;
-        case "CreateGeofenceEvent":
-          var createGeofenceEvent = new CreateGeofenceEvent()
-          {
-            ActionUTC = eventObject.EventDate,
-            ReceivedUTC = eventObject.EventDate,
-            GeofenceUID = eventObject.GeofenceUID,
-            CustomerUID = eventObject.CustomerUID,
-            Description = eventObject.Description,
-            FillColor = int.Parse(eventObject.FillColor),
-            GeofenceName = eventObject.GeofenceName,
-            GeofenceType = eventObject.GeofenceType,
-            GeometryWKT = eventObject.GeometryWKT,
-            IsTransparent = bool.Parse(eventObject.IsTransparent),
-            UserUID = eventObject.UserUID
-          };
-          jsonString = JsonConvert.SerializeObject(new { CreateGeofenceEvent = createGeofenceEvent }, JsonSettings);
-          break;
-
         case "ImportedFileDescriptor":
           var importedFileDescriptor = new ImportedFileDescriptor
           {

@@ -41,8 +41,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         UserID = userId,
         ProjectSettingsType = request.ProjectSettingsType,
         Settings = request.Settings,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       if (await projectRepo.StoreEvent(upsertProjectSettingsEvent).ConfigureAwait(false) < 1)

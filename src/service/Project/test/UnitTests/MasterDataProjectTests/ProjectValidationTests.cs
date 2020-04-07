@@ -90,7 +90,7 @@ namespace VSS.MasterData.ProjectTests
     [InlineData(-43.5, -200)]
     [InlineData(-43.5, 200)]
     [InlineData(-90.5, -100)]
-    // todoMaverick  [InlineData(90.5, 100)]
+    [InlineData(90.5, 100)]
     [InlineData(0.1, -1.99)]
     [InlineData(-1.99, 0.99)]
     public void ValidateCreateProjectV5Request_BoundaryInvalidLAtLong(double latitude, double longitude)

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Clients.CWS.Utilities;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
@@ -32,7 +31,7 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
     {
-      createProjectRequest.accountId = TRNHelper.MakeTRN(createProjectRequest.accountId, TRNHelper.TRN_PROJECT);
+      createProjectRequest.accountId = TRNHelper.MakeTRN(createProjectRequest.accountId, TRNHelper.TRN_ACCOUNT);
       var response = await PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
       response.Id = TRNHelper.ExtractGuidAsString(response.Id);
       return response;

@@ -30,7 +30,6 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
         .ForMember(dest => dest.UserUID, opt => opt.MapFrom(src => src.UserUid))
         .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUid))
         .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
-        .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
         .ForMember(dest => dest.Description, opt => opt.Ignore())
         .ForMember(dest => dest.FillColor, opt => opt.MapFrom(x => 16011550))//F4511E
         .ForMember(dest => dest.IsTransparent, opt => opt.MapFrom(x => true))
@@ -44,7 +43,6 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
         .ForMember(dest => dest.GeofenceType, opt => opt.MapFrom(src => src.GeofenceType.ToString()))
         .ForMember(dest => dest.UserUID, opt => opt.MapFrom(src => src.UserUid))
         .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
-        .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
         .ForMember(dest => dest.Description, opt => opt.Ignore())
         .ForMember(dest => dest.FillColor, opt => opt.Ignore())
         .ForMember(dest => dest.IsTransparent, opt => opt.Ignore())
@@ -54,8 +52,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
       CreateMap<BoundaryUidRequestFull, DeleteGeofenceEvent>()
         .ForMember(dest => dest.GeofenceUID, opt => opt.MapFrom(src => src.BoundaryUid))
         .ForMember(dest => dest.UserUID, opt => opt.MapFrom(src => src.UserUid))
-        .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
-        .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore());
+        .ForMember(dest => dest.ActionUTC, opt => opt.Ignore());
     }
   }
 }

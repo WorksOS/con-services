@@ -8,7 +8,6 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
     public Guid FilterUID { get; set; }
 
     public DateTime ActionUTC { get; set; }
-    public DateTime ReceivedUTC { get; set; }
 
     // the following are provided to allow for insert where the delete arrives from old kafka before the Create
     public Guid CustomerUID { get; set; }

@@ -202,8 +202,8 @@ public class PlanSpec {
                         new Variable("run_acceptance_tests", runAcceptanceTest ? "true" : "false"),
                         new Variable("run_unit_tests", runUnitTests ? "true" : "false")
                         )
-//                .triggers(new RepositoryPollingTrigger()
-//                        .pollEvery(10, TimeUnit.MINUTES))
+                .triggers(new RepositoryPollingTrigger()
+                        .pollEvery(10, TimeUnit.MINUTES))
                 .planBranchManagement(new PlanBranchManagement()
                         .createForVcsBranchMatching("feature/.*") // Don't monitor feature branches
                         .notificationForCommitters()
@@ -230,11 +230,24 @@ public class PlanSpec {
 
     void createSanityPlan(BambooServer bambooServer) {
         Plan plan = new Plan(project(), "Services Sanity Build", "SANITY")
-                .linkedRepositories("con-services")
+                .planRepositories(new BitbucketServerRepository()
+                        .name("code")
+                        .server(new ApplicationLink()
+                                .name("E-Tools Bitbucket"))
+                        .projectKey("CIV")
+                        .repositorySlug("con-services")
+                        .branch("master")
+                        .sshCloneUrl("ssh://git@bitbucket.trimble.tools/civ/con-services.git")
+                        .sshPublicKey(SshPublicKey)
+                        .sshPrivateKey(SshPrivateKey)
+                        .shallowClonesEnabled(true)
+                        .fetchWholeRepository(false)
+                        .changeDetection(new VcsChangeDetection()
+                                .quietPeriodEnabled(true)))
                 .description("Plan created from Bamboo Java Specs")
                 .notifications(new EmptyNotificationsList())
-//                .triggers(new RepositoryPollingTrigger()
-//                        .pollEvery(1, TimeUnit.MINUTES))
+                .triggers(new RepositoryPollingTrigger()
+                        .pollEvery(1, TimeUnit.MINUTES))
                 .planBranchManagement(new PlanBranchManagement()
                         .createForVcsBranchMatching("feature/.*")
                         .notificationForCommitters()
@@ -243,20 +256,20 @@ public class PlanSpec {
                                 .whenInactiveInRepositoryAfterDays(7)));
 
         Stage stage = new Stage("Sanity Builds");
-        createSanityJob(stage, "COMMON", "Common", "src/Common/Common.sln");
-        createSanityJob(stage, "ASSETMGMT", "Asset Management", "src/service/3dAssetMgmt/VSS.Productivity3D.3DAssetMgmt.sln");
-//        createSanityJob(stage, "3DNOW", "3D Now", "src/service/3dNow/VSS.Productivity3D.3DNow.sln");
-        createSanityJob(stage, "3DP", "3DP", "src/service/3DP/VSS.Productivity3D.Service.sln");
-        createSanityJob(stage, "FILEACCESS", "File Access", "src/service/FileAccess/VSS.Productivity3D.FileAccess.Service.sln");
-        createSanityJob(stage, "FILTER", "Filter", "src/service/Filter/VSS.Productivity3D.Filter.sln");
-        // Has no tests
-//        createSanityJob(stage, "MOCKAPI", "Mock Web API", "src/service/MockProjectWebApi/MockProjectWebApi.sln");
-        createSanityJob(stage, "PROJECT", "Project", "src/service/Project/VSS.Visionlink.Project.sln");
-        createSanityJob(stage, "PUSH", "Push", "src/service/Push/VSS.Productivity3D.Push.sln");
-        createSanityJob(stage, "SCHEDULER", "Scheduler", "src/service/Scheduler/VSS.Productivity3D.Scheduler.sln");
-        createSanityJob(stage, "TFA", "Tag File Auth", "src/service/TagFileAuth/VSS.TagFileAuth.Service.sln");
-        createSanityJob(stage, "TILE", "Tile", "src/service/TileService/VSS.Tile.Service.sln");
-        createSanityJob(stage, "TREX", "TRex", "src/service/TRex/TRex.netstandard.sln");
+//        createSanityJob(stage, "COMMON", "Common", "src/Common/", "Common.sln", "");
+        createSanityJob(stage, "ASSETMGMT", "Asset Management", "src/service/3dAssetMgmt/", "VSS.Productivity3D.3DAssetMgmt.sln", "test");
+//        createSanityJob(stage, "3DNOW", "3D Now", "src/service/3dNow/VSS.Productivity3D.3DNow.sln", "test");
+        createSanityJob(stage, "3DP", "3DP", "src/service/3DP/", "VSS.Productivity3D.Service.sln", "test");
+        createSanityJob(stage, "FILEACCESS", "File Access", "src/service/FileAccess/","VSS.Productivity3D.FileAccess.Service.sln", "test");
+        createSanityJob(stage, "FILTER", "Filter", "src/service/Filter/","VSS.Productivity3D.Filter.sln", "test");
+//        // Has no tests
+//        createSanityJob(stage, "MOCKAPI", "Mock Web API", "src/service/MockProjectWebApi/MockProjectWebApi.sln", "test");
+        createSanityJob(stage, "PROJECT", "Project", "src/service/Project/","VSS.Visionlink.Project.sln", "test");
+        createSanityJob(stage, "PUSH", "Push", "src/service/Push/","VSS.Productivity3D.Push.sln", "test");
+        createSanityJob(stage, "SCHEDULER", "Scheduler", "src/service/Scheduler/","VSS.Productivity3D.Scheduler.sln", "test");
+        createSanityJob(stage, "TFA", "Tag File Auth", "src/service/TagFileAuth/","VSS.TagFileAuth.Service.sln", "test");
+        createSanityJob(stage, "TILE", "Tile", "src/service/TileService/","VSS.Tile.Service.sln", "test");
+        createSanityJob(stage, "TREX", "TRex", "src/service/TRex/","TRex.netstandard.sln", "tests");
 
         plan.stages(stage);
 
@@ -265,22 +278,34 @@ public class PlanSpec {
         bambooServer.publish(plan);
     }
 
-    void createSanityJob(Stage stage, String key, String serviceName, String solutionPath) {
+    void createSanityJob(Stage stage, String key, String serviceName, String serviceFolder, String solutionName, String testFolder) {
+        String solutionPath = serviceFolder + solutionName;
         String dotnetParms = "-r linux-x64 -p:AllowUnsafeBlocks=true";
+
+        // Command we are trying to run
+        // find src/Common/ -type f -name "*.csproj" | xargs -I@ sh -c "dotnet test -r linux-x64 -p:AllowUnsafeBlocks=true --test-adapter-path:. --logger:\"nunit;LogFilePath=\$(pwd)\TestResults/\$(basename @).xml\" @"
+        String testCommand = String.format("find %s%s -type f -name \"*.csproj\" | xargs -I@ sh -c \"echo @ && dotnet test -r linux-x64 -p:AllowUnsafeBlocks=true --test-adapter-path:. --logger:\\\"nunit;LogFilePath=$(pwd)/TestResults/\\$(basename @).xml\\\" @ \"",
+                serviceFolder,
+                testFolder);
+
         ScriptTask buildScript = new ScriptTask()
                 .inlineBody("dotnet build " + dotnetParms + " " + solutionPath)
                 .interpreterBinSh();
 
         ScriptTask testScript = new ScriptTask()
-                .inlineBody("dotnet test --logger \"nunit\" " + dotnetParms + " " + solutionPath)
+                .inlineBody(testCommand)
                 .interpreterBinSh();
 
         TestParserTask testParserTask = TestParserTask.createNUnitParserTask()
-                .resultDirectories("linux-x64/*.xml");
+                .resultDirectories("TestResults/*.xml");
 
         Job buildJob = new Job(serviceName, "SAN"+key)
-                .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript, testParserTask)
-                .finalTasks(cleanTask());
+                .tasks(cleanTask(), checkoutCodeTask(), buildScript, testScript)
+                .artifacts(new Artifact(serviceName + "Test Results")
+                        .location("TestResults/")
+                        .copyPattern("*.xml")
+                        .shared(true))
+                .finalTasks(testParserTask);
 //                .requirements(new Requirement("team")
 //                        .matchType(Requirement.MatchType.EQUALS)
 //                        .matchValue("merino"));

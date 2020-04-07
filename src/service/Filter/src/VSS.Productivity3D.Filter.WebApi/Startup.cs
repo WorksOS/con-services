@@ -23,7 +23,9 @@ using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
+using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
+using VSS.Productivity3D.Push.WebAPI;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 using VSS.WebApi.Common;
 
@@ -89,13 +91,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
       services.AddTransient<IProjectProxy, ProjectV6Proxy>();
-      services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
+      services.AddTransient<IFileImportProxy, FileImportV6Proxy>();
       services.AddTransient<ICwsAccountClient, CwsAccountClient>();
 
-      // todoMaverick
-      //services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); todoMaverick 
-      services.AddTransient<IWebRequest, GracefulWebRequest>();
-      // endof todoMaverick
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 
       services.AddSingleton<CacheInvalidationService>();
 

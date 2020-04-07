@@ -25,13 +25,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task WriteFileToDataOcean(
       Stream fileContents, string rootFolder, string customerUid, string projectUid, string dataOceanFileName,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IDataOceanClient dataOceanClient,
-      ITPaaSApplicationAuthentication authn, string fileUid, IConfigurationStore configStore)
+      ITPaaSApplicationAuthentication authn, Guid fileUid, IConfigurationStore configStore)
     {
       var dataOceanEnabled = configStore.GetValueBool("ENABLE_DATA_OCEAN", false);
 
       if (dataOceanEnabled)
       {
-        if (!dataOceanFileName.StartsWith(fileUid))
+        if (!dataOceanFileName.StartsWith(fileUid.ToString()))
         {
           throw new ServiceException(HttpStatusCode.InternalServerError,
             new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError,
@@ -80,13 +80,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes the importedFile from DataOcean
     /// </summary>
     public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(
-      string fileName, string rootFolder, string customerUid, string projectUid, string importedFileUid, 
+      string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid, 
       ILogger log, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn, IConfigurationStore configStore)
     {
       var dataOceanEnabled = configStore.GetValueBool("ENABLE_DATA_OCEAN", false);
       if (dataOceanEnabled)
       {
-        var dataOceanPath = DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid);
+        var dataOceanPath = DataOceanFileUtil.DataOceanPath(rootFolder, customerUid, projectUid.ToString());
         var fullFileName = $"{dataOceanPath}{Path.DirectorySeparatorChar}{fileName}";
         log.LogInformation($"{nameof(DeleteFileFromDataOcean)}: fullFileName {JsonConvert.SerializeObject(fullFileName)}");
 

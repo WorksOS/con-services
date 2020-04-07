@@ -139,7 +139,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// The UID of the design file that the reference surface is based off.
     /// </summary>
-    public string ParentUid { get; set; }
+    public Guid? ParentUid { get; set; }
 
     /// <summary>
     /// The offset in meters for the reference surface.

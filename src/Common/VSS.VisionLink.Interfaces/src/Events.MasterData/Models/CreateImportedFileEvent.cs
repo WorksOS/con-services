@@ -19,7 +19,6 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
     public DxfUnitsType DxfUnitsType { get; set; }
     public Guid ProjectUID { get; set; }
     public DateTime ActionUTC { get; set; }
-    public DateTime ReceivedUTC { get; set; }
     public int MinZoomLevel { get; set; }
     public int MaxZoomLevel { get; set; }
     public double Offset { get; set; }

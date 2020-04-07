@@ -101,34 +101,10 @@ namespace VSS.MasterData.Project.WebAPI
         });
       });
 
-      // todoMaverick
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); 
-      services.AddTransient<IWebRequest, GracefulWebRequest>();
-      // endof todoMaverick
-
       services.AddSingleton<CacheInvalidationService>();
-      services.AddTransient<ImportedFileUpdateService>();
-
-      //Note: The injection of CAP subscriber service needed before 'services.AddCap()'
-      //services.AddTransient<ISubscriberService, SubscriberService>();
-      //Disable CAP for now #76666
-      /*
-      services.AddCap(x =>
-      {
-        x.UseMySql(y =>
-        {
-          y.ConnectionString = configStore.GetConnectionString("VSPDB", "MYSQL_CAP_DATABASE_NAME");
-          y.TableNamePrefix = configStore.GetValueString("MYSQL_CAP_TABLE_PREFIX");
-        });
-        x.UseKafka(z =>
-        {
-          z.Servers = $"{configStore.GetValueString("KAFKA_URI")}:{configStore.GetValueString("KAFKA_PORT")}";
-          z.MainConfig.TryAdd("group.id", configStore.GetValueString("KAFKA_CAP_GROUP_NAME"));
-          //z.MainConfig.TryAdd("auto.offset.reset", "earliest");//Uncomment for debugging locally
-        });
-        x.UseDashboard(); //View dashboard at http://localhost:5000/cap
-      });
-      */
+      services.AddTransient<ImportedFileUpdateService>(); 
+      
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)

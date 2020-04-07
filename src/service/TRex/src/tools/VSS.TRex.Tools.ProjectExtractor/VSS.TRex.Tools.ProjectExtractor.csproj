@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Alignments\VSS.TRex.Alignments.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Designs\VSS.TRex.Designs.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj" />

@@ -6,18 +6,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   /// <summary>
   /// The request representation used to Create a project. 
-  /// If CustomerUI, ProjectUID and ProjectID are null, then they will be populated via other means.
+  /// If CustomerUID is null, it will be populated via other means.
   /// This handles create of project, association to the customer and notification to raptor.
   /// </summary>
   public class CreateProjectRequest
-  {
-    /// <summary>
-    /// The unique ID of the project. if null, then one will be generated.
-    /// </summary>
-    [JsonProperty(PropertyName = "ProjectUID", Required = Required.Default)]
-    public Guid? ProjectUID { get; set; } = null;
-
-    
+  {   
     /// <summary>
     /// The unique ID of the customer which the project is to be associated with. 
     /// if null, then the customer from the header will be used.
@@ -67,14 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </summary>
     [JsonProperty(PropertyName = "ProjectBoundary", Required = Required.Default)]
     public string ProjectBoundary { get; set; }
-
-    /// <summary>
-    /// The legacy customer number.
-    /// This is no longer required by raptor so will be optional.
-    /// </summary>
-    [JsonProperty(PropertyName = "CustomerID", Required = Required.Default)]
-    public long? ObsoleteCustomerID { get; set; } = 0;
-
+    
     /// <summary>
     /// The CS of the project. 
     /// This is required for landfills but optional for other project types.
@@ -99,7 +85,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <summary>
     /// Create instance of CreateProjectRequest
     /// </summary>
-    public static CreateProjectRequest CreateACreateProjectRequest(string projectUid, string customerUid, 
+    public static CreateProjectRequest CreateACreateProjectRequest(string customerUid, 
       ProjectType projectType, string projectName, string description,
       DateTime projectStartDate, DateTime projectEndDate, string projectTimezone, string projectBoundary,
       string coordinateSystemFileName, byte[] coordinateSystemFileContent
@@ -107,7 +93,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     {
       return new CreateProjectRequest
       {
-        ProjectUID = string.IsNullOrEmpty(projectUid) ? (Guid?) null : new Guid(projectUid),
         CustomerUID = string.IsNullOrEmpty(customerUid) ? (Guid?)null : new Guid(customerUid),
         ProjectType = projectType,
         ProjectName = projectName,

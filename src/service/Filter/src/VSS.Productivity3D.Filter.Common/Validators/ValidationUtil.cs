@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.Filter.Common.Validators
           filterBoundary = await geofenceRepository.GetGeofence(filterTempForHydration.PolygonUid);
         }
 
-        // geofenceSvc not available to ccss
+        // favorite and assoicated geofences N/A and geofenceSvc not available to ccss
         //if (filterBoundary == null)
         //{
         //  //Get geofence from geofence service. It could be a favorite or an associated geofence.

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -125,7 +126,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent)
       {
-        await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+        await notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
       }
 
       return upsertFilterResult;

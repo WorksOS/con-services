@@ -17,24 +17,14 @@ data:
 #MySql configuration
   MYSQL_SERVER_NAME_VSPDB: rds-rpd-mydb04.cfyg2f3omhgy.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
-#Kafka configuration
-  KAFKA_URI: kafka.alpha.eks.ccss.cloud
-  KAFKA_PORT: "9092"
-  KAFKA_TOPIC_NAME_SUFFIX: -Alpha
-  KAFKA_OFFSET: latest
-  PROJECTSERVICE_KAFKA_TOPIC_NAME: ccss.Interfaces.Events.MasterData.IProjectEvent
 #Service references  
- # ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/associateprojectsubscription
- # DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-subscriptionservice/1.0/project/dissociateprojectsubscription
-  CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-customer/1.0/Customers/me
-  GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-geofenceservice/1.0/
+  cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
   PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-preferenceservice/1.0
   VETA_EXPORT_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0/export/veta
   TILE_INTERNAL_BASE_URL: http://tile.alpha.eks.ccss.cloud/internal/v1
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-UnifiedFleet/1.0
   assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-assetutilization/1.1 
-  unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-unifiedproductivity/1.0
   productivity3d_service_public_v1: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0
   productivity3d_service_public_v2: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0
   cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
@@ -44,7 +34,6 @@ data:
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"
   TILE_RENDER_WAIT_INTERVAL: "2000"
-  CUSTOM_INIT_SCRIPT: zookeeper_check.sh
   LOG_MAX_CHAR: "1000"
   SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES: "720"
   DOWNLOAD_FOLDER: C:/temp/
@@ -86,10 +75,9 @@ data:
   MAX_FILE_SIZE: "100000000"
   TILE_CACHE_LIFE: 00:15:00
   CUSTOMER_CACHE_LIFE: 00:30:00
+  CWS_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
-  GEOFENCE_CACHE_LIFE: 00:00:03
-  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:00:03
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00

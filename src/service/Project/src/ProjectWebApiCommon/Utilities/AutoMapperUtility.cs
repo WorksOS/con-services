@@ -5,8 +5,6 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-//using ImportedFileHistoryItem = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.ImportedFileHistoryItem;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
@@ -52,9 +50,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
         {
           cfg.AllowNullCollections = true; // so that byte[] can be null
           cfg.CreateMap<CreateProjectRequest, CreateProjectEvent>()
+            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore()) // will come from cws
             .ForMember(dest => dest.CustomerUID, opt => opt.MapFrom(src => src.CustomerUID))
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
-            .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore());
           cfg.CreateMap<CreateProjectEvent, ProjectDatabaseModel>()
             .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.ProjectStartDate))
@@ -69,7 +67,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.LastActionedUTC, opt => opt.Ignore());
           cfg.CreateMap<UpdateProjectRequest, UpdateProjectEvent>()            
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
-            .ForMember(dest => dest.ReceivedUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ProjectTimezone, opt => opt.Ignore());
           cfg.CreateMap<ProjectDatabaseModel, ProjectV6Descriptor>()
             .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.Boundary))
@@ -89,8 +86,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<ImportedFile, UpdateImportedFileEvent>()
             .ForMember(dest => dest.ImportedFileUID, opt => opt.MapFrom(src => Guid.Parse(src.ImportedFileUid)))
             .ForMember(dest => dest.ProjectUID, opt => opt.MapFrom(src => Guid.Parse(src.ProjectUid)))
-            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc))
-            .ForMember(dest => dest.ReceivedUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
+            .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(src => src.LastActionedUtc));
 
           // for v2 BC apis
           cfg.CreateMap<ProjectDatabaseModel, ProjectV5DescriptorResult>()
@@ -105,7 +101,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemFileName, opt => opt.MapFrom((src => src.CoordinateSystem.Name)))
             .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow))
-            .ForMember(dest => dest.ReceivedUTC, opt => opt.MapFrom(x => DateTime.UtcNow))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(x => 0))
             .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
             .ForMember(dest => dest.Description, opt => opt.Ignore());

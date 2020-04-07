@@ -61,7 +61,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null
@@ -70,8 +69,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, boundaryUid);
@@ -83,13 +81,13 @@ namespace ExecutorTests
       var filterToTest = new GeofenceDataSingleResult(
         new GeofenceData
         {
-          GeofenceUID = boundaryUid.ToString(),
+          GeofenceUID = boundaryUid,
           Description = null,
           GeofenceName = name,
-          UserUID = userId.ToString(),
+          UserUID = userId,
           GeometryWKT = boundaryPolygon,
           GeofenceType = GeofenceType.Filter.ToString(),
-          CustomerUID = custUid.ToString(),
+          CustomerUID = custUid,
           FillColor = 0,
           IsTransparent = false
         });
@@ -122,7 +120,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null
@@ -131,8 +128,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, boundaryUid);
@@ -163,7 +159,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = GenerateWKTPolygon(),
         GeofenceName = "name",
         Description = null
@@ -172,8 +167,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid1,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid2, userId, boundaryUid);

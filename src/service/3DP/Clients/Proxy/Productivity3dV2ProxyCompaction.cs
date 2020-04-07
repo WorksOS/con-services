@@ -39,12 +39,12 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
     {
     }
 
-    public async Task<Stream> GetLineworkFromAlignment(string projectUid, string alignmentUid, IDictionary<string, string> customHeaders)
+    public async Task<Stream> GetLineworkFromAlignment(Guid projectUid, Guid alignmentUid, IDictionary<string, string> customHeaders)
     {
       var queryParams = new List<KeyValuePair<string, string>>
       {
-        new KeyValuePair<string, string>("projectUid", projectUid),
-        new KeyValuePair<string, string>("alignmentUid", alignmentUid)
+        new KeyValuePair<string, string>("projectUid", projectUid.ToString()),
+        new KeyValuePair<string, string>("alignmentUid", alignmentUid.ToString())
       };
 
       var result = await GetMasterDataStreamItemServiceDiscoveryNoCache

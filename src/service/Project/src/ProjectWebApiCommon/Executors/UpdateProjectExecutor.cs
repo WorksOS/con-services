@@ -33,7 +33,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (existing == null)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
 
-      ProjectRequestHelper.ValidateProjectBoundary(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
+      if (existing == null || !string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary))
+        ProjectRequestHelper.ValidateProjectBoundary(updateProjectEvent.ProjectBoundary, serviceExceptionHandler);
 
       await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
@@ -41,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
-        await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID.ToString(),
+        await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID,
           existing.StartDate, updateProjectEvent.ProjectEndDate, updateProjectEvent.ProjectBoundary,
           log, serviceExceptionHandler, projectRepo);
       }
@@ -54,9 +55,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       // create/update in Cws
       try
       {
-        var projectTRN = await UpdateCws(existing, updateProjectEvent);
-        if (!string.IsNullOrEmpty(projectTRN)) // no error, may have been a create project
-          updateProjectEvent.ProjectUID = new Guid(projectTRN);
+        var projectUid = await UpdateCws(existing, updateProjectEvent);
+        if (!string.IsNullOrEmpty(projectUid)) // no error, may have been a create project
+          updateProjectEvent.ProjectUID = new Guid(projectUid);
         // todoMaverick what kind of errors?
       }
       catch (Exception e)
@@ -72,7 +73,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       if (!string.IsNullOrEmpty(updateProjectEvent.CoordinateSystemFileName))
       {
         // don't bother rolling this back
-        await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID.ToString(),
+        await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(updateProjectEvent.ProjectUID,
           existing.ShortRaptorProjectId,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
@@ -106,7 +107,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         try
         {
-          // todo convert from ours to WM Project TimeZone?
           var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(updateProjectEvent);
           createProjectRequestModel.accountId = customerUid;
           createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
@@ -126,7 +126,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       else
       {
-        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0)
+        // todoMaverick may need to check start and end dates if we add them
+        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0
+          || string.Compare(existing.Description, updateProjectEvent.Description, true) != 0)
         {
           // todoMaverick how to update endDate and Description?
           var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
@@ -136,7 +138,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
         {
-          // todoMaverick how to update timezone
           var boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
           await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
           // todoMaverick what are errors?

@@ -105,8 +105,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </summary>
     public string CustomerUID { get; set; }
 
-    // public string LegacyCustomerId { get; set; } todoMaverick obsolete?
-
     /// <summary>
     /// Gets or sets the CoordinateSystem FileName which the project is associated with
     /// </summary>

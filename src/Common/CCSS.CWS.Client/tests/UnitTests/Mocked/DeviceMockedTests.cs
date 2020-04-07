@@ -2,16 +2,14 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Clients.CWS.Utilities;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using Xunit;
 
 namespace CCSS.CWS.Client.UnitTests.Mocked
 {
-  [TestClass]
   public class DeviceMockedTests : BaseTestClass
   {
     protected override IServiceCollection SetupTestServices(IServiceCollection services)
@@ -23,7 +21,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       return services;
     }
 
-    [TestMethod]
+    [Fact]
     public void GetDeviceBySerialNumberTest()
     {
       const string serialNumber = "2002J032SW";
@@ -47,18 +45,18 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
         var result = await client.GetDeviceBySerialNumber(serialNumber);
 
-        Assert.IsNotNull(result, "No result from getting device by serialNumber");
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Id);
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedAccountId), result.AccountId);
-        Assert.AreEqual(expectedDeviceType, result.DeviceType);
-        Assert.AreEqual(expectedDeviceName, result.DeviceName);
-        Assert.AreEqual(expectedStatus, result.Status);
-        Assert.AreEqual(expectedSerialNumber, result.SerialNumber);
+        Assert.NotNull(result);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Id);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedAccountId), result.AccountId);
+        Assert.Equal(expectedDeviceType, result.DeviceType);
+        Assert.Equal(expectedDeviceName, result.DeviceName);
+        Assert.Equal(expectedStatus, result.Status);
+        Assert.Equal(expectedSerialNumber, result.SerialNumber);
         return true;
       });
     }
 
-    [TestMethod]
+    [Fact]
     public void GetDeviceByDeviceUidTest()
     {
       const string DeviceId = "trn::profilex:us-west-2:device:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
@@ -82,18 +80,18 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
         var result = await client.GetDeviceByDeviceUid(TRNHelper.ExtractGuid(DeviceId).Value);
 
-        Assert.IsNotNull(result, "No result from getting device by serialNumber");
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Id);
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedAccountId), result.AccountId);
-        Assert.AreEqual(expectedDeviceType, result.DeviceType);
-        Assert.AreEqual(expectedDeviceName, result.DeviceName);
-        Assert.AreEqual(expectedStatus, result.Status);
-        Assert.AreEqual(expectedSerialNumber, result.SerialNumber);
+        Assert.NotNull(result);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Id);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedAccountId), result.AccountId);
+        Assert.Equal(expectedDeviceType, result.DeviceType);
+        Assert.Equal(expectedDeviceName, result.DeviceName);
+        Assert.Equal(expectedStatus, result.Status);
+        Assert.Equal(expectedSerialNumber, result.SerialNumber);
         return true;
       });
     }
 
-    [TestMethod]
+    [Fact]
     public void GetDevicesForAccountTest()
     {
       const string accountId = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
@@ -122,21 +120,21 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
         var result = await client.GetDevicesForAccount(TRNHelper.ExtractGuid(accountId).Value);
 
-        Assert.IsNotNull(result, "No result from getting account devices");
-        Assert.IsFalse(result.HasMore);
-        Assert.IsNotNull(result.Devices);
-        Assert.AreEqual(1, result.Devices.Count);
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Devices[0].Id);
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedAccountId), result.Devices[0].AccountId);
-        Assert.AreEqual(expectedDeviceType, result.Devices[0].DeviceType);
-        Assert.AreEqual(expectedDeviceName, result.Devices[0].DeviceName);
-        Assert.AreEqual(expectedStatus, result.Devices[0].Status);
-        Assert.AreEqual(expectedSerialNumber, result.Devices[0].SerialNumber);
+        Assert.NotNull(result);
+        Assert.False(result.HasMore);
+        Assert.NotNull(result.Devices);
+        Assert.Equal(1, result.Devices.Count);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Devices[0].Id);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedAccountId), result.Devices[0].AccountId);
+        Assert.Equal(expectedDeviceType, result.Devices[0].DeviceType);
+        Assert.Equal(expectedDeviceName, result.Devices[0].DeviceName);
+        Assert.Equal(expectedStatus, result.Devices[0].Status);
+        Assert.Equal(expectedSerialNumber, result.Devices[0].SerialNumber);
         return true;
       });
     }
 
-    [TestMethod]
+    [Fact]
     public void GetProjectsForDeviceTest()
     {
       const string deviceTrn = "trn::profilex:us-west-2:device:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97";
@@ -162,12 +160,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
         var result = await client.GetProjectsForDevice(TRNHelper.ExtractGuid(deviceTrn).Value);
 
-        Assert.IsNotNull(result, "No result from getting projects for a device");
-        Assert.IsFalse(result.HasMore);
-        Assert.IsNotNull(result.Projects);
-        Assert.AreEqual(1, result.Projects.Count);
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedProjectTrn), result.Projects[0].projectId);
-        Assert.AreEqual(TRNHelper.ExtractGuidAsString(expectedAccountTrn), result.Projects[0].accountId);
+        Assert.NotNull(result);
+        Assert.False(result.HasMore);
+        Assert.NotNull(result.Projects);
+        Assert.Equal(1, result.Projects.Count);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedProjectTrn), result.Projects[0].projectId);
+        Assert.Equal(TRNHelper.ExtractGuidAsString(expectedAccountTrn), result.Projects[0].accountId);
         return true;
       });
     }

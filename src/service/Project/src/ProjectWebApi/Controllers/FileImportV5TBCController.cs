@@ -115,10 +115,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             ? $"{nameof(UpsertImportedFileV5TBC)}: file doesn't exist already in DB: {importedFileTbc.Name} projectUid {project.ProjectUID} ImportedFileType: {importedFileTbc.ImportedFileTypeId}"
             : $"{nameof(UpsertImportedFileV5TBC)}: file exists already in DB. Will be updated: {JsonConvert.SerializeObject(existing)}");
 
-        var importedFileUid = creating ? Guid.NewGuid().ToString() : existing.ImportedFileUid;
+        var importedFileUid = creating ? Guid.NewGuid() : Guid.Parse(existing.ImportedFileUid);
         var dataOceanFileName = DataOceanFileUtil.DataOceanFileName(importedFileTbc.Name,
           importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface || importedFileTbc.ImportedFileTypeId == ImportedFileType.GeoTiff,
-          importedFileUid.ToString(), importedFileTbc.SurfaceFile?.SurveyedUtc);
+          importedFileUid, importedFileTbc.SurfaceFile?.SurveyedUtc);
 
         if (memStream == null)
         {
@@ -126,7 +126,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         }
         await DataOceanHelper.WriteFileToDataOcean(
           memStream, DataOceanRootFolderId, customerUid, project.ProjectUID, dataOceanFileName,
-          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid.ToString(), ConfigStore);
+          Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
 
         var fileEntry = await fileEntryTask;
         ImportedFileDescriptorSingleResult importedFile;
@@ -159,7 +159,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         {
           var importedFileUpsertEvent = new UpdateImportedFile
           (
-            project.ProjectUID, project.ShortRaptorProjectId, importedFileTbc.ImportedFileTypeId,
+            Guid.Parse(project.ProjectUID), project.ShortRaptorProjectId, importedFileTbc.ImportedFileTypeId,
             importedFileTbc.ImportedFileTypeId == ImportedFileType.SurveyedSurface
               ? importedFileTbc.SurfaceFile.SurveyedUtc
               : (DateTime?)null,
@@ -167,7 +167,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
               ? importedFileTbc.LineworkFile.DxfUnitsTypeId
               : DxfUnitsType.Meters,
             fileEntry.createTime, fileEntry.modifyTime,
-            fileDescriptor, existing.ImportedFileUid, existing.ImportedFileId,
+            fileDescriptor, Guid.Parse(existing.ImportedFileUid), existing.ImportedFileId,
             DataOceanRootFolderId, 0, dataOceanFileName
           );
 

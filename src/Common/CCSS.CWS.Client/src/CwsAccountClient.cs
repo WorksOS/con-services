@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Clients.CWS.Utilities;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Proxies.Interfaces;
@@ -28,14 +27,11 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me/accounts
     ///   user token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
-    ///   CCSSCON- available
     /// </summary>
     public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
     {
       var userTrn = TRNHelper.MakeTRN(userUid, TRNHelper.TRN_USER);
-      var accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid.ToString(), null, customHeaders);
+      var accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, null, customHeaders);
       // todoMaveric what if error?
       foreach (var account in accountListResponseModel.Accounts)
       {
@@ -56,7 +52,7 @@ namespace CCSS.CWS.Client
     {
       var userTrn = TRNHelper.MakeTRN(userUid, TRNHelper.TRN_USER);
       var queryParameters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("userId", userTrn) };
-      return GetData<AccountListResponseModel>("/users/me/accounts", null, userUid.ToString(), queryParameters, customHeaders);
+      return GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, queryParameters, customHeaders);
     }
 
     public async Task<AccountResponseModel> GetAccountForUser(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
@@ -67,7 +63,7 @@ namespace CCSS.CWS.Client
          new KeyValuePair<string, string>( "accountId", accountTrn )
         };
 
-      var accountResponseModel = await GetData<AccountResponseModel>("/users/me/account", null, userUid.ToString(), queryParameters, customHeaders);
+      var accountResponseModel = await GetData<AccountResponseModel>("/users/me/account", null, userUid, queryParameters, customHeaders);
       
       // todoMaveric what if error?
       accountResponseModel.Id = TRNHelper.ExtractGuidAsString(accountResponseModel.Id);
@@ -84,7 +80,7 @@ namespace CCSS.CWS.Client
     public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IDictionary<string, string> customHeaders = null)
     {
       var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
-      return GetData<DeviceLicenseResponseModel>($"/accounts/{accountTrn}/devicelicense", customerUid.ToString(), null, null, customHeaders);
+      return GetData<DeviceLicenseResponseModel>($"/accounts/{accountTrn}/devicelicense", customerUid, null, null, customHeaders);
     }
   }
 }

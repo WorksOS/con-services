@@ -96,13 +96,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return projects;
     }
 
-    public static async Task<bool> DoesProjectOverlap(string customerUid, string projectUid, DateTime projectStartDate,
+    public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, DateTime projectStartDate,
       DateTime projectEndDate, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var overlaps =
         await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate, projectUid);
+          projectStartDate, projectEndDate, projectUid == Guid.Empty ? string.Empty : projectUid.ToString());
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
@@ -159,7 +159,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Create CoordinateSystem in Raptor and save a copy of the file in TCC
     /// </summary>
-    public static async Task CreateCoordSystemInProductivity3dAndTcc(string projectUid, int shortRaptorProjectId,
+    public static async Task CreateCoordSystemInProductivity3dAndTcc(Guid projectUid, int shortRaptorProjectId,
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
@@ -217,7 +217,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
-              ms, rootFolder, customerUid, projectUid,
+              ms, rootFolder, customerUid, projectUid.ToString(),
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
               log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
           }
@@ -284,13 +284,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <param name="log"></param>
     /// <param name="projectRepo"></param>
     /// <returns></returns>
-    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, string projectUid, ILogger log,
+    public static async Task DeleteProjectPermanentlyInDb(Guid customerUid, Guid projectUid, ILogger log,
       IProjectRepository projectRepo)
     {
       log.LogDebug($"DeleteProjectPermanentlyInDB: {projectUid}");
       var deleteProjectEvent = new DeleteProjectEvent
       {
-        ProjectUID = new Guid(projectUid),
+        ProjectUID = projectUid,
         DeletePermanently = true,
         ActionUTC = DateTime.UtcNow
       };

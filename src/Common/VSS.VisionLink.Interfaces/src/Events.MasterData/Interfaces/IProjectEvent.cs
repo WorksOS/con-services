@@ -6,6 +6,5 @@ namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces
   {
     Guid ProjectUID { get; set; }
     DateTime ActionUTC { get; set; }
-    DateTime ReceivedUTC { get; set; }
   }
 }

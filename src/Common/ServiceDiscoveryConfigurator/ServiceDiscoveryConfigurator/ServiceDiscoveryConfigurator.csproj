@@ -89,7 +89,7 @@
     <None Include="Resources\AppIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj">
+    <ProjectReference Include="..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj">
       <Project>{F71C3672-C186-40FE-89B7-250AFBD1947C}</Project>
       <Name>VSS.Common.Abstractions</Name>
     </ProjectReference>

@@ -60,7 +60,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task CreateProjectV5Executor_GetTCCFile()
+    public async Task CreateProjectV5TBCExecutor_GetTCCFile()
     {
       var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
       var fileRepo = new Mock<IFileRepository>();
@@ -79,7 +79,7 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task CreateProjectV5Executor_HappyPath()
+    public async Task CreateProjectV5TBCExecutor_HappyPath()
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
@@ -105,7 +105,7 @@ namespace VSS.MasterData.ProjectTests.Executors
             It.IsAny<string>()))
         .ReturnsAsync(false);
 
-      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
       
@@ -143,19 +143,19 @@ namespace VSS.MasterData.ProjectTests.Executors
     }
 
     [Fact]
-    public async Task CreateProjectV4Executor_HappyPath()
+    public async Task CreateProjectV6Executor_HappyPath()
     {
       var userId = Guid.NewGuid().ToString();
       var customHeaders = new Dictionary<string, string>();
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
-      (Guid.NewGuid().ToString(), Guid.NewGuid().ToString(),
+      ( Guid.NewGuid().ToString(),
         ProjectType.Standard, "projectName", "this is the description",
         new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         null, null);
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
-      createProjectEvent.ActionUTC = createProjectEvent.ReceivedUTC = DateTime.UtcNow;
+      createProjectEvent.ActionUTC = DateTime.UtcNow;
 
       var configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
@@ -170,7 +170,7 @@ namespace VSS.MasterData.ProjectTests.Executors
             It.IsAny<string>()))
         .ReturnsAsync(false);
 
-      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
+      var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
       cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
 

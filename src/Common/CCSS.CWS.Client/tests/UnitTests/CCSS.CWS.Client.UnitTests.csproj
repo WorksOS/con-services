@@ -24,13 +24,24 @@
     <PackageReference Include="XunitXml.TestLogger" Version="2.0.0" />
     <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
     <PackageReference Include="Moq" Version="4.10.1" />
+    <PackageReference Include="NunitXml.TestLogger" Version="2.1.41" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\src\CCSS.CWS.Client.csproj" />
+    <ProjectReference Include="..\..\..\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
+    <ProjectReference Include="..\..\..\WebApi.Common\src\VSS.WebApi.Common.csproj" />
+    <ProjectReference Include="..\..\src\CCSS.CWS.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="VSS.Common.Abstractions">
+      <HintPath>..\..\VSS.Common.Abstractions\src\bin\Debug\netcoreapp3.1\VSS.Common.Abstractions.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 

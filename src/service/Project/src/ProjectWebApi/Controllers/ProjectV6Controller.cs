@@ -48,28 +48,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets a list of projects for a customer. The list includes projects of all project types,
-    ///    and both active and archived projects.
-    /// </summary>
-    /// <param name="includeLandfill">Obsolete</param>
-    /// <returns>A list of projects</returns>
-    [Route("api/v6/project")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6([FromQuery] bool? includeLandfill)
-    {
-      // Note: includeLandfill is obsolete, but not worth the grief up creating a new endpoint.
-
-      return await GetAllProjectsV6();
-    }
-
-    /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
     ///        and both active and archived projects.
     /// </summary>
-    /// <returns>A list of projects</returns>
-    [Route("api/v6/project/all")]
+    [Route("api/v6/project")]
     [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetAllProjectsV6()
+    public async Task<ProjectV6DescriptorsListResult> GetProjectsV6()
     {
       Logger.LogInformation("GetAllProjectsV6");
 
@@ -194,7 +178,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid().ToString();
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
-      createProjectEvent.ReceivedUTC = createProjectEvent.ActionUTC = DateTime.UtcNow;
+      createProjectEvent.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
       if (createProjectEvent.CustomerUID.ToString() != customerUid)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 18);
@@ -209,7 +193,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient)
+            cwsProjectClient: CwsProjectClient)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -279,7 +263,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       Logger.LogInformation("UpdateProjectV6. projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);      
-      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
+      project.ActionUTC = DateTime.UtcNow;
 
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
@@ -291,13 +275,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
-            dataOceanClient: DataOceanClient, authn: Authorization)
+            dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient)
           .ProcessAsync(project)
       );
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation("UpdateProjectV6. Invalidating 3D PM cache");
-      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID.ToString()));
+      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
@@ -322,7 +306,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       // do a quick validation to make sure the project acctually exists (this will also be run in the background task, but a quick response to the UI will be better if the project can't be updated)
       var project = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(projectRequest);
-      project.ReceivedUTC = project.ActionUTC = DateTime.UtcNow;
+      project.ActionUTC = DateTime.UtcNow;
       // validation includes check that project must exist - otherwise there will be a null legacyID.
       ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
       await ProjectDataValidator.ValidateProjectName(customerUid, projectRequest.ProjectName, projectRequest.ProjectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo);
@@ -365,8 +349,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       {
         ProjectUID = new Guid(projectUid),
         DeletePermanently = false,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
       ProjectDataValidator.Validate(project, ProjectRepo, ServiceExceptionHandler);
 
@@ -374,6 +357,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var isDeleted = await ProjectRepo.StoreEvent(project).ConfigureAwait(false);
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
+
+      // todoMaverick archive in cws
 
       if (!string.IsNullOrEmpty(customerUid))
         await notificationHubClient.Notify(new CustomerChangedNotification(customerUid));

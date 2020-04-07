@@ -104,45 +104,6 @@ namespace WebApiTests
       var respGet = JsonConvert.DeserializeObject<GeofenceDataSingleResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual("GetBoundary By BoundaryUid. The requested Boundary does not exist, or does not belong to the requesting project or filter.", respGet.Message,
         "Expecting an error message to say the boundary does not exist.");
-    }
-
-    [TestMethod]
-    public void GetBoundaries()
-    {
-      var overlappingFavoriteGeofences = new List<string> { GoldenDimensionFavoriteGeofenceUid.ToString() };
-      var associatedGeofences = new List<Guid> {GoldenDimensionAssociatedGeofenceUid, EOP13AssociatedGeofenceUid};
-
-      ts.DeleteAllBoundariesAndAssociations();
-
-      const string boundaryName = "Boundary Web test 5";
-      this.Msg.Title(boundaryName, "Get boundaries");
-
-      var boundaryRequest = BoundaryRequest.Create(string.Empty, boundaryName + ".1", GenerateWKTPolygon());
-      var boundary = JsonConvert.SerializeObject(boundaryRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var responseCreate = ts.CallFilterWebApi($"api/v1/boundary/{ProjectUid}", "PUT", boundary);
-      var boundaryResponse = JsonConvert.DeserializeObject<GeofenceDataSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var boundaryUid1 = boundaryResponse.GeofenceData.GeofenceUID;
-
-      boundaryRequest = BoundaryRequest.Create(string.Empty, boundaryName + ".2", GenerateWKTPolygon());
-      boundary = JsonConvert.SerializeObject(boundaryRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      responseCreate = ts.CallFilterWebApi($"api/v1/boundary/{ProjectUid}", "PUT", boundary);
-      boundaryResponse = JsonConvert.DeserializeObject<GeofenceDataSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      var boundaryUid2 = boundaryResponse.GeofenceData.GeofenceUID;
-
-      var responseGet = ts.CallFilterWebApi($"api/v1/boundaries/{ProjectUid}", "GET");
-      var boundaryResponseGet = JsonConvert.DeserializeObject<GeofenceDataListResult>(responseGet, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
-      //2 boundaries and 1 overlapping favorite and 2 associated geofences but one is a duplicate of the favorite
-      Assert.AreEqual(2 + overlappingFavoriteGeofences.Count + associatedGeofences.Count - 1, boundaryResponseGet.GeofenceData.Count);
-      Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == boundaryUid1), "Missing boundary 1");
-      Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == boundaryUid2), "Missing boundary 2");
-      foreach (var geofenceUid in overlappingFavoriteGeofences)
-      {
-        Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == geofenceUid), "Missing favorite geofence");
-      }
-      foreach (var geofenceUid in associatedGeofences)
-      {
-        Assert.IsNotNull(boundaryResponseGet.GeofenceData.SingleOrDefault(g => g.GeofenceUID == geofenceUid.ToString()), "Missing associated geofence");
-      }
-    }
+    }     
   }
 }

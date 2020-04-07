@@ -19,7 +19,6 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="DotNetCore.CAP" Version="3.0.2" />
-    <PackageReference Include="DotNetCore.CAP.Kafka" Version="3.0.2" />
     <PackageReference Include="DotNetCore.CAP.MySql" Version="3.0.2" />
   </ItemGroup>
 

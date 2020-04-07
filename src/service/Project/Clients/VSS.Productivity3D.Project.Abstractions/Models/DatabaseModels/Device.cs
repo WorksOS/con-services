@@ -6,7 +6,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
   {
     public string DeviceUID { get; set; }
 
-    // todoMaverick 
     // This IS really an asset id and Raptor treats this as such
     // However in WorksManager there is no asset type entity
     // so I'll stuff it in the Device for now.....

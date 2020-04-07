@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Common.Abstractions.Clients.CWS.Utilities
+namespace CCSS.CWS.Client
 {
   public class TRNHelper
   {

@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.GridFabric\VSS.TRex.GridFabric.csproj" />
   </ItemGroup>

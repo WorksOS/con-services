@@ -4,11 +4,11 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Proxies.Interfaces;
 using FluentAssertions.Json;
+using Xunit;
 
 namespace CCSS.CWS.Client.UnitTests.Mocked
 {
@@ -24,13 +24,13 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       SetupMockRequest(mockWebRequest,
         url,
         () => response,
-        validateUrlAction: (requestUrl) => Assert.AreEqual(requestUrl, url),
+        validateUrlAction: (requestUrl) => Assert.Equal(requestUrl, url),
         validateStreamAction: (requestStream) => ValidateRequestStream(requestStream, expectedJson),
-        validateHttpMethodAction: (requestMethod) => Assert.AreEqual(requestMethod, method, $"{what} should be {method} but it is {requestMethod}")
+        validateHttpMethodAction: (requestMethod) => Assert.Equal(requestMethod, method)
       );
 
       var result = testExecution.Invoke().Result;
-      Assert.IsTrue(result);
+      Assert.True(result);
     }
 
     public static void TestRequestSendsCorrectJson(string what, Mock<IWebRequest> mockWebRequest,
@@ -38,13 +38,13 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
     {
       SetupMockRequest(mockWebRequest,
         url,
-        validateUrlAction: (requestUrl) => Assert.AreEqual(requestUrl, url),
+        validateUrlAction: (requestUrl) => Assert.Equal(requestUrl, url),
         validateStreamAction: (requestStream) => ValidateRequestStream(requestStream, expectedJson),
-        validateHttpMethodAction: (requestMethod) => Assert.AreEqual(requestMethod, method, $"{what} should be {method} but it is {requestMethod}")
+        validateHttpMethodAction: (requestMethod) => Assert.Equal(requestMethod, method)
       );
 
       var result = testExecution.Invoke().Result;
-      Assert.IsTrue(result);
+      Assert.True(result);
     }
 
     private static void ValidateRequestStream(Stream requestStream, string expectedJson)

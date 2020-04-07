@@ -36,7 +36,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
       await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
-        createProjectEvent.ProjectUID.ToString(),
+        createProjectEvent.ProjectUID,
         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary,
         log, serviceExceptionHandler, projectRepo);
 
@@ -66,7 +66,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       //    if AssociateProjectSubscription fails ditto      
       createProjectEvent = await CreateProjectInDb(createProjectEvent).ConfigureAwait(false);
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
-        createProjectEvent.ProjectUID.ToString(), createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
+        createProjectEvent.ProjectUID, createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
         projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");

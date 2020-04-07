@@ -62,7 +62,6 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(_checkBoundaryString, creatProjectEvent.ProjectBoundary);
       Assert.Equal(_businessCenterFile.Name, creatProjectEvent.CoordinateSystemFileName);
       Assert.True(creatProjectEvent.ActionUTC > DateTime.MinValue, "ActionUTC has not been mapped correctly");
-      Assert.True(creatProjectEvent.ReceivedUTC > DateTime.MinValue, "ReceivedUTC has not been mapped correctly");
     }
 
     [Fact]

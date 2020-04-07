@@ -104,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       if (checkExists)
       {
         bool isCreate = evt is CreateProjectEvent;
-        if (evt.ProjectUID != null)
+        if (evt.ProjectUID != null && evt.ProjectUID != Guid.Empty)
         {
           bool exists = projectRepo.ProjectExists(evt.ProjectUID.ToString()).Result;
           if ((isCreate && exists) || (!isCreate && !exists))

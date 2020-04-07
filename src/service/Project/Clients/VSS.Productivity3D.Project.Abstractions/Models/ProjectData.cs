@@ -27,16 +27,12 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     public string ProjectTimeZoneIana { get; set; }
 
     // start and end are actually only date with no time component. However C# has no date-only.
-    public DateTime StartDate { get; set; }
+    public string StartDate { get; set; }
 
-    public DateTime EndDate { get; set; }
+    public string EndDate { get; set; }
 
 
     public string CustomerUID { get; set; }
-
-    // todoMaverick, what is this for?
-    //// legacy CustomerID in Gen2 is a bigint. Unlike LegacyProjectID, this is passed around as a long. I don't know why.
-    //public long LegacyCustomerID { get; set; }
 
     public string GeometryWKT { get; set; }
 

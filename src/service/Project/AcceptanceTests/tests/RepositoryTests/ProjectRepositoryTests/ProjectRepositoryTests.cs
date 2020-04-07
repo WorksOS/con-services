@@ -76,7 +76,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       pg.Wait();
       Assert.NotNull(pg.Result);
       var projectGeofenceList = pg.Result.ToList();
-      Assert.Empty(projectGeofenceList);
+      Assert.Equal(1, projectGeofenceList.Count);
     }
 
     /// <summary>
@@ -912,7 +912,6 @@ namespace RepositoryTests.ProjectRepositoryTests
       {
         ProjectUID = createProjectEvent.ProjectUID,
         GeofenceUID = createGeofenceEvent.GeofenceUID,
-        ReceivedUTC = actionUtc,
         ActionUTC = actionUtc
       };
 
@@ -921,9 +920,9 @@ namespace RepositoryTests.ProjectRepositoryTests
       Assert.Equal(1, geo.Result);
 
 
-      var p = projectRepo.StoreEvent(createProjectEvent);
-      p.Wait();
-      Assert.Equal(1, p.Result);
+      //var p = projectRepo.StoreEvent(createProjectEvent);
+      //p.Wait();
+      //Assert.Equal(1, p.Result);
 
       var pg = projectRepo.StoreEvent(associateProjectGeofence);
       pg.Wait();
