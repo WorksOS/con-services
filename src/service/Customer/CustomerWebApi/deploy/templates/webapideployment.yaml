@@ -1,0 +1,37 @@
+{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+{{- $configName := printf "%s-config-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $serviceName }}
+  labels:
+    app: {{ $serviceName }}
+    component: {{ template "component.webapi" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ $serviceName }}
+      component: {{ template "component.webapi" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ $serviceName }}
+        component: {{ template "component.webapi" . }}
+    spec:
+      serviceAccount: {{ .Values.environment }}-service-account
+      containers:
+      - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-customer-webapi:latest
+        name: {{ $serviceName }}     
+        resources:
+{{ toYaml .Values.resources | indent 12 }}
+        envFrom:
+        - configMapRef:
+            name: {{ $configName }}
+        - configMapRef:
+            name: {{ .Values.globalConfig }}
+        - secretRef:
+            name: {{ .Values.globalConfig }}-secret
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

@@ -1,0 +1,17 @@
+{{- $serviceName := printf "%s-%s-%s" .Release.Name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 63 | trimSuffix "-" -}}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ $serviceName }}
+  labels:
+    service-name: {{ .Values.serviceName }}
+  annotations:
+    prometheus.io/scrape: "true"
+spec:
+  selector:
+    component: {{ template "component.webapi" . }}
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: ClusterIP

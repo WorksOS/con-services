@@ -1,0 +1,52 @@
+{
+  //"iisSettings": {
+  //  "windowsAuthentication": false,
+  //  "anonymousAuthentication": true,
+  //  "iisExpress": {
+  //    "applicationUrl": "http://localhost:51676",
+  //    "sslPort": 44306
+  //  }
+  //},
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    //"IIS Express": {
+    //  "commandName": "IISExpress",
+    //  "launchBrowser": true,
+    //  "environmentVariables": {
+    //    "ASPNETCORE_ENVIRONMENT": "Development"
+    //  }
+    //},
+    "CustomerWebApi": {
+      "commandName": "Project",
+      //      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_DATABASE_NAME": "Alpha-Customer",
+        "MYSQL_SERVER_NAME_VSPDB": "rds-rpd-mydb04.cfyg2f3omhgy.us-west-2.rds.amazonaws.com",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USERNAME": "ServiceAccess",
+        "MYSQL_ROOT_PASSWORD": "%rTYNEpSRnEbrYU;"
+      },
+      "applicationUrl": "http://localhost:5000"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "http://{ServiceHost}:{ServicePort}",
+      "httpPort": 5000,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_SERVER_NAME_VSPDB": "Alpha-Customer",
+        "ASPNETCORE_HTTP_PORT": "5000",
+        "ASPNETCORE_HTTPS_PORT": "",
+        "ASPNETCORE_URLS": "http://+:80"
+      }
+      //"launchBrowser": true,
+      //"launchUrl": "http://{ServiceHost}:{ServicePort}",
+      //"environmentVariables": {
+      //  "Key": "Value"
+      //},
+      //"publishAllPorts": true,
+      //"useSSL": true
+    }
+  }
+}
