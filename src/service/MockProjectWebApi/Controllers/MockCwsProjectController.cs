@@ -1,9 +1,9 @@
 ﻿using System;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Clients.CWS.Utilities;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -21,7 +21,7 @@ namespace MockProjectWebApi.Controllers
         Id = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_PROJECT)
       };
 
-      Logger.LogInformation($"CreateProject: createProjectRequestModel {JsonConvert.SerializeObject(createProjectRequestModel)} createProjectResponseModel {JsonConvert.SerializeObject(createProjectResponseModel)}");
+      Logger.LogInformation($"{nameof(CreateProject)}: createProjectRequestModel {JsonConvert.SerializeObject(createProjectRequestModel)} createProjectResponseModel {JsonConvert.SerializeObject(createProjectResponseModel)}");
 
       return createProjectResponseModel;
     }
@@ -30,7 +30,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPut]
     public void UpdateProjectDetails(string projectTrn, [FromQuery] UpdateProjectDetailsRequestModel updateProjectDetailsRequestModel)
     {
-      Logger.LogInformation($"UpdateProjectDetails: projectTrn {projectTrn} updateProjectDetailsRequestModel {JsonConvert.SerializeObject(updateProjectDetailsRequestModel)}");
+      Logger.LogInformation($"{nameof(UpdateProjectDetails)}: projectTrn {projectTrn} updateProjectDetailsRequestModel {JsonConvert.SerializeObject(updateProjectDetailsRequestModel)}");
 
       return;
     }
@@ -39,7 +39,7 @@ namespace MockProjectWebApi.Controllers
     [HttpPut]
     public void UpdateProjectDetails(string projectTrn, [FromQuery] ProjectBoundary projectBoundary)
     {
-      Logger.LogInformation($"UpdateProjectDetails: projectTrn {projectTrn} projectBoundary {JsonConvert.SerializeObject(projectBoundary)}");
+      Logger.LogInformation($"{nameof(UpdateProjectDetails)}: projectTrn {projectTrn} projectBoundary {JsonConvert.SerializeObject(projectBoundary)}");
 
       return;
     }

@@ -7,6 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -51,7 +52,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     private async Task<GetProjectAndAssetUidsEarthWorksResult> HandleCutFillExport(GetProjectAndAssetUidsEarthWorksRequest request,
       DeviceData device)
     {
-      var potentialProjects = await dataRepository.CheckDeviceProjectIntersection(device, request.Latitude,
+      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude,
         request.Longitude, request.TimeOfPosition);
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");

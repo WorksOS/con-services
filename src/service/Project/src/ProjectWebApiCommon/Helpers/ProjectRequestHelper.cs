@@ -19,7 +19,6 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -51,12 +50,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
-    /// Gets a Project NO customer uid.
+    /// Gets a Project, even if archived
     /// </summary>
-    public static async Task<ProjectDatabaseModel> GetProject(string projectUid,
+    public static async Task<ProjectDatabaseModel> GetProjectOnly(string projectUid,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
-      var project = (await projectRepo.GetProject(projectUid));
+      var project = (await projectRepo.GetProjectOnly(projectUid));
 
       if (project == null)
       {

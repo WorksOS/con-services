@@ -1,5 +1,4 @@
-﻿
-namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
+﻿namespace VSS.Productivity3D.TagFileAuth.Models.ResultsHandling
 {
   /// <summary>
   /// The result representation of a get project id request.

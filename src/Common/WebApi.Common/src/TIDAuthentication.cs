@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.Authentication.JWT;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
@@ -132,7 +133,9 @@ namespace VSS.WebApi.Common
         {
           try
           {
-            var customer = await accountClient.GetAccountForUser(new Guid(userUid), new Guid(customerUid), customHeaders);
+            // todoMaverick do we need the get GetAccountForUser as isApplicaitonContext never comes in here
+            var customer = await accountClient.GetMyAccount(new Guid(userUid), new Guid(customerUid), customHeaders);
+
             if (customer == null)
             {
               var error = $"User {userUid} is not authorized to configure this customer {customerUid}";

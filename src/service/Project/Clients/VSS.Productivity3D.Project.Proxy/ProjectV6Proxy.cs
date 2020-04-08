@@ -98,7 +98,7 @@ namespace VSS.Productivity3D.Project.Proxy
     /// </summary>
     public async Task<ProjectData> GetProjectApplicationContext(long shortRaptorProjectId, IDictionary<string, string> customHeaders = null)
     {
-      var result = await GetMasterDataItemServiceDiscovery<ProjectDataSingleResult>($"/project/applicationcontext/{shortRaptorProjectId}",
+      var result = await GetMasterDataItemServiceDiscovery<ProjectDataSingleResult>($"/project/applicationcontext/shortId/{shortRaptorProjectId}",
              shortRaptorProjectId.ToString(),
              null,
              customHeaders);

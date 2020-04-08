@@ -6,7 +6,7 @@ FROM ${BUILD_CONTAINER} as build_container
 
 # Now create runtime container
 # Why bash? it seems to be needed for ignite to run (maybe a dependency?)
-FROM microsoft/dotnet:2.2-aspnetcore-runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 
 #debconf shouldn't expect an interactive terminal
 ENV DEBIAN_FRONTEND=noninteractive

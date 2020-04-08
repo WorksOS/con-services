@@ -91,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(GetProjectUidApplicationContextV6)}");
 
-      var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
+      var project = await ProjectRequestHelper.GetProjectOnly(projectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
     }
 
@@ -135,22 +135,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
            .ToImmutableList()
       };
     }
-
-    ///// <summary>
-    ///// Gets projects which this device has access to, from cws
-    /////   applicationContext i.e. no customer. 
-    /////   Could have TFA go direct to cwsProjectClient
-    ///// </summary>
-    ///// <returns>A project data</returns>
-    //[Route("api/v6/project/applicationcontext/{shortRaptorProjectId}")]
-    //[HttpGet]
-    //public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
-    //{
-    //  Logger.LogInformation($"{nameof(GetProjectShortIdApplicationContextV6)}");
-
-    //  var project = await ProjectRequestHelper.GetProject(shortRaptorProjectId, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-    //  return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
-    //}
 
     // POST: api/project
     /// <summary>
@@ -201,7 +185,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
-      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value.ToString()));
+      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
@@ -361,7 +345,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // todoMaverick archive in cws
 
       if (!string.IsNullOrEmpty(customerUid))
-        await notificationHubClient.Notify(new CustomerChangedNotification(customerUid));
+        await notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
 
       Logger.LogInformation("ArchiveProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(

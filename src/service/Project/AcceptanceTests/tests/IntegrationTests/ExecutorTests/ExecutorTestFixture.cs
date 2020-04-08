@@ -58,8 +58,7 @@ namespace IntegrationTests.ExecutorTests
         .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
         .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
         .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
-        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>()
-        .AddMemoryCache();  
+        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();  
 
       _serviceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();

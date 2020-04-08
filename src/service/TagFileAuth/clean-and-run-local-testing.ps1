@@ -11,6 +11,6 @@ Write-Host "Removing old application containers"
 docker ps -aq --filter "name=tagfileauth_" | ForEach-Object { docker rm $_ }
 
 Write-Host "Connecting to image host" -ForegroundColor DarkGray
-Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2)
+Invoke-Expression -Command (aws ecr get-login --no-include-email --region us-west-2 --profile okta)
 
 & .\RunLocalTesting.bat

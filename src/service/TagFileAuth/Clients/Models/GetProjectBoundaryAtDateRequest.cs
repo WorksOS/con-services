@@ -56,11 +56,11 @@ namespace VSS.Productivity3D.TagFileAuth.Models
             ContractExecutionStatesEnum.ValidationError, 18));
       }
 
-      if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(30)))
+      if (!(tagFileUTC > DateTime.UtcNow.AddYears(-50) && tagFileUTC <= DateTime.UtcNow.AddDays(2)))
       {
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest,
           GetProjectBoundaryAtDateResult.CreateGetProjectBoundaryAtDateResult(false, new TWGS84FenceContainer(),
-            ContractExecutionStatesEnum.ValidationError, 17));
+            ContractExecutionStatesEnum.ValidationError, 23));
       }
     }
   }

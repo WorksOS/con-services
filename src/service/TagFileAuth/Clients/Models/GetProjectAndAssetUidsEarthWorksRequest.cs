@@ -1,6 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.TagFileAuth.Models
 {
@@ -76,7 +77,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       if (Longitude < -180 || Longitude > 180)
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 22));
 
-      if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(30)))
+      if (!(TimeOfPosition > DateTime.UtcNow.AddYears(-50) && TimeOfPosition <= DateTime.UtcNow.AddDays(2)))
         throw new ServiceException(System.Net.HttpStatusCode.BadRequest, GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: 23));
     }
   }

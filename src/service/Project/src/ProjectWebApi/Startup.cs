@@ -90,9 +90,9 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
-      services.AddSingleton<ICwsAccountClient, CwsAccountClient>();
-      services.AddSingleton<ICwsProjectClient, CwsProjectClient>();
-      services.AddSingleton<ICwsDeviceClient, CwsDeviceClient>();
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
+      services.AddTransient<ICwsProjectClient, CwsProjectClient>();
+      services.AddTransient<ICwsDeviceClient, CwsDeviceClient>();
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

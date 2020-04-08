@@ -35,7 +35,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var deviceResponseModel = new DeviceResponseModel() 
         { Id = expectedDeviceId, AccountId = expectedAccountId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, Status = expectedStatus, SerialNumber = expectedSerialNumber};
       
-      var route = $"/devices/{serialNumber}";
+      var route = $"/devices/serialnumber/{serialNumber}";
       var expectedUrl = $"{baseUrl}{route}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));

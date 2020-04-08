@@ -1,7 +1,5 @@
 ﻿using System;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.TRex.ConnectedSite.Gateway.Abstractions;
-using VSS.VisionLink.Interfaces.Events.Commands.MTS;
 
 namespace VSS.TRex.ConnectedSite.Gateway.Models
 {
