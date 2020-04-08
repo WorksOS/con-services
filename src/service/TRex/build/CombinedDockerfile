@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 as build_container
 ARG SERVICE_PATH
 
 #debconf shouldn't expect an interactive terminal
@@ -97,46 +97,43 @@ RUN wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaage
 
 # Now create runtime container
 # Why bash? it seems to be needed for ignite to run (maybe a dependency?)
-###FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 
 #debconf shouldn't expect an interactive terminal
-###ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 #Slim based images don't have man dirs which will cause autoconf to fail during java install. Create the dirs here
-###RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
+RUN seq 1 8 | xargs -I{} mkdir -p /usr/share/man/man{}
 
-###RUN apt-get update && apt-get install -y\
-###    apt-utils \
-###    software-properties-common
+RUN apt-get update && apt-get install -y\
+    apt-utils \
+    software-properties-common
 
-###RUN apt-get update && apt-get install -y \
-###    wget
+RUN apt-get update && apt-get install -y \
+    wget
 
-###RUN apt-get update && apt-get install -y \
-###    gnupg2
+RUN apt-get update && apt-get install -y \
+    gnupg2
 
-###RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
-###  && apt-get install -y nodejs
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - \
+  && apt-get install -y nodejs
 
-###RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
-###    add-apt-repository 'deb https://apt.corretto.aws stable main'
+RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add - && \
+    add-apt-repository 'deb https://apt.corretto.aws stable main'
 
-###RUN apt-get update && apt-get install -y \
-###    java-11-amazon-corretto-jdk
+RUN apt-get update && apt-get install -y \
+    java-11-amazon-corretto-jdk
 
 # RUN apt-get update && apt-get install -y \
 #     openjdk-8-jdk
 
-###RUN apt-get update && apt-get install -y \
-###    libc6-dev
+RUN apt-get update && apt-get install -y \
+    libc6-dev
 
+RUN wget https://download.mono-project.com/repo/ubuntu/pool/main/libg/libgdiplus/libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb && \
+    apt-get install -y ./libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb
 
-
-###RUN wget https://download.mono-project.com/repo/ubuntu/pool/main/libg/libgdiplus/libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb && \
-###    apt-get install -y ./libgdiplus_5.6-0xamarin3+debian9b1_amd64.deb
-
-# #Need these for ignite to work
-# #Need these for ignite to work
+#Need these for ignite to work
 ENV JAVA_HOME=/usr/lib/jvm/java-11-amazon-corretto
 ENV LD_LIBRARY_PATH=$JAVA_HOME/lib/server
 ENV IGNITE_HOME=/trex/
@@ -146,12 +143,12 @@ ENV TPAAS_APP_TOKEN=MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVF
 ENV COORDINATE_SERVICE_URL=https://api-stg.trimble.com/t/trimble.com/coordinates/1.0
 
 #Bring libs accross TODO: make the common part of this a new image to speed build times
-###COPY --from=build_container /trex/libs/ /trex/libs/
+COPY --from=build_container /trex/libs/ /trex/libs/
 
 # Copy built artifacts from last stage into runtime container
 #ARGS have weird scoping
-###ARG COMPONENT
-###COPY --from=build_container /trex/${COMPONENT}/ /trex/
+ARG COMPONENT
+COPY --from=build_container /trex/${COMPONENT}/ /trex/
 WORKDIR /trex
 RUN touch prometheusConfig.yaml
 
