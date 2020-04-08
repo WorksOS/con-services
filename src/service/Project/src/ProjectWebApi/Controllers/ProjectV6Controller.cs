@@ -185,7 +185,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
-      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value.ToString()));
+      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
@@ -345,7 +345,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // todoMaverick archive in cws
 
       if (!string.IsNullOrEmpty(customerUid))
-        await notificationHubClient.Notify(new CustomerChangedNotification(customerUid));
+        await notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
 
       Logger.LogInformation("ArchiveProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(

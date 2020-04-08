@@ -7,6 +7,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
 {
@@ -31,10 +32,10 @@ namespace VSS.Productivity3D.WebApi.Models.Compaction.Helpers
     /// tfa checks in this order: snm940; snm941; EC520
     /// </summary>
     public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectUid(string radioSerial, string eCSerial,
-        string tccOrgUid, double machineLatitude, double machineLongitude)
+        string ObsoletetccOrgUid, double machineLatitude, double machineLongitude)
     {
       var tfaRequest = new GetProjectAndAssetUidsEarthWorksRequest(eCSerial, radioSerial,
-        tccOrgUid, machineLatitude, machineLongitude, DateTime.UtcNow);
+        machineLatitude, machineLongitude, DateTime.UtcNow);
 
       GetProjectAndAssetUidsEarthWorksResult result;
       try
