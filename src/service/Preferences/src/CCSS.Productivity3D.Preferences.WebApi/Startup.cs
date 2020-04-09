@@ -16,6 +16,8 @@ using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.VisionLink.Interfaces.Events.Preference.Interfaces;
 using VSS.WebApi.Common;
@@ -62,7 +64,9 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IPreferenceRepository, PreferenceRepository>();
       services.AddTransient<IErrorCodesProvider, PreferenceErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-     
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
+      services.AddSingleton<IWebRequest, GracefulWebRequest>();
+
       //services.AddSingleton<CacheInvalidationService>();
 
       services.AddOpenTracing(builder =>

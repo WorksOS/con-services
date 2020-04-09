@@ -101,7 +101,7 @@ namespace CCSS.Productivity3D.Preferences.Repository
       var prefKey = new PrefKeyDataModel
       {
         KeyName = prefKeyName,
-        PreferenceKeyUID = prefKeyUID,
+        PreferenceKeyUID = prefKeyUID?.ToString(),
         PreferenceKeyID = existing?.PreferenceKeyID ?? 0
       };
 
@@ -205,12 +205,12 @@ namespace CCSS.Productivity3D.Preferences.Repository
       {
         PreferenceKeyID = prefKey.PreferenceKeyID,
         SchemaVersion = schemaVersion,
-        UserUID = userUID,
+        UserUID = userUID.ToString(),
         PreferenceJson = prefJson
       };
 
       var upsertedCount = 0;
-      var existing = await GetUserPreference(userUID, userPref.PreferenceKeyID);
+      var existing = await GetUserPreference(userUID, prefKey.PreferenceKeyID);
       
       if (eventType == PreferenceEventType.CreateUserPreferenceEvent)
         upsertedCount = await CreateUserPreference(userPref, existing);
@@ -260,12 +260,14 @@ namespace CCSS.Productivity3D.Preferences.Repository
       var upsertedCount = 0;
       if (existing != null)
       {
+        existing.PreferenceJson = userPref.PreferenceJson;
+        existing.SchemaVersion = userPref.SchemaVersion;
         var update = $@"UPDATE UserPreference
                 SET Value = @PreferenceJson, 
                   SchemaVersion = @SchemaVersion
                 WHERE UserPreferenceID = @UserPreferenceID";
 
-        upsertedCount = await ExecuteWithAsyncPolicy(update, userPref);
+        upsertedCount = await ExecuteWithAsyncPolicy(update, existing);
         Log.LogDebug($"PreferenceRepository/UpdateUserPreference: upserted {upsertedCount} rows");
       }
       else
@@ -289,7 +291,7 @@ namespace CCSS.Productivity3D.Preferences.Repository
         const string delete =
           @"DELETE FROM UserPreference
                 WHERE UserPreferenceID = @UserPreferenceID";
-        upsertedCount = await ExecuteWithAsyncPolicy(delete, userPref);
+        upsertedCount = await ExecuteWithAsyncPolicy(delete, existing);
         Log.LogDebug($"PreferenceRepository/DeleteUserPreference: deleted {upsertedCount} rows");
       }
       else
@@ -343,7 +345,7 @@ namespace CCSS.Productivity3D.Preferences.Repository
     private async Task<UserPrefDataModel> GetUserPreference(Guid userUID, long prefKeyID)
     {
       var userPref = (await QueryWithAsyncPolicy<UserPrefDataModel>
-      (@"SELECT UserPreferenceID, UserUID, fk_PreferenceKeyID AS PreferenceKeyID, Value, SchemaVersion
+      (@"SELECT UserPreferenceID, Value as PreferenceJson, SchemaVersion, UserUID, fk_PreferenceKeyID as PreferenceKeyID
               FROM UserPreference
               WHERE fk_PreferenceKeyID = @PreferenceKeyID
                 AND UserUID = @UserUID",
@@ -357,14 +359,14 @@ namespace CCSS.Productivity3D.Preferences.Repository
     /// </summary>
     public async Task<UserPrefKeyDataModel> GetUserPreference(Guid userUID, string prefKeyName)
     {
-      var userPrefKey = (await QueryWithAsyncPolicy<UserPrefKeyDataModel>
-      (@"SELECT Value, SchemaVersion, KeyName, PreferenceKeyUID
+      var userPref = (await QueryWithAsyncPolicy<UserPrefKeyDataModel>
+      (@"SELECT Value as PreferenceJson, SchemaVersion, KeyName, PreferenceKeyUID
               FROM UserPreference up 
               INNER JOIN PreferenceKey pk ON up.fk_PreferenceKeyID = pk.PreferenceKeyID
               WHERE UserUID = @UserUID AND KeyName = @KeyName",
         new { UserUID = userUID.ToString(), KeyName = prefKeyName }
       )).FirstOrDefault();
-      return userPrefKey;
+      return userPref;
     }
 
     /// <summary>
@@ -373,11 +375,11 @@ namespace CCSS.Productivity3D.Preferences.Repository
     public async Task<bool> UserPreferenceExistsForKey(Guid prefKeyUID)
     {
       var userPrefKeys = (await QueryWithAsyncPolicy<UserPrefKeyDataModel>
-      (@"SELECT Value, SchemaVersion, KeyName, PreferenceKeyUID
+      (@"SELECT Value as PreferenceJson, SchemaVersion, KeyName, PreferenceKeyUID
               FROM UserPreference up 
               INNER JOIN PreferenceKey pk ON up.fk_PreferenceKeyID = pk.PreferenceKeyID
               WHERE PreferenceKeyUID = @PreferenceKeyUID",
-        new { PreferenceKeyUID = prefKeyUID }
+        new { PreferenceKeyUID = prefKeyUID.ToString() }
       )).ToList();
       return userPrefKeys != null && userPrefKeys.Count > 0;
     }

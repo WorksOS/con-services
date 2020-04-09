@@ -14,6 +14,7 @@ using Serilog;
 using Dapper;
 using System.Linq;
 using VSS.VisionLink.Interfaces.Events.Preference;
+using VSS.ConfigurationStore;
 
 namespace RepositoryTests
 {
@@ -29,8 +30,9 @@ namespace RepositoryTests
     {
       ServiceProvider = new ServiceCollection()
         .AddLogging()
-        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Filter.Repository.Tests.log")))    
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("CCSS.Preference.Repository.Tests.log")))    
         .AddTransient<IRepository<IPreferenceEvent>, PreferenceRepository>()
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddMemoryCache()
         //.AddSingleton<IDataCache, InMemoryDataCache>()
         .BuildServiceProvider();
@@ -71,7 +73,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -83,7 +85,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -104,7 +106,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -125,7 +127,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -133,7 +135,7 @@ namespace RepositoryTests
 
       var prefEvent2 = new UpdatePreferenceKeyEvent
       {
-        PreferenceKeyName = "updated key",
+        PreferenceKeyName = $"updated key {DateTime.Now.Ticks}",
         PreferenceKeyUID = prefEvent.PreferenceKeyUID
       };
 
@@ -145,7 +147,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -165,7 +167,7 @@ namespace RepositoryTests
     {
       var prefEvent = new UpdatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -177,7 +179,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -208,7 +210,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -220,7 +222,7 @@ namespace RepositoryTests
       var result = task.Result;
       Assert.IsNotNull(result);
       Assert.AreEqual(prefEvent.PreferenceKeyName, result.KeyName); 
-      Assert.AreEqual(prefEvent.PreferenceKeyUID, result.PreferenceKeyUID);
+      Assert.AreEqual(prefEvent.PreferenceKeyUID.ToString(), result.PreferenceKeyUID);
 
       //Get by key UID
       task = PrefRepo.GetPreferenceKey(prefEvent.PreferenceKeyUID);
@@ -228,7 +230,7 @@ namespace RepositoryTests
       result = task.Result;
       Assert.IsNotNull(result);
       Assert.AreEqual(prefEvent.PreferenceKeyName, result.KeyName);
-      Assert.AreEqual(prefEvent.PreferenceKeyUID, result.PreferenceKeyUID);
+      Assert.AreEqual(prefEvent.PreferenceKeyUID.ToString(), result.PreferenceKeyUID);
 
       //Get by both key name and UID
       task = PrefRepo.GetPreferenceKey(prefEvent.PreferenceKeyUID, prefEvent.PreferenceKeyName);
@@ -236,7 +238,7 @@ namespace RepositoryTests
       result = task.Result;
       Assert.IsNotNull(result);
       Assert.AreEqual(prefEvent.PreferenceKeyName, result.KeyName);
-      Assert.AreEqual(prefEvent.PreferenceKeyUID, result.PreferenceKeyUID);
+      Assert.AreEqual(prefEvent.PreferenceKeyUID.ToString(), result.PreferenceKeyUID);
     }
 
     [TestMethod]
@@ -244,7 +246,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -280,7 +282,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -303,7 +305,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -322,8 +324,8 @@ namespace RepositoryTests
 
       var userPrefEvent2 = new CreateUserPreferenceEvent
       {
-        PreferenceKeyName = prefEvent.PreferenceKeyName,
-        PreferenceKeyUID = prefEvent.PreferenceKeyUID,
+        PreferenceKeyName = userPrefEvent.PreferenceKeyName,
+        PreferenceKeyUID = userPrefEvent.PreferenceKeyUID,
         PreferenceJson = "some different json here",
         SchemaVersion = "1.0",
         UserUID = userPrefEvent.UserUID
@@ -337,7 +339,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -371,7 +373,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -394,7 +396,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -426,7 +428,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -448,7 +450,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -470,7 +472,7 @@ namespace RepositoryTests
       var result = task.Result;
       Assert.IsNotNull(result);
       Assert.AreEqual(userPrefEvent.PreferenceKeyName, result.KeyName);
-      Assert.AreEqual(userPrefEvent.PreferenceKeyUID, result.PreferenceKeyUID);
+      Assert.AreEqual(userPrefEvent.PreferenceKeyUID.ToString(), result.PreferenceKeyUID);
       Assert.AreEqual(userPrefEvent.PreferenceJson, result.PreferenceJson);
       Assert.AreEqual(userPrefEvent.SchemaVersion, result.SchemaVersion);
     }
@@ -480,7 +482,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -508,7 +510,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
@@ -525,7 +527,7 @@ namespace RepositoryTests
 
       WriteEventToDb(userPrefEvent);
 
-      var task = PrefRepo.UserPreferenceExistsForKey(userPrefEvent.UserUID);
+      var task = PrefRepo.UserPreferenceExistsForKey(prefEvent.PreferenceKeyUID);
       task.Wait();
       var result = task.Result;
       Assert.IsTrue(result);
@@ -536,7 +538,7 @@ namespace RepositoryTests
     {
       var prefEvent = new CreatePreferenceKeyEvent
       {
-        PreferenceKeyName = "some key",
+        PreferenceKeyName = $"some key {DateTime.Now.Ticks}",
         PreferenceKeyUID = Guid.NewGuid()
       };
 
