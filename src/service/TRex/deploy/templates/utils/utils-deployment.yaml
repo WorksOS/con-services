@@ -40,7 +40,9 @@ spec:
 
         resources:
 {{ toYaml .Values.resources | indent 10 }}
-        
+        envFrom:
+        - configMapRef:
+            name: {{ template "trex.config" . }}
         command: ["bash"]
         args: ["-c", "sleep 1d"]
 

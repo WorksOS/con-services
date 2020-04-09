@@ -1,4 +1,5 @@
 # An example of a Kubernetes configuration for Ignite pods deployment.
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -38,7 +39,9 @@ spec:
         # Ignite Docker image. Kubernetes IP finder is supported starting from
         # Apache Ignite 2.3.0
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}.Gateway
-        
+        envFrom:
+        - configMapRef:
+            name: {{ template "trex.config" . }}        
         resources:
 {{ toYaml .Values.gateway.resources | indent 10 }}        
 
