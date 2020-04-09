@@ -73,6 +73,7 @@ node ('jenkinsslave-pod') {
 		//Tests are done here because host volume mounts cannot be specified in the dockerfile
 		stage('Build Container') {
 			checkout scm
+			sh "eval \$(aws ecr get-login --no-include-email --region us-west-2)"
 			build_container = docker.build(buildContainerTag, "-f ./${servicePath}/build/Dockerfile.build . --build-arg SERVICE_PATH=${servicePath}")
 		}
 		
@@ -135,7 +136,7 @@ node ('jenkinsslave-pod') {
 		for (int i = 0; i < trexComponents.size(); i++ ){
 			def component = trexComponents[i]
 			def imagetag = runtimeContainerTag + "." + component
-			def runtime_container = docker.build(imagetag, "-f ./${servicePath}/build/Dockerfile --build-arg COMPONENT=${component} .")
+			def runtime_container = docker.build(imagetag, "-f ./${servicePath}/build/Dockerfile --build-arg COMPONENT=${component} --build-arg SERVICE_PATH=${servicePath} .")
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker images"
 			runtime_container.push()
