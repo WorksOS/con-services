@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using VSS.Common.ServiceDiscovery;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
@@ -52,10 +54,14 @@ namespace VSS.Productivity3D.WebApi
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
     {
-      services.AddMvc(options =>
+      // Output formatters are honored in the order added so we repeat this part of what's done
+      // in BaseStartup to ensure Protobuf comes after NewtonsoftJson.
+      services.AddControllers().AddNewtonsoftJson(options =>
       {
-        options.OutputFormatters.Add(new ProtobufOutputFormatter(new ProtobufFormatterOptions()));
-      });
+        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+        options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;
+        options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+      }).AddProtobufFormatters();
 
       services.AddResponseCompression();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
