@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using TestUtility;
+using VSS.MasterData.Models.ResultHandling.Abstractions;
 using Xunit;
 
 namespace WebApiTests
@@ -21,7 +22,7 @@ namespace WebApiTests
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreatePreferenceKeyEvent    | {customerUid} | {prefKeyName}     | {prefKeyUid}     |               |               |                | " ,
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | some json here |"};
-      var request = await ts.PublishEventCollection(prefEventArray);
+      var request = await ts.PublishEventCollection<ContractExecutionResult>(prefEventArray);
       await ts.GetUserPreferenceViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerUid, request, false);
     }
 
@@ -38,12 +39,12 @@ namespace WebApiTests
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreatePreferenceKeyEvent    | {customerUid} | {prefKeyName}     | {prefKeyUid}     |               |               |                | " ,
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | some json here |" };
-      await ts.PublishEventCollection(prefEventArray);
+      await ts.PublishEventCollection<ContractExecutionResult>(prefEventArray);
 
       var prefEventArray2 = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | different json |"};
-      var response2 = await ts.PublishEventToWebApi(prefEventArray2);
+      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2);
       Assert.True(response2 == $"Unable to create user preference. {0}", "Response is unexpected. Should fail with unable to create. Response: " + response2);
     }
 
@@ -60,12 +61,12 @@ namespace WebApiTests
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreatePreferenceKeyEvent    | {customerUid} | {prefKeyName}     | {prefKeyUid}     |               |               |                | " ,
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | some json here |" };
-      await ts.PublishEventCollection(prefEventArray);
+      await ts.PublishEventCollection<ContractExecutionResult>(prefEventArray);
 
       var prefEventArray2 = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | different json |"};
-      var response2 = await ts.PublishEventToWebApi(prefEventArray2, "?allowUpdate=true");
+      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2, "?allowUpdate=true");
       Assert.True(response2 == "success", "Response is unexpected. Should be a success. Response: " + response2);
     }
 
@@ -83,7 +84,7 @@ namespace WebApiTests
       $"| CreatePreferenceKeyEvent    | {customerUid} | {prefKeyName}     | {prefKeyUid}     |               |               |                | " ,
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | some json here |",
       $"| UpdateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | different json |"};
-      var request = await ts.PublishEventCollection(prefEventArray);
+      var request = await ts.PublishEventCollection<ContractExecutionResult>(prefEventArray);
       await ts.GetUserPreferenceViaWebApiAndCompareActualWithExpected(HttpStatusCode.OK, customerUid, request, false);
     }
 
@@ -99,12 +100,12 @@ namespace WebApiTests
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreatePreferenceKeyEvent    | {customerUid} | {prefKeyName}     | {prefKeyUid}     |               |               |                | "};
-      await ts.PublishEventCollection(prefEventArray);
+      await ts.PublishEventCollection<ContractExecutionResult>(prefEventArray);
 
       var prefEventArray2 = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| UpdateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | some json here |"};
-      var response2 = await ts.PublishEventToWebApi(prefEventArray2);
+      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2);
       Assert.True(response2 == $"Unable to update user preference. {0}", "Response is unexpected. Should fail with unable to update. Response: " + response2);
     }
 
@@ -121,13 +122,13 @@ namespace WebApiTests
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreatePreferenceKeyEvent    | {customerUid} | {prefKeyName}     | {prefKeyUid}     |               |               |                | " ,
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | some json here |" };
-      await ts.PublishEventCollection(prefEventArray);
+      await ts.PublishEventCollection<ContractExecutionResult>(prefEventArray);
 
       var prefEventArray2 = new[] {
        "| EventType                   | CustomerUID   |",
       $"| DeleteUserPreferenceRequest | {customerUid} |"};
       var queryParams = $"?preferencekeyname={prefKeyName}&preferencekeyuid={prefKeyUid}&userGuid={userUid}";
-      var response = await ts.PublishEventToWebApi(prefEventArray2, queryParams);
+      var response = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2, queryParams);
       Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
     }
 
@@ -143,13 +144,13 @@ namespace WebApiTests
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreatePreferenceKeyEvent    | {customerUid} | {prefKeyName}     | {prefKeyUid}     |               |               |                | "};
-      await ts.PublishEventCollection(prefEventArray);
+      await ts.PublishEventCollection<ContractExecutionResult>(prefEventArray);
 
       var prefEventArray2 = new[] {
        "| EventType                   | CustomerUID   |",
       $"| DeleteUserPreferenceRequest | {customerUid} |"};
       var queryParams = $"?preferencekeyname={prefKeyName}&preferencekeyuid={prefKeyUid}&userGuid={userUid}";
-      var response2 = await ts.PublishEventToWebApi(prefEventArray2, queryParams);
+      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2, queryParams);
       Assert.True(response2 == $"Unable to delete user preference. {0}", "Response is unexpected. Should fail with unable to delete. Response: " + response2);
     }
 

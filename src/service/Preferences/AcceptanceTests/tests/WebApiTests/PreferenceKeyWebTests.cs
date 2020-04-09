@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using CCSS.Productivity3D.Preferences.Abstractions.ResultsHandling;
 using TestUtility;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.VisionLink.Interfaces.Events.Preference;
 using Xunit;
 
 namespace WebApiTests
@@ -21,7 +18,7 @@ namespace WebApiTests
       var prefKeyEventArray = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | My preference key | {prefKeyUid}     |" };
-      var response = await ts.PublishEventToWebApi(prefKeyEventArray);
+      var response = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray);
       Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
     }
 
@@ -36,14 +33,14 @@ namespace WebApiTests
       var prefKeyEventArray1 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | {prefKeyName}     | {prefKeyUid1}    |" };
-      var response1 = await ts.PublishEventToWebApi(prefKeyEventArray1);
+      var response1 = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray1);
       Assert.True(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
 
       var prefKeyUid2 = Guid.NewGuid(); 
       var prefKeyEventArray2 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | {prefKeyName}     | {prefKeyUid2}    |" };
-      var response2 = await ts.PublishEventToWebApi(prefKeyEventArray2);
+      var response2 = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray2);
       Assert.True(response2 == $"Duplicate preference key name. {prefKeyName}", "Response is unexpected. Should fail with duplicate name. Response: " + response2);    
     }
 
@@ -58,14 +55,14 @@ namespace WebApiTests
       var prefKeyEventArray1 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | {prefKeyName1}    | {prefKeyUid}     |" };
-      var response1 = await ts.PublishEventToWebApi(prefKeyEventArray1);
+      var response1 = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray1);
       Assert.True(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
 
       var prefKeyName2 = "A new key";
       var prefKeyEventArray2 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | {prefKeyName2}     | {prefKeyUid}    |" };
-      var response2 = await ts.PublishEventToWebApi(prefKeyEventArray2);
+      var response2 = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray2);
       Assert.True(response2 == $"Duplicate preference key UID. {prefKeyUid}", "Response is unexpected. Should fail with duplicate UID. Response: " + response2);
     }
 
@@ -79,12 +76,12 @@ namespace WebApiTests
       var prefKeyEventArray1 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | My preference key | {prefKeyUid}     |" };
-      await ts.PublishEventCollection(prefKeyEventArray1);
+      await ts.PublishEventCollection<PreferenceKeyV1Result>(prefKeyEventArray1);
 
       var prefKeyEventArray2 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| UpdatePreferenceKeyEvent | {customerUid} | My updated key    | {prefKeyUid}     |" };
-      var response = await ts.PublishEventToWebApi(prefKeyEventArray2);
+      var response = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray2);
       Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
     }
 
@@ -99,7 +96,7 @@ namespace WebApiTests
       var prefKeyEventArray1 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | {prefKeyName1}     | {prefKeyUid1}    |" };
-      var response1 = await ts.PublishEventToWebApi(prefKeyEventArray1);
+      var response1 = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray1);
       Assert.True(response1 == "success", "Response is unexpected. Should be a success. Response: " + response1);
 
       var prefKeyUid2 = Guid.NewGuid();
@@ -107,13 +104,13 @@ namespace WebApiTests
       var prefKeyEventArray2 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | {prefKeyName2}     | {prefKeyUid2}    |" };
-      var response2 = await ts.PublishEventToWebApi(prefKeyEventArray2);
+      var response2 = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray2);
       Assert.True(response2 == "success", "Response is unexpected. Should be a success. Response: " + response2);
 
       var prefKeyEventArray3 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| UpdatePreferenceKeyEvent | {customerUid} | {prefKeyName1}     | {prefKeyUid2}    |" };
-      var response3 = await ts.PublishEventToWebApi(prefKeyEventArray3);
+      var response3 = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray3);
       Assert.True(response3 == $"Duplicate preference key name. {prefKeyName1}", "Response is unexpected. Should fail with duplicate name. Response: " + response3);
     }
 
@@ -128,7 +125,7 @@ namespace WebApiTests
       var prefKeyEventArray1 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| UpdatePreferenceKeyEvent | {customerUid} | {prefKeyName}     | {prefKeyUid}     |" };
-      var response = await ts.PublishEventToWebApi(prefKeyEventArray1);
+      var response = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray1);
       Assert.True(response == $"Unable to update preference key. {prefKeyName}", "Response is unexpected. Should fail with unable to update. Response: " + response);
     }
 
@@ -142,12 +139,12 @@ namespace WebApiTests
       var prefKeyEventArray1 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | My preference key | {prefKeyUid}     |" };
-      await ts.PublishEventCollection(prefKeyEventArray1);
+      await ts.PublishEventCollection<PreferenceKeyV1Result>(prefKeyEventArray1);
 
       var prefKeyEventArray2 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| UpdatePreferenceKeyEvent | {customerUid} | My updated key    | {prefKeyUid}     |" };
-      var response = await ts.PublishEventToWebApi(prefKeyEventArray2);
+      var response = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray2);
       Assert.True(response == $"Cannot delete preference key as user preferences exist. {prefKeyUid}", "Response is unexpected. Should fail with user preferences exist. Response: " + response);
     }
 
@@ -162,7 +159,7 @@ namespace WebApiTests
       var prefKeyEventArray = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| DeletePreferenceKeyEvent | {customerUid} |                   | {prefKeyUid}     |" };
-      var response = await ts.PublishEventToWebApi(prefKeyEventArray);
+      var response = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray);
       Assert.True(response == $"Unable to delete preference key. {prefKeyName}", "Response is unexpected. Should fail with unable to delete. Response: " + response);
     }
 
@@ -176,12 +173,12 @@ namespace WebApiTests
       var prefKeyEventArray1 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| CreatePreferenceKeyEvent | {customerUid} | My preference key | {prefKeyUid}     |" };
-      await ts.PublishEventCollection(prefKeyEventArray1);
+      await ts.PublishEventCollection<PreferenceKeyV1Result>(prefKeyEventArray1);
 
       var prefKeyEventArray2 = new[] {
        "| EventType                | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | ",
       $"| DeletePreferenceKeyEvent | {customerUid} |                   | {prefKeyUid}     |" };
-      var response = await ts.PublishEventToWebApi(prefKeyEventArray2);
+      var response = await ts.PublishEventToWebApi<PreferenceKeyV1Result>(prefKeyEventArray2);
       Assert.True(response == "success", "Response is unexpected. Should be a success. Response: " + response);
     }
   }

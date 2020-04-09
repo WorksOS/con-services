@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.MasterData.Proxies;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -14,7 +16,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v1/users/me/accounts")]
     [HttpGet]
-    public AccountListResponseModel GetMyAccounts([FromQuery] string userId)
+    public AccountListResponseModel GetMyAccounts()
     {
       var accountListResponseModel = new AccountListResponseModel()
       {
@@ -22,13 +24,13 @@ namespace MockProjectWebApi.Controllers
         {
           new AccountResponseModel
           {
-            Id = Guid.NewGuid().ToString(),
-            Name = "customerName"
+            Id = TRNHelper.MakeTRN(HttpContext.Request.Headers["X-VisionLink-CustomerUID"], TRNHelper.TRN_ACCOUNT),
+            Name = "Customer from header in TIDAuthentication"
           }
         }
       };
 
-      Logger.LogInformation($"{nameof(GetMyAccounts)}: userId {userId}. accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
+      Logger.LogInformation($"{nameof(GetMyAccounts)}: accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
 
       return accountListResponseModel;
     }
@@ -70,16 +72,16 @@ namespace MockProjectWebApi.Controllers
     //  return accountResponseModel;
     //}
 
-    [Route("api/v1/accounts/{accountId}/devicelicense")]
+    [Route("api/v1/accounts/{accountTrn}/devicelicense")]
     [HttpGet]
-    public DeviceLicenseResponseModel GetDeviceLicenses(string accountId)
+    public DeviceLicenseResponseModel GetDeviceLicenses(string accountTrn)
     {
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel
       {
         Total = 10
       };
 
-      Logger.LogInformation($"{nameof(GetDeviceLicenses)}: customerUid {accountId}. deviceLicenseResponseModel {JsonConvert.SerializeObject(deviceLicenseResponseModel)}");
+      Logger.LogInformation($"{nameof(GetDeviceLicenses)}: accountTrn {accountTrn}. deviceLicenseResponseModel {JsonConvert.SerializeObject(deviceLicenseResponseModel)}");
 
       return deviceLicenseResponseModel;
     }

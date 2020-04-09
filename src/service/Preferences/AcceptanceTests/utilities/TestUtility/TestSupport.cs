@@ -48,7 +48,8 @@ namespace TestUtility
     /// <summary>
     /// Publish events to web api from string array
     /// </summary>
-    public async Task<string> PublishEventCollection(string[] eventArray, string queryParams=null, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public async Task<string> PublishEventCollection<TRes>(string[] eventArray, string queryParams=null, HttpStatusCode statusCode = HttpStatusCode.OK)
+      where TRes : ContractExecutionResult
     {
       string jsonString = null;
       try
@@ -61,7 +62,7 @@ namespace TestUtility
           dynamic dynEvt = ConvertToExpando(allColumnNames, eventRow);
         
           jsonString = BuildEventIntoObject(dynEvt);
-          await CallPreferenceWebApi(jsonString, dynEvt.EventType, dynEvt.CustomerUID, statusCode, queryParams);           
+          await CallPreferenceWebApi<TRes>(jsonString, dynEvt.EventType, dynEvt.CustomerUID, statusCode, queryParams);           
         }
       }
       catch (Exception ex)
@@ -75,7 +76,8 @@ namespace TestUtility
     /// <summary>
     /// Publish event to web api
     /// </summary>
-    public async Task<string> PublishEventToWebApi(string[] eventArray, string queryParams=null, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public async Task<string> PublishEventToWebApi<TRes>(string[] eventArray, string queryParams=null, HttpStatusCode statusCode = HttpStatusCode.OK)
+      where TRes : ContractExecutionResult
     {
       try
       {
@@ -87,11 +89,11 @@ namespace TestUtility
         string response;
         try
         {
-          response = await CallPreferenceWebApi(jsonString, eventObject.EventType, eventObject.CustomerUID, statusCode, queryParams);
+          response = await CallPreferenceWebApi<TRes>(jsonString, eventObject.EventType, eventObject.CustomerUID, statusCode, queryParams);
         }
         catch (RuntimeBinderException)
         {
-          response = await CallPreferenceWebApi(jsonString, eventObject.EventType, CustomerUid.ToString(), statusCode, queryParams);
+          response = await CallPreferenceWebApi<TRes>(jsonString, eventObject.EventType, CustomerUid.ToString(), statusCode, queryParams);
         }
         return response;
       }
@@ -105,7 +107,8 @@ namespace TestUtility
     /// <summary>
     /// Call the preference service web api
     /// </summary>
-    private async Task<string> CallPreferenceWebApi<TRes>(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode, string queryParams=null) where TRes : ContractExecutionResult
+    private async Task<string> CallPreferenceWebApi<TRes>(string jsonString, string eventType, string customerUid, HttpStatusCode statusCode, string queryParams=null) 
+      where TRes : ContractExecutionResult
     {
       var response = string.Empty;
 

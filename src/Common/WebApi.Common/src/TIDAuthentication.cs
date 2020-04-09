@@ -133,7 +133,9 @@ namespace VSS.WebApi.Common
         {
           try
           {
-            // todoMaverick do we need the get GetAccountForUser as isApplicaitonContext never comes in here
+            // todoMaverick do we need the get GetAccountForUser as isApplicationContext never comes in here
+            // todoMaverick find out if the UserId in the JWT for WM (CWS) calls is the Guid or the TRN. 
+            // If TRN need to extract the Guid here
             var customer = await accountClient.GetMyAccount(new Guid(userUid), new Guid(customerUid), customHeaders);
 
             if (customer == null)
