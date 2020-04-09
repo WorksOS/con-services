@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-mds
+  name: {{ template "trex.deployname" . }}-mds
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}

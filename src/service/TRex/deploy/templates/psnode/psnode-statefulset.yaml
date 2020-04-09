@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-psn
+  name: {{ template "trex.deployname" . }}-psn
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
