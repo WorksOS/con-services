@@ -57,7 +57,7 @@ spec:
         - name: ENABLE_TFA_SERVICE
           value: "true"
         - name: TFA_SERVICE_BASEURL
-          value: "http://tagfileauth.dev.eks.ccss.cloud/"
+          value: "http://tagfileauth.alpha.eks.ccss.cloud/"
         - name: IS_KUBERNETES
           value: "true"
         - name: DEPLOYED_ENV
