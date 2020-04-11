@@ -40,14 +40,13 @@ RUN wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaage
 # RUN rm spring*4.3.18*
 #TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile
 
-
-
+WORKDIR /trex
 
 #We are now constructing the run time container
 
 # Now create runtime container
 # Why bash? it seems to be needed for ignite to run (maybe a dependency?)
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-runtime
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-runtime as runtime_container
 ARG COMPONENT
 
 ENV TPAAS_AUTH_URL=https://identity-stg.trimble.com/i/oauth2
@@ -57,8 +56,11 @@ ENV COORDINATE_SERVICE_URL=https://api-stg.trimble.com/t/trimble.com/coordinates
 #Bring libs accross TODO: make the common part of this a new image to speed build times
 COPY --from=build_container /trex/libs/ /trex/libs/
 
+WORKDIR /trex
+
+# Make sure this is done in the final container
+RUN touch prometheusConfig.yaml
+
 # Copy built artifacts from last stage into runtime container
 COPY --from=build_container /trex/${COMPONENT}/ /trex/
-WORKDIR /trex
-RUN touch prometheusConfig.yaml
 
