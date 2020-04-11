@@ -13,7 +13,7 @@ using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {

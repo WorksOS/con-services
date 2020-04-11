@@ -28,7 +28,7 @@ using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;

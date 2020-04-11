@@ -27,7 +27,7 @@ using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 

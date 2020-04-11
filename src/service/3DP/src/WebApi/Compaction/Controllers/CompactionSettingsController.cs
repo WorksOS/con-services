@@ -14,7 +14,7 @@ using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Productivity3D.Models.Compaction;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {

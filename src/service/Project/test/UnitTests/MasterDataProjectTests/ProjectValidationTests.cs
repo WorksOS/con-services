@@ -8,7 +8,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 

@@ -3,7 +3,7 @@ using System.Linq;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.MasterData.Models.Models;
 
-namespace VSS.MasterData.Models.ResultHandling
+namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
   public class CustomerDataResult : IMasterDataModel
   {

@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
 
 namespace TestUtility
 {
@@ -46,64 +45,6 @@ namespace TestUtility
     {
       EventDate = DateTime.SpecifyKind(DateTime.Today.AddDays(-RandomNumber(10, 360)), DateTimeKind.Unspecified);
     }
-    /// <summary>
-    /// Publish events from string array
-    /// </summary>
-    /// <param name="eventArray">string array with all the events we are going to publish</param>
-    public void PublishEventCollection(string[] eventArray)
-    {
-      try
-      {
-        if (IsPublishToWebApi)
-        { msg.DisplayEventsToConsoleWeb(eventArray); }
-        else
-        { msg.DisplayEventsForDbInjectToConsole(eventArray); }
-
-        var allColumnNames = eventArray.ElementAt(0).Split(SEPARATOR);
-        for (var rowCnt = 1; rowCnt <= eventArray.Length - 1; rowCnt++)
-        {
-          var eventRow = eventArray.ElementAt(rowCnt).Split(SEPARATOR);
-          dynamic dynEvt = ConvertToExpando(allColumnNames, eventRow);
-          if (IsPublishToWebApi)
-          {
-            var jsonString = BuildEventIntoObject(dynEvt);
-              string routeSuffix;
-              string method;
-              string eventType = dynEvt.EventType;
-            switch (eventType)
-            {
-              case "CreateFilterEvent":
-              case "UpdateFilterEvent":
-                routeSuffix = $"api/v4/filter/{dynEvt.ProjectUID}";
-                method = "PUT";
-                break;
-              case "DeleteFilterEvent":
-                routeSuffix = $"api/v4/filter/{dynEvt.ProjectUID}";
-                method = "DELETE";
-                break;
-              default:
-                routeSuffix = $"api/v4/filter/{dynEvt.ProjectUID}";
-                method = "GET";
-                break;
-                CallFilterWebApi(routeSuffix, method, jsonString);
-            }
-          }          
-        }
-      }
-      catch (Exception ex)
-      {
-        msg.DisplayException(ex.Message);
-        throw;
-      }
-    }
-
-    public string CallFilterWebApi(string routeSuffix, string method, string body = null)
-    {
-      var uri = GetBaseUri() + routeSuffix;
-      var restClient = new RestClientUtil();
-      var response = restClient.DoHttpRequest(uri, method, body, HttpStatusCode.OK, "application/json", CustomerUid.ToString());
-      return response;
-    }
 
     public DateTime ConvertTimeStampAndDayOffSetToDateTime(string timeStampAndDayOffSet, DateTime startEventDateTime)
     {
@@ -127,57 +68,6 @@ namespace TestUtility
     #endregion
 
     #region "private methods"
-    /// <summary>
-    /// Create an instance of the master data events. Convert to JSON. 
-    /// </summary>
-    /// <param name="eventObject">event to be published</param>
-    /// <returns>json string with event serialized</returns>
-    private string BuildEventIntoObject(dynamic eventObject)
-    {
-      var jsonString = string.Empty;
-      string eventType = eventObject.EventType;
-      switch (eventType)
-      {
-        case "CreateFilterEvent":
-          var createFilterEvent = new CreateFilterEvent
-          {
-            ActionUTC = EventDate,
-            FilterUID = eventObject.FilterUID,
-            CustomerUID = eventObject.CustomerUID,
-            ProjectUID = eventObject.ProjectUID,
-            UserID = eventObject.UserID,
-            FilterJson = eventObject.FilterJson,
-            FilterType = eventObject.FilterType
-          };
-          jsonString = JsonConvert.SerializeObject(new { CreateFilterEvent = createFilterEvent }, JsonSettings);
-          break;
-        case "UpdateFilterEvent":
-          var updateFilterEvent = new UpdateFilterEvent
-          {
-            ActionUTC = EventDate,
-            FilterUID = eventObject.FilterUID,
-            CustomerUID = eventObject.CustomerUID,
-            ProjectUID = eventObject.ProjectUID,
-            UserID = eventObject.UserID,
-            FilterJson = eventObject.FilterJson,
-            FilterType = eventObject.FilterType
-          };
-          jsonString = JsonConvert.SerializeObject(new { UpdateFilterEvent = updateFilterEvent }, JsonSettings);
-          break;
-        case "DeleteFilterEvent":
-          var deleteFilterEvent = new DeleteFilterEvent
-          {
-            ActionUTC = EventDate,
-            FilterUID = eventObject.FilterUID,
-            CustomerUID = eventObject.CustomerUID,
-            ProjectUID = eventObject.ProjectUID,
-            UserID = eventObject.UserID,
-          };
-          jsonString = JsonConvert.SerializeObject(new { DeleteFilterEvent = deleteFilterEvent }, JsonSettings);
-          break;
-      }
-      return jsonString;
-    }
 
     /// <summary>
     /// Create an ExpandoObject of all the fields from the event array

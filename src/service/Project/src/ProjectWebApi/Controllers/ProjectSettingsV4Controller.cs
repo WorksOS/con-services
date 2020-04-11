@@ -13,7 +13,7 @@ using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {

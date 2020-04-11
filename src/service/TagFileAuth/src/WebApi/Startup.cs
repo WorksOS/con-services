@@ -1,4 +1,5 @@
 ﻿using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -42,7 +43,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddSingleton<IWebRequest, GracefulWebRequest>()
-        .AddTransient<ICwsAccountClient, CwsAccountClient>()
+        .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
         .AddTransient<IProjectProxy, ProjectV6Proxy>()
         .AddTransient<IDeviceProxy, DeviceV5Proxy>();
       

@@ -13,8 +13,8 @@ using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.MasterData.Repositories.Extensions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using ProjectDataModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.Productivity3D.Project.Repository

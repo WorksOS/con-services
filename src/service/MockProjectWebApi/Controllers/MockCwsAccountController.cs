@@ -14,7 +14,7 @@ namespace MockProjectWebApi.Controllers
 
     [Route("api/v1/users/me/accounts")]
     [HttpGet]
-    public AccountListResponseModel GetMyAccounts([FromQuery] string userId)
+    public AccountListResponseModel GetMyAccounts()
     {
       var accountListResponseModel = new AccountListResponseModel()
       {
@@ -28,7 +28,7 @@ namespace MockProjectWebApi.Controllers
         }
       };
 
-      Logger.LogInformation($"{nameof(GetMyAccounts)}: userId {userId}. accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
+      Logger.LogInformation($"{nameof(GetMyAccounts)}: accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
 
       return accountListResponseModel;
     }
@@ -79,7 +79,7 @@ namespace MockProjectWebApi.Controllers
         Total = 10
       };
 
-      Logger.LogInformation($"{nameof(GetDeviceLicenses)}: customerUid {accountId}. deviceLicenseResponseModel {JsonConvert.SerializeObject(deviceLicenseResponseModel)}");
+      Logger.LogInformation($"{nameof(GetDeviceLicenses)}: accountId {accountId}. deviceLicenseResponseModel {JsonConvert.SerializeObject(deviceLicenseResponseModel)}");
 
       return deviceLicenseResponseModel;
     }

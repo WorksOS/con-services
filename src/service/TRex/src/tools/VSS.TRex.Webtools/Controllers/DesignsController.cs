@@ -16,7 +16,7 @@ using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Webtools.Controllers
 {

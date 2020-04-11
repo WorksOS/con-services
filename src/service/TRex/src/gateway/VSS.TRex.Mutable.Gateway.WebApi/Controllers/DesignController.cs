@@ -19,7 +19,7 @@ using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Helpers;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Mutable.Gateway.WebApi.Controllers
 {

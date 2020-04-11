@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         HierarchicFilterUids = request?.HierarchicFilterUids,
         Name = request?.Name ?? string.Empty,
         FilterJson = request?.FilterJson ?? string.Empty,
-        FilterType = request?.FilterType ?? VSS.Visionlink.Interfaces.Core.Events.MasterData.Models.FilterType.Transient,
+        FilterType = request?.FilterType ?? VSS.Visionlink.Interfaces.Events.MasterData.Models.FilterType.Transient,
         CustomerUid = customerUid,
         IsApplicationContext = isApplicationContext,
         UserId = userId,

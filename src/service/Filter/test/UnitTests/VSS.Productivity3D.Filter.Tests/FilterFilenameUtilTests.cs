@@ -22,7 +22,7 @@ using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using FilterModel = VSS.MasterData.Repositories.DBModels.Filter;
 

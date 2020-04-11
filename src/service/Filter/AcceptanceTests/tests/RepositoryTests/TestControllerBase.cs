@@ -11,7 +11,7 @@ using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 
 namespace RepositoryTests
 {

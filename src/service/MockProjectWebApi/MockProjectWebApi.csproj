@@ -201,6 +201,7 @@
     <ProjectReference Include="..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
     <ProjectReference Include="..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
+    <ProjectReference Include="..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
     <ProjectReference Include="..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
     <ProjectReference Include="..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
     <ProjectReference Include="..\3DP\Clients\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />

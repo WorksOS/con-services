@@ -12,9 +12,9 @@ namespace MockProjectWebApi.Controllers
     public MockCwsDeviceController(ILoggerFactory loggerFactory) : base(loggerFactory)
     { }
 
-    [Route("api/v1/devices/serialnumber/{serialnumber}")]
+    [Route("api/v1/devices/serialnumber/{serialNumber}")]
     [HttpGet]
-    public DeviceResponseModel GetDeviceBySerialNumber(string serialnumber)
+    public DeviceResponseModel GetDeviceBySerialNumber(string serialNumber)
     {
       var deviceResponseModel = new DeviceResponseModel()
       {
@@ -23,10 +23,10 @@ namespace MockProjectWebApi.Controllers
         DeviceType = "EC520",
         DeviceName = "this is a device",
         Status = "Active",
-        SerialNumber = serialnumber
+        SerialNumber = serialNumber
       };
 
-      Logger.LogInformation($"{nameof(GetDeviceByDeviceUid)}: serialnumber {serialnumber}. deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
+      Logger.LogInformation($"{nameof(GetDeviceByDeviceUid)}: serialNumber {serialNumber}. deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return deviceResponseModel;
     }
 

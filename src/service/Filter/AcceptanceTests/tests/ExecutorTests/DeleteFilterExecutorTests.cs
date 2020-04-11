@@ -4,7 +4,7 @@ using System;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Filter.Common.Executors;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {

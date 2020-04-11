@@ -14,7 +14,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 

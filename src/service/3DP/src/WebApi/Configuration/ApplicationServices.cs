@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -64,7 +66,7 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IErrorCodesProvider, TRexResult>();
 #endif
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
       services.AddTransient<ITileGenerator, TileGenerator>();
@@ -88,14 +90,14 @@ namespace VSS.Productivity3D.WebApi
 
       services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4Proxy>();
-      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
-      services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
+      services.AddTransient<IProjectProxy, ProjectV6Proxy>();
+      services.AddTransient<IFileImportProxy, FileImportV6Proxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
       services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();
       services.AddTransient<ITRexTagFileProxy, TRexTagFileV2Proxy>();
       services.AddTransient<ITRexConnectedSiteProxy, TRexConnectedSiteV1Proxy>();
       services.AddTransient<ITRexCompactionDataProxy, TRexCompactionDataV1Proxy>();
-      services.AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV2Proxy>();
+      services.AddTransient<ITagFileAuthProjectProxy, TagFileAuthProjectV4Proxy>();
 
       //Disable CAP for now #76666
       /*

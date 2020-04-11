@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {

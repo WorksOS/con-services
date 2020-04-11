@@ -4,7 +4,7 @@ using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities

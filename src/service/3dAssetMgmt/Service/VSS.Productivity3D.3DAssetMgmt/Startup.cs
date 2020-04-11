@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CCSS.CWS.Client.MockClients;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -9,7 +11,6 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
@@ -39,8 +40,8 @@ namespace VSS.Productivity3D.AssetMgmt3D
       services.AddMvc();
 
       // Required for authentication
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
-      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+      services.AddTransient<IProjectProxy, ProjectV6Proxy>();
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();

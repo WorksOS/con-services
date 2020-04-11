@@ -5,13 +5,10 @@ metadata:
 data:
   ALK_KEY: 97CC5BD1CA28934796791B229AE9C3FA
   ALK_BASE_URL: http://localhost:5001
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/Customers/me
   DATA_OCEAN_ROOT_FOLDER_ID: "a3f51fdf-69e4-4d80-b734-e72e4f9b36d9"
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_URL: http://localhost:5001
-  GEOFENCE_API_URL: http://localhost:5001/api/v1/mock/geofences
-  LOADDUMP_API_URL: http://localhost:5001/api/v1/mock/loaddump
   LOG_MAX_CHAR: "1000"
   MOCK_WEBAPI_BASE_URL: http://localhost:5001
   PEGASUS_DXF_PROCEDURE_ID: b8431158-1917-4d18-9f2e-e26b255900b7

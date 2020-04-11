@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -33,18 +35,26 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets a list of customers for the user in user token. 
     /// </summary>
-    [Route("api/v1/customer/all")]
+    [Route("api/v1/Customers/me")]
     [HttpGet]
-    public async Task<CustomerV1ListResult> GetCustomersForMe()
+    public async Task<CustomerDataResult> GetCustomersForMe()
     {
-      Logger.LogInformation($"{nameof(GetCustomersForMe)}");
+      Logger.LogInformation($"{nameof(GetCustomersForMe)} userId: {userId} customerUid: {customerUid}");
       var customers = await cwsAccountClient.GetMyAccounts(new Guid(userId));
-      return new CustomerV1ListResult
+      
+      var cs = new CustomerDataResult
       {
-        customers = customers.Accounts.Select(c =>
+        status = 200,
+        metadata = new Metadata
+        { msg = "success" },
+          customer = customers.Accounts.Select(c =>
             AutoMapperUtility.Automapper.Map<CustomerData>(c))
             .ToList()
       };
+
+      Logger.LogInformation($"GetCustomersForMe: CustomerDataResult {JsonConvert.SerializeObject(cs)}");
+
+      return cs;
     }
 
     // todMaverick not needed?

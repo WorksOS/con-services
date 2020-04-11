@@ -12,7 +12,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {

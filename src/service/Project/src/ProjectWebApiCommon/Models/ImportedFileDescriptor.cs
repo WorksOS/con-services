@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {

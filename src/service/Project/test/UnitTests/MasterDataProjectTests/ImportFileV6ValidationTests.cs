@@ -8,7 +8,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.MasterData.ProjectTests

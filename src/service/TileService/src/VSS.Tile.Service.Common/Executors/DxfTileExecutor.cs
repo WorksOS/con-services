@@ -18,7 +18,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Point = VSS.MasterData.Models.Models.Point;
 
 namespace VSS.Tile.Service.Common.Executors

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using VSS.Serilog.Extensions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Repositories
 {

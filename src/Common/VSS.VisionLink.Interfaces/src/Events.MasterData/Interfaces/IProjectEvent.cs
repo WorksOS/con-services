@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces
+namespace VSS.Visionlink.Interfaces.Events.MasterData.Interfaces
 {
   public interface IProjectEvent
   {

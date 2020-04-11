@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Repositories.DBModels
 {

@@ -22,8 +22,8 @@ using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {

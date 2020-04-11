@@ -28,7 +28,7 @@ using VSS.Productivity3D.WebApi.Models.Notification.Executors;
 using VSS.Productivity3D.WebApi.Models.Services;
 using VSS.Productivity3D.WebApiModels.Notification.Models;
 using VSS.TCCFileAccess;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Notification.Controllers

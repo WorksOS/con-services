@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CCSS.CWS.Client.MockClients;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
@@ -46,7 +48,7 @@ namespace VSS.Tile.Service.WebApi
     {
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>(); // used in TID auth for customer/user validation
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>(); // used in TID auth for customer/user validation
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
@@ -69,8 +71,8 @@ namespace VSS.Tile.Service.WebApi
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
 
-      services.AddSingleton<IProjectProxy, ProjectV4Proxy>();
-      services.AddSingleton<IFileImportProxy, FileImportV4Proxy>();
+      services.AddSingleton<IProjectProxy, ProjectV6Proxy>();
+      services.AddSingleton<IFileImportProxy, FileImportV6Proxy>();
 
       services.AddSingleton<IFileRepository, FileRepository>();
 

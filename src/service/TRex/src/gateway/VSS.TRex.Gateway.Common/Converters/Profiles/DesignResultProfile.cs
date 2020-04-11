@@ -5,7 +5,7 @@ using VSS.TRex.Alignments;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.Common.Converters.Profiles
 {

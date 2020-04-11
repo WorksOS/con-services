@@ -2,7 +2,7 @@
 using System.Linq;
 using RepositoryTests.Internal;
 using VSS.Productivity3D.Project.Repository;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace RepositoryTests

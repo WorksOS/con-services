@@ -23,7 +23,7 @@ using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Serilog.Extensions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Productivity3D.Filter.Repository;
 
 namespace ExecutorTests.Internal

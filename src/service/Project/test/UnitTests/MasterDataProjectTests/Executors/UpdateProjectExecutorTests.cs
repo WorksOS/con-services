@@ -20,7 +20,7 @@ using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using Xunit;

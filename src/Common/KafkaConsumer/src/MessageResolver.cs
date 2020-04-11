@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using VSS.KafkaConsumer.Interfaces;
 using VSS.KafkaConsumer.JsonConverters;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.KafkaConsumer

@@ -14,7 +14,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Productivity3D.Proxy
 {

@@ -10,7 +10,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace WebApiTests.Executors
