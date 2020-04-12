@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
@@ -19,7 +16,7 @@ using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
 using VSS.Productivity3D.WebApi.Notification.Controllers;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 {

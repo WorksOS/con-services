@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using VSS.Productivity3D._3DAssetMgmt.Abstractions;
 
 namespace VSS.Productivity3D.AssetMgmt3D.AssetStatus
 {

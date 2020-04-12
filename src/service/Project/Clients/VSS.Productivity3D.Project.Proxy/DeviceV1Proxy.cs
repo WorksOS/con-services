@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
@@ -13,9 +17,9 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Project.Proxy
 {
-  public class DeviceV5Proxy : BaseServiceDiscoveryProxy, IDeviceProxy
+  public class DeviceV1Proxy : BaseServiceDiscoveryProxy, IDeviceProxy
   {
-    public DeviceV5Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
+    public DeviceV1Proxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
       : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
@@ -26,7 +30,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public override string ExternalServiceName => null;
 
-    public  override ApiVersion Version => ApiVersion.V5;
+    public  override ApiVersion Version => ApiVersion.V1;
 
     public  override ApiType Type => ApiType.Public;
 
@@ -108,6 +112,41 @@ namespace VSS.Productivity3D.Project.Proxy
       if(string.IsNullOrEmpty(userId))
         ClearCacheByTag(userId);
     }
-    
+
+    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingDevices(List<Guid> deviceUids, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetMatchingDevices)} deviceUids: {deviceUids}");
+      if (deviceUids.Count == 0)
+        return new DeviceMatchingModel().deviceIdentifiers;
+
+      using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(deviceUids))))
+      {
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<DeviceMatchingModel>("/devices/deviceuids", customHeaders, HttpMethod.Post, payload: ms);
+        if (result.Code == 0)
+          return result.deviceIdentifiers;
+
+        log.LogDebug($"{nameof(GetMatchingDevices)} Failed to get list of devices: {result.Code}, {result.Message}");
+      }
+
+      return null;
+    }
+
+    public async Task<IEnumerable<KeyValuePair<Guid, long>>> GetMatchingDevices(List<long> shortRaptorAssetIds, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetMatchingDevices)} shortRaptorAssetIds: {shortRaptorAssetIds}");
+      if (shortRaptorAssetIds.Count == 0)
+        return new DeviceMatchingModel().deviceIdentifiers;
+
+      using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(shortRaptorAssetIds))))
+      {
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<DeviceMatchingModel>("/devices/shortRaptorAssetIds", customHeaders, HttpMethod.Post, payload: ms);
+        if (result.Code == 0)
+          return result.deviceIdentifiers;
+
+        log.LogDebug($"{nameof(GetMatchingDevices)} Failed to get list of devices: {result.Code}, {result.Message}");
+      }
+
+      return null;
+    }
   }
 }

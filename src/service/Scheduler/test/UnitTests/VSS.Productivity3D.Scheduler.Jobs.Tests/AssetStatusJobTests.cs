@@ -10,15 +10,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
+using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity.Push.Models;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Push.Abstractions.AssetLocations;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Serilog.Extensions;
@@ -41,29 +43,30 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
     private Mock<IFleetAssetDetailsProxy> mockFleetAssetDetails = new Mock<IFleetAssetDetailsProxy>();
     private Mock<IFleetAssetSummaryProxy> mockAssetSummaryProxy = new Mock<IFleetAssetSummaryProxy>();
     private Mock<IProductivity3dV2ProxyNotification> mockProductivity3dV2ProxyNotification = new Mock<IProductivity3dV2ProxyNotification>();
-    private Mock<IAssetResolverProxy> mockAssetResolverProxy = new Mock<IAssetResolverProxy>();
+    private Mock<IDeviceProxy> mockDeviceProxy = new Mock<IDeviceProxy>();
 
     [TestInitialize]
     public void TestInitialize()
     {
-      var logger = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Scheduler.Jobs.UnitTests"));
       var serviceCollection = new ServiceCollection();
 
       serviceProvider = serviceCollection.AddLogging()
-                       .AddSingleton(logger)
+                       .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Scheduler.Jobs.UnitTests")))
+                       .AddSingleton<IConfigurationStore, GenericConfiguration>()
                        .AddSingleton(mockAssetStatusServerHubClient.Object)
                        .AddSingleton(mockFleetAssetDetails.Object)
                        .AddSingleton(mockAssetSummaryProxy.Object)
                        .AddSingleton(mockProductivity3dV2ProxyNotification.Object)
-                       .AddSingleton(mockAssetResolverProxy.Object)
+                       .AddSingleton(mockDeviceProxy.Object)
                        .AddTransient<IJob, AssetStatusJob.AssetStatusJob>() // This is the class we are testing
                        .BuildServiceProvider();
 
+      loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
       mockAssetStatusServerHubClient.Reset();
       mockFleetAssetDetails.Reset();
       mockAssetSummaryProxy.Reset();
       mockProductivity3dV2ProxyNotification.Reset();
-      mockAssetResolverProxy.Reset();
+      mockDeviceProxy.Reset();
 
       loggerFactory = serviceProvider.GetService<ILoggerFactory>();
     }
@@ -255,8 +258,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
             It.IsAny<IDictionary<string, string>>()))
         .Returns(Task.FromResult(machineResult));
 
-      mockAssetResolverProxy
-        .Setup(m => m.GetMatchingAssets(
+      mockDeviceProxy
+        .Setup(m => m.GetMatchingDevices(
           It.IsAny<List<long>>(), 
           It.IsAny<IDictionary<string, string>>()))
         .Returns(Task.FromResult<IEnumerable<KeyValuePair<Guid, long>>>(null));
@@ -270,17 +273,18 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       job.Run(null).Wait();
 
       // Validate the calls
-      mockAssetResolverProxy
-        .Verify(m => m.GetMatchingAssets(
+      mockDeviceProxy
+        .Verify(m => m.GetMatchingDevices(
             It.Is<List<long>>(l => l.Count == 1 && l[0] == machine1.AssetId),
             It.Is<IDictionary<string, string>>(d => DictionaryContentEquals(d, expectedHeaders))),
           Times.Once);
 
-      // We should not call this if we have not matching 3d/2d assets
-      mockAssetResolverProxy
-        .Verify(m => m.GetMatching3D2DAssets(It.IsAny<MatchingAssetsDisplayModel>(),
-            It.IsAny<IDictionary<string, string>>()),
-          Times.Never);
+      // todoMaverick not possible with WM devices
+      //// We should not call this if we have not matching 3d/2d assets
+      //mockAssetResolverProxy
+      //  .Verify(m => m.GetMatching3D2DAssets(It.IsAny<MatchingAssetsDisplayModel>(),
+      //      It.IsAny<IDictionary<string, string>>()),
+      //    Times.Never);
 
       // We should have received one event 
       mockAssetStatusServerHubClient
@@ -367,8 +371,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
             It.IsAny<IDictionary<string, string>>()))
         .Returns(Task.FromResult(machineResult));
 
-      mockAssetResolverProxy
-        .Setup(m => m.GetMatchingAssets(
+      mockDeviceProxy
+        .Setup(m => m.GetMatchingDevices(
           It.IsAny<List<long>>(), 
           It.IsAny<IDictionary<string, string>>()))
         .Returns(Task.FromResult<IEnumerable<KeyValuePair<Guid, long>>>(new KeyValuePair<Guid, long>[]
@@ -391,8 +395,8 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
       job.Run(null).Wait();
 
       // Validate the calls
-      mockAssetResolverProxy
-        .Verify(m => m.GetMatchingAssets(
+      mockDeviceProxy
+        .Verify(m => m.GetMatchingDevices(
             It.Is<List<long>>(l => l.Count == 1 && l[0] == machine.AssetId),
             It.Is<IDictionary<string, string>>(d => DictionaryContentEquals(d, expectedHeaders))),
           Times.Once);

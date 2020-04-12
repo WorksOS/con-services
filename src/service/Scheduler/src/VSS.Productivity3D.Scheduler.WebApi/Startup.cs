@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
-using CCSS.CWS.Client;
 using CCSS.CWS.Client.MockClients;
 using Hangfire;
 using Hangfire.MySql;
@@ -21,8 +20,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
-using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -104,7 +101,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITpaasEmailProxy, TpaasEmailProxy>();
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
-      services.AddTransient<IAssetResolverProxy, AssetResolverProxy>();
+      services.AddTransient<IDeviceProxy, DeviceV1Proxy>();
       services.AddSingleton<IJobRegistrationManager, JobRegistrationManager>();
       services.AddSingleton<IHangfireMetricScheduler, HangfireMetricScheduler>();
       services.AddTransient<IExportEmailGenerator, ExportEmailGenerator>();

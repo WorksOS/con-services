@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.Extensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApiTests.ProductionData.Models.Extensions
 {

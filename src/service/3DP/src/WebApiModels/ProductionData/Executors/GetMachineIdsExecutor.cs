@@ -12,7 +12,6 @@ using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
-using VSS.Productivity3D.Productivity3D.Models.Utilities;
 
 namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 {
@@ -101,7 +100,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var assetUids = new List<Guid>(machines.Where(a => a.AssetUid.HasValue && a.AssetUid.Value != Guid.Empty && !a.IsJohnDoe).Select(a => a.AssetUid.Value).Distinct());
         if (assetUids.Count > 0)
         {
-          var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetUids, customHeaders)).ToList();
+          var assetMatchingResult = (await deviceProxy.GetMatchingDevices(assetUids, customHeaders)).ToList();
           foreach (var assetMatch in assetMatchingResult)
           {
             if (assetMatch.Value > 0)
@@ -116,7 +115,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
         var assetIds = new List<long>(machines.Where(a => a.AssetId > 0 && !a.IsJohnDoe).Select(a => a.AssetId).Distinct());
         if (assetIds.Count > 0)
         {
-          var assetMatchingResult = (await assetResolverProxy.GetMatchingAssets(assetIds, customHeaders)).ToList();
+          var assetMatchingResult = (await deviceProxy.GetMatchingDevices(assetIds, customHeaders)).ToList();
           foreach (var assetMatch in assetMatchingResult)
           {
             if (assetMatch.Value > 0) // machineId of 0/-1 may occur for >1 AssetUid

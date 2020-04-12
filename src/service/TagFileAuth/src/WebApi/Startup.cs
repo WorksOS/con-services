@@ -45,7 +45,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddSingleton<IWebRequest, GracefulWebRequest>()
         .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
         .AddTransient<IProjectProxy, ProjectV6Proxy>()
-        .AddTransient<IDeviceProxy, DeviceV5Proxy>();
+        .AddTransient<IDeviceProxy, DeviceV1Proxy>();
       
       services.AddOpenTracing(builder =>
       {

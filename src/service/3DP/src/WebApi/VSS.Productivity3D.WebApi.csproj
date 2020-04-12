@@ -61,8 +61,6 @@
     <ProjectReference Include="..\..\..\..\Common\VSS.Common.ServiceDiscovery\src\VSS.Common.ServiceDiscovery.csproj" />
     <ProjectReference Include="..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
-    <ProjectReference Include="..\..\..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Proxy\VSS.Productivity3D.3DAssetMgmt.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Filter\Clients\VSS.Productivity3D.Filter.Proxy\VSS.Productivity3D.Filter.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />

@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using VSS.Common.Abstractions.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+<<<<<<< Updated upstream
+using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+=======
+>>>>>>> Stashed changes
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {

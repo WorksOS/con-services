@@ -45,7 +45,8 @@ namespace VSS.Productivity3D.AssetMgmt3D
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
-      services.AddTransient<IAssetRepository, AssetRepository>();
+      // todoMaverick placeholder
+      //services.AddTransient<IAssetRepository, AssetRepository>();
 
       services.AddSingleton<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IErrorCodesProvider, AssetMgmt3DExecutionStates>();

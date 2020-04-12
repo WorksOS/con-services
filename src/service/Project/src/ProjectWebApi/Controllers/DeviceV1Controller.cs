@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -124,6 +125,34 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };      
 
       return projectDataResult;
+    }
+
+    /// <summary>
+    /// Get a list of device Uid/Id matches for Uids supplied
+    /// </summary>
+    [HttpPost("api/v1/devices/deviceuids")]
+    [ProducesResponseType(typeof(DeviceMatchingModel), 200)]
+    public async Task<IActionResult> GetMatchingDevices([FromBody] List<Guid> deviceUids)
+    {
+      var deviceUidDisplay = string.Join(", ", deviceUids ?? new List<Guid>());
+      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for deviceUids: {deviceUidDisplay}");
+
+      var devices = await DeviceRepo.GetDevices(deviceUids);
+      return Json(DeviceMatchingModel.FromDeviceList(devices));
+    }
+
+    /// <summary>
+    /// Get a list of device Uid/Id matches for Ids supplied
+    /// </summary>
+    [HttpPost("api/v1/devices/shortRaptorAssetIds")]
+    [ProducesResponseType(typeof(List<DeviceMatchingModel>), 200)]
+    public async Task<IActionResult> GetMatchingDevices([FromBody] List<long> shortRaptorAssetIds)
+    {
+      var assetIdDisplay = string.Join(", ", shortRaptorAssetIds ?? new List<long>());
+      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for shortRaptorAssetIds: {assetIdDisplay}");
+
+      var devices = await DeviceRepo.GetDevices(shortRaptorAssetIds);
+      return Json(DeviceMatchingModel.FromDeviceList(devices));
     }
 
   }

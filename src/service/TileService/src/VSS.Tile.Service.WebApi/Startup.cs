@@ -63,7 +63,6 @@ namespace VSS.Tile.Service.WebApi
       services.AddScoped<IBoundingBoxHelper, BoundingBoxHelper>();
       services.AddSingleton<IProductivity3dV2ProxyCompactionTile, Productivity3dV2ProxyCompactionTile>();
 
-      services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddSingleton<ILoadDumpProxy, LoadDumpProxy>();
       services.AddSingleton<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();

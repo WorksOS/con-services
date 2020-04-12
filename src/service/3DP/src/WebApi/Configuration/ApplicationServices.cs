@@ -14,10 +14,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
-using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Common.Interfaces;
-using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
@@ -75,7 +72,6 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IProductionDataRequestFactory, ProductionDataRequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddTransient<ICompactionProfileResultHelper, CompactionProfileResultHelper>();
-      services.AddSingleton<IGeofenceProxy, GeofenceProxy>();
       services.AddScoped<IProductionDataTileService, ProductionDataTileService>();
       services.AddScoped<IBoundingBoxService, BoundingBoxService>();
       services.AddScoped<ITransferProxy>(sp => new TransferProxy(sp.GetRequiredService<IConfigurationStore>(), "AWS_TAGFILE_BUCKET_NAME"));
@@ -87,10 +83,9 @@ namespace VSS.Productivity3D.WebApi
 
       // Action services
       services.AddSingleton<ISummaryDataHelper, SummaryDataHelper>();
-
-      services.AddScoped<IAssetResolverProxy, AssetResolverProxy>();
       services.AddTransient<IProjectSettingsProxy, ProjectSettingsV4Proxy>();
       services.AddTransient<IProjectProxy, ProjectV6Proxy>();
+      services.AddTransient<IDeviceProxy, DeviceV1Proxy>();
       services.AddTransient<IFileImportProxy, FileImportV6Proxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
       services.AddTransient<ISchedulerProxy, SchedulerV1Proxy>();
