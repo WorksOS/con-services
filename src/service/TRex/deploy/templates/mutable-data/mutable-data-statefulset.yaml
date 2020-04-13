@@ -7,7 +7,7 @@ metadata:
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
-    component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
+    component: {{ template "trex.deployname" . }}-mds
     mutable-cluster: "true"
     immutable-cluster: "true"
     jmx-prometheus: "true"
@@ -16,7 +16,7 @@ spec:
   selector:
     matchLabels:
       #this must match one of metadata.labels above
-      component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
+      component: {{ template "trex.deployname" . }}-mds
   # A number of Ignite pods to be started by Kubernetes initially.
   replicas: {{ .Values.mutableData.replicaCount }}
   template:
@@ -26,7 +26,7 @@ spec:
         # ignite-service.yaml so that the Kubernetes Ignite lookup service
         # can easily track all Ignite pods available deployed so far.
         app: {{ template "trex.deployname" . }}
-        component: {{ .Release.Name }}-{{ .Values.environment }}-{{ .Values.image.tag }}-mds
+        component: {{ template "trex.deployname" . }}-mds
         mutable-cluster: "true"
         immutable-cluster: "true"
         jmx-prometheus: "true"
