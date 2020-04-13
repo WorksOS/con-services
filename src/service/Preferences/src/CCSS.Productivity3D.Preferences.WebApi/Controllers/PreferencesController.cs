@@ -301,7 +301,7 @@ namespace CCSS.Productivity3D.Preferences.WebApi.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
-          .Build<CreatePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
+          .Build<DeletePreferenceKeyExecutor>(LoggerFactory, ServiceExceptionHandler, PreferenceRepo)
           .ProcessAsync(preferenceEvent)
       );
 

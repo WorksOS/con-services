@@ -130,7 +130,7 @@ namespace TestUtility
           response = await CallWebApi("api/v1/user/key", HttpMethod.Put, jsonString, customerUid, statusCode: statusCode);
           break;
         case "DeletePreferenceKeyEvent":
-          response = await CallWebApi("api/v1/user/key", HttpMethod.Delete, string.Empty, customerUid, statusCode: statusCode);
+          response = await CallWebApi("api/v1/user/key", HttpMethod.Delete, jsonString, customerUid, statusCode: statusCode);
           break;
       }
 
@@ -145,11 +145,13 @@ namespace TestUtility
     /// </summary>
     public async Task GetUserPreferenceViaWebApiAndCompareActualWithExpected(HttpStatusCode statusCode, Guid customerUid, string request, bool ignoreZeros)
     {
-      var response = await CallWebApi("api/v1/user", HttpMethod.Get, null, customerUid.ToString());
+      var createRequest = JsonConvert.DeserializeObject<UpsertUserPreferenceRequest>(request);
+      var queryParams = $"?keyName={createRequest.PreferenceKeyName}&userUid={createRequest.TargetUserUID}";
+      var response = await CallWebApi($"api/v1/user{queryParams}", HttpMethod.Get, null, customerUid.ToString());
       if (statusCode == HttpStatusCode.OK)
       {
         var actualPref = JsonConvert.DeserializeObject<UserPreferenceV1Result>(response);
-        var expectedPref = ConstructExpectedResult(JsonConvert.DeserializeObject<UpsertUserPreferenceRequest>(request));
+        var expectedPref = ConstructExpectedResult(createRequest);
         Msg.DisplayResults($"Expected preference: {JsonConvert.SerializeObject(expectedPref)}", $"Actual from WebApi: {response}");
           
         CompareTheActualWithExpected(actualPref, expectedPref, ignoreZeros);

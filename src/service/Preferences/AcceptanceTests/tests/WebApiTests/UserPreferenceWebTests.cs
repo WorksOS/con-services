@@ -15,8 +15,8 @@ namespace WebApiTests
       Msg.Title("User Preference test 1", "Create user preference successfully");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var prefKeyName = "My preference key";
+      var userUid = RestClient.DEFAULT_USER;
+      var prefKeyName = $"My preference key {DateTime.Now.Ticks}";
       var prefKeyUid = Guid.NewGuid();
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
@@ -32,8 +32,8 @@ namespace WebApiTests
       Msg.Title("User Preference test 2", "Create duplicate user preference");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var prefKeyName = "My preference key";
+      var userUid = RestClient.DEFAULT_USER;
+      var prefKeyName = $"My preference key {DateTime.Now.Ticks}";
       var prefKeyUid = Guid.NewGuid();
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
@@ -44,8 +44,8 @@ namespace WebApiTests
       var prefEventArray2 = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| CreateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | different json |"};
-      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2);
-      Assert.True(response2 == $"Unable to create user preference. {0}", "Response is unexpected. Should fail with unable to create. Response: " + response2);
+      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2, statusCode: HttpStatusCode.BadRequest);
+      Assert.True(response2 == $"User preference already exists. ", "Response is unexpected. Should fail with unable to create. Response: " + response2);
     }
 
     [Fact]
@@ -54,8 +54,8 @@ namespace WebApiTests
       Msg.Title("User Preference test 3", "Upsert user preference");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var prefKeyName = "My preference key";
+      var userUid = RestClient.DEFAULT_USER;
+      var prefKeyName = $"My preference key {DateTime.Now.Ticks}";
       var prefKeyUid = Guid.NewGuid();
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
@@ -76,8 +76,8 @@ namespace WebApiTests
       Msg.Title("User Preference test 4", "Update user preference successfully");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var prefKeyName = "My preference key";
+      var userUid = RestClient.DEFAULT_USER;
+      var prefKeyName = $"My preference key {DateTime.Now.Ticks}";
       var prefKeyUid = Guid.NewGuid();
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
@@ -94,8 +94,8 @@ namespace WebApiTests
       Msg.Title("User Preference test 5", "Update non-existant user preference");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var prefKeyName = "My preference key";
+      var userUid = RestClient.DEFAULT_USER;
+      var prefKeyName = $"My preference key {DateTime.Now.Ticks}";
       var prefKeyUid = Guid.NewGuid();
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
@@ -105,8 +105,8 @@ namespace WebApiTests
       var prefEventArray2 = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
       $"| UpdateUserPreferenceRequest | {customerUid} | {prefKeyName}     | {prefKeyUid}     | {userUid}     |  1.0          | some json here |"};
-      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2);
-      Assert.True(response2 == $"Unable to update user preference. {0}", "Response is unexpected. Should fail with unable to update. Response: " + response2);
+      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2, statusCode: HttpStatusCode.InternalServerError);
+      Assert.True(response2 == $"Unable to update user preference. ", "Response is unexpected. Should fail with unable to update. Response: " + response2);
     }
 
     [Fact]
@@ -115,8 +115,8 @@ namespace WebApiTests
       Msg.Title("User Preference test 6", "Delete user preference successfully");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var prefKeyName = "My preference key";
+      var userUid = RestClient.DEFAULT_USER;
+      var prefKeyName = $"My preference key {DateTime.Now.Ticks}";
       var prefKeyUid = Guid.NewGuid();
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
@@ -138,8 +138,8 @@ namespace WebApiTests
       Msg.Title("User Preference test 7", "Delete non-existant user preference");
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
-      var userUid = Guid.NewGuid();
-      var prefKeyName = "My preference key";
+      var userUid = RestClient.DEFAULT_USER;
+      var prefKeyName = $"My preference key {DateTime.Now.Ticks}";
       var prefKeyUid = Guid.NewGuid();
       var prefEventArray = new[] {
        "| EventType                   | CustomerUID   | PreferenceKeyName | PreferenceKeyUID | TargetUserUID | SchemaVersion | PreferenceJson |",
@@ -150,8 +150,8 @@ namespace WebApiTests
        "| EventType                   | CustomerUID   |",
       $"| DeleteUserPreferenceRequest | {customerUid} |"};
       var queryParams = $"?preferencekeyname={prefKeyName}&preferencekeyuid={prefKeyUid}&userGuid={userUid}";
-      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2, queryParams);
-      Assert.True(response2 == $"Unable to delete user preference. {0}", "Response is unexpected. Should fail with unable to delete. Response: " + response2);
+      var response2 = await ts.PublishEventToWebApi<ContractExecutionResult>(prefEventArray2, queryParams, HttpStatusCode.InternalServerError);
+      Assert.True(response2 == $"Unable to delete user preference. ", "Response is unexpected. Should fail with unable to delete. Response: " + response2);
     }
 
   }

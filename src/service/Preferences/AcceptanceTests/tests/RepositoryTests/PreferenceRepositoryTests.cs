@@ -34,7 +34,6 @@ namespace RepositoryTests
         .AddTransient<IRepository<IPreferenceEvent>, PreferenceRepository>()
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddMemoryCache()
-        //.AddSingleton<IDataCache, InMemoryDataCache>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
