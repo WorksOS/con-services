@@ -5,11 +5,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   public class CustomerV1DeviceLicenseResult : ContractExecutionResult
   {
-    private int _totalLicenses;
+    public int TotalLicenses;
 
     public CustomerV1DeviceLicenseResult(int totalLicenses)
     {
-      this._totalLicenses = totalLicenses;
+      this.TotalLicenses = totalLicenses;
     }
   }
 }

@@ -35,7 +35,7 @@ namespace CCSS.CWS.Client.MockClients
 
       return Task.FromResult(deviceResponseModel);
     }
-      
+
     public Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
       var deviceResponseModel = new DeviceResponseModel()
@@ -59,14 +59,14 @@ namespace CCSS.CWS.Client.MockClients
         {
           new DeviceResponseModel()
           {
-          Id = Guid.NewGuid().ToString(),
-          AccountId = accountUid.ToString(),
-          DeviceType = "EC520",
-          DeviceName = "this is a device",
-          Status = "Active",
-         SerialNumber = "56556565"
+            Id = Guid.NewGuid().ToString(),
+            AccountId = accountUid.ToString(),
+            DeviceType = "EC520",
+            DeviceName = "this is a device",
+            Status = "Active",
+            SerialNumber = "56556565"
           }
-          }
+        }
       };
       return Task.FromResult(deviceListResponseModel);
     }

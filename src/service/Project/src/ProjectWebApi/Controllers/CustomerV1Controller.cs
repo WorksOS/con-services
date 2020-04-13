@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -37,24 +36,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     [Route("api/v1/Customers/me")]
     [HttpGet]
-    public async Task<CustomerDataResult> GetCustomersForMe()
+    public async Task<CustomerV1ListResult> GetCustomersForMe()
     {
-      Logger.LogInformation($"{nameof(GetCustomersForMe)} userId: {userId} customerUid: {customerUid}");
+      Logger.LogInformation($"{nameof(GetCustomersForMe)}");
       var customers = await cwsAccountClient.GetMyAccounts(new Guid(userId));
-      
-      var cs = new CustomerDataResult
+      return new CustomerV1ListResult
       {
-        status = 200,
-        metadata = new Metadata
-        { msg = "success" },
-          customer = customers.Accounts.Select(c =>
+        Customers = customers.Accounts.Select(c =>
             AutoMapperUtility.Automapper.Map<CustomerData>(c))
             .ToList()
       };
-
-      Logger.LogInformation($"GetCustomersForMe: CustomerDataResult {JsonConvert.SerializeObject(cs)}");
-
-      return cs;
     }
 
     // todMaverick not needed?
@@ -96,9 +87,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     //}
 
     /// <summary>
-    /// Gets the total devices licensed for this customer, NOT from the user token. 
+    /// Gets the total devices licensed for this customer. 
+    ///   Also triggers a lazy load of devices from cws, so that shortRaptorAssetId is generated.
     /// </summary>
-    [Route("api/v1/customer/user")]
+    [Route("api/v1/customer/license/{customerUid}")]
     [HttpGet]
     public async Task<CustomerV1DeviceLicenseResult> GetCustomerDeviceLicense(string customerUid)
     {
@@ -115,6 +107,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       foreach (var device in deviceList.Devices)
       {
         // if it exists, does nothing but return a count of 0
+        //  don't store customerUid, so that we don't need to move the device if ownership changes.
+        //      may ned to change this is we ever need a time-component to ownership
         // todoMaverick do we care what the status is?
         await DeviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(device));
       }
