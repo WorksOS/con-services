@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -17,6 +16,7 @@ namespace CCSS.CWS.Client.MockClients
   /// </summary>
   public class MockCwsAccountClient : CwsProfileManagerClient, ICwsAccountClient
   {
+    private const string Daves3dDemoCustomerUid = "8abcf851-44c5-e311-aa77-00505688274d";
     public MockCwsAccountClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)
     {
@@ -31,7 +31,7 @@ namespace CCSS.CWS.Client.MockClients
         {
           new AccountResponseModel
           {
-            Id = "8abcf851-44c5-e311-aa77-00505688274d",
+            Id = Daves3dDemoCustomerUid,
             Name = "3D Demo customer"
           }
         }
@@ -42,21 +42,19 @@ namespace CCSS.CWS.Client.MockClients
     /// </summary>
     public Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
     {
-      if (string.Compare(customerUid.ToString(), "8abcf851-44c5-e311-aa77-00505688274d", StringComparison.OrdinalIgnoreCase) == 0)
+      if (string.Compare(customerUid.ToString(), Daves3dDemoCustomerUid, StringComparison.OrdinalIgnoreCase) == 0)
         return Task.FromResult(new AccountResponseModel()
         {
-          Id = "8abcf851-44c5-e311-aa77-00505688274d",
+          Id = Daves3dDemoCustomerUid,
           Name = "3D Demo customer"
         });
 
-      var accountListResponseModel = GetMyAccounts(userUid, customHeaders).Result;
-
-      if (accountListResponseModel == null || !accountListResponseModel.Accounts.Any())
-        return null;
-
-      return Task.FromResult(accountListResponseModel.Accounts
-        .Where(a => string.Compare(a.Id, customerUid.ToString(), StringComparison.InvariantCultureIgnoreCase) == 0)
-        .FirstOrDefault());
+      var accountResponseModel = new AccountResponseModel
+      {
+        Id = customerUid.ToString(),
+        Name = "Got this other customer"
+      };
+      return Task.FromResult(accountResponseModel);
     }
 
     public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IDictionary<string, string> customHeaders = null)
