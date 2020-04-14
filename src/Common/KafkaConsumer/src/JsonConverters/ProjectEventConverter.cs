@@ -1,6 +1,8 @@
-using System;
+﻿using System;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Repositories.ExtendedModels;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
@@ -21,22 +23,6 @@ namespace VSS.KafkaConsumer.JsonConverters
       if (jObject["DeleteProjectEvent"] != null)
       {
         return jObject["DeleteProjectEvent"].ToObject<DeleteProjectEvent>();
-      }
-      if (jObject["AssociateProjectCustomer"] != null)
-      {
-        return jObject["AssociateProjectCustomer"].ToObject<AssociateProjectCustomer>();
-      }
-      if (jObject["DissociateProjectCustomer"] != null)
-      {
-        return jObject["DissociateProjectCustomer"].ToObject<DissociateProjectCustomer>();
-      }
-      if (jObject["AssociateProjectGeofence"] != null)
-      {
-        return jObject["AssociateProjectGeofence"].ToObject<AssociateProjectGeofence>();
-      }
-      if (jObject["DissociateProjectGeofence"] != null)
-      {
-        return jObject["DissociateProjectGeofence"].ToObject<DissociateProjectGeofence>();
       }
       if (jObject["CreateImportedFileEvent"] != null)
       {

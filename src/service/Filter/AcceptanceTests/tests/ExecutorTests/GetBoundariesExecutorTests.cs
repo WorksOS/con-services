@@ -8,7 +8,8 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -40,10 +41,11 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor = RequestExecutorContainer.Build<GetBoundariesExecutor>(
-        ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
+        ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
+
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
-      Assert.AreEqual(2, result.GeofenceData.Count, "Should be two overlapping favorite or associated geofences returned");
+      Assert.AreEqual(0, result.GeofenceData.Count, "Should be no boundaries");
       var boundaries = result.GeofenceData.Where(b => b.GeofenceType == GeofenceType.Filter.ToString()).ToList();
       Assert.AreEqual(0, boundaries.Count, "Shouldn't be any boundaries returned");
     }
@@ -64,7 +66,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null,
@@ -73,15 +74,14 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(
-          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
+          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       var boundaryToTest = new GeofenceDataSingleResult(
@@ -128,7 +128,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null
@@ -137,15 +136,14 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, goldenDimensionsPolygon);
 
       var executor =
         RequestExecutorContainer.Build<GetBoundariesExecutor>(
-          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, geofenceProxy: GeofenceProxy, unifiedProductivityProxy: UnifiedProductivityProxy);
+          ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo);
       var result = await executor.ProcessAsync(request) as GeofenceDataListResult;
 
       Assert.IsNotNull(result, Responses.ShouldReturnResult);
@@ -158,7 +156,7 @@ namespace ExecutorTests
       var request = BaseRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUid = projectUid.ToString(), ProjectGeofenceWKT = projectGeometryWKT},
+        new ProjectData() { ProjectUID = projectUid.ToString(), GeometryWKT = projectGeometryWKT},
         userId.ToString(), null);
       request.Validate(ServiceExceptionHandler);
       return request;

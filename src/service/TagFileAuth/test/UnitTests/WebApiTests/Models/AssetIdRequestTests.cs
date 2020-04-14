@@ -9,7 +9,7 @@ namespace WebApiTests.Models
   [TestClass]
   public class AssetIdRequestTests : ModelBaseTests
   {
-    private string assetIdPrefix = @"{{""assetId"":-1,""machineLevel"":0,";
+    private string assetIdPrefix = @"{{""shortRaptorAssetId"":-1,""machineLevel"":0,";
 
     [TestMethod]
     public void ValidateGetAssetIdRequest_ValidatorCase1()

@@ -17,40 +17,24 @@ data:
   MYSQL_SERVER_NAME_VSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_SERVER_NAME_ReadVSPDB: rdsmysql-8469.c31ahitxrkg7.us-west-2.rds.amazonaws.com
   MYSQL_PORT: "3306"
-#Kafka configuration
-  KAFKA_URI: kafka1.alpha.vspengg.com,kafka2.alpha.vspengg.com,kafka3.alpha.vspengg.com,kafka4.alpha.vspengg.com,kafka5.alpha.vspengg.com
-  KAFKA_PORT: "9092"
-  KAFKA_TOPIC_NAME_SUFFIX: -Dev
-  KAFKA_OFFSET: latest
-  PROJECTSERVICE_KAFKA_TOPIC_NAME: VSS.Interfaces.Events.MasterData.IProjectEvent
-#Service references
-  ASSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/associateprojectsubscription
-  CUSTOMERSERVICE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-customerservice/1.0/Customers/me
-  DISSOCIATESUBSPROJECT_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-dev-subscriptionservice/1.0/project/dissociateprojectsubscription
-  GEOFENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-geofenceservice/1.0/  
-  PREFERENCE_API_URL: https://api-stg.trimble.com/t/trimble.com/vss-alpha-preferenceservice/1.0 
-  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
-  VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
+#Service references 
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/VSS-Alpha-UnifiedFleet/1.0
   assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/vss-alpha-assetutilization/1.1
-  unifiedproductivity_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-dev-unifiedproductivity/1.0
+  cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
   productivity3d_service_public_v1: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/1.0
   productivity3d_service_public_v2: https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0
   productivity3dinternal_service_public_v2: http://10.97.99.166:5001
   tpaasemail_public_v1: https://api-stg.trimble.com/t/trimble.com/tpaas-email-service/1.0/emails/
+  TILE_INTERNAL_BASE_URL: http://tile.dev.eks.ccss.cloud/internal/v1
+  VETA_EXPORT_URL: "https://api-stg.trimble.com/t/trimble.com/vss-dev-3dproductivity/2.0/export/veta"
 #TPaaS
   TPAAS_OAUTH_URL: https://identity-stg.trimble.com/i/oauth2 
   INTERNAL_JWT: eyJ4NXQiOiJNREk0WTJNd1pUVmpNRGRsTkdVeFlUSmtaV00zWmpCaVptVTBZVFprTkRjek9HTmhZMk5oTmciLCJraWQiOiJNREk0WTJNd1pUVmpNRGRsTkdVeFlUSmtaV00zWmpCaVptVTBZVFprTkRjek9HTmhZMk5oTmciLCJhbGciOiJSUzI1NiJ9.eyJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hY2NvdW50TG9ja2VkIjoiZmFsc2UiLCJzdWIiOiJmMzFmYmFmMC0xMzBjLTQzM2ItYjlhMC03YWQ3NWI4M2Y0MmEiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hY2NvdW50bmFtZSI6InRyaW1ibGUuY29tIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvcm9sZSI6IiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2ZhaWxlZExvZ2luQXR0ZW1wdHMiOiIwIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvYXBwbGljYXRpb250aWVyIjoiVW5saW1pdGVkIiwiaXNzIjoiaHR0cHM6XC9cL2lkZW50aXR5LnRyaW1ibGUuY29tIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvbGFzdFB3ZFNldFRpbWVTdGFtcCI6IjE1MjY0NjMyMTAwOTIiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9lbmR1c2VyVGVuYW50SWQiOjEsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2xhc3RMb2dpblRpbWVTdGFtcCI6IjE1NDA3NTQ4MjUwOTkiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC91dWlkIjoiZjMxZmJhZjAtMTMwYy00MzNiLWI5YTAtN2FkNzViODNmNDJhIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvdXNlckNyZWF0ZVRpbWVTdGFtcCI6IjE1MjY0NjMyMTAwOTIiLCJhenAiOiI5WDd6MkZKNXRBUVNNd05KVXhPaGZCcVVWTmdhIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZW1haWxhZGRyZXNzIjoiY3RjdC10cGFhcy11Z0B0cmltYmxlLmNvbSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2xhc3RuYW1lIjoiZGV2IiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZmlyc3RuYW1lIjoiY3RjdCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL3VzZXJ0eXBlIjoiQVBQTElDQVRJT04iLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9hcHBsaWNhdGlvbmlkIjowLCJleHAiOjE1Njk1NTM4ODAsImlhdCI6MTU2OTU0OTk0MSwiaHR0cDpcL1wvdHJpbWJsZS5jb21cL3RwYWFzXC9jbGFpbXNcL2FwcGxpY2F0aW9ubmFtZSI6IlByb2QtRWFydGh3b3Jrcy1FQzUyMCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FwaWNvbnRleHQiOiJcL3RcL3RyaW1ibGUuY29tXC92c3MtM2Rwcm9kdWN0aXZpdHkiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9wYXNzd29yZFRpbWVzdGFtcCI6IjE1MjY0NjMyMTAwOTIiLCJodHRwOlwvXC90cmltYmxlLmNvbVwvdHBhYXNcL2NsYWltc1wvdXNlcm5hbWUiOiJjdGN0LXRwYWFzLXVnQHRyaW1ibGUuY29tIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvdmVyc2lvbiI6IjIuMCIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2tleXR5cGUiOiJQUk9EVUNUSU9OIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvYXBwbGljYXRpb25uYW1lIjoiUHJvZC1FYXJ0aHdvcmtzLUVDNTIwIiwiaHR0cDpcL1wvd3NvMi5vcmdcL2NsYWltc1wvZW5kdXNlciI6ImN0Y3QtdHBhYXMtdWdAdHJpbWJsZS5jb20iLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9sYXN0VXBkYXRlVGltZVN0YW1wIjoiMTU2Njg1NjI2ODUzNiIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2dpdmVubmFtZSI6ImN0Y3QiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9lbWFpbFZlcmlmaWVkIjoidHJ1ZSIsImh0dHA6XC9cL3dzbzIub3JnXC9jbGFpbXNcL2FjY291bnR1c2VybmFtZSI6ImN0Y3QtdHBhYXMtdWciLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC90aWVyIjoiVW5saW1pdGVkIiwiaHR0cDpcL1wvdHJpbWJsZS5jb21cL3RwYWFzXC9jbGFpbXNcL2FwcGxpY2F0aW9uaWQiOiJhNWI4ODllOS04ODdjLTQ0NWItOTlhOS0wZDQ3NjZlODEwMjUiLCJodHRwOlwvXC93c28yLm9yZ1wvY2xhaW1zXC9zdWJqZWN0IjoiY3RjdC10cGFhcy11ZyIsInNjb3BlcyI6IkRJRF8wOGQ2YWM4Ni0wY2I3LTdjNWQtY2EyYi0yYjAwMDEwMDA1NmQiLCJodHRwOlwvXC90cmltYmxlLmNvbVwvdHBhYXNcL2NsYWltc1wvY29uc3VtZXJrZXkiOiI5WDd6MkZKNXRBUVNNd05KVXhPaGZCcVVWTmdhIn0.DnhJONdd3NGygZwcwk7eO2w-awVhHjffzMAUUPdROGQ4WMuXaZoGBSAI1p7GtJM5Zq_hjs24Of3rVQ5yKQsFO6q6g4ghgjYSCIhmYf3b6VsygZvtlVMPYbzO7Xxkodu3iErs8Tmka-WEiy3u3I2jDUn0x5v-ypmemJoeqHGCi0s
-#CAP configuration  
-  MYSQL_CAP_DATABASE_NAME: VSS-Productivity3D-CAP-Dev
-  MYSQL_CAP_TABLE_PREFIX: Project
-  KAFKA_CAP_GROUP_NAME: Project-CAP
 #Misc stuff   
   TILE_RENDER_MAX_ZOOM_LEVEL: "21"
   TILE_RENDER_MAX_ZOOM_RANGE: "14"
   TILE_RENDER_WAIT_INTERVAL: "2000"
-  CUSTOM_INIT_SCRIPT: zookeeper_check.sh
   LOG_MAX_CHAR: "1000"
   SCHEDULER_FILTER_CLEANUP_TASK_AGE_MINUTES: "720"
   DOWNLOAD_FOLDER: C:/temp/
@@ -95,11 +79,9 @@ data:
 #Cache
   MAX_FILE_SIZE: "100000000"
   TILE_CACHE_LIFE: 00:15:00
-  CUSTOMER_CACHE_LIFE: 00:30:00
+  CWS_CACHE_LIFE: 00:30:00
   ELEVATION_EXTENTS_CACHE_LIFE: 00:30:00
   FILTER_CACHE_LIFE: 00:15:00
-  GEOFENCE_CACHE_LIFE: 00:00:03
-  UNIFIED_PRODUCTIVITY_CACHE_LIFE: 00:00:03
   IMPORTED_FILE_CACHE_LIFE: 00:15:00
   PROJECT_CACHE_LIFE: 00:30:00
   ASSETMGMT_CACHE_LIFE: 00:30:00

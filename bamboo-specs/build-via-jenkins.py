@@ -53,10 +53,7 @@ def get_build_status(url, server, build, id, debug=False):
         if debug:
             print(json.dumps(buildInfo, sort_keys=True, indent=2))
         #print("Current Status: %s (Building: %s)" % (status, building))
-        
-        if not building and status is not None:
-            print(json.dumps(buildInfo, sort_keys=True, indent=2))
-        
+
         # Get logs
         log_url = "%s/job/%s/%d/logText/progressiveText?start=%d" %(url, build, id, logStart)
         r = requests.get(log_url)

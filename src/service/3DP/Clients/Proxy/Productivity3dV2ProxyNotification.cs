@@ -14,7 +14,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Productivity3D.Proxy
 {
@@ -79,13 +79,16 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
       log.LogDebug($"{nameof(UpdateFiles)} projectUid: {projectUid} fileUids: {string.Join<Guid>(",", fileUidsList)}");
 
       //var queryParams = $"?projectUid={projectUid}&fileUids={string.Join<Guid>("&fileUids=", fileUids)}";
-      var queryParams = new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>("projectUid", projectUid.ToString())};
+      var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("projectUid", projectUid.ToString()) };
       foreach (var fileUid in fileUidsList)
         queryParams.Add(new KeyValuePair<string, string>("fileUids", fileUid.ToString()));
 
       return await NotifyFile<BaseMasterDataResult>("/notification/updatefiles", queryParams, customHeaders);
     }
 
+    /// <summary>
+    /// Notifies TRex/Raptor that a file has been CRUD to a project via CGen
+    /// </summary>
     /// <summary>
     /// Notifies TRex/Raptor that a file has been CRUD to a project via CGen
     /// </summary>
@@ -124,7 +127,7 @@ namespace VSS.Productivity3D.Productivity3D.Proxy
         new KeyValuePair<string, string>("projectUid", projectUid.ToString())
       };
 
-      var response = await GetMasterDataItemServiceDiscoveryNoCache<BaseMasterDataResult>("/notification/filterchange", customHeaders, queryParams );
+      var response = await GetMasterDataItemServiceDiscoveryNoCache<BaseMasterDataResult>("/notification/filterchange", customHeaders, queryParams);
       log.LogDebug($"{nameof(NotifyFilterChange)} response: {(response == null ? null : JsonConvert.SerializeObject(response).Truncate(_logMaxChar))}");
 
       return response;

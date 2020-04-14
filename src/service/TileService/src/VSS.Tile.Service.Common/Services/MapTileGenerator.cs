@@ -128,7 +128,7 @@ namespace VSS.Tile.Service.Common.Services
         case TileOverlayType.ProductionData:
           var bbox =
             $"{request.mapParameters.bbox.minLatDegrees},{request.mapParameters.bbox.minLngDegrees},{request.mapParameters.bbox.maxLatDegrees},{request.mapParameters.bbox.maxLngDegrees}";
-          bitmap = await productivity3DProxyCompactionTile.GetProductionDataTile(Guid.Parse(request.project.ProjectUid), request.filterUid,
+          bitmap = await productivity3DProxyCompactionTile.GetProductionDataTile(Guid.Parse(request.project.ProjectUID), request.filterUid,
             request.cutFillDesignUid, (ushort) request.mapParameters.mapWidth, (ushort) request.mapParameters.mapHeight,
             bbox, request.mode.Value, request.baseUid, request.topUid, request.volCalcType, request.customHeaders, request.ExplicitFilters);
           break;
@@ -158,7 +158,7 @@ namespace VSS.Tile.Service.Common.Services
             FilterBoundaryType.Design);
           break;
         case TileOverlayType.Alignments:
-          bitmap = alignmentTileService.GetAlignmentsBitmap(request.mapParameters, request.project.LegacyProjectId,
+          bitmap = alignmentTileService.GetAlignmentsBitmap(request.mapParameters, request.project.ShortRaptorProjectId,
             request.alignmentPointsList);
           break;
         case TileOverlayType.DxfLinework:
@@ -166,7 +166,7 @@ namespace VSS.Tile.Service.Common.Services
           break;
         case TileOverlayType.LoadDumpData:
           var loadDumpLocations =
-            await loadDumpProxy.GetLoadDumpLocations(request.project.ProjectUid, request.customHeaders);
+            await loadDumpProxy.GetLoadDumpLocations(request.project.ProjectUID, request.customHeaders);
           bitmap = loadDumpTileService.GetLoadDumpBitmap(request.mapParameters, loadDumpLocations);
           break;
       }

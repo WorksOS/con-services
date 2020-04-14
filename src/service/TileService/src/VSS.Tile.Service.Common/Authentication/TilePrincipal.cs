@@ -4,9 +4,9 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.Common.Authentication
@@ -83,7 +83,7 @@ namespace VSS.Tile.Service.Common.Authentication
       }
 
       var project = await GetProject(projectUid);
-      var projectId = project.LegacyProjectId;
+      var projectId = project.ShortRaptorProjectId;
       if (projectId > 0)
       {
         return projectId;

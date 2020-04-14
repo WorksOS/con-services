@@ -1,5 +1,5 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 
 namespace VSS.MasterData.Repositories.ExtendedModels
 {
@@ -10,7 +10,5 @@ namespace VSS.MasterData.Repositories.ExtendedModels
     public Guid ProjectUID { get; set; }
 
     public DateTime ActionUTC { get; set; }
-
-    public DateTime ReceivedUTC { get; set; }
   }
 }

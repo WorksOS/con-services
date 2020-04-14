@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
+using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.ResultHandling;
 
 namespace WebApiTests.Executors
 {
@@ -15,12 +15,12 @@ namespace WebApiTests.Executors
     [TestMethod]
     public async Task CanCallProjectBoundariesAtDateExecutorNoValidInput()
     {
-      GetProjectBoundariesAtDateRequest ProjectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(-1, DateTime.UtcNow);
-      ILoggerFactory loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      var projectBoundariesAtDateRequest = GetProjectBoundariesAtDateRequest.CreateGetProjectBoundariesAtDateRequest(-1, DateTime.UtcNow);
+      var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(loggerFactory.CreateLogger<ProjectBoundariesAtDateExecutorTests>(), ConfigStore,
-        AssetRepository, DeviceRepository, CustomerRepository, ProjectRepository, SubscriptionRepository);
-      var result = await executor.ProcessAsync(ProjectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+      var result = await executor.ProcessAsync(projectBoundariesAtDateRequest) as GetProjectBoundariesAtDateResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
       Assert.IsNotNull(result.projectBoundaries, "executor returned incorrect ProjectBoundaries");

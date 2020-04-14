@@ -37,7 +37,7 @@ namespace VSS.MasterData.Proxies
         tPaasOauthResult.Code = 1902; // todo
         tPaasOauthResult.Message = e.Message;
       }
-    
+
       var resultString = tPaasOauthResult == null ? "null" : JsonConvert.SerializeObject(tPaasOauthResult);
       var message = $"GetApplicationBearerToken: response: {resultString}";
       log.LogDebug(message);

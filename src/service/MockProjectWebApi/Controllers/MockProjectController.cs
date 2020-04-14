@@ -26,8 +26,8 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4")]
-    [Route("api/v4/project")]
+    [Route("api/v6")]
+    [Route("api/v6/project")]
     [HttpGet]
     public ProjectDataResult GetMockProjects()
     {
@@ -38,19 +38,51 @@ namespace MockProjectWebApi.Controllers
     }
 
     /// <summary>
-    /// Gets the list of projects used in the Raptor service acceptance tests.
+    /// Gets the project used in the Raptor service acceptance tests.
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked projects</returns>
-    [Route("api/v4/{projectUid}")]
-    [Route("api/v4/project/{projectUid}")]
+    [Route("api/v6/{projectUid}")]
+    [Route("api/v6/project/{projectUid}")]
+    [Route("api/v6/project/applicationcontext/{projectUid}")]
     [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
       Logger.LogInformation($"{nameof(GetMockProject)}: projectUid={projectUid}");
       //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
       //Logger.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
-      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUid == projectUid.ToString()) };
+      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ProjectUID == projectUid.ToString()) };
+    }
+
+    /// <summary>
+    /// Gets the project used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The list of mocked projects</returns>
+    [Route("api/v6/project/applicationcontext/shortId/{shortRaptorProjectId}")]
+    [HttpGet]
+    public ProjectDataSingleResult GetMockProjectByShortId(int shortRaptorProjectId)
+    {
+      Logger.LogInformation($"{nameof(GetMockProjectByShortId)}: shortRaptorProjectId={shortRaptorProjectId}");
+      //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      //Logger.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      return new ProjectDataSingleResult { ProjectDescriptor = projectService.ProjectList.SingleOrDefault(p => p.ShortRaptorProjectId == shortRaptorProjectId) };
+    }
+
+    /// <summary>
+    /// Gets the list of projects used in the Raptor service acceptance tests.
+    /// The data is mocked.
+    /// </summary>
+    /// <returns>The list of mocked projects</returns>
+    [Route("api/v6/project/applicationcontext/intersecting")]
+    [HttpGet]
+    public ProjectDataResult GetMockIntersectingProjects(string customerUid,
+       double latitude, double longitude, DateTime? timeOfPosition = null)
+    {
+      Logger.LogInformation($"{nameof(GetMockIntersectingProjects)}");
+      //var customerUid = ((this.User as GenericPrincipal).Identity as GenericIdentity).AuthenticationType;
+      //Logger.LogInformation("CustomerUID=" + customerUid + " and user=" + User);
+      return new ProjectDataResult { ProjectDescriptors = projectService.ProjectList };
     }
 
     /// <summary>

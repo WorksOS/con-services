@@ -5,10 +5,7 @@ using Moq;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.ConfigurationStore;
-using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.TRex.Alignments;
 using VSS.TRex.Common;
@@ -16,7 +13,7 @@ using VSS.TRex.DI;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Geometry;
 using VSS.TRex.SurveyedSurfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.TRex.Gateway.Tests.Controllers.Design

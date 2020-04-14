@@ -8,7 +8,8 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -60,7 +61,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null
@@ -69,8 +69,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, boundaryUid);
@@ -121,7 +120,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = boundaryPolygon,
         GeofenceName = name,
         Description = null
@@ -130,8 +128,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, boundaryUid);
@@ -162,7 +159,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = GenerateWKTPolygon(),
         GeofenceName = "name",
         Description = null
@@ -171,8 +167,7 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid1,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid2, userId, boundaryUid);
@@ -190,7 +185,7 @@ namespace ExecutorTests
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUid = projectUid.ToString() },
+        new ProjectData() { ProjectUID = projectUid.ToString() },
         userId.ToString(),
         boundaryUid.ToString());
       request.Validate(ServiceExceptionHandler);

@@ -1,14 +1,19 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Repositories;
-using VSS.Productivity3D.Project.Repository;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.MasterData.Models.Handlers;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Proxy;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
@@ -19,7 +24,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
   public class Startup : BaseStartup
   {
     /// <inheritdoc />
-    public override string ServiceName => "3dpm Tag File Auth API";
+    public override string ServiceName => "Tag File Auth API";
 
     /// <inheritdoc />
     public override string ServiceDescription => "The service is used for TagFile authorization";
@@ -34,15 +39,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
       // Add framework services.
       services
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-        .AddTransient<IRepository<IAssetEvent>, AssetRepository>()
-        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
-        .AddTransient<IRepository<IDeviceEvent>, DeviceRepository>()
-        .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<ISubscriptionEvent>, SubscriptionRepository>()
-        .AddSingleton<IKafka, RdKafkaDriver>()
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
-
+        .AddSingleton<IWebRequest, GracefulWebRequest>()
+        .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
+        .AddTransient<IProjectProxy, ProjectV6Proxy>()
+        .AddTransient<IDeviceProxy, DeviceV1Proxy>();
+      
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

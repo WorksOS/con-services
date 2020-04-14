@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
-    <ProjectReference Include="..\..\..\..\3dAssetMgmt\Clients\VSS.Productivity3D.3DAssetMgmt.Abstractions\VSS.Productivity3D.3DAssetMgmt.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.Jobs.AssetWorksManagerJob\VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Productivity3D.Scheduler.Jobs.TileGenJob\VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.csproj" />
   </ItemGroup>

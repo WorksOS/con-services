@@ -5,7 +5,6 @@ metadata:
 data:
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_PRESIGNED_URL_EXPIRY: "7.00:00:00"
-  CUSTOMERSERVICE_API_URL: http://localhost:5001/api/v1/Customers/me
   DOWNLOAD_FOLDER: "C:/temp/"
   project_service_public_v4: https://api-stg.trimble.com/t/trimble.com/vss-dev-projects/1.4
   LOG_MAX_CHAR: "1000"

@@ -7,9 +7,8 @@ using Moq;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
@@ -51,12 +50,12 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
-    public void ValidateCreateProjectV2Request_HappyPath()
+    public void ValidateCreateProjectV5Request_HappyPath()
     {
-      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      var request = CreateProjectV5Request.CreateACreateProjectV5Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", _boundaryLL, _businessCenterFile);
-      var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
+      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid);
       Assert.Equal(_checkBoundaryString, createProjectEvent.ProjectBoundary);
 
       var projectRepo = new Mock<IProjectRepository>();
@@ -67,17 +66,17 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
-    public void ValidateCreateProjectV2Request_BoundaryTooFewPoints()
+    public void ValidateCreateProjectV5Request_BoundaryTooFewPoints()
     {
       var invalidBoundaryLl = new List<TBCPoint>
                               {
         new TBCPoint(-43.5, 172.6)
       };
 
-      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      var request = CreateProjectV5Request.CreateACreateProjectV5Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
-      var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
+      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid);
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
@@ -94,7 +93,7 @@ namespace VSS.MasterData.ProjectTests
     [InlineData(90.5, 100)]
     [InlineData(0.1, -1.99)]
     [InlineData(-1.99, 0.99)]
-    public void ValidateCreateProjectV2Request_BoundaryInvalidLAtLong(double latitude, double longitude)
+    public void ValidateCreateProjectV5Request_BoundaryInvalidLAtLong(double latitude, double longitude)
     {
       var invalidBoundaryLl = new List<TBCPoint>
                               {
@@ -104,10 +103,10 @@ namespace VSS.MasterData.ProjectTests
         new TBCPoint(-43.5, 172.603)
       };
 
-      var request = CreateProjectV2Request.CreateACreateProjectV2Request
+      var request = CreateProjectV5Request.CreateACreateProjectV5Request
       (ProjectType.Standard, new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "projectName",
         "New Zealand Standard Time", invalidBoundaryLl, _businessCenterFile);
-      var createProjectEvent = MapV2Models.MapCreateProjectV2RequestToEvent(request, _customerUid);
+      var createProjectEvent = MapV5Models.MapCreateProjectV5RequestToEvent(request, _customerUid);
 
       var projectRepo = new Mock<IProjectRepository>();
       projectRepo.Setup(ps => ps.ProjectExists(It.IsAny<string>())).ReturnsAsync(false);
@@ -118,7 +117,7 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
-    public void ValidateCreateProjectV2Request_CheckBusinessCentreFile()
+    public void ValidateCreateProjectV5Request_CheckBusinessCentreFile()
     {
       var bcf = BusinessCenterFile.CreateBusinessCenterFile(_businessCenterFile.FileSpaceId, _businessCenterFile.Path,
         _businessCenterFile.Name, _businessCenterFile.CreatedUtc);
@@ -196,59 +195,6 @@ namespace VSS.MasterData.ProjectTests
       var ex = Assert.Throws<ServiceException>(
         () => ProjectDataValidator.Validate(updateProjectEvent, projectRepo.Object, ServiceExceptionHandler));
       Assert.NotEqual(-1, ex.GetContent.IndexOf("2025", StringComparison.Ordinal));
-    }
-
-
-    [Fact]
-    public void ValidateGeofenceTypes_HappyPath()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Landfill };
-      ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes);
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_LandfillTypeRequired1()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Generic, GeofenceType.Waste };
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_LandfillTypeRequired2()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Filter, GeofenceType.Landfill, GeofenceType.Borrow };
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
-    }
-
-
-    [Fact]
-    public void ValidateGeofenceTypes_UnhappyPath1()
-    {
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(null));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_UnhappyPath2()
-    {
-      var geofenceTypes = new List<GeofenceType> { GeofenceType.Waste };
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2102", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public void ValidateGeofenceTypes_UnhappyPath3()
-    {
-      var geofenceTypes = new List<GeofenceType>();
-      var ex = Assert.Throws<ServiceException>(
-        () => ProjectDataValidator.ValidateGeofenceTypes(geofenceTypes));
-      Assert.NotEqual(-1, ex.GetContent.IndexOf("2073", StringComparison.Ordinal));
     }
 
     [Fact]

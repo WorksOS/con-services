@@ -9,6 +9,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -36,31 +37,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       var upsertProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = Guid.Parse(request.projectUid),
+        ProjectUID = new Guid(request.projectUid),
         UserID = userId,
         ProjectSettingsType = request.ProjectSettingsType,
         Settings = request.Settings,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       if (await projectRepo.StoreEvent(upsertProjectSettingsEvent).ConfigureAwait(false) < 1)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 52);
-
-      try
-      {
-        var messagePayload = JsonConvert.SerializeObject(new { UpdateProjectSettingsEvent = upsertProjectSettingsEvent });
-        producer.Send(kafkaTopicName,
-          new List<KeyValuePair<string, string>>
-          {
-            new KeyValuePair<string, string>(upsertProjectSettingsEvent.ProjectUID.ToString(), messagePayload)
-          });
-      }
-      catch (Exception e)
-      {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 72, e.Message);
-      }
-
+      
       try
       {
         var projectSettings = await projectRepo.GetProjectSettings(request.projectUid, userId, request.ProjectSettingsType).ConfigureAwait(false);

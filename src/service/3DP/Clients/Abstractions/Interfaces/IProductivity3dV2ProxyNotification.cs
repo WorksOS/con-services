@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.Notification.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
 {
@@ -14,6 +14,7 @@ namespace VSS.Productivity3D.Productivity3D.Abstractions.Interfaces
 
     Task<BaseMasterDataResult> DeleteFile(Guid projectUid, ImportedFileType fileType, Guid fileUid, string fileDescriptor,
       long fileId, long? legacyFileId, IDictionary<string, string> customHeaders = null);
+
 
     Task<BaseMasterDataResult> UpdateFiles(Guid projectUid, IEnumerable<Guid> fileUids,
       IDictionary<string, string> customHeaders = null);

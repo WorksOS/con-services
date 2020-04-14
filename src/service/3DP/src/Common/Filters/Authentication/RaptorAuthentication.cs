@@ -2,9 +2,9 @@
 using System.Security.Principal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.WebApi.Common;
@@ -22,11 +22,11 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// Initializes a new instance of the <see cref="RaptorAuthentication"/> class.
     /// </summary>
     public RaptorAuthentication(RequestDelegate next,
-      ICustomerProxy customerProxy,
+      ICwsAccountClient cwsAccountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler,
-      IProjectProxy projectProxy) : base(next, customerProxy, store, logger, serviceExceptionHandler)
+      IProjectProxy projectProxy) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
     {
       this.projectProxy = projectProxy;
     }

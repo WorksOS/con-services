@@ -8,23 +8,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 {
@@ -42,8 +41,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     public FilterController(IConfigurationStore configStore, ILoggerFactory logger, IServiceExceptionHandler serviceExceptionHandler,
       IProjectProxy projectProxy,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction,
-      IRepository<IFilterEvent> filterRepo, IKafka producer, IRepository<IGeofenceEvent> geofenceRepo)
-      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, producer, "IFilterEvent")
+      IRepository<IFilterEvent> filterRepo, IRepository<IGeofenceEvent> geofenceRepo)
+      : base(configStore, logger, serviceExceptionHandler, projectProxy, productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction, "IFilterEvent")
     {
       Log = logger.CreateLogger<FilterController>();
       this.filterRepo = filterRepo as FilterRepository;
@@ -112,7 +111,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     /// </summary>
     [HttpPut("api/v1/filter/{ProjectUid}")]
     public async Task<FilterDescriptorSingleResult> PutFilter(
-      [FromServices] IGeofenceProxy geofenceProxy,
+      //[FromServices] IGeofenceProxy geofenceProxy,
       [FromServices] IFileImportProxy fileImportProxy,
       [FromServices] INotificationHubClient notificationHubClient,
       string projectUid,
@@ -122,7 +121,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
 
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectProxy,
         productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-        producer: Producer, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy, geofenceProxy: geofenceProxy);
+        fileImportProxy: fileImportProxy /*, geofenceProxy: geofenceProxy */);
       var upsertFilterResult = await UpsertFilter(filterExecutor, await GetProject(projectUid), request);
 
       if (upsertFilterResult.FilterDescriptor.FilterType == FilterType.Persistent)
@@ -142,8 +141,9 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
     [HttpPost("api/v1/filters/{projectUid}")]
     public async Task<FilterDescriptorListResult> CreateFilters(
       string projectUid,
-      [FromBody] FilterListRequest request,
-      [FromServices] IGeofenceProxy geofenceProxy)
+      [FromBody] FilterListRequest request
+      /* ,     [FromServices] IGeofenceProxy geofenceProxy */
+      )
     {
       Log.LogInformation($"{nameof(CreateFilters)}: CustomerUID={CustomerUid} FilterListRequest: {JsonConvert.SerializeObject(request)}");
 
@@ -155,8 +155,8 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       var projectTask = GetProject(projectUid);
       var newFilters = new List<FilterDescriptor>();
       var filterExecutor = RequestExecutorContainer.Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, geofenceRepository, ProjectProxy,
-        productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-        producer: Producer, kafkaTopicName: KafkaTopicName, geofenceProxy: geofenceProxy);
+        productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction
+        /* , geofenceProxy: geofenceProxy */ );
 
       var project = await projectTask;
 
@@ -192,7 +192,7 @@ namespace VSS.Productivity3D.Filter.WebAPI.Controllers
       requestFull.Validate(ServiceExceptionHandler, true);
 
       var executor = RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, filterRepo, null, ProjectProxy,
-        productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, producer: Producer, kafkaTopicName: KafkaTopicName);
+        productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction);
       var result = await executor.ProcessAsync(requestFull);
 
       Log.LogInformation($"{nameof(DeleteFilter)} Completed: resultCode: {result?.Code} result: {JsonConvert.SerializeObject(result)}");

@@ -11,7 +11,6 @@ using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -23,9 +22,8 @@ using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Serilog.Extensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using RdKafkaDriver = VSS.KafkaConsumer.Kafka.RdKafkaDriver;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace IntegrationTests.ExecutorTests
 {
@@ -35,13 +33,10 @@ namespace IntegrationTests.ExecutorTests
     public readonly IConfigurationStore ConfigStore;
     public readonly ILoggerFactory Logger;
     public readonly IServiceExceptionHandler ServiceExceptionHandler;
-    public readonly ProjectRepository ProjectRepo;
-    public readonly CustomerRepository CustomerRepo;
+    public readonly ProjectRepository ProjectRepo; 
     public readonly IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord;
     public readonly IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
     public readonly IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
-    public readonly IKafka Producer;
-    public readonly string KafkaTopicName;
 
     public ExecutorTestFixture()
     {
@@ -52,7 +47,6 @@ namespace IntegrationTests.ExecutorTests
         .AddSingleton(loggerFactory)
         .AddSingleton<IConfigurationStore, GenericConfiguration>()
         .AddTransient<IRepository<IProjectEvent>, ProjectRepository>()
-        .AddTransient<IRepository<ICustomerEvent>, CustomerRepository>()
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
 
         // for serviceDiscovery
@@ -64,26 +58,16 @@ namespace IntegrationTests.ExecutorTests
         .AddTransient<IProductivity3dV1ProxyCoord, Productivity3dV1ProxyCoord>()
         .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
         .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
-        .AddSingleton<IKafka, RdKafkaDriver>()
-        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>()
-        .AddMemoryCache();  
+        .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();  
 
       _serviceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = _serviceProvider.GetRequiredService<IConfigurationStore>();
       Logger = _serviceProvider.GetRequiredService<ILoggerFactory>();
       ServiceExceptionHandler = _serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       ProjectRepo = _serviceProvider.GetRequiredService<IRepository<IProjectEvent>>() as ProjectRepository;
-      CustomerRepo = _serviceProvider.GetRequiredService<IRepository<ICustomerEvent>>() as CustomerRepository;
       Productivity3dV1ProxyCoord = _serviceProvider.GetRequiredService<IProductivity3dV1ProxyCoord>();
       Productivity3dV2ProxyNotification = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyNotification>();
-      Productivity3dV2ProxyCompaction = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();
-      Producer = _serviceProvider.GetRequiredService<IKafka>();
-
-      if (!Producer.IsInitializedProducer)
-        Producer.InitProducer(ConfigStore);
-
-      KafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       ConfigStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      Productivity3dV2ProxyCompaction = _serviceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();     
     }
 
     public IDictionary<string, string> CustomHeaders(string customerUid)
@@ -97,24 +81,16 @@ namespace IntegrationTests.ExecutorTests
 
     public bool CreateCustomerProject(string customerUid, string projectUid)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-
-      var createCustomerEvent = new CreateCustomerEvent
-      {
-        CustomerUID = Guid.Parse(customerUid),
-        CustomerName = "The Customer Name",
-        CustomerType = CustomerType.Customer.ToString(),
-        ActionUTC = actionUtc
-      };
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);          
 
       var createProjectEvent = new CreateProjectEvent()
       {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = Guid.Parse(projectUid),
-        ProjectID = new Random().Next(1, 1999999),
+        CustomerUID = new Guid(customerUid),
+        ProjectUID = new Guid(projectUid),
+        ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
         Description = "the Description",
-        ProjectType = ProjectType.LandFill,
+        ProjectType = ProjectType.Standard,
         ProjectTimezone = "New Zealand Standard Time",
         ProjectStartDate = new DateTime(2016, 02, 01),
         ProjectEndDate = new DateTime(2017, 02, 01),
@@ -124,31 +100,18 @@ namespace IntegrationTests.ExecutorTests
         CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
         CoordinateSystemFileName = "thisLocation\\this.cs"
       };
-
-      var associateCustomerProjectEvent = new AssociateProjectCustomer
-      {
-        CustomerUID = createCustomerEvent.CustomerUID,
-        ProjectUID = createProjectEvent.ProjectUID,
-        LegacyCustomerID = 1234,
-        RelationType = RelationType.Customer,
-        ActionUTC = actionUtc
-      };
-
+           
       ProjectRepo.StoreEvent(createProjectEvent).Wait();
-      CustomerRepo.StoreEvent(createCustomerEvent).Wait();
-      ProjectRepo.StoreEvent(associateCustomerProjectEvent).Wait();
       var g = ProjectRepo.GetProject(projectUid); g.Wait();
       return (g.Result != null ? true : false);
     }
 
     public bool CreateProjectSettings(string projectUid, string userId, string settings, ProjectSettingsType settingsType)
     {
-      DateTime actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);
-      var projectGuidParseResult = Guid.TryParse(projectUid, out Guid projectGuid);
-      Console.WriteLine($"Guid Parsed {projectGuidParseResult} Creating project settings for project {projectGuid}, for user {userId}");
+      var actionUtc = new DateTime(2017, 1, 1, 2, 30, 3);     
       var createProjectSettingsEvent = new UpdateProjectSettingsEvent()
       {
-        ProjectUID = projectGuid,
+        ProjectUID = new Guid(projectUid),
         UserID = userId,
         Settings = settings,
         ProjectSettingsType = settingsType,

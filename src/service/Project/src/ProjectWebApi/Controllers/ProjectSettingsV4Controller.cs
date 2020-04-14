@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
@@ -14,7 +13,7 @@ using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -34,7 +33,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor
     /// </summary>
-    public ProjectSettingsV4Controller(IKafka producer, IConfigurationStore configStore, IRequestFactory requestFactory, INotificationHubClient notificationHubClient) : base (producer, configStore)
+    public ProjectSettingsV4Controller(IConfigurationStore configStore, IRequestFactory requestFactory, INotificationHubClient notificationHubClient) 
+      : base (configStore)
     {
       this.requestFactory = requestFactory;
       this.notificationHubClient = notificationHubClient;
@@ -89,7 +89,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, headers: customHeaders,
-            producer: Producer, kafkaTopicName: KafkaTopicName,
             productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;
@@ -124,7 +123,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, headers: customHeaders,
-            producer: Producer, kafkaTopicName: KafkaTopicName,
             productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       )) as ProjectSettingsResult;

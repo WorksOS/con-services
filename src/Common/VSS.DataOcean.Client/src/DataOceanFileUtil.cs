@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using VSS.Common.Abstractions.Extensions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.DataOcean.Client
 {
@@ -21,7 +21,7 @@ namespace VSS.DataOcean.Client
     public string GeneratedTilesFolder => TilesFolderWithSuffix();
 
     public DataOceanFileUtil(string fullFileName)
-    { 
+    {
       FileName = Path.GetFileName(fullFileName);
       FilePath = Path.GetDirectoryName(fullFileName)
                      ?.Replace(Path.DirectorySeparatorChar, DataOceanUtil.PathSeparator);

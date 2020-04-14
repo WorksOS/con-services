@@ -36,7 +36,7 @@ using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Extensions;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 {
@@ -514,7 +514,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      filter.ApplyDateRange(project.IanaTimeZone, true);
+      filter.ApplyDateRange(project.ProjectTimeZoneIana, true);
     }
 
     private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
@@ -527,7 +527,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      filter.ApplyDateRange(project.IanaTimeZone);
+      filter.ApplyDateRange(project.ProjectTimeZoneIana);
     }
 
     /// <summary>

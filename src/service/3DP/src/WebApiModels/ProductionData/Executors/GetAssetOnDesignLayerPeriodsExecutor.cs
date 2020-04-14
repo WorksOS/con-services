@@ -69,7 +69,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Executors
 #if RAPTOR
               raptorClient,
 #endif
-              configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, assetResolverProxy: assetResolverProxy,
+              configStore: configStore, trexCompactionDataProxy: trexCompactionDataProxy, deviceProxy: deviceProxy,
               customHeaders: customHeaders, customerUid: customerUid)
             .ProcessAsync(projectIds) is MachineExecutionResult machineExecutionResult && machineExecutionResult.MachineStatuses.Count > 0)
       {

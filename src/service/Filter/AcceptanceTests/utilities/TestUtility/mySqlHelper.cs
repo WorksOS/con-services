@@ -149,7 +149,7 @@ namespace TestUtility
     }
 
     /// <summary>
-    /// Check the database to see if the records injected into kafka have reached there. This
+    /// Check the database to see if the records injected into kafka (obsolete method?) have reached there. This
     /// Will loop for 20 times or until it finds the correct answer.
     /// </summary>
     /// <param name="query"></param>

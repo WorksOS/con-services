@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.ConfigurationStore", ".
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories", "..\..\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj", "{635607FA-236B-4008-BC17-D34C7968841B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{9F834981-6331-4C51-A4B4-E68FF2F3435B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{9F834981-6331-4C51-A4B4-E68FF2F3435B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filter Service", "Filter Service", "{29BB7408-35FF-4874-948A-8D1E430CC9F0}"
 EndProject

@@ -7,12 +7,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TestUtility;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -29,7 +29,7 @@ namespace ExecutorTests
       executor = RequestExecutorContainer
         .Build<UpsertFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, GeofenceRepo, ProjectProxy,
           productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-          producer:Producer, kafkaTopicName:KafkaTopicName, fileImportProxy:FileImportProxy);
+          fileImportProxy:FileImportProxy);
     }
 
     [TestMethod]
@@ -41,7 +41,7 @@ namespace ExecutorTests
       string name = string.Empty;
       const string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson, FilterType = FilterType.Transient });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson, FilterType = FilterType.Transient });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -61,7 +61,7 @@ namespace ExecutorTests
       string name = string.Empty;
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = FilterType.Transient });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = FilterType.Transient });
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
 
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2016", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -71,10 +71,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task UpsertFilterExecutor_Transient_Existing_FilterUidNotSupported()
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
@@ -82,18 +82,17 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
-        UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        CustomerUID = custUid,
+        UserID = userId.ToString(),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
 
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2016", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -111,7 +110,7 @@ namespace ExecutorTests
       string filterJson1 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
       string filterJson2 = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson1, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson1, FilterType = filterType });
       var result1 = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result1, "executor should always return a result");
@@ -120,7 +119,7 @@ namespace ExecutorTests
       Assert.AreEqual(filterJson1, result1.FilterDescriptor.FilterJson, "executor returned incorrect FilterJson");
       Assert.AreEqual(filterType, result1.FilterDescriptor.FilterType, "executor returned incorrect FilterType");
 
-      request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson2, FilterType = filterType });
+      request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson2, FilterType = filterType });
       var result2 = await executor.ProcessAsync(request).ConfigureAwait(false) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result2, "executor should always return a result");
@@ -138,10 +137,10 @@ namespace ExecutorTests
     [TestMethod]
     public async Task UpsertFilterExecutor_Transient_Existing_NoFilterUidProvided()
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = UIDs.JWT_USER_ID;
-      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = UIDs.JWT_USER_ID;
+      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID;
+      var filterUid = Guid.NewGuid();
       string name = string.Empty;
       FilterType filterType = FilterType.Transient;
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
@@ -149,18 +148,17 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = custUid,
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -180,7 +178,7 @@ namespace ExecutorTests
       string name = "the Name";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { Name = name, FilterJson = filterJson, FilterType = filterType });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -202,7 +200,7 @@ namespace ExecutorTests
       string name = "the Name";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJson, FilterType = filterType });
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
 
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2021", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -214,10 +212,10 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonIgnored(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = UIDs.JWT_USER_ID;
-      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = UIDs.JWT_USER_ID;
+      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      var filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
       string filterJsonUpdated = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
@@ -231,11 +229,10 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -251,10 +248,10 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent_Existing_ChangeJsonAndName(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid().ToString();
       string userId = UIDs.JWT_USER_ID;
-      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      var filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = "theName updated";
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
@@ -269,11 +266,10 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonUpdated, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = nameUpdated, FilterJson = filterJsonUpdated, FilterType = filterType });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -286,13 +282,13 @@ namespace ExecutorTests
 
     [TestMethod]
     [DataRow(FilterType.Persistent)]
-    [DataRow(FilterType.Report)]
+    //[DataRow(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent_ExistingName_AddNew_CaseInsensitive(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = UIDs.JWT_USER_ID;
-      string projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid().ToString();
+      var userId = UIDs.JWT_USER_ID;
+      var projectUid = UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID.ToString();
+      var filterUid = Guid.NewGuid().ToString();
       string name = "theName";
       string nameUpdated = name.ToUpper();
       string filterJson = "{\"designUid\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\"}";
@@ -307,12 +303,11 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       // try to update a filter with same name but upper case (allowed!)
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = nameUpdated, FilterJson = filterJsonNew, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId, new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = nameUpdated, FilterJson = filterJsonNew, FilterType = filterType });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -329,10 +324,10 @@ namespace ExecutorTests
       //Note: this test only applies to persistent filters not report filters.
       //Report filters are allowed duplicate names.
 
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "theName";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
@@ -340,18 +335,17 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
-        UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        CustomerUID = custUid,
+        UserID = userId.ToString(),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
 
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2039", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -364,11 +358,11 @@ namespace ExecutorTests
       //Note: this test only applies to persistent filters not report filters.
       //Report filters are allowed duplicate names.
 
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid1 = Guid.NewGuid().ToString();
-      string filterUid2 = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid1 = Guid.NewGuid();
+      var filterUid2 = Guid.NewGuid();
       string name = "theName";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
@@ -376,26 +370,25 @@ namespace ExecutorTests
 
       var filterEvent = new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
-        UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid1),
+        CustomerUID = custUid,
+        UserID = userId.ToString(),
+        ProjectUID = projectUid,
+        FilterUID = filterUid1,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterEvent);
 
-      filterEvent.FilterUID = Guid.Parse(filterUid2);
+      filterEvent.FilterUID = filterUid2;
       filterEvent.Name = "something else";
 
       WriteEventToDb(filterEvent);
 
       // now try to change the 2nd filter to the name of the first
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid2, Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid2.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       var content = ex.GetContent;
 
@@ -408,28 +401,27 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task UpsertFilterExecutor_Persistent_Existing_FilterUidProvidedBelongsToTransient(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "theName";
       string filterJson = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"contributingMachines\":[{\"assetID\":\"123456789\",\"machineName\":\"TheMachineName\",\"isJohnDoe\":false,\"assetUid\":null}]}";
       string filterJsonUpdated = "{\"designUID\":\"c2e5940c-4370-4d23-a930-b5b74a9fc22b\",\"onMachineDesignID\":null,\"elevationType\":3,\"vibeStateOn\":true}";
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
-        UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        CustomerUID = custUid,
+        UserID = userId.ToString(),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userId, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid.ToString(), false, userId.ToString(), new ProjectData { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), Name = name, FilterJson = filterJsonUpdated, FilterType = filterType });
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
 
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2021", StringComparison.Ordinal), "executor threw exception but incorrect code");
@@ -448,7 +440,7 @@ namespace ExecutorTests
       var name = Guid.NewGuid().ToString();
       var filterJson = "{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":6,\"elevationType\":null,\"onMachineDesignId\":\"1\",\"alignmentUid\":\"6ece671b-7959-4a14-86fa-6bfe6ef4dd62\"}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -472,7 +464,7 @@ namespace ExecutorTests
       var name = Guid.NewGuid().ToString();
       var filterJson = "{\"startUtc\":\"2012-10-30T00:12:09.109\",\"endUtc\":\"2018-06-14T11:58:13.662\",\"dateRangeType\":6,\"elevationType\":null,\"onMachineDesignId\":\"1\",\"designUid\":\"dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff\"}";
 
-      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUid = projectUid }, new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
+      var request = FilterRequestFull.Create(new Dictionary<string, string>(), custUid, false, userUid, new ProjectData { ProjectUID = projectUid }, new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");

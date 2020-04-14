@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSS.MasterData.Repositories.DBModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace RepositoryTests
 {
@@ -37,7 +38,7 @@ namespace RepositoryTests
     [TestMethod]
     public void GetFiltersForProject_PersistentOnly()
     {
-      var custUid = Guid.Parse("f57e30d2-ad64-452a-8d6c-0afd790eab6c");
+      var custUid = new Guid("f57e30d2-ad64-452a-8d6c-0afd790eab6c");
 
       DateTime firstCreatedUtc = new DateTime(2017, 1, 1, 2, 30, 3);
       var createTransientFilterEvent1 = new CreateFilterEvent
@@ -49,8 +50,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah1",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
       var createTransientFilterEvent2 = new CreateFilterEvent
       {
@@ -61,8 +61,7 @@ namespace RepositoryTests
         Name = "Transient 2",
         FilterType = FilterType.Transient,
         FilterJson = "blah2",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var createPersistentFilterEvent1 = new CreateFilterEvent
@@ -70,12 +69,11 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.Parse("6396c4b0-3ed4-40fa-afed-035457252463"),
+        FilterUID = new Guid("6396c4b0-3ed4-40fa-afed-035457252463"),
         Name = "dateRangeType=Today with polygonLL",
         FilterType = FilterType.Persistent,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":0,\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var createPersistentFilterEvent2 = new CreateFilterEvent
@@ -83,12 +81,11 @@ namespace RepositoryTests
         CustomerUID = custUid,
         ProjectUID = TestUtility.UIDs.MOCK_WEB_API_DIMENSIONS_PROJECT_UID,
         UserID = TestUtility.UIDs.JWT_USER_ID,
-        FilterUID = Guid.Parse("59e28218-0164-417b-8de0-9ed8f96d6ed2"),
+        FilterUID = new Guid("59e28218-0164-417b-8de0-9ed8f96d6ed2"),
         Name = "dateRangeType=Yesterday with polygonLL",
         FilterType = FilterType.Persistent,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":1,\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var createReportFilterEvent1 = new CreateFilterEvent
@@ -100,8 +97,7 @@ namespace RepositoryTests
         Name = "dateRangeType=Today with polygonLL",//match a peristent filter name on purpose
         FilterType = FilterType.Report,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":0,\"asAtDate\":\"false\",\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-b2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var createReportFilterEvent2 = new CreateFilterEvent
@@ -113,8 +109,7 @@ namespace RepositoryTests
         Name = "Report 2",
         FilterType = FilterType.Report,
         FilterJson = "{\"startUtc\":null,\"endUtc\":null,\"dateRangeType\":1,\"asAtDate\":\"true\",\"designUID\":null,\"contributingMachines\":null,\"onMachineDesignID\":null,\"vibeStateOn\":null,\"polygonUID\":\"ca9c91c3-513b-4082-2d7-0568899e56d5\",\"polygonName\":null,\"polygonLL\":[{\"Lat\":36.207118,\"Lon\":-115.01848},{\"Lat\":36.207334,\"Lon\":-115.018394},{\"Lat\":36.207492,\"Lon\":-115.019604},{\"Lat\":36.207101,\"Lon\":-115.019478}],\"forwardDirection\":null,\"layerNumber\":null}",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       this.FilterRepo.StoreEvent(createTransientFilterEvent1).Wait();
@@ -183,8 +178,7 @@ namespace RepositoryTests
         Name = filterName,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var filter = new Filter
@@ -236,8 +230,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah1",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var createTransientFilterEvent2 = new CreateFilterEvent
@@ -249,8 +242,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah2",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       WriteEventToDb(createTransientFilterEvent1);
@@ -277,8 +269,7 @@ namespace RepositoryTests
         Name = "HasAName",
         FilterType = FilterType.Persistent,
         FilterJson = "blah1",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var createPersistentFilterEvent2 = new CreateFilterEvent
@@ -290,8 +281,7 @@ namespace RepositoryTests
         Name = "HasAName",
         FilterType = FilterType.Persistent,
         FilterJson = "blah2",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       WriteEventToDb(createPersistentFilterEvent1);
@@ -319,8 +309,7 @@ namespace RepositoryTests
         Name = "HasAName",
         FilterType = FilterType.Report,
         FilterJson = "blah1",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var createReportFilterEvent2 = new CreateFilterEvent
@@ -332,8 +321,7 @@ namespace RepositoryTests
         Name = "HasAName",
         FilterType = FilterType.Report,
         FilterJson = "blah2",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       WriteEventToDb(createReportFilterEvent1);
@@ -357,8 +345,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var updateFilterEvent = new UpdateFilterEvent
@@ -370,8 +357,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Report,
         FilterJson = "blahDeBlah",
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc.AddMinutes(2)
       };
 
       var filter = new Filter
@@ -411,8 +397,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var updateFilterEvent = new UpdateFilterEvent
@@ -424,8 +409,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blahDeBlah",
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc.AddMinutes(2)
       };
 
       var filter = new Filter
@@ -468,8 +452,7 @@ namespace RepositoryTests
         Name = "persistent",
         FilterType = filterType,
         FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var updateFilterEvent = new UpdateFilterEvent
@@ -481,8 +464,7 @@ namespace RepositoryTests
         Name = "changed",
         FilterJson = "blahDeBlah",
         FilterType = filterType,
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc.AddMinutes(2)
       };
 
       var filter = new Filter
@@ -524,8 +506,7 @@ namespace RepositoryTests
         Name = "persistent",
         FilterType = filterType,
         FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var updateFilterEvent = new UpdateFilterEvent
@@ -537,8 +518,7 @@ namespace RepositoryTests
         Name = "changed",
         FilterType = filterType,
         FilterJson = "blahDeBlah",
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc.AddMinutes(2)
       };
 
       var filter = new Filter
@@ -578,8 +558,7 @@ namespace RepositoryTests
         Name = string.Empty,
         FilterType = FilterType.Transient,
         FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var deleteFilterEvent = new DeleteFilterEvent
@@ -588,8 +567,7 @@ namespace RepositoryTests
         ProjectUID = createFilterEvent.ProjectUID,
         UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc.AddMinutes(2)
       };
 
       this.FilterRepo.StoreEvent(createFilterEvent).Wait();
@@ -617,8 +595,7 @@ namespace RepositoryTests
         ProjectUID = Guid.NewGuid(),
         UserID = Guid.NewGuid().ToString(),
         FilterUID = Guid.NewGuid(),
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc.AddMinutes(2)
       };
 
       WriteEventToDb(deleteFilterEvent, "Filter event set to deleted");
@@ -650,8 +627,7 @@ namespace RepositoryTests
         Name = "hasOne",
         FilterType = filterType,
         FilterJson = "blah",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var deleteFilterEvent = new DeleteFilterEvent
@@ -660,8 +636,7 @@ namespace RepositoryTests
         ProjectUID = createFilterEvent.ProjectUID,
         UserID = createFilterEvent.UserID,
         FilterUID = createFilterEvent.FilterUID,
-        ActionUTC = firstCreatedUtc.AddMinutes(2),
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc.AddMinutes(2)
       };
 
       this.FilterRepo.StoreEvent(createFilterEvent).Wait();
@@ -709,15 +684,13 @@ namespace RepositoryTests
       {
         ProjectUID = projUid,
         GeofenceUID = Guid.NewGuid(),
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
       var createAssociateEvent2 = new AssociateProjectGeofence
       {
         ProjectUID = projUid,
         GeofenceUID = Guid.NewGuid(),
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
       this.ProjectRepo.StoreEvent(createAssociateEvent1).Wait();
       this.ProjectRepo.StoreEvent(createAssociateEvent2).Wait();
@@ -737,8 +710,7 @@ namespace RepositoryTests
       {
         ProjectUID = projUid,
         GeofenceUID = Guid.NewGuid(),
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       WriteEventToDb(createAssociateEvent, "Associate event not written");
@@ -758,8 +730,7 @@ namespace RepositoryTests
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
       this.GeofenceRepo.StoreEvent(createGeofenceEvent).Wait();
 
@@ -786,8 +757,7 @@ namespace RepositoryTests
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
       var createGeofenceEvent2 = new CreateGeofenceEvent
       {
@@ -797,8 +767,7 @@ namespace RepositoryTests
         GeofenceName = "Boundary two",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((81.257874 13.677856,80.856873 14.039345,81.375977 14.443052,81.257874 13.677856))",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
       var createGeofenceEvent3 = new CreateGeofenceEvent
       {
@@ -808,15 +777,13 @@ namespace RepositoryTests
         GeofenceName = "Boundary three",
         GeofenceType = geofenceType,
         GeometryWKT = "POLYGON((82.257874 14.677856,81.856873 15.039345,82.375977 15.443052,82.257874 14.677856))",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
       var deleteGeofenceEvent = new DeleteGeofenceEvent
       {
         GeofenceUID = createGeofenceEvent1.GeofenceUID,
         UserUID = userId,
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       this.GeofenceRepo.StoreEvent(createGeofenceEvent1).Wait();
@@ -849,8 +816,7 @@ namespace RepositoryTests
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var boundary = new Geofence
@@ -893,16 +859,14 @@ namespace RepositoryTests
         GeofenceName = "Boundary one",
         GeofenceType = geofenceType.ToString(),
         GeometryWKT = "POLYGON((80.257874 12.677856,79.856873 13.039345,80.375977 13.443052,80.257874 12.677856))",
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       var deleteGeofenceEvent = new DeleteGeofenceEvent
       {
         GeofenceUID = geofenceUid,
         UserUID = userUid,
-        ActionUTC = firstCreatedUtc,
-        ReceivedUTC = firstCreatedUtc
+        ActionUTC = firstCreatedUtc
       };
 
       this.GeofenceRepo.StoreEvent(createGeofenceEvent).Wait();

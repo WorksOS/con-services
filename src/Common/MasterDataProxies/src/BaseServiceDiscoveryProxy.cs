@@ -123,6 +123,15 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
+    /// Execute a Post/Put/Delete to an endpoint that returns only an HttpStatusCode.
+    /// </summary>
+    protected Task SendMasterDataItemServiceDiscoveryNoCache(string route, IDictionary<string, string> customHeaders,
+     HttpMethod method, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
+    {
+      return Request(customHeaders, method, route, queryParameters, payload);
+    }
+
+    /// <summary>
     /// Execute a Post/Put/Delete to an endpoint, do not cache the result
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
@@ -227,6 +236,17 @@ namespace VSS.MasterData.Proxies
       log.LogDebug($"{nameof(RequestAndReturnResult)} Result: {JsonConvert.SerializeObject(result)}");
 
       return result;
+    }
+
+    private async Task Request(IDictionary<string, string> customHeaders,
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null)
+    {
+      var url = await GetUrl(route, customHeaders, queryParameters);
+
+      // If we are calling to our own services, keep the JWT assertion
+      customHeaders.StripHeaders(IsInsideAuthBoundary);
+
+      await webRequest.ExecuteRequest(url, payload: payload, customHeaders: customHeaders, method: method);
     }
     
     #endregion

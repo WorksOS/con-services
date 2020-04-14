@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Common;
@@ -17,6 +16,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Proxies;
 using VSS.Productivity3D.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Compaction.Utilities;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Executors;
 using VSS.Productivity3D.WebApi.Models.TagfileProcessing.Models;
@@ -190,9 +190,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     {
       var projectData = await ((RaptorPrincipal)User).GetProject(projectUid);
       
-      return projectData.ProjectGeofenceWKT == null
+      return projectData.ProjectTimeZoneIana == null
         ? null
-        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectGeofenceWKT).ToArray());
+        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectTimeZoneIana).ToArray());
     }
   }
 }

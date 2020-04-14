@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -78,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (importedFile.ImportedFileType == ImportedFileType.DesignSurface ||
             importedFile.ImportedFileType == ImportedFileType.SurveyedSurface)
         {
-          await ImportedFileRequestHelper.NotifyRaptorAddFile(project.LegacyProjectID,
+          await ImportedFileRequestHelper.NotifyRaptorAddFile(project.ShortRaptorProjectId,
             importedFile.ProjectUid,
             importedFile.ImportedFileType, importedFile.DxfUnitsType, importedFile.FileDescriptor,
             createImportedFileEvent.ImportedFileID, createImportedFileEvent.ImportedFileUID, true,
@@ -136,14 +135,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           importedFile.SurveyedUtc);
         await schedulerProxy.ScheduleVSSJob(jobRequest, customHeaders);
       }
-
-      var messagePayload = JsonConvert.SerializeObject(new { CreateImportedFileEvent = createImportedFileEvent });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
-        {
-          new KeyValuePair<string, string>(createImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
-
+      
       var fileDescriptor = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestDatabaseHelper
           .GetImportedFileList(importedFile.ProjectUid.ToString(), log, userId, projectRepo)
