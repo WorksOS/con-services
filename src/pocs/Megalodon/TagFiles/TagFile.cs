@@ -100,7 +100,6 @@ namespace TagFiles
       {
         WriteTagFileToDisk();
         ReadyToWrite = false;
-        Parser.HeaderRequired = true;
       }
     }
 
@@ -146,7 +145,7 @@ namespace TagFiles
 
       if (Parser._Prev_EpochRec != null)
       {
-        if (Parser.EpochRec.NotSamePosition(ref Parser._Prev_EpochRec))
+        if (Parser.EpochRec.BladePositionDifferent(ref Parser._Prev_EpochRec))
           Parser.UpdateTagContentList(ref Parser.EpochRec, ref tmpNR, TagConstants.UpdateReason.CutOffLastEpoch); // save epoch to tagfile before writing
         else
         {
@@ -179,13 +178,14 @@ namespace TagFiles
       {
         if (Write(outStream)) // write tagfile to stream
         {
-          Parser.Reset();
           tagFileCount++;
-          Log.LogInformation($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} successfully written to disk. Total Tagfiles:{tagFileCount}");
+          Log.LogInformation($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} successfully written to disk. Updates:{Parser.EpochCount}, Total Tagfiles:{tagFileCount}");
+          Parser.Reset();
         }
         else
           Log.LogWarning($"{nameof(WriteTagFileToDisk)}. End. {toSendFilePath} failed to write to disk.");
         ReadyToWrite = false;
+        Parser.HeaderRequired = true;
       }
       finally
       {
@@ -338,6 +338,7 @@ namespace TagFiles
 
       // write contents
       Parser.TagContent.Write(nStream);
+
       nStream.Pad(); // have to pad the dictionary
       var pos = nStream.stream.Position;
       // dictionary writtten last

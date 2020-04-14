@@ -62,7 +62,7 @@ designElevation:
       target: 100
 
 gateway:
-  replicaCount: 2
+  replicaCount: 1
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-immutable
@@ -81,7 +81,7 @@ immutableData:
       memory: 1536Mi
 
 mutableData:
-  replicaCount: 2
+  replicaCount: 1
   javaHeapMaxSizeMb: 1024
   javaHeapInitialSizeMb: 768  
   resources: 
@@ -100,7 +100,7 @@ mutableData:
     tagfileArchiveFolder: ""
 
 mutableGateway:
-  replicaCount: 2
+  replicaCount: 1
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
   serviceDiscoveryName: trex-service-mutable
@@ -110,7 +110,7 @@ mutableGateway:
       memory: 1Gi
 
 psnode:
-  replicaCount: 2
+  replicaCount: 1
   javaHeapMaxSizeMb: 4096
   javaHeapInitialSizeMb: 768  
   resources: 
@@ -170,7 +170,7 @@ tileServer:
       memory: 1536Mi
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1
     maxReplicas: 5
     memory:
       enabled: false
@@ -189,7 +189,7 @@ tinExportServer:
       memory: 1536Mi
   autoscaling:
     enabled: false
-    minReplicas: 2
+    minReplicas: 1
     maxReplicas: 3
     memory:
       enabled: false

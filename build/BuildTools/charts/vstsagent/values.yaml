@@ -1,16 +1,20 @@
 
 image:
-  repository: 940327799086.dkr.ecr.us-west-2.amazonaws.com/helm-vsts-agent
-  tag: merino
+  repository: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images
+  tag: vsts-dind-agent-k8s
+  pullPolicy: Always
 
-resources:
-  disk: "5Gi"
-
-vstsToken: "kk6mfp4kkqmupyec7tztxiiihzsg4okb6otwufw7hsfclizmlqvq"
-vstsAccount: "VisionLink"
-vstsPool: "kubernetes-production"
+vstsToken: "h3jjfv3uviriasqttntt2vlqm7ui3qfy2ysm3enuwrgunvvfdckq"
+vstsAccount: "trmb-ccss"
+vstsPool: "k8s-fsm"
 
 replicas: 2
+
+# securityContext: 
+#   privileged: true
+#   runAsNonRoot: true
+#   runAsUser: 1000 # Bamboo runs as user bamboo (UID 1000)
+#   allowPrivilegeEscalation: true
 
 #tolerations: 
 #  - key: "dedicated"
@@ -26,3 +30,11 @@ replicas: 2
 #  vss/application: jenkins
 
 
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
