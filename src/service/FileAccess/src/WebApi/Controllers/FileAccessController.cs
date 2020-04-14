@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Http;
@@ -31,7 +29,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
     /// Gets requested file from the injected repository.
     /// </summary>
     [HttpPost("api/v1/rawfiles")]
-    public async Task<IActionResult> GetFile([FromBody] FileDescriptor request)
+    public IActionResult GetFile([FromBody] FileDescriptor request)
     {
       log.LogInformation($"Get file from TCC: {JsonConvert.SerializeObject(request)}");
 
@@ -42,7 +40,7 @@ namespace VSS.Productivity3D.FileAccess.WebAPI.Controllers
         if (RequestExecutorContainer.Build<RawFileAccessExecutor>(logger, null, fileAccess)
                                     .Process(request) is RawFileAccessResult downloadResult && downloadResult.Success)
         {
-          return Ok(new FileStreamResult(new MemoryStream(downloadResult.fileContents), ContentTypeConstants.ApplicationOctetStream));
+          return File(downloadResult.fileContents, ContentTypeConstants.ApplicationOctetStream);
         }
 
         return NoContent();
