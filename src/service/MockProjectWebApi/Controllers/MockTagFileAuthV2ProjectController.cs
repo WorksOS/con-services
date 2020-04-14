@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using MockProjectWebApi.Utils;
 using Newtonsoft.Json;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace MockProjectWebApi.Controllers
 {

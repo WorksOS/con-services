@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {

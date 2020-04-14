@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using MockProjectWebApi.Utils;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Services
 {

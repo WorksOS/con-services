@@ -6,6 +6,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Filter.Common.Filters.Authentication

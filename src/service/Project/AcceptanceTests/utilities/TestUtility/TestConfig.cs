@@ -13,9 +13,7 @@ namespace TestUtility
     public string mySqlUser = Environment.GetEnvironmentVariable("MYSQL_USERNAME");
     public string mySqlPassword = Environment.GetEnvironmentVariable("MYSQL_ROOT_PASSWORD");
     public string mySqlPort = Environment.GetEnvironmentVariable("MYSQL_PORT");
-    public string kafkaServer = Environment.GetEnvironmentVariable("KAFKA_URI") + ":" + Environment.GetEnvironmentVariable("KAFKA_PORT");
     public string dbSchema;
-    public string kafkaTopicSuffix = Environment.GetEnvironmentVariable("KAFKA_TOPIC_NAME_SUFFIX");
     public string webApiUri = Environment.GetEnvironmentVariable("WEBAPI_URI");
     public string debugWebApiUri = "http://localhost:5000/"; // Environment.GetEnvironmentVariable("WEBAPI_DEBUG_URI");
     public string operatingSystem = Environment.GetEnvironmentVariable("OS");
@@ -36,7 +34,7 @@ namespace TestUtility
         ? databaseSchemaName
         : Environment.GetEnvironmentVariable("MYSQL_DATABASE_NAME");
 
-      dbSchema = "VSS-MasterData-Project";
+      dbSchema = "CCSS-Project";
 
       mySqlServer = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
 

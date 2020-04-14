@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {

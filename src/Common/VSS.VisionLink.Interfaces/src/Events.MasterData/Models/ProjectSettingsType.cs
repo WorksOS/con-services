@@ -1,4 +1,4 @@
-﻿namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+﻿namespace VSS.Visionlink.Interfaces.Events.MasterData.Models
 {
   public enum ProjectSettingsType
   {

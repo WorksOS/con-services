@@ -9,14 +9,12 @@ using VSS.Common.Cache.MemoryCache;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -25,6 +23,8 @@ using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Productivity3D.Proxy;
 using VSS.Serilog.Extensions;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Productivity3D.Filter.Repository;
 
 namespace ExecutorTests.Internal
 {
@@ -38,13 +38,11 @@ namespace ExecutorTests.Internal
     protected IFileImportProxy FileImportProxy;
     protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification;
     protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction;
-    protected IKafka Producer;
-    protected string KafkaTopicName;
     protected FilterRepository FilterRepo;
     protected ProjectRepository ProjectRepo;
     protected GeofenceRepository GeofenceRepo;
-    protected IGeofenceProxy GeofenceProxy;
-    protected IUnifiedProductivityProxy UnifiedProductivityProxy;
+    //protected IGeofenceProxy GeofenceProxy;
+    //protected IUnifiedProductivityProxy UnifiedProductivityProxy;
 
     public void SetupDI()
     {
@@ -67,13 +65,12 @@ namespace ExecutorTests.Internal
         .AddTransient<IWebRequest, GracefulWebRequest>()
         .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
         .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()
-        .AddSingleton<IKafka, RdKafkaDriver>()
         .AddTransient<IErrorCodesProvider, FilterErrorCodesProvider>()
         .AddSingleton<IDataCache, InMemoryDataCache>()
-        .AddSingleton<IGeofenceProxy, GeofenceProxy>()
-        .AddSingleton<IProjectProxy, ProjectV4Proxy>()
-        .AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>()       
-        .AddSingleton<IFileImportProxy, FileImportV4Proxy>()
+        //.AddSingleton<IGeofenceProxy, GeofenceProxy>()
+        //.AddSingleton<IUnifiedProductivityProxy, UnifiedProductivityProxy>()  
+        .AddSingleton<IProjectProxy, ProjectV6Proxy>()   
+        .AddSingleton<IFileImportProxy, FileImportV6Proxy>()
         .BuildServiceProvider();
 
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
@@ -86,8 +83,8 @@ namespace ExecutorTests.Internal
       FileImportProxy = ServiceProvider.GetRequiredService<IFileImportProxy>();
       Productivity3dV2ProxyNotification = ServiceProvider.GetRequiredService<IProductivity3dV2ProxyNotification>();
       Productivity3dV2ProxyCompaction = ServiceProvider.GetRequiredService<IProductivity3dV2ProxyCompaction>();
-      GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();
-      UnifiedProductivityProxy = ServiceProvider.GetRequiredService<IUnifiedProductivityProxy>();
+      //GeofenceProxy = ServiceProvider.GetRequiredService<IGeofenceProxy>();
+      //UnifiedProductivityProxy = ServiceProvider.GetRequiredService<IUnifiedProductivityProxy>();
 
       Assert.IsNotNull(ServiceProvider.GetService<ILoggerFactory>());
     }

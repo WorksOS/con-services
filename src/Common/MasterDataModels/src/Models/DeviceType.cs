@@ -1,6 +1,9 @@
-﻿namespace VSS.MasterData.Models.Models
+﻿using System;
+
+namespace VSS.MasterData.Models.Models
 {
   // this enum sequence is derived from 2nd Generation Visionlink
+  [Obsolete("todoMaverick obsolete", false)]
   public enum DeviceTypeEnum
   {
     MANUALDEVICE = 0,

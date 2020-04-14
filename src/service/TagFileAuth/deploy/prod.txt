@@ -1,7 +1,5 @@
 MYSQL_DATABASE_NAME: VSS-TagFileAuth
 MYSQL_USERNAME: vssTagFileAuthUsr
 MYSQL_ROOT_PASSWORD: mRty94hER
-KAFKA_GROUP_NAME: TagFileAuth-Consumer-Prod
-KAFKA_TOPICS: VSS.Interfaces.Events.MasterData.ICustomerEvent.V1,VSS.Interfaces.Events.MasterData.IProjectEvent.V2,VSS.Interfaces.Events.MasterData.ISubscriptionEvent.V1,VSS.Interfaces.Events.MasterData.IAssetEvent.V1,VSS.Interfaces.Events.MasterData.IDeviceEvent.V1
 JAEGER_SERVICE_NAME: tagfileauth service
 ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"

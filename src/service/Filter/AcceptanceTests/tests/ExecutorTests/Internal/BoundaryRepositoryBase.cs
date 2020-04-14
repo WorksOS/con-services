@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using VSS.KafkaConsumer.Kafka;
+﻿using System;
 
 namespace ExecutorTests.Internal
 {
@@ -8,15 +6,7 @@ namespace ExecutorTests.Internal
   {
     public void Setup()
     {
-      SetupDI();
-      Producer = ServiceProvider.GetRequiredService<IKafka>();
-      if (!Producer.IsInitializedProducer)
-      {
-        Producer.InitProducer(ConfigStore);
-      }
-
-      KafkaTopicName = "VSS.Interfaces.Events.MasterData.IProjectEvent" +
-                       ConfigStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      SetupDI();      
     }
 
     protected static string GenerateWKTPolygon()

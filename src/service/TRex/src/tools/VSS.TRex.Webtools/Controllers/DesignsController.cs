@@ -3,8 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.Common;
 using VSS.TRex.Common.Utilities;
@@ -17,8 +15,8 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.ExistenceMaps.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Consts = VSS.TRex.ExistenceMaps.Interfaces.Consts;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Webtools.Controllers
 {

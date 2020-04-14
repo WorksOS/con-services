@@ -40,8 +40,6 @@ namespace VSS.MasterData.Models.Models
 
     public DateTime ActionUTC { get; set; }
 
-    public DateTime ReceivedUTC { get; set; }
-
     public DateTime? EndDate { get; set; }
 
   }

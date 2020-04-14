@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
       [FromQuery] ushort width,
       [FromQuery] ushort height,
       [FromQuery] int? liftId = null,
-      [FromQuery] Guid? geofenceUid = null,
+      // no longer supported in WorksOS as no geofenceService [FromQuery] Guid? geofenceUid = null,
       [FromQuery] Guid? assetUid = null);
 
     /// <summary>
@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.WebApi.Models.ProductionData.Contracts
                    [FromQuery] ushort width,
                    [FromQuery] ushort height,
                    [FromQuery] int? liftId = null,
-                   [FromQuery] Guid? geofenceUid = null,
+                   // no longer supported in WorksOS as no geofenceService [FromQuery] Guid? geofenceUid = null,
                    [FromQuery] Guid? assetUid = null);
   }
 }

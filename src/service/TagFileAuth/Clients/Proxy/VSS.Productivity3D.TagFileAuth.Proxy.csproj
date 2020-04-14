@@ -7,7 +7,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
     <ProjectReference Include="..\Abstractions\VSS.Productivity3D.TagFileAuth.Abstractions.csproj" />
     <ProjectReference Include="..\Models\VSS.Productivity3D.TagFileAuth.Models.csproj" />
   </ItemGroup>

@@ -7,7 +7,7 @@ namespace TestUtility
 {
   public static class MySqlHelper
   {
-    private const string PROJECT_DB_SCHEMA_NAME = "VSS-MasterData-Project";
+    private const string PROJECT_DB_SCHEMA_NAME = "CCSS-Project";
     private static readonly TestConfig _appConfig = new TestConfig(PROJECT_DB_SCHEMA_NAME);
 
     /// <summary>

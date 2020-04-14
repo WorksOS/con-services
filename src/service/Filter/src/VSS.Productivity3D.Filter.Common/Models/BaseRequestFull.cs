@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Net;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
   /// <summary>
-  /// All the common parameters reequired for boundary requests.
+  /// All the common parameters required for boundary requests.
   /// </summary>
   public class BaseRequestFull
   {
@@ -15,13 +15,8 @@ namespace VSS.Productivity3D.Filter.Common.Models
     public bool IsApplicationContext { get; set; }
     public string UserUid { get; set; }
     public string ProjectUid { get; set; }
-    public string ProjectGeometryWKT { get; set; }
+    public string GeometryWKT { get; set; }
     public IDictionary<string, string> CustomHeaders { get; set; }
-
-    /// <summary>
-    /// Determines whether CRUD operations should result in a Kafka message being sent.
-    /// </summary>
-    public bool SendKafkaMessages = true;
 
     /// <summary>
     /// Returns a new instance of <see cref="BaseRequestFull"/> using the provided inputs.
@@ -36,11 +31,11 @@ namespace VSS.Productivity3D.Filter.Common.Models
       return new BaseRequestFull
       {
         IsApplicationContext = isApplicationContext,
-        ProjectUid = projectData?.ProjectUid,
+        ProjectUid = projectData?.ProjectUID,
         CustomerUid = customerUid,
         UserUid = userUid,
         CustomHeaders = customHeaders,
-        ProjectGeometryWKT = projectData?.ProjectGeofenceWKT
+        GeometryWKT = projectData?.GeometryWKT
       };
     }
 

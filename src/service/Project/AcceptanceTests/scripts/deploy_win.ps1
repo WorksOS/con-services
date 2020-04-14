@@ -1,14 +1,14 @@
 Set-Location $PSScriptRoot/../
 
-Remove-Item -Path ./Deploy -Recurse -Force -ErrorAction Ignore
+Remove-Item -Path ./deploy -Recurse -Force -ErrorAction Ignore
 
-New-Item -ItemType directory ./Deploy | out-null
-New-Item -ItemType directory ./Deploy/TestResults | out-null
+New-Item -ItemType directory ./deploy | out-null
+New-Item -ItemType directory ./deploy/testresults | out-null
 
-Copy-Item ./Dockerfile ./Deploy
-Copy-Item ./scripts/runtests.sh ./Deploy
-Copy-Item ./scripts/wait-for-it.sh ./Deploy
-Copy-Item ./scripts/rm_cr.sh ./Deploy
+Copy-Item ./Dockerfile ./deploy
+Copy-Item ./scripts/runtests.sh ./deploy
+Copy-Item ./scripts/wait-for-it.sh ./deploy
+Copy-Item ./scripts/rm_cr.sh ./deploy
 
 Set-Location ./Tests
 

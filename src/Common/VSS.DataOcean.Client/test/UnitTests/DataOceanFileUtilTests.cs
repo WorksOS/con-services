@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.DataOcean.Client.UnitTests

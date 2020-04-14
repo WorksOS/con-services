@@ -6,9 +6,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Http;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Common.Filters.Authentication.Models
@@ -118,7 +118,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       async Task<long> GetProjectId()
       {
         var project = await GetProject(projectUid);
-        var projectId = project.LegacyProjectId;
+        var projectId = project.ShortRaptorProjectId;
 
         if (projectId > 0)
         {
@@ -146,7 +146,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication.Models
       {
         var project = await GetProject(projectId);
 
-        if (Guid.TryParse(project.ProjectUid, out var projectUid))
+        if (Guid.TryParse(project.ProjectUID, out var projectUid))
         {
           ProjectUidsCache.TryAdd(projectId, projectUid);
 

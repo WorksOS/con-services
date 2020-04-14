@@ -7,13 +7,13 @@ using Moq;
 using Newtonsoft.Json;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Internal;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -47,27 +47,26 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task GetFilterExecutor_ExistingFilter(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "blah";
       string filterJson = "{\"dateRangeType\":1,\"elevationType\":null}";
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
-        UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        CustomerUID = custUid,
+        UserID = userId.ToString(),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, false, userId,  new ProjectData() { ProjectUid = projectUid }, new FilterRequest {FilterUid = filterUid, FilterType = filterType});
+      var request = FilterRequestFull.Create(null, custUid.ToString(), false, userId.ToString(),  new ProjectData() { ProjectUID = projectUid.ToString() }, new FilterRequest {FilterUid = filterUid.ToString(), FilterType = filterType});
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -76,7 +75,7 @@ namespace ExecutorTests
       var filterToTest = new FilterDescriptorSingleResult(
         new FilterDescriptor
         {
-          FilterUid = filterUid,
+          FilterUid = filterUid.ToString(),
           Name = name,
           FilterType = filterType,
           FilterJson = filterJson
@@ -102,27 +101,26 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task GetFilterExecutor_ExistingFilterApplicationContext(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "blah";
       string filterJson = "{\"dateRangeType\":1,\"elevationType\":null}";
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
-        UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        CustomerUID = custUid,
+        UserID = userId.ToString(),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = FilterRequestFull.Create(null, custUid, true, "0", new ProjectData() { ProjectUid = projectUid }, new FilterRequest { FilterUid = filterUid, FilterType = filterType });
+      var request = FilterRequestFull.Create(null, custUid.ToString(), true, "0", new ProjectData() { ProjectUID = projectUid.ToString() }, new FilterRequest { FilterUid = filterUid.ToString(), FilterType = filterType });
 
       var executor =
         RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null);
@@ -131,7 +129,7 @@ namespace ExecutorTests
       var filterToTest = new FilterDescriptorSingleResult(
         new FilterDescriptor
         {
-          FilterUid = filterUid,
+          FilterUid = filterUid.ToString(),
           Name = name,
           FilterType = filterType,
           FilterJson = filterJson
@@ -163,15 +161,14 @@ namespace ExecutorTests
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
+        CustomerUID = new Guid(custUid),
         UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        ProjectUID = new Guid(projectUid),
+        FilterUID = new Guid(filterUid),
         Name = name,
         FilterType = filterType,
         FilterJson = "{\"dateRangeType\":0,\"elevationType\":null}",
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(customerUid: custUid.ToUpper(), userId: userId.ToUpper(), projectUid: projectUid.ToUpper(), filterUid: filterUid.ToUpper(), filterType: filterType, name: name);
@@ -204,21 +201,20 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterCreateEvent);
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
@@ -251,21 +247,20 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": \"{startDate}\",\"endUtc\": \"{endDate}\",\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterCreateEvent);
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectUid: filterCreateEvent.ProjectUID.ToString(), filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var tcs = new TaskCompletionSource<List<ProjectData>>();
       tcs.SetResult(new List<ProjectData> { projectData });
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
@@ -315,13 +310,12 @@ namespace ExecutorTests
         Name = name,
         FilterType = filterType,
         FilterJson = $"{{\"startUtc\": null,\"endUtc\": null,\"dateRangeType\": {dateRangeType}, \"asAtDate\":\"{asAtDate}\"}}",
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       };
 
       WriteEventToDb(filterCreateEvent);
 
-      var projectData = new ProjectData { ProjectUid = filterCreateEvent.ProjectUID.ToString(), IanaTimeZone = "America/Los_Angeles" };
+      var projectData = new ProjectData { ProjectUID = filterCreateEvent.ProjectUID.ToString(), ProjectTimeZoneIana = "America/Los_Angeles" };
 
       var request = CreateAndValidateRequest(customerUid: filterCreateEvent.CustomerUID.ToString(), userId: filterCreateEvent.UserID, projectData: projectData, filterUid: filterCreateEvent.FilterUID.ToString(), filterType: filterType, name: name);
 
@@ -329,7 +323,7 @@ namespace ExecutorTests
       tcs.SetResult(new List<ProjectData> {projectData});
 
       var projectProxy = new Mock<IProjectProxy>();
-      projectProxy.Setup(x => x.GetProjectsV4(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
+      projectProxy.Setup(x => x.GetProjects(filterCreateEvent.CustomerUID.ToString(), request.CustomHeaders)).Returns(() => tcs.Task);
       var executor = RequestExecutorContainer.Build<GetFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, projectProxy.Object);
       var result = executor.ProcessAsync(request).Result as FilterDescriptorSingleResult;
 

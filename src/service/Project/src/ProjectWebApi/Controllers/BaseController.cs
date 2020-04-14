@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
@@ -22,6 +21,7 @@ using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -33,11 +33,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary> base message number for ProjectService </summary>
     protected readonly int customErrorMessageOffset = 2000;
 
-    /// <summary> Gets or sets the Kafka topic. </summary>
-    protected readonly string KafkaTopicName;
-
-
-    private ILogger<T> _logger;
+  private ILogger<T> _logger;
     private ILoggerFactory _loggerFactory;
     private IServiceExceptionHandler _serviceExceptionHandler;
 
@@ -45,10 +41,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
     private IProductivity3dV2ProxyCompaction _productivity3dV2ProxyCompaction;
     private IProjectRepository _projectRepo;
-    private ISubscriptionRepository _subscriptionRepo;
+    private IDeviceRepository _deviceRepo;
     private IFileRepository _fileRepo;
     private IDataOceanClient _dataOceanClient;
     private ITPaaSApplicationAuthentication _authorization;
+    private ICwsProjectClient _cwsProjectClient;
+    private ICwsDeviceClient _cwsDeviceClient;
 
 
     /// <summary> Gets the application logging interface. </summary>
@@ -63,10 +61,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary> Gets the config store. </summary>
     protected readonly IConfigurationStore ConfigStore;
 
-    /// <summary> Gets the kafka producer </summary>
-    protected readonly IKafka Producer;
-
-
     /// <summary> Gets or sets the Productivity3d Coord proxy. </summary>
     protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => _productivity3dV1ProxyCoord ?? (_productivity3dV1ProxyCoord = HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>());
 
@@ -76,13 +70,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary> Gets or sets the Productivity3d Compaction proxy. </summary>
     protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => _productivity3dV2ProxyCompaction ?? (_productivity3dV2ProxyCompaction = HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>());
 
-
     /// <summary> Gets or sets the Project Repository.  </summary>
     protected IProjectRepository ProjectRepo => _projectRepo ?? (_projectRepo = HttpContext.RequestServices.GetService<IProjectRepository>());
 
-    /// <summary> Gets or sets the Subscription Repository. </summary>
-    protected ISubscriptionRepository SubscriptionRepo => _subscriptionRepo ?? (_subscriptionRepo = HttpContext.RequestServices.GetService<ISubscriptionRepository>());
-
+    /// <summary> Gets or sets the Device Repository.  </summary>
+    protected IDeviceRepository DeviceRepo => _deviceRepo ?? (_deviceRepo = HttpContext.RequestServices.GetService<IDeviceRepository>());
+    
     /// <summary> Gets or sets the TCC File Repository. </summary>
     protected IFileRepository FileRepo => _fileRepo ?? (_fileRepo = HttpContext.RequestServices.GetService<IFileRepository>());
 
@@ -90,6 +83,16 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the Data Ocean client agent.
     /// </summary>
     protected IDataOceanClient DataOceanClient => _dataOceanClient ?? (_dataOceanClient = HttpContext.RequestServices.GetService<IDataOceanClient>());
+
+    /// <summary>
+    /// Gets or sets the csw Project Client
+    /// </summary>
+    protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ?? (_cwsProjectClient = HttpContext.RequestServices.GetService<ICwsProjectClient>());
+
+    /// <summary>
+    /// Gets or sets the csw Device Client
+    /// </summary>
+    protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ?? (_cwsDeviceClient = HttpContext.RequestServices.GetService<ICwsDeviceClient>());
 
     /// <summary> Gets or sets the TPaaS application authentication helper. </summary>
     protected ITPaaSApplicationAuthentication Authorization => _authorization ?? (_authorization = HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>());
@@ -122,17 +125,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IKafka producer, IConfigurationStore configStore)
+    protected BaseController(IConfigurationStore configStore)
     {
-      Producer = producer;
       ConfigStore = configStore;
-      if (!Producer.IsInitializedProducer)
-      {
-        Producer.InitProducer(ConfigStore);
-      }
-
-      KafkaTopicName = (ConfigStore.GetValueString("PROJECTSERVICE_KAFKA_TOPIC_NAME") +
-                        ConfigStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX")).Trim();
     }
 
     /// <summary>
@@ -171,10 +166,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Gets the customer uid from the context.
+    /// Gets the account uid from the context.
     /// </summary>
     /// <returns></returns>
-    /// <exception cref="ArgumentException">Incorrect customer uid value.</exception>
+    /// <exception cref="ArgumentException">Incorrect account uid value.</exception>
     private string GetCustomerUid()
     {
       if (User is TIDCustomPrincipal principal)
@@ -218,21 +213,20 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets the project.
     /// </summary>
-    /// <param name="legacyProjectId"></param>
-    protected async Task<ProjectDatabaseModel> GetProject(long legacyProjectId)
+    protected async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId)
     {
-      var customerUid = LogCustomerDetails("GetProject by legacyProjectId", legacyProjectId);
+      var customerUid = LogCustomerDetails("GetProject by shortRaptorProjectId", shortRaptorProjectId);
       var project =
-        (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
-          p => p.LegacyProjectID == legacyProjectId);
+        (await ProjectRepo.GetProjectsForCustomer(this.customerUid).ConfigureAwait(false)).FirstOrDefault(
+          p => p.ShortRaptorProjectId == shortRaptorProjectId);
 
       if (project == null)
       {
-        Logger.LogWarning($"User doesn't have access to legacyProjectId: {legacyProjectId}");
+        Logger.LogWarning($"User doesn't have access to legacyProjectId: {shortRaptorProjectId}");
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.Forbidden, 1);
       }
 
-      Logger.LogInformation($"Project legacyProjectId: {legacyProjectId} retrieved");
+      Logger.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} ProjectUID: {project.ProjectUID} CustomerUID: {project.CustomerUID} retrieved");
       return project;
     }
 

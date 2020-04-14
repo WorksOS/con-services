@@ -3,11 +3,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -29,7 +29,7 @@ namespace ExecutorTests
       var request = CreateAndValidateRequest(custUid, projectUid, userId, Guid.NewGuid());
 
       var executor =
-        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, producer:Producer, kafkaTopicName:KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy);
 
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.IsTrue(serviceException.GetContent.Contains("2049"));
@@ -51,7 +51,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = GenerateWKTPolygon(),
         GeofenceName = "name",
         Description = null
@@ -60,14 +59,13 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid, userId, boundaryUid);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy,producer:Producer, kafkaTopicName:KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -91,7 +89,6 @@ namespace ExecutorTests
         CustomerUID = custUid,
         UserUID = userId,
         ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow,
         GeometryWKT = GenerateWKTPolygon(),
         GeofenceName = "name",
         Description = null
@@ -100,14 +97,13 @@ namespace ExecutorTests
       {
         ProjectUID = projectUid1,
         GeofenceUID = boundaryUid,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
       var request = CreateAndValidateRequest(custUid, projectUid2, userId, boundaryUid);
 
       var executor =
-        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, producer:Producer, kafkaTopicName:KafkaTopicName);
+        RequestExecutorContainer.Build<DeleteBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy);
 
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
       Assert.IsTrue(serviceException.GetContent.Contains("2049"));
@@ -119,7 +115,7 @@ namespace ExecutorTests
       var request = BoundaryUidRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUid = projectUid.ToString() },
+        new ProjectData() { ProjectUID = projectUid.ToString() },
         userId.ToString(),
         boundaryUid.ToString());
       request.Validate(ServiceExceptionHandler);

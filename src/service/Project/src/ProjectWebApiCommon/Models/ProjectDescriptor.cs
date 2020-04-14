@@ -1,8 +1,6 @@
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Repositories.DBModels;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
@@ -22,54 +20,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public ImmutableList<ProjectDescriptor> ProjectDescriptors { get; set; }
   }
 
-  /// <summary>
-  /// Describes standard container with subscription descriptor
-  /// </summary>
-  /// <seealso cref="ContractExecutionResult" />
-  public class SubscriptionsListResult : ContractExecutionResult
-  {
-    /// <summary>
-    /// Gets or sets the subscription descriptors.
-    /// </summary>
-    /// <value>
-    /// The subscription descriptors.
-    /// </value>
-    public ImmutableList<SubscriptionDescriptor> SubscriptionDescriptors { get; set; }
-  }
-
-
-  /// <summary>
-  /// Descriped standrd subscription
-  /// </summary>
-  /// <seealso cref="Subscription" />
-  public class SubscriptionDescriptor : Subscription
-  {
-    /// <summary>
-    /// Gets the name of the service type.
-    /// </summary>
-    /// <value>
-    /// The name of the service type.
-    /// </value>
-    public string ServiceTypeName => ((ServiceTypeEnum)this.ServiceTypeID).ToString();
-
-    /// <summary>
-    /// Builds custom contrat from the subscription DB model.
-    /// </summary>
-    /// <param name="s">The s.</param>
-    /// <returns></returns>
-    public static SubscriptionDescriptor FromSubscription(Subscription s)
-    {
-      return new SubscriptionDescriptor()
-      {
-        CustomerUID = s.CustomerUID,
-        EndDate = s.EndDate,
-        LastActionedUTC = s.LastActionedUTC,
-        ServiceTypeID = s.ServiceTypeID,
-        StartDate = s.StartDate,
-        SubscriptionUID = s.SubscriptionUID
-      };
-    }
-  }
 
   /// <summary>
   ///   Describes VL project
@@ -148,29 +98,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// </value>
     public string ProjectGeofenceWKT { get; set; }
 
-    /// <summary>
-    /// Gets or sets the project ID from legacy VisionLink
-    /// </summary>
-    /// <value>
-    /// The legacy project ID.
-    /// </value>
-    public int LegacyProjectId { get; set; }
+    public int ShortRaptorProjectId { get; set; }
 
     /// <summary>
     /// Gets or sets the CustomerUID which the project is associated with
     /// </summary>
-    /// <value>
-    /// The Customer UID.
-    /// </value>
     public string CustomerUID { get; set; }
-
-    /// <summary>
-    /// Gets or sets the customer Id from legacy VisionLink
-    /// </summary>
-    /// <value>
-    /// The legacy Customer Id.
-    /// </value>
-    public string LegacyCustomerId { get; set; }
 
     /// <summary>
     /// Gets or sets the CoordinateSystem FileName which the project is associated with
@@ -186,14 +119,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
       if (otherProject == null) return false;
       return otherProject.ProjectUid == this.ProjectUid
              && otherProject.Name == this.Name
-             && otherProject.LegacyProjectId == this.LegacyProjectId
+             && otherProject.ShortRaptorProjectId == this.ShortRaptorProjectId
              && otherProject.StartDate == this.StartDate
              && otherProject.EndDate == this.EndDate
              && otherProject.ProjectGeofenceWKT == this.ProjectGeofenceWKT
              && otherProject.ProjectTimeZone == this.ProjectTimeZone
              && otherProject.ProjectType == this.ProjectType
              && otherProject.IsArchived == this.IsArchived
-             && otherProject.LegacyCustomerId == this.LegacyCustomerId
              && otherProject.CustomerUID == this.CustomerUID
              && otherProject.CoordinateSystemFileName == this.CoordinateSystemFileName
           ;

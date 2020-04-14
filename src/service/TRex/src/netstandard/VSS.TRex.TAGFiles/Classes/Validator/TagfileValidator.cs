@@ -6,9 +6,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.TRex.Common;
 using VSS.TRex.DI;
@@ -18,6 +16,7 @@ using VSS.TRex.TAGFiles.Types;
 using System.IO;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -112,7 +111,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
 
       var tfaRequest = new GetProjectAndAssetUidsRequest(
         tagDetail.projectId == null ? string.Empty : tagDetail.projectId.ToString(),
-        (int)radioType, preScanState.RadioSerial, EC520SerialID, tagDetail.tccOrgId,
+        (int)radioType, preScanState.RadioSerial, EC520SerialID, // obsolete tagDetail.tccOrgId,
         MathUtilities.RadiansToDegrees(preScanState.SeedLatitude ?? 0),
         MathUtilities.RadiansToDegrees(preScanState.SeedLongitude ?? 0),
         preScanState.LastDataTime ?? Consts.MIN_DATETIME_AS_UTC);
@@ -129,7 +128,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         }
 
         // take what TFA gives us including an empty guid which is a JohnDoe
-        tagDetail.assetId = tfaResult.AssetUid == string.Empty ? Guid.Empty :(Guid.Parse(tfaResult.AssetUid));
+        tagDetail.assetId = tfaResult.DeviceUid == string.Empty ? Guid.Empty :(Guid.Parse(tfaResult.DeviceUid));
 
         // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense
         if (tagDetail.assetId == Guid.Empty)

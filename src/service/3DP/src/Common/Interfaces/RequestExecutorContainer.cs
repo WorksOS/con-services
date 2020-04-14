@@ -7,9 +7,9 @@ using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 
     protected ITRexCompactionDataProxy trexCompactionDataProxy;
 
-    protected IAssetResolverProxy assetResolverProxy;
+    protected IDeviceProxy deviceProxy;
 
     protected IDictionary<string, string> customHeaders;
 
@@ -180,7 +180,7 @@ namespace VSS.Productivity3D.Common.Interfaces
 #endif
       IConfigurationStore configStore, IFileRepository fileRepo, ITileGenerator tileGenerator, List<FileData> fileList, ICompactionProfileResultHelper profileResultHelper,
       ITransferProxy transferProxy, ITRexTagFileProxy tRexTagFileProxy, ITRexConnectedSiteProxy tRexConnectedSiteProxy, ITRexCompactionDataProxy trexCompactionDataProxy,
-      IAssetResolverProxy assetResolverProxy, IDictionary<string, string> customHeaders, string customerUid)
+      IDeviceProxy deviceProxy, IDictionary<string, string> customHeaders, string customerUid)
     {
       this.loggerFactory = loggerFactory;
       this.log = logger;
@@ -197,7 +197,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       this.tRexTagFileProxy = tRexTagFileProxy;
       this.tRexConnectedSiteProxy = tRexConnectedSiteProxy;
       this.trexCompactionDataProxy = trexCompactionDataProxy;
-      this.assetResolverProxy = assetResolverProxy;
+      this.deviceProxy = deviceProxy;
       this.customHeaders = customHeaders;
       this.customerUid = customerUid;
     }

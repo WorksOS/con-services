@@ -13,13 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Deploy\**" />
+    <Compile Remove="deploy\**" />
     <Compile Remove="logs\**" />
-    <Content Remove="Deploy\**" />
+    <Content Remove="deploy\**" />
     <Content Remove="logs\**" />
-    <EmbeddedResource Remove="Deploy\**" />
+    <EmbeddedResource Remove="deploy\**" />
     <EmbeddedResource Remove="logs\**" />
-    <None Remove="Deploy\**" />
+    <None Remove="deploy\**" />
     <None Remove="logs\**" />
   </ItemGroup>
 
@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj" />
@@ -51,6 +50,7 @@
     <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
     <ProjectReference Include="..\..\..\Push\Abstractions\VSS.Productivity3D.Push.Abstractions\VSS.Productivity3D.Push.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Push\WebAPI\VSS.Productivity3D.Push.WebAPI\VSS.Productivity3D.Push.WebAPI.csproj" />
+    <ProjectReference Include="..\..\Clients\VSS.Productivity3D.Filter.Repository\VSS.Productivity3D.Filter.Repository.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Filter.Common\VSS.Productivity3D.Filter.Common.csproj" />
   </ItemGroup>
 

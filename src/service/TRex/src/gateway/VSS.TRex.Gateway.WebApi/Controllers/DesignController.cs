@@ -19,7 +19,7 @@ using VSS.TRex.Gateway.Common.Executors.Design;
 using VSS.TRex.Gateway.Common.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.WebApi.Controllers
 {

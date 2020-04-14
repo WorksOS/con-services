@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{DA964F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{2124B777-5DC4-498E-A970-FA7DBF38121B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{C9A5D011-C2CC-4AF2-9198-9CBE5092DE84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{C9A5D011-C2CC-4AF2-9198-9CBE5092DE84}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Asset Resolver Service", "Asset Resolver Service", "{3CC6F25F-2121-4170-9656-74A61F2742C7}"
 EndProject
@@ -56,6 +56,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileAuth.Models", "..\TagFileAuth\Clients\Models\VSS.Productivity3D.TagFileAuth.Models.csproj", "{03B133A9-7828-4C09-A2DD-976C12C366E9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.FlowJSHandler", "..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj", "{23982A93-1D91-41B7-997B-8B72C92D152A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.WebApi.Common", "..\..\Common\WebApi.Common\src\VSS.WebApi.Common.csproj", "{E38D688E-33C8-492C-B7B7-94C4074A9BB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -201,6 +203,14 @@ Global
 		{23982A93-1D91-41B7-997B-8B72C92D152A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{23982A93-1D91-41B7-997B-8B72C92D152A}.Release|x64.ActiveCfg = Release|Any CPU
 		{23982A93-1D91-41B7-997B-8B72C92D152A}.Release|x64.Build.0 = Release|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Debug|x64.Build.0 = Debug|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Release|x64.ActiveCfg = Release|Any CPU
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -229,6 +239,7 @@ Global
 		{81938ED3-5E50-4DBD-B906-3A52A8EE478E} = {87BFF03E-CA3F-4773-B4F9-E112A5516CED}
 		{03B133A9-7828-4C09-A2DD-976C12C366E9} = {81938ED3-5E50-4DBD-B906-3A52A8EE478E}
 		{23982A93-1D91-41B7-997B-8B72C92D152A} = {DA964F8A-89E7-431A-AFDA-53B1C701C2C0}
+		{E38D688E-33C8-492C-B7B7-94C4074A9BB8} = {DA964F8A-89E7-431A-AFDA-53B1C701C2C0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F6524D83-9E29-4F62-8C9A-E01BA4C38D05}

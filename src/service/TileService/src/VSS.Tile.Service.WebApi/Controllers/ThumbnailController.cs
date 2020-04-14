@@ -2,26 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Abstractions.Http;
-using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Extensions;
-using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Interfaces;
-using VSS.Tile.Service.Common.Models;
-using VSS.Tile.Service.Common.ResultHandling;
 using VSS.Tile.Service.Common.Services;
 using VSS.WebApi.Common;
 
@@ -48,9 +41,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Default constructor.
     /// </summary>
     public ThumbnailController(IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy, 
-      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore, 
+      IMapTileGenerator tileGenerator, IMemoryCache cache, IConfigurationStore configStore, 
       IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
-      : base(productivity3DProxyCompactionTile, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
+      : base(productivity3DProxyCompactionTile, prefProxy, fileImportProxy, tileGenerator, cache, configStore, boundingBoxHelper, authn)
     {
     }
 
@@ -67,7 +60,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       Log.LogDebug($"{nameof(GetProjectThumbnailPng)}: {Request.QueryString}");
 
       var project = await ((TilePrincipal) User).GetProject(projectUid);
-      var bbox = GetBoundingBoxFromWKT(project.ProjectGeofenceWKT);
+      var bbox = GetBoundingBoxFromWKT(project.GeometryWKT);
 
       DisplayMode? mode = null;
       var overlays = DEFAULT_PROJECT_THUMBNAIL_OVERLAYS.ToList();
@@ -164,6 +157,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       return GetStreamContents(result);
     }
 
+    /**** I believe these were for 2dProductivity, so obsolete
     /// <summary>
     /// Gets a geofence thumbnail image as a raw png.
     /// </summary>
@@ -273,8 +267,11 @@ namespace VSS.Tile.Service.WebApi.Controllers
           { Uid = Guid.Empty, Data = GetStreamContents(thumb) }).ToList()
       };
     }
+    ****/
 
     #region privates
+
+    /**** I believe these were for 2dProductivity, so obsolete
     /// <summary>
     /// Multithreaded method to retrieve Geofence PNG
     /// </summary>
@@ -316,6 +313,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
 
       return tileResult;
     }
+    ****/
 
     /// <summary>
     /// Gets the bounding box of the WKT

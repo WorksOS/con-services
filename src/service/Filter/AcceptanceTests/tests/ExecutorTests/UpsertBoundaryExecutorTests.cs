@@ -7,6 +7,7 @@ using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace ExecutorTests
 {
@@ -35,9 +36,9 @@ namespace ExecutorTests
       string projectUid = Guid.NewGuid().ToString();
       string name = "name";
 
-      var request = BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid, new BoundaryRequest { Name = name, BoundaryPolygonWKT = geometryWKT });
+      var request = BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUID = projectUid }, userUid, new BoundaryRequest { Name = name, BoundaryPolygonWKT = geometryWKT });
 
-      var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, producer:Producer, kafkaTopicName:KafkaTopicName);
+      var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy);
       var result = await executor.ProcessAsync(request) as GeofenceDataSingleResult;
 
       Assert.IsNotNull(result, "executor should always return a result");
@@ -54,9 +55,9 @@ namespace ExecutorTests
       string projectUid = Guid.NewGuid().ToString();
       string name = "name";
 
-      var request = BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUid = projectUid }, userUid, new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = name, BoundaryPolygonWKT = geometryWKT });
+      var request = BoundaryRequestFull.Create(custUid, false, new ProjectData() { ProjectUID = projectUid }, userUid, new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = name, BoundaryPolygonWKT = geometryWKT });
 
-      var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy, producer:Producer, kafkaTopicName:KafkaTopicName);
+      var executor = RequestExecutorContainer.Build<UpsertBoundaryExecutor>(ConfigStore, Logger, ServiceExceptionHandler, GeofenceRepo, ProjectRepo, ProjectProxy);
       var serviceException = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request));
 
       Assert.IsTrue(serviceException.GetContent.Contains("2061"));

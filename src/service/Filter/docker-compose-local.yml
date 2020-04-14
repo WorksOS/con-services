@@ -34,24 +34,7 @@ services:
     env_file:
       - docker-compose-local.env
     ports:
-      - "3306:3306"
-  zookeeper:
-    image: wurstmeister/zookeeper:3.4.6
-    ports:
-      - "2181:2181"
-  kafka:
-    image: wurstmeister/kafka:0.11.0.1
-    env_file:
-      - docker-compose-local.env
-    environment:
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CREATE_TOPICS=VSS.Interfaces.Events.MasterData.IFilterEvent:1:1
-    ports:
-      - "9092:9092"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    depends_on:
-      - zookeeper
+      - "3306:3306"  
   accepttest:
     build: ./AcceptanceTests/deploy
     env_file:
@@ -60,4 +43,3 @@ services:
       - ./AcceptanceTests/deploy/testresults:/app/testresults
     depends_on:
       - webapi
-      - kafka
