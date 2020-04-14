@@ -10,6 +10,15 @@
     <PackageId>TRexWebApi</PackageId>
     <RootNamespace>VSS.TRex.Mutable.Gateway.WebApi</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileFile>..\..\..\build\Dockerfile</DockerfileFile>
+    <DockerfileContext>..\..\..\..</DockerfileContext>
+    <DockerfileRunEnvironmentFiles>settings.env</DockerfileRunEnvironmentFiles>
+    <DockerfileBuildArguments>--no-cache --build-arg SERVICE_PATH=src/service/TRex --build-arg COMPONENT=MutableGateway</DockerfileBuildArguments>
+    <DockerfileRunArguments>--entrypoint "dotnet VSS.TRex.Mutable.Gateway.WebApi.dll"</DockerfileRunArguments>
+    <DockerDebuggeeWorkingDirectory>/trex</DockerDebuggeeWorkingDirectory>
+    <DockerfileFastModeStage>runtime_container</DockerfileFastModeStage>
+    <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
   </PropertyGroup>
 
   <ItemGroup>
