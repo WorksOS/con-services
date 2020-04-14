@@ -15,8 +15,8 @@ services:
      - filter_service=http://filter.alpha.eks.ccss.cloud
      - tagfileauth_service=http://tagfileauth.alpha.eks.ccss.cloud
      - trex_service_connectedsite=http://connectedsite.alpha.eks.ccss.cloud
-     - trex_service_immutable=http://trex.immutable.dev.eks.ccss.cloud
-     - trex_service_mutable=http://trex.mutable.dev.eks.ccss.cloud
+     - trex_service_immutable=http://trex.immutable.alpha.eks.ccss.cloud
+     - trex_service_mutable=http://trex.mutable.alpha.eks.ccss.cloud
      - ASSETMGMT_CACHE_LIFE=00:15:00
      - AWS_DESIGNIMPORT_BUCKET_NAME=vss-project3dp-stg
      - AWS_PRESIGNED_URL_EXPIRY=7.00:00:00

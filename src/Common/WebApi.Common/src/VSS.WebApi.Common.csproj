@@ -46,7 +46,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.2" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.2.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.3.1" />
     <PackageReference Include="Jaeger" Version="0.3.7" />
     <PackageReference Include="NewRelic.Agent.Api" Version="8.25.214" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />

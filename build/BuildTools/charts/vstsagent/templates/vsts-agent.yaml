@@ -17,6 +17,7 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      serviceAccountName: {{ .Chart.Name }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -31,15 +32,13 @@ spec:
             value: {{ .vstsPool | default "kubernetes-vsts-agents" }}
           - name: VSTS_AGENT
             value: {{ .vstsAgentName | default "$HOSTNAME" }}
-          - name: VSTS_WORK
-            value: {{ .vstsWorkspace | default "/workspace" }}
           {{- end }}
         volumeMounts:
           - name: docker-socket
             mountPath: /var/run/docker.sock
             readOnly: false
-          - name: workspace
-            mountPath: /workspace
+          # - name: workspace
+          #   mountPath: /workspace
       volumes:
         - name: docker-socket
           hostPath:
@@ -56,12 +55,3 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
     {{- end }}
-  volumeClaimTemplates:
-  - metadata:
-      name: workspace
-    spec:
-      accessModes: [ ReadWriteOnce ]
-      storageClassName: gp-west-2b-retain
-      resources:
-        requests:
-          storage: {{ .Values.resources.disk | default "50Gi" | quote }}
