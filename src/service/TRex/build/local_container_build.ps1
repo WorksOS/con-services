@@ -13,7 +13,7 @@ $trexComponents = (
     "Reports",
     "Gateway",
     "MutableGateway",
-    "Webtools",
+#    "Webtools",
     "Utils"
 )
 
