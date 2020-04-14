@@ -25,7 +25,7 @@ namespace CCSS.Productivity3D.Preferences.Tests
       var userPref = new UserPrefKeyDataModel
       {
         KeyName = "some preference key",
-        PreferenceKeyUID = Guid.NewGuid(),
+        PreferenceKeyUID = Guid.NewGuid().ToString(),
         PreferenceJson = "some json string here",
         SchemaVersion = "1.0"
       };
@@ -33,7 +33,7 @@ namespace CCSS.Productivity3D.Preferences.Tests
       var result = AutoMapperUtility.Automapper.Map<UserPreferenceV1Result>(userPref);
       Assert.Equal(userPref.KeyName, result.PreferenceKeyName);
       Assert.Equal(userPref.PreferenceJson, result.PreferenceJson);
-      Assert.Equal(userPref.PreferenceKeyUID, result.PreferenceKeyUID);
+      Assert.Equal(userPref.PreferenceKeyUID, result.PreferenceKeyUID.ToString());
       Assert.Equal(userPref.SchemaVersion, result.SchemaVersion);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -45,12 +45,12 @@ namespace CCSS.Productivity3D.Preferences.Tests
       var prefKey = new PrefKeyDataModel
       {
         KeyName = "some preference key",
-        PreferenceKeyUID = Guid.NewGuid(),
+        PreferenceKeyUID = Guid.NewGuid().ToString(),
       };
 
       var result = AutoMapperUtility.Automapper.Map<PreferenceKeyV1Result>(prefKey);
       Assert.Equal(prefKey.KeyName, result.PreferenceKeyName);
-      Assert.Equal(prefKey.PreferenceKeyUID, result.PreferenceKeyUID);
+      Assert.Equal(prefKey.PreferenceKeyUID, result.PreferenceKeyUID.ToString());
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }

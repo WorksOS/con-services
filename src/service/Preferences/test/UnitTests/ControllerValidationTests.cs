@@ -26,7 +26,7 @@ namespace CCSS.Productivity3D.Preferences.Tests
       var userPrefDatabase = new UserPrefKeyDataModel
       {
         KeyName = keyName,
-        PreferenceKeyUID = Guid.NewGuid(),
+        PreferenceKeyUID = Guid.NewGuid().ToString(),
         PreferenceJson = "some json",
         SchemaVersion = "1.0"
       };
@@ -40,7 +40,7 @@ namespace CCSS.Productivity3D.Preferences.Tests
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
       Assert.Equal(userPrefDatabase.KeyName, result.PreferenceKeyName);
-      Assert.Equal(userPrefDatabase.PreferenceKeyUID, result.PreferenceKeyUID);
+      Assert.Equal(userPrefDatabase.PreferenceKeyUID, result.PreferenceKeyUID.ToString());
       Assert.Equal(userPrefDatabase.PreferenceJson, result.PreferenceJson);
       Assert.Equal(userPrefDatabase.SchemaVersion, result.SchemaVersion);
     }
@@ -79,11 +79,11 @@ namespace CCSS.Productivity3D.Preferences.Tests
     {
       const string keyName = "some key";
       var userUid = Guid.NewGuid();
-
+      var prefKeyUid = Guid.NewGuid();
       var userPrefDatabase = new UserPrefKeyDataModel
       {
         KeyName = keyName,
-        PreferenceKeyUID = Guid.NewGuid(),
+        PreferenceKeyUID = prefKeyUid.ToString(),
         PreferenceJson = "some json",
         SchemaVersion = "1.0"
       };
@@ -94,7 +94,7 @@ namespace CCSS.Productivity3D.Preferences.Tests
       var request = new UpsertUserPreferenceRequest
       {
         PreferenceJson = "some new json",
-        PreferenceKeyUID = userPrefDatabase.PreferenceKeyUID,
+        PreferenceKeyUID = prefKeyUid,
         PreferenceKeyName = userPrefDatabase.KeyName,
         SchemaVersion = userPrefDatabase.SchemaVersion,
         TargetUserUID = userUid

@@ -73,7 +73,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
       var userPref = new UserPrefKeyDataModel
       {
         KeyName = keyName,
-        PreferenceKeyUID = prefEvent.PreferenceKeyUID.Value,
+        PreferenceKeyUID = prefEvent.PreferenceKeyUID.Value.ToString(),
         PreferenceJson = prefEvent.PreferenceJson,
         SchemaVersion = prefEvent.SchemaVersion
       };

@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using VSS.VisionLink.Interfaces.Events.Preference.Interfaces;
 using PrefKeyDataModel = CCSS.Productivity3D.Preferences.Abstractions.Models.Database.PreferenceKey;
-using UserPrefDataModel = CCSS.Productivity3D.Preferences.Abstractions.Models.Database.UserPreference;
 using UserPrefKeyDataModel = CCSS.Productivity3D.Preferences.Abstractions.Models.Database.UserPreferenceKey;
 
 namespace CCSS.Productivity3D.Preferences.Abstractions.Interfaces

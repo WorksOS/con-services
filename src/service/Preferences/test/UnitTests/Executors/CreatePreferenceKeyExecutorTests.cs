@@ -34,7 +34,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
       var prefKeyDatabase = new PrefKeyDataModel
       {
         KeyName = keyName,
-        PreferenceKeyUID = Guid.NewGuid(),
+        PreferenceKeyUID = Guid.NewGuid().ToString(),
         PreferenceKeyID = 12345
       };
       mockPrefRepo.Setup(p => p.GetPreferenceKey(null, keyName))
@@ -66,7 +66,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
       var prefKeyDatabase = new PrefKeyDataModel
       {
         KeyName = "some key",
-        PreferenceKeyUID = keyUid,
+        PreferenceKeyUID = keyUid.ToString(),
         PreferenceKeyID = 12345
       };
       mockPrefRepo.Setup(p => p.GetPreferenceKey(keyUid, null))
@@ -111,7 +111,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
       var prefKeyDatabase = new PrefKeyDataModel
       {
         KeyName = keyName,
-        PreferenceKeyUID = keyUid,
+        PreferenceKeyUID = keyUid.ToString(),
         PreferenceKeyID = 12345
       };
       mockPrefRepo.Setup(p => p.GetPreferenceKey(keyUid, keyName))

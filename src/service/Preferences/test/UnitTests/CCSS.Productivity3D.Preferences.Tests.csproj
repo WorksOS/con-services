@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
     <ProjectReference Include="..\..\Clients\CCSS.Productivity3D.Preferences.Repository\CCSS.Productivity3D.Preferences.Repository.csproj" />
     <ProjectReference Include="..\..\src\CCSS.Productivity3D.Preferences.Common\CCSS.Productivity3D.Preferences.Common.csproj" />
     <ProjectReference Include="..\..\src\CCSS.Productivity3D.Preferences.WebApi\CCSS.Productivity3D.Preferences.WebApi.csproj" />

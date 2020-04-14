@@ -8,13 +8,12 @@ using MySql.Data.MySqlClient;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Repositories;
 using VSS.Serilog.Extensions;
-using VSS.VisionLink.Interfaces.Events.Preference.Interfaces;
+using VSS.VisionLink.Interfaces.Events.Preference;
 using Serilog;
-
 using Dapper;
 using System.Linq;
-using VSS.VisionLink.Interfaces.Events.Preference;
 using VSS.ConfigurationStore;
+using VSS.VisionLink.Interfaces.Events.Preference.Interfaces;
 
 namespace RepositoryTests
 {
