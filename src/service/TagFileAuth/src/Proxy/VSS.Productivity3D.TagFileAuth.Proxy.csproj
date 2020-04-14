@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
