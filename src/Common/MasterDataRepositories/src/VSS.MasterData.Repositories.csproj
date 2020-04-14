@@ -30,7 +30,7 @@
     <ProjectReference Include="..\..\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
+    <ProjectReference Include="..\..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -6,7 +6,7 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace IntegrationTests.ExecutorTests

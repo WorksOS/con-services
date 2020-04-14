@@ -49,10 +49,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// LoggerFactory factory for use by executor
     /// </summary>
     private readonly ILoggerFactory logger;
-    /// <summary>
-    /// Proxy for getting geofences from master data. Used to get boundary for Raptor using given geofenceUid.
-    /// </summary>
-    private readonly IGeofenceProxy geofenceProxy;
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from
@@ -72,18 +68,15 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <summary>
     /// Constructor with dependency injection
     /// </summary>
-    /// <param name="geofenceProxy">Proxy client for getting geofences for boundaries</param>
     /// <param name="logger">LoggerFactory</param>
-    /// <param name="raptorClient">Raptor client</param>
     /// <param name="configStore">Configuration Store</param>
     /// <param name="trexCompactionDataProxy">Trex Gateway production data proxy</param>
-    public CCATileController(IGeofenceProxy geofenceProxy, ILoggerFactory logger,
+    public CCATileController(ILoggerFactory logger,
 #if RAPTOR
       IASNodeClient raptorClient, 
 #endif
       IConfigurationStore configStore, ITRexCompactionDataProxy trexCompactionDataProxy)
     {
-      this.geofenceProxy = geofenceProxy;
       this.logger = logger;
       log = logger.CreateLogger<CCATileController>();
 #if RAPTOR
@@ -106,7 +99,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="width">Width of the requested CCA data tile.</param>
     /// <param name="height">Height of the requested CCA data tile.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
-    /// <param name="geofenceUid">Geofence boundary unique identifier.</param>
     /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     [ProjectVerifier]
@@ -123,12 +115,12 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       [FromQuery] ushort width,
       [FromQuery] ushort height,
       [FromQuery] int? liftId = null,
-      [FromQuery] Guid? geofenceUid = null,
+      // no longer supported in WorksOS as no geofenceService [FromQuery] Guid? geofenceUid = null,
       [FromQuery] Guid? assetUid = null)
     {
       log.LogInformation("Get: " + Request.QueryString);
 
-      var request = await CreateAndValidateRequest(projectId, null, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
+      var request = await CreateAndValidateRequest(projectId, null, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, assetUid);
 
       return await GetCCADataTile(request);
     }
@@ -147,7 +139,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     /// <param name="width">Width of the requested CCA data tile.</param>
     /// <param name="height">Height of the requested CCA data tile.</param>
     /// <param name="liftId">Lift identifier of the requested CCA data.</param>
-    /// <param name="geofenceUid">Geofence boundary unique identifier.</param>
     /// <param name="assetUid">TRex's machine identifier.</param>
     /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request suceeds. If the size of a pixel in the rendered tile coveres more than 10.88 meters in width or height, then the pixel will be rendered in a 'representational style' where black (currently, but there is a work item to allow this to be configurable) is used to indicate the presense of data. Representational style rendering performs no filtering what so ever on the data.10.88 meters is 32 (number of cells across a subgrid) * 0.34 (default width in meters of a single cell)</returns>
     [ProjectVerifier]
@@ -165,13 +156,13 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       [FromQuery] ushort width,
       [FromQuery] ushort height,
       [FromQuery] int? liftId = null,
-      [FromQuery] Guid? geofenceUid = null,
+      // no longer supported in WorksOS as no geofenceService [FromQuery] Guid? geofenceUid = null,
       [FromQuery] Guid? assetUid = null
     )
     {
       log.LogInformation("Get: " + Request.QueryString);
       long projectId = await ((RaptorPrincipal) User).GetLegacyProjectId(projectUid);
-      var request = await CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, geofenceUid, assetUid);
+      var request = await CreateAndValidateRequest(projectId, projectUid, assetId, machineName, isJohnDoe, startUtc, endUtc, bbox, width, height, liftId, assetUid);
 
       return await GetCCADataTile(request);
     }
@@ -214,7 +205,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ushort width,
       ushort height,
       int? liftId,
-      Guid? geofenceUid,
       Guid? assetUid)
     {
       if (liftId == 0)
@@ -231,6 +221,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
             "BBOX parameter must contain 4 coordinates!"));
       }
 
+      /*** no longer supported in WorksOS as no geofenceService
       List<WGSPoint> geometry = null;
       if (geofenceUid.HasValue)
       {
@@ -242,13 +233,14 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
 
         geometry = CommonConverters.GeometryToPoints(geometryWKT).ToList();
       }
+      ***/
 
       var filter = FilterResult.CreateFilterForCCATileRequest
       (
         startUtc,
         endUtc,
         new List<long> { assetId },
-        geometry,
+        null,
         liftId.HasValue ? FilterLayerMethod.TagfileLayerNumber : FilterLayerMethod.None,
         liftId,
         new List<MachineDetails> { new MachineDetails(assetId, machineName, isJohnDoe, assetUid) }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Events.MasterData.Models
 {
   public class CreateUserPreferencePayload
   {

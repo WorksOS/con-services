@@ -63,12 +63,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // to assetMatch on VSS assets
       var assetMatches = new List< KeyValuePair<Guid, long> > { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, assetResolverProxy: assetProxy.Object,
+          trexCompactionDataProxy: tRexProxy.Object, deviceProxy: deviceProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
@@ -227,12 +227,12 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, assetResolverProxy: assetProxy.Object,
+          trexCompactionDataProxy: tRexProxy.Object, deviceProxy: deviceProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;

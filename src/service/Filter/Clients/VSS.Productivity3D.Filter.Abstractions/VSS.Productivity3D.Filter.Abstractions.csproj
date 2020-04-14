@@ -11,7 +11,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
     <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
   </ItemGroup>

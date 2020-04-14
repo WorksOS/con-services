@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
 using VSS.TRex.Gateway.Common.Abstractions;
@@ -23,7 +23,7 @@ namespace VSS.Productivity3D.Common.Interfaces
       IConfigurationStore configStore = null, IFileRepository fileRepo = null,
       ITileGenerator tileGenerator = null, List<FileData> fileList = null, ICompactionProfileResultHelper profileResultHelper = null, 
       ITransferProxy transferProxy = null, ITRexTagFileProxy tRexTagFileProxy = null, ITRexConnectedSiteProxy tRexConnectedSiteProxy = null, ITRexCompactionDataProxy trexCompactionDataProxy = null,
-      IAssetResolverProxy assetResolverProxy = null, IDictionary<string, string> customHeaders = null, string customerUid = null)
+      IDeviceProxy deviceProxy = null, IDictionary<string, string> customHeaders = null, string customerUid = null)
       where TExecutor : RequestExecutorContainer, new()
     {
       ILogger log = null;
@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.Common.Interfaces
         tRexTagFileProxy,
         tRexConnectedSiteProxy,
         trexCompactionDataProxy,
-        assetResolverProxy,
+        deviceProxy,
         customHeaders,
         customerUid);
       

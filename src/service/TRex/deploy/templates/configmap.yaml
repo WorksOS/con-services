@@ -1,0 +1,14 @@
+{{- $filename := printf "%s.txt" .Values.environment -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "trex.config" . }}
+  labels:
+    app: {{ template "trex.deployname" . }}
+    component: {{ template "trex.deployname" . }}-configmap
+    chart: {{ template "trex.chart" . }}
+data:
+  {{ range .Files.Lines $filename }}
+  {{ . }}{{ end }}
+

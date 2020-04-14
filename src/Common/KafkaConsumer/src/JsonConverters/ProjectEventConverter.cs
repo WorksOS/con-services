@@ -1,8 +1,8 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 

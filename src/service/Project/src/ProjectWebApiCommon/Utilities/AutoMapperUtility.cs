@@ -1,10 +1,11 @@
 ﻿using System;
 using AutoMapper;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
@@ -129,7 +130,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
           cfg.CreateMap<AccountResponseModel, CustomerData>()
             .ForMember(dest => dest.uid, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
-            .ForMember(dest => dest.type, opt => opt.Ignore())
+            .ForMember(dest => dest.type, opt => opt.MapFrom(c => CustomerType.Customer.ToString()))
             ;
         }
       );

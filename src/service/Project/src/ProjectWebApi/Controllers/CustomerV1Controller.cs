@@ -3,12 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -33,7 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets a list of customers for the user in user token. 
     /// </summary>
-    [Route("api/v1/customer/all")]
+    [Route("api/v1/Customers/me")]
     [HttpGet]
     public async Task<CustomerV1ListResult> GetCustomersForMe()
     {
@@ -41,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var customers = await cwsAccountClient.GetMyAccounts(new Guid(userId));
       return new CustomerV1ListResult
       {
-        customers = customers.Accounts.Select(c =>
+        Customers = customers.Accounts.Select(c =>
             AutoMapperUtility.Automapper.Map<CustomerData>(c))
             .ToList()
       };
@@ -86,9 +87,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     //}
 
     /// <summary>
-    /// Gets the total devices licensed for this customer, NOT from the user token. 
+    /// Gets the total devices licensed for this customer. 
+    ///   Also triggers a lazy load of devices from cws, so that shortRaptorAssetId is generated.
     /// </summary>
-    [Route("api/v1/customer/user")]
+    [Route("api/v1/customer/license/{customerUid}")]
     [HttpGet]
     public async Task<CustomerV1DeviceLicenseResult> GetCustomerDeviceLicense(string customerUid)
     {
@@ -105,6 +107,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       foreach (var device in deviceList.Devices)
       {
         // if it exists, does nothing but return a count of 0
+        //  don't store customerUid, so that we don't need to move the device if ownership changes.
+        //      may ned to change this is we ever need a time-component to ownership
         // todoMaverick do we care what the status is?
         await DeviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(device));
       }

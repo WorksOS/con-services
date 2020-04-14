@@ -214,11 +214,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
-      var startEndDate = await GetDateRange(project.LegacyProjectId, filter);
+      var startEndDate = await GetDateRange(project.ShortRaptorProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(project.LegacyProjectId)
+          .ProjectId(project.ShortRaptorProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings.Result)
           .Filter(filter))
@@ -298,11 +298,11 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       var project = projectTask.Result;
       var filter = filterTask.Result;
 
-      var startEndDate = await GetDateRange(project.LegacyProjectId, filter);
+      var startEndDate = await GetDateRange(project.ShortRaptorProjectId, filter);
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(project.LegacyProjectId)
+          .ProjectId(project.ShortRaptorProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings.Result)
           .Filter(filter))
@@ -381,7 +381,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(project.Result.LegacyProjectId)
+          .ProjectId(project.Result.ShortRaptorProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings.Result)
           .Filter(filter.Result))

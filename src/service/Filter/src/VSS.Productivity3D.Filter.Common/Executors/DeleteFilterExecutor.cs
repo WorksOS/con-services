@@ -12,7 +12,7 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Executors

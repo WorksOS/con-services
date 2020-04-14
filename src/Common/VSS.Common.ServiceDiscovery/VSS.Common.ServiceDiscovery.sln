@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Models", "..
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Common.Cache.MemoryCache", "..\VSS.Common.Cache.MemoryCache\src\VSS.Common.Cache.MemoryCache.csproj", "{5DE9AE61-5C43-4509-BE83-FF62C11139F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{264A0C35-1D9A-4293-9012-FD914F9534F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{264A0C35-1D9A-4293-9012-FD914F9534F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

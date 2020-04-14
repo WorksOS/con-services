@@ -70,7 +70,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.3DAssetM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{8439ED55-CED4-4160-AB12-3D50E5A2A2B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{4B604EFD-01D0-4B43-B0B7-4EE0E3B2018C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{D3A9C19A-39BA-4806-90F6-E3D6B6C02357}"
 EndProject

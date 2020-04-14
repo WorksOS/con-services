@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Authentication.JWT;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -69,7 +70,11 @@ namespace VSS.WebApi.Common
         var customerUid = string.Empty;
         string customerName;
 
+        // todoMaverick temporary to look into user info available.
+        log.LogDebug($"{nameof(Invoke)}: TIDAuth context Headers {JsonConvert.SerializeObject(context.Request.Headers, Formatting.None)}");
+        
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
+        log.LogDebug($"{nameof(Invoke)}: TIDAuth authorization {JsonConvert.SerializeObject(authorization)}");
 
         // If no authorization header found, nothing to process further
         // note keep these result messages vague (but distinct): https://www.gnucitizen.org/blog/username-enumeration-vulnerabilities/
@@ -83,6 +88,7 @@ namespace VSS.WebApi.Common
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
+          log.LogDebug($"{nameof(Invoke)}: TIDAuth authorization {JsonConvert.SerializeObject(jwtToken)}");
           isApplicationContext = jwtToken.IsApplicationToken;
           applicationName = jwtToken.ApplicationName;
           userEmail = isApplicationContext ? applicationName : jwtToken.EmailAddress;
@@ -134,8 +140,8 @@ namespace VSS.WebApi.Common
           try
           {
             // todoMaverick do we need the get GetAccountForUser as isApplicationContext never comes in here
-            // todoMaverick find out if the UserId in the JWT for WM (CWS) calls is the Guid or the TRN. 
-            // If TRN need to extract the Guid here
+            // what format will userId be in when logged in as a WM user, I would expect a TRN rather than a Guid
+            log.LogDebug($"{nameof(Invoke)}: TIDAuth what are we getting here TRN/Guid? userUid {JsonConvert.SerializeObject(userUid)}");
             var customer = await accountClient.GetMyAccount(new Guid(userUid), new Guid(customerUid), customHeaders);
 
             if (customer == null)
@@ -150,7 +156,7 @@ namespace VSS.WebApi.Common
           catch (Exception e)
           {
             log.LogWarning(
-              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+              $"Unable to access the 'accountClient.GetMyAccount' Message: {e.Message}.");
             await SetResult("Failed authentication", context);
             return;
           }

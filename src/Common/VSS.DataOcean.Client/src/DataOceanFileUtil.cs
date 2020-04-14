@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using VSS.Common.Abstractions.Extensions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.DataOcean.Client
 {

@@ -122,7 +122,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.Project.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Authentication.JWT", "..\..\Common\VSS.Authentication\VSS.Authentication.JWT\VSS.Authentication.JWT.csproj", "{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{1FA95274-85C2-4F4C-9973-B798E4870B9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{1FA95274-85C2-4F4C-9973-B798E4870B9B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.CWS.Client", "..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj", "{2FB56844-5536-4239-B382-9720EACC8E88}"
 EndProject

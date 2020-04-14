@@ -16,6 +16,7 @@ using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Factories.ProductionData;
@@ -127,7 +128,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var result = await WithServiceExceptionTryExecuteAsync(() =>
         boundingBoxService.GetAlignmentStationRange(
-          new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = (int)projectId.Result },
+          new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = (int)projectId.Result },
           alignmentDescriptor.Result,
           CustomHeaders));
 
@@ -228,7 +229,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       };
 
       //In case we have rogue tag files distorting the extents, restrict to project boundary
-      var projectPoints = CommonConverters.GeometryToPoints(project.ProjectGeofenceWKT).ToList();
+      var projectPoints = CommonConverters.GeometryToPoints(project.ProjectTimeZoneIana).ToList();
       var projMinLat = projectPoints.Min(p => p.Lat);
       var projMinLng = projectPoints.Min(p => p.Lon);
       var projMaxLat = projectPoints.Max(p => p.Lat);

@@ -1,7 +1,7 @@
 ﻿using System;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.Visionlink.Interfaces.Core.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Events.MasterData.Models
 {
   public class CreateFilterEvent : IFilterEvent
   {

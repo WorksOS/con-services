@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.MasterData.Repositories
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Pegasus.Client.Models", "..\Pegasus\VSS.Pegasus.Client.Models\VSS.Pegasus.Client.Models.csproj", "{7C681BD5-3B76-4D82-A33D-490119B14C07}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{01F3F292-F472-42D7-8DC0-36A619C03902}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{01F3F292-F472-42D7-8DC0-36A619C03902}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.ConnectedSite.Gateway.Abstractions", "..\..\service\TRex\src\interfaces\VSS.TRex.ConnectedSite.Gateway.Abstractions\VSS.TRex.ConnectedSite.Gateway.Abstractions.csproj", "{7066E839-661C-46AB-AB4A-A4DE599D411A}"
 EndProject

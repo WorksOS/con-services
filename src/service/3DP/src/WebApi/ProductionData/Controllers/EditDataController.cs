@@ -9,13 +9,11 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
 using VSS.Productivity3D.Common;
 using VSS.Productivity3D.Common.Filters.Authentication;
 using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
-using VSS.Productivity3D.WebApi.Models.Compaction.Helpers;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Contracts;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Executors;
 using VSS.Productivity3D.WebApi.Models.ProductionData.Models;
@@ -39,7 +37,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IConfigurationStore configStore;
     private readonly IFileImportProxy fileImportProxy;
     private readonly ITRexCompactionDataProxy tRexCompactionDataProxy;
-    private readonly IAssetResolverProxy assetResolverProxy;
 
     private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders(true);
     private string CustomerUid => ((RaptorPrincipal)Request.HttpContext.User).CustomerUid;
@@ -54,8 +51,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       ILoggerFactory logger,
       IConfigurationStore configStore,
       IFileImportProxy fileImportProxy,
-      ITRexCompactionDataProxy tRexCompactionDataProxy, 
-      IAssetResolverProxy assetResolverProxy)
+      ITRexCompactionDataProxy tRexCompactionDataProxy)
     {
 #if RAPTOR
       this.raptorClient = raptorClient;
@@ -65,7 +61,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
       this.configStore = configStore;
       this.fileImportProxy = fileImportProxy;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
-      this.assetResolverProxy = assetResolverProxy;
     }
 
     /// <summary>
@@ -85,7 +80,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         tagProcessor,
 #endif
         configStore,
-        assetResolverProxy: assetResolverProxy,
         trexCompactionDataProxy: tRexCompactionDataProxy
         ).ProcessAsync(request) as EditDataResult;
     }
@@ -119,7 +113,6 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
         tagProcessor,
 #endif
         configStore,
-        assetResolverProxy: assetResolverProxy,
         trexCompactionDataProxy: tRexCompactionDataProxy
         ).ProcessAsync(request);
     }

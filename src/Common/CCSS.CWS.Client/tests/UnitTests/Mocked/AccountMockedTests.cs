@@ -11,7 +11,7 @@ using Xunit;
 
 namespace CCSS.CWS.Client.UnitTests.Mocked
 {
-  public class TRNHelperTests : BaseTestClass
+  public class AccountMockedTests : BaseTestClass
   {
     protected override IServiceCollection SetupTestServices(IServiceCollection services)
     {
@@ -51,7 +51,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Assert.NotNull(result);
         Assert.False(result.HasMore);
         Assert.NotNull(result.Accounts);
-        Assert.Equal(1, result.Accounts.Count);
+        Assert.Single(result.Accounts);
         Assert.Equal(TRNHelper.ExtractGuidAsString(expectedId), result.Accounts[0].Id);
         Assert.Equal(expectedName, result.Accounts[0].Name);
         return true;

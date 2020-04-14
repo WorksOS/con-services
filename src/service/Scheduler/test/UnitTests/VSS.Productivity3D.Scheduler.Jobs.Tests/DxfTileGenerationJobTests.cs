@@ -20,7 +20,7 @@ using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob;
 using VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.Models;
 using VSS.Productivity3D.Scheduler.Models;
 using VSS.Serilog.Extensions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 

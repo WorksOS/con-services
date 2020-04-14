@@ -1,4 +1,5 @@
 # An example of a Kubernetes configuration for Ignite pods deployment.
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -41,7 +42,10 @@ spec:
 
         resources:
 {{ toYaml .Values.qmeshServer.resources | indent 10 }}
-        
+        envFrom:
+        - configMapRef:
+            name: {{ template "trex.config" . }}
+            
         command: ["dotnet"]
         args: ["VSS.TRex.Server.QuantizedMesh.dll"]
 

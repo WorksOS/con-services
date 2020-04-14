@@ -16,6 +16,7 @@ using VSS.Productivity3D.Common.Filters.Authentication.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
 {
@@ -82,7 +83,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID()}
       };
 
-      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
       var contextHeaders = new Dictionary<string, string>();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -118,7 +119,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectUid = projectUid }}
       };
 
-      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
       var contextHeaders = new Dictionary<string, string>();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -156,7 +157,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectId = legacyProjectId } }
       };
 
-      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
       var contextHeaders = new Dictionary<string, string>();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -193,7 +194,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID { ProjectId = legacyProjectId } }
       };
 
-      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = legacyProjectId };
+      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = legacyProjectId };
       var contextHeaders = new Dictionary<string, string>();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -230,7 +231,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectUid = projectUid } }
       };
 
-      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = new Random().Next() };
+      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = new Random().Next() };
       var contextHeaders = new Dictionary<string, string>();
 
       var mockProxy = new Mock<IProjectProxy>();
@@ -267,7 +268,7 @@ namespace VSS.Productivity3D.WebApiTests.Common.Filters.Authentication
         {"request", new ProjectID{ProjectUid = projectUid } }
       };
 
-      var projectData = new ProjectData { ProjectUid = projectUid.ToString(), LegacyProjectId = legacyProjectId };
+      var projectData = new ProjectData { ProjectUID = projectUid.ToString(), ShortRaptorProjectId = legacyProjectId };
       var contextHeaders = new Dictionary<string, string>();
 
       var mockProxy = new Mock<IProjectProxy>();

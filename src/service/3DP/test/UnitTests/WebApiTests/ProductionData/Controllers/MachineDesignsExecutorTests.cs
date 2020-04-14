@@ -60,13 +60,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // for GetMachineIdsExecutor
       var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
       // GetAssetOnDesignPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignPeriodsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, assetResolverProxy: assetProxy.Object,
+          trexCompactionDataProxy: tRexProxy.Object, deviceProxy: deviceProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineDesignsExecutionResult;
@@ -121,13 +121,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // for GetMachineIdsExecutor
       var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
       // GetAssetOnDesignPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignPeriodsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, assetResolverProxy: assetProxy.Object,
+          trexCompactionDataProxy: tRexProxy.Object, deviceProxy: deviceProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
       var result = await executor.ProcessAsync(projectIds) as MachineDesignsExecutionResult;
       Assert.IsNotNull(result, "Result should not be null");
@@ -213,13 +213,13 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
         .ReturnsAsync(assetMatches);
 
       // GetAssetOnDesignPeriodsExecutor will call GetMachineIdsExecutor
       var executor = RequestExecutorContainerFactory
         .Build<GetAssetOnDesignPeriodsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, assetResolverProxy: assetProxy.Object,
+          trexCompactionDataProxy: tRexProxy.Object, deviceProxy: deviceProxy.Object,
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineDesignsExecutionResult;

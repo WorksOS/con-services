@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -6,8 +8,8 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Repositories;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Project.Repository
 {
@@ -121,6 +123,29 @@ namespace VSS.Productivity3D.Project.Repository
         , new { shortRaptorAssetId }
       )).FirstOrDefault();
     }
+
+    public async Task<List<Device>> GetDevices(IEnumerable<Guid> deviceUids)
+    {
+      var devicesArray = deviceUids.ToArray();
+      return (await QueryWithAsyncPolicy<Device>
+      (@"SELECT 
+               DeviceUID, ShortRaptorAssetId,  LastActionedUTC AS LastActionedUtc
+            FROM Device
+            WHERE DeviceUID IN @devices"
+      , new { devices = devicesArray })).ToList();
+    }
+
+    public async Task<List<Device>> GetDevices(IEnumerable<long> shortRaptorAssetIds)
+    {
+      var devicesArray = shortRaptorAssetIds.ToArray();
+      return (await QueryWithAsyncPolicy<Device>
+      (@"SELECT 
+                 DeviceUID, ShortRaptorAssetId,  LastActionedUTC AS LastActionedUtc
+            FROM Device
+            WHERE ShortRaptorAssetId IN @devices"
+      , new { devices = devicesArray })).ToList();
+    }
+
 
     #endregion
   }

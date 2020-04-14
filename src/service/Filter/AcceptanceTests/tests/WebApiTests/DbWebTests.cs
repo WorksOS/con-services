@@ -7,7 +7,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests
 {

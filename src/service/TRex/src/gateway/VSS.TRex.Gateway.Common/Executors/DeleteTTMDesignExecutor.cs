@@ -12,7 +12,7 @@ using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Types;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Gateway.Common.Executors
 {

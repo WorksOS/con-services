@@ -47,4 +47,8 @@
     <ProjectReference Include="..\..\..\Service\VSS.Productivity3D.3DAssetMgmt\VSS.Productivity3D.AssetMgmt3D.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="WebApiTests\" />
+  </ItemGroup>
+
 </Project>

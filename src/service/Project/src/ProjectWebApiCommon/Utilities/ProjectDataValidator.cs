@@ -13,8 +13,8 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Interfaces;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities

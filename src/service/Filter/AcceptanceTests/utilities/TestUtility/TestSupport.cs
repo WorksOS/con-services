@@ -6,7 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility
 {

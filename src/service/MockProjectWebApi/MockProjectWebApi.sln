@@ -27,7 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{DA964F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{2124B777-5DC4-498E-A970-FA7DBF38121B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{C9A5D011-C2CC-4AF2-9198-9CBE5092DE84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{C9A5D011-C2CC-4AF2-9198-9CBE5092DE84}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Asset Resolver Service", "Asset Resolver Service", "{3CC6F25F-2121-4170-9656-74A61F2742C7}"
 EndProject

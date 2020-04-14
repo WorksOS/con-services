@@ -23,7 +23,7 @@ using VSS.Tile.Service.Common.Filters;
 using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
@@ -36,9 +36,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Default constructor.
     /// </summary>
     public LineworkTileController(IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
-      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configStore,
+      IMapTileGenerator tileGenerator, IMemoryCache cache, IConfigurationStore configStore,
       IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
-      : base(productivity3DProxyCompactionTile, prefProxy, fileImportProxy, tileGenerator, geofenceProxy, cache, configStore, boundingBoxHelper, authn)
+      : base(productivity3DProxyCompactionTile, prefProxy, fileImportProxy, tileGenerator, cache, configStore, boundingBoxHelper, authn)
     {
       this.dataOceanClient = dataOceanClient;
     }

@@ -27,8 +27,7 @@ using VSS.Tile.Service.Common.Authentication;
 using VSS.Tile.Service.Common.Interfaces;
 using VSS.Tile.Service.Common.Models;
 using VSS.Tile.Service.Common.Services;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi.Controllers
@@ -39,7 +38,6 @@ namespace VSS.Tile.Service.WebApi.Controllers
     protected readonly IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile;
     protected readonly IFileImportProxy fileImportProxy;
     private readonly IMapTileGenerator tileGenerator;
-    protected readonly IGeofenceProxy geofenceProxy;
     private ILogger<T> logger;
     private IServiceExceptionHandler serviceExceptionHandler;
     protected readonly IConfigurationStore configStore;
@@ -69,14 +67,13 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// Default constructor.
     /// </summary>
     protected BaseController(IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy, 
-      IMapTileGenerator tileGenerator, IGeofenceProxy geofenceProxy, IMemoryCache cache, IConfigurationStore configurationStore,
+      IMapTileGenerator tileGenerator, IMemoryCache cache, IConfigurationStore configurationStore,
       IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
     {
       this.productivity3DProxyCompactionTile = productivity3DProxyCompactionTile;
       this.prefProxy = prefProxy;
       this.fileImportProxy = fileImportProxy;
       this.tileGenerator = tileGenerator;
-      this.geofenceProxy = geofenceProxy;
       tileCache = cache;
       tileCacheExpiration = GetCacheExpiration(configurationStore);
       configStore = configurationStore;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Abstractions.Models
 {

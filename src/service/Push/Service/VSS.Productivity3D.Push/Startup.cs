@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -46,7 +47,7 @@ namespace VSS.Productivity3D.Push
      services.AddMvc();
 
       // Required for authentication
-      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, PushResult>();

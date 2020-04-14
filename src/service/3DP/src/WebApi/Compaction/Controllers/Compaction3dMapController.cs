@@ -291,7 +291,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
       // Get the terrain mesh
       var exportRequest = requestFactory.Create<ExportRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(project.LegacyProjectId)
+          .ProjectId(project.ShortRaptorProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings.Result)
           .Filter(filter.Result))
@@ -522,7 +522,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
         tileService.GetProductionDataTile(projectSettings,
           projectSettingsColors.Result,
           filter,
-          project.Result.LegacyProjectId,
+          project.Result.ShortRaptorProjectId,
           projectUid,
           mode,
           4096,

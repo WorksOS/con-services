@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Utilities.AutoMapper.Profiles
 {

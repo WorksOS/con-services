@@ -1,5 +1,6 @@
 ﻿using System;
 using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -90,9 +91,10 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
-      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
-      services.AddTransient<ICwsProjectClient, CwsProjectClient>();
-      services.AddTransient<ICwsDeviceClient, CwsDeviceClient>();
+      // todoMaverick move to real endpoints when available
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+      services.AddTransient<ICwsProjectClient, MockCwsProjectClient>();
+      services.AddTransient<ICwsDeviceClient, MockCwsDeviceClient>();
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

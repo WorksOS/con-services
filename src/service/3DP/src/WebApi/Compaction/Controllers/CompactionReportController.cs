@@ -194,7 +194,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
 
       var reportRequest = requestFactory.Create<CompactionReportStationOffsetRequestHelper>(r => r
           .ProjectUid(projectUid)
-          .ProjectId(project.Result.LegacyProjectId)
+          .ProjectId(project.Result.ShortRaptorProjectId)
           .Headers(CustomHeaders)
           .ProjectSettings(projectSettings.Result)
           .Filter(filter.Result))

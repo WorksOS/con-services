@@ -3,7 +3,7 @@ using MasterDataModels = VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using VSS.Visionlink.Interfaces.Core.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.WebApi.Models.Compaction.Models
 {
