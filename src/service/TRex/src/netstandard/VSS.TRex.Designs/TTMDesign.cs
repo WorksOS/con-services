@@ -1029,5 +1029,23 @@ namespace VSS.TRex.Designs
 
       return boundary;
     }
+
+    public override bool RemoveFromStorage(Guid siteModelUid, string fileName)
+    {
+      try
+      {
+        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
+        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Exception RemoveFromStorage");
+        return false;
+      }
+      return true;
+    }
+
   }
 }

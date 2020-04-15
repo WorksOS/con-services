@@ -552,3 +552,4 @@ $RECYCLE.BIN/
 /src/service/MockProjectWebApi/RunMe.bat
 /src/service/TRex/src/gateway/VSS.TRex.Gateway.WebApi/RunMe.bat
 /src/service/TRex/src/tools/VSS.TRex.Webtools/RunMe.bat
+src/service/TRex/src/tools/VSS.TRex.Webtools/ignite/README.txt
