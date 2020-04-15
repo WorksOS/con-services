@@ -5,9 +5,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using VSS.Productivity3D.FileAccess.WebAPI;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
-using Startup = VSS.Productivity3D.FileAccess.WebAPI.Startup;
 
 namespace FileAccess.IntegrationTests
 {
