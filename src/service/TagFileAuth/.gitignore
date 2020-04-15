@@ -207,4 +207,4 @@ test/UnitTests/MockClasses/TestData/ZeroAssets.json
 
 # exclude deploy folder
 Deploy_Production/
-deploy/ExecutorTests
+deploy/WebApiTests
