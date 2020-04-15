@@ -6,6 +6,7 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.Models.Models.Designs;
 using VSS.Productivity3D.Models.ResultHandling.Coords;
 using VSS.Productivity3D.Models.ResultHandling.Designs;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.WebApi.Models.MapHandling;
 
 namespace VSS.Productivity3D.WebApi.Models.Interfaces

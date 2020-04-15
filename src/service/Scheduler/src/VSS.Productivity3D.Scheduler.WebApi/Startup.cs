@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using CCSS.CWS.Client.MockClients;
 using Hangfire;
 using Hangfire.MySql;
 using Microsoft.AspNetCore.Builder;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
@@ -18,8 +20,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Pegasus.Client;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
-using VSS.Productivity3D.AssetMgmt3D.Proxy;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
@@ -76,7 +76,7 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, SchedulerErrorCodesProvider>();
@@ -96,12 +96,12 @@ namespace VSS.Productivity3D.Scheduler.WebApi
       services.AddTransient<IFleetSummaryProxy, FleetSummaryProxy>();
       services.AddTransient<IFleetAssetSummaryProxy, FleetAssetSummaryProxy>();
       services.AddTransient<IFleetAssetDetailsProxy, FleetAssetDetailsProxy>();
-      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<IProjectProxy, ProjectV6Proxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
       services.AddTransient<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITpaasEmailProxy, TpaasEmailProxy>();
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
-      services.AddTransient<IAssetResolverProxy, AssetResolverProxy>();
+      services.AddTransient<IDeviceProxy, DeviceV1Proxy>();
       services.AddSingleton<IJobRegistrationManager, JobRegistrationManager>();
       services.AddSingleton<IHangfireMetricScheduler, HangfireMetricScheduler>();
       services.AddTransient<IExportEmailGenerator, ExportEmailGenerator>();

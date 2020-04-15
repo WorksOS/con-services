@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.MasterData.Repositories
 {
@@ -32,7 +33,42 @@ namespace VSS.MasterData.Repositories
       }
 
       return boundaryWkt;
-    } 
+    }
+
+    /// <summary>
+    /// Map a 3dp project wkt boundary to the format required for cws Project API
+    /// </summary>
+    /// <param name="boundary"></param>
+    /// <returns></returns>
+    public static ProjectBoundary MapProjectBoundary(string boundary)
+    {
+      if (string.IsNullOrEmpty(boundary))
+        return null;
+
+      // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
+      const string polygonStr = "POLYGON";
+      if (!boundary.Contains(polygonStr))
+        {
+          boundary =
+            boundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
+          boundary =
+            string.Concat(polygonStr + "((", boundary, "))");
+        }
+        //Polygon must start and end with the same point
+
+        var boundaryWkt = boundary.ParseGeometryData().ClosePolygonIfRequired();
+      var pointsAsDoubleList = new List<double[,]>();
+      foreach (var point in boundaryWkt)
+      {       
+        pointsAsDoubleList.Add(item: new double[,] { { point.X, point.Y } });
+      }
+
+      var cwsProjectBoundary = new ProjectBoundary();
+      cwsProjectBoundary.type = "Polygon";
+      cwsProjectBoundary.coordinates = pointsAsDoubleList;     
+
+      return cwsProjectBoundary;
+    }
   }
 
   internal static class ExtensionString

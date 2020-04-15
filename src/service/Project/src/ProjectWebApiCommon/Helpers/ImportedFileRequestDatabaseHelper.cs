@@ -13,9 +13,9 @@ using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
-using Filter=VSS.Productivity3D.Filter.Abstractions.Models.Filter;
+using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -102,8 +102,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return existing;
     }
 
-  public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid,
-      string userId, IProjectRepository projectRepo)
+    public static async Task<List<ActivatedFileDescriptor>> GetImportedFileProjectSettings(string projectUid,
+        string userId, IProjectRepository projectRepo)
     {
       List<ActivatedFileDescriptor> deactivatedFileList = null;
       var importFileSettings = await projectRepo
@@ -141,8 +141,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         FileUpdatedUtc = fileUpdatedUtc,
         ImportedBy = importedBy,
         SurveyedUTC = surveyedUtc,
-        ActionUTC = nowUtc, // aka importedUtc
-        ReceivedUTC = nowUtc,
+        ActionUTC = nowUtc, 
         ParentUID = parentUid,
         Offset = offset ?? 0
       };
@@ -186,8 +185,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
         ProjectUID = projectUid,
         ImportedFileUID = importedFileUid,
         DeletePermanently = deletePermanently,
-        ActionUTC = nowUtc, // aka importedDate
-        ReceivedUTC = nowUtc
+        ActionUTC = nowUtc
       };
 
       if (await projectRepo.StoreEvent(deleteImportedFileEvent).ConfigureAwait(false) == 1)
@@ -228,7 +226,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       updateImportedFileEvent.FileUpdatedUtc = fileUpdatedUtc;
       updateImportedFileEvent.ImportedBy = importedBy;
       updateImportedFileEvent.ActionUTC = nowUtc;
-      updateImportedFileEvent.ReceivedUTC = nowUtc;
 
       log.LogInformation(
         $"UpdateImportedFileInDb. UpdateImportedFileEvent: {JsonConvert.SerializeObject(updateImportedFileEvent)}");
@@ -253,8 +250,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         ProjectUID = projectUid,
         ImportedFileUID = importedFileUid,
-        ActionUTC = nowUtc,
-        ReceivedUTC = nowUtc
+        ActionUTC = nowUtc
       };
 
       if (await projectRepo.StoreEvent(undeleteImportedFileEvent).ConfigureAwait(false) == 1)
@@ -267,7 +263,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Get the list of filters for the project
     /// </summary>
-    public static async Task<List<Filter>> GetFilters(Guid projectUid, 
+    public static async Task<List<Filter>> GetFilters(Guid projectUid,
       IDictionary<string, string> customHeaders, IFilterServiceProxy filterServiceProxy)
     {
       var filterDescriptors = await filterServiceProxy.GetFilters(projectUid.ToString(), customHeaders);

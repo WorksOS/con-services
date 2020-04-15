@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -12,7 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -61,10 +60,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             importedFile.ImportedFileType == ImportedFileType.SurveyedSurface)
         {
           await ImportedFileRequestHelper.NotifyRaptorAddFile(
-            importedFile.LegacyProjectId, Guid.Parse(importedFile.ProjectUid.ToString()),
+            importedFile.ShortRaptorProjectId, importedFile.ProjectUid,
             importedFile.ImportedFileType, importedFile.DxfUnitsTypeId,
             importedFile.FileDescriptor, importedFile.ImportedFileId,
-            Guid.Parse(importedFile.ImportedFileUid.ToString()), false, log, customHeaders,
+            importedFile.ImportedFileUid, false, log, customHeaders,
             serviceExceptionHandler, productivity3dV2ProxyNotification,
             projectRepo);
         }
@@ -122,14 +121,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           importedFile.SurveyedUtc, existingImportedFile.MinZoomLevel, existingImportedFile.MaxZoomLevel,
           importedFile.FileCreatedUtc, importedFile.FileUpdatedUtc, userEmailAddress,
           log, serviceExceptionHandler, projectRepo);
-
-      var messagePayload = JsonConvert.SerializeObject(new { UpdateImportedFileEvent = updateImportedFileEvent });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
-        {
-            new KeyValuePair<string, string>(updateImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
-
+      
       var fileDescriptor = new ImportedFileDescriptorSingleResult(
         (await ImportedFileRequestDatabaseHelper.GetImportedFileList(importedFile.ProjectUid.ToString(), log, userId, projectRepo).ConfigureAwait(false))
         .ToImmutableList()

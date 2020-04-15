@@ -78,7 +78,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Types", "..\servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Serilog.Extensions", "LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj", "{74FA413C-B4A5-4DD4-BBFE-623D51554AF4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{03558ABB-DE65-441E-9DBA-E5B8C8A66F0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{03558ABB-DE65-441E-9DBA-E5B8C8A66F0D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{097EC302-9BE1-4619-B57E-42CEA8085EF8}"
 EndProject

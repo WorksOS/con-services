@@ -9,6 +9,8 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
@@ -83,7 +85,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           if (deleteImportedFile.ImportedFileType != ImportedFileType.ReferenceSurface)
           {
             await TccHelper.DeleteFileFromTCCRepository
-              (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid, deleteImportedFile.ImportedFileUid,
+              (deleteImportedFile.FileDescriptor, deleteImportedFile.ProjectUid.ToString(), deleteImportedFile.ImportedFileUid.ToString(),
                 log, serviceExceptionHandler, fileRepo)
               .ConfigureAwait(false);
 
@@ -126,13 +128,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           serviceExceptionHandler.ThrowServiceException(importedFileInternalResult.StatusCode, importedFileInternalResult.ErrorNumber, importedFileInternalResult.ResultCode, importedFileInternalResult.ErrorMessage1);
         }
       }
-
-      var messagePayload = JsonConvert.SerializeObject(new { DeleteImportedFileEvent = deleteImportedFileEvent });
-      producer.Send(kafkaTopicName,
-        new List<KeyValuePair<string, string>>
-        {
-          new KeyValuePair<string, string>(deleteImportedFileEvent.ImportedFileUID.ToString(), messagePayload)
-        });
 
       return new ContractExecutionResult();
     }

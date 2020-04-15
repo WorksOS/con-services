@@ -81,7 +81,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Trex Service", "Trex Servic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.TRex.Gateway.Common.Abstractions", "..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj", "{6BF125E2-632B-42C8-BAA9-AE5A2A3B3BAB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces.Core", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj", "{1994AE98-7A39-4156-B2AA-4F1789B7E221}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces", "..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj", "{1994AE98-7A39-4156-B2AA-4F1789B7E221}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Filter Service", "Filter Service", "{D12E5420-87DD-4246-857F-13225EAB430F}"
 EndProject

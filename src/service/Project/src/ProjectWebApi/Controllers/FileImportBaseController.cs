@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -16,7 +15,7 @@ using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.TRex.Gateway.Common.Abstractions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -25,7 +24,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportBaseController : BaseController<FileImportBaseController>
   {
-    protected ITransferProxy persistantTransferProxy;
+    protected ITransferProxy persistantTransferProxy; 
     protected IFilterServiceProxy filterServiceProxy;
     protected ITRexImportFileProxy tRexImportFileProxy;
 
@@ -42,9 +41,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    public FileImportBaseController(IKafka producer, IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportBaseController(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
-    : base (producer, configStore)
+    : base (configStore)
     {
       this.requestFactory = requestFactory;
 
@@ -142,7 +141,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         RequestExecutorContainerFactory
           .Build<UpsertProjectSettingsExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             customerUid, userId, headers: customHeaders,
-            producer: Producer, kafkaTopicName: KafkaTopicName,
             productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction, projectRepo: ProjectRepo)
           .ProcessAsync(projectSettingsRequest)
       ) as ProjectSettingsResult;

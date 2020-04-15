@@ -61,7 +61,7 @@ namespace VSS.WebApi.Common
             {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationFormUrlEncoded},
             {HeaderConstants.AUTHORIZATION, string.Format($"Basic {configuration.GetValueString("TPAAS_APP_TOKENKEYS")}")}
           };
-          TPaasOauthResult tPaasOauthResult; 
+          TPaasOauthResult tPaasOauthResult;
 
           try
           {
@@ -116,7 +116,7 @@ namespace VSS.WebApi.Common
       }
     }
 
-    public IDictionary<string,string> CustomHeadersJWT()
+    public IDictionary<string, string> CustomHeadersJWT()
     {
       return new Dictionary<string, string>
       {

@@ -4,7 +4,7 @@ using System.Net;
 using VSS.Common.Exceptions;
 using VSS.FlowJSHandler;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
@@ -15,7 +15,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
     /// Validate the Create request e.g that the file has been uploaded and parameters are as expected.
     /// </summary>
     public static void ValidateUpsertImportedFileRequest(FlowFile file, Guid projectUid,
-      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, 
+      ImportedFileType importedFileType, DxfUnitsType dxfUnitsType,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
       string importedBy, DateTime? surveyedUtc, Guid? parentUid, double? offset)
     {

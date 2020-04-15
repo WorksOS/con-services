@@ -10,7 +10,7 @@ using VSS.FlowJSHandler;
 using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -29,7 +29,7 @@ namespace MockProjectWebApi.Controllers
     /// The data is mocked.
     /// </summary>
     /// <returns>The list of mocked imported files</returns>
-    [Route("api/v4/importedfiles")]
+    [Route("api/v6/importedfiles")]
     [HttpGet]
     public FileDataResult GetMockImportedFiles([FromQuery] Guid projectUid)
     {
@@ -46,14 +46,14 @@ namespace MockProjectWebApi.Controllers
     /// <summary>
     /// Used as a callback by Flow.JS
     /// </summary>
-    [Route("api/v4/importedfile")]
+    [Route("api/v6/importedfile")]
     [HttpGet]
     public ActionResult Upload()
     {
       return new NoContentResult();
     }
 
-    [Route("api/v4/importedfile")]
+    [Route("api/v6/importedfile")]
     [HttpPost]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
@@ -85,7 +85,7 @@ namespace MockProjectWebApi.Controllers
       return new FileDataSingleResult { Code = VSS.MasterData.Models.ResultHandling.Abstractions.ContractExecutionStatesEnum.InternalProcessingError, Message = "Failed to create imported file" };
     }
 
-    [Route("api/v4/importedfile")]
+    [Route("api/v6/importedfile")]
     [HttpPut]
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
@@ -121,7 +121,7 @@ namespace MockProjectWebApi.Controllers
       };
     }
 
-    [Route("api/v4/importedfile")]
+    [Route("api/v6/importedfile")]
     [HttpDelete]
     public BaseDataResult DeleteMockImportedFile([FromQuery] Guid projectUid, [FromQuery] Guid importedFileUid)
     {

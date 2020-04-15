@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TestUtility.Model;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace TestUtility
 {
@@ -44,7 +44,7 @@ namespace TestUtility
 
     public ImportFile(string uriRoot = null)
     {
-      this.uriRoot = uriRoot ?? "api/v4/importedfile";
+      this.uriRoot = uriRoot ?? "api/v6/importedfile";
 
       ExpectedImportFileDescriptorSingleResult = new ImportedFileDescriptorSingleResult(ImportFileDescriptor);
     }
@@ -62,7 +62,7 @@ namespace TestUtility
     /// <summary>
     /// Send request to the FileImportV4 controller
     /// </summary>
-    public async Task<ImportedFileDescriptorSingleResult> SendRequestToFileImportV4(
+    public async Task<ImportedFileDescriptorSingleResult> SendRequestToFileImportV6(
       TestSupport ts,
       string[] importFileArray,
       int row,
@@ -104,7 +104,7 @@ namespace TestUtility
 
       if (importOptions.HttpMethod == HttpMethod.Delete)
       {
-        uri = $"api/v4/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
+        uri = $"api/v6/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
       string response;
@@ -131,9 +131,9 @@ namespace TestUtility
     /// <summary>
     /// Add a string array of data 
     /// </summary>
-    public Task<string> SendImportedFilesToWebApiV2(TestSupport ts, long projectId, string[] importFileArray, int row, HttpStatusCode statusCode = HttpStatusCode.OK)
+    public Task<string> SendImportedFilesToWebApiV5TBC(TestSupport ts, long projectId, string[] importFileArray, int row, HttpStatusCode statusCode = HttpStatusCode.OK)
     {
-      var uri = $"api/v2/projects/{projectId}/importedfiles";
+      var uri = $"api/v5/projects/{projectId}/importedfiles";
       var ed = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
       var importedFileTbc = new ImportedFileTbc

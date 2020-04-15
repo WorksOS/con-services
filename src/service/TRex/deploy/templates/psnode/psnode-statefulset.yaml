@@ -1,8 +1,9 @@
 # An example of a Kubernetes configuration for Ignite pods deployment.
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-psn
+  name: {{ template "trex.deployname" . }}-psn
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
@@ -45,6 +46,9 @@ spec:
         
         resources:
 {{ toYaml .Values.psnode.resources | indent 10 }}
+        envFrom:
+        - configMapRef:
+            name: {{ template "trex.config" . }}
 
         #command: ["dotnet"]
         #args: ["VSS.TRex.Server.PSNode.dll"]
@@ -57,7 +61,7 @@ spec:
         - name: ENABLE_TFA_SERVICE
           value: "true"
         - name: TFA_SERVICE_BASEURL
-          value: "http://tagfileauth.dev.eks.ccss.cloud/"
+          value: "http://tagfileauth.alpha.eks.ccss.cloud/"
         - name: IS_KUBERNETES
           value: "true"
         - name: DEPLOYED_ENV

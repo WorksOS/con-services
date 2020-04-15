@@ -3,10 +3,10 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.Primitives;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Tile.Service.Common.Extensions;
 using VSS.Tile.Service.Common.Helpers;
 using VSS.Tile.Service.Common.Models;
-using MasterDataModels = VSS.MasterData.Models.Models;
 
 namespace VSS.Tile.Service.Common.Services
 {
@@ -28,9 +28,9 @@ namespace VSS.Tile.Service.Common.Services
     /// <param name="parameters">Map parameters such as bounding box, tile size, zoom level etc.</param>
     /// <param name="project">The project to draw the boundary for</param>
     /// <returns>A bitmap</returns>
-    public byte[] GetProjectBitmap(MapParameters parameters, MasterDataModels.ProjectData project)
+    public byte[] GetProjectBitmap(MapParameters parameters, ProjectData project)
     {
-      log.LogInformation($"GetProjectBitmap: project {project.ProjectUid}");
+      log.LogInformation($"GetProjectBitmap: project {project.ProjectUID}");
 
       const int PROJECT_BOUNDARY_COLOR = 0x0080FF;//Note: packed is abgr order
       const int STROKE_TRANSPARENCY = 0x73; //0.45 of FF
@@ -43,7 +43,7 @@ namespace VSS.Tile.Service.Common.Services
       {
         using (Image<Rgba32> bitmap = new Image<Rgba32>(parameters.mapWidth, parameters.mapHeight))
         {
-          var projectPoints = project.ProjectGeofenceWKT.GeometryToPoints();
+          var projectPoints = project.GeometryWKT.GeometryToPoints();
           PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(projectPoints, parameters.pixelTopLeft, parameters.numTiles);
 
           bitmap.Mutate(ctx => ctx.DrawPolygon(PROJECT_BOUNDARY_RGBA, PROJECT_OUTLINE_WIDTH, pixelPoints));
@@ -58,6 +58,6 @@ namespace VSS.Tile.Service.Common.Services
 
   public interface IProjectTileService
   {
-    byte[] GetProjectBitmap(MapParameters parameters, MasterDataModels.ProjectData project);
+    byte[] GetProjectBitmap(MapParameters parameters, ProjectData project);
   }
 }

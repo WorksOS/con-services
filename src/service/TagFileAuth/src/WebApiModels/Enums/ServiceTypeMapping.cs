@@ -26,10 +26,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums
 
       // customer-based sub
       serviceTypes.Add(new ServiceTypeMapping() { name = "Manual 3D Project Monitoring", CGEnum = 18, NGEnum = 15 });
-
-      // project-based subs
-      serviceTypes.Add(new ServiceTypeMapping() { name = "Landfill", CGEnum = 23, NGEnum = 19 });
-      serviceTypes.Add(new ServiceTypeMapping() { name = "Project Monitoring", CGEnum = 24, NGEnum = 20 });
     }
   }  
 

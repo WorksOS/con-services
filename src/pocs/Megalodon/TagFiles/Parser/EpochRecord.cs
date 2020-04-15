@@ -11,7 +11,6 @@ namespace TagFiles.Parser
     public bool HasTime = false;
     public bool HasDeltaTime = false;
     public bool HasPrevTime = false;
-    public bool HasPrevBOG = false;
     public bool HasWeek = false;
     public bool HasCoordSys = false;
     public bool HasLEB = false;
@@ -205,16 +204,13 @@ namespace TagFiles.Parser
     /// Blade On Ground
     /// </summary>
     private ushort _BOG = 0;
-    public ushort PREV_BOG = 0;
     public ushort BOG
     {
       get => _BOG;
       set
       {
         _BOG = value;
-        PREV_BOG = value;
         HasBOG = true;
-        HasPrevBOG = true;
       }
     }
 
@@ -459,7 +455,6 @@ namespace TagFiles.Parser
       HasTime = false;
       HasDeltaTime = false;
       HasPrevTime = false;
-      HasPrevBOG = false;
       HasWeek = false;
       HasCoordSys = false;
       HasLEB = false;
@@ -512,14 +507,25 @@ namespace TagFiles.Parser
       BOG = eRec.BOG;
       HDG = eRec.HDG;
       MSD = eRec.MSD;
+      LAT = eRec.LAT;
+      LON = eRec.LON;
+      HGT = eRec.HGT;
+      GPM = eRec.GPM;
+      UTM = eRec.UTM;
+      MTP = eRec.MTP;
+      MID = eRec.MID;
+      Serial = eRec.Serial;
+      Design = eRec.Design;
+      RadioSerial = eRec.RadioSerial;
+      RadioType = eRec.RadioType;
       HasHeader = eRec.HasHeader;
     }
 
     /// <summary>
-    /// is this the same epoch update
+    /// Is the blade position different from the ref epoch
     /// </summary>
     /// <param name="eRec"></param>
-    public bool NotSamePosition(ref EpochRecord eRec)
+    public bool BladePositionDifferent(ref EpochRecord eRec)
     {
       if (IsFullPositionEpoch() & eRec.IsFullPositionEpoch())
         return !(LEB == eRec.LEB & LNB == eRec.LNB & LHB == eRec.LHB & REB == eRec.REB & RNB == eRec.RNB & RHB == eRec.RHB);
@@ -528,6 +534,15 @@ namespace TagFiles.Parser
 
     }
 
+    /// <summary>
+    /// Does epoch contain any change data
+    /// </summary>
+    public bool HasUpdateData()
+    {
+      return HasLEB || HasLHB || HasLNB || HasREB || HasRHB || HasRNB || HasGPM || HasBOG || HasDES || HasLAT || HasLON ||
+             HasHGT || HasMSD || HasHDG;
+
+    }
 
   }
 }

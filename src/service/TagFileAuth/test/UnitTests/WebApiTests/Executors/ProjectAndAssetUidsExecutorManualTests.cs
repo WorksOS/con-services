@@ -6,15 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.ExtendedModels;
-using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
-using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace WebApiTests.Executors
 {
@@ -23,1041 +22,427 @@ namespace WebApiTests.Executors
   {
     private ILoggerFactory _loggerFactory;
 
-    private Mock<IAssetRepository> _assetRepo;
-    private Mock<IDeviceRepository> _deviceRepo;
-    private Mock<ICustomerRepository> _customerRepo;
-    private Mock<ISubscriptionRepository> _subscriptionRepo;
-    private Mock<IProjectRepository> _projectRepo;
-
     [TestInitialize]
     public override void InitTest()
     {
       base.InitTest();
 
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
-
-      _assetRepo = new Mock<IAssetRepository>();
-      _deviceRepo = new Mock<IDeviceRepository>();
-      _customerRepo = new Mock<ICustomerRepository>();
-      _projectRepo = new Mock<IProjectRepository>();
-      _subscriptionRepo = new Mock<ISubscriptionRepository>();
     }
 
-    #region StandardProjects
-
     [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_StdPrj_PrjMan3d()
+    public async Task TRexExecutor_Manual_Happy_ProjectAccountLicense_CBDeviceAndNoLicense()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = projectOfInterest;
+      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>
-                              {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        }),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
+      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      //var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (List<ProjectData>)null;
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial,
+          ec520Device, projectListForEC520,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+        );
     }
 
     [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_StdPrj_PrjMan3d_940_And_Ec520()
+    public async Task TRexExecutor_Manual_Happy_ProjectAccountLicense_ECMDeviceAndNoLicense()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = projectOfInterest;
+      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>
-                              {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        }),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> { projectOfInterest },
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = string.Empty;
+      var radioSerialDevice = (DeviceData)null;
+      var projectListForRadioSerial = (List<ProjectData>)null;
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = new DeviceData { CustomerUID = ec520AccountUid, DeviceUID = ec520Uid };
+      var projectListForEC520 = new List<ProjectData>() { projectOfInterest };
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial, // radioSerialDeviceLicenseResponseModel,
+          ec520Device, projectListForEC520, // ec520DeviceLicenseResponseModel,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+          );
     }
 
     [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_StdPrj_PrjMan3d_Ec520()
+    public async Task TRexExecutor_Manual_Happy_ProjectAccountLicense_NoDevice()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = projectOfInterest;
+      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.EC520, string.Empty, "ec520Serial", string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: (new List<Subscription>
-                              {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        }),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> { projectOfInterest },
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: ec520Uid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = string.Empty;
+      var radioSerialDevice = (DeviceData)null;
+      var projectListForRadioSerial = (List<ProjectData>)null;
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (List<ProjectData>)null;
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial, // radioSerialDeviceLicenseResponseModel,
+          ec520Device, projectListForEC520, // ec520DeviceLicenseResponseModel,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+          );
     }
 
     [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_StdPrj__ProjectNotFound()
+    public async Task TRexExecutor_Manual_Sad_ProjectNotFound()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      Project projectOfInterest = null;
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, DateTime.UtcNow),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project>(),
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3038,
-        expectedMessageResult: "Unable to find the Project requested"
-      );
-
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_StdPrj_AssetCustMan3d()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = (ProjectData)null;
+      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>
-                           {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
+      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      //var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (List<ProjectData>)null;
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial, // radioSerialDeviceLicenseResponseModel,
+          ec520Device, projectListForEC520, // ec520DeviceLicenseResponseModel,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 3038, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(38)
+        );
     }
 
     [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_StdPrj_NoSub()
+    public async Task TRexExecutor_Manual_Sad_ProjectArchived()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString(),
+        IsArchived = true
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = projectOfInterest;
+      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3039,
-        expectedMessageResult: "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
+      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      //var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (List<ProjectData>)null;
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial, // radioSerialDeviceLicenseResponseModel,
+          ec520Device, projectListForEC520, // ec520DeviceLicenseResponseModel,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 3043, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(43)
+        );
     }
 
     [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_StdPrj_Asset3dSub_MatchesProjectCustomer()
+    public async Task TRexExecutor_Manual_Sad_ProjectAccountHasNoDeviceLicenses()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = projectOfInterest;
+      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = projectCustomerUid },
-        assetSubs: new List<Subscription>
-                   {
-          new Subscription
-          {
-            ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
-            CustomerUID = projectCustomerUid
-          }
-        },
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
+      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      //var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (List<ProjectData>)null;
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial, // radioSerialDeviceLicenseResponseModel,
+          ec520Device, projectListForEC520, // ec520DeviceLicenseResponseModel,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 3031, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(31)
+        );
     }
 
     [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_StdPrj_Asset3dSub_NoMatchForProjectCustomer()
+    public async Task TRexExecutor_Manual_Sad_Project_NoIntersectingProjectBoundaries()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = projectOfInterest;
+      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>
-                   {
-          new Subscription
-          {
-            ServiceTypeID = (int) ServiceTypeEnum.ThreeDProjectMonitoring,
-            CustomerUID = assetCustomerUid
-          }
-        },
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3039,
-        expectedMessageResult: "Manual Import: got asset. Unable to locate any valid project, or asset subscriptions"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
+      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      //var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (List<ProjectData>)null;
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial, // radioSerialDeviceLicenseResponseModel,
+          ec520Device, projectListForEC520, // ec520DeviceLicenseResponseModel,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 3041, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(41)
+        );
     }
 
     [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_StdPrj_PrjMan3d_ProjectDoesntIntersectSpatially()
+    public async Task TRexExecutor_Manual_Sad_Project_TooManyIntersectingProjectBoundaries()
     {
+      // this scenario should not be possible, this should be an internal error
       var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData
+      {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
       };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>
-                             {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> { },
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3041,
-        expectedMessageResult: "Manual Import: no intersecting projects found"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_StdPrj_PrjMan3d_TimeOutsideProjectDates()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
+      var projectOfInterest2 = new ProjectData
+      {
+        ProjectUID = Guid.NewGuid().ToString(),
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
+        CustomerUID = projectAccountUid,
+        StartDate = DateTime.UtcNow.AddDays(-40).ToString(),
+        EndDate = DateTime.UtcNow.AddDays(-1).ToString()
       };
 
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var projectForProjectUid = projectOfInterest;
+      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest, projectOfInterest2 };
+      var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>
-                             {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
+      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      //var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (List<ProjectData>)null;
+      //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
+
+
+      await ExecuteManual
+        (getProjectAndAssetUidsRequest,
+          projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+          radioSerialDevice, projectListForRadioSerial, // radioSerialDeviceLicenseResponseModel,
+          ec520Device, projectListForEC520, // ec520DeviceLicenseResponseModel,
+          expectedGetProjectAndAssetUidsResult, expectedCode: 3049, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(49)
+        );
     }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_StdPrj_ProjectIsDeleted()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3),
-        IsDeleted = true
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3043,
-        expectedMessageResult: "Manual Import: cannot import to an archived project"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_StdPrj_NoSub_NoRadioSerial()
-    {
-      // standard Project requires a known asset, if project has no Man3d
-
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3),
-        IsDeleted = true
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3043,
-        expectedMessageResult: "Manual Import: cannot import to an archived project"
-      );
-    }
-
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_StdPrj_PrjMan3d_DeviceNotFound()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty,  91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>
-                             {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_StdPrj_PrjMan3d_ManualDeviceType()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, String.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>
-                             {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
-    }
-
-    #endregion StandardProjects
-
-    #region CivilProjects
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_CvPrj_NotSupported()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.ProjectMonitoring,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(-3)
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3044,
-        expectedMessageResult: "Manual Import: cannot import to a Civil type project"
-      );
-    }
-
-    #endregion CivilProjects
-
-
-    #region LandfillProjects
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_LFPrj_LFSub()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.LandFill,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(3),
-        ServiceTypeID = (int) ServiceTypeEnum.Landfill,
-        SubscriptionEndDate = DateTime.UtcNow.AddDays(6)
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(1)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_LFPrj_LFSub_TimeOutsideProjectDates()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.LandFill,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(3),
-        ServiceTypeID = (int) ServiceTypeEnum.Landfill,
-        SubscriptionEndDate = DateTime.UtcNow.AddDays(6)
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: assetUid,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_LFPrj_PrjMan3d()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.LandFill,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(3),
-        SubscriptionEndDate = null
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>
-                             {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3045,
-        expectedMessageResult: "Manual Import: landfill project does not have a valid subscription at that time"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Sad_LFPrj_PrjMan3d_NoRadioSerial()
-    {
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.LandFill,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(3),
-        SubscriptionEndDate = null
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>
-                             {
-          new Subscription {ServiceTypeID = (int) ServiceTypeEnum.Manual3DProjectMonitoring}
-        },
-        assetUid: assetUid,
-        assetDevice: new AssetDeviceIds { AssetUID = assetUid, OwningCustomerUID = assetCustomerUid },
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: new AssetDeviceIds { AssetUID = ec520Uid, OwningCustomerUID = assetCustomerUid },
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: string.Empty,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 3045,
-        expectedMessageResult: "Manual Import: landfill project does not have a valid subscription at that time"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_LFPrj_LFSub_NoRadioSerial()
-    {
-      // landfill Project requires a landfill sub - doesn't require asset
-
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.LandFill,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(3),
-        ServiceTypeID = (int) ServiceTypeEnum.Landfill,
-        SubscriptionStartDate = DateTime.UtcNow.AddYears(-1),
-        SubscriptionEndDate = new DateTime(9999, 12, 31).Date
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_LFPrj_LFSub_DeviceNotFound()
-    {
-      // landfill Project requires a landfill sub - doesn't require asset
-
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.LandFill,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(3),
-        ServiceTypeID = (int) ServiceTypeEnum.Landfill,
-        SubscriptionStartDate = DateTime.UtcNow.AddYears(-1),
-        SubscriptionEndDate = new DateTime(9999, 12, 31).Date
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.SNM940, "snm940Serial", string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
-    }
-
-    [TestMethod]
-    public async Task TRexExecutor_Manual_Happy_LFPrj_LFSub_ManualDeviceType()
-    {
-      // landfill Project requires a landfill sub - doesn't require asset
-
-      var projectUid = Guid.NewGuid().ToString();
-      var projectCustomerUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new Project
-                              {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.LandFill,
-        CustomerUID = projectCustomerUid,
-        StartDate = DateTime.UtcNow.AddDays(-4),
-        EndDate = DateTime.UtcNow.AddDays(3),
-        ServiceTypeID = (int) ServiceTypeEnum.Landfill,
-        SubscriptionStartDate = DateTime.UtcNow.AddYears(-1),
-        SubscriptionEndDate = new DateTime(9999, 12, 31).Date
-      };
-
-      string assetUid = Guid.NewGuid().ToString();
-      string ec520Uid = Guid.NewGuid().ToString();
-      string assetCustomerUid = Guid.NewGuid().ToString();
-
-      await Execute
-      (request: new GetProjectAndAssetUidsRequest(projectUid, (int)DeviceTypeEnum.MANUALDEVICE, string.Empty, string.Empty, string.Empty, 91, 181, projectOfInterest.StartDate.AddDays(-10)),
-        projectUid: projectUid,
-        projectCustomerUid: projectCustomerUid,
-        projectCustomerSubs: new List<Subscription>(),
-        assetUid: assetUid,
-        assetDevice: (AssetDeviceIds)null,
-        assetSubs: new List<Subscription>(),
-        ec520Uid: ec520Uid,
-        ec520Device: (AssetDeviceIds)null,
-        ec520Subs: new List<Subscription>(),
-        assetCustomerUid: assetCustomerUid,
-        assetCustomerSubs: new List<Subscription>(),
-        projectOfInterest: projectOfInterest,
-        intersectingProjects: new List<Project> {projectOfInterest},
-        expectedProjectUidResult: projectUid,
-        expectedAssetUidResult: string.Empty,
-        expectedCodeResult: 0,
-        expectedMessageResult: "success"
-      );
-    }
-
-    #endregion LandfillProjects
-
 
     [TestMethod]
     public async Task TRexExecutor_Sad_InvalidParameters()
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() =>
-        executor.ProcessAsync((GetProjectAndAssetUidsRequest) null));
+        executor.ProcessAsync((GetProjectAndAssetUidsRequest)null));
 
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
       Assert.AreEqual(-3, ex.GetResult.Code);
       Assert.AreEqual("Serialization error", ex.GetResult.Message);
     }
 
-    private async Task Execute(GetProjectAndAssetUidsRequest request,
-      string projectUid, string projectCustomerUid, List<Subscription> projectCustomerSubs,
-      string assetUid, AssetDeviceIds assetDevice, List<Subscription> assetSubs,
-      string ec520Uid, AssetDeviceIds ec520Device, List<Subscription> ec520Subs,
-      string assetCustomerUid, List<Subscription> assetCustomerSubs,
-      Project projectOfInterest, List<Project> intersectingProjects,
-      string expectedProjectUidResult, string expectedAssetUidResult, int expectedCodeResult,
-      string expectedMessageResult
-    )
+    private async Task ExecuteManual(GetProjectAndAssetUidsRequest request,
+      string projectAccountUid, ProjectData projectForProjectUid, List<ProjectData> projectListForProjectAccountUid, DeviceLicenseResponseModel projectDeviceLicenseResponseModel,
+      DeviceData radioSerialDevice, List<ProjectData> projectListForRadioSerial, // DeviceLicenseResponseModel radioSerialDeviceLicenseResponseModel,
+      DeviceData ec520Device, List<ProjectData> projectListForEC520, // DeviceLicenseResponseModel ec520DeviceLicenseResponseModel,
+      GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
+  )
     {
-      _projectRepo.Setup(p => p.GetProject(It.IsAny<string>())).ReturnsAsync(projectOfInterest);
-      _projectRepo.Setup(p => p.GetIntersectingProjects(It.IsAny<string>(), It.IsAny<double>(), It.IsAny<double>(),
-        It.IsAny<int[]>(), It.IsAny<DateTime?>())).ReturnsAsync(intersectingProjects);
+      projectProxy.Setup(p => p.GetProjectApplicationContext(request.ProjectUid, null)).ReturnsAsync(projectForProjectUid);
+      projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, null, null))
+            .ReturnsAsync(projectListForProjectAccountUid);
+      cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(projectAccountUid), null)).ReturnsAsync(projectDeviceLicenseResponseModel);
 
-      _deviceRepo.Setup(d => d.GetAssociatedAsset(request.RadioSerial, It.IsAny<string>())).ReturnsAsync(assetDevice);
-      _deviceRepo.Setup(d => d.GetAssociatedAsset(request.Ec520Serial, It.IsAny<string>())).ReturnsAsync(ec520Device);
 
-      _subscriptionRepo.Setup(d => d.GetProjectBasedSubscriptionsByCustomer(projectCustomerUid, It.IsAny<DateTime>()))
-        .ReturnsAsync(projectCustomerSubs);
-      _subscriptionRepo.Setup(d => d.GetProjectBasedSubscriptionsByCustomer(assetCustomerUid, It.IsAny<DateTime>()))
-        .ReturnsAsync(assetCustomerSubs);
-      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(assetUid, It.IsAny<DateTime>())).ReturnsAsync(assetSubs);
-      _subscriptionRepo.Setup(d => d.GetSubscriptionsByAsset(ec520Uid, It.IsAny<DateTime>())).ReturnsAsync(ec520Subs);
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(radioSerialDevice);
+      if (radioSerialDevice != null)
+      {
+        deviceProxy.Setup(d => d.GetProjectsForDevice(radioSerialDevice.DeviceUID, null)).ReturnsAsync(projectListForRadioSerial);
+        // cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(radioSerialDevice.CustomerUID), null)).ReturnsAsync(radioSerialDeviceLicenseResponseModel);  
+      }
+
+      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(ec520Device);
+      if (ec520Device != null)
+      {
+        deviceProxy.Setup(d => d.GetProjectsForDevice(ec520Device.DeviceUID, null)).ReturnsAsync(projectListForEC520);
+        // cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(ec520Device.CustomerUID), null)).ReturnsAsync(ec520DeviceLicenseResponseModel);
+      }
+
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        _assetRepo.Object, _deviceRepo.Object, _customerRepo.Object, _projectRepo.Object, _subscriptionRepo.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
-      ValidateResult(result, expectedProjectUidResult, expectedAssetUidResult, expectedCodeResult,
-        expectedMessageResult);
+      ValidateResult(result, expectedGetProjectAndAssetUidsResult, expectedCode, expectedMessage);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult result, string expectedProjectUid, string expectedAssetUid,
+    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult,
       int resultCode, string resultMessage)
     {
-      Assert.IsNotNull(result, "executor returned nothing");
-      Assert.AreEqual(expectedProjectUid, result.ProjectUid, "executor returned incorrect ProjectUid");
-      Assert.AreEqual(expectedAssetUid, result.AssetUid, "executor returned incorrect AssetUid");
-      Assert.AreEqual(resultCode, result.Code, "executor returned incorrect result code");
-      Assert.AreEqual(resultMessage, result.Message, "executor returned incorrect result message");
+      Assert.IsNotNull(actualResult, "executor returned nothing");
+      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid, "executor returned incorrect ProjectUid");
+      Assert.AreEqual(expectedGetProjectAndAssetUidsResult.DeviceUid, actualResult.DeviceUid, "executor returned incorrect DeviceUid");
+      Assert.AreEqual(resultCode, actualResult.Code, "executor returned incorrect result code");
+      Assert.AreEqual(resultMessage, actualResult.Message, "executor returned incorrect result message");
     }
   }
-
 }

@@ -8,22 +8,21 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.KafkaConsumer.Kafka;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
-using VSS.MasterData.Repositories;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Executors;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
+using VSS.Productivity3D.Filter.Repository;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using FilterModel = VSS.MasterData.Repositories.DBModels.Filter;
 
@@ -38,9 +37,7 @@ namespace VSS.Productivity3D.Filter.Tests
     private readonly string custUid = Guid.NewGuid().ToString();
     private readonly string userUid = Guid.NewGuid().ToString();
     private readonly string projectUid = Guid.NewGuid().ToString();
-    private string KafkaTopicName => GetType().Name;
-    private static Mock<IKafka> Producer => new Mock<IKafka>();
-
+    
     public FilterFilenameUtilTests(ExecutorBaseTests classFixture)
     {
       _classFixture = classFixture;
@@ -89,13 +86,12 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
-        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-        producer: Producer.Object, kafkaTopicName: KafkaTopicName);
+        productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -152,13 +148,13 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
         productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
+        fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -229,13 +225,13 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
         productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
+        fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -307,13 +303,13 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
         productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
+        fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 
@@ -395,13 +391,13 @@ namespace VSS.Productivity3D.Filter.Tests
         custUid,
         false,
         userUid,
-        new ProjectData { ProjectUid = projectUid },
+        new ProjectData { ProjectUID = projectUid },
         new FilterRequest { FilterUid = null, Name = name, FilterJson = filterJson, FilterType = FilterType.Persistent });
 
       var executor = RequestExecutorContainer.Build<UpsertFilterExecutor>(configStore, logger, serviceExceptionHandler,
         filterRepo.Object, geofenceRepo.Object,
         productivity3dV2ProxyNotification: productivity3dV2ProxyNotification.Object, productivity3dV2ProxyCompaction: productivity3dV2ProxyCompaction.Object,
-        producer: Producer.Object, kafkaTopicName: KafkaTopicName, fileImportProxy: fileImportProxy.Object);
+        fileImportProxy: fileImportProxy.Object);
 
       var result = await executor.ProcessAsync(request) as FilterDescriptorSingleResult;
 

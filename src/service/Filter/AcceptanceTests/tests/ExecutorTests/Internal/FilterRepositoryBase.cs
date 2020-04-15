@@ -1,11 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using VSS.KafkaConsumer.Kafka;
-using VSS.MasterData.Models.Models;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests.Internal
 {
@@ -13,15 +11,7 @@ namespace ExecutorTests.Internal
   {
     public void Setup()
     {
-      SetupDI();
-      Producer = ServiceProvider.GetRequiredService<IKafka>();
-      if (!Producer.IsInitializedProducer)
-      {
-        Producer.InitProducer(ConfigStore);
-      }
-
-      KafkaTopicName = "VSS.Interfaces.Events.MasterData.IFilterEvent" +
-                       ConfigStore.GetValueString("KAFKA_TOPIC_NAME_SUFFIX");
+      SetupDI();     
     }
 
     protected FilterRequestFull CreateAndValidateRequest(
@@ -41,7 +31,7 @@ namespace ExecutorTests.Internal
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = projectUid ?? Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = projectUid ?? Guid.NewGuid().ToString() },
         new FilterRequest
         {
           FilterUid = filterUid ?? Guid.NewGuid().ToString(),
@@ -74,7 +64,7 @@ namespace ExecutorTests.Internal
         customerUid ?? Guid.NewGuid().ToString(),
         isApplicationContext,
         userId ?? Guid.NewGuid().ToString(),
-        projectData ?? new ProjectData() { ProjectUid = Guid.NewGuid().ToString() },
+        projectData ?? new ProjectData() { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest
         {
           FilterUid = filterUid ?? Guid.NewGuid().ToString(),

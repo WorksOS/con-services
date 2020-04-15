@@ -21,103 +21,6 @@ spec:
     - configMapRef:
         name: projectservice-testing
 
-  - name: masterdataconsumercustomer
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
-    imagePullPolicy: Always
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing
-    tty: true
-    env:
-    - name: KAFKA_TOPICS
-      value: "VSS.Interfaces.Events.MasterData.ICustomerEvent"
-
-  - name: masterdataconsumerproject
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
-    imagePullPolicy: Always
-    env_file:
-     - docker-compose.env
-    tty: true
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing    
-    env:
-    - name: KAFKA_TOPICS
-      value: "VSS.Interfaces.Events.MasterData.IProjectEvent"
-    - name: MYSQL_DATABASE_NAME
-      value: "VSS-MasterData-Project-Only"
-      
-  - name: masterdataconsumergeofence
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
-    imagePullPolicy: Always
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing
-    tty: true
-    env:
-    - name: KAFKA_TOPICS
-      value: "VSS.Interfaces.Events.MasterData.IGeofenceEvent"
-
-  - name: masterdataconsumersubscription
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer:latest
-    imagePullPolicy: Always
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing
-    tty: true
-    env:
-    - name: KAFKA_TOPICS
-      value: "VSS.Interfaces.Events.MasterData.ISubscriptionEvent"
-
-  - name: masterdataschema
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer-db:latest
-    imagePullPolicy: Always
-    tty: true
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing
-    env:
-    - name: INF
-      value: "1"
-     
-  - name: projectonlyschema
-    image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-masterdataconsumer-db:latest
-    imagePullPolicy: Always
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing
-    tty: true
-    env:
-    - name: MYSQL_DATABASE_NAME
-      value: "VSS-MasterData-Project-Only"
-    - name: INF
-      value: "1"
-
-  - name: zookeeper-container
-    image: wurstmeister/zookeeper:3.4.6
-    ports:
-    - containerPort: 2181
-    livenessProbe:
-      tcpSocket:
-        port: 2181
-    readinessProbe:
-      tcpSocket:
-        port: 2181
-
-  - name: kafka-container
-    image: wurstmeister/kafka:0.11.0.1
-    ports:
-    - containerPort: 9092
-    livenessProbe:
-      tcpSocket:
-        port: 9092
-    readinessProbe:
-      tcpSocket:
-        port: 9092
-    envFrom:
-    - configMapRef:
-        name: projectservice-testing
-
   - name: mockapi-container
     image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-mock-webapi:latest-linux
     imagePullPolicy: Always
@@ -133,6 +36,16 @@ spec:
     envFrom:
     - configMapRef:
         name: projectservice-testing
+
+  - name: service-container-db
+    image: !db-container!
+    tty: true
+    envFrom:
+    - configMapRef:
+        name: projectservice-testing
+    env:
+    - name: INF
+      value: "1"
 
   - name: service-container
     image: !container!

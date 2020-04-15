@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
-using VSS.MasterData.Repositories;
-using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Filter.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Filter.Common.ResultHandling;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
@@ -25,7 +24,7 @@ namespace VSS.Productivity3D.Filter.Common.Utilities
       IEnumerable<Geofence> geofences = null;
       try
       {
-        IEnumerable<ProjectGeofence> associations = await projectRepository
+        var associations = await projectRepository
           .GetAssociatedGeofences(projectUid)
           .ConfigureAwait(false);
 

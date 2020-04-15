@@ -6,12 +6,14 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Authentication.JWT;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
-using VSS.MasterData.Proxies.Interfaces;
 
 namespace VSS.WebApi.Common
 {
@@ -22,7 +24,7 @@ namespace VSS.WebApi.Common
   {
     private readonly RequestDelegate _next;
     protected readonly ILogger<TIDAuthentication> log;
-    private readonly ICustomerProxy customerProxy;
+    private readonly ICwsAccountClient accountClient;
     private readonly IConfigurationStore store;
 
     protected virtual List<string> IgnoredPaths => new List<string> { "/swagger/", "/cache/" };
@@ -36,13 +38,13 @@ namespace VSS.WebApi.Common
     /// Initializes a new instance of the <see cref="TIDAuthentication"/> class.
     /// </summary>
     public TIDAuthentication(RequestDelegate next,
-      ICustomerProxy customerProxy,
+      ICwsAccountClient accountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
       IServiceExceptionHandler serviceExceptionHandler)
     {
       log = logger.CreateLogger<TIDAuthentication>();
-      this.customerProxy = customerProxy;
+      this.accountClient = accountClient;
       _next = next;
       this.store = store;
       ServiceExceptionHandler = serviceExceptionHandler;
@@ -68,7 +70,11 @@ namespace VSS.WebApi.Common
         var customerUid = string.Empty;
         string customerName;
 
+        // todoMaverick temporary to look into user info available.
+        log.LogDebug($"{nameof(Invoke)}: TIDAuth context Headers {JsonConvert.SerializeObject(context.Request.Headers, Formatting.None)}");
+        
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
+        log.LogDebug($"{nameof(Invoke)}: TIDAuth authorization {JsonConvert.SerializeObject(authorization)}");
 
         // If no authorization header found, nothing to process further
         // note keep these result messages vague (but distinct): https://www.gnucitizen.org/blog/username-enumeration-vulnerabilities/
@@ -82,6 +88,7 @@ namespace VSS.WebApi.Common
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
+          log.LogDebug($"{nameof(Invoke)}: TIDAuth authorization {JsonConvert.SerializeObject(jwtToken)}");
           isApplicationContext = jwtToken.IsApplicationToken;
           applicationName = jwtToken.ApplicationName;
           userEmail = isApplicationContext ? applicationName : jwtToken.EmailAddress;
@@ -132,7 +139,11 @@ namespace VSS.WebApi.Common
         {
           try
           {
-            var customer = await customerProxy.GetCustomerForUser(userUid, customerUid, customHeaders);
+            // todoMaverick do we need the get GetAccountForUser as isApplicationContext never comes in here
+            // what format will userId be in when logged in as a WM user, I would expect a TRN rather than a Guid
+            log.LogDebug($"{nameof(Invoke)}: TIDAuth what are we getting here TRN/Guid? userUid {JsonConvert.SerializeObject(userUid)}");
+            var customer = await accountClient.GetMyAccount(new Guid(userUid), new Guid(customerUid), customHeaders);
+
             if (customer == null)
             {
               var error = $"User {userUid} is not authorized to configure this customer {customerUid}";
@@ -140,12 +151,12 @@ namespace VSS.WebApi.Common
               await SetResult(error, context);
               return;
             }
-            customerName = customer.name;
+            customerName = customer.Name;
           }
           catch (Exception e)
           {
             log.LogWarning(
-              $"Unable to access the 'customerProxy.GetCustomersForMe' endpoint: {store.GetValueString("CUSTOMERSERVICE_API_URL")}. Message: {e.Message}.");
+              $"Unable to access the 'accountClient.GetMyAccount' Message: {e.Message}.");
             await SetResult("Failed authentication", context);
             return;
           }

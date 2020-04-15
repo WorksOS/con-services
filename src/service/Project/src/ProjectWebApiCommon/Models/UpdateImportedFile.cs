@@ -1,12 +1,12 @@
 ﻿using System;
 using VSS.MasterData.Models.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   public class UpdateImportedFile : ImportedFileBase
   {
-    public long LegacyProjectId { get; set; }
+    public long ShortRaptorProjectId { get; set; }
     public DxfUnitsType DxfUnitsTypeId { get; set; }
     public DateTime FileCreatedUtc { get; set; }
     public DateTime FileUpdatedUtc { get; set; }
@@ -22,14 +22,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// It's presence here is to prevent calling into Raptor on file upsert and not generate extra files, e.g. .prg.
     /// </remarks>
     public UpdateImportedFile(
-      Guid projectUid, long legacyProjectId, ImportedFileType importedFileTypeId,
+      Guid projectUid, long shortRaptorProjectId, ImportedFileType importedFileTypeId,
       DateTime? surveyedUtc, DxfUnitsType dxfUnitsTypeId,
       DateTime fileCreatedUtc, DateTime fileUpdatedUtc,
       FileDescriptor fileDescriptor, Guid importedFileUid, long importedFileId,
       string dataOceanRootFolder, double? offset, string dataOceanFileName)
     {
       ProjectUid = projectUid;
-      LegacyProjectId = legacyProjectId;
+      ShortRaptorProjectId = shortRaptorProjectId;
       ImportedFileType = importedFileTypeId;
       SurveyedUtc = surveyedUtc;
       DxfUnitsTypeId = dxfUnitsTypeId;

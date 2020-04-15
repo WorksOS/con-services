@@ -19,14 +19,12 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="9.0.0" />
     <PackageReference Include="DotNetCore.CAP" Version="3.0.2" />
-    <PackageReference Include="DotNetCore.CAP.Kafka" Version="3.0.2" />
     <PackageReference Include="DotNetCore.CAP.MySql" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\AWS.TransferProxy\src\VSS.AWS.TransferProxy.csproj" />
     <ProjectReference Include="..\..\..\..\Common\FlowJSMVC\src\VSS.FlowJSHandler.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\KafkaConsumer\src\VSS.KafkaConsumer.csproj" />
     <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\MasterDataRepositories\src\VSS.MasterData.Repositories.csproj" />
@@ -39,6 +37,7 @@
     <ProjectReference Include="..\..\..\Scheduler\Clients\VSS.Productivity3D.Scheduler.Abstractions\VSS.Productivity3D.Scheduler.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Scheduler\src\VSS.Productivity3D.Scheduler.Jobs.TileGenJob\VSS.Productivity3D.Scheduler.Jobs.DxfTileJob.csproj" />
     <ProjectReference Include="..\..\..\TRex\src\interfaces\VSS.TRex.Gateway.Common.Abstractions\VSS.TRex.Gateway.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
   </ItemGroup>
 
 </Project>

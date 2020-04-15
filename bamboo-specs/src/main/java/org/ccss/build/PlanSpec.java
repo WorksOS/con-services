@@ -342,14 +342,13 @@ public class PlanSpec {
         String deployCommand =
                 // Remove the prefix from a branch name
                 // i.e feature/test -> test
-                "IMAGETAG=$(basename ${bamboo.planRepository.branchName})\n"+
                 "helm upgrade " +
                 "--install " +
                 "${bamboo.deploy.environment}-${bamboo.service} " +
                 "--namespace ${bamboo.deploy.environment} " +
                 "--reset-values " +
                 "--values ./chart/values.yaml " +
-                "--set image.tag=$IMAGETAG-${bamboo.buildNumber}," +
+                "--set image.tag=$(basename ${bamboo.planRepository.branchName})-${bamboo.buildNumber}," +
                 "environment=${bamboo.deploy.environment}," +
                 "globalConfig=3dapp-${bamboo.deploy.environment}," +
                 "rootDomain=eks.ccss.cloud," +

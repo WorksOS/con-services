@@ -12,7 +12,7 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.TCCFileAccess;
 using VSS.TCCFileAccess.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -195,7 +195,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
     /// <summary>
     /// Copies importedFile between filespaces in TCC
-    ///     From FilespaceIDBcCustomer\BC Data to FilespaceIdVisionLink\CustomerUid\ProjectUid
+    ///     From FilespaceIDBcCustomer\BC Data to FilespaceIdVisionLink\CustomerUID\ProjectUID
     ///   returns filespaceID; path and filename which identifies it uniquely in TCC
     ///   this may be a create or update, so ok if it already exists
     /// </summary>
@@ -253,7 +253,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes the importedFile from TCC
     /// </summary>
     /// <returns></returns>
-    public static async Task<ImportedFileInternalResult> DeleteFileFromTCCRepository(FileDescriptor fileDescriptor, Guid projectUid, Guid importedFileUid,
+    public static async Task<ImportedFileInternalResult> DeleteFileFromTCCRepository(FileDescriptor fileDescriptor, string projectUid, string importedFileUid,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IFileRepository fileRepo)
     {
       log.LogInformation($"DeleteFileFromTCCRepository: fileDescriptor {JsonConvert.SerializeObject(fileDescriptor)}");

@@ -4,7 +4,9 @@ using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Filter.Abstractions.Models;
 using VSS.Productivity3D.Filter.Common.Models;
 using VSS.Productivity3D.Filter.Common.Utilities.AutoMapper;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
 namespace VSS.Productivity3D.Filter.Tests
@@ -46,7 +48,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_UserContext(FilterType filterType)
+    public void MapFilterRequestToCreateFilterEvent_UserContext(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -54,7 +56,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
 
       );
@@ -72,7 +74,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_UserContext_NoFilterUID(FilterType filterType)
+    public void MapFilterRequestToCreateFilterEvent_UserContext_NoFilterUID(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -80,58 +82,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
-      );
-      filterRequest.FilterUid = Guid.NewGuid().ToString();
-
-      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-      Assert.Equal(filterRequest.CustomerUid, result.CustomerUID.ToString());
-      Assert.Equal(filterRequest.UserId, result.UserID);
-      Assert.Equal(filterRequest.ProjectUid, result.ProjectUID.ToString());
-      Assert.Equal(filterRequest.FilterUid, result.FilterUID.ToString());
-      Assert.Equal(filterRequest.Name, result.Name);
-      Assert.Equal(filterRequest.FilterJson, result.FilterJson);
-      Assert.Equal(filterRequest.FilterType, result.FilterType);
-    }
-
-    [Theory]
-    [InlineData(FilterType.Persistent)]
-    [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext(FilterType filterType)
-    {
-      var filterRequest = FilterRequestFull.Create
-      (
-        null,
-        Guid.NewGuid().ToString(),
-        false,
-        "ApplicationName",
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
-        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
-      );
-
-      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
-      Assert.Equal(filterRequest.CustomerUid, result.CustomerUID.ToString());
-      Assert.Equal(filterRequest.UserId, result.UserID);
-      Assert.Equal(filterRequest.ProjectUid, result.ProjectUID.ToString());
-      Assert.Equal(filterRequest.FilterUid, result.FilterUID.ToString());
-      Assert.Equal(filterRequest.Name, result.Name);
-      Assert.Equal(filterRequest.FilterJson, result.FilterJson);
-      Assert.Equal(filterRequest.FilterType, result.FilterType);
-    }
-
-    [Theory]
-    [InlineData(FilterType.Persistent)]
-    [InlineData(FilterType.Report)]
-    public void MapFilterRequestToCreateKafkaEvent_ApplicationContext_NoFilterUID(FilterType filterType)
-    {
-      var filterRequest = FilterRequestFull.Create
-      (
-        null,
-        Guid.NewGuid().ToString(),
-        false,
-        "ApplicationName",
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
       filterRequest.FilterUid = Guid.NewGuid().ToString();
@@ -149,7 +100,58 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToUpdateKafkaEvent(FilterType filterType)
+    public void MapFilterRequestToCreateFilterEvent_ApplicationContext(FilterType filterType)
+    {
+      var filterRequest = FilterRequestFull.Create
+      (
+        null,
+        Guid.NewGuid().ToString(),
+        false,
+        "ApplicationName",
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
+      );
+
+      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+      Assert.Equal(filterRequest.CustomerUid, result.CustomerUID.ToString());
+      Assert.Equal(filterRequest.UserId, result.UserID);
+      Assert.Equal(filterRequest.ProjectUid, result.ProjectUID.ToString());
+      Assert.Equal(filterRequest.FilterUid, result.FilterUID.ToString());
+      Assert.Equal(filterRequest.Name, result.Name);
+      Assert.Equal(filterRequest.FilterJson, result.FilterJson);
+      Assert.Equal(filterRequest.FilterType, result.FilterType);
+    }
+
+    [Theory]
+    [InlineData(FilterType.Persistent)]
+    [InlineData(FilterType.Report)]
+    public void MapFilterRequestToCreateFilterEvent_ApplicationContext_NoFilterUID(FilterType filterType)
+    {
+      var filterRequest = FilterRequestFull.Create
+      (
+        null,
+        Guid.NewGuid().ToString(),
+        false,
+        "ApplicationName",
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
+        new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
+      );
+      filterRequest.FilterUid = Guid.NewGuid().ToString();
+
+      var result = AutoMapperUtility.Automapper.Map<CreateFilterEvent>(filterRequest);
+      Assert.Equal(filterRequest.CustomerUid, result.CustomerUID.ToString());
+      Assert.Equal(filterRequest.UserId, result.UserID);
+      Assert.Equal(filterRequest.ProjectUid, result.ProjectUID.ToString());
+      Assert.Equal(filterRequest.FilterUid, result.FilterUID.ToString());
+      Assert.Equal(filterRequest.Name, result.Name);
+      Assert.Equal(filterRequest.FilterJson, result.FilterJson);
+      Assert.Equal(filterRequest.FilterType, result.FilterType);
+    }
+
+    [Theory]
+    [InlineData(FilterType.Persistent)]
+    [InlineData(FilterType.Report)]
+    public void MapFilterRequestToUpdateFilterEvent(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -157,7 +159,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
@@ -174,7 +176,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterRequestToDeleteKafkaEvent(FilterType filterType)
+    public void MapFilterRequestToDeletevEvent(FilterType filterType)
     {
       var filterRequest = FilterRequestFull.Create
       (
@@ -182,7 +184,7 @@ namespace VSS.Productivity3D.Filter.Tests
         Guid.NewGuid().ToString(),
         false,
         Guid.NewGuid().ToString(),
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         new FilterRequest { FilterUid = Guid.NewGuid().ToString(), Name = "the name", FilterJson = "the Json", FilterType = filterType }
       );
 
@@ -196,7 +198,7 @@ namespace VSS.Productivity3D.Filter.Tests
     [Theory]
     [InlineData(FilterType.Persistent)]
     [InlineData(FilterType.Report)]
-    public void MapFilterDBModelRequestToDeleteKafkaEvent(FilterType filterType)
+    public void MapFilterDBModelRequestToDeleteFilterEvent(FilterType filterType)
     {
       var filter = new MasterData.Repositories.DBModels.Filter
       {
@@ -219,7 +221,7 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapProjectGeofenceRequestToAssociateKafkaEvent()
+    public void MapProjectGeofenceRequestToAssociateFilterEvent()
     {
       var request = ProjectGeofenceRequest.Create(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
    
@@ -252,13 +254,13 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapBoundaryRequestToDeleteKafkaEvent()
+    public void MapBoundaryRequestToDeleteFilterEvent()
     {
       var request = BoundaryUidRequestFull.Create
       (
         Guid.NewGuid().ToString(),
         false,
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         Guid.NewGuid().ToString()
       );
@@ -269,13 +271,13 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapBoundaryRequestToCreateKafkaEvent()
+    public void MapBoundaryRequestToCreateFilterEvent()
     {
       var request = BoundaryRequestFull.Create
       (
         Guid.NewGuid().ToString(),
         false,
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
       );
@@ -290,13 +292,13 @@ namespace VSS.Productivity3D.Filter.Tests
     }
 
     [Fact]
-    public void MapBoundaryRequestToUpdateKafkaEvent()
+    public void MapBoundaryRequestToUpdateFilterEvent()
     {
       var request = BoundaryRequestFull.Create
       (
         Guid.NewGuid().ToString(),
         false,
-        new ProjectData { ProjectUid = Guid.NewGuid().ToString() },
+        new ProjectData { ProjectUID = Guid.NewGuid().ToString() },
         Guid.NewGuid().ToString(),
         new BoundaryRequest { BoundaryUid = Guid.NewGuid().ToString(), Name = "the name", BoundaryPolygonWKT = "the WKT" }
       );

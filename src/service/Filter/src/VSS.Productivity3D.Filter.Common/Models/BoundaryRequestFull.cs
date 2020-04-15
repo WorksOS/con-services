@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Models.Models;
 using VSS.MasterData.Repositories.DBModels;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.Productivity3D.Filter.Common.Models
 {
@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
       return new BoundaryRequestFull
       {
         IsApplicationContext = isApplicationContext,
-        ProjectUid = projectData?.ProjectUid,
+        ProjectUid = projectData?.ProjectUID,
         CustomerUid = customerUid,
         UserUid = userUid,
         Request = request

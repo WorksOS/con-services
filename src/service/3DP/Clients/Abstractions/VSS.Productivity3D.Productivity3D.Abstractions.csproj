@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
     <ProjectReference Include="..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Project\Clients\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
     <ProjectReference Include="..\Models\VSS.Productivity3D.Productivity3D.Models.csproj" />
   </ItemGroup>

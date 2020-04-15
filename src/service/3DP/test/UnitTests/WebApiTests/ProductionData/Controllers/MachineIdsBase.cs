@@ -5,10 +5,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.AssetMgmt3D.Abstractions;
-using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData.ResultHandling;
+using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Serilog.Extensions;
 using VSS.TRex.Gateway.Common.Abstractions;
 #if RAPTOR
@@ -29,7 +28,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
     protected static Mock<IASNodeClient> raptorClient;
 #endif
     protected static Mock<IConfigurationStore> configStore;
-    protected static Mock<IAssetResolverProxy> assetProxy;
+    protected static Mock<IDeviceProxy> deviceProxy;
 
     protected static void Init()
     {
@@ -45,7 +44,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       raptorClient = new Mock<IASNodeClient>();
 #endif
       configStore = new Mock<IConfigurationStore>();
-      assetProxy = new Mock<IAssetResolverProxy>();
+      deviceProxy = new Mock<IDeviceProxy>();
     }
 
     protected void GetTRexMachineIdsMock(List<MachineStatus> machineStatusList, Guid projectUid,

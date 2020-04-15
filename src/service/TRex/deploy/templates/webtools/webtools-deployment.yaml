@@ -41,7 +41,10 @@ spec:
 
         resources:
 {{ toYaml .Values.webtools.resources | indent 10 }}
-        
+        envFrom:
+        - configMapRef:
+            name: {{ template "trex.config" . }}
+
         command: ["dotnet"]
         args: ["VSS.TRex.Webtools.dll"]
 

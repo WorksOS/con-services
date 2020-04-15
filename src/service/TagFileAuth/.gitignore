@@ -204,3 +204,7 @@ test/UnitTests/MockClasses/TestData/MultipleAssets.json
 test/UnitTests/MockClasses/TestData/NoAssetList.json
 test/UnitTests/MockClasses/TestData/SingleAssetWithRuntimeHours.json
 test/UnitTests/MockClasses/TestData/ZeroAssets.json
+
+# exclude deploy folder
+Deploy_Production/
+deploy/ExecutorTests

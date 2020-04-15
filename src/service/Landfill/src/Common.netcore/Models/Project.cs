@@ -1,4 +1,5 @@
 ﻿using System;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace Common.Models

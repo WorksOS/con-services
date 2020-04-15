@@ -1,6 +1,4 @@
 MYSQL_DATABASE_NAME: Alpha-Project
-KAFKA_GROUP_NAME: Project-Consumer-Alpha
-KAFKA_TOPICS: CCSS.Interfaces.Events.MasterData.ICustomerEvent,CCSS.Interfaces.Events.MasterData.IGeofenceEvent,CCSS.Interfaces.Events.MasterData.ISubscriptionEvent
 JAEGER_SERVICE_NAME: Alpha Project Service API
 ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
 ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false"

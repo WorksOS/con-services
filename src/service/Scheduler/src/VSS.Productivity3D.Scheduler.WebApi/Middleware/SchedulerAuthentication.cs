@@ -1,10 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.Scheduler.WebAPI.Middleware
@@ -18,10 +16,10 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.Middleware
     /// Constructor
     /// </summary>
     public SchedulerAuthentication(RequestDelegate next,
-      ICustomerProxy customerProxy,
+      ICwsAccountClient cwsAccountClient,
       IConfigurationStore store,
       ILoggerFactory logger,
-      IServiceExceptionHandler serviceExceptionHandler) : base(next, customerProxy, store, logger, serviceExceptionHandler)
+      IServiceExceptionHandler serviceExceptionHandler) : base(next, cwsAccountClient, store, logger, serviceExceptionHandler)
     {
     }
 

@@ -56,10 +56,9 @@ namespace MockProjectWebApi
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddSingleton<IFiltersService, FiltersService>();
       services.AddSingleton<IImportedFilesService, ImportedFilesService>();
-      services.AddSingleton<IProjectService, ProjectService>();
-      services.AddSingleton<IGeofenceservice, GeofenceService>();
+      services.AddSingleton<IProjectService, ProjectService>();      
     }
-    
+
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       //Enable CORS before TID so OPTIONS works without authentication

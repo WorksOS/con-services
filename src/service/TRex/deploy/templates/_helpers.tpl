@@ -36,5 +36,10 @@ This is actually the name we are going to use we append the actual service name 
 */}}
 {{- define "trex.deployname" -}}
 {{- $name := default .Chart.Name .Values.nameOverride -}}
-{{- printf "%s-%s-%s" $name .Values.environment .Values.image.tag | lower | replace "_" "-" | trunc 58 | trimSuffix "-" -}}
+{{- printf "%s-%s" $name .Values.environment | lower | replace "_" "-" | trunc 58 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "trex.config" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s" $name .Values.environment | lower | replace "_" "-" | trunc 58 | trimSuffix "-" -}}
 {{- end -}}

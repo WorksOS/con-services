@@ -14,53 +14,23 @@ namespace TagFiles
   /// </summary>
   public class SocketManager : ISocketManager
   {
-
     private int port = 1500;
     private string tcip = "127.0.0.1";
     private int logEntries = 10;
-
-    private bool _PortRestartNeeded = false;
-    public bool PortRestartNeeded 
-    {
-      get => _PortRestartNeeded;
-      set => _PortRestartNeeded = value;
-    }
-
-    private bool _HeaderRequired = true;
-    public bool HeaderRequired  // read-write instance property
-    {
-      get => _HeaderRequired;
-      set => _HeaderRequired = value;
-    }
-
-    private bool _LogStartup = true;
-    public bool LogStartup  
-    {
-      get => _LogStartup;
-      set => _LogStartup = value;
-    }
-
+    public bool PortRestartNeeded { get; set; } = false;
+    public bool HeaderRequired  { get; set; } = true;
+    public bool LogStartup { get; set; } = true;
     private bool _DebugTraceToLog = false;
-
+    public Socket SocketListener { get; set; }
     SocketPermission permission;
-
-    private Socket _SocketListener;
-    public Socket SocketListener
-    {
-      get => _SocketListener;
-      set => _SocketListener = value;
-    }
-
     IPEndPoint ipEndPoint;
     Socket handler;
-
     private readonly ILogger _log;
     private readonly IConfigurationStore _config;
     private uint epochsSeen = 0;
     public delegate void CallbackEventHandler(string something, int mode);
     public event CallbackEventHandler Callback;
     public static ManualResetEvent allDone = new ManualResetEvent(false);
-
 
     /// <summary>
     /// Intialize SocketManager
@@ -99,7 +69,7 @@ namespace TagFiles
     {
       try
       {
-        _PortRestartNeeded = false;
+        PortRestartNeeded = false;
         // Creates one SocketPermission object for access restrictions
         permission = new SocketPermission(
         NetworkAccess.Accept,     // Allowed to accept connections 
@@ -109,7 +79,7 @@ namespace TagFiles
         );
 
         // Listening Socket object 
-        _SocketListener = null;
+        SocketListener = null;
 
         // Ensures the code to have permission to access a Socket 
         permission.Demand();
@@ -127,14 +97,14 @@ namespace TagFiles
         _log.LogInformation($"Opening socket at {ipAddr}:{port}");
 
         // Create one Socket object to listen the incoming connection 
-        _SocketListener = new Socket(
+        SocketListener = new Socket(
             ipAddr.AddressFamily,
             SocketType.Stream,
             ProtocolType.Tcp
             );
 
         // Associates a Socket with a local endpoint 
-        _SocketListener.Bind(ipEndPoint);
+        SocketListener.Bind(ipEndPoint);
 
       }
       catch (Exception exc)
@@ -152,7 +122,7 @@ namespace TagFiles
       {
         // Places a Socket in a listening state and specifies the maximum 
         // Length of the pending connections queue 
-        _SocketListener.Listen(10);
+        SocketListener.Listen(10);
 
         // Set the event to nonsignaled state.
         allDone.Reset();
@@ -161,9 +131,9 @@ namespace TagFiles
         Console.WriteLine(msg);
         _log.LogInformation(msg);
 
-        _SocketListener.BeginAccept(
+        SocketListener.BeginAccept(
           new AsyncCallback(AcceptCallback),
-          _SocketListener);
+          SocketListener);
 
         allDone.WaitOne();
 
@@ -287,7 +257,7 @@ namespace TagFiles
         {
           content += Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-          if (_LogStartup)
+          if (LogStartup)
           { // record first 5 entries for possible trouble shooting
             epochsSeen++;
             if (epochsSeen == 1)
@@ -295,7 +265,7 @@ namespace TagFiles
             _log.LogInformation(FormatTrace(content));
             if (epochsSeen >= logEntries)
             {
-              _LogStartup = false; // This will get restart on new tagfile
+              LogStartup = false; // This will get restart on new tagfile
               logEntries = 2;
               epochsSeen = 0;
             }
@@ -318,14 +288,14 @@ namespace TagFiles
               {
                 case TagConstants.ENQ:
                   keepListening = true;
-                  if (_HeaderRequired)
+                  if (HeaderRequired)
                     byteData[0] = TagConstants.SOH;
                   else
                     byteData[0] = TagConstants.ACK;
                   handler.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), handler);
                   if (_DebugTraceToLog)
                   {
-                    if (_HeaderRequired)
+                    if (HeaderRequired)
                       _log.LogDebug("ENQ recieved. Returning SOH");
                     else
                       _log.LogDebug("ENQ recieved. Returning ACK");
@@ -354,7 +324,7 @@ namespace TagFiles
               if (Callback != null)
               {
                 Callback(str, TagConstants.CALLBACK_PARSE_PACKET); // process datapacket in Megalodon.SocketManagerCallback
-                if (_HeaderRequired) // Prepare the reply message 
+                if (HeaderRequired) // Prepare the reply message 
                 {
                   byteData[0] = TagConstants.SOH;
                   if (_DebugTraceToLog)
@@ -405,7 +375,7 @@ namespace TagFiles
       {
         // This is where we can handle a forced socket break by client
         _log.LogError($"ReceiveCallback Exception. {exc.ToString()}");
-        _PortRestartNeeded = true; // tell the controller we lost connection to client
+        PortRestartNeeded = true; // tell the controller we lost connection to client
       }
     }
 

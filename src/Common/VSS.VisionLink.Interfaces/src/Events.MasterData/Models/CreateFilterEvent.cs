@@ -1,14 +1,12 @@
 ﻿using System;
-using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 
-namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
+namespace VSS.Visionlink.Interfaces.Events.MasterData.Models
 {
   public class CreateFilterEvent : IFilterEvent
   {
     public Guid CustomerUID { get; set; }
-    [Obsolete]
-    public Guid UserUID { get; set; }
-
+       
     // UserID will include either a UserUID (GUID) or ApplicationID (string)
     public string UserID { get; set; }
     public Guid ProjectUID { get; set; }
@@ -17,6 +15,5 @@ namespace VSS.VisionLink.Interfaces.Events.MasterData.Models
     public string FilterJson { get; set; }
     public FilterType FilterType { get; set; }
     public DateTime ActionUTC { get; set; }
-    public DateTime ReceivedUTC { get; set; }
   }
 }

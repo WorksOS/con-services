@@ -4,7 +4,7 @@ using System;
 using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Filter.Common.Executors;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace ExecutorTests
 {
@@ -27,8 +27,7 @@ namespace ExecutorTests
 
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectProxy, 
-          productivity3dV2ProxyNotification:Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction:Productivity3dV2ProxyCompaction,
-          producer:Producer, kafkaTopicName:KafkaTopicName);
+          productivity3dV2ProxyNotification:Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction:Productivity3dV2ProxyCompaction);
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(async () => await executor.ProcessAsync(request)).ConfigureAwait(false);
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("2011", StringComparison.Ordinal), "executor threw exception but incorrect code");
       Assert.AreNotEqual(-1, ex.GetContent.IndexOf("DeleteFilter failed. The requested filter does not exist, or does not belong to the requesting customer; project or user.", StringComparison.Ordinal), "executor threw exception but incorrect message");
@@ -40,32 +39,30 @@ namespace ExecutorTests
     [DataRow(FilterType.Report)]
     public async Task DeleteFilterExecutor_ExistingFilter(FilterType filterType)
     {
-      string custUid = Guid.NewGuid().ToString();
-      string userId = Guid.NewGuid().ToString();
-      string projectUid = Guid.NewGuid().ToString();
-      string filterUid = Guid.NewGuid().ToString();
+      var custUid = Guid.NewGuid();
+      var userId = Guid.NewGuid();
+      var projectUid = Guid.NewGuid();
+      var filterUid = Guid.NewGuid();
       string name = "blah";
       string filterJson = "theJsonString";
 
       WriteEventToDb(new CreateFilterEvent
       {
-        CustomerUID = Guid.Parse(custUid),
-        UserID = userId,
-        ProjectUID = Guid.Parse(projectUid),
-        FilterUID = Guid.Parse(filterUid),
+        CustomerUID = custUid,
+        UserID = userId.ToString(),
+        ProjectUID = projectUid,
+        FilterUID = filterUid,
         Name = name,
         FilterType = filterType,
         FilterJson = filterJson,
-        ActionUTC = DateTime.UtcNow,
-        ReceivedUTC = DateTime.UtcNow
+        ActionUTC = DateTime.UtcNow
       });
 
-      var request = CreateAndValidateRequest(name: name, customerUid: custUid, userId: userId, projectUid: projectUid, filterUid: filterUid, filterType: filterType, onlyFilterUid: true);
+      var request = CreateAndValidateRequest(name: name, customerUid: custUid.ToString(), userId: userId.ToString(), projectUid: projectUid.ToString(), filterUid: filterUid.ToString(), filterType: filterType, onlyFilterUid: true);
 
       var executor =
         RequestExecutorContainer.Build<DeleteFilterExecutor>(ConfigStore, Logger, ServiceExceptionHandler, FilterRepo, null, ProjectProxy,
-          productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
-          producer:Producer, kafkaTopicName:KafkaTopicName);
+          productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction);
       var result = await executor.ProcessAsync(request);
 
       Assert.IsNotNull(result, "executor should always return a result");

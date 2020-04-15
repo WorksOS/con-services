@@ -46,7 +46,7 @@ namespace WebApiTests.Models
       var ex = Assert.ThrowsException<ServiceException>(() => projectBoundariesAtDateRequest.Validate());
       Assert.AreEqual(HttpStatusCode.BadRequest, ex.Code);
 
-      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(17);
+      var errorMessage = contractExecutionStatesEnum.FirstNameWithOffset(23);
       var internalCode = (int)ContractExecutionStatesEnum.ValidationError;
       var exceptionMessage = string.Format(projectBoundariesPrefix + RaptorExceptionTemplate, internalCode, errorMessage);
       Assert.AreEqual(exceptionMessage, ex.GetContent);
