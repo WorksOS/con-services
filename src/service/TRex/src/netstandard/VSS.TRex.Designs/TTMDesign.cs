@@ -1034,10 +1034,12 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
-        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
-        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
-        S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+        if (S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName))
+        {
+          S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SUB_GRID_INDEX_FILE_EXTENSION);
+          S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_SPATIAL_INDEX_FILE_EXTENSION);
+          S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName + Consts.DESIGN_BOUNDARY_FILE_EXTENSION);
+        }
       }
       catch (Exception e)
       {
