@@ -8,7 +8,7 @@
     <AssemblyName>VSS.Productivity3D.FileAccess.WebAPI</AssemblyName>
     <PackageId>ProjectWebApi</PackageId>
     <RootNamespace>VSS.Productivity3D.FileAccess.WebAPI</RootNamespace>
-    <Platforms>AnyCPU;x64</Platforms>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,10 +24,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="3.1.2" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.1985401" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.6.2" />
   </ItemGroup>
 
