@@ -1043,7 +1043,7 @@ namespace VSS.TRex.Designs
       }
       catch (Exception e)
       {
-        Log.LogError(e, "Exception RemoveFromStorage");
+        Log.LogError(e, $"Exception RemoveFromStorage. file:{fileName}");
         return false;
       }
       return true;
