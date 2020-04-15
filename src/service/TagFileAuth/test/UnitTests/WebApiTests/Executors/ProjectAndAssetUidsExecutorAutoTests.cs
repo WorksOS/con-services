@@ -27,7 +27,7 @@ namespace WebApiTests.Executors
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
     }
 
-    // todoMaverick maybe some tests on the 2 device status?
+    // CCSSSCON-207 maybe some tests on the 2 device status?
 
 
     [TestMethod]

@@ -32,7 +32,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
   }
 
   /* Example response:
-   * todoMaverick format not available yet
+   * CCSSSCON-136 etc format not available yet
    {
     "hasMore": true,
     "devices": [

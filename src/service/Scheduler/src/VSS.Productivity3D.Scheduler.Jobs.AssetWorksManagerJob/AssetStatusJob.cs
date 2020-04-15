@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
       var assetList = assets?.ToList();
       if (assetList != null && assetList.Any())
       {
-        // todoMaverick it's not possible to match radio types in WM cws/ProfileX
+        // CCSSCOON-85 it's not possible to match radio types in WM cws/ProfileX
         // var matchingAsset = await _deviceProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel() {AssetUID3D = assetList.First().Key.ToString()}, headers);
         //Change that for the actual matched asset. Since we supplied 3d asset get data for the matching 2d asset.
         //if there is no 2d asset we should try using SNM asset

@@ -48,44 +48,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       };
     }
 
-    // todMaverick not needed?
-    ///// <summary>
-    ///// Gets a list of customers for the user provided, NOT from the user token. 
-    ///// </summary>
-    //[Route("api/v1/customer/all/user")]
-    //[HttpGet]
-    //public async Task<CustomerV1ListResult> GetCustomersForUser(string userUid)
-    //{
-    //  Logger.LogInformation($"{nameof(GetCustomersForUser)}");
-    //  var customers = await cwsAccountClient.GetAccountsForUser(new Guid(userUid));
-    //  var customerDataResult = new CustomerDataResult();
-
-    //  return new CustomerV1ListResult
-    //  {
-    //    customers = customers.Accounts.Select(c =>
-    //        AutoMapperUtility.Automapper.Map<CustomerData>(c))
-    //        .ToList()
-    //  };
-    //}
-
-    // todMaverick not needed?
-    ///// <summary>
-    ///// Gets a requested customer for the user provided, NOT from the user token. 
-    ///// </summary>
-    //[Route("api/v1/customer/user")]
-    //[HttpGet]
-    //public async Task<CustomerV1SingleResult> GetCustomerForUser(string userUid, string customerUid)
-    //{
-    //  Logger.LogInformation($"{nameof(GetCustomerForUser)}");
-    //  var customers = await cwsAccountClient.GetAccountsForUser(new Guid(userUid));
-    //  var customerDataResult = new CustomerDataResult();
-    //  var foundIt = customers.Accounts.Where(c => c.Id == customerUid).FirstOrDefault();
-
-    //  if (foundIt != null)
-    //    return new CustomerV1SingleResult(AutoMapperUtility.Automapper.Map<CustomerData>(foundIt));
-    //  return null; // todoMaverick
-    //}
-
     /// <summary>
     /// Gets the total devices licensed for this customer. 
     ///   Also triggers a lazy load of devices from cws, so that shortRaptorAssetId is generated.
@@ -97,7 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)}");
       var deviceLicenses = await cwsAccountClient.GetDeviceLicenses(new Guid(customerUid));
 
-      // todoMaverick may want to move this, and into executor
+      // CCSSSCON-207 may want to move this, and into executor
       //  Which endpoint does the UI use to actually select the project. 
       //     That is the endpoint which should load any devices for the account.
       //     These need to be loaded into the localDB device table so that shortRaptorAssetIds can be generated.
@@ -109,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         // if it exists, does nothing but return a count of 0
         //  don't store customerUid, so that we don't need to move the device if ownership changes.
         //      may ned to change this is we ever need a time-component to ownership
-        // todoMaverick do we care what the status is?
+        // CCSSSCON-207 do we care what the status is?
         await DeviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(device));
       }
 

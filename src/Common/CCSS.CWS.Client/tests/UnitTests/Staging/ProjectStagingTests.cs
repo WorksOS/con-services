@@ -32,11 +32,10 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       return CheckTPaaS();
     }
 
-    [Fact(Skip= "todoMaverick")]
-    // todoMaverick this fails as don't have a good user name to get token, but don't want to insert projects all the time anyway
-    // (requires a user token. This is ok as will have one via from ProjectSvc) 
+    [Fact(Skip= "test waiting on C2S3CON-211")]
     public async Task CreateProjectTest()
     {
+      // test requires a user token.
       var accountClient = ServiceProvider.GetRequiredService<ICwsAccountClient>();
       var accountListResponseModel = await accountClient.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
       Assert.NotNull(accountListResponseModel);

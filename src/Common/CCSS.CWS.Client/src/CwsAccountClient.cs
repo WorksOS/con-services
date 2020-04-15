@@ -57,37 +57,6 @@ namespace CCSS.CWS.Client
         .FirstOrDefault();
     }
 
-    //// todoMaverick do we need this for TIDAuthentication; UI or other?  Steve?
-    ///// <summary>
-    ///// We need to query by userUid to allow override as per TIDAuthentication
-    ///// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/{userId}/accounts?
-    /////   application token
-    /////   todoMaaverick where is this used ?
-    /////                 what response fields are required?
-    /////   CCSSCON-122
-    ///// </summary>
-    //public Task<AccountListResponseModel> GetAccountsForUser(Guid userUid, IDictionary<string, string> customHeaders = null)
-    //{
-    //  var userTrn = TRNHelper.MakeTRN(userUid, TRNHelper.TRN_USER);
-    //  var queryParameters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("userId", userTrn) };
-    //  return GetData<AccountListResponseModel>("/users/accounts", null, userUid, queryParameters, customHeaders);
-    //}
-
-    //public async Task<AccountResponseModel> GetAccountForUser(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
-    //{
-    //  var userTrn = TRNHelper.MakeTRN(userUid, TRNHelper.TRN_USER);
-    //  var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
-    //  var queryParameters = new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>( "userId", userTrn),
-    //     new KeyValuePair<string, string>( "accountId", accountTrn )
-    //    };
-
-    //  var accountResponseModel = await GetData<AccountResponseModel>("/users/account", null, userUid, queryParameters, customHeaders);
-      
-    //  // todoMaveric what if error?
-    //  accountResponseModel.Id = TRNHelper.ExtractGuidAsString(accountResponseModel.Id);
-    //  return accountResponseModel;
-    //}
-
     /// <summary>
     /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/accounts/{accountId}/devicelicense
     ///   application token

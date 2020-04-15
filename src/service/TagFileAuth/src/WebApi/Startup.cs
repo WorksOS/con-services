@@ -43,7 +43,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddSingleton<IWebRequest, GracefulWebRequest>()
+
+        // Required for TIDAuthentication  
+        // CCSSSCON-216 temporary move to real endpoints when available
         .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
+
         .AddTransient<IProjectProxy, ProjectV6Proxy>()
         .AddTransient<IDeviceProxy, DeviceV1Proxy>();
       

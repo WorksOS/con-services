@@ -2,7 +2,7 @@
 
 namespace VSS.Productivity3D._3DAssetMgmt.Abstractions
 {
-  // todoMaverick placeholder
+  // CCSSSCON-85 placeholder until the AssetLocations stuff is sorted out (Aaron).
   public class Asset
   {
     public string AssetUID { get; set; }

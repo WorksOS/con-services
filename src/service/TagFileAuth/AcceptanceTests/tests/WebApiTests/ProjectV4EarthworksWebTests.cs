@@ -8,7 +8,7 @@ namespace WebApiTests
 {
   public class ProjectV4EarthworksWebTests : ExecutorTestData
   {
-    [Fact(Skip = "todoMaverick no time now")]
+    [Fact(Skip = "CCSSSCON-207 no time now")]
     public async System.Threading.Tasks.Task Manual_Sad_ProjectNotFound()
     {
       var projectUid = Guid.NewGuid().ToString();
