@@ -208,6 +208,7 @@ utilities:
       memory: 1Gi
 
 webtools:
+  deploy: false
   replicaCount: 1
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
