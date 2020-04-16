@@ -66,27 +66,34 @@ namespace VSS.Productivity3D.TagFileForwarder
 
     private async Task StartProcessingTagFiles(CancellationToken token)
     {
-
-      var profile = _config.GetValueString("AWS_PROFILE", null);
-      var s3Client = string.IsNullOrEmpty(profile) 
-        ? new AmazonS3Client(RegionEndpoint.USWest2) 
-        : new AmazonS3Client(new StoredProfileAWSCredentials(profile), RegionEndpoint.USWest2);
-
-      var startDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-      var now = DateTime.UtcNow;
-
-      while (startDate < now)
+      try
       {
-        await ProcessDate(startDate, s3Client, token);
-        startDate = startDate.AddDays(1);
+        var profile = _config.GetValueString("AWS_PROFILE", null);
+        var s3Client = string.IsNullOrEmpty(profile)
+          ? new AmazonS3Client(RegionEndpoint.USWest2)
+          : new AmazonS3Client(new StoredProfileAWSCredentials(profile), RegionEndpoint.USWest2);
+
+        var startDate = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var now = DateTime.UtcNow;
+
+        while (startDate < now)
+        {
+          await ProcessDate(startDate, s3Client, token);
+          startDate = startDate.AddDays(1);
+        }
+
+        while (true)
+        {
+          // Indefinite processing
+          await ProcessDate(DateTime.Now, s3Client, token);
+          await Task.Delay(new TimeSpan(0, 5, 0), token); // 5 min delay
+        }
       }
-
-      while (true)
+      catch (Exception e)
       {
-        // Indefinite processing
-        await ProcessDate(DateTime.Now, s3Client, token);
-        await Task.Delay(new TimeSpan(0, 5, 0), token); // 5 min delay
+        _logger.LogCritical(e,"Failed to process tag files");
+        Environment.Exit(1);
       }
     }
 
