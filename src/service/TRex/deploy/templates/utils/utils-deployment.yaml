@@ -1,4 +1,4 @@
-# An example of a Kubernetes configuration for Ignite pods deployment.
+{{ if .Values.utilities.deploy }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -85,3 +85,4 @@ spec:
             value: {{ .Values.utilities.javaHeapMaxSizeMb | quote }}
           - name: TREX_IGNITE_JVM_INITIAL_HEAP_SIZE_MB
             value: {{ .Values.utilities.javaHeapInitialSizeMb | quote }}  
+{{ end }}
