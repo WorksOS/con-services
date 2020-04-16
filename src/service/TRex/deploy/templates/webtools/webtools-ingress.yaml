@@ -1,3 +1,4 @@
+{{ if .Values.webtools.deploy }}
 {{- $fdqn := printf "%s.%s" .Values.environment .Values.rootDomain -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -18,3 +19,4 @@ spec:
               serviceName: {{ template "trex.deployname" . }}-webtools 
               servicePort: 80
 
+{{ end }}

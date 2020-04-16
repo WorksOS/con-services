@@ -51,8 +51,8 @@ node ('jenkinsslave-pod') {
 		"Reports",
 		"Gateway",
 		"MutableGateway",
-		"Webtools",
-		"Utils"
+		// "Webtools", // Disabled until we build webtools again
+		// "Utils" // Disabled until we build again
 		]
 
     //Set the build name so it is consistant with VSTS
