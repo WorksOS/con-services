@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
@@ -45,7 +46,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddSingleton<IWebRequest, GracefulWebRequest>()
         .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
         .AddTransient<IProjectProxy, ProjectV6Proxy>()
-        .AddTransient<IDeviceProxy, DeviceV1Proxy>();
+        .AddTransient<IDeviceProxy, DeviceV1Proxy>()
+        .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();
       
       services.AddOpenTracing(builder =>
       {
