@@ -20,7 +20,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   public class ProjectV4Controller : BaseController
   {
     private readonly ILogger _log;
-    private readonly ICustomRadioSerialProjectMap customRadioSerialMapper;
+    private readonly ICustomRadioSerialProjectMap _customRadioSerialMapper;
 
     /// <summary>
     /// Default constructor.
@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
     {
       _log = logger.CreateLogger<ProjectV4Controller>();
-      customRadioSerialMapper = HttpContext.RequestServices.GetRequiredService<ICustomRadioSerialProjectMap>();
+      _customRadioSerialMapper = HttpContext.RequestServices.GetRequiredService<ICustomRadioSerialProjectMap>();
   }
 
   /// <summary>
@@ -64,7 +64,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       request.Validate();
   
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
-      executor.customRadioSerialMapper = customRadioSerialMapper;
+      executor.customRadioSerialMapper = _customRadioSerialMapper;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
@@ -123,7 +123,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       request.Validate();
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
-      executor.customRadioSerialMapper = customRadioSerialMapper;
+      executor.customRadioSerialMapper = _customRadioSerialMapper;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 

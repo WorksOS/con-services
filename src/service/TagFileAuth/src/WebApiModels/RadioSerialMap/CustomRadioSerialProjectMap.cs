@@ -30,7 +30,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
       LoadDictionary();
     }
 
-    private string key(string radioSerial, string radioType) => $"{radioSerial}|{radioType}";
+    private string key(string radioSerial, int deviceType) => $"{radioSerial}|{deviceType}";
 
     private readonly Dictionary<string, RadioSerialMapAssetIdentifier> _map = new Dictionary<string, RadioSerialMapAssetIdentifier>();
 
@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
       dynamic fileContent = JsonConvert.DeserializeObject(File.ReadAllText(DeviceToAssetProjectMapFileName));
 
       // JSON file is of schema:
-      // {map:[{radioSerial:string, radioType:string, assetId:string, assetUid:string, projectId:string, projectUid:string}]}
+      // {map:[{radioSerial:string, deviceType:string, assetId:string, assetUid:string, projectId:string, projectUid:string}]}
 
       if (fileContent.map == null)
       {
@@ -58,13 +58,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
 
       foreach (var elem in fileContent.map)
       {
-        if (elem.radioSerial == null || elem.radioType == null)
+        if (elem.radioSerial == null || elem.deviceType == null)
         {
-          _log.LogError($"Either/both of radioSerial and radioType not present in mapping element: {elem}");
+          _log.LogError($"Either/both of radioSerial and deviceType not present in mapping element: {elem}");
+          continue;
         }
 
-        if (!_map.TryAdd(key(elem.radioSerial.Value, elem.radioType.Value),
-          new RadioSerialMapAssetIdentifier()
+        if (!_map.TryAdd(key(elem.radioSerial.Value, Convert.ToInt32(elem.deviceType.Value)),
+          new RadioSerialMapAssetIdentifier
           {
             assetId = Convert.ToInt64(elem.assetId?.Value ?? "-1"), 
             assetUid = new Guid(elem.assetUid?.Value ?? ""), 
@@ -85,12 +86,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
     /// 
     /// </summary>
     /// <param name="radioSerial"></param>
-    /// <param name="radioType"></param>
+    /// <param name="deviceType"></param>
     /// <param name="radioSerialMapAssetIdentifier"></param>
     /// <returns></returns>
-    public bool LocateAsset(string radioSerial, string radioType, out RadioSerialMapAssetIdentifier radioSerialMapAssetIdentifier)
+    public bool LocateAsset(string radioSerial, int deviceType, out RadioSerialMapAssetIdentifier radioSerialMapAssetIdentifier)
     {
-      if (_map.TryGetValue(key(radioSerial, radioType), out var value))
+      if (_map.TryGetValue(key(radioSerial, deviceType), out var value))
       {
         radioSerialMapAssetIdentifier = value;
         return true;

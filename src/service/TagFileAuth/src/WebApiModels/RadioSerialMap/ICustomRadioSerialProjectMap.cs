@@ -8,6 +8,6 @@
     /// <summary>
     /// Locate a defined mapping for a radio serial/type and asset/project combination
     /// </summary>
-    bool LocateAsset(string radioSerial, string radioType, out RadioSerialMapAssetIdentifier radioSerialMapAssetIdentifier);
+    bool LocateAsset(string radioSerial, int deviceType, out RadioSerialMapAssetIdentifier radioSerialMapAssetIdentifier);
   }
 }
