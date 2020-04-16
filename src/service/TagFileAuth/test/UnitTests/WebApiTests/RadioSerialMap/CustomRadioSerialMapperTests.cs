@@ -49,10 +49,10 @@ namespace WebApiTests.RadioSerialMap
       var locateResult = mapper.LocateAsset(testRadioSerial, testRadioType, out var id);
 
       Assert.IsTrue(locateResult);
-      Assert.IsTrue(id.assetId == testAssetId);
-      Assert.IsTrue(id.assetUid.CompareTo(testAssetUid) == 0);
-      Assert.IsTrue(id.projectId == testProjectId);
-      Assert.IsTrue(id.projectUid.CompareTo(testProjectUid) == 0);
+      Assert.IsTrue(id.AssetId == testAssetId);
+      Assert.IsTrue(id.AssetUid.CompareTo(testAssetUid) == 0);
+      Assert.IsTrue(id.ProjectId == testProjectId);
+      Assert.IsTrue(id.ProjectUid.CompareTo(testProjectUid) == 0);
     }
 
     [TestMethod]

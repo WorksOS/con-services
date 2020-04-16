@@ -17,7 +17,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectAndAssetUidsExecutor : RequestExecutorContainer
   {
-    public ICustomRadioSerialProjectMap customRadioSerialMapper { get; set; }
+    public ICustomRadioSerialProjectMap CustomRadioSerialMapper { get; set; }
 
     ///  <summary>
     ///  There are 2 modes this may be called in:
@@ -34,7 +34,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///                  therefore this should legitimately retrieve max of ONE match
     ///    
     ///  if a deviceSerial/dtype is provided and can be resolved, the deviceUid will also be returned.
-    ///  Archived projects are not considered, also note that there are only standard projects available    
+    ///  Archived projects are not considered, also note that there are only standard projects available
+    ///
+    ///  TFA has the capability to be provided a radio/device type -> Asset/Project map to cover special cases
+    ///  where a device has no provisioning but we want to bring it into a known project. In this case, if the
+    ///  radio serial number and device type are found in the map, the item is processed as if were a manual
+    ///  import into the project, under the asset, located in the map
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -66,6 +71,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 38);
         }
+      }
+
+      // Radio serial -> Asset/Project override
+      if (CustomRadioSerialMapper.LocateAsset(request.RadioSerial, request.DeviceType, out var id))
+      {
+        return GetProjectAndAssetUidsResult.FormatResult(id.ProjectUid.ToString(), id.AssetUid.ToString());
       }
 
       DeviceData device = null;

@@ -27,8 +27,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectAndAssetUidsEarthWorksExecutor : RequestExecutorContainer
   {
-    public ICustomRadioSerialProjectMap customRadioSerialMapper { get; set; }
-
     ///  <summary>
     ///  Processes the get project Uid request and finds the Uid of the project corresponding to the given location and devices Customer and relevant deviceLicenses.
     ///  </summary>

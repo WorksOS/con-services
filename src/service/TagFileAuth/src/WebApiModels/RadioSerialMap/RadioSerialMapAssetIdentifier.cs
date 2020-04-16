@@ -7,9 +7,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
   /// </summary>
   public struct RadioSerialMapAssetIdentifier
   {
-    public long assetId;
-    public Guid assetUid;
-    public long projectId;
-    public Guid projectUid;
+    public long AssetId;
+    public Guid AssetUid;
+    public long ProjectId;
+    public Guid ProjectUid;
   }
 }

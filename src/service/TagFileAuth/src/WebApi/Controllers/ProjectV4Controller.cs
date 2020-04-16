@@ -64,8 +64,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       request.Validate();
   
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
-      executor.customRadioSerialMapper = _customRadioSerialMapper;
-
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
       _log.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
@@ -123,7 +121,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       request.Validate();
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
-      executor.customRadioSerialMapper = _customRadioSerialMapper;
+      executor.CustomRadioSerialMapper = _customRadioSerialMapper;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 

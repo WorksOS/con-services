@@ -67,10 +67,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
         if (!_map.TryAdd(key(elem.radioSerial.Value, Convert.ToInt32(elem.deviceType.Value)),
           new RadioSerialMapAssetIdentifier
           {
-            assetId = Convert.ToInt64(elem.assetId?.Value ?? "-1"), 
-            assetUid = new Guid(elem.assetUid?.Value ?? ""), 
-            projectId = Convert.ToInt64(elem.projectId?.Value ?? "-1"), 
-            projectUid = new Guid(elem.projectUid?.Value ?? "")
+            AssetId = Convert.ToInt64(elem.assetId?.Value ?? "-1"), 
+            AssetUid = new Guid(elem.assetUid?.Value ?? ""), 
+            ProjectId = Convert.ToInt64(elem.projectId?.Value ?? "-1"), 
+            ProjectUid = new Guid(elem.projectUid?.Value ?? "")
           }))
         {
           _log.LogError($"Radio device to asset/project map already contains an entry for {elem}");
