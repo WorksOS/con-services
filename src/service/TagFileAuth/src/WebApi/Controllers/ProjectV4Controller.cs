@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -8,6 +9,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
@@ -18,6 +20,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   public class ProjectV4Controller : BaseController
   {
     private readonly ILogger _log;
+    private readonly ICustomRadioSerialProjectMap customRadioSerialMapper;
 
     /// <summary>
     /// Default constructor.
@@ -27,32 +30,33 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
     {
       _log = logger.CreateLogger<ProjectV4Controller>();
-    }
+      customRadioSerialMapper = HttpContext.RequestServices.GetRequiredService<ICustomRadioSerialProjectMap>();
+  }
 
-    /// <summary>
-    /// This endpoint is used by CTCTs Earthworks product.
-    ///   It allows an operator, once or twice a day
-    ///      to obtain data to enable it to generate a Cut/fill or other map from 3dpService. 
-    ///   This step tries to identify a unique projectUid.
-    /// 
-    /// EC and/or radio, location and possibly TCCOrgID are provided.
-    /// 
-    /// Get the ProjectUid 
-    ///     which belongs to the devices Customer and 
-    ///     whose boundary the location is inside at the given date time. 
-    ///     NOTE as of Sept 2019, VSS commercial model has not been determined,
-    ///        current thinking is that:
-    ///          1) if there is no traditional sub, they may get cutfill for surveyed surfaces only
-    ///          2) if there is a traditional sub they get production data as well
-    ///          3) there may be a completely new type of subscription, specific to EarthWorks cutfill ...
-    /// </summary>
-    /// <returns>
-    /// The project Uid which satisfies spatial and time requirements
-    ///      and possibly device
-    ///      and an indicator of subscription availability
-    ///      otherwise a returnCode.
-    /// </returns>
-    [Route("api/v4/project/getUidsEarthWorks")]
+  /// <summary>
+  /// This endpoint is used by CTCTs Earthworks product.
+  ///   It allows an operator, once or twice a day
+  ///      to obtain data to enable it to generate a Cut/fill or other map from 3dpService. 
+  ///   This step tries to identify a unique projectUid.
+  /// 
+  /// EC and/or radio, location and possibly TCCOrgID are provided.
+  /// 
+  /// Get the ProjectUid 
+  ///     which belongs to the devices Customer and 
+  ///     whose boundary the location is inside at the given date time. 
+  ///     NOTE as of Sept 2019, VSS commercial model has not been determined,
+  ///        current thinking is that:
+  ///          1) if there is no traditional sub, they may get cutfill for surveyed surfaces only
+  ///          2) if there is a traditional sub they get production data as well
+  ///          3) there may be a completely new type of subscription, specific to EarthWorks cutfill ...
+  /// </summary>
+  /// <returns>
+  /// The project Uid which satisfies spatial and time requirements
+  ///      and possibly device
+  ///      and an indicator of subscription availability
+  ///      otherwise a returnCode.
+  /// </returns>
+  [Route("api/v4/project/getUidsEarthWorks")]
     [HttpPost]
     public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndDeviceUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {
@@ -60,6 +64,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       request.Validate();
   
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
+      executor.customRadioSerialMapper = customRadioSerialMapper;
+
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
       _log.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
@@ -117,6 +123,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       request.Validate();
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
+      executor.customRadioSerialMapper = customRadioSerialMapper;
+
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       _log.LogResult(nameof(GetProjectAndDeviceUids), request, result);

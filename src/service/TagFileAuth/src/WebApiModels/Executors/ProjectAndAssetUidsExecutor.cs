@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -16,6 +17,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectAndAssetUidsExecutor : RequestExecutorContainer
   {
+    public ICustomRadioSerialProjectMap customRadioSerialMapper { get; set; }
 
     ///  <summary>
     ///  There are 2 modes this may be called in:
@@ -27,12 +29,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// 
     ///  b) Auto Import
     ///     a deviceSerial provided.
-    ///     This must be resolveable and it's customer must have paying-devicePackage
+    ///     This must be resolvable and its customer must have paying-devicePackage
     ///     A customers active projects cannot overlap spatially at the same point-in-time
     ///                  therefore this should legitimately retrieve max of ONE match
     ///    
     ///  if a deviceSerial/dtype is provided and can be resolved, the deviceUid will also be returned.
-    ///  Archived projects are not considered, also note that there are only standard projects available     /// 
+    ///  Archived projects are not considered, also note that there are only standard projects available    
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {

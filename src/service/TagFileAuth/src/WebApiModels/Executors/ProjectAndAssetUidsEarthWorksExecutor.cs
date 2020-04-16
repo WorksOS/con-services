@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -26,6 +27,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectAndAssetUidsEarthWorksExecutor : RequestExecutorContainer
   {
+    public ICustomRadioSerialProjectMap customRadioSerialMapper { get; set; }
+
     ///  <summary>
     ///  Processes the get project Uid request and finds the Uid of the project corresponding to the given location and devices Customer and relevant deviceLicenses.
     ///  </summary>
