@@ -37,6 +37,7 @@ node ('jenkinsslave-pod') {
 
 	// def buildContainerTag = "registry-docker-registry.jenkins:5000/${project_name}:${versionNumber}"
 	def buildContainerTag = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}"
+	def commonContainerTag = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}jenkins-sandbox:${buildkey}-${params.VSTS_BUILD_NUMBER}-Common"
 	def runtimeContainerTag = "940327799086.dkr.ecr.us-west-2.amazonaws.com/${ecr_prefix}${project_name}:${versionNumber}"
 
 	def trexComponents = [
@@ -132,14 +133,14 @@ node ('jenkinsslave-pod') {
 
 	stage('Build Runtime Container') {
 		// Build common container and use that in the subsequent run time containers
-    	def common_container = docker.build(imagetag, "-f ./${servicePath}/build/Dockerfile.common --build-arg SERVICE_PATH=${servicePath} .")
+    	def common_container = docker.build(commonContainerTag, "-f ./${servicePath}/build/Dockerfile.common --build-arg SERVICE_PATH=${servicePath} .")
         common_container.push()
 		
 		// Iterate over all components and construct individual runtime containers from the artfacts in the common build container
 		for (int i = 0; i < trexComponents.size(); i++ ){
 			def component = trexComponents[i]
 			def imagetag = runtimeContainerTag + "." + component
-			def runtime_container = docker.build(imagetag, "-f ./${servicePath}/build/Dockerfile --build-arg COMPONENT=${component} --build-arg SERVICE_PATH=${servicePath} .")
+			def runtime_container = docker.build(imagetag, "-f ./${servicePath}/build/Dockerfile --build-arg COMPONENT=${component} --build-arg SERVICE_PATH=${servicePath} --build-arg BUILD_CONTAINER=${commonContainerTag} .")
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker images"
 			runtime_container.push()

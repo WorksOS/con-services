@@ -52,9 +52,9 @@ WORKDIR /trex
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-runtime as runtime_container
 ARG COMPONENT
 
-ENV TPAAS_AUTH_URL=https://identity-stg.trimble.com/i/oauth2
-ENV TPAAS_APP_TOKEN=MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh
-ENV COORDINATE_SERVICE_URL=https://api-stg.trimble.com/t/trimble.com/coordinates/1.0
+ENV TPAAS_AUTH_URL=https://identity-stg.trimble.com/i/oauth2 \
+    TPAAS_APP_TOKEN=MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh \
+    COORDINATE_SERVICE_URL=https://api-stg.trimble.com/t/trimble.com/coordinates/1.0
 
 #Bring libs accross TODO: make the common part of this a new image to speed build times
 COPY --from=build_container /trex/libs/ /trex/libs/
