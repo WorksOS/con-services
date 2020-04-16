@@ -60,6 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
+    [Route("api/v4/importedfiles")] // temporary kludge until ccssscon-219 
     [Route("api/v6/importedfiles")]
     [HttpGet]
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV6([FromQuery] string projectUid)
@@ -75,6 +76,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Used as a callback by Flow.JS
     /// </summary>
+    [Route("api/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [HttpGet]
     public ActionResult Upload()
@@ -85,6 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Upload a file, and do processing synchronously
     /// </summary>
+    [Route("api/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [HttpPost]
     [FlowUpload(Extensions = new[]
@@ -137,6 +140,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>Schedule Job Result with a Job ID</returns>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("api/v4/importedfile/background")]
     [Route("api/v6/importedfile/background")]
     [HttpPost]
     [HttpPut]
@@ -214,6 +218,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="transferProxyFunc"></param>
     /// <param name="schedulerProxy"></param>
     /// <remarks>Import a design file for a project, once the file has been uploaded to AWS</remarks>
+    [Route("internal/v4/importedfile")]
     [Route("internal/v6/importedfile")]
     [HttpGet]
     public async Task<ImportedFileDescriptorSingleResult> InternalImportedFileV6(
@@ -275,6 +280,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   notify RaptorWebAPI.
     /// </summary>
     // I don't believe this endpoint is used anymore
+    [Route("api/v4/importedfile")]
+    [Route("internal/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [Route("internal/v6/importedfile")]
     [HttpPut]
@@ -318,6 +325,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>
     /// Intended for use by 3rd party connected systems that wish to avoid using FlowJS file upload framework.
     /// </remarks>
+    [Route("api/v4/importedfile/direct")]
     [Route("api/v6/importedfile/direct")]
     [HttpPost]
     [DisableFormValueModelBinding]
@@ -364,6 +372,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///      As of this writing, the file will remain there, even after deletion
     /// </summary>
     /// <remarks>Deletes existing imported file</remarks>
+    [Route("api/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [HttpDelete]
     public async Task<ContractExecutionResult> DeleteImportedFileV6(

@@ -23,7 +23,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     private const string URL_ROUTE_PATH_SEPARATOR = "/";
 
     private const string URL_FIRST_PARAMETER_SEPARATOR = "?";
-    private const string URL_OTHER_PARAMETER_SEPARATOR  = "&";
+    private const string URL_OTHER_PARAMETER_SEPARATOR = "&";
 
     private readonly ILogger<InternalServiceResolver> logger;
     private readonly IDataCache cache;
@@ -87,32 +87,21 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     ///
     /// TRex uses its own resolver in BaseTRexServiceDiscoveryProxy
     /// </summary>
-    /// <returns>The service name string for the API Service Enum Value</returns>
     public string GetServiceName(ApiService service)
     {
-      switch (service)
+      return service switch
       {
-        case ApiService.Project:
-          return Constants.ServiceNameConstants.PROJECT_SERVICE;
-        case ApiService.Filter:
-          return Constants.ServiceNameConstants.FILTER_SERVICE;
-        case ApiService.Productivity3D:
-          return Constants.ServiceNameConstants.PRODUCTIVITY3D_SERVICE;
-        case ApiService.Scheduler:
-          return Constants.ServiceNameConstants.SCHEDULER_SERVICE;
-        case ApiService.AssetMgmt3D:
-          return Constants.ServiceNameConstants.ASSETMGMT3D_SERVICE;
-        case ApiService.Push:
-          return Constants.ServiceNameConstants.PUSH_SERVICE;
-        case ApiService.Tile:
-          return Constants.ServiceNameConstants.TILE_SERVICE;
-        case ApiService.TagFileAuth:
-          return Constants.ServiceNameConstants.TAGFIELAUTH_SERVICE;
-
-        default:
-          // There are unit tests to ensure this does not happen 
-          throw new ArgumentOutOfRangeException(nameof(service), service, null);
-      }
+        ApiService.Project => Constants.ServiceNameConstants.PROJECT_SERVICE,
+        ApiService.Filter => Constants.ServiceNameConstants.FILTER_SERVICE,
+        ApiService.Productivity3D => Constants.ServiceNameConstants.PRODUCTIVITY3D_SERVICE,
+        ApiService.Scheduler => Constants.ServiceNameConstants.SCHEDULER_SERVICE,
+        ApiService.AssetMgmt3D => Constants.ServiceNameConstants.ASSETMGMT3D_SERVICE,
+        ApiService.Push => Constants.ServiceNameConstants.PUSH_SERVICE,
+        ApiService.Tile => Constants.ServiceNameConstants.TILE_SERVICE,
+        ApiService.TagFileAuth => Constants.ServiceNameConstants.TAGFIELAUTH_SERVICE,
+        ApiService.Device => Constants.ServiceNameConstants.DEVICE_SERVICE,
+        _ => throw new ArgumentOutOfRangeException(nameof(service), service, null)
+      };
     }
 
     /// <summary>
@@ -130,15 +119,12 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     /// <returns>A URL component representing the API Type</returns>
     public string GetApiRoute(ApiType apiType)
     {
-      switch (apiType)
+      return apiType switch
       {
-        case  ApiType.Private:
-          return "internal";
-        case ApiType.Public:
-          return "api";
-        default:
-          throw new ArgumentOutOfRangeException(nameof(apiType), apiType, null);
-      }
+        ApiType.Private => "internal",
+        ApiType.Public => "api",
+        _ => throw new ArgumentOutOfRangeException(nameof(apiType), apiType, null)
+      };
     }
 
     /// <inheritdoc />
@@ -186,19 +172,19 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
       // Now we have a URL, attempt to add the routes
       if (string.IsNullOrEmpty(route))
       {
-        if(queryParameters != null)
+        if (queryParameters != null)
           throw new ArgumentException($"Query Parameters passed in with no URL Route");
         return url;
       }
 
       var sb = new StringBuilder(url);
-        
+
       if (route.StartsWith(URL_ROUTE_PATH_SEPARATOR))
         sb.Append(route);
       else
         sb.Append(URL_ROUTE_PATH_SEPARATOR + route);
 
-      if (queryParameters == null) 
+      if (queryParameters == null)
         return sb.ToString();
 
       var first = true;
@@ -209,14 +195,14 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         sb.Append($"{WebUtility.UrlEncode(parameter.Key)}={WebUtility.UrlEncode(parameter.Value)}");
         first = false;
       }
-      
+
       return sb.ToString();
     }
 
     private async Task<string> GetUrl(string serviceName, ApiType apiType, ApiVersion version)
     {
       string url;
-      
+
       // We will see if we have an explicit service defined for this version of the service
       // If not we will attempt to build it from the base url
       var service = await ResolveService(GetServiceConfigurationName(serviceName, apiType, version));

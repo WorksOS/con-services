@@ -1,6 +1,8 @@
-using System;
+﻿using System;
 using Newtonsoft.Json.Linq;
+using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.VisionLink.Interfaces.Events.MasterData.Interfaces;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.KafkaConsumer.JsonConverters
