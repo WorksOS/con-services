@@ -1,4 +1,4 @@
-FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as build_container
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as test_build_container
 ARG SERVICE_PATH=src/service/TRex
 
 # We are contructing the build container and performing the build

@@ -1,0 +1,46 @@
+FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as runtime_build_container
+ARG SERVICE_PATH
+ARG COMPONENT
+
+# We are contructing the build container and performing the build
+COPY . /build/
+WORKDIR /build
+
+#publish TRex servers
+RUN dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.QuantizedMesh/VSS.TRex.Server.QuantizedMesh.csproj --output /trex/QMesh ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Reports --output /trex/Reports ; \
+ dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --output /trex/ConnectedSiteGateway ; \
+ dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway ; \
+ dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway ; \
+ dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator ; \
+ dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer
+## dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools
+
+#Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
+RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/
+COPY ./$SERVICE_PATH/build/ignite-kubernetes-2.8.0.jar /trex/libs/
+
+WORKDIR /trex/libs/
+RUN wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.9.8/jackson-core-2.9.8.jar ; \
+    wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.9.8/jackson-annotations-2.9.8.jar ; \
+    wget https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.9.8/jackson-databind-2.9.8.jar ; \
+    wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar
+
+# wget http://repo1.maven.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar
+# wget http://repo1.maven.org/maven2/org/apache/ignite/ignite-log4j/2.7.0/ignite-log4j-2.7.0.jar
+# wget http://repo1.maven.org/maven2/org/springframework/spring-aop/5.0.8.RELEASE/spring-aop-5.0.8.RELEASE.jar
+# wget http://repo1.maven.org/maven2/org/springframework/spring-expression/5.0.8.RELEASE/spring-expression-5.0.8.RELEASE.jar
+# wget https://repo1.maven.org/maven2/org/springframework/spring-jdbc/5.0.8.RELEASE/spring-jdbc-5.0.8.RELEASE.jar
+
+# RUN rm spring*4.3.18*
+#TRex unit tests will be tested by the jenkins file as host directory mounts cannot be specified in the dockerfile
+
+WORKDIR /trex
+
+
