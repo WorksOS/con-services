@@ -64,14 +64,22 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
           continue;
         }
 
-        if (!_map.TryAdd(key(elem.radioSerial.Value, Convert.ToInt32(elem.deviceType.Value)),
-          new RadioSerialMapAssetIdentifier
-          {
-            AssetId = Convert.ToInt64(elem.assetId?.Value ?? "-1"), 
-            AssetUid = new Guid(elem.assetUid?.Value ?? ""), 
-            ProjectId = Convert.ToInt64(elem.projectId?.Value ?? "-1"), 
-            ProjectUid = new Guid(elem.projectUid?.Value ?? "")
-          }))
+        var newItem = new RadioSerialMapAssetIdentifier
+        {
+          AssetId = Convert.ToInt64(elem.assetId?.Value ?? "-1"),
+          AssetUid = new Guid(elem.assetUid?.Value ?? ""),
+          ProjectId = Convert.ToInt64(elem.projectId?.Value ?? "-1"),
+          ProjectUid = new Guid(elem.projectUid?.Value ?? "")
+        };
+
+        if (!((newItem.AssetId != -1 && newItem.ProjectId != -1) ||
+              (newItem.AssetUid.CompareTo(Guid.Empty) != 0) && newItem.ProjectUid.CompareTo(Guid.Empty) != 0))
+        {
+          _log.LogError($"Asset and project IDs/UIDs not set correctly in mapping element: {elem}");
+          continue;
+        }
+
+        if (!_map.TryAdd(key(elem.radioSerial.Value, Convert.ToInt32(elem.deviceType.Value)), newItem))
         {
           _log.LogError($"Radio device to asset/project map already contains an entry for {elem}");
         }
