@@ -1,28 +1,26 @@
 FROM 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-base-images:trex-3.1-build as build_container
 ARG SERVICE_PATH
 ARG COMPONENT
-ARG DEBUG=false
 
 # We are contructing the build container and performing the build
 COPY . /build/
 WORKDIR /build
 
 #publish TRex servers
-RUN if [ "$COMPONENT" = "ApplicationServer" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; fi ; \
- if [ "$COMPONENT" = "DesignElevation" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation ; fi ; \
- if [ "$COMPONENT" = "MutableData" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData ; fi ; \
- if [ "$COMPONENT" = "PSNode" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode ; fi ; \
- if [ "$COMPONENT" = "QMesh" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.QuantizedMesh/VSS.TRex.Server.QuantizedMesh.csproj --output /trex/QMesh ; fi ; \
- if [ "$COMPONENT" = "TileRendering" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering ; fi ; \
- if [ "$COMPONENT" = "TINSurfaceExport" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport ; fi ; \
- if [ "$COMPONENT" = "Reports" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Reports --output /trex/Reports ; fi ; \
- if [ "$COMPONENT" = "ConnectedSiteGateway" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --output /trex/ConnectedSiteGateway ; fi ; \
- if [ "$COMPONENT" = "Gateway" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway ; fi ; \
- if [ "$COMPONENT" = "MutableGateway"-o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway ; fi ; \
-## if [ "$COMPONENT" = "Webtools" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; fi ; \
- if [ "$COMPONENT" = "Activator" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator ; fi ; \
- if [ "$COMPONENT" = "Deployer" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer ; fi
-
+RUN dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.QuantizedMesh/VSS.TRex.Server.QuantizedMesh.csproj --output /trex/QMesh ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport ; \
+ dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Reports --output /trex/Reports ; \
+ dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --output /trex/ConnectedSiteGateway ; \
+ dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway ; \
+ dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway ; \
+## dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; \
+ dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator ; \
+ dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/

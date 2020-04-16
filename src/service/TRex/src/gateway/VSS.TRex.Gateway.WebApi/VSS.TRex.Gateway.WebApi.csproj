@@ -11,7 +11,7 @@
     <RootNamespace>VSS.TRex.Gateway.WebApi</RootNamespace>
     <LangVersion>latest</LangVersion>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileFile>..\..\..\build\Dockerfile</DockerfileFile>
+    <DockerfileFile>..\..\..\build\Dockerfile.debug</DockerfileFile>
     <DockerfileContext>..\..\..\..</DockerfileContext>
     <DockerfileRunEnvironmentFiles>settings.env</DockerfileRunEnvironmentFiles>
     <DockerfileBuildArguments>--no-cache --build-arg SERVICE_PATH=src/service/TRex --build-arg COMPONENT=Gateway</DockerfileBuildArguments>
