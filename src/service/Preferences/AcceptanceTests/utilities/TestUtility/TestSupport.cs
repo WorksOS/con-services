@@ -27,13 +27,6 @@ namespace TestUtility
 
     private const char SEPARATOR = '|';
 
-    private static readonly TestConfig _testConfig;
-
-    static TestSupport()
-    {
-      _testConfig = new TestConfig(MySqlHelper.PREFERENCE_DB_SCHEMA_NAME);
-    }
-
     public TestSupport()
     { 
       SetCustomerUid();

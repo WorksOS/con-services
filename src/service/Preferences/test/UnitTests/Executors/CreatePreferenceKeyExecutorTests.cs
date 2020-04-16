@@ -4,9 +4,6 @@ using CCSS.Productivity3D.Preferences.Common.Executors;
 using CSS.Productivity3D.Preferences.Common.Utilities;
 using VSS.VisionLink.Interfaces.Events.Preference;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using VSS.MasterData.Models.Handlers;
 using VSS.Common.Exceptions;
 using System.Net;
 using Moq;
@@ -26,10 +23,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     [Fact]
     public async Task CreatePreferenceKeyExecutor_DuplicateKeyName()
     {
-      const string keyName= "some key";
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      const string keyName= "some key";  
 
       var prefKeyDatabase = new PrefKeyDataModel
       {
@@ -47,7 +41,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
       };
 
       var executor = RequestExecutorContainerFactory.Build<CreatePreferenceKeyExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(prefEvent));
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
       var result = ex.GetResult;
@@ -59,9 +53,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     public async Task CreatePreferenceKeyExecutor_DuplicateKeyUID()
     {
       var keyUid = Guid.NewGuid();
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var prefKeyDatabase = new PrefKeyDataModel
       {
@@ -79,7 +70,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
       };
 
       var executor = RequestExecutorContainerFactory.Build<CreatePreferenceKeyExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(prefEvent));
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
       var result = ex.GetResult;
@@ -92,9 +83,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     {
       const string keyName = "some key";
       var keyUid = Guid.NewGuid();
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
   
       mockPrefRepo.Setup(p => p.GetPreferenceKey(null, keyName))
               .ReturnsAsync((PrefKeyDataModel)null);
@@ -118,7 +106,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
              .ReturnsAsync(prefKeyDatabase);
 
       var executor = RequestExecutorContainerFactory.Build<CreatePreferenceKeyExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var result = await executor.ProcessAsync(prefEvent) as PreferenceKeyV1Result;
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);

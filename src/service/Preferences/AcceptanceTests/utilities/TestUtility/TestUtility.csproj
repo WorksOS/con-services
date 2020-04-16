@@ -12,6 +12,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\VSS.VisionLink.Interfaces\src\VSS.Visionlink.Interfaces.csproj" />
     <ProjectReference Include="..\..\..\Clients\CCSS.Productivity3D.Preferences.Abstractions\CCSS.Productivity3D.Preferences.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\src\CCSS.Productivity3D.Preferences.Common\CCSS.Productivity3D.Preferences.Common.csproj" />
   </ItemGroup>

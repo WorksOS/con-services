@@ -384,8 +384,6 @@ namespace CCSS.Productivity3D.Preferences.Repository
       return userPrefKeys != null && userPrefKeys.Count > 0;
     }
 
-    //todoMaaverick: Do we need a getUserPreferences to get all for a user. I think we always get by KeyName.
-
     #endregion
   }
 }

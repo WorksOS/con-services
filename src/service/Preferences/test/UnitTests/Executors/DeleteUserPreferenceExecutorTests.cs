@@ -24,9 +24,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     [Fact]
     public async Task DeleteUserPreferenceExecutor_NoExisting()
     {
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
       var prefEvent = new DeleteUserPreferenceEvent
       {
         PreferenceKeyName = "some key",
@@ -37,7 +34,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
         .ReturnsAsync(0);
 
       var executor = RequestExecutorContainerFactory.Build<DeleteUserPreferenceExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(prefEvent));
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       var result = ex.GetResult;
@@ -48,9 +45,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     [Fact]
     public async Task DeleteUserPreferenceExecutor_HappyPath()
     {
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
       var prefEvent = new DeleteUserPreferenceEvent
       {
         PreferenceKeyName = "some key",
@@ -61,7 +55,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
         .ReturnsAsync(1);
 
       var executor = RequestExecutorContainerFactory.Build<DeleteUserPreferenceExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var result = await executor.ProcessAsync(prefEvent);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);

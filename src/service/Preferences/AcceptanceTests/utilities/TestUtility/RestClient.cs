@@ -12,6 +12,8 @@ namespace TestUtility
 {
   public class RestClient
   {
+    public const string PREFERENCE_DB_SCHEMA_NAME = "Preference-ccss";
+
     public static readonly string ServiceBaseUrl;
 
     private static readonly HttpClient httpClient;
@@ -23,7 +25,7 @@ namespace TestUtility
       httpClient.DefaultRequestHeaders.Add("X-VisionLink-ClearCache", "true");
       httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
 
-      var _testConfig = new TestConfig(MySqlHelper.PREFERENCE_DB_SCHEMA_NAME);
+      var _testConfig = new TestConfig(PREFERENCE_DB_SCHEMA_NAME);
 
       if (Debugger.IsAttached || _testConfig.operatingSystem == "Windows_NT")
       {

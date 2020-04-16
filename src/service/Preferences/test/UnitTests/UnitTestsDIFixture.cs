@@ -23,6 +23,7 @@ namespace CCSS.Productivity3D.Preferences.Tests
     protected IServiceExceptionHandler ServiceExceptionHandler;
     public ILogger Log;
     protected Mock<IPreferenceRepository> mockPrefRepo = new Mock<IPreferenceRepository>();
+    protected ILoggerFactory Logger;
 
     public UnitTestsDIFixture()
     {
@@ -41,6 +42,7 @@ namespace CCSS.Productivity3D.Preferences.Tests
 
       ServiceProvider = serviceCollection.BuildServiceProvider();
       ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      Logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       Log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<T>();
     }

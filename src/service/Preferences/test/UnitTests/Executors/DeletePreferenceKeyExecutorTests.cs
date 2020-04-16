@@ -26,9 +26,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     {
       var keyUid = Guid.NewGuid();
 
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
       mockPrefRepo.Setup(p => p.UserPreferenceExistsForKey(keyUid))
               .ReturnsAsync(true);
 
@@ -38,7 +35,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
       };
 
       var executor = RequestExecutorContainerFactory.Build<DeletePreferenceKeyExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(prefEvent));
       Assert.Equal(HttpStatusCode.BadRequest, ex.Code);
       var result = ex.GetResult;
@@ -51,10 +48,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     {
       var keyUid = Guid.NewGuid();
 
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
-      mockPrefRepo.Setup(p => p.UserPreferenceExistsForKey(keyUid))
+     mockPrefRepo.Setup(p => p.UserPreferenceExistsForKey(keyUid))
               .ReturnsAsync(false);
 
       var prefEvent = new DeletePreferenceKeyEvent
@@ -65,7 +59,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
         .ReturnsAsync(0);
 
       var executor = RequestExecutorContainerFactory.Build<DeletePreferenceKeyExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(prefEvent));
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       var result = ex.GetResult;
@@ -78,9 +72,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     {
       var keyUid = Guid.NewGuid();
 
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
       mockPrefRepo.Setup(p => p.UserPreferenceExistsForKey(keyUid))
              .ReturnsAsync(false);
 
@@ -92,7 +83,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
         .ReturnsAsync(1);
 
       var executor = RequestExecutorContainerFactory.Build<DeletePreferenceKeyExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var result = await executor.ProcessAsync(prefEvent);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);

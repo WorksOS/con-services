@@ -26,9 +26,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     [Fact]
     public async Task CreateUserPreferenceExecutor_Existing()
     {
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-
       var prefEvent = new CreateUserPreferenceEvent
       {
         PreferenceKeyName = "some key",
@@ -41,7 +38,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
         .ReturnsAsync(0);
 
       var executor = RequestExecutorContainerFactory.Build<CreateUserPreferenceExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var ex = await Assert.ThrowsAsync<ServiceException>(async () => await executor.ProcessAsync(prefEvent));
       Assert.Equal(HttpStatusCode.InternalServerError, ex.Code);
       var result = ex.GetResult;
@@ -54,9 +51,6 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
     {
       const string keyName = "some key";
       var userUid = Guid.NewGuid();
-
-      var logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      var serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
 
       var prefEvent = new CreateUserPreferenceEvent
       {
@@ -80,7 +74,7 @@ namespace CCSS.Productivity3D.Preferences.Tests.Executors
         .ReturnsAsync(userPref);
 
       var executor = RequestExecutorContainerFactory.Build<CreateUserPreferenceExecutor>
-       (logger, serviceExceptionHandler, mockPrefRepo.Object);
+       (Logger, ServiceExceptionHandler, mockPrefRepo.Object);
       var result = await executor.ProcessAsync(prefEvent) as UserPreferenceV1Result;
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
