@@ -1,6 +1,0 @@
----
-version: 2
-deployment: Deployment for Civil 3D - File Access Service
-deployment-permissions: !include 'includes/deployment-permissions.yaml'
-default-environment-permissions: !include 'includes/default-env-permissions.yaml'
-environment-permissions: !include 'includes/env-permissions.yaml'
