@@ -32,10 +32,7 @@ namespace FileAccess.IntegrationTests
                       .BuildKestrelWebHost()
                       .UseStartup<Startup>()
                       .UseTestServer()
-                      .ConfigureTestServices(services =>
-                      {
-                        services.AddTransient<IFileRepository, MockFileRepository>();
-                      });
+                      .ConfigureTestServices(services => services.AddTransient<IFileRepository, MockFileRepository>());
           });
 
     public void Dispose()
