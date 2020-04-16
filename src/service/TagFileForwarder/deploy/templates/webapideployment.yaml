@@ -19,15 +19,6 @@ spec:
       containers:
       - image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/ccss-tagfileforwarder:{{ .Values.image.tag }}
         name: {{ $name }}    
-        livenessProbe:
-          httpGet:
-            scheme: HTTP
-            path: /ping
-            port: 80
-        readinessProbe:
-          httpGet:
-            path: /ping
-            port: 80
         resources:
 {{ toYaml .Values.resources | indent 12 }}
         envFrom:

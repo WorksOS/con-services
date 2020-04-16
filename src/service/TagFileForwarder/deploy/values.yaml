@@ -1,18 +1,18 @@
 # Default values for projectservice.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-environment: alpha
+environment: prod
 
 rootDomain: eks.ccsseng.com
 
-globalConfig: 3dapp-alpha
+globalConfig: 3dapp-prod
 
 replicaCount: 1
 
 serviceName: tagfileforwarder-service
 
 image:
-  tag: 1
+  tag: "411"
 
 resources:
   limits:
