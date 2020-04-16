@@ -8,20 +8,20 @@ COPY . /build/
 WORKDIR /build
 
 #publish TRex servers
-RUN if [ "$COMPONENT" = "ApplicationServer" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; fi &&
- if [ "$COMPONENT" = "DesignElevation" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation ; fi &&
- if [ "$COMPONENT" = "MutableData" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData ; fi &&
- if [ "$COMPONENT" = "PSNode" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode ; fi &&
- if [ "$COMPONENT" = "QMesh" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.QuantizedMesh/VSS.TRex.Server.QuantizedMesh.csproj --output /trex/QMesh ; fi &&
- if [ "$COMPONENT" = "TileRendering" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering ; fi &&
- if [ "$COMPONENT" = "TINSurfaceExport" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport ; fi &&
- if [ "$COMPONENT" = "Reports" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Reports --output /trex/Reports ; fi &&
- if [ "$COMPONENT" = "ConnectedSiteGateway" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --output /trex/ConnectedSiteGateway ; fi &&
- if [ "$COMPONENT" = "Gateway" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway ; fi &&
- if [ "$COMPONENT" = "MutableGateway" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway ; fi &&
-## if [ "$COMPONENT" = "Webtools" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; fi &&
- if [ "$COMPONENT" = "Activator" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator ; fi &&
- if [ "$COMPONENT" = "Deployer" || "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer ; fi
+RUN if [ "$COMPONENT" = "ApplicationServer" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; fi ; \
+ if [ "$COMPONENT" = "DesignElevation" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation ; fi ; \
+ if [ "$COMPONENT" = "MutableData" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData ; fi ; \
+ if [ "$COMPONENT" = "PSNode" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode ; fi ; \
+ if [ "$COMPONENT" = "QMesh" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.QuantizedMesh/VSS.TRex.Server.QuantizedMesh.csproj --output /trex/QMesh ; fi ; \
+ if [ "$COMPONENT" = "TileRendering" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TileRendering/VSS.TRex.Server.TileRendering.csproj --output /trex/TileRendering ; fi ; \
+ if [ "$COMPONENT" = "TINSurfaceExport" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.TINSurfaceExport/VSS.TRex.Server.TINSurfaceExport.csproj --output /trex/TINSurfaceExport ; fi ; \
+ if [ "$COMPONENT" = "Reports" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Reports --output /trex/Reports ; fi ; \
+ if [ "$COMPONENT" = "ConnectedSiteGateway" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --output /trex/ConnectedSiteGateway ; fi ; \
+ if [ "$COMPONENT" = "Gateway" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway ; fi ; \
+ if [ "$COMPONENT" = "MutableGateway"-o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway ; fi ; \
+## if [ "$COMPONENT" = "Webtools" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; fi ; \
+ if [ "$COMPONENT" = "Activator" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator ; fi ; \
+ if [ "$COMPONENT" = "Deployer" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer ; fi
 
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
