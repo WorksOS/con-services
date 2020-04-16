@@ -78,7 +78,7 @@ namespace VSS.WebApi.Common
       });
 
       services.AddCommon<BaseStartup>(ServiceName, ServiceDescription, ServiceVersion);
-      services.AddJaeger(ServiceName);
+//      services.AddJaeger(ServiceName);
       services.AddServiceDiscovery();
 
       services.AddMvcCore(config =>
