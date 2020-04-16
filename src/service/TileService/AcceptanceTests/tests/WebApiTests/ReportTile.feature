@@ -1,6 +1,7 @@
 ﻿Feature: ReportTile
 I should be able to request report tiles
 
+@ignore
 Scenario Outline: Report Tiles
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "<ProjectUID>"
@@ -49,7 +50,7 @@ Examples:
 | ElevWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 0    | 3          |          |
 | TempWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b | AllOverlays                            | HYBRID    | 10   | 3          |          |
 
-
+@ignore
 Scenario Outline: Large Report Tiles
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a width "1024" and a height "1024"
@@ -64,6 +65,7 @@ Examples:
 | ResultName            | ProjectUID                           | filterUID                            | overlayType                                                             | mapType   | mode | Difference |
 | CMVLarge              | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | ProductionData,BaseMap,ProjectBoundary                                  | SATELLITE | 1    | 10         |
 
+@ignore
 Scenario Outline: Report cutfill and volume tiles
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "<ProjectUID>"
@@ -91,7 +93,7 @@ Examples:
 | G2DOverlayAll            | ff91dd40-1569-4765-a2bc-014321f76ace |                                      | GroundToDesign | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff | 9c27697f-ea6d-478a-a168-ed20d6cd9a22 | AllOverlays                            | HYBRID  | 8    | 5          |                                      |
 | CFillWithAlignOverlayAll | ff91dd40-1569-4765-a2bc-014321f76ace | dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff |                |                                      |                                      | AllOverlays                            | HYBRID  | 8    | 5          | 2811c7c3-d270-4d63-97e2-fc3340bf6c6b |
 
-
+@ignore
 Scenario Outline: Report cutfill and volume tiles - Explicit
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "<ProjectUID>"
@@ -109,8 +111,7 @@ Examples:
 | GroundToGroundExplicit | ff91dd40-1569-4765-a2bc-014321f76ace | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData | 8    | 1          | true            |
 | GroundToGround         | ff91dd40-1569-4765-a2bc-014321f76ace | GroundToGround | A40814AA-9CDB-4981-9A21-96EA30FFECDD | F07ED071-F8A1-42C3-804A-1BDE7A78BE5B | ProductionData | 8    | 1          | false           |         
 
-
-
+@ignore
 Scenario: Report Tile - Missing Mode 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -118,6 +119,7 @@ And an overlayType "ProductionData"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "Missing display mode parameter for production data overlay"
 
+@ignore
 Scenario: Report Tile - Missing Map Type 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -125,12 +127,14 @@ And an overlayType "BaseMap"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "Missing map type parameter for base map overlay"
 
+@ignore
 Scenario: Report Tile - Missing Overlays 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "At least one type of map tile overlay must be specified"
 
+@ignore
 Scenario: Report Tile - Invalid Size 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -139,6 +143,7 @@ And a width "16" and a height "16"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "Tile size must be between 64 and 2048 with a base map or 64 and 4096 otherwise"
 
+@ignore
 Scenario: Report Tile - Missing CutFill Design 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -147,6 +152,7 @@ And a mode "8"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "Missing design for cut-fill production data overlay"
 
+@ignore
 Scenario: Report Tile - Missing Volume Design 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -156,6 +162,7 @@ And a volumeCalcType "DesignToGround"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "Missing design for summary volumes production data overlay"
 
+@ignore
 Scenario: Report Tile - Missing Base Filter 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -166,6 +173,7 @@ And a volumeTopUid "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff"
 When I request a Report Tile Expecting BadRequest
 Then I should get error code -1 and message "Missing base filter for summary volumes production data overlay"
 
+@ignore
 Scenario: Report Tile - Missing Top Filter 
 Given the Report Tile service URI "/api/v1/reporttiles/png" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.Executors;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.Models;
 using VSS.Productivity3D.FileAccess.WebAPI.Models.ResultHandling;
@@ -15,15 +13,15 @@ using Xunit;
 
 namespace FileAccess.UnitTests.Executors
 {
-  public class RawFileAccessExecutorTests : IClassFixture<ExecutorBaseTests>
+  public class RawFileAccessExecutorTests : IClassFixture<ExecutorBaseFixture>
   {
-    private readonly ExecutorBaseTests _testFixture;
-    private IServiceProvider _serviceProvider => _testFixture.serviceProvider;
-    private IConfigurationStore _configStore => _testFixture.configStore;
+    private readonly ExecutorBaseFixture executorFixture;
+    private IServiceProvider _serviceProvider => executorFixture.serviceProvider;
+    private IConfigurationStore _configStore => executorFixture.configStore;
 
-    public RawFileAccessExecutorTests(ExecutorBaseTests testFixture)
+    public RawFileAccessExecutorTests(ExecutorBaseFixture testFixture)
     {
-      _testFixture = testFixture;
+      executorFixture = testFixture;
     }
 
     [Fact]

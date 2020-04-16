@@ -1,6 +1,6 @@
 ﻿namespace VSS.Common.Abstractions.ServiceDiscovery.Constants
 {
-  public class ServiceNameConstants
+  public static class ServiceNameConstants
   {
     public const string FILTER_SERVICE = "filter-service";
     public const string PRODUCTIVITY3D_SERVICE = "productivity3d-service";
@@ -10,6 +10,7 @@
     public const string PUSH_SERVICE = "push-service";
     public const string TILE_SERVICE = "tile-service";
     public const string TAGFIELAUTH_SERVICE = "tagfileauth-service";
+    public const string DEVICE_SERVICE = "device-service";
     public const string TREX_SERVICE_IMMUTABLE = "trex-service-immutable";
     public const string TREX_SERVICE_MUTABLE = "trex-service-mutable";
     public const string TREX_SERVICE_CONNECTEDSITE = "trex-service-connectedsite";

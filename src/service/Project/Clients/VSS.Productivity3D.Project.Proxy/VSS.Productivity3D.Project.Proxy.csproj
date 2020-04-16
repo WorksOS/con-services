@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
     <ProjectReference Include="..\VSS.Productivity3D.Project.Abstractions\VSS.Productivity3D.Project.Abstractions.csproj" />
   </ItemGroup>
 </Project>

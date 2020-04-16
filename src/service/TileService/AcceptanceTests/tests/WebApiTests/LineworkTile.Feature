@@ -1,6 +1,7 @@
 ﻿Feature: LineworkTile
 I should be able to request linework tiles
 
+@ignore
 Scenario Outline: Linework Tiles 3D
 Given the Linework Tile 3D service URI "/api/v1/lineworktiles3d" 
 And a projectUid "<ProjectUID>"
@@ -16,6 +17,7 @@ Examples:
 | Alignment             | ff91dd40-1569-4765-a2bc-014321f76ace | Alignment     | 18        | 102753 | 47317 | 1          | 
 | GeoTiff               | ff91dd40-1569-4765-a2bc-014321f76ace | GeoTiff       | 16        | 41583  | 64159 | 1          | 
 
+@ignore
 Scenario: Linework Tile - Missing File Type 
 Given the Linework Tile 3D service URI "/api/v1/lineworktiles3d" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -25,6 +27,7 @@ And a xTile "54321"
 When I request a Linework Tile Expecting BadRequest
 Then I should get error code -1 and message "Missing file type"
 
+@ignore
 Scenario: Linework Tile - Unsupported File Type 
 Given the Linework Tile 3D service URI "/api/v1/lineworktiles3d" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"
@@ -35,6 +38,7 @@ And a xTile "54321"
 When I request a Linework Tile Expecting BadRequest
 Then I should get error code -1 and message "Unsupported file type DesignSurface"
 
+@ignore
 Scenario: Linework Tile - Invalid File Type 
 Given the Linework Tile 3D service URI "/api/v1/lineworktiles3d" 
 And a projectUid "ff91dd40-1569-4765-a2bc-014321f76ace"

@@ -25,7 +25,7 @@ namespace CCSS.CWS.Client.MockClients
     {
       var createProjectResponseModel = new CreateProjectResponseModel
       {
-        Id = TRNHelper.MakeTRN(Guid.NewGuid(), TRNHelper.TRN_PROJECT)
+        Id = Guid.NewGuid().ToString()
       };
       return Task.FromResult(createProjectResponseModel);
     }
