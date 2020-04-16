@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -30,11 +31,14 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetDeviceBySerialNumber)}: serialNumber {serialNumber}");
+
       var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/serialnumber/{serialNumber}", null, null, null, customHeaders);
       // todoMaveric what if error?
       deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
       deviceResponseModel.AccountId = TRNHelper.ExtractGuidAsString(deviceResponseModel.AccountId);
 
+      log.LogDebug($"{nameof(GetDeviceBySerialNumber)}: deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return deviceResponseModel;
     }
 
@@ -47,12 +51,15 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
-      var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
+      log.LogDebug($"{nameof(GetDeviceByDeviceUid)}: deviceUid {deviceUid}");
 
+      var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
       var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/{deviceTrn}", deviceUid, null, null, customHeaders);
       // todoMaveric what if error?
       deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
       deviceResponseModel.AccountId = TRNHelper.ExtractGuidAsString(deviceResponseModel.AccountId);
+
+      log.LogDebug($"{nameof(GetDeviceByDeviceUid)}: deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return deviceResponseModel;
     }
 
@@ -66,6 +73,8 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetDevicesForAccount)}: accountUid {accountUid}");
+
       var accountTrn = TRNHelper.MakeTRN(accountUid, TRNHelper.TRN_ACCOUNT);
       var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices", accountUid, null, null, customHeaders);
       //  parameters: &includeTccRegistrationStatus=true
@@ -76,6 +85,8 @@ namespace CCSS.CWS.Client
         device.Id = TRNHelper.ExtractGuidAsString(device.Id);
         device.AccountId = TRNHelper.ExtractGuidAsString(device.AccountId);
       }
+
+      log.LogDebug($"{nameof(GetDevicesForAccount)}: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return deviceListResponseModel;
     }
 
@@ -88,14 +99,18 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetProjectsForDevice)}: deviceUid {deviceUid}");
+
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
-      var projectListResponse = await GetData<ProjectListResponseModel>($"/device/{deviceTrn}/projects", deviceUid, null, null, customHeaders);
-      foreach (var project in projectListResponse.Projects)
+      var projectListResponseModel = await GetData<ProjectListResponseModel>($"/device/{deviceTrn}/projects", deviceUid, null, null, customHeaders);
+      foreach (var project in projectListResponseModel.Projects)
       {
         project.accountId = TRNHelper.ExtractGuidAsString(project.accountId);
         project.projectId = TRNHelper.ExtractGuidAsString(project.projectId);
       }
-      return projectListResponse;
+
+      log.LogDebug($"{nameof(GetProjectsForDevice)}: projectListResponseModel {JsonConvert.SerializeObject(projectListResponseModel)}");
+      return projectListResponseModel;
     }
 
   }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -23,6 +24,8 @@ namespace CCSS.CWS.Client.MockClients
 
     public Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetDeviceBySerialNumber)} Mock: serialNumber {serialNumber}");
+
       var deviceResponseModel = new DeviceResponseModel()
       {
         Id = Guid.NewGuid().ToString(),
@@ -32,12 +35,14 @@ namespace CCSS.CWS.Client.MockClients
         Status = "Active",
         SerialNumber = serialNumber
       };
-
+      log.LogDebug($"{nameof(GetDeviceBySerialNumber)} Mock: deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return Task.FromResult(deviceResponseModel);
     }
 
     public Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetDeviceByDeviceUid)} Mock: deviceUid {deviceUid}");
+      
       var deviceResponseModel = new DeviceResponseModel()
       {
         Id = deviceUid.ToString(),
@@ -48,11 +53,14 @@ namespace CCSS.CWS.Client.MockClients
         SerialNumber = "56556565"
       };
 
+      log.LogDebug($"{nameof(GetDeviceByDeviceUid)} Mock: deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
       return Task.FromResult(deviceResponseModel);
     }
 
     public Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: accountUid {accountUid}");
+
       var deviceListResponseModel = new DeviceListResponseModel()
       {
         Devices = new List<DeviceResponseModel>()
@@ -68,11 +76,15 @@ namespace CCSS.CWS.Client.MockClients
           }
         }
       };
+
+      log.LogDebug($"{nameof(GetDevicesForAccount)} Mock: deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return Task.FromResult(deviceListResponseModel);
     }
 
     public Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetProjectsForDevice)} Mock: deviceUid {deviceUid}");
+
       var projectListResponseModel = new ProjectListResponseModel()
       {
         Projects = new List<ProjectResponseModel>()
@@ -92,6 +104,7 @@ namespace CCSS.CWS.Client.MockClients
         }
       };
 
+      log.LogDebug($"{nameof(GetProjectsForDevice)} Mock: projectListResponseModel {JsonConvert.SerializeObject(projectListResponseModel)}");
       return Task.FromResult(projectListResponseModel);
     }
 
