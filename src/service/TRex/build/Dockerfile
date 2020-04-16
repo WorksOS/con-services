@@ -8,7 +8,7 @@ ARG COMPONENT
 
 ENV TPAAS_AUTH_URL=https://identity-stg.trimble.com/i/oauth2 \
     TPAAS_APP_TOKEN=MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh \
-    COORDINATE_SERVICE_URL=https://api-stg.trimble.com/t/trimble.com/coordinates/1.0 \
+    COORDINATE_SERVICE_URL=https://api-stg.trimble.com/t/trimble.com/coordinates/1.0
 
 #Bring libs accross
 COPY --from=build_container /trex/libs/ /trex/libs/
