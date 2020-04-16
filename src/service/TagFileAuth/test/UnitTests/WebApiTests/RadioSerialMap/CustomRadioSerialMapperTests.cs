@@ -10,25 +10,12 @@ namespace WebApiTests.RadioSerialMap
   [TestClass]
   public class CustomRadioSerialMapTests : ExecutorBaseTests
   {
-    /* Text of test json file
-{ 
-"map" : [{
-    "note": "A test element",
-    "radioSerial": "123",
-    "radioType" : "torch",
-    "assetId": "123",
-    "assetUid": "B00C62B3-4EEE-472E-9814-C31379E94BD5",
-    "projectId": "234",
-    "projectUid": "896C7A36-E079-4B67-A79C-B209398F01CA"
-}]
-}     */
-
     private string testRadioSerial = "123";
     private int testRadioType = 6; // SNM940/torch;
     private long testAssetId = 123;
-    private Guid testAssetUid = new Guid("B00C62B3-4EEE-472E-9814-C31379E94BD5");
+    private Guid testAssetUid = new Guid("b00c62b3-4eee-472e-9814-c31379e94bd5");
     private long testProjectId = 234;
-    private Guid testProjectUid = new Guid("896C7A36-E079-4B67-A79C-B209398F01CA");
+    private Guid testProjectUid = new Guid("896c7a36-e079-4b67-a79c-b209398f01ca");
 
     [TestMethod]
     public void Creation()

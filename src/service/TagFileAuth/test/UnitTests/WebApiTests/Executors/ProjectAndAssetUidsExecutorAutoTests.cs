@@ -72,6 +72,21 @@ namespace WebApiTests.Executors
         );
     }
 
+    [TestMethod]
+    public async Task TRexExecutor_Auto_Happy_RadioSerialMapOverride()
+    {
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "123", string.Empty, 0, 0, DateTime.MinValue);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult("896c7a36-e079-4b67-a79c-b209398f01ca", "b00c62b3-4eee-472e-9814-c31379e94bd5");
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+      executor.CustomRadioSerialMapper = ServiceProvider.GetService<ICustomRadioSerialProjectMap>();
+
+      var result = await executor.ProcessAsync(getProjectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+
+      ValidateResult(result, expectedGetProjectAndAssetUidsResult, 0, "success");
+    }
 
     [TestMethod]
     public async Task TRexExecutor_Auto_Happy_EC520device_WithNoLicense_AndProject()

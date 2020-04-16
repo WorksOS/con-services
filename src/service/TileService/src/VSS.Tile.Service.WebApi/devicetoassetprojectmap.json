@@ -2,7 +2,7 @@
 "map" : [{
     "note": "A test element",
     "radioSerial": "123",
-    "deviceType" : "6", // SNM940/torch
+    "radioType" : "torch",
     "assetId": "123",
     "assetUid": "b00c62b3-4eee-472e-9814-c31379e94bd5",
     "projectId": "234",
