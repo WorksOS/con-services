@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace VSS.Productivity3D.TagFileAuth.WebAPI.RadioSerialMap
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
 {
   /// <summary>
   /// This defines a set of specific mappings of radio serial/type asset identification to projects to support TMC and other special cases that do not have devices
@@ -62,10 +63,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.RadioSerialMap
           _log.LogError($"Either/both of radioSerial and radioType not present in mapping element: {elem}");
         }
 
-        if (!_map.TryAdd(key(elem.radioSerial, elem.radioType),
+        if (!_map.TryAdd(key(elem.radioSerial.Value, elem.radioType.Value),
           new RadioSerialMapAssetIdentifier()
           {
-            assetId = elem.assetId ?? "", assetUid = elem.assetId ?? "", projectId = elem.projectId ?? "", projectUid = elem.projectUid ?? "",
+            assetId = Convert.ToInt64(elem.assetId?.Value ?? "-1"), 
+            assetUid = new Guid(elem.assetUid?.Value ?? ""), 
+            projectId = Convert.ToInt64(elem.projectId?.Value ?? "-1"), 
+            projectUid = new Guid(elem.projectUid?.Value ?? "")
           }))
         {
           _log.LogError($"Radio device to asset/project map already contains an entry for {elem}");

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VSS.Productivity3D.TagFileAuth.WebAPI.RadioSerialMap
+namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
 {
   /// <summary>
   /// Defines the known short and long asset and project IDs for a radio serial/type key combination
@@ -10,6 +10,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.RadioSerialMap
     public long assetId;
     public Guid assetUid;
     public long projectId;
-    public long projectUid;
+    public Guid projectUid;
   }
 }

@@ -1,4 +1,4 @@
-﻿namespace VSS.Productivity3D.TagFileAuth.WebAPI.RadioSerialMap
+﻿namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap
 {
   /// <summary>
   /// Interface providing access to radio serial/type asset/project mapping
