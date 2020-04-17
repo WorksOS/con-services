@@ -6,7 +6,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>CCSS.Productivity3D.Preferences.WebAPI</AssemblyName>
-    <OutputType>exe</OutputType>
     <PackageId>PreferencesWebApi</PackageId>
     <RootNamespace>CCSS.Productivity3D.Preferences.WebAPI</RootNamespace>
     <PackageTags>ccss-productivity3d-preference-service</PackageTags>
