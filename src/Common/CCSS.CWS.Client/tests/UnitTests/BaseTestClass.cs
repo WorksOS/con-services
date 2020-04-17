@@ -72,7 +72,7 @@ namespace CCSS.CWS.Client.UnitTests
       try
       {
         var token = ServiceProvider.GetService<ITPaaSApplicationAuthentication>().GetApplicationBearerToken();
-        //todomaverick
+        // C2S3CON-211
         //TODO: set userId from JWT
         //string authorization = context.Request.Headers["X-Jwt-Assertion"];
         //var jwtToken = new TPaaSJWT(authorization);

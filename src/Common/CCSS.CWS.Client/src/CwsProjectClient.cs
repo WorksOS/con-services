@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -31,10 +32,14 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task<CreateProjectResponseModel> CreateProject(CreateProjectRequestModel createProjectRequest, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(CreateProject)}: createProjectRequest {JsonConvert.SerializeObject(createProjectRequest)}");
+
       createProjectRequest.accountId = TRNHelper.MakeTRN(createProjectRequest.accountId, TRNHelper.TRN_ACCOUNT);
-      var response = await PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
-      response.Id = TRNHelper.ExtractGuidAsString(response.Id);
-      return response;
+      var createProjectResponseModel = await PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
+      createProjectResponseModel.Id = TRNHelper.ExtractGuidAsString(createProjectResponseModel.Id);
+
+      log.LogDebug($"{nameof(CreateProject)}: createProjectResponseModel {JsonConvert.SerializeObject(createProjectResponseModel)}");
+      return createProjectResponseModel;
     }
 
     /// <summary>
@@ -46,6 +51,8 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task UpdateProjectDetails(Guid projectUid, UpdateProjectDetailsRequestModel updateProjectDetailsRequest, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(UpdateProjectDetails)}: projectUid {projectUid} updateProjectDetailsRequest {JsonConvert.SerializeObject(updateProjectDetailsRequest)}");
+
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
       await UpdateData($"/projects/{projectTrn}", updateProjectDetailsRequest, null, customHeaders);
     }
@@ -59,6 +66,8 @@ namespace CCSS.CWS.Client
     /// </summary>
     public async Task UpdateProjectBoundary(Guid projectUid, ProjectBoundary projectBoundary, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(UpdateProjectBoundary)}: projectUid {projectUid} projectBoundary {JsonConvert.SerializeObject(projectBoundary)}");
+
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
       await UpdateData($"/projects/{projectTrn}/boundary", projectBoundary, null, customHeaders);
     }

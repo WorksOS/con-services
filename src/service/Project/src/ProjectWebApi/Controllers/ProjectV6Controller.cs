@@ -164,10 +164,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = new Guid(customerUid);
-      
-      // todoMaverick, no, we need the trn from WM
-      //if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid().ToString();
-
+   
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
@@ -354,7 +351,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
-      // todoMaverick archive in cws
+      // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
       if (!string.IsNullOrEmpty(customerUid))
         await notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));

@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         if (project != null)
         {
-          // todoMaverick I believe deviceType will always be Manual when shortRaptorProjectId is provided 
+          // CCSSSCON-207 I believe deviceType will always be Manual when shortRaptorProjectId is provided 
           //  If a projects account (for manual import) has only a free sub, I don't believe the UI should allow it to get here.
           //  However, if it does, then should we allow manually importing tag files into project where the account has no deviceLicenses? 
           //   Assuming no here.
@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (string.Compare(device.Status, "ACTIVE", true) == 0)
         {
           shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
-          // todoMaverick If a devices account has only a free sub, then should we import tag files into it?
+          // CCSSSCON-207 If a devices account has only a free sub, then should we import tag files into it?
           int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
           if (deviceLicenseTotal > 0)
             serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").CGEnum;

@@ -28,11 +28,10 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       return CheckTPaaS();
     }
 
-    [Fact(Skip = "todoMaverick")] 
-    // todoMaverick does this need a user token Sankari? 
-    // (requires a user token. This is ok as will have one via from ProjectSvc) 
+    [Fact(Skip = "waiting on CCSSSCON-136")] 
     public async Task GetDevicesForAccountTest()
     {
+      // (new version of GetDevicesForAccount will allow an application token . Setup test with applicationToken
       var accountClient = ServiceProvider.GetRequiredService<ICwsAccountClient>();
       var accountListResponseModel = await accountClient.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
       Assert.NotNull(accountListResponseModel);

@@ -279,7 +279,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.Tests
             It.Is<IDictionary<string, string>>(d => DictionaryContentEquals(d, expectedHeaders))),
           Times.Once);
 
-      // todoMaverick not possible with WM devices
+      // CCSSSCON-85 not possible with WM devices
       //// We should not call this if we have not matching 3d/2d assets
       //mockAssetResolverProxy
       //  .Verify(m => m.GetMatching3D2DAssets(It.IsAny<MatchingAssetsDisplayModel>(),

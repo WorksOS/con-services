@@ -37,7 +37,7 @@ namespace VSS.WebApi.Common
       app.UseExceptionTrap();
       app.UseFilterMiddleware<RequestIDMiddleware>();
 
-      // todoMaverick
+      // CCSSSCON-223
       //app.UseSwagger();
       ////Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
       //app.UseSwaggerUI(c =>

@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     }
 
     /// <summary>
-    /// EarthWorks cut/fill doesn't necessarily REQUIRE a subscription? todoMaverick how will this work in WorksOS?
+    /// EarthWorks cut/fill doesn't necessarily REQUIRE a subscription? CCSSSCON-207 how will this work in WorksOS?
     /// </summary>
     private async Task<GetProjectAndAssetUidsEarthWorksResult> HandleCutFillExport(GetProjectAndAssetUidsEarthWorksRequest request,
       DeviceData device)

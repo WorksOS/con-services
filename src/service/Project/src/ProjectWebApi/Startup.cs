@@ -91,7 +91,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
-      // todoMaverick move to real endpoints when available
+      // CCSSSCON-216 temporary move to real endpoints when available
       services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
       services.AddTransient<ICwsProjectClient, MockCwsProjectClient>();
       services.AddTransient<ICwsDeviceClient, MockCwsDeviceClient>();
