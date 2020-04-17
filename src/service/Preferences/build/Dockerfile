@@ -32,4 +32,4 @@ EXPOSE 80
 COPY --from=builder /build/artifacts/CCSS.Productivity3D.Preferences.WebApi .
 
 
-ENTRYPOINT ["dotnet", "CCSS.Productivity3D.Preferences.WebApi.dll"]
+ENTRYPOINT ["dotnet", "CCSS.Productivity3D.Preferences.WebAPI.dll"]
