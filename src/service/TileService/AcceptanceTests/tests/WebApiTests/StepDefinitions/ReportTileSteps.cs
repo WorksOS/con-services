@@ -32,6 +32,7 @@ namespace WebApiTests.StepDefinitions
     public void GivenTheReportTileServiceURI(string url)
     {
       this.url = RestClient.TileServiceBaseUrl + url;
+      this.url = "http://localhost:5000" + url;
     }
 
     [And(@"a projectUid ""(.*)""")]
