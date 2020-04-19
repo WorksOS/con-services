@@ -74,6 +74,7 @@ namespace VSS.TRex.Webtools
         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;
         options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
       });
 
       services.AddSingleton(new VSS.TRex.IO.RecyclableMemoryStreamManager
