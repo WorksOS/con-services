@@ -19,6 +19,25 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("accountName")]
     public string Name { get; set; }
 
+    /// <summary>
+    /// device count
+    /// </summary>
+    [JsonProperty("deviceCount")]
+    public int DeviceCount { get; set; }
+
+    /// <summary>
+    /// user count
+    /// </summary>
+    [JsonProperty("userCount")]
+    public int UserCount { get; set; }
+
+    /// <summary>
+    /// project count
+    /// </summary>
+    [JsonProperty("projectCount")]
+    public int ProjectCount { get; set; }
+
+
     public List<string> GetIdentifiers() => new List<string>
     {
       Id

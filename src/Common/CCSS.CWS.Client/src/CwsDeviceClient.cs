@@ -23,17 +23,20 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// GET https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/1332J023SW ??
+    /// GET https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/devices/getDeviceWithSerialNumber?serialNumber=CB123
     ///   application token
     ///   todoMaaverick used by TFA AssetIdExecutor; ProjectAndAssetUidsExecutor;  ProjectAndAssetUidsEarthWorksExecutor
     ///                 response fields: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
-    ///   CCSSCON-115
+    ///   CCSSSCON-115
+    ///        2020_04_17 todoWM the response has no AccountId , name or status yet?
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceBySerialNumber(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDeviceBySerialNumber)}: serialNumber {serialNumber}");
 
-      var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/serialnumber/{serialNumber}", null, null, null, customHeaders);
+      var queryParameters = new List<KeyValuePair<string, string>>{
+          new KeyValuePair<string, string>("serialNumber", serialNumber)};
+      var deviceResponseModel = await GetData<DeviceResponseModel>($"/devices/getDeviceWithSerialNumber", null, null, queryParameters, customHeaders);
       // todoMaveric what if error?
       deviceResponseModel.Id = TRNHelper.ExtractGuidAsString(deviceResponseModel.Id);
       deviceResponseModel.AccountId = TRNHelper.ExtractGuidAsString(deviceResponseModel.AccountId);
@@ -43,11 +46,12 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// GET https://api-stg.trimble.com/t/trimble.com/cws-devicegateway-stg/2.0/devices/{deviceId}
+    /// GET https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/devices/trn::profilex:us-west-2:device:08d7b6bb-c4d5-209a-01d9-bf00010008b5
     ///   application token
     ///   todoMaaverick used by TFA ProjectIDExecutor, projectBoundariesAtDateExecutor
     ///                 response fields: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
-    ///   CCSSCON-114
+    ///   CCSSSCON-114
+    ///        2020_04_17 todoWM the response has no AccountId or status yet?
     /// </summary>
     public async Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {
@@ -64,20 +68,20 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// GET https://api.trimble.com/t/trimble.com/cws-devicegateway/1.0/accounts/{accountUid}/devices
+    /// GET https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/accounts/trn::profilex:us-west-2:account:158ef953-4967-4af7-81cc-952d47cb6c6f%0A/devices?includeTccRegistrationStatus=true
     ///   application token
     ///   todoMaaverick used when UI calls ProjectSvc.GetCustomerDeviceLicense() 
     ///   to load devices for account into DB (to generate shortRaptorAssetId)
     ///                 response fields: DeviceTRN
-    ///   CCSSCON-136
+    ///   CCSSSCON-136
+    ///       2020_04_17 todoWM returns no devices yet?
     /// </summary>
     public async Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevicesForAccount)}: accountUid {accountUid}");
 
       var accountTrn = TRNHelper.MakeTRN(accountUid, TRNHelper.TRN_ACCOUNT);
-      var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices", accountUid, null, null, customHeaders);
-      //  parameters: &includeTccRegistrationStatus=true
+      var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices?includeTccRegistrationStatus=true", accountUid, null, null, customHeaders);
       // todoMaveric what if error?
 
       foreach (var device in deviceListResponseModel.Devices)
