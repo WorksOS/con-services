@@ -109,7 +109,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
     /// For example, if you wanted to configure Scheduler Public V2 API to be different, you could set a specific config value to override the default
     /// </summary>
     /// <returns>Service Name value for a specific API Version and Type</returns>
-    public string GetServiceConfigurationName(string serviceName, ApiType apiType, ApiVersion version) => $"{serviceName}-{apiType.GetDescription()}-{version.GetDescription()}".ToLower();
+    public string GetServiceConfigurationName(string serviceName, ApiType apiType, ApiVersion version) => $"{serviceName}_{apiType.GetDescription()}_{version.GetDescription()}".ToLower();
 
     /// <summary>
     /// This is a naming convention for our APIS
