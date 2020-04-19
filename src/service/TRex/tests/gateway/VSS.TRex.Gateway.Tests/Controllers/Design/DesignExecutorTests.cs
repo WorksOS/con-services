@@ -53,6 +53,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
     {
       var mockTransferProxy = new Mock<ITransferProxy>();
       mockTransferProxy.Setup(t => t.Upload(It.IsAny<Stream>(), It.IsAny<string>()));
+
       var mockConfig = new Mock<IConfigurationStore>();
       mockConfig.Setup(x => x.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME")).Returns("vss-projects-stg");
 
@@ -67,7 +68,32 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Design
       string transferFileName = "TransferTestDesign.ttm";
       var isWrittenToS3Ok = S3FileTransfer.WriteFile("TestData", projectUid, transferFileName);
       Assert.True(isWrittenToS3Ok);
+
     }
+
+
+    [Fact]
+    public void FileDeleteFromStorage_HappyPath()
+    {
+      var mockTransferProxy = new Mock<ITransferProxy>();
+      mockTransferProxy.Setup(t => t.RemoveFromBucket(It.IsAny<string>())).Returns(true);
+      var mockConfig = new Mock<IConfigurationStore>();
+      mockConfig.Setup(x => x.GetValueString("AWS_DESIGNIMPORT_BUCKET_NAME")).Returns("vss-projects-stg");
+
+      DIBuilder
+        .New()
+        .AddLogging()
+        .Add(x => x.AddSingleton(mockConfig.Object))
+        .Add(x => x.AddSingleton(mockTransferProxy.Object))
+        .Complete();
+
+      Guid projectUid = Guid.Parse("A11F2458-6666-424F-A995-4426a00771AE");
+      string transferFileName = "TransferTestDesign.ttm";
+      var isDeletedFromS3Ok = S3FileTransfer.RemoveFileFromBucket(projectUid, transferFileName);
+      Assert.True(isDeletedFromS3Ok);
+
+    }
+
 
     [Fact]
     public void MapDesignsurfaceToResult()

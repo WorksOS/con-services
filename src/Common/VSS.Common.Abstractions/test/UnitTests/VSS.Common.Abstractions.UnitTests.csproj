@@ -29,8 +29,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\VSS.Common.Abstractions.csproj" />
   </ItemGroup>
-
-
-
-
+  
 </Project>

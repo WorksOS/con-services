@@ -5,7 +5,7 @@ namespace VSS.TRex.Designs.Interfaces
 {
   public interface IDesignFiles
   {
-    bool RemoveDesignFromCache(Guid designUid, IDesignBase design, bool deleteFile);
+    bool RemoveDesignFromCache(Guid designUid, IDesignBase design, Guid siteModelUid, bool deleteFile);
 
     /// <summary>
     /// Acquire a lock and reference to the design referenced by the given design UID
