@@ -3,7 +3,6 @@ kind: ConfigMap
 metadata:
   name: projectservice-testing
 data:
-  __ASSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
   AWS_BUCKET_NAME: vss-exports-stg
   AWS_DESIGNIMPORT_BUCKET_NAME: vss-project3dp-stg
   cws_profilemanager_public_v1: http://localhost:5001/api/v1
@@ -13,7 +12,6 @@ data:
   DATA_OCEAN_UPLOAD_TIMEOUT_MINS: "1"
   DATA_OCEAN_UPLOAD_WAIT_MILLSECS: "1000"
   DATA_OCEAN_URL: http://localhost:5001
-  __DISSOCIATESUBSPROJECT_API_URL: http://localhost:5001/dummy/
   ENABLE_RAPTOR_GATEWAY_DESIGNIMPORT: "true"
   ENABLE_TREX_GATEWAY_DESIGNIMPORT: "false"
   ENVIRONMENT_PROJECTTYPEGEOFENCE_ISREQUIRED: "false"

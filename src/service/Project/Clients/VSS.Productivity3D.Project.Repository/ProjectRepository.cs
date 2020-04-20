@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Models.Internal;
 using VSS.MasterData.Models.Utilities;
 using VSS.MasterData.Repositories;
 using VSS.MasterData.Repositories.DBModels;
@@ -455,7 +454,7 @@ namespace VSS.Productivity3D.Project.Repository
 
             const string update =
               @"UPDATE Project                
-                  SET IsArchived = 1
+                  SET IsArchived = 1,
                     LastActionedUTC = @LastActionedUTC
                   WHERE ProjectUID = @ProjectUID";
             upsertedCount = await ExecuteWithAsyncPolicy(update, project);

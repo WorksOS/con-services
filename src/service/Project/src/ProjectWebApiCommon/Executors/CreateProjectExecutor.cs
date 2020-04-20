@@ -19,11 +19,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   public class CreateProjectExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Save for potential rollback
-    /// </summary>
-    protected string subscriptionUidAssigned;
-
-    /// <summary>
     /// Processes the CreateProjectEvent
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)

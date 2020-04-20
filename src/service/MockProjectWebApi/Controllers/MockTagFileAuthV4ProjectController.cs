@@ -7,13 +7,13 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
 namespace MockProjectWebApi.Controllers
 {
-  public class MockTagFileAuthV2ProjectController : BaseController
+  public class MockTagFileAuthV4ProjectController : BaseController
   {
-    public MockTagFileAuthV2ProjectController(ILoggerFactory loggerFactory) : base(loggerFactory)
+    public MockTagFileAuthV4ProjectController(ILoggerFactory loggerFactory) : base(loggerFactory)
     { }
 
-    [Route("api/v2/project/getUidsEarthWorks")]
-    [Route("api/v2/project/getUidsCTCT")] // this will be obsolete as soon as MockAPI deployed
+    [Route("api/v4/project/getUidsEarthWorks")]
+    [Route("api/v4/project/getUidsCTCT")] // this will be obsolete as soon as MockAPI deployed
     [HttpPost]
     public GetProjectAndAssetUidsEarthWorksResult GetProjectAndAssetUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {
@@ -27,7 +27,7 @@ namespace MockProjectWebApi.Controllers
       return new GetProjectAndAssetUidsEarthWorksResult(string.Empty, string.Empty, string.Empty, false, 41, "Manual Import: no intersecting projects found");
     }
 
-    [Route("api/v2/project/getUids")]
+    [Route("api/v4/project/getUids")]
     [HttpPost]
     public GetProjectAndAssetUidsResult GetProjectAndAssetUids([FromBody]GetProjectAndAssetUidsRequest request)
     {

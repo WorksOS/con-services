@@ -720,8 +720,6 @@ namespace TestUtility
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            StartDate = eventObject.ProjectStartDate,
-            EndDate = eventObject.ProjectEndDate,
             ProjectGeofenceWKT = eventObject.ProjectBoundary,
           };
           if (HasProperty(eventObject, "IsArchived"))

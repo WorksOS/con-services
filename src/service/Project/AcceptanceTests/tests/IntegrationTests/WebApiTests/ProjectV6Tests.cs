@@ -292,30 +292,5 @@ namespace IntegrationTests.WebApiTests
       await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
       await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectUid_firstCreate.ToString(), projectEventArray, true);
     }
-
-    [Fact]
-    public async Task Create2StandardProjectsWithOverlappingBoundarysButNotTimes()
-    {
-      var testText = "Project v6 test 12";
-      Msg.Title(testText, "Create 2 standard projects with overlapping boundaries but not times.");
-      var ts = new TestSupport();
-      var customerUid = Guid.NewGuid();
-      ts.IsPublishToWebApi = true;
-      var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   | ",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary3}   | {customerUid} | " };
-      await ts.PublishEventCollection(projectEventArray);
-      await ts.GetProjectsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, projectEventArray, true);
-      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray, true);
-
-      testText += "_Updated";
-      var projectEventArray2 = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   | ",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary3}   | {customerUid} | " };
-      var response2 = await ts.PublishEventToWebApi(projectEventArray2);
-      Assert.True(response2 == "success", "Response is unexpected. Should be a success. Response: " + response2);
-      
-      await ts.GetProjectDetailsViaWebApiV6AndCompareActualWithExpected(HttpStatusCode.OK, customerUid, ts.ProjectUid.ToString(), projectEventArray2, true);
-    }
   }
 }

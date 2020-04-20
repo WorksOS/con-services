@@ -65,22 +65,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// The name of the project type.
     /// </value>
     public string ProjectTypeName => ProjectType.ToString();
-
-    /// <summary>
-    /// Gets or sets the start date.
-    /// </summary>
-    /// <value>
-    /// The start date.
-    /// </value>
-    public string StartDate { get; set; }
-
-    /// <summary>
-    /// Gets or sets the end date.
-    /// </summary>
-    /// <value>
-    /// The end date.
-    /// </value>
-    public string EndDate { get; set; }
+      
 
     /// <summary>
     /// Gets or sets the project uid.
@@ -120,8 +105,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
       return otherProject.ProjectUid == ProjectUid
              && otherProject.Name == Name
              && otherProject.ShortRaptorProjectId == ShortRaptorProjectId
-             && otherProject.StartDate == StartDate
-             && otherProject.EndDate == EndDate
              && otherProject.ProjectGeofenceWKT == ProjectGeofenceWKT
              && otherProject.ProjectTimeZone == ProjectTimeZone
              && otherProject.ProjectType == ProjectType

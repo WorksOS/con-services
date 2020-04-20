@@ -514,7 +514,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      filter.ApplyDateRange(project.ProjectTimeZoneIana, true);
+      filter.ApplyDateRange(project.IanaTimeZone, true);
     }
 
     private async Task ApplyDateRange(Guid projectUid, FilterResult filter)
@@ -527,7 +527,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, "Failed to retrieve project."));
       }
 
-      filter.ApplyDateRange(project.ProjectTimeZoneIana);
+      filter.ApplyDateRange(project.IanaTimeZone);
     }
 
     /// <summary>

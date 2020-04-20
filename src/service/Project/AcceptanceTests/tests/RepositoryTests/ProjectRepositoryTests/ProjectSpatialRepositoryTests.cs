@@ -145,7 +145,7 @@ namespace RepositoryTests
     ///    but time is overlapping
     /// </summary>
     [Fact]
-    public void PolygonIntersection_InternalBoundaryExternalTime()
+    public void PolygonIntersection_InternalBoundaryExternalTime_HappyPath()
     {
       var actionUTC = new DateTime(2017, 1, 1, 2, 30, 3);
       
@@ -167,7 +167,7 @@ namespace RepositoryTests
       var testCustomerUID = createProjectEvent.CustomerUID.ToString();
 
       var g = projectRepo.DoesPolygonOverlap(testCustomerUID, testBoundary); g.Wait();
-      Assert.False(g.Result);
+      Assert.True(g.Result);
     }
 
     /// <summary>
