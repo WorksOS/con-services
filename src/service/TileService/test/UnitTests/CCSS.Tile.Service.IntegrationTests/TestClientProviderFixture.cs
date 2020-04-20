@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Net.Http;
 using CCSS.IntegrationTests.Utils;
 using Microsoft.AspNetCore.Hosting;
@@ -14,15 +13,13 @@ using VSS.WebApi.Common;
 
 namespace CCSS.Tile.Service.IntegrationTests
 {
-  public class TestClientProviderFixture : IDisposable
+  public class TestClientProviderFixture
   {
-    public ServiceProvider ServiceProvider {get; }
+    public ServiceProvider ServiceProvider { get; }
     public IRestClient RestClient { get; }
 
     public TestClientProviderFixture()
     {
-
-
       var httpClient = CreateHostBuilder().Start()
                                           .GetTestClient();
 
@@ -43,12 +40,6 @@ namespace CCSS.Tile.Service.IntegrationTests
                       .BuildKestrelWebHost()
                       .UseStartup<Startup>()
                       .UseTestServer();
-                    //  .ConfigureTestServices(services =>
-                    //  {
-                    //    //services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(Log.Logger));
-                    //    //services.AddSingleton<IConfiguration>(config);
-                    ////    services.AddSingleton<IRestClient, RestClient>();
-                    //  });
           });
 
 
@@ -68,11 +59,6 @@ namespace CCSS.Tile.Service.IntegrationTests
              .AddLogging(loggingBuilder => loggingBuilder.AddSerilog(Log.Logger))
              .AddSingleton<IConfiguration>(config)
              .AddSingleton<IRestClient>(s => new RestClient(s.GetService<ILoggerFactory>(), s.GetService<IConfiguration>(), client));
-    }
-
-    public void Dispose()
-    {
-    //  RestClient?.Dispose();
     }
   }
 }

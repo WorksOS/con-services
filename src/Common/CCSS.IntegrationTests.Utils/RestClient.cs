@@ -11,8 +11,9 @@ using Newtonsoft.Json;
 
 namespace CCSS.IntegrationTests.Utils
 {
-  public class RestClient : IRestClient
+  public class RestClient : IRestClient, IDisposable
   {
+    private bool disposed;
     private readonly ILogger log;
     private readonly string serviceBaseUrl;
     private readonly HttpClient httpClient;
@@ -24,11 +25,11 @@ namespace CCSS.IntegrationTests.Utils
 
       this.httpClient = httpClient ?? new HttpClient();
 
-      httpClient.DefaultRequestHeaders.Add("X-VisionLink-ClearCache", "true");
-      httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
+      this.httpClient.DefaultRequestHeaders.Add("X-VisionLink-ClearCache", "true");
+      this.httpClient.DefaultRequestHeaders.Add("pragma", "no-cache");
     }
 
-    public Task<HttpResponseMessage> SendHttpClientRequest(string route, HttpMethod method, HttpHeaders customHeaders = null, string acceptHeader = MediaTypes.JSON, string contentType = MediaTypes.JSON, object body = null, string customerUid = null, string jwtToken = null)
+    public Task<HttpResponseMessage> SendAsync(string route, HttpMethod method, HttpHeaders customHeaders = null, string acceptHeader = MediaTypes.JSON, string contentType = MediaTypes.JSON, object body = null, string customerUid = null, string jwtToken = null)
     {
       var requestMessage = new HttpRequestMessage(method, new Uri(serviceBaseUrl + route));
 
@@ -55,6 +56,31 @@ namespace CCSS.IntegrationTests.Utils
       log.LogInformation($"[{method}] {requestMessage.RequestUri.AbsoluteUri}");
 
       return httpClient.SendAsync(requestMessage);
+    }
+
+    ~RestClient()
+    {
+      Dispose(false);
+    }
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposed)
+      {
+        return;
+      }
+
+      if (disposing)
+      {
+        httpClient?.Dispose();
+      }
+
+      disposed = true;
     }
   }
 }

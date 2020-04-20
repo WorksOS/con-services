@@ -28,8 +28,47 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\CCSS.IntegrationTests.ImageComparison\CCSS.IntegrationTests.ImageComparison.csproj" />
     <ProjectReference Include="..\..\..\..\..\Common\CCSS.IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Tile.Service.WebApi\VSS.Tile.Service.WebApi.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <TestData Include="./TestData/**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="TestData\LineworkTiles\Alignment.json" />
+    <None Remove="TestData\ProjectThumbnails\LoadDumpData.json" />
+    <None Remove="TestData\ProjectThumbnails\NoProductionData.json" />
+    <None Remove="TestData\ProjectThumbnails\ProductionData.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <TestData Remove="TestData\LineworkTiles\Alignment.json" />
+    <TestData Remove="TestData\LineworkTiles\Geotiff.json" />
+    <TestData Remove="TestData\ProjectThumbnails\LoadDumpData.json" />
+    <TestData Remove="TestData\ProjectThumbnails\NoProductionData.json" />
+    <TestData Remove="TestData\ProjectThumbnails\ProductionData.json" />
+    <TestData Remove="TestData\ProjectThumbnails\ProjectBoundaryOnly.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\GeofenceThumbnailResponse.json" />
+    <Content Include="TestData\LineworkTiles\Alignment.json" />
+    <Content Include="TestData\LineworkTiles\Geotiff.json" />
+    <Content Include="TestData\LineworkTiles\Linework.json" />
+    <Content Include="TestData\MultiGeofenceThumbnailRequest.json" />
+    <Content Include="TestData\MultiGeofenceThumbnailResponse.json" />
+    <Content Include="TestData\ProjectThumbnails\ProductionData.json" />
+    <Content Include="TestData\ProjectThumbnails\LoadDumpData.json" />
+    <Content Include="TestData\ProjectThumbnails\NoProductionData.json" />
+    <Content Include="TestData\ProjectThumbnails\ProjectBoundaryOnly.json" />
+    <Content Include="TestData\ReportTileResponse.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="CopyCustomContent" AfterTargets="AfterBuild">
+    <Copy SourceFiles="@(TestData)" DestinationFolder="$(OutputPath)/TestData/%(RecursiveDir)" SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

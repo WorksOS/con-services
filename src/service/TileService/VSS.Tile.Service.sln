@@ -104,6 +104,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi", "..\Moc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.IntegrationTests.Utils", "..\..\Common\CCSS.IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj", "{C3A5E48A-8E90-4929-838B-9AEE6E8E3270}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.IntegrationTests.ImageComparison", "..\..\Common\CCSS.IntegrationTests.ImageComparison\CCSS.IntegrationTests.ImageComparison.csproj", "{1311C0CF-92BF-4642-889A-926B8C6E23D6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -262,6 +264,10 @@ Global
 		{C3A5E48A-8E90-4929-838B-9AEE6E8E3270}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3A5E48A-8E90-4929-838B-9AEE6E8E3270}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3A5E48A-8E90-4929-838B-9AEE6E8E3270}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1311C0CF-92BF-4642-889A-926B8C6E23D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1311C0CF-92BF-4642-889A-926B8C6E23D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1311C0CF-92BF-4642-889A-926B8C6E23D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1311C0CF-92BF-4642-889A-926B8C6E23D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -311,6 +317,7 @@ Global
 		{1AF5652C-A5BC-4334-831A-0AFAC761A197} = {FDDB44E3-7F49-4988-8CF8-0C471437ECF0}
 		{1FECD62A-A4C2-495D-8247-52FE4CF676A7} = {1EEFA0EC-0C75-4621-85A4-9B9829905675}
 		{C3A5E48A-8E90-4929-838B-9AEE6E8E3270} = {1EEFA0EC-0C75-4621-85A4-9B9829905675}
+		{1311C0CF-92BF-4642-889A-926B8C6E23D6} = {1EEFA0EC-0C75-4621-85A4-9B9829905675}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6751412A-15E0-42BD-8F9F-FFFA8AF71A71}

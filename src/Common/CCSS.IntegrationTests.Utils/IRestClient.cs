@@ -7,6 +7,6 @@ namespace CCSS.IntegrationTests.Utils
 {
   public interface IRestClient
   {
-    Task<HttpResponseMessage> SendHttpClientRequest(string route, HttpMethod method, HttpHeaders customHeaders = null, string acceptHeader = MediaTypes.JSON, string contentType = MediaTypes.JSON, object body = null, string customerUid = null, string jwtToken = null);
+    Task<HttpResponseMessage> SendAsync(string route, HttpMethod method, HttpHeaders customHeaders = null, string acceptHeader = MediaTypes.JSON, string contentType = MediaTypes.JSON, object body = null, string customerUid = null, string jwtToken = null);
   }
 }
