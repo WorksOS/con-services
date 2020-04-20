@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Common\CCSS.IntegrationTests.ImageComparison\CCSS.IntegrationTests.ImageComparison.csproj" />
-    <ProjectReference Include="..\..\..\..\..\Common\CCSS.IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\IntegrationTests.ImageComparison\CCSS.IntegrationTests.ImageComparison.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\IntegrationTests.Utils\CCSS.IntegrationTests.Utils.csproj" />
     <ProjectReference Include="..\..\..\src\VSS.Tile.Service.WebApi\VSS.Tile.Service.WebApi.csproj" />
   </ItemGroup>
   <ItemGroup>
