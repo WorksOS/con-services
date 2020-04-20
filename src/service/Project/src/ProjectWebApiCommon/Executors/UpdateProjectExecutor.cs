@@ -43,8 +43,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID,
-          existing.StartDate, updateProjectEvent.ProjectEndDate, updateProjectEvent.ProjectBoundary,
-          log, serviceExceptionHandler, projectRepo);
+          updateProjectEvent.ProjectBoundary, log, serviceExceptionHandler, projectRepo);
       }
 
       if (existing != null && existing.ProjectType != updateProjectEvent.ProjectType)
@@ -126,9 +125,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       else
       {
-        // CCSSSCON-213 214 may need to check start and end dates if we add them, also Description
-        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0
-          || string.Compare(existing.Description, updateProjectEvent.Description, true) != 0)
+        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0)
         {
           // CCSSSCON-214 what are errors?
           var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
@@ -154,10 +151,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // rollback changes to Project
         var rollbackProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectEvent);
-        rollbackProjectEvent.ProjectEndDate = existing.EndDate;
         rollbackProjectEvent.ProjectTimezone = existing.ProjectTimeZone;
         rollbackProjectEvent.ProjectName = existing.Name;
-        rollbackProjectEvent.Description = existing.Description;
         rollbackProjectEvent.ProjectType = existing.ProjectType;
         rollbackProjectEvent.ProjectBoundary = existing.Boundary;
         rollbackProjectEvent.CoordinateSystemFileName = existing.CoordinateSystemFileName;

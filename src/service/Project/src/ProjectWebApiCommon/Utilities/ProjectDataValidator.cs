@@ -9,13 +9,12 @@ using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 {
@@ -151,31 +150,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             throw new ServiceException(HttpStatusCode.BadRequest,
               new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
                 projectErrorCodesProvider.FirstNameWithOffset(12)));
-          }
-          if (!string.IsNullOrEmpty(createEvent.Description) && createEvent.Description.Length > 2000)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(13),
-                projectErrorCodesProvider.FirstNameWithOffset(13)));
-          }
-          if (createEvent.ProjectStartDate == DateTime.MinValue)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(14),
-                projectErrorCodesProvider.FirstNameWithOffset(14)));
-          }
-          if (createEvent.ProjectEndDate == DateTime.MinValue)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(15),
-                projectErrorCodesProvider.FirstNameWithOffset(15)));
-          }
-          if (createEvent.ProjectStartDate > createEvent.ProjectEndDate)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(16),
-                projectErrorCodesProvider.FirstNameWithOffset(16)));
-          }
+          }          
         }
         else if (evt is UpdateProjectEvent)
         {
@@ -192,25 +167,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(12),
                 projectErrorCodesProvider.FirstNameWithOffset(12)));
           }
-          if (!string.IsNullOrEmpty(updateEvent.Description) && updateEvent.Description.Length > 2000)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(13),
-                projectErrorCodesProvider.FirstNameWithOffset(13)));
-          }
-          if (updateEvent.ProjectEndDate == DateTime.MinValue)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(15),
-                projectErrorCodesProvider.FirstNameWithOffset(15)));
-          }
-          var project = projectRepo.GetProjectOnly(evt.ProjectUID.ToString()).Result;
-          if (project.StartDate > updateEvent.ProjectEndDate)
-          {
-            throw new ServiceException(HttpStatusCode.BadRequest,
-              new ContractExecutionResult(projectErrorCodesProvider.GetErrorNumberwithOffset(16),
-                projectErrorCodesProvider.FirstNameWithOffset(16)));
-          }
+         
+          var project = projectRepo.GetProjectOnly(evt.ProjectUID.ToString()).Result;          
           if (!string.IsNullOrEmpty(updateEvent.ProjectTimezone) &&
               !project.ProjectTimeZone.Equals(updateEvent.ProjectTimezone))
           {

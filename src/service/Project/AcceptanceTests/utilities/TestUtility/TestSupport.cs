@@ -11,7 +11,9 @@ using System.Threading.Tasks;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 
@@ -477,8 +479,7 @@ namespace TestUtility
           }
           var cprequest = CreateProjectRequest.CreateACreateProjectRequest(cpCustomerUid,
             (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            eventObject.ProjectName, cpDescription, DateTime.Parse(eventObject.ProjectStartDate),
-            DateTime.Parse(eventObject.ProjectEndDate), eventObject.ProjectTimezone,
+            eventObject.ProjectName, eventObject.ProjectTimezone,
             eventObject.ProjectBoundary, cpCoordinateSystemFileName, cpCoordinateSystemFileContent);
           jsonString = JsonConvert.SerializeObject(cprequest, JsonSettings);
           break;        
@@ -492,10 +493,6 @@ namespace TestUtility
             updateProjectRequest.CoordinateSystemFileName = eventObject.CoordinateSystem;
             updateProjectRequest.CoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
           }
-          if (HasProperty(eventObject, "ProjectEndDate") && eventObject.ProjectEndDate != null)
-          {
-            updateProjectRequest.ProjectEndDate = DateTime.Parse(eventObject.ProjectEndDate);
-          }
           if (HasProperty(eventObject, "ProjectName"))
           {
             updateProjectRequest.ProjectName = eventObject.ProjectName;
@@ -503,18 +500,14 @@ namespace TestUtility
           if (HasProperty(eventObject, "ProjectType"))
           {
             updateProjectRequest.ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType);
-          }
-          if (HasProperty(eventObject, "Description"))
-          {
-            updateProjectRequest.Description = eventObject.Description;
-          }
+          }         
           if (HasProperty(eventObject, "ProjectBoundary"))
           {
             updateProjectRequest.ProjectBoundary = eventObject.ProjectBoundary;
           }
 
-          var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName, updateProjectRequest.Description,
-                                              updateProjectRequest.ProjectEndDate, updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent, updateProjectRequest.ProjectBoundary);
+          var request = UpdateProjectRequest.CreateUpdateProjectRequest(updateProjectRequest.ProjectUID, updateProjectRequest.ProjectType, updateProjectRequest.ProjectName, 
+                                                                        updateProjectRequest.CoordinateSystemFileName, updateProjectRequest.CoordinateSystemFileContent, updateProjectRequest.ProjectBoundary);
           jsonString = JsonConvert.SerializeObject(request, JsonSettings);
           break;        
         case "AssociateProjectGeofence":          
@@ -784,8 +777,6 @@ namespace TestUtility
             Name = eventObject.ProjectName,
             ProjectTimeZone = eventObject.ProjectTimezone,
             ProjectType = (ProjectType)Enum.Parse(typeof(ProjectType), eventObject.ProjectType),
-            StartDate = eventObject.ProjectStartDate,
-            EndDate = eventObject.ProjectEndDate,
             ProjectGeofenceWKT = eventObject.ProjectBoundary,
           };
           if (HasProperty(eventObject, "IsArchived"))
@@ -807,15 +798,7 @@ namespace TestUtility
           if (HasProperty(eventObject, "CustomerUID"))
           {
             pd.CustomerUid = eventObject.CustomerUID;
-          }          
-          if (HasProperty(eventObject, "Description"))
-          {
-            pd.Description = eventObject.Description;
-          }
-          //if (HasProperty(eventObject, "ServiceType"))
-          //{
-          //  pd.ServiceType = eventObject.ServiceType.ToSafeString();
-          //}
+          }                   
           eventList.Add(pd);
         }
         return eventList;

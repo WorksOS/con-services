@@ -112,7 +112,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         {
           // CCSSSCON-207, what should be the marketing requirements for dates here?
           return p
-              .Where(x => DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)
+              .Where(x => !x.IsArchived)
               .ToList();
         }
         return null;
@@ -136,8 +136,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         {
           // CCSSSCON-207, what should be the marketing requirements for dates here?
           return p
-            .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) &&
-                DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)
+            .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) && !x.IsArchived)
             .ToList();
         }
         return null;
@@ -192,7 +191,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     public async Task<List<ProjectData>> GetIntersectingProjectsForDevice(DeviceData device,
-      double latitude, double longitude, DateTime timeOfPosition)
+      double latitude, double longitude)
     {
       var accountProjects = new List<ProjectData>();
       if (device == null || string.IsNullOrEmpty(device.CustomerUID) || string.IsNullOrEmpty(device.DeviceUID))
@@ -201,7 +200,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this customer have which intersect the lat/long?
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
+        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude));
         if (!accountProjects.Any())
           return accountProjects;
       }

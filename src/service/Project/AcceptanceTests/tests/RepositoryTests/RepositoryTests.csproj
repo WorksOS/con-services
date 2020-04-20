@@ -29,7 +29,6 @@
     <ProjectReference Include="..\..\..\..\Filter\Clients\VSS.Productivity3D.Filter.Repository\VSS.Productivity3D.Filter.Repository.csproj" />
     <ProjectReference Include="..\..\..\Clients\VSS.Productivity3D.Project.Proxy\VSS.Productivity3D.Project.Proxy.csproj" />
     <ProjectReference Include="..\..\..\Clients\VSS.Productivity3D.Project.Repository\VSS.Productivity3D.Project.Repository.csproj" />
-    <ProjectReference Include="..\..\..\src\ProjectWebApiCommon\VSS.Project.WebApi.Common.csproj" />
     <ProjectReference Include="..\..\utilities\TestUtility\TestUtility.csproj" />
   </ItemGroup>
 

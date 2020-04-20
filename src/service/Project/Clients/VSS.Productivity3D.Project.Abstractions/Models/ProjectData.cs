@@ -15,8 +15,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     public ProjectType ProjectType { get; set; }
 
     public string Name { get; set; }
-    public string Description { get; set; }
-
+   
     // IanaTimeZone
     public string ProjectTimeZone { get; set; }
 
@@ -25,12 +24,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     //     ProjectTimeZone is in Windows StandardTime name,
     //         which the UI,and ProjectSvc limit to a known set (contained in PreferencesTimeZones.cs).
     public string ProjectTimeZoneIana { get; set; }
-
-    // start and end are actually only date with no time component. However C# has no date-only.
-    public string StartDate { get; set; }
-
-    public string EndDate { get; set; }
-
 
     public string CustomerUID { get; set; }
 
@@ -52,11 +45,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
         && otherProject.ShortRaptorProjectId == ShortRaptorProjectId
         && otherProject.ProjectType == ProjectType
         && otherProject.Name == Name
-        && otherProject.Description == Description
         && otherProject.ProjectTimeZone == ProjectTimeZone
         && otherProject.ProjectTimeZoneIana == ProjectTimeZoneIana
-        && otherProject.StartDate == StartDate
-        && otherProject.EndDate == EndDate
         && otherProject.CustomerUID == CustomerUID
         && otherProject.GeometryWKT == GeometryWKT
         && otherProject.CoordinateSystemFileName == CoordinateSystemFileName

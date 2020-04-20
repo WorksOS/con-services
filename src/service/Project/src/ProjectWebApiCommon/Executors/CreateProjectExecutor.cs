@@ -36,8 +36,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
       await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
-        createProjectEvent.ProjectUID,
-        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary,
+        createProjectEvent.ProjectUID, createProjectEvent.ProjectBoundary,
         log, serviceExceptionHandler, projectRepo);
 
       // Write to WM first to obtain their ProjectTRN to use as ProjectUid for our DB etc

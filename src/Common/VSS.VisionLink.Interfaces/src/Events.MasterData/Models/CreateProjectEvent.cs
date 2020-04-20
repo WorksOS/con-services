@@ -8,11 +8,8 @@ namespace VSS.Visionlink.Interfaces.Events.MasterData.Models
     public Guid ProjectUID { get; set; }
     public Guid CustomerUID { get; set; }
     public int ShortRaptorProjectId { get; set; }
-    public string ProjectName { get; set; }
-    public string Description { get; set; }
+    public string ProjectName { get; set; }   
     public ProjectType ProjectType { get; set; }
-    public DateTime ProjectStartDate { get; set; }
-    public DateTime ProjectEndDate { get; set; }
     public string ProjectTimezone { get; set; }   
     public string ProjectBoundary { get; set; }
     public string CoordinateSystemFileName { get; set; }

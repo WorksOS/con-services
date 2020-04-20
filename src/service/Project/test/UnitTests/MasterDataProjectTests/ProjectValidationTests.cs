@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
@@ -153,8 +153,7 @@ namespace VSS.MasterData.ProjectTests
     public void ValidateUpsertProjectV1Request_GoodBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, "the projectName", "the project description",
-        new DateTime(2017, 01, 20), null, null, _validBoundary);
+      (Guid.NewGuid(), ProjectType.Standard, "the projectName", "the project description", null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -164,7 +163,6 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel
       {
         ProjectUID = updateProjectEvent.ProjectUID.ToString(),
-        StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
         ProjectTimeZone = updateProjectEvent.ProjectTimezone
 
       });
@@ -176,8 +174,7 @@ namespace VSS.MasterData.ProjectTests
     public void ValidateUpsertProjectV1Request_InvalidBoundary()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, "the projectName", "the project description",
-        new DateTime(2017, 01, 20), null, null, _invalidBoundary);
+      (Guid.NewGuid(), ProjectType.Standard, "the projectName", null, null, _invalidBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -187,7 +184,6 @@ namespace VSS.MasterData.ProjectTests
       projectRepo.Setup(ps => ps.GetProjectOnly(It.IsAny<string>())).ReturnsAsync(new ProjectDatabaseModel
       {
         ProjectUID = updateProjectEvent.ProjectUID.ToString(),
-        StartDate = updateProjectEvent.ProjectEndDate.AddDays(-2),
         ProjectTimeZone = updateProjectEvent.ProjectTimezone
 
       });
@@ -202,8 +198,7 @@ namespace VSS.MasterData.ProjectTests
     {
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
-        new DateTime(2017, 01, 20), null, null, _validBoundary);
+      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description", null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -222,8 +217,7 @@ namespace VSS.MasterData.ProjectTests
       var log = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ProjectValidationTestsDiFixture>();
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
-        new DateTime(2017, 01, 20), null, null, _validBoundary);
+      (Guid.NewGuid(), ProjectType.Standard, projectName, null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -241,8 +235,7 @@ namespace VSS.MasterData.ProjectTests
     {
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
-        new DateTime(2017, 01, 20), null, null, _validBoundary);
+      (Guid.NewGuid(), ProjectType.Standard, projectName, null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -266,8 +259,7 @@ namespace VSS.MasterData.ProjectTests
     {
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
-        new DateTime(2017, 01, 20), null, null, _validBoundary);
+      (Guid.NewGuid(), ProjectType.Standard, projectName, null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
@@ -294,8 +286,7 @@ namespace VSS.MasterData.ProjectTests
       // note that this should NEVER occur as the first duplicate shouldn't have been allowed
       string projectName = "the projectName";
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, projectName, "the project description",
-        new DateTime(2017, 01, 20), null, null, _validBoundary);
+      (Guid.NewGuid(), ProjectType.Standard, projectName, null, null, _validBoundary);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       updateProjectEvent.ActionUTC = DateTime.UtcNow;
