@@ -1,0 +1,32 @@
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using VSS.Common.Abstractions.Configuration;
+using VSS.ConfigurationStore;
+using VSS.Serilog.Extensions;
+using VSS.TCCFileAccess;
+
+namespace FileAccess.UnitTests.Executors
+{
+  public class ExecutorBaseFixture : IDisposable
+  {
+    public IConfigurationStore configStore;
+    public IServiceProvider serviceProvider;
+
+    public ExecutorBaseFixture()
+    {
+      serviceProvider = new ServiceCollection()
+        .AddLogging()
+        .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("FileAccess.UnitTests.log")))
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<IFileRepository, FileRepository>()
+        .BuildServiceProvider();
+
+      configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+    }
+
+    public void Dispose()
+    { }
+  }
+}

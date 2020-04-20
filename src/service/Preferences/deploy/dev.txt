@@ -1,0 +1,2 @@
+MYSQL_DATABASE_NAME: Dev-Preference-ccss
+JAEGER_SERVICE_NAME: Dev Preference Service API 

@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// True for success and false for failure.
     /// </returns>
     /// <executor>TagFileProcessingErrorV1Executor</executor>
-    [Obsolete("todoMaverick obsolete", false)]
+    [Obsolete("CCSSSCON-207 obsolete", false)]
     [Route("api/v1/notification/tagFileProcessingError")]
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV1Request request)

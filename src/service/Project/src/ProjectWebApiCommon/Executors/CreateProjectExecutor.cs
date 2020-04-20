@@ -43,16 +43,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       // Write to WM first to obtain their ProjectTRN to use as ProjectUid for our DB etc
       try
       {
-        // todo convert from ours to WM Project TimeZone?
+        // don't send our timezone, we only need it for WorksOS. WM has their own, calculated from the boundary, for their own uses.
         var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
         createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
+        // CCSSSCON-141 what are exceptions/other error
         var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
         if (response != null && !string.IsNullOrEmpty(response.Id))
           createProjectEvent.ProjectUID = new Guid(response.Id);
         else
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7); // todoMaverick eception for bad return
-        // todoMaverick what about exception/other error
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);       
       }
       catch (Exception e)
       {

@@ -269,5 +269,11 @@ namespace VSS.TRex.Designs
 
       return calcResult;
     }
+
+    public override bool RemoveFromStorage(Guid siteModelUid, string fileName)
+    {
+      return S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
+    }
+
   }
 }

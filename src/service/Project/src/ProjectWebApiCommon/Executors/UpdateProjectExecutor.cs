@@ -38,7 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
-      // todoMaverick theres a bug if endDate is extended, it needs to re-check overlap
+      // CCSSSCON-213 theres a bug if endDate is extended, it needs to re-check overlap
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
@@ -48,17 +48,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
 
       if (existing != null && existing.ProjectType != updateProjectEvent.ProjectType)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7); // todoMaverick only 1 projectType now
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
 
       log.LogDebug($"UpdateProject: passed validation {updateProjectEvent.ProjectUID}");
 
       // create/update in Cws
       try
       {
+        // CCSSSCON-214 what kind of errors?
         var projectUid = await UpdateCws(existing, updateProjectEvent);
         if (!string.IsNullOrEmpty(projectUid)) // no error, may have been a create project
           updateProjectEvent.ProjectUID = new Guid(projectUid);
-        // todoMaverick what kind of errors?
       }
       catch (Exception e)
       {
@@ -100,7 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return new ContractExecutionResult();
     }
 
-    // todoMaverick if actually creating, then need to write to WM first to obtain the ProjectUid for our DB 
+    // if actually creating, then need to write to WM first to obtain the ProjectUid for our DB 
     private async Task<string> UpdateCws(ProjectDatabaseModel existing, UpdateProjectEvent updateProjectEvent)
     {
       if (existing == null)
@@ -114,9 +114,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
           if (response != null)
           {
+            // CCSSSCON-214 what about exception/other error
             updateProjectEvent.ProjectUID = new Guid(response.Id);
-            return response.Id;
-            // todoMaverick what about exception/other error
+            return response.Id;            
           }
         }
         catch (Exception e)
@@ -126,23 +126,21 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       else
       {
-        // todoMaverick may need to check start and end dates if we add them
+        // CCSSSCON-213 214 may need to check start and end dates if we add them, also Description
         if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0
           || string.Compare(existing.Description, updateProjectEvent.Description, true) != 0)
         {
-          // todoMaverick how to update endDate and Description?
+          // CCSSSCON-214 what are errors?
           var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
-          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel);
-          // todoMaverick what are errors?
+          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel);          
         }
         if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
         {
+          // CCSSSCON-214 what are errors?
           var boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
           await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
-          // todoMaverick what are errors?
-        }
-        // todoMaverick what about exception/other error
+        }        
         return updateProjectEvent.ProjectUID.ToString();
       }
       return null;

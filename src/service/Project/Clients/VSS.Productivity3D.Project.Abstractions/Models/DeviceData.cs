@@ -13,7 +13,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     public string DeviceName { get; set; }
     public string SerialNumber { get; set; }
     
-    // todoMaverick what will we get from WM Claimed/Registered/other?
+    // CCSSSCON-115 what will we get from WM Claimed/Registered/other?
     public string Status { get; set; }
     public long? ShortRaptorAssetId { get; set; }
 

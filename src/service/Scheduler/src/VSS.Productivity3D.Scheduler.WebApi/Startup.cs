@@ -76,7 +76,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
+
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
       services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, SchedulerErrorCodesProvider>();

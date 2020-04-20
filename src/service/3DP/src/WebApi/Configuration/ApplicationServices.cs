@@ -63,7 +63,11 @@ namespace VSS.Productivity3D.WebApi
       services.AddScoped<IErrorCodesProvider, TRexResult>();
 #endif
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
+
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
       services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();
       services.AddTransient<ITileGenerator, TileGenerator>();

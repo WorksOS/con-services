@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public async Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick at this stage we may not need to query also by device type. Question with Sankari re options
+      // CCSSSCON-115 at this stage we may not need to query also by device type. Question with Sankari re options
       // called by TFA AssetIdExecutor, projectUidexe
       // in ProjectSvc.DeviceV1Controller GetDevice
       // a) retrieve from cws using serialNumber which must get 
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick 
+      // CCSSSCON-114 
       // called by TFA ProjectIDExecutor, projectBoundariesAtDateExecutor
       // in ProjectSvc.DeviceController GetDevice
       // a) lookup localDB using shortRaptorAssetId to get DeviceTRN (return if not present)
@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.Project.Proxy
     
     public async Task<List<ProjectData>> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick 
+      // CCSSSCON-207
       // in ProjectSvc.DeviceController
       // a) retrieve list of associated projects from cws using DeviceTRN.
       //    Response must include list of projects; device status for each licensed/pending/?

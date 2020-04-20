@@ -35,7 +35,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         HasMore = false,
         Accounts = new List<AccountResponseModel>()
         {
-          new AccountResponseModel() {Id = expectedId, Name = expectedName}
+          new AccountResponseModel() {Id = expectedId, Name = expectedName, DeviceCount = 10, UserCount = 5, ProjectCount = 0}
         }
       };
 
@@ -54,22 +54,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Assert.Single(result.Accounts);
         Assert.Equal(TRNHelper.ExtractGuidAsString(expectedId), result.Accounts[0].Id);
         Assert.Equal(expectedName, result.Accounts[0].Name);
+        Assert.Equal(accountListModel.Accounts[0].DeviceCount, result.Accounts[0].DeviceCount);
+        Assert.Equal(accountListModel.Accounts[0].UserCount, result.Accounts[0].UserCount);
+        Assert.Equal(accountListModel.Accounts[0].ProjectCount, result.Accounts[0].ProjectCount);
         return true;
       });
     }
-
-    // todoMaverick, not needed?
-    //[Fact(Skip = "Not implemented")]
-    //public void GetAccountsForUserTest()
-    //{
-    //  throw new NotImplementedException();
-    //}
-
-    //[Fact(Skip = "Not implemented")]
-    //public void GetAccountForUserTest()
-    //{
-    //  throw new NotImplementedException();
-    //}
 
     [Fact]
     public void GetDeviceLicensesTest()

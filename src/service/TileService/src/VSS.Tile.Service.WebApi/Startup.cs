@@ -48,7 +48,11 @@ namespace VSS.Tile.Service.WebApi
     {
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>(); // used in TID auth for customer/user validation
+
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>(); 
+
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();

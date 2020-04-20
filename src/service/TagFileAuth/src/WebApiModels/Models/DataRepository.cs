@@ -110,7 +110,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         var p = await _projectProxy.GetProjects(customerUid);
         if (p != null)
         {
-          // todoMaverick, what should be the marketing requirements for dates here?
+          // CCSSSCON-207, what should be the marketing requirements for dates here?
           return p
               .Where(x => DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)
               .ToList();
@@ -134,7 +134,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         var p = await _deviceProxy.GetProjectsForDevice(deviceUid);
         if (p != null)
         {
-          // todoMaverick, what should be the marketing requirements for dates here?
+          // CCSSSCON-207, what should be the marketing requirements for dates here?
           return p
             .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) &&
                 DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)

@@ -12,6 +12,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 
 namespace WebApiTests.Executors
 {
@@ -27,7 +28,7 @@ namespace WebApiTests.Executors
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
     }
 
-    // todoMaverick maybe some tests on the 2 device status?
+    // CCSSSCON-207 maybe some tests on the 2 device status?
 
 
     [TestMethod]
@@ -66,10 +67,26 @@ namespace WebApiTests.Executors
           //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
           radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
           ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+          ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
           expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
         );
     }
 
+    [TestMethod]
+    public async Task TRexExecutor_Auto_Happy_RadioSerialMapOverride()
+    {
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "123", string.Empty, 0, 0, DateTime.MinValue);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult("896c7a36-e079-4b67-a79c-b209398f01ca", "b00c62b3-4eee-472e-9814-c31379e94bd5");
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+      executor.CustomRadioSerialMapper = ServiceProvider.GetService<ICustomRadioSerialProjectMap>();
+
+      var result = await executor.ProcessAsync(getProjectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+
+      ValidateResult(result, expectedGetProjectAndAssetUidsResult, 0, "success");
+    }
 
     [TestMethod]
     public async Task TRexExecutor_Auto_Happy_EC520device_WithNoLicense_AndProject()
@@ -107,6 +124,7 @@ namespace WebApiTests.Executors
           //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
           radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
           ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+          ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
           expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
         );
     }
@@ -147,6 +165,7 @@ namespace WebApiTests.Executors
           //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
           radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
           ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+          ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
           expectedGetProjectAndAssetUidsResult, expectedCode: 3001, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(1)
         );
     }
@@ -188,6 +207,7 @@ namespace WebApiTests.Executors
           //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
           radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
           ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+          ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
           expectedGetProjectAndAssetUidsResult, expectedCode: 3048, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(48)
         );
     }
@@ -236,6 +256,7 @@ namespace WebApiTests.Executors
           //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
           radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
           ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+          ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
           expectedGetProjectAndAssetUidsResult, expectedCode: 3049, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(49)
         );
     }
@@ -243,6 +264,7 @@ namespace WebApiTests.Executors
     private async Task ExecuteAuto(GetProjectAndAssetUidsRequest request,
       DeviceData radioSerialDevice, List<ProjectData> projectListForRadioSerial, DeviceLicenseResponseModel radioSerialDeviceLicenseResponseModel,
       DeviceData ec520Device, List<ProjectData> projectListForEC520, DeviceLicenseResponseModel ec520DeviceLicenseResponseModel,
+      ICustomRadioSerialProjectMap customRadioSerialMapper,
       GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
       )
     {
@@ -268,6 +290,8 @@ namespace WebApiTests.Executors
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
          cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+      executor.CustomRadioSerialMapper = customRadioSerialMapper;
+
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, expectedGetProjectAndAssetUidsResult, expectedCode, expectedMessage);

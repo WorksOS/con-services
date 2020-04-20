@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
@@ -43,9 +44,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddSingleton<IWebRequest, GracefulWebRequest>()
+
+        // Required for TIDAuthentication  
+        // CCSSSCON-216 temporary move to real endpoints when available
         .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
+
         .AddTransient<IProjectProxy, ProjectV6Proxy>()
-        .AddTransient<IDeviceProxy, DeviceV1Proxy>();
+        .AddTransient<IDeviceProxy, DeviceV1Proxy>()
+        .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();
       
       services.AddOpenTracing(builder =>
       {

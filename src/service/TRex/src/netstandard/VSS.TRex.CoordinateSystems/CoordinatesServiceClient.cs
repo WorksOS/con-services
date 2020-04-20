@@ -27,7 +27,7 @@ namespace VSS.TRex.CoordinateSystems
     private static readonly ILogger log = Logging.Logger.CreateLogger<CoordinatesServiceClient>();
     private readonly CoordinateServiceHttpClient serviceHttpClient;
 
-    // Bug 81615 - We are adding a cahce to Coordinate system calls until CoreX is done, as we are hitting rate limits when generating tiles
+    // Bug 81615 - We are adding a cache to Coordinate system calls until CoreX is done, as we are hitting rate limits when generating tiles
     // When CoreX is implemented, this cache will not be needed (nor will this class)
     private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
     private readonly TimeSpan _cacheTimeout = new TimeSpan(0, 8, 0, 0);
@@ -203,7 +203,7 @@ namespace VSS.TRex.CoordinateSystems
     }
 
     /// <summary>
-    /// Extracts a coordinate system defintion response object from a DC file presented as a byte array.
+    /// Extracts a coordinate system definition response object from a DC file presented as a byte array.
     /// </summary>
     public async Task<CoordinateSystemResponse> ImportCSDFromDCContentAsync(string filePath, byte[] fileContent)
     {
@@ -216,7 +216,7 @@ namespace VSS.TRex.CoordinateSystems
         
         using (var content = new MultipartFormDataContent("Upload----" + DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)))
         {
-          content.Add(new StreamContent(new MemoryStream(fileContent)), "DC", Path.GetFileName(filePath));
+          content.Add(new StreamContent(new MemoryStream(fileContent)), "file", Path.GetFileName(filePath));
 
           var response = await serviceHttpClient.SendRequest("/coordinatesystems/imports/dc/file", content);
           if (!response.IsSuccessStatusCode)
@@ -251,7 +251,7 @@ namespace VSS.TRex.CoordinateSystems
     }
 
     /// <summary>
-    /// Extracts a coordinate system defintion response object from a CSIB string.
+    /// Extracts a coordinate system definition response object from a CSIB string.
     /// </summary>
     public async Task<CoordinateSystemResponse> ImportCSDFromCSIBAsync(string csib)
     {

@@ -51,6 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets a list of projects for a customer. The list includes projects of all project types
     ///        and both active and archived projects.
     /// </summary>
+    [Route("api/v4/project")] // temporary kludge until ccssscon-219 
     [Route("api/v6/project")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsListResult> GetProjectsV6()
@@ -71,6 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets a project for a customer. 
     /// </summary>
     /// <returns>A project data</returns>
+    [Route("api/v4/project/{projectUid}")]
     [Route("api/v6/project/{projectUid}")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectV6(string projectUid)
@@ -85,6 +87,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets a project in applicationContext i.e. no customer. 
     /// </summary>
     /// <returns>A project data</returns>
+    [Route("api/v4/project/applicationcontext/{projectUid}")]
     [Route("api/v6/project/applicationcontext/{projectUid}")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectUidApplicationContextV6(string projectUid)
@@ -101,6 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///    get this from localDB now.
     ///       response to include customerUid
     /// </summary>
+    [Route("api/v4/project/applicationcontext/{shortRaptorProjectId}")]
     [Route("api/v6/project/applicationcontext/{shortRaptorProjectId}")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
@@ -117,6 +121,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///    else get overlapping projects in localDB for this CustomerUID
     /// </summary>
     /// <returns>project data list</returns>
+    [Route("api/v4/project/applicationcontext/intersecting")]
     [Route("api/v6/project/applicationcontext/intersecting")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsListResult> GetIntersectingProjectsApplicationContextV6(string customerUid,
@@ -146,6 +151,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("internal/v4/project")]
+    [Route("api/v4/project")]
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPost]
@@ -157,10 +164,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = new Guid(customerUid);
-      
-      // todoMaverick, no, we need the trn from WM
-      //if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid().ToString();
-
+   
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
@@ -197,6 +201,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRequest">The project request model to be used</param>
     /// <param name="scheduler">The scheduler used to queue the job</param>
     /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
+    [Route("api/v4/project/background")]
     [Route("api/v6/project/background")]
     [HttpPost]
     public async Task<ScheduleJobResult> RequestCreateProjectBackgroundJob([FromBody] CreateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
@@ -235,6 +240,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("internal/v4/project")]
+    [Route("api/v4/project")]
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPut]
@@ -279,6 +286,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRequest">The project request model to be used in the update</param>
     /// <param name="scheduler">The scheduler used to queue the job</param>
     /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
+    [Route("api/v4/project/background")]
     [Route("api/v6/project/background")]
     [HttpPut]
     public async Task<ScheduleJobResult> RequestUpdateProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
@@ -324,6 +332,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Deletes existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("api/v4/project/{projectUid}")]
     [Route("api/v6/project/{projectUid}")]
     [HttpDelete]
     public async Task<ProjectV6DescriptorsSingleResult> ArchiveProjectV6([FromRoute] string projectUid)
@@ -342,7 +351,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
-      // todoMaverick archive in cws
+      // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
       if (!string.IsNullOrEmpty(customerUid))
         await notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));

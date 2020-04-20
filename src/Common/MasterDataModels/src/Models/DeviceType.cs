@@ -3,7 +3,7 @@
 namespace VSS.MasterData.Models.Models
 {
   // this enum sequence is derived from 2nd Generation Visionlink
-  [Obsolete("todoMaverick obsolete", false)]
+  [Obsolete("CCSSSCON-207 obsolete?", false)]
   public enum DeviceTypeEnum
   {
     MANUALDEVICE = 0,

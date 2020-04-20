@@ -39,13 +39,14 @@ namespace VSS.Productivity3D.AssetMgmt3D
     {
       services.AddMvc();
 
-      // Required for authentication
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
       services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
       services.AddTransient<IProjectProxy, ProjectV6Proxy>();
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
-      // todoMaverick placeholder
+      // CCSSSCON-85 placeholder
       //services.AddTransient<IAssetRepository, AssetRepository>();
 
       services.AddSingleton<IServiceExceptionHandler, ServiceExceptionHandler>();
