@@ -1,11 +1,27 @@
-{ 
-"map" : [{
-    "note": "A test element",
-    "radioSerial": "123",
-    "deviceType" : "6", // SNM940/torch
-    "assetId": "123",
-    "assetUid": "b00c62b3-4eee-472e-9814-c31379e94bd5",
-    "projectId": "234",
-    "projectUid": "896c7a36-e079-4b67-a79c-b209398f01ca"
-}]
+{
+  "map": [
+    {
+      "note": "A test element - full schema",
+      "radioSerial": "123",
+      "deviceType": "6", // SNM940/torch
+      "assetId": "123",
+      "assetUid": "b00c62b3-4eee-472e-9814-c31379e94bd5",
+      "projectId": "234",
+      "projectUid": "896c7a36-e079-4b67-a79c-b209398f01ca"
+    },
+    {
+      "note": "TMC machine",
+      "radioSerial": "b056da49-5883-48e7-90ad-f25b30ef5b6f",
+      "deviceType": "6", // SNM940/torch
+      "assetUid": "b00c62b3-4eee-472e-9814-c31379e94bd5",
+      "projectUid": "de856e74-85f4-4573-aa6c-5097448f87b5"
+    },
+    {
+      "note": "TMC machine",
+      "radioSerial": "b242007d-265f-4c99-b78c-dc7462095186",
+      "deviceType": "6", // SNM940/torch
+      "assetUid": "b242007d-265f-4c99-b78c-dc7462095186",
+      "projectUid": "de856e74-85f4-4573-aa6c-5097448f87b5"
+    }
+  ]
 }
