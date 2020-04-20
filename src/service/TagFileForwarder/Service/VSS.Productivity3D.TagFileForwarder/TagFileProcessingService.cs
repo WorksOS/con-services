@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -109,69 +110,86 @@ namespace VSS.Productivity3D.TagFileForwarder
       ListObjectsV2Response listResponse;
       do
       {
+
         listResponse = await s3Client.ListObjectsV2Async(listRequest, token);
+        const int maxTasks = 10;
+        var tagFileTasks = new List<Task>(maxTasks);
         foreach (var obj in listResponse.S3Objects)
         {
-          _logger.LogInformation($"Attempting to send the tag file: {obj.Key}");
+          var t = ProcessSingleTagFile(s3Client, obj, token);
+          tagFileTasks.Add(t);
 
-          if (GetS3Key(obj.Key, out var method, out var tagFileName, out var tccOrg))
+          if(tagFileTasks.Count >= maxTasks)
           {
-            await using var memoryStream = new MemoryStream();
-            using var transferUtil = new TransferUtility(s3Client);
-
-            var stream = await transferUtil.OpenStreamAsync(_bucketName, obj.Key, token);
-            stream.CopyTo(memoryStream);
-
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            var request = new CompactionTagFileRequest()
-            {
-              Data = memoryStream.ToArray(),FileName = tagFileName, OrgId = tccOrg
-            };
-
-            _logger.LogInformation($"Found Filename: {tagFileName}, method: {method}, TCC OrgID: {tccOrg}");
-
-            var result = await _tagFileForwarder.SendTagFileDirect(request, null);
-
-            if (result == null || result.Code != 0)
-            {
-              _logger.LogWarning($"Failed to process tag file {tagFileName}. Code: {result?.Code}. Message: {result?.Message}");
-            }
-            else
-            {
-              var renameName = $"completed/{obj.Key}";
-              _logger.LogInformation($"Processed tag file {tagFileName} successfully");
-
-              // S3 does not allow files to be renamed, you need to copy and delete
-              var copyResult = await s3Client.CopyObjectAsync(_bucketName, obj.Key, _bucketName, renameName, token);
-              if (copyResult.HttpStatusCode == HttpStatusCode.OK)
-              {
-                var deleteResponse = await s3Client.DeleteObjectAsync(_bucketName, obj.Key, token);
-                if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent)
-                {
-                  _logger.LogInformation($"Moved Tagfile to {renameName}");
-                }
-                else
-                {
-                  _logger.LogWarning($"Failed to rename (delete old) file {renameName}, http code: {deleteResponse.HttpStatusCode}");
-                }
-              }
-              else
-              {
-                _logger.LogWarning($"Failed to rename (copy old) file {renameName}, http code: {copyResult.HttpStatusCode}");
-              }
-            }
+            var completed = await Task.WhenAny(tagFileTasks);
+            tagFileTasks.Remove(completed);
           }
-          else
-          {
-            _logger.LogError($"Failed to parse S3 Key: {obj.Key}");
-          }
-          
         }
+
+        await Task.WhenAll(tagFileTasks);
 
         listRequest.ContinuationToken = listResponse.NextContinuationToken;
       } while (listResponse.IsTruncated);
     }
 
+    private async Task ProcessSingleTagFile(IAmazonS3 s3Client, S3Object obj, CancellationToken token)
+    {
+      _logger.LogInformation($"Attempting to send the tag file: {obj.Key}");
+
+      if (GetS3Key(obj.Key, out var method, out var tagFileName, out var tccOrg))
+      {
+        await using var memoryStream = new MemoryStream();
+        using var transferUtil = new TransferUtility(s3Client);
+
+        var stream = await transferUtil.OpenStreamAsync(_bucketName, obj.Key, token);
+        stream.CopyTo(memoryStream);
+
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        var request = new CompactionTagFileRequest()
+        {
+          Data = memoryStream.ToArray(),
+          FileName = tagFileName,
+          OrgId = tccOrg
+        };
+
+        _logger.LogInformation($"Found Filename: {tagFileName}, method: {method}, TCC OrgID: {tccOrg}");
+
+        var result = await _tagFileForwarder.SendTagFileDirect(request, null);
+
+        if (result == null || result.Code != 0)
+        {
+          _logger.LogWarning($"Failed to process tag file {tagFileName}. Code: {result?.Code}. Message: {result?.Message}");
+        }
+        else
+        {
+          var renameName = $"completed/{obj.Key}";
+          _logger.LogInformation($"Processed tag file {tagFileName} successfully");
+
+          // S3 does not allow files to be renamed, you need to copy and delete
+          var copyResult = await s3Client.CopyObjectAsync(_bucketName, obj.Key, _bucketName, renameName, token);
+          if (copyResult.HttpStatusCode == HttpStatusCode.OK)
+          {
+            var deleteResponse = await s3Client.DeleteObjectAsync(_bucketName, obj.Key, token);
+            if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent)
+            {
+              _logger.LogInformation($"Moved Tagfile to {renameName}");
+            }
+            else
+            {
+              _logger.LogWarning($"Failed to rename (delete old) file {renameName}, http code: {deleteResponse.HttpStatusCode}");
+            }
+          }
+          else
+          {
+            _logger.LogWarning($"Failed to rename (copy old) file {renameName}, http code: {copyResult.HttpStatusCode}");
+          }
+        }
+      }
+      else
+      {
+        _logger.LogError($"Failed to parse S3 Key: {obj.Key}");
+      }
+    }
 
     private bool GetS3Key(string key, out string method, out string tagFileName, out string tccOrgId)
     {
