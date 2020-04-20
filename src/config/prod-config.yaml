@@ -23,8 +23,9 @@ data:
   MYSQL_PORT: "3306"
 #Kafka configuration
 #Service references  
-  cws_profilemanager_public_v1:
-  https://api-trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
+  cws_profilemanager_public_v1: https://api-trimble.com/t/trimble.com/cws-profilemanager/1.0
+  cws_designmanager_public_v1: https://api-trimble.com/t/trimble.com/cws-designmanager/1.0
+  cws_profilesettings_public_v1: https://api.trimble.com/t/trimble.com/cws-profilesettings/1.0
   PREFERENCE_API_URL: https://api.trimble.com/t/trimble.com/vss-preferenceservice/1.0 
   TILE_BASE_URL: https://api.trimble.com/t/trimble.com/vss-tile/1.0
   VETA_EXPORT_URL: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0/export/veta

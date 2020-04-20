@@ -27,8 +27,11 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me/accounts
+    /// https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/users/me/accounts
     ///   user token
+    ///   todoWM
+    ///       I get 10 accounts using an application token
+    ///       I get 1 if using user token(account == "trn::profilex:us-west-2:account:158ef953-4967-4af7-81cc-952d47cb6c6f")
     /// </summary>
     public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
     {
@@ -46,7 +49,7 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me/accounts
+    /// https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/users/me/accounts
     ///   user token
     /// </summary>
     public async Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
