@@ -75,6 +75,7 @@ namespace WebApiTests
       var boundaryRequest = BoundaryRequest.Create(string.Empty, boundaryName, boundaryWKT);
       var boundary = JsonConvert.SerializeObject(boundaryRequest, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       var responseCreate = ts.CallFilterWebApi($"api/v1/boundary/{ProjectUid}", "PUT", boundary);
+      Assert.AreNotEqual(string.Empty, responseCreate, "Boundary WKT not found from PUT request");
       var boundaryResponse = JsonConvert.DeserializeObject<GeofenceDataSingleResult>(responseCreate, new JsonSerializerSettings { DateTimeZoneHandling = DateTimeZoneHandling.Unspecified });
       Assert.AreEqual(boundaryWKT, boundaryResponse.GeofenceData.GeometryWKT, "Boundary WKT doesn't match for PUT request");
       Assert.AreEqual(boundaryName, boundaryResponse.GeofenceData.GeofenceName, "Boundary name doesn't match for PUT request");

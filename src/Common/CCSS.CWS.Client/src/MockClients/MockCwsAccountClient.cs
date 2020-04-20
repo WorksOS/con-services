@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -25,6 +26,8 @@ namespace CCSS.CWS.Client.MockClients
     /// </summary>
     public Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetMyAccounts)} Mock: userUid {userUid}");
+
       var accountListResponseModel = new AccountListResponseModel()
       {
         Accounts = new List<AccountResponseModel>()
@@ -36,12 +39,16 @@ namespace CCSS.CWS.Client.MockClients
           }
         }
       };
+
+      log.LogDebug($"{nameof(GetMyAccounts)} Mock: accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
       return Task.FromResult(accountListResponseModel);
     }
 
     /// </summary>
     public Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetMyAccount)} Mock: userUid {userUid} customerUid {customerUid}");
+
       if (string.Compare(customerUid.ToString(), Daves3dDemoCustomerUid, StringComparison.OrdinalIgnoreCase) == 0)
         return Task.FromResult(new AccountResponseModel()
         {
@@ -54,11 +61,15 @@ namespace CCSS.CWS.Client.MockClients
         Id = customerUid.ToString(),
         Name = "Got this other customer"
       };
+
+      log.LogDebug($"{nameof(GetMyAccount)} Mock: accountResponseModel {JsonConvert.SerializeObject(accountResponseModel)}");
       return Task.FromResult(accountResponseModel);
     }
 
     public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetDeviceLicenses)} Mock: customerUid {customerUid}");
+
       var deviceLicenseResponseModel = new DeviceLicenseResponseModel
       {
         Total = 10

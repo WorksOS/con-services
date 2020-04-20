@@ -57,6 +57,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// </summary>
     [PostRequestVerifier]
     [Route("api/v1/coordsystem")]
+    [Route("api/v2/coordsystem")]
     [HttpPost]
     public async Task<CoordinateSystemSettings> Post([FromBody] CoordinateSystemFile request)
     {
@@ -74,11 +75,12 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// </summary>
     [PostRequestVerifier]
     [Route("api/v1/coordsystem/validation")]
+    [Route("api/v2/coordsystem/validation")]
     [HttpPost]
     public async Task<CoordinateSystemSettings> PostValidate([FromBody] CoordinateSystemFileValidationRequest request)
     {
       var serializedRequest = JsonConvert.SerializeObject(request);
-      _log.LogDebug($"POST api/v1/coordsystem/validation: request {serializedRequest}");
+      _log.LogDebug($"POST coordsystem/validation: request {serializedRequest}");
 
       request.Validate();
 
@@ -138,6 +140,7 @@ namespace VSS.Productivity3D.WebApi.Coord.Controllers
     /// </summary>
     [PostRequestVerifier]
     [Route("api/v1/coordinateconversion")]
+    [Route("api/v2/coordinateconversion")]
     [HttpPost]
     public async Task<CoordinateConversionResult> Post([FromBody] CoordinateConversionRequest request)
     {

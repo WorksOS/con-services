@@ -95,5 +95,36 @@ namespace VSS.AWS.TransferProxy
         stream.CopyTo(fs);
       }
     }
+
+    /// <summary>
+    /// Remove file from storage
+    /// </summary>
+    /// <param name="s3Key"></param>
+    /// <returns></returns>
+    public bool RemoveFromBucket(string s3Key)
+    {
+      var localKey = (s3Key.StartsWith("/") ? s3Key.Substring(1) : s3Key).Replace('/', Path.DirectorySeparatorChar);
+      var fileName = Path.Combine(_rootLocalTransferProxyFolder, _awsBucketName, localKey);
+      if (File.Exists(fileName))
+      {
+        // If file found, delete it from storage    
+        try
+        {
+          File.Delete(fileName);
+        }
+        catch (Exception e)
+        {
+          _logger.LogError(e,$"Unable to delete file: {Path.GetFileName(fileName)}");
+          return false;
+        }
+        _logger.LogInformation($"File {Path.GetFileName(fileName)} deleted.");
+      }
+      else
+      {
+        _logger.LogWarning($"File {Path.GetFileName(fileName)} missing, so not deleted.");
+      }
+      return true;
+    }
+
   }
 }

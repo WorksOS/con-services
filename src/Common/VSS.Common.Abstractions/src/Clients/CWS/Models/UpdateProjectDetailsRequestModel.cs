@@ -2,8 +2,8 @@
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  // todoMaverick this doesn't include start and end dates. 
-  //  Steve says this is as expected.
+  // CCSSSCON-23 this doesn't include start and end dates or description
+  //  marketing are still going back and forth on these
   public class UpdateProjectDetailsRequestModel
   {
     /// <summary>

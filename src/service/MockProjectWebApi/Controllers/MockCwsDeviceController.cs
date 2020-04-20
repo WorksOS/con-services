@@ -48,7 +48,6 @@ namespace MockProjectWebApi.Controllers
       return deviceResponseModel;
     }
 
-    // todoMaverick will this go to account service?
     [Route("api/v1/accounts/{accountTrn}/devices")]
     [HttpGet]
     public DeviceListResponseModel GetDevicesForAccount(string accountTrn)
@@ -74,7 +73,6 @@ namespace MockProjectWebApi.Controllers
     }
 
 
-    // todoMaverick will this go to project service?
     [Route("api/v1/device/{deviceTrn}/projects")]
     [HttpGet]
     public ProjectListResponseModel GetProjectsForDevice(string deviceTrn)

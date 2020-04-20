@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -16,6 +17,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectAndAssetUidsExecutor : RequestExecutorContainer
   {
+    public ICustomRadioSerialProjectMap CustomRadioSerialMapper { get; set; }
 
     ///  <summary>
     ///  There are 2 modes this may be called in:
@@ -23,16 +25,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///            either the projects customer has a paying-devicePackage (>0 i.e. not Free)
     ///              or the asset (if provided) Customer has a paying-devicePackage AND the project is owned by the same customer
     ///          and the location is inside the project
-    ///             the time of location is not limited to the project start/end time (todoMaverick still under discussion)
+    ///             the time of location is not limited to the project start/end time (CCSSSCON-207 still under discussion)
     /// 
     ///  b) Auto Import
     ///     a deviceSerial provided.
-    ///     This must be resolveable and it's customer must have paying-devicePackage
+    ///     This must be resolvable and its customer must have paying-devicePackage
     ///     A customers active projects cannot overlap spatially at the same point-in-time
     ///                  therefore this should legitimately retrieve max of ONE match
     ///    
     ///  if a deviceSerial/dtype is provided and can be resolved, the deviceUid will also be returned.
-    ///  Archived projects are not considered, also note that there are only standard projects available     /// 
+    ///  Archived projects are not considered, also note that there are only standard projects available
+    ///
+    ///  TFA has the capability to be provided a radio/device type -> Asset/Project map to cover special cases
+    ///  where a device has no provisioning but we want to bring it into a known project. In this case, if the
+    ///  radio serial number and device type are found in the map, the item is processed as if were a manual
+    ///  import into the project, under the asset, located in the map
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -64,6 +71,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         {
           return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 38);
         }
+      }
+
+      // Radio serial -> Asset/Project override
+      if (CustomRadioSerialMapper.LocateAsset(request.RadioSerial, request.DeviceType, out var id))
+      {
+        return GetProjectAndAssetUidsResult.FormatResult(id.ProjectUid.ToString(), id.AssetUid.ToString());
       }
 
       DeviceData device = null;
@@ -103,9 +116,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  Can manually import tag files where we don't know the device, and regardless of the device customers deviceEntitlement
       //  If device is available, it must be associated with the project
       //  For ManualImport we want to maximise ability so don't bother checking deviceStatus?
-      // todoMaverick verify: about ignoring device status; ignoring device-Customer entitlement and requiring device-project association?
+      // CCSSSCON-207 verify: about ignoring device status; ignoring device-Customer entitlement and requiring device-project association?
       //                      also no projectTime overlap? 
-      
+
       var intersectingProjects = await dataRepository.GetIntersectingProjectsForManual(project, request.Latitude,
             request.Longitude, device);
       log.LogDebug(

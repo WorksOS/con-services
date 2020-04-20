@@ -35,10 +35,12 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var deviceResponseModel = new DeviceResponseModel() 
         { Id = expectedDeviceId, AccountId = expectedAccountId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, Status = expectedStatus, SerialNumber = expectedSerialNumber};
       
-      var route = $"/devices/serialnumber/{serialNumber}";
-      var expectedUrl = $"{baseUrl}{route}";
+      var route = $"/devices/getDeviceWithSerialNumber";
+      var queryParameters = new List<KeyValuePair<string, string>>{
+          new KeyValuePair<string, string>("serialNumber", serialNumber)};
+      var expectedUrl = $"{baseUrl}{route}?serialNumber={serialNumber}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
-        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
+        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, queryParameters)).Returns(Task.FromResult(expectedUrl));
 
       MockUtilities.TestRequestSendsCorrectJson("Get device by serial number", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceResponseModel, async () =>
       {
@@ -75,7 +77,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
 
-      MockUtilities.TestRequestSendsCorrectJson("Get device by serial number", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceResponseModel, async () =>
+      MockUtilities.TestRequestSendsCorrectJson("Get device by deviceUid", mockWebRequest, null, expectedUrl, HttpMethod.Get, deviceResponseModel, async () =>
       {
         var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
         var result = await client.GetDeviceByDeviceUid(TRNHelper.ExtractGuid(DeviceId).Value);
@@ -110,7 +112,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
           new DeviceResponseModel() {Id = expectedDeviceId, AccountId = expectedAccountId, DeviceType = expectedDeviceType, DeviceName = expectedDeviceName, Status = expectedStatus, SerialNumber = expectedSerialNumber}
         }
       };
-      var route = $"/accounts/{accountId}/devices";
+      var route = $"/accounts/{accountId}/devices?includeTccRegistrationStatus=true";
       var expectedUrl = $"{baseUrl}{route}";
       mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
         It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
@@ -123,7 +125,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
         Assert.NotNull(result);
         Assert.False(result.HasMore);
         Assert.NotNull(result.Devices);
-        Assert.Equal(1, result.Devices.Count);
+        Assert.Single(result.Devices);
         Assert.Equal(TRNHelper.ExtractGuidAsString(expectedDeviceId), result.Devices[0].Id);
         Assert.Equal(TRNHelper.ExtractGuidAsString(expectedAccountId), result.Devices[0].AccountId);
         Assert.Equal(expectedDeviceType, result.Devices[0].DeviceType);

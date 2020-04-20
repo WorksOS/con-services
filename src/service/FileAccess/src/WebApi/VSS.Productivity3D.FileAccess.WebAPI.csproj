@@ -8,7 +8,7 @@
     <AssemblyName>VSS.Productivity3D.FileAccess.WebAPI</AssemblyName>
     <PackageId>ProjectWebApi</PackageId>
     <RootNamespace>VSS.Productivity3D.FileAccess.WebAPI</RootNamespace>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;AnyCPU</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,11 +17,6 @@
     <EmbeddedResource Remove="logs\**" />
     <None Remove="logs\**" />
   </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DebugType>full</DebugType>
-    <DebugSymbols>True</DebugSymbols>
-  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="3.1.2" />
@@ -57,23 +52,10 @@
     </Content>
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-    <NoWarn>1701;1702;1705;NU1605;CS1591</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|Release|netcoreapp3.1|AnyCPU'">
     <NoWarn>1701;1702;1705;NU1605;CS1591</NoWarn>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|x64'">
-    <DebugType>portable</DebugType>
-    <DebugSymbols>true</DebugSymbols>
-    <DocumentationFile />
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
 
 </Project>

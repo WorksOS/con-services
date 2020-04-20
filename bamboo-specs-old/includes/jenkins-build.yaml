@@ -1,7 +1,0 @@
-- clean
-- script:
-  - chmod +x ./bamboo-specs/build-via-jenkins.py
-- script:
-  - ./bamboo-specs/build-via-jenkins.py --url ${bamboo.jenkins_url} --username ${bamboo.jenkins_username} --token ${bamboo.jenkins_token} --branch ${bamboo.planRepository.branchName} --buildid ${bamboo.buildNumber} --servicepath ${bamboo.service_path} --build ${bamboo.service} --imagetag ${bamboo.image_tag} --builddb ${bamboo.build_db} --runacctests ${bamboo.run_acceptance_tests} --rununittests ${bamboo.run_unit_tests}
-
-

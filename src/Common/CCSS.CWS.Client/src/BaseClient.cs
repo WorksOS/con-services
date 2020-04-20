@@ -48,7 +48,7 @@ namespace CCSS.CWS.Client
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters);
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
       }
     }
 
@@ -61,7 +61,7 @@ namespace CCSS.CWS.Client
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters);
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
       }
     }
 

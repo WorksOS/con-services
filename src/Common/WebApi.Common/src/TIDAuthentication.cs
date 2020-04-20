@@ -70,7 +70,7 @@ namespace VSS.WebApi.Common
         var customerUid = string.Empty;
         string customerName;
 
-        // todoMaverick temporary to look into user info available.
+        // todoJeannie temporary to look into user info while we test.
         log.LogDebug($"{nameof(Invoke)}: TIDAuth context Headers {JsonConvert.SerializeObject(context.Request.Headers, Formatting.None)}");
         
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
@@ -88,7 +88,6 @@ namespace VSS.WebApi.Common
         try
         {
           var jwtToken = new TPaaSJWT(authorization);
-          log.LogDebug($"{nameof(Invoke)}: TIDAuth authorization {JsonConvert.SerializeObject(jwtToken)}");
           isApplicationContext = jwtToken.IsApplicationToken;
           applicationName = jwtToken.ApplicationName;
           userEmail = isApplicationContext ? applicationName : jwtToken.EmailAddress;
@@ -139,9 +138,7 @@ namespace VSS.WebApi.Common
         {
           try
           {
-            // todoMaverick do we need the get GetAccountForUser as isApplicationContext never comes in here
-            // what format will userId be in when logged in as a WM user, I would expect a TRN rather than a Guid
-            log.LogDebug($"{nameof(Invoke)}: TIDAuth what are we getting here TRN/Guid? userUid {JsonConvert.SerializeObject(userUid)}");
+            // the TID userId is the guid portion of the TRN
             var customer = await accountClient.GetMyAccount(new Guid(userUid), new Guid(customerUid), customHeaders);
 
             if (customer == null)

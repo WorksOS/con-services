@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
@@ -26,79 +27,61 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me/accounts
+    /// https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/users/me/accounts
     ///   user token
+    ///   todoWM
+    ///       I get 10 accounts using an application token
+    ///       I get 1 if using user token(account == "trn::profilex:us-west-2:account:158ef953-4967-4af7-81cc-952d47cb6c6f")
     /// </summary>
     public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetMyAccounts)}: userUid {userUid}");
+
       var accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, null, customHeaders);
       // todoMaveric what if error?
       foreach (var account in accountListResponseModel.Accounts)
       {
         account.Id = TRNHelper.ExtractGuidAsString(account.Id);
       }
+
+      log.LogDebug($"{nameof(GetMyAccounts)}: accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
       return accountListResponseModel;
     }
 
     /// <summary>
-    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me/accounts
+    /// https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/users/me/accounts
     ///   user token
     /// </summary>
     public async Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
     {
       var accountListResponseModel = await GetMyAccounts(userUid, customHeaders);
-      // todoMaveric what if error?
   
       if (accountListResponseModel == null || !accountListResponseModel.Accounts.Any())
         return null;
 
-      return accountListResponseModel.Accounts
+      var accountResponseModel = accountListResponseModel.Accounts
         .Where(a => (string.Compare(a.Id, customerUid.ToString(), StringComparison.InvariantCultureIgnoreCase) == 0))
         .FirstOrDefault();
+
+      log.LogDebug($"{nameof(GetMyAccount)}: accountResponseModel {JsonConvert.SerializeObject(accountResponseModel)}");
+      return accountResponseModel;
     }
-
-    //// todoMaverick do we need this for TIDAuthentication; UI or other?  Steve?
-    ///// <summary>
-    ///// We need to query by userUid to allow override as per TIDAuthentication
-    ///// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/{userId}/accounts?
-    /////   application token
-    /////   todoMaaverick where is this used ?
-    /////                 what response fields are required?
-    /////   CCSSCON-122
-    ///// </summary>
-    //public Task<AccountListResponseModel> GetAccountsForUser(Guid userUid, IDictionary<string, string> customHeaders = null)
-    //{
-    //  var userTrn = TRNHelper.MakeTRN(userUid, TRNHelper.TRN_USER);
-    //  var queryParameters = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("userId", userTrn) };
-    //  return GetData<AccountListResponseModel>("/users/accounts", null, userUid, queryParameters, customHeaders);
-    //}
-
-    //public async Task<AccountResponseModel> GetAccountForUser(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
-    //{
-    //  var userTrn = TRNHelper.MakeTRN(userUid, TRNHelper.TRN_USER);
-    //  var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
-    //  var queryParameters = new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>( "userId", userTrn),
-    //     new KeyValuePair<string, string>( "accountId", accountTrn )
-    //    };
-
-    //  var accountResponseModel = await GetData<AccountResponseModel>("/users/account", null, userUid, queryParameters, customHeaders);
-      
-    //  // todoMaveric what if error?
-    //  accountResponseModel.Id = TRNHelper.ExtractGuidAsString(accountResponseModel.Id);
-    //  return accountResponseModel;
-    //}
 
     /// <summary>
     /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/accounts/{accountId}/devicelicense
-    ///   application token
-    ///   todoMaaverick where is this used ?
-    ///                 what response fields are required?
-    ///   CCSSCON-available                
+    ///   application token and user token
+    ///   used by UI to determine functionality allowed by user user token
+    ///   used by TFA CCSSSCON-207? application token            
     /// </summary>
     public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IDictionary<string, string> customHeaders = null)
     {
+      log.LogDebug($"{nameof(GetDeviceLicenses)}: customerUid {customerUid}");
+
       var accountTrn = TRNHelper.MakeTRN(customerUid, TRNHelper.TRN_ACCOUNT);
-      return GetData<DeviceLicenseResponseModel>($"/accounts/{accountTrn}/devicelicense", customerUid, null, null, customHeaders);
+      var deviceLicenseResponseModel = GetData<DeviceLicenseResponseModel>($"/accounts/{accountTrn}/devicelicense", customerUid, null, null, customHeaders);
+      
+      log.LogDebug($"{nameof(GetDeviceLicenses)}: deviceLicenseResponseModel {JsonConvert.SerializeObject(deviceLicenseResponseModel)}");
+      return deviceLicenseResponseModel;
     }
   }
 }

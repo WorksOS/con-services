@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     /// <summary>
     /// The device type of the machine.
     ///           Valid values are 0=Manual Device (John Doe machines)
-    ///           and SNM940/SNM941/EC520. todoMaverick we don't have a lookup by serialNumber
+    ///           and SNM940/SNM941/EC520. CCSSSCON-207 we don't have a lookup by serialNumber
     /// </summary>
     [JsonProperty(PropertyName = "deviceType", Required = Required.Always)]
     public int deviceType { get; set; }

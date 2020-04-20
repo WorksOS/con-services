@@ -1,0 +1,37 @@
+image:
+  repository: 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images
+  tag: vsts-dind-agent-k8s
+  pullPolicy: Always
+
+vstsToken: "h3jjfv3uviriasqttntt2vlqm7ui3qfy2ysm3enuwrgunvvfdckq"
+vstsAccount: "trmb-ccss"
+vstsPool: "k8s-cec"
+
+replicas: 1
+
+# securityContext:
+#   privileged: true
+#   runAsNonRoot: true
+#   runAsUser: 1000 # Bamboo runs as user bamboo (UID 1000)
+#   allowPrivilegeEscalation: true
+
+#tolerations:
+#  - key: "dedicated"
+#    operator: "Equal"
+#    value: "jenkins"
+#    effect: "NoSchedule"
+
+## Node labels for controller pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+#nodeSelector:
+#  vss/application: jenkins
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:

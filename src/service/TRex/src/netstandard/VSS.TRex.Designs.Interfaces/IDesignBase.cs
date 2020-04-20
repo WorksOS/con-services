@@ -18,6 +18,8 @@ namespace VSS.TRex.Designs.Interfaces
     DesignLoadResult LoadFromFile(string fileName, bool saveIndexFiles = true);
     Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath,
       bool loadIndices = false);
+    bool RemoveFromStorage(Guid siteModelUid, string fileName);
+
     void GetExtents(out double x1, out double y1, out double x2, out double y2);
     void GetHeightRange(out double z1, out double z2);
 

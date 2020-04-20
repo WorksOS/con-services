@@ -74,9 +74,8 @@ namespace VSS.Productivity3D.Project.Proxy
     // customHeaders will NOT include customerUid
     public async Task<ProjectData> GetProjectApplicationContext(string projectUid, IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick
-      // ProjectSvc.ProjectController should be able to get this from localDB now.
-      // response should include customerUid
+      // ProjectSvc.ProjectController get this from localDB now.
+      // response includes customerUid
 
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataSingleResult>($"/project/applicationcontext/{projectUid}",
              projectUid,
@@ -110,12 +109,11 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
 
-    // customHeaders will NOT include customerUid
     public async Task<List<ProjectData>> GetIntersectingProjectsApplicationContext(string customerUid,
         double latitude, double longitude, string projectUid = null, DateTime? timeOfPosition = null,
         IDictionary<string, string> customHeaders = null)
     {
-      // todoMaverick
+      // customHeaders will NOT include customerUid as this is ApplicationContext from TFA
       // ProjectSvc.ProjectController should:
       //  if projectUid, get it if it overlaps in localDB
       //    else get overlapping projects in localDB for this CustomerUID

@@ -1,0 +1,4 @@
+MYSQL_DATABASE_NAME: Preference-ccss
+MYSQL_USERNAME: vssPreferenceUsr
+MYSQL_ROOT_PASSWORD: mRty94hER
+JAEGER_SERVICE_NAME: Preference Service

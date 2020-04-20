@@ -42,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery]  string serialNumber)
     {
       Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)}");
-      // todoMaverick executor and validation
+      // CCSSSCON-207 executor and validation
       var deviceResponseModel = await cwsDeviceClient.GetDeviceBySerialNumber(serialNumber);
       if (deviceResponseModel == null)
         throw new NotImplementedException();
@@ -72,7 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
     {
       Logger.LogInformation($"{nameof(GetDevice)}");
-      // todoMaverick executor and validation
+      // CCSSSCON-207 executor and validation
       var deviceFromRepo = await DeviceRepo.GetDevice(shortRaptorAssetId); 
       
       var deviceResponseModel = await cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID));
@@ -104,7 +104,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(GetProjectsForDevice)}");
 
-      // todoMaverick executor and validation
+      // CCSSSCON-207 executor and validation
       var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid));
       if (cwsDeviceClient == null)
         throw new NotImplementedException();

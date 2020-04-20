@@ -8,6 +8,7 @@ using VSS.MasterData.Proxies.Interfaces;
 using VSS.WebApi.Common;
 using VSS.Common.ServiceDiscovery;
 using Xunit;
+using System.Linq;
 
 namespace CCSS.CWS.Client.UnitTests.Staging
 {
@@ -33,35 +34,24 @@ namespace CCSS.CWS.Client.UnitTests.Staging
     public async Task GetMyAccountsTest()
     {
       var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
+      var expectedAccountId = "158ef953-4967-4af7-81cc-952d47cb6c6f";
       var result = await client.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
 
       Assert.NotNull(result);
       Assert.NotNull(result.Accounts);
-      Assert.True(result.Accounts.Count > 0);
+      Assert.True(result.Accounts.Count > 0);     
+      Assert.Single(result.Accounts.Where(a => string.Compare(a.Id, expectedAccountId, true) == 0));
     }
-
-    [Fact(Skip = "Implement test when we have the endpoint in cws")]
-    public async Task GetAccountsForUserTest()
-    {
-      throw new NotImplementedException();
-    }
-
-    [Fact(Skip = "Implement test when we have the endpoint in cws")]
-    public async Task GetAccountForUserTest()
-    {
-      throw new NotImplementedException();
-    }
-
-    [Fact(Skip = "Can be used for testing and debugging")]
+       
+   [Fact(Skip = "Can be used for testing and debugging")]
+   //[Fact]
     public async Task GetDeviceAccountsTest()
     {
       var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
       var headers = CustomHeaders();
-      var accountsResult = await client.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, headers);
-      Assert.NotNull(accountsResult);
-      Assert.True(accountsResult.Accounts.Count > 0);
+      var accountId = "158ef953-4967-4af7-81cc-952d47cb6c6f";
 
-      var result = await client.GetDeviceLicenses(new Guid(accountsResult.Accounts[0].Id), headers);
+      var result = await client.GetDeviceLicenses(new Guid(accountId), headers);
       Assert.NotNull(result);
       Assert.Equal(DeviceLicenseResponseModel.FREE_DEVICE_LICENSE, result.Total);
     }

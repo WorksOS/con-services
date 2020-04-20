@@ -82,7 +82,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-        // todoMaverick need to send update to cws only if boundary/name changed
+        // CCSSSCON-214 need to send update to cws only if boundary/name changed
         //var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
         var projectClient = new Mock<ICwsProjectClient>();
         //projectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
