@@ -89,7 +89,7 @@ def main(argv):
     runintegrationtests=''
 
     try:
-        opts, args = getopt.getopt(argv,"",["url=","username=","token=","build=", "buildid=","branch=","servicepath=","imagetag=","builddb=","runacctests=","rununittests=","runintegrationtests"])
+        opts, args = getopt.getopt(argv,"",["url=","username=","token=","build=", "buildid=","branch=","servicepath=","imagetag=","builddb=","runacctests=","rununittests=","runintegrationtests="])
     except getopt.GetoptError:
         sys.exit(3)
 
