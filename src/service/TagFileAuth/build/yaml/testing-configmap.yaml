@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: tagfileauthservice-testing
 data:
-  WEBAPI_DEBUG_URI: http://localhost:5000/
-  WEBAPI_URI: http://localhost:3001/
+  WEBAPI_DEBUG_URI: http://localhost:80/
+  WEBAPI_URI: http://localhost:80/
   project_service: http://localhost:5001
-  tagfileauth_service: http://localhost:5000
+  tagfileauth_service: http://localhost:80/
   cws_profilemanager_public_v1: http://localhost:5001/api/v1
