@@ -99,7 +99,7 @@ namespace CCSS.Tile.Service.IntegrationTests.ReportTiles
       Assert.Equal(expectedMessage, result.Message);
     }
 
-    [Theory(Skip = "Reason")]
+    [Theory(Skip = "Ignore until CCSSSCON-246 is completed.")]
     //[InlineData("DxfLinework", "7b2bd262-8355-44ba-938a-d50f9712dafc", "DxfLinework", null, null, null, 1)]
     [InlineData("Alignments", null, "Alignments", null, null, null, 1)]
     [InlineData("ProjectBoundary", null, "ProjectBoundary", null, null, null, 1)]
@@ -161,7 +161,7 @@ namespace CCSS.Tile.Service.IntegrationTests.ReportTiles
                   $"Linework tile for '{resultName}' doesn't match. Allowed tollerance {tollerance}, actual difference is {actualDiff}");
     }
 
-    [Theory(Skip="Reason")]
+    [Theory(Skip="Ignore until CCSSSCON-246 is completed.")]
     [InlineData("CutFill", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", null, null, null, "ProductionData", null, 8, 5, null)]
     [InlineData("CutFillOverlay", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", null, null, null, "ProductionData,BaseMap,ProjectBoundary", "MAP", 8, 3, null)]
     [InlineData("CutFillTerrain", "dd64fe2e-6f27-4a78-82a3-0c0e8a5e84ff", null, null, null, "ProductionData,BaseMap,ProjectBoundary", "TERRAIN", 8, 3, null)]
@@ -200,7 +200,7 @@ namespace CCSS.Tile.Service.IntegrationTests.ReportTiles
                   $"Linework tile for '{resultName}' doesn't match. Allowed tollerance {tollerance}, actual difference is {actualDiff}");
     }
 
-    [Fact(Skip="Reason")]
+    [Fact(Skip="Ignore until CCSSSCON-246 is completed.")]
     public async Task Large_report_tiles()
     {
       const string resultName = "CMVLarge";
@@ -225,7 +225,7 @@ namespace CCSS.Tile.Service.IntegrationTests.ReportTiles
                   $"Linework tile for '{resultName}' doesn't match. Allowed tollerance {tollerance}, actual difference is {actualDiff}");
     }
 
-    [Theory(Skip="Reason")]
+    [Theory(Skip="Ignore until CCSSSCON-246 is completed.")]
     [InlineData("GroundToGroundExplicit", true, 1)]
     [InlineData("GroundToGround", false, 1)]
     public async Task Report_cutfill_and_volume_tiles_with_explicitFilters(string resultName, bool explicitFilters, double tollerance)

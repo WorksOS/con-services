@@ -43,6 +43,11 @@ node ('jenkinsslave-pod') {
 				description: 'Run Unit Tests',
 				name: 'RUN_UNITTESTS'
 			),
+            booleanParam(
+				defaultValue: false,
+				description: 'Run Integration Tests',
+				name: 'RUN_INTEGRATIONTESTS'
+			)
 		])
 	])
 
@@ -77,6 +82,7 @@ node ('jenkinsslave-pod') {
 	def buildDB = params.BUILD_DB
 	def runTests = params.RUN_ACCTEST
 	def runUnitTests = params.RUN_UNITTESTS
+    def runIntegrationTests = params.RUN_INTEGRATIONTESTS
 	def additionalImageTag = params.IMAGE_TAG
 	if (additionalImageTag == "None")
 		if (branchName == "master")
@@ -167,6 +173,11 @@ node ('jenkinsslave-pod') {
 				stash name: "build-test-results"
 			} 
 		}
+
+        if (runIntegrationTests)
+	    {
+            // TODO
+        }
 	}
 	
 	stage('Preparing runtime image') {
@@ -180,7 +191,7 @@ node ('jenkinsslave-pod') {
 		}
 	}
 
-	//Do not run acceptance tests if ther eis no dockerfile - mockapi is an example
+	//Do not run acceptance tests if there is no dockerfile - mockapi is an example
 	def dockerTestsFileExists = fileExists "./${servicePath}/build/Dockerfile.tests"
 	if (!dockerTestsFileExists)
 		runTests = false

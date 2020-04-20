@@ -15,7 +15,7 @@ namespace CCSS.Tile.Service.IntegrationTests.Thumbnails
       restClient = testFixture.RestClient;
     }
 
-    [Theory(Skip="Reason")]
+    [Theory(Skip="Ignore until CCSSSCON-246 is completed.")]
     [InlineData("/api/v1/projectthumbnail3d/png", MediaTypes.PNG, ID.Project.DIMENSIONS, "ProductionData")]
     [InlineData("/api/v1/projectthumbnail3d/base64", null, ID.Project.DIMENSIONS, "ProductionData")]
     [InlineData("/api/v1/projectthumbnail3d/png", MediaTypes.PNG, ID.Project.DIMENSIONS_EMPTY_PROJECT_UID, "NoProductionData")]

@@ -31,7 +31,7 @@ namespace CCSS.Tile.Service.IntegrationTests.LineworkTiles
       Assert.Equal(expectedMessage, result.Message);
     }
 
-    [Theory(Skip = "Reason")]
+    [Theory(Skip = "Ignore until CCSSSCON-246 is completed.")]
     [InlineData("Linework", 15, 12844, 5914, 1.00, "Linework.json")]
     [InlineData("Alignment", 18, 102753, 47317, 1.00, "Linework.json")]
     [InlineData("GeoTiff", 16, 41583, 64159, 1.00, "Linework.json")]
