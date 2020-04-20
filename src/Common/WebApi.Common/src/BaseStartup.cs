@@ -130,6 +130,7 @@ namespace VSS.WebApi.Common
         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
         options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Include;
         options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+        options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
       });
 
       services.AddMetrics(metrics);
