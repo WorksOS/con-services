@@ -53,7 +53,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         foreach (var p in projects)
         {
-          var boundaryFence = new TWGS84FenceContainer {FencePoints = dataRepository.ParseBoundaryData(p.GeometryWKT)};
+          var boundaryFence = new TWGS84FenceContainer {FencePoints = dataRepository.ParseBoundaryData(p.ProjectGeofenceWKT)};
           if (boundaryFence.FencePoints.Length > 0)
           {
             projectBoundaryPackages.Add(new ProjectBoundaryPackage {ProjectID = p.ShortRaptorProjectId, Boundary = boundaryFence});

@@ -1,0 +1,73 @@
+﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+
+namespace VSS.Productivity3D.Project.Abstractions.Models
+{
+  /// <summary>
+  /// The request representation used to Create a project via TBC. 
+  ///   TBC also send CustomerUID and CustomerName on the end, but Legacy and NGen 
+  ///      dont' use this but gets them via TIDAuthenticaition
+  /// </summary>
+  public class CreateProjectV5Request
+  {
+    /// <summary>
+    /// Project type: Standard = 0 (default), Landfill = 1, ProjectMonitoring = 2 
+    /// </summary>
+    [JsonProperty(PropertyName = "ProjectType", Required = Required.Always)]
+    public ProjectType ProjectType { get; set; }
+
+    /// <summary>
+    /// The project name, between 1 and 30 characters long. It must be unique.
+    /// </summary>
+    [JsonProperty(PropertyName = "ProjectName", Required = Required.Always)]
+    public string ProjectName { get; set; }
+
+    /// <summary>
+    /// The name of time zone of the project. This must be a standard Windows time zone name.
+    /// </summary>
+    [JsonProperty(PropertyName = "TimeZoneName", Required = Required.Always)]
+    public string ProjectTimezone { get; set; }
+
+    /// <summary>
+    /// The list of latitude, longitude points that make up the project boundary.
+    /// The list must contain at least three points and no more than 50 points.
+    /// The boundary must not self-intersect nor overlap (temporarally or spatially) other projects.
+    /// </summary>
+    [JsonProperty(PropertyName = "BoundaryLL", Required = Required.Always)]
+    public List<TBCPoint> BoundaryLL { get; set; }
+
+    /// <summary>
+    /// The details of the coordinate system file from Trimble Business Center.
+    /// </summary>
+    [JsonProperty(PropertyName = "CoordinateSystem", Required = Required.Always)]
+    public BusinessCenterFile CoordinateSystem { get; set; }
+
+
+    /// <summary>
+    /// Private constructor
+    /// </summary>
+    private CreateProjectV5Request()
+    { }
+
+    /// <summary>
+    /// Create instance of CreateProjectV2Request
+    /// </summary>
+    public static CreateProjectV5Request CreateACreateProjectV5Request(
+      ProjectType projectType, DateTime projectStartDate, DateTime projectEndDate, string projectName,
+      string projectTimezone, List<TBCPoint> boundaryLL,
+      BusinessCenterFile coordinateSystem
+      )
+    {
+      return new CreateProjectV5Request
+      {
+        ProjectType = projectType,
+        ProjectName = projectName,
+        ProjectTimezone = projectTimezone,
+        BoundaryLL = boundaryLL,
+        CoordinateSystem = coordinateSystem
+      };
+    }
+  }
+}

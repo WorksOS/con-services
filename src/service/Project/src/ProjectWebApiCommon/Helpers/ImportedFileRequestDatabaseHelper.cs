@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Handlers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.ExtendedModels;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
@@ -16,6 +15,7 @@ using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using Filter = VSS.Productivity3D.Filter.Abstractions.Models.Filter;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {

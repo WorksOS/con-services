@@ -35,11 +35,9 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces.Repository
 
     #region projectSpatial
 
-    Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, DateTime startDate,
-      DateTime endDate, string excludeProjectUid = "");
+    Task<bool> DoesPolygonOverlap(string customerUid, string geometryWkt, string excludeProjectUid = "");
     
-    Task<IEnumerable<Models.DatabaseModels.Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude,
-      DateTime? timeOfPosition = null);
+    Task<IEnumerable<Models.DatabaseModels.Project>> GetIntersectingProjects(string customerUid, double latitude, double longitude);
     
     #endregion projectSpatial
 

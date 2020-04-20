@@ -89,11 +89,8 @@ namespace IntegrationTests.ExecutorTests
         ProjectUID = new Guid(projectUid),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
-        Description = "the Description",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = "New Zealand Standard Time",
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",

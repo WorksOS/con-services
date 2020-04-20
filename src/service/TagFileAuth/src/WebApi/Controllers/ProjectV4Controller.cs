@@ -20,7 +20,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   public class ProjectV4Controller : BaseController
   {
     private readonly ILogger _log;
-    private readonly ICustomRadioSerialProjectMap _customRadioSerialMapper;
 
     /// <summary>
     /// Default constructor.
@@ -30,8 +29,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
     {
       _log = logger.CreateLogger<ProjectV4Controller>();
-      _customRadioSerialMapper = HttpContext.RequestServices.GetRequiredService<ICustomRadioSerialProjectMap>();
-  }
+    }
 
   /// <summary>
   /// This endpoint is used by CTCTs Earthworks product.
@@ -115,13 +113,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// </returns>
     [Route("api/v4/project/getUids")]
     [HttpPost]
-    public async Task<GetProjectAndAssetUidsResult> GetProjectAndDeviceUids([FromBody]GetProjectAndAssetUidsRequest request)
+    public async Task<GetProjectAndAssetUidsResult> GetProjectAndDeviceUids(
+      [FromBody]GetProjectAndAssetUidsRequest request,
+      [FromServices] ICustomRadioSerialProjectMap customRadioSerialProjectMap)
     {
       _log.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
-      executor.CustomRadioSerialMapper = _customRadioSerialMapper;
+      executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 

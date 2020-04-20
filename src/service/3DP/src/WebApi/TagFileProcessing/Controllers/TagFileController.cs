@@ -190,9 +190,9 @@ namespace VSS.Productivity3D.WebApi.TagFileProcessing.Controllers
     {
       var projectData = await ((RaptorPrincipal)User).GetProject(projectUid);
       
-      return projectData.ProjectTimeZoneIana == null
+      return projectData.IanaTimeZone == null
         ? null
-        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.ProjectTimeZoneIana).ToArray());
+        : new WGS84Fence(CommonConverters.GeometryToPoints(projectData.IanaTimeZone).ToArray());
     }
   }
 }

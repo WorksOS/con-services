@@ -14,11 +14,11 @@ using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
@@ -101,8 +101,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
         .ReturnsAsync(new ProjectDatabaseModel { ShortRaptorProjectId = 999 });
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
-            It.IsAny<string>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(false);
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
@@ -150,8 +149,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var request = CreateProjectRequest.CreateACreateProjectRequest
       ( Guid.NewGuid().ToString(),
-        ProjectType.Standard, "projectName", "this is the description",
-        new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
+        ProjectType.Standard, "projectName", "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         null, null);
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
@@ -166,8 +164,7 @@ namespace VSS.MasterData.ProjectTests.Executors
        projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
         .ReturnsAsync(new ProjectDatabaseModel { ShortRaptorProjectId = 999 });
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
-            It.IsAny<string>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(false);
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };

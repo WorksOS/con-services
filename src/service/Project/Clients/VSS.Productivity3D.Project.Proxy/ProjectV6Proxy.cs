@@ -110,22 +110,18 @@ namespace VSS.Productivity3D.Project.Proxy
     }
 
     public async Task<List<ProjectData>> GetIntersectingProjectsApplicationContext(string customerUid,
-        double latitude, double longitude, string projectUid = null, DateTime? timeOfPosition = null,
-        IDictionary<string, string> customHeaders = null)
+        double latitude, double longitude, string projectUid = null, IDictionary<string, string> customHeaders = null)
     {
       // customHeaders will NOT include customerUid as this is ApplicationContext from TFA
       // ProjectSvc.ProjectController should:
       //  if projectUid, get it if it overlaps in localDB
       //    else get overlapping projects in localDB for this CustomerUID
-      //  Note that if timeOfPosition == null, don't check it.
-
-      var topAsString = timeOfPosition == null ? null : timeOfPosition.ToString();
+            
       var queryParameters = new List<KeyValuePair<string, string>>{
           new KeyValuePair<string, string>("customerUid", customerUid),
           new KeyValuePair<string, string>( "latitude",latitude.ToString()),
           new KeyValuePair<string, string>( "longitude",longitude.ToString()),
-          new KeyValuePair<string, string>( "projectUid",projectUid),
-          new KeyValuePair<string, string>( "timeOfPosition",topAsString) };
+          new KeyValuePair<string, string>( "projectUid",projectUid) };
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project/applicationcontext/intersecting",
         customerUid, null, customHeaders, queryParameters);
 

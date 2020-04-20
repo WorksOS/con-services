@@ -35,17 +35,15 @@ namespace WebApiTests.Executors
     public async Task TRexExecutor_Manual_Happy_ProjectAccountLicense_CBDeviceAndNoLicense()
     {
       var projectUid = Guid.NewGuid().ToString();
-      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectAccountUid = Guid.NewGuid().ToString();      
       var projectOfInterest = new ProjectData
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
+        CustomerUID = projectAccountUid
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
       var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
@@ -84,12 +82,10 @@ namespace WebApiTests.Executors
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
+        CustomerUID = projectAccountUid
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
       var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
@@ -128,12 +124,10 @@ namespace WebApiTests.Executors
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
+        CustomerUID = projectAccountUid
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
       var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
@@ -172,12 +166,10 @@ namespace WebApiTests.Executors
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
+        CustomerUID = projectAccountUid
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = (ProjectData)null;
       var projectListForProjectAccountUid = new List<ProjectData>();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
@@ -217,12 +209,10 @@ namespace WebApiTests.Executors
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
         CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString(),
         IsArchived = true
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
       var projectListForProjectAccountUid = new List<ProjectData>();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
@@ -261,12 +251,10 @@ namespace WebApiTests.Executors
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
+        CustomerUID = projectAccountUid
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
       var projectListForProjectAccountUid = new List<ProjectData>();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
@@ -305,12 +293,10 @@ namespace WebApiTests.Executors
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
+        CustomerUID = projectAccountUid
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
       var projectListForProjectAccountUid = new List<ProjectData>();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
@@ -350,20 +336,16 @@ namespace WebApiTests.Executors
       {
         ProjectUID = projectUid,
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
+        CustomerUID = projectAccountUid
       };
       var projectOfInterest2 = new ProjectData
       {
         ProjectUID = Guid.NewGuid().ToString(),
         ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-40).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-1).ToString()
+        CustomerUID = projectAccountUid
       };
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
       var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest, projectOfInterest2 };
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
@@ -417,7 +399,7 @@ namespace WebApiTests.Executors
   )
     {
       projectProxy.Setup(p => p.GetProjectApplicationContext(request.ProjectUid, null)).ReturnsAsync(projectForProjectUid);
-      projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, null, null))
+      projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, null))
             .ReturnsAsync(projectListForProjectAccountUid);
       cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(projectAccountUid), null)).ReturnsAsync(projectDeviceLicenseResponseModel);
 

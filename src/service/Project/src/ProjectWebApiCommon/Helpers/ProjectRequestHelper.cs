@@ -86,22 +86,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
       string customerUid, double latitude, double longitude, 
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
-      DateTime? timeOfPosition = null)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
-      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude, timeOfPosition)).ToList();        ;
+      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList();        ;
 
       log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
       return projects;
     }
 
-    public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, DateTime projectStartDate,
-      DateTime projectEndDate, string databaseProjectBoundary,
+    public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var overlaps =
-        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate, projectUid == Guid.Empty ? string.Empty : projectUid.ToString());
+        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary, projectUid == Guid.Empty ? string.Empty : projectUid.ToString());
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 

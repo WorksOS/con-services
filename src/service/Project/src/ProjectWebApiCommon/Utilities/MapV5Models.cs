@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
-using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Utilities
