@@ -77,10 +77,10 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
       var response = await request.ExecuteAsync(arg);
 
-      var fileName = @$"Test_CutFillTile_TAGFile_FlatDesign-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
-      var path = Path.Combine("TestData", "RenderedTiles", "Test_CutFillTile_TAGFile_FlatDesign", fileName);
+      var fileName = @$"Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
+      var path = Path.Combine("TestData", "RenderedTiles", "CutFillTile", fileName);
 
-      // var saveFileName = @$"C:\Temp\Test_CutFillTile_TAGFile_FlatDesign-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
+      // var saveFileName = @$"C:\Temp\Flat-Elevation-{elevation}-Smoothing-{useSmoothing}-{maskSize}-{nullInfillMode}.bmp";
 
       CheckSimpleRenderTileResponse(response, DisplayMode.CutFill, "", path);
     }
