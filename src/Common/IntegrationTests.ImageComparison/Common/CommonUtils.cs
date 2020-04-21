@@ -80,6 +80,10 @@ namespace XnaFan.ImageComparison.Netcore.Common
 
     public static bool CompareImages(string resultName, double difference, byte[] expectedTileData, byte[] actualTileData, out int actualDiff)
     {
+      //These 2 lines are for debugging so we can paste into an online image converter
+      //var expectedTileDataString = JsonConvert.SerializeObject(expectedTileData);
+      //var actualTileDataString = JsonConvert.SerializeObject(actualTileData);
+
       var expFileName = "Expected_" + resultName + ".png";
       var actFileName = "Actual_" + resultName + ".png";
       var diff = CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData, expFileName, actFileName);
