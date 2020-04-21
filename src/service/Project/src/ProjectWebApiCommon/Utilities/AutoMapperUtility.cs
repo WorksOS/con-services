@@ -1,7 +1,6 @@
 ﻿using System;
 using AutoMapper;
 using VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -56,8 +55,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ActionUTC, opt => opt.Ignore())
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.Ignore());
           cfg.CreateMap<CreateProjectEvent, ProjectDatabaseModel>()
-            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.ProjectStartDate))
-            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.ProjectEndDate))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.ProjectName))
             .ForMember(dest => dest.Boundary, opt => opt.MapFrom(src => src.ProjectBoundary))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
@@ -73,9 +70,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.Boundary))
             .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.ProjectTimeZoneIana))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
-            .ForMember(dest => dest.IsArchived, opt => opt.MapFrom(src => src.IsArchived))
-            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
-            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")));
+            .ForMember(dest => dest.IsArchived, opt => opt.MapFrom(src => src.IsArchived));
           cfg.CreateMap<ImportedFile, ImportedFileDescriptor>()
             .ForMember(dest => dest.ImportedUtc, opt => opt.MapFrom(src => src.LastActionedUtc))
             .ForMember(dest => dest.LegacyFileId, opt => opt.MapFrom(src => src.ImportedFileId))
@@ -91,8 +86,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
           // for v2 BC apis
           cfg.CreateMap<ProjectDatabaseModel, ProjectV5DescriptorResult>()
-            .ForMember(dest => dest.StartDate, opt => opt.MapFrom(src => src.StartDate.ToString("O")))
-            .ForMember(dest => dest.EndDate, opt => opt.MapFrom(src => src.EndDate.ToString("O")))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(src => src.ShortRaptorProjectId))
             .ForMember(dest => dest.Code, opt => opt.Ignore())
             .ForMember(dest => dest.Message, opt => opt.Ignore());
@@ -103,8 +96,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.CoordinateSystemFileContent, opt => opt.Ignore()) // done externally
             .ForMember(dest => dest.ActionUTC, opt => opt.MapFrom(x => DateTime.UtcNow))
             .ForMember(dest => dest.ShortRaptorProjectId, opt => opt.MapFrom(x => 0))
-            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore())
-            .ForMember(dest => dest.Description, opt => opt.Ignore());
+            .ForMember(dest => dest.ProjectUID, opt => opt.Ignore());
           cfg.CreateMap<TBCPoint, VSS.MasterData.Models.Models.Point>()
             .ForMember(dest => dest.y, opt => opt.MapFrom((src => src.Latitude)))
             .ForMember(dest => dest.x, opt => opt.MapFrom((src => src.Longitude)));

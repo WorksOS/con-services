@@ -43,7 +43,7 @@ namespace VSS.Tile.Service.Common.Services
       {
         using (Image<Rgba32> bitmap = new Image<Rgba32>(parameters.mapWidth, parameters.mapHeight))
         {
-          var projectPoints = project.GeometryWKT.GeometryToPoints();
+          var projectPoints = project.ProjectGeofenceWKT.GeometryToPoints();
           PointF[] pixelPoints = TileServiceUtils.LatLngToPixelOffset(projectPoints, parameters.pixelTopLeft, parameters.numTiles);
 
           bitmap.Mutate(ctx => ctx.DrawPolygon(PROJECT_BOUNDARY_RGBA, PROJECT_OUTLINE_WIDTH, pixelPoints));

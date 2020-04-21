@@ -12,10 +12,11 @@ using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies;
 using VSS.Productivity.Push.Models.Notifications.Changes;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
@@ -125,14 +126,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [Route("api/v6/project/applicationcontext/intersecting")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsListResult> GetIntersectingProjectsApplicationContextV6(string customerUid,
-       double latitude, double longitude, DateTime? timeOfPosition = null)
+       double latitude, double longitude)
     {
       Logger.LogInformation($"{nameof(GetIntersectingProjectsApplicationContextV6)}");
 
       var projects = await ProjectRequestHelper.GetIntersectingProjects(
         customerUid, latitude, longitude,
-        Logger, ServiceExceptionHandler, ProjectRepo,
-        timeOfPosition).ConfigureAwait(false);
+        Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
       return new ProjectV6DescriptorsListResult
       {
         ProjectDescriptors = projects.Select(project =>

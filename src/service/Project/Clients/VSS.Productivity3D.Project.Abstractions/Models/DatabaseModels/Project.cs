@@ -14,14 +14,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
 
     public string Name { get; set; }
 
-    public string Description { get; set; }
-
-    public ProjectType ProjectType { get; set; }
-
-    // start and end are actually only date with no time component. However C# has no date-only.
-    public DateTime StartDate { get; set; }
-
-    public DateTime EndDate { get; set; }
+    public ProjectType ProjectType { get; set; }     
 
     public string ProjectTimeZone { get; set; }
      
@@ -48,10 +41,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels
         && otherProject.CustomerUID == CustomerUID
         && otherProject.ShortRaptorProjectId == ShortRaptorProjectId
         && otherProject.Name == Name
-        && otherProject.Description == Description
         && otherProject.ProjectType == ProjectType
-        && otherProject.StartDate == StartDate
-        && otherProject.EndDate == EndDate
         && otherProject.ProjectTimeZone == ProjectTimeZone
         && otherProject.ProjectTimeZoneIana == ProjectTimeZoneIana        
         && otherProject.Boundary == Boundary

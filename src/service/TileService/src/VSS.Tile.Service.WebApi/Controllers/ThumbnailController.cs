@@ -60,7 +60,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
       Log.LogDebug($"{nameof(GetProjectThumbnailPng)}: {Request.QueryString}");
 
       var project = await ((TilePrincipal) User).GetProject(projectUid);
-      var bbox = GetBoundingBoxFromWKT(project.GeometryWKT);
+      var bbox = GetBoundingBoxFromWKT(project.ProjectGeofenceWKT);
 
       DisplayMode? mode = null;
       var overlays = DEFAULT_PROJECT_THUMBNAIL_OVERLAYS.ToList();

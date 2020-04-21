@@ -46,8 +46,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         if (device == null || deviceLicenseTotal < 1)
           return GetProjectIdResult.CreateGetProjectIdResult(false, projectId);
 
-        var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device,
-          request.latitude, request.longitude, request.timeOfPosition);
+        var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.latitude, request.longitude);
         log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded projects which lat/long is within {JsonConvert.SerializeObject(potentialProjects)}");
          
 

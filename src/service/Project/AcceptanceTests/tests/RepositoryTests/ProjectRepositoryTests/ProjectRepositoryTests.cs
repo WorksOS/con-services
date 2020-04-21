@@ -41,11 +41,8 @@ namespace RepositoryTests.ProjectRepositoryTests
         CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name",
-        Description = "the Description",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
@@ -65,8 +62,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result, 
         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-        createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType, 
-        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
+        createProjectEvent.ProjectName,createProjectEvent.ProjectType, 
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
            
@@ -94,11 +90,8 @@ namespace RepositoryTests.ProjectRepositoryTests
         CustomerUID = Guid.NewGuid(),
         ShortRaptorProjectId = new Random().Next(1, 1999999),
         ProjectName = "The Project Name(株)城内組　二見地区築堤護岸工事",
-        Description = "the Description(株)城内組　二見地区築堤護岸工事",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
@@ -114,8 +107,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
        createProjectEvent.ProjectUID.ToString().ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-       createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-       createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
+       createProjectEvent.ProjectName, createProjectEvent.ProjectType,
        createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
        createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
@@ -139,8 +131,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
@@ -154,9 +144,8 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-        createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-         createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
-         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
+        createProjectEvent.ProjectName,createProjectEvent.ProjectType,
+        createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
       
       CheckProjectHistoryCount(createProjectEvent.ProjectUID.ToString(), 1);
@@ -179,8 +168,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
@@ -194,8 +181,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name 2",
         ProjectType = createProjectEvent1.ProjectType,
         ProjectTimezone = createProjectEvent1.ProjectTimezone,
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ActionUTC = actionUtc,
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))"
@@ -231,9 +216,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -255,8 +237,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-        createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
+        createProjectEvent.ProjectName,createProjectEvent.ProjectType,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
@@ -280,9 +261,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
 
@@ -297,8 +275,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The NEW Project Name",
         ProjectType = createProjectEvent.ProjectType,
         ProjectTimezone = createProjectEvent.ProjectTimezone,
-
-        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         CoordinateSystemFileName = "thatLocation\\that.cs",
         ActionUTC = actionUtc.AddHours(1)
       };
@@ -317,8 +293,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       CompareProject(g.Result,
         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-        updateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-        createProjectEvent.ProjectStartDate, updateProjectEvent.ProjectEndDate,
+        updateProjectEvent.ProjectName, createProjectEvent.ProjectType,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, updateProjectEvent.ActionUTC, updateProjectEvent.CoordinateSystemFileName);
 
@@ -341,9 +316,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -353,7 +325,6 @@ namespace RepositoryTests.ProjectRepositoryTests
       {
         ProjectUID = createProjectEvent.ProjectUID,
         ProjectType = createProjectEvent.ProjectType,
-        ProjectEndDate = createProjectEvent.ProjectEndDate,
         ActionUTC = actionUtc.AddHours(1)
       };
 
@@ -369,8 +340,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-        createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
+        createProjectEvent.ProjectName, createProjectEvent.ProjectType,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, updateProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
@@ -394,9 +364,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -408,8 +375,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The NEW Project Name",
         ProjectType = createProjectEvent.ProjectType,
         ProjectTimezone = createProjectEvent.ProjectTimezone,
-
-        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         ActionUTC = actionUtc.AddHours(-1)
       };
 
@@ -430,8 +395,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
              createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-             createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-             createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
+             createProjectEvent.ProjectName, createProjectEvent.ProjectType,
              createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
              createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
@@ -454,9 +418,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -468,8 +429,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The NEW Project Name",
         ProjectType = createProjectEvent.ProjectType,
         ProjectTimezone = createProjectEvent.ProjectTimezone,
-
-        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         ActionUTC = actionUtc.AddHours(1)
       };
 
@@ -485,8 +444,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       var g = projectRepo.GetProject(createProjectEvent.ProjectUID.ToString());
       CompareProject(g.Result,
          createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-         updateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-         createProjectEvent.ProjectStartDate, updateProjectEvent.ProjectEndDate,
+         updateProjectEvent.ProjectName, createProjectEvent.ProjectType,
          createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
          createProjectEvent.ProjectBoundary, updateProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
@@ -509,9 +467,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -522,8 +477,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectUID = createProjectEvent.ProjectUID,
         ProjectName = "The NEW Project Name",
         ProjectType = createProjectEvent.ProjectType,
-       
-        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         ActionUTC = actionUtc.AddHours(1)
       };
 
@@ -539,8 +492,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-        updateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-        createProjectEvent.ProjectStartDate, updateProjectEvent.ProjectEndDate,
+        updateProjectEvent.ProjectName, createProjectEvent.ProjectType,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, updateProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
     }
@@ -567,9 +519,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary = originalProjectBoundary,
         CoordinateSystemFileContent = new byte[] { 0, 1, 2, 3, 4 },
         CoordinateSystemFileName = "thisLocation\\this.cs",
@@ -583,8 +532,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectType = createProjectEvent.ProjectType,
         ProjectTimezone = createProjectEvent.ProjectTimezone,
         ProjectBoundary = updatedProjectBoundary,
-
-        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         CoordinateSystemFileName = "thatLocation\\that.cs",
         ActionUTC = actionUtc.AddHours(1)
       };
@@ -596,8 +543,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectType = createProjectEvent.ProjectType,
         ProjectTimezone = createProjectEvent.ProjectTimezone,
         ProjectBoundary = string.Empty,
-
-        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         CoordinateSystemFileName = "thatLocation\\that.cs",
         ActionUTC = actionUtc.AddHours(2)
       };
@@ -609,8 +554,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectType = createProjectEvent.ProjectType,
         ProjectTimezone = createProjectEvent.ProjectTimezone,
         ProjectBoundary = null,
-
-        ProjectEndDate = createProjectEvent.ProjectEndDate.AddDays(6),
         CoordinateSystemFileName = "thatLocation\\that.cs",
         ActionUTC = actionUtc.AddHours(3)
       };
@@ -631,8 +574,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
        createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-       firstUpdateProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-       createProjectEvent.ProjectStartDate, firstUpdateProjectEvent.ProjectEndDate,
+       firstUpdateProjectEvent.ProjectName,createProjectEvent.ProjectType,
        createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
        firstUpdateProjectEvent.ProjectBoundary, firstUpdateProjectEvent.ActionUTC, firstUpdateProjectEvent.CoordinateSystemFileName);
       
@@ -674,9 +616,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -719,9 +658,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -773,9 +709,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = actionUtc
@@ -824,9 +757,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary =
           "POLYGON((-121.347189366818 38.8361907402694,-121.349260032177 38.8361656688414,-121.349217116833 38.8387897637231,-121.347275197506 38.8387145521594,-121.347189366818 38.8361907402694,-121.347189366818 38.8361907402694))",
         ActionUTC = ActionUTC
@@ -854,8 +784,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       g.Wait();
       CompareProject(g.Result,
         createProjectEvent.ProjectUID.ToString(), createProjectEvent.CustomerUID.ToString(), 0,
-        createProjectEvent.ProjectName, createProjectEvent.Description, createProjectEvent.ProjectType,
-        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate,
+        createProjectEvent.ProjectName, createProjectEvent.ProjectType,
         createProjectEvent.ProjectTimezone, ProjectTimezones.PacificAuckland,
         createProjectEvent.ProjectBoundary, createProjectEvent.ActionUTC, createProjectEvent.CoordinateSystemFileName);
 
@@ -886,9 +815,6 @@ namespace RepositoryTests.ProjectRepositoryTests
         ProjectName = "The Project Name",
         ProjectType = ProjectType.Standard,
         ProjectTimezone = ProjectTimezones.NewZealandStandardTime,
-
-        ProjectStartDate = new DateTime(2016, 02, 01),
-        ProjectEndDate = new DateTime(2017, 02, 01),
         ProjectBoundary = boundary,
         ActionUTC = actionUtc
       };
@@ -1002,8 +928,7 @@ namespace RepositoryTests.ProjectRepositoryTests
 
     private void CompareProject(Project result, 
       string expectedProjectUID, string expectedCustomerUID, int greaterThanShortRaptorProjectId,
-      string expectedProjectName, string expectedDescription, ProjectType expectedProjectType,
-      DateTime expectedProjectStartDate, DateTime expectedProjectEndDate, 
+      string expectedProjectName, ProjectType expectedProjectType,
       string expectedProjectTimezone, string expectedProjectTimeZoneIana,
       string expectedBoundary, DateTime expectedActionUTC, string expectedCoordinateSystemFileName
       )
@@ -1013,10 +938,7 @@ namespace RepositoryTests.ProjectRepositoryTests
       Assert.Equal(expectedCustomerUID, result.CustomerUID);
       Assert.True(result.ShortRaptorProjectId > greaterThanShortRaptorProjectId);
       Assert.Equal(expectedProjectName, result.Name);
-      Assert.Equal(expectedDescription, result.Description);
       Assert.Equal(expectedProjectType, result.ProjectType);
-      Assert.Equal(expectedProjectStartDate, result.StartDate);
-      Assert.Equal(expectedProjectEndDate, result.EndDate);
       Assert.Equal(expectedProjectTimezone, result.ProjectTimeZone);
       Assert.Equal(expectedProjectTimeZoneIana, result.ProjectTimeZoneIana);
       Assert.Equal(expectedBoundary, result.Boundary);
