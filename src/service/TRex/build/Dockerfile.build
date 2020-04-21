@@ -6,7 +6,8 @@ COPY . /build/
 WORKDIR /build
 
 #publish TRex servers
-RUN dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; \
+RUN dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; \
+dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.Application/VSS.TRex.Server.Application.csproj --output /trex/ApplicationServer ; \
 dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.DesignElevation/VSS.TRex.Server.DesignElevation.csproj --output /trex/DesignElevation ; \
 dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.MutableData/VSS.TRex.Server.MutableData.csproj --output /trex/MutableData ; \
 dotnet publish ./$SERVICE_PATH/src/netstandard/services/VSS.TRex.Server.PSNode/VSS.TRex.Server.PSNode.csproj --output /trex/PSNode ; \
@@ -20,7 +21,6 @@ dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.T
 dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator ; \
 dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer
 
-###dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools
 
 #Gather dependencies - kubernetes support (and its dependencies) have to be injected here as its not part of the nuget package
 RUN cp -r /root/.nuget/packages/apache.ignite/2.8.0/build/output/libs/ /trex/libs/

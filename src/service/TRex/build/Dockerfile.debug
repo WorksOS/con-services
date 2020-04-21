@@ -19,7 +19,7 @@ RUN if [ "$COMPONENT" = "ApplicationServer" -o "$DEBUG" != "" ] ; then dotnet pu
  if [ "$COMPONENT" = "ConnectedSiteGateway" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.ConnectedSite.Gateway.WebApi/VSS.TRex.ConnectedSite.Gateway.WebApi.csproj --output /trex/ConnectedSiteGateway ; fi ; \
  if [ "$COMPONENT" = "Gateway" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Gateway.WebApi/VSS.TRex.Gateway.WebApi.csproj --output /trex/Gateway ; fi ; \
  if [ "$COMPONENT" = "MutableGateway"-o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/gateway/VSS.TRex.Mutable.Gateway.WebApi/VSS.TRex.Mutable.Gateway.WebApi.csproj --output /trex/MutableGateway ; fi ; \
-## if [ "$COMPONENT" = "Webtools" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; fi ; \
+ if [ "$COMPONENT" = "Webtools" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Webtools/VSS.TRex.Webtools.csproj --output /trex/Webtools ; fi ; \
  if [ "$COMPONENT" = "Activator" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.GridActivator/VSS.TRex.GridActivator.csproj --output /trex/Utils/Activator ; fi ; \
  if [ "$COMPONENT" = "Deployer" -o "$DEBUG" != "" ] ; then dotnet publish ./$SERVICE_PATH/src/tools/VSS.TRex.Service.Deployer/VSS.TRex.Service.Deployer.csproj --output /trex/Utils/Deployer ; fi
 
