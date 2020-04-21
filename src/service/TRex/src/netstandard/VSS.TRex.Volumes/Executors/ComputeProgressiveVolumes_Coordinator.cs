@@ -257,6 +257,9 @@ namespace VSS.TRex.Volumes.Executors
           // Instruct the Aggregator to perform any finalization logic before reading out the results
           Aggregator.Finalise();
 
+          var noProductionDataCount = 0;
+          var invalidPlanExtentsCount = 0;
+
           foreach (var state in Aggregator.AggregationStates)
           {
             Log.LogInformation($"#Result# Progressive volume result: Cut={state.CutFillVolume.CutVolume:F3}, Fill={state.CutFillVolume.FillVolume:F3}, Area={state.CoverageArea:F3}");
@@ -264,13 +267,19 @@ namespace VSS.TRex.Volumes.Executors
             if (!state.BoundingExtents.IsValidPlanExtent)
             {
               if (state.CoverageArea == 0 && state.CutFillVolume.CutVolume == 0 && state.CutFillVolume.FillVolume == 0)
-                resultStatus = RequestErrorStatus.NoProductionDataFound;
+                noProductionDataCount++;
               else
-                resultStatus = RequestErrorStatus.InvalidPlanExtents;
-
-              Log.LogInformation($"Progressive volume invalid plan extents or no data found: {resultStatus}");
+                invalidPlanExtentsCount++;
             }
           }
+
+          if (noProductionDataCount == Aggregator.AggregationStates.Length)
+            resultStatus = RequestErrorStatus.NoProductionDataFound;
+          else if (invalidPlanExtentsCount == Aggregator.AggregationStates.Length)
+            resultStatus = RequestErrorStatus.InvalidPlanExtents;
+
+          if (resultStatus == RequestErrorStatus.NoProductionDataFound || resultStatus == RequestErrorStatus.InvalidPlanExtents)
+            Log.LogInformation($"Progressive volume invalid plan extents or no data found: {resultStatus}");
 
           volumesResult.ResultStatus = resultStatus;
 

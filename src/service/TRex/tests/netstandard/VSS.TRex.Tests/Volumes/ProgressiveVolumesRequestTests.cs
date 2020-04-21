@@ -163,9 +163,9 @@ namespace VSS.TRex.Tests.Volumes
       //Was, response = {Cut:1.00113831634521, Fill:2.48526947021484, Cut Area:117.5652, FillArea: 202.9936, Total Area:353.0424, BoundingGrid:MinX: 537669.2, MaxX:537676.34, MinY:5427391.44, MaxY:5427514.52, MinZ: 1E+308, MaxZ:1E+308, BoundingLLH:MinX: 1E+308, MaxX:1E+308, MinY:1...
      // const double EPSILON = 0.000001;
       response.Should().NotBeNull();
+      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       response.Volumes.Should().NotBeNull();
-      response.ResultStatus.Should().Be(RequestErrorStatus.OK);
 
       // todo: Complete this
 /*      response.BoundingExtentGrid.MinX.Should().BeApproximately(537669.2, EPSILON);
