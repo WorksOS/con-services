@@ -53,8 +53,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     private async Task<GetProjectAndAssetUidsEarthWorksResult> HandleCutFillExport(GetProjectAndAssetUidsEarthWorksRequest request,
       DeviceData device)
     {
-      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude,
-        request.Longitude, request.TimeOfPosition);
+      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude);
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 

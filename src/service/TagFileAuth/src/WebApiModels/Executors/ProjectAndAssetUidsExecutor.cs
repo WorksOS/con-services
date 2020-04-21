@@ -143,8 +143,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (deviceAccountDeviceLicenseTotal < 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 1);
 
-      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude,
-        request.Longitude, request.TimeOfPosition);
+      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude);
       log.LogDebug(
         $"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 

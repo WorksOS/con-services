@@ -18,10 +18,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Invalid ProjectTimezone.", 10);
       this.DynamicAddwithOffset("Missing ProjectName.", 11);
       this.DynamicAddwithOffset("ProjectName is longer than the 255 characters allowed.", 12);
-      this.DynamicAddwithOffset("Description is longer than the 2000 characters allowed.", 13);
-      this.DynamicAddwithOffset("Missing ProjectStartDate.", 14);
-      this.DynamicAddwithOffset("Missing ProjectEndDate.", 15);
-      this.DynamicAddwithOffset("Project start date must be earlier than end date.", 16);
       this.DynamicAddwithOffset("Project timezone cannot be updated.", 17);
       this.DynamicAddwithOffset("CustomerUID parameter differs to the requesting CustomerUID. Impersonation is not supported.", 18);
       this.DynamicAddwithOffset("Missing CustomerUID.", 19);

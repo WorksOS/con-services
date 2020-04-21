@@ -156,7 +156,7 @@ namespace ExecutorTests
       var request = BaseRequestFull.Create(
         custUid.ToString(),
         false,
-        new ProjectData() { ProjectUID = projectUid.ToString(), GeometryWKT = projectGeometryWKT},
+        new ProjectData() { ProjectUID = projectUid.ToString(), ProjectGeofenceWKT = projectGeometryWKT},
         userId.ToString(), null);
       request.Validate(ServiceExceptionHandler);
       return request;

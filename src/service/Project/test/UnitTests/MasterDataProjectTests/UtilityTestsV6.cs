@@ -2,9 +2,10 @@
 using Newtonsoft.Json;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.Utilities;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 using Xunit;
@@ -24,17 +25,13 @@ namespace VSS.MasterData.ProjectTests
     {
       var request = CreateProjectRequest.CreateACreateProjectRequest
       (Guid.NewGuid().ToString(),
-        ProjectType.Standard, "projectName", "this is the description",
-        new DateTime(2017, 01, 20), new DateTime(2017, 02, 15), "NZ whatsup",
+        ProjectType.Standard, "projectName", "NZ whatsup",
         "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
        null, null);
 
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(request);
       Assert.Equal(request.ProjectType, createProjectEvent.ProjectType);
       Assert.Equal(request.ProjectName, createProjectEvent.ProjectName);
-      Assert.Equal(request.Description, createProjectEvent.Description);
-      Assert.Equal(request.ProjectStartDate, createProjectEvent.ProjectStartDate);
-      Assert.Equal(request.ProjectEndDate, createProjectEvent.ProjectEndDate);
       Assert.Equal(request.ProjectTimezone, createProjectEvent.ProjectTimezone);
       Assert.Equal(request.ProjectBoundary, createProjectEvent.ProjectBoundary);
       Assert.Equal(request.CoordinateSystemFileName, createProjectEvent.CoordinateSystemFileName);
@@ -51,15 +48,12 @@ namespace VSS.MasterData.ProjectTests
     public void MapUpdateProjectRequestToEvent()
     {
       var request = UpdateProjectRequest.CreateUpdateProjectRequest
-      (Guid.NewGuid(), ProjectType.Standard, "projectName", "this is the description",
-        new DateTime(2017, 02, 15), "csName", new byte[] { 1, 2, 3 }, null);
+      (Guid.NewGuid(), ProjectType.Standard, "projectName", "csName", new byte[] { 1, 2, 3 }, null);
 
       var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(request);
       Assert.Equal(request.ProjectUid, updateProjectEvent.ProjectUID);
       Assert.Equal(request.ProjectType, updateProjectEvent.ProjectType);
       Assert.Equal(request.ProjectName, updateProjectEvent.ProjectName);
-      Assert.Equal(request.Description, updateProjectEvent.Description);
-      Assert.Equal(request.ProjectEndDate, updateProjectEvent.ProjectEndDate);
       Assert.Equal(request.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileName);
       Assert.Equal(request.CoordinateSystemFileContent, updateProjectEvent.CoordinateSystemFileContent);
 
@@ -80,11 +74,8 @@ namespace VSS.MasterData.ProjectTests
         ShortRaptorProjectId = 123,
         ProjectType = ProjectType.Standard,
         Name = "the Name",
-        Description = "the Description",
         ProjectTimeZone = "NZ stuff",
         ProjectTimeZoneIana = "Pacific stuff",
-        StartDate = new DateTime(2017, 01, 20),
-        EndDate = new DateTime(2017, 02, 15),
         CustomerUID = Guid.NewGuid().ToString(),
         Boundary = "POLYGON((172.595831670724 -43.5427038560109,172.594630041089 -43.5438859356773,172.59329966542 -43.542486101965, 172.595831670724 -43.5427038560109))",
         CoordinateSystemFileName = "",
@@ -99,11 +90,8 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(project.ShortRaptorProjectId, result.ShortRaptorProjectId);
       Assert.Equal(project.ProjectType, result.ProjectType);
       Assert.Equal(project.Name, result.Name);
-      Assert.Equal(project.Description, result.Description);
       Assert.Equal(project.ProjectTimeZone, result.ProjectTimeZone);
       Assert.Equal(project.ProjectTimeZoneIana, result.IanaTimeZone);
-      Assert.Equal(project.StartDate.ToString("O"), result.StartDate);
-      Assert.Equal(project.EndDate.ToString("O"), result.EndDate);
       Assert.Equal(project.CustomerUID, result.CustomerUid);
       Assert.Equal(project.Boundary, result.ProjectGeofenceWKT);
       Assert.False(result.IsArchived, "IsArchived has not been mapped correctly");

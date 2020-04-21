@@ -35,7 +35,7 @@ namespace VSS.Productivity3D.Filter.Common.Models
         CustomerUid = customerUid,
         UserUid = userUid,
         CustomHeaders = customHeaders,
-        GeometryWKT = projectData?.GeometryWKT
+        GeometryWKT = projectData?.ProjectGeofenceWKT
       };
     }
 
