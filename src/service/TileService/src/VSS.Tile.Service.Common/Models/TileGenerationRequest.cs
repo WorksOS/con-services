@@ -147,7 +147,7 @@ namespace VSS.Tile.Service.Common.Models
               new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
                 "Missing design for cut-fill production data overlay"));
           }
-          if ((volCalcType == VolumeCalcType.DesignToGround && baseUid == null) || 
+          if ((volCalcType == VolumeCalcType.DesignToGround && baseUid == null) ||
               (volCalcType == VolumeCalcType.GroundToDesign && topUid == null))
           {
             throw new ServiceException(HttpStatusCode.BadRequest,

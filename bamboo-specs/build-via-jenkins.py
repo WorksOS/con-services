@@ -86,9 +86,10 @@ def main(argv):
     builddb=''
     runacctests=''
     rununittests=''
+    runintegrationtests=''
 
     try:
-        opts, args = getopt.getopt(argv,"",["url=","username=","token=","build=", "buildid=","branch=","servicepath=","imagetag=","builddb=","runacctests=","rununittests="])
+        opts, args = getopt.getopt(argv,"",["url=","username=","token=","build=", "buildid=","branch=","servicepath=","imagetag=","builddb=","runacctests=","rununittests=","runintegrationtests="])
     except getopt.GetoptError:
         sys.exit(3)
 
@@ -116,6 +117,8 @@ def main(argv):
             runacctests = arg
         elif opt == '--rununittests':
             rununittests = arg
+        elif opt == '--runintegrationtests':
+            runintegrationtests = arg
     
 
 
@@ -133,6 +136,8 @@ def main(argv):
         parameters["RUN_ACCTEST"] = runacctests
     if 0 < len(rununittests):
         parameters["RUN_UNITTESTS"] = rununittests
+    if 0 < len(runintegrationtests):
+        parameters["RUN_INTEGRATIONTESTS"] = runintegrationtests
 
     print("server details {} {} {}".format(url, username, token))
     s = get_server(url, username, token)

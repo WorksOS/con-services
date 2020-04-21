@@ -100,6 +100,7 @@ namespace VSS.WebApi.Common
       return builder;
     }
 
+    private static object _lock = new object();
 
     public static IServiceCollection AddJaeger(this IServiceCollection collection, string service_title)
     {
@@ -134,10 +135,17 @@ namespace VSS.WebApi.Common
           .Build();
         }
 
-        GlobalTracer.Register(tracer);
+        lock (_lock)
+        {
+          if (!GlobalTracer.IsRegistered())
+          {
+            GlobalTracer.Register(tracer);
+          }
+        }
 
         return tracer;
       });
+
       return collection;
     }
 
