@@ -3,6 +3,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Logging;
+using VSS.TRex.SiteModelChangeMaps.GridFabric.Services;
 using VSS.TRex.TAGFiles.GridFabric.Services;
 
 namespace VSS.TRex.Webtools.Controllers
@@ -37,6 +38,30 @@ namespace VSS.TRex.Webtools.Controllers
 
       Log.LogInformation("Completed service deployment for TAG file buffer queue service");
       return "Completed service deployment for TAG file buffer queue service";
+    }
+
+    /// <summary>
+    /// Deploys the TagFileBufferQueueService to the grid
+    /// </summary>
+    /// <returns></returns>
+    [HttpPut("sitemodelchangeprocessorservice")]
+    public string DeploySiteModelChangeProcessorService()
+    {
+      Log.LogInformation("Obtaining proxy for site model change processor service");
+
+      try
+      {
+        var proxy = new SiteModelChangeProcessorServiceProxy();
+        Log.LogInformation("Deploying site model change processor service service to the immutable grid");
+        proxy.Deploy();
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Exception occurred deploying service:");
+      }
+
+      Log.LogInformation("Completed service deployment for site model change processor service");
+      return "Completed service deployment for site model change processor service";
     }
 
     /// <summary>
