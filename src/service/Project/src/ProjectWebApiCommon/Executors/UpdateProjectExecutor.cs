@@ -76,7 +76,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           existing.ShortRaptorProjectId,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
-          projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
+          projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
+          cwsDesignClient, cwsProfileSettingsClient).ConfigureAwait(false);
         log.LogDebug("UpdateProject: CreateCoordSystemInProductivity3dAndTcc succeeded");
       }         
 
@@ -107,8 +108,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         try
         {
           var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(updateProjectEvent);
-          createProjectRequestModel.accountId = customerUid;
-          createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
+          createProjectRequestModel.AccountId = customerUid;
+          createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
 
           var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
           if (response != null)

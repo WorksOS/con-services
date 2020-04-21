@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -37,6 +38,24 @@ namespace CCSS.CWS.Client
 
       log.LogDebug($"{nameof(CreateFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
       return createFileResponse;
-    }   
+    }
+    
+    /// <summary>
+    /// Creates file metadata in Data Ocean through CWS then uploads file contents.
+    /// </summary>
+    public async Task<CreateFileResponseModel> CreateAndUploadFile(Guid projectUid, CreateFileRequestModel createFileRequest, Stream fileContents, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileRequest {JsonConvert.SerializeObject(createFileRequest)}");
+
+      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var createFileResponse = await PostData<CreateFileRequestModel, CreateFileResponseModel>($"/projects/{projectTrn}/file", createFileRequest, null, customHeaders);
+
+      await UploadData(createFileResponse.UploadUrl, fileContents, customHeaders);
+
+      // TODO: What do we do about monitoring the status of the upload?
+
+      log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
+      return createFileResponse;
+    }
   }
 }

@@ -13,7 +13,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     public string FileSpaceId { get; set; }
 
     /// <summary>
-    /// FilespaceId within dataocean
+    /// URL to use for uploading file
     /// </summary>
     [JsonProperty("uploadUrl")]
     public string UploadUrl { get; set; }

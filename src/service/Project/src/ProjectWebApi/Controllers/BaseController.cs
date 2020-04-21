@@ -47,6 +47,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private ITPaaSApplicationAuthentication _authorization;
     private ICwsProjectClient _cwsProjectClient;
     private ICwsDeviceClient _cwsDeviceClient;
+    private ICwsDesignClient _cwsDesignClient;
+    private ICwsProfileSettingsClient _cwsProfileSettingsClient;
 
 
     /// <summary> Gets the application logging interface. </summary>
@@ -93,6 +95,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets or sets the csw Device Client
     /// </summary>
     protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ?? (_cwsDeviceClient = HttpContext.RequestServices.GetService<ICwsDeviceClient>());
+
+    protected ICwsDesignClient CwsDesignClient => _cwsDesignClient ?? (_cwsDesignClient = HttpContext.RequestServices.GetService<ICwsDesignClient>());
+
+    protected ICwsProfileSettingsClient CwsProfileSettingsClient => _cwsProfileSettingsClient ?? (_cwsProfileSettingsClient = HttpContext.RequestServices.GetService<ICwsProfileSettingsClient>());
 
     /// <summary> Gets or sets the TPaaS application authentication helper. </summary>
     protected ITPaaSApplicationAuthentication Authorization => _authorization ?? (_authorization = HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>());

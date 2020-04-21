@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // don't send our timezone, we only need it for WorksOS. WM has their own, calculated from the boundary, for their own uses.
         var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
-        createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
+        createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
         // CCSSSCON-141 what are exceptions/other error
         var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
@@ -62,7 +62,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
-        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
+        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn, 
+        cwsDesignClient, cwsProfileSettingsClient).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
       
       log.LogDebug("CreateProject. completed successfully");

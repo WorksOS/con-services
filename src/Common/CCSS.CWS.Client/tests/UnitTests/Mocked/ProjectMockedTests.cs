@@ -32,9 +32,10 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       
       var createProjectRequestModel = new CreateProjectRequestModel
       {
-        accountId = customerUid.ToString(),
-        projectName = "my first project",        
-        boundary = new ProjectBoundary()
+        AccountId = customerUid.ToString(),
+        ProjectName = "my first project",    
+        Timezone = "Mountain Standard Time",
+        Boundary = new ProjectBoundary()
         {
           type = "Polygon",
           coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } }
