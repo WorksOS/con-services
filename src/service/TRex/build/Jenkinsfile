@@ -52,7 +52,7 @@ node ('jenkinsslave-pod') {
 		"Reports",
 		"Gateway",
 		"MutableGateway",
-		// "Webtools", // Disabled until we build webtools again
+		"Webtools", // Disabled until we build webtools again
 		// "Utils" // Disabled until we build again
 		]
 
