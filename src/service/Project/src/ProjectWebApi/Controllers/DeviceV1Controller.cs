@@ -143,11 +143,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [ProducesResponseType(typeof(List<DeviceMatchingModel>), 200)]
     public async Task<IActionResult> GetMatchingDevices([FromBody] List<long> shortRaptorAssetIds)
     {
-      var assetIdDisplay = string.Join(", ", shortRaptorAssetIds ?? new List<long>());
-      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for shortRaptorAssetIds: {assetIdDisplay}");
+      var deviceIdsDisplay = string.Join(", ", shortRaptorAssetIds ?? new List<long>());
+      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for shortRaptorAssetIds: {deviceIdsDisplay}");
 
       var devices = await DeviceRepo.GetDevices(shortRaptorAssetIds);
       return Json(DeviceMatchingModel.FromDeviceList(devices));
+    }
+
+    /// <summary>
+    /// Get location data for a given set of Devices.
+    /// </summary>
+    [HttpPost("api/v1/devices/location")]
+    public IActionResult GetDeviceLocationData([FromBody] List<Guid> deviceIds)
+    {
+      var deviceIdsDisplay = string.Join(", ", deviceIds ?? new List<Guid>());
+      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Device location data for: {deviceIdsDisplay}");
+
+      return BadRequest("API not supported yet.");
     }
   }
 }

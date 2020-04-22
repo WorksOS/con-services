@@ -24,7 +24,6 @@ namespace VSS.Productivity3D.Project.Repository
     public async Task<int> StoreEvent(IDeviceEvent evt)
     {
       var upsertedCount = 0;
-      var eventType = "Unknown";
       if (evt == null)
       {
         Log.LogWarning($"Unsupported event type");
@@ -32,19 +31,21 @@ namespace VSS.Productivity3D.Project.Repository
       }
 
       Log.LogDebug($"Event type is {evt.GetType()}");
-      if (evt is CreateDeviceEvent)
+      if (evt is CreateDeviceEvent deviceEvent)
       {
-        var device = new Device();
-        var deviceEvent = (CreateDeviceEvent)evt;
-        device.DeviceUID = deviceEvent.DeviceUID.ToString();
-        device.ShortRaptorAssetID = -1;
-        device.LastActionedUTC = deviceEvent.ActionUTC;
-        eventType = "CreateDeviceEvent";
+        var device = new Device
+        {
+          DeviceUID = deviceEvent.DeviceUID.ToString(),
+          ShortRaptorAssetID = -1,
+          LastActionedUTC = deviceEvent.ActionUTC
+        };
+
+        const string eventType = "CreateDeviceEvent";
         upsertedCount = await UpsertDeviceDetail(device, eventType);
       }
+
       return upsertedCount;
     }
-
 
     #region device
 
@@ -53,9 +54,6 @@ namespace VSS.Productivity3D.Project.Repository
     ///     but only certain columns can be updated.
     ///     on deletion, a flag will be set.
     /// </summary>
-    /// <param name="device"></param>
-    /// <param name="eventType"></param>
-    /// <returns></returns>
     private async Task<int> UpsertDeviceDetail(Device device, string eventType)
     {
       Log.LogDebug("DeviceRepository: Upserting eventType{0} deviceUid={1}", eventType, device.DeviceUID);
@@ -83,18 +81,19 @@ namespace VSS.Productivity3D.Project.Repository
 
     private async Task<int> CreateDevice(Device device, Device existing)
     {
-      if (existing == null)
+      if (existing != null)
       {
-        // the DB will generate the ShortRaptorAssetId
-        const string upsert =
-          @"INSERT Device
+        return await Task.FromResult(0);
+      }
+
+      // the DB will generate the ShortRaptorAssetId
+      const string upsert =
+        @"INSERT Device
                 (DeviceUID, LastActionedUTC )
               VALUES
                 (@DeviceUID, @LastActionedUTC)";
-        return await ExecuteWithAsyncPolicy(upsert, device);
-      }
 
-      return await Task.FromResult(0);
+      return await ExecuteWithAsyncPolicy(upsert, device);
     }
 
     #endregion device
@@ -145,7 +144,6 @@ namespace VSS.Productivity3D.Project.Repository
             WHERE ShortRaptorAssetId IN @devices"
       , new { devices = devicesArray })).ToList();
     }
-
 
     #endregion
   }
