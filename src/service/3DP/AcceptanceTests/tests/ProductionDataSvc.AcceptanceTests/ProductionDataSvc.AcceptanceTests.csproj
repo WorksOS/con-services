@@ -58,7 +58,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\Common\XnaFanImageComparison\ImageComparisonNetcore\ImageComparisonNetcore.csproj" />
+    <ProjectReference Include="..\..\..\..\..\Common\IntegrationTests.ImageComparison\CCSS.IntegrationTests.ImageComparison.csproj" />
   </ItemGroup>
 
   <ItemGroup>
