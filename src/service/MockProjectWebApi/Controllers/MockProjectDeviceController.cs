@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace MockProjectWebApi.Controllers
 {
@@ -13,6 +14,28 @@ namespace MockProjectWebApi.Controllers
     : base(loggerFactory)
     {
     }
+
+    [HttpGet("api/v1/device/applicationcontext/serialnumber")]
+    public DeviceDataSingleResult GetDeviceBySerialNumber([FromQuery] string serialNumber)
+    {
+      Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)} serialNumber {serialNumber}");
+      return new DeviceDataSingleResult();
+    }
+
+    [HttpGet("api/v1/device/applicationcontext/shortRaptorAssetId")]
+    public DeviceDataResult GetDevice([FromQuery] int shortRaptorAssetId)
+    {
+      Logger.LogInformation($"{nameof(GetDevice)} serialNumber {shortRaptorAssetId}");
+      return new DeviceDataResult();
+    }
+
+    [HttpGet("api/v1/device/applicationcontext/{deviceUid}/projects")]
+    public ProjectDataResult GetProjectsForDevice(string deviceUid)
+    {
+      Logger.LogInformation($"{nameof(GetProjectsForDevice)} deviceUid {deviceUid}");
+      return new ProjectDataResult();
+    }
+
 
     [HttpPost("api/v1/devices/deviceuids")]
     [ProducesResponseType(typeof(List<DeviceMatchingModel>), 200)]
