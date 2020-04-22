@@ -23,6 +23,8 @@ namespace VSS.TRex.Volumes
    *
    * Should always have a time range?
    *
+   *  WIP1: Minimum elevation mode is not yet taken into account here
+   *  WIP2: Surveyed surfaces are not yet taken into account here
    */
   public class ProgressiveVolumesSubGridRetriever : SubGridRetrieverBase, ISubGridRetriever
   {
