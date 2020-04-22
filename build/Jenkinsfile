@@ -174,7 +174,7 @@ node ('jenkinsslave-pod') {
 			} 
 		}
 
-		//Do not run integration tests if there is folder in the expected location.
+		//Do not run integration tests if there is no folder in the expected location.
 		def integrationTestsFolderExists = fileExists "./${servicePath}/test/IntegrationTests"
 		if (!integrationTestsFolderExists)
 			runIntegrationTests = false
