@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -42,9 +41,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    public FileImportBaseController(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportBaseController(Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
-    : base (configStore)
     {
       this.requestFactory = requestFactory;
 
@@ -67,7 +65,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected async Task ValidateProjectId(string projectUid)
     {
-      var customerUid = LogCustomerDetails("GetProject", projectUid);
+      LogCustomerDetails("GetProject", projectUid);
       var project =
         (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -41,8 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV6Controller(IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
-      : base(configStore)
+    public ProjectV6Controller(IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
     {
       this.HttpContextAccessor = httpContextAccessor;
       this.notificationHubClient = notificationHubClient;
@@ -59,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation("GetAllProjectsV6");
 
-      var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
+      var projects = (await GetProjectListForCustomer().ConfigureAwait(false)).ToImmutableList();
 
       return new ProjectV6DescriptorsListResult
       {
