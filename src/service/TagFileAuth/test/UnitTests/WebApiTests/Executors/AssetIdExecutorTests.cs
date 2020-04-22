@@ -62,14 +62,11 @@ namespace WebApiTests.Executors
     [DataRow("ec520Serial", "ec520Serial")]
     public async Task AssetUidExecutor_GetAssetDevice_HappyPath(string serialNumberRequested, string serialNumberExpected)
     {
-      var deviceDataToBeReturned = new DeviceDataResult()
+      var deviceDataToBeReturned = new DeviceData()
       {
-        DeviceDescriptor = new DeviceData()
-        {
-          CustomerUID = Guid.NewGuid().ToString(),
-          DeviceUID = Guid.NewGuid().ToString(),
-          SerialNumber = serialNumberExpected
-        }
+        CustomerUID = Guid.NewGuid().ToString(),
+        DeviceUID = Guid.NewGuid().ToString(),
+        SerialNumber = serialNumberExpected
       };
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
@@ -78,7 +75,7 @@ namespace WebApiTests.Executors
       var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, null);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
-      Assert.AreEqual(serialNumberExpected, device.DeviceDescriptor.SerialNumber);
+      Assert.AreEqual(serialNumberExpected, device.SerialNumber);
     }
 
     [TestMethod]
@@ -86,7 +83,7 @@ namespace WebApiTests.Executors
     public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(string serialNumberRequested)
     {
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync((DeviceDataResult)null);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync((DeviceData)null);
 
       var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, null);
 

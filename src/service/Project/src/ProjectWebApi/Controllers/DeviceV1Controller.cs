@@ -64,7 +64,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     [Route("api/v1/device/applicationcontext/shortRaptorAssetId")]
     [HttpGet]
-    public async Task<DeviceDataResult> GetDevice([FromQuery] int shortRaptorAssetId)
+    public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
     {
       Logger.LogInformation($"{nameof(GetDevice)}");
       // CCSSSCON-207 executor and validation
@@ -75,7 +75,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         throw new NotImplementedException();
 
       
-      var deviceDataResult = new DeviceDataResult()
+      var deviceDataResult = new DeviceDataSingleResult()
       {
         DeviceDescriptor = new DeviceData()
         {
@@ -125,7 +125,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Get a list of device Uid/Id matches for Uids supplied
     /// </summary>
-    [HttpPost("api/v1/devices/applicationcontext/deviceuids")]
+    [HttpPost("api/v1/devices/deviceuids")]
     [ProducesResponseType(typeof(DeviceMatchingModel), 200)]
     public async Task<IActionResult> GetMatchingDevices([FromBody] List<Guid> deviceUids)
     {
@@ -139,7 +139,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Get a list of device Uid/Id matches for Ids supplied
     /// </summary>
-    [HttpPost("api/v1/devices/applicationcontext/shortRaptorAssetIds")]
+    [HttpPost("api/v1/devices/shortRaptorAssetIds")]
     [ProducesResponseType(typeof(List<DeviceMatchingModel>), 200)]
     public async Task<IActionResult> GetMatchingDevices([FromBody] List<long> shortRaptorAssetIds)
     {

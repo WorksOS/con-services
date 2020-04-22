@@ -246,7 +246,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     // Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
     // and shortRaptorAssetId(localDB)
-    public async Task<DeviceDataResult> GetDevice(string serialNumber)
+    public async Task<DeviceData> GetDevice(string serialNumber)
     {
       if (string.IsNullOrEmpty(serialNumber))
         return null;

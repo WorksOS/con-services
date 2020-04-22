@@ -35,43 +35,6 @@ namespace MockProjectWebApi.Controllers
       return accountListResponseModel;
     }
 
-    //[Route("api/v1/users/accounts")]
-    //[HttpGet]
-    //public AccountListResponseModel GetAccountsForUser([FromQuery] string userId, [FromQuery] string accountId)
-    //{
-
-    //  var accountListResponseModel = new AccountListResponseModel()
-    //  {
-    //    Accounts = new List<AccountResponseModel>()
-    //    {
-    //      new AccountResponseModel
-    //      {
-    //        Id = accountId,
-    //        Name = "customerName"
-    //      }
-    //    }
-    //  };
-
-    //  Logger.LogInformation($"{nameof(GetAccountsForUser)}: userId {userId} accountId {accountId}. accountListResponseModel {JsonConvert.SerializeObject(accountListResponseModel)}");
-
-    //  return accountListResponseModel;
-    //}
-
-    //[Route("api/v1/users/account")]
-    //[HttpGet]
-    //public AccountResponseModel GetAccountForUser([FromQuery] string userId, [FromQuery] string accountId)
-    //{
-    //  var accountResponseModel = new AccountResponseModel
-    //  {
-    //    Id = accountId,
-    //    Name = "customerName"
-    //  };
-
-    //  Logger.LogInformation($"{nameof(GetAccountForUser)}: userId {userId} accountId {accountId}. accountResponseModel {JsonConvert.SerializeObject(accountResponseModel)}");
-
-    //  return accountResponseModel;
-    //}
-
     [Route("api/v1/accounts/{accountTrn}/devicelicense")]
     [HttpGet]
     public DeviceLicenseResponseModel GetDeviceLicenses(string accountTrn)

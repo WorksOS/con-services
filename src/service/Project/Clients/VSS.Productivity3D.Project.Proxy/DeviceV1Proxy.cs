@@ -37,7 +37,7 @@ namespace VSS.Productivity3D.Project.Proxy
     public  override string CacheLifeKey => "DEVICE_CACHE_LIFE";
 
 
-    public async Task<DeviceDataResult> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
+    public async Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
       // CCSSSCON-115 at this stage we may not need to query also by device type. Question with Sankari re options
       // called by TFA AssetIdExecutor, projectUidexe
@@ -49,10 +49,10 @@ namespace VSS.Productivity3D.Project.Proxy
       // should we cache by serialNumber
       log.LogDebug($"{nameof(GetDevice)} serialNumber: {serialNumber}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("serialNumber", serialNumber) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataResult>($"/device/applicationcontext/serialnumber",
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceData>($"/device/applicationcontext/serialnumber",
         customHeaders, queryParams);
 
-      if (result.Code == 0 ) // && result. != null)
+      if (result.Code == 0 ) 
         return result;
 
       log.LogDebug($"Failed to get device with Uid {serialNumber} result: {result.Code}, {result.Message}");
@@ -71,11 +71,11 @@ namespace VSS.Productivity3D.Project.Proxy
       // should do a cache by shortRaptorAssetId
       log.LogDebug($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("shortRaptorAssetId", shortRaptorAssetId.ToString()) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataResult>($"/device/applicationcontext/shortRaptorAssetId",
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceData>($"/device/applicationcontext/shortRaptorAssetId",
         customHeaders, queryParams);
 
       if (result.Code == 0)
-        return result.DeviceDescriptor;
+        return result;
 
       log.LogDebug($"Failed to get device with shortRaptorAssetId {shortRaptorAssetId} result: {result.Code}, {result.Message}");
       return null;

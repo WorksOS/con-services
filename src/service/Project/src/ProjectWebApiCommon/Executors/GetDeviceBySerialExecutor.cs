@@ -22,7 +22,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     {
       var deviceSerial = CastRequestObjectTo<DeviceSerial>(item, errorCode: 68);
         
-      var deviceDataResult = new DeviceDataResult();
+      var deviceDataSingleResult = new DeviceDataSingleResult();
       try
       {
         var deviceResponseModel = await cwsDeviceClient.GetDeviceBySerialNumber(deviceSerial.SerialNumber, customHeaders);
@@ -30,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           var deviceFromRepo = await deviceRepo.GetDevice(deviceResponseModel.Id);
           if (deviceFromRepo != null)
-            deviceDataResult.DeviceDescriptor = new DeviceData()
+            deviceDataSingleResult.DeviceDescriptor = new DeviceData()
             {
               CustomerUID = deviceResponseModel.AccountId,
               DeviceUID = deviceResponseModel.Id,
@@ -45,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 57, "deviceController", e.Message);
       }
-      return new DeviceDataSingleResult(deviceDataResult.DeviceDescriptor);
+      return deviceDataSingleResult;
     }
 
     protected override ContractExecutionResult ProcessEx<T>(T item)

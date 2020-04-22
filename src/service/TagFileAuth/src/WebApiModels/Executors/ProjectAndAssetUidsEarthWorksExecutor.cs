@@ -53,22 +53,22 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// EarthWorks cut/fill doesn't REQUIRE a subscription.
     /// </summary>
     private async Task<GetProjectAndAssetUidsEarthWorksResult> HandleCutFillExport(GetProjectAndAssetUidsEarthWorksRequest request,
-      DeviceDataResult device)
+      DeviceData device)
     {
       var errorCode = 0;
-      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device.DeviceDescriptor, request.Latitude, request.Longitude, out errorCode);
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, out errorCode);
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
-        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceDescriptor.DeviceUID, customerUid: device.DeviceDescriptor.CustomerUID, uniqueCode: errorCode);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: errorCode);
 
       if (potentialProjects.Count > 1)
-        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceDescriptor.DeviceUID, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
       
-      var deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.DeviceDescriptor.CustomerUID);
+      var deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
       return GetProjectAndAssetUidsEarthWorksResult.FormatResult(
-        potentialProjects[0].ProjectUID, device.DeviceDescriptor.DeviceUID,
+        potentialProjects[0].ProjectUID, device.DeviceUID,
         potentialProjects[0].CustomerUID,
         (deviceLicenseTotal > 0));
     }
