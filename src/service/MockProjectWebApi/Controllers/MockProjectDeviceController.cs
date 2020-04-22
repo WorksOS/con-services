@@ -23,10 +23,10 @@ namespace MockProjectWebApi.Controllers
     }
 
     [HttpGet("api/v1/device/applicationcontext/shortRaptorAssetId")]
-    public DeviceDataResult GetDevice([FromQuery] int shortRaptorAssetId)
+    public DeviceDataSingleResult GetDevice([FromQuery] int shortRaptorAssetId)
     {
       Logger.LogInformation($"{nameof(GetDevice)} serialNumber {shortRaptorAssetId}");
-      return new DeviceDataResult();
+      return new DeviceDataSingleResult();
     }
 
     [HttpGet("api/v1/device/applicationcontext/{deviceUid}/projects")]
