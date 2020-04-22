@@ -9,6 +9,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
@@ -35,14 +36,19 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceProxy _deviceProxy;
 
+    private IDictionary<string, string> _customHeaders;
+
     public DataRepository(ILogger logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy,
+      IDictionary<string, string> customHeaders
+      )
     {
       _log = logger;
       _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
+      _customHeaders = customHeaders;
     }
 
     #region account
@@ -91,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _projectProxy.GetProjectApplicationContext(projectUid);
+        return await _projectProxy.GetProjectApplicationContext(projectUid, _customHeaders);
       }
       catch (Exception e)
       {
@@ -190,9 +196,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
     }
 
-    public async Task<List<ProjectData>> GetIntersectingProjectsForDevice(DeviceData device,
-      double latitude, double longitude)
+    public List<ProjectData> GetIntersectingProjectsForDevice(DeviceData device,
+      double latitude, double longitude, out int errorCode)
     {
+      errorCode = 0;
       var accountProjects = new List<ProjectData>();
       if (device == null || string.IsNullOrEmpty(device.CustomerUID) || string.IsNullOrEmpty(device.DeviceUID))
         return accountProjects;
@@ -200,9 +207,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this customer have which intersect the lat/long?
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude));
+        accountProjects = _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude).Result;
         if (!accountProjects.Any())
+        {
+          errorCode = 44;
           return accountProjects;
+        }
       }
       catch (Exception e)
       {
@@ -214,9 +224,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this device have visibility to?
       try
       {
-        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
+        var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID).Result;
         var intersection = projectsAssociatedWithDevice.Select(dp => dp.ProjectUID).Intersect(accountProjects.Select(ap => ap.ProjectUID));
-        return projectsAssociatedWithDevice.Where(p => intersection.Contains(p.ProjectUID)).ToList();
+        var intersectingProjectsForDevice = projectsAssociatedWithDevice.Where(p => intersection.Contains(p.ProjectUID)).ToList();
+        if (!intersectingProjectsForDevice.Any())
+          errorCode = 45;
+        return intersectingProjectsForDevice;
       }
       catch (Exception e)
       {
@@ -233,13 +246,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     // Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
     // and shortRaptorAssetId(localDB)
-    public async Task<DeviceData> GetDevice(string serialNumber)
+    public async Task<DeviceDataResult> GetDevice(string serialNumber)
     {
       if (string.IsNullOrEmpty(serialNumber))
         return null;
       try
       {
-        return await _deviceProxy.GetDevice(serialNumber);
+        return await _deviceProxy.GetDevice(serialNumber, _customHeaders);
       }
       catch (Exception e)
       {

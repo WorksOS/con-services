@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
@@ -79,15 +80,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectAndAssetUidsResult.FormatResult(id.ProjectUid.ToString(), id.AssetUid.ToString());
       }
 
-      DeviceData device = null;
+      DeviceDataResult device = null;
       // a CB will have a RadioSerial, whose suffix defines the type
       if (!string.IsNullOrEmpty(request.RadioSerial))
       {
         device = await dataRepository.GetDevice(request.RadioSerial);
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {(device?.DeviceDescriptor == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
       }
 
-      if (device == null && !string.IsNullOrEmpty(request.Ec520Serial))
+      if (device?.DeviceDescriptor == null && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
@@ -96,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, project, device);
 
-      if (device == null)
+      if (device?.DeviceDescriptor == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
 
       return await HandleAutoImport(request, device);
@@ -104,7 +105,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
 
     private async Task<GetProjectAndAssetUidsResult> HandleManualImport(GetProjectAndAssetUidsRequest request,
-      ProjectData project, DeviceData device = null)
+      ProjectData project, DeviceDataResult device = null)
     {
       // by this stage...
       //  got an active project, with a payed-DeviceEntitlement,
@@ -120,40 +121,40 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //                      also no projectTime overlap? 
 
       var intersectingProjects = await dataRepository.GetIntersectingProjectsForManual(project, request.Latitude,
-            request.Longitude, device);
+            request.Longitude, device?.DeviceDescriptor);
       log.LogDebug(
         $"{nameof(HandleManualImport)}: GotIntersectingProjectsForManual: {JsonConvert.SerializeObject(intersectingProjects)}");
 
       if (!intersectingProjects.Any())
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceUID, uniqueCode: 41);
+        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceDescriptor.DeviceUID, uniqueCode: 41);
 
       if (intersectingProjects.Count > 1)
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceUID, uniqueCode: 49);
+        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceDescriptor.DeviceUID, uniqueCode: 49);
 
-      return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUID, device == null ? string.Empty : device.DeviceUID);
+      return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUID, device == null ? string.Empty : device.DeviceDescriptor.DeviceUID);
     }
 
     private async Task<GetProjectAndAssetUidsResult> HandleAutoImport(GetProjectAndAssetUidsRequest request,
-      DeviceData device)
+      DeviceDataResult device)
     {
       // todoMaaverick do we want to check the device states also ?
 
-      var deviceAccountDeviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
+      var deviceAccountDeviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.DeviceDescriptor.CustomerUID);
       log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Loaded DeviceAccount deviceLicenses? {JsonConvert.SerializeObject(deviceAccountDeviceLicenseTotal)}");
       if (deviceAccountDeviceLicenseTotal < 1)
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 1);
+        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceDescriptor.DeviceUID, uniqueCode: 1);
 
-      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude);
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device.DeviceDescriptor, request.Latitude, request.Longitude, out var errorCode);
       log.LogDebug(
         $"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 48);
+        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceDescriptor.DeviceUID, uniqueCode: errorCode);
 
       if (potentialProjects.Count > 1)
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 49);
+        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceDescriptor.DeviceUID, uniqueCode: 49);
 
-      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects[0].ProjectUID, device.DeviceUID);
+      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects[0].ProjectUID, device.DeviceDescriptor.DeviceUID);
     }
     
     protected override ContractExecutionResult ProcessEx<T>(T item)

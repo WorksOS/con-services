@@ -105,7 +105,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// 'internal' or not.
     /// </remarks>
     protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
-    //protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders(true); //use this when debugging locally and calling other 3dpm services 
 
     /// <summary>
     /// Gets the customer uid from the current context

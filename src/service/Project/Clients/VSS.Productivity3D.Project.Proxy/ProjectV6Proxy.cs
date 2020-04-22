@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.Project.Proxy
              null,
              customHeaders);
 
-      if (result.Code == 0)
+      if (result.Code == 0 && result.ProjectDescriptor != null)
         return result.ProjectDescriptor;
 
       log.LogDebug($"Failed to get project with Uid {projectUid} for applicationContext: {result.Code}, {result.Message}");

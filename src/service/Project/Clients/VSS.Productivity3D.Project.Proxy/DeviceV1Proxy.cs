@@ -36,7 +36,8 @@ namespace VSS.Productivity3D.Project.Proxy
 
     public  override string CacheLifeKey => "DEVICE_CACHE_LIFE";
 
-    public async Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
+
+    public async Task<DeviceDataResult> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
       // CCSSSCON-115 at this stage we may not need to query also by device type. Question with Sankari re options
       // called by TFA AssetIdExecutor, projectUidexe
@@ -48,11 +49,11 @@ namespace VSS.Productivity3D.Project.Proxy
       // should we cache by serialNumber
       log.LogDebug($"{nameof(GetDevice)} serialNumber: {serialNumber}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("serialNumber", serialNumber) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataSingleResult>($"/device/serialnumber",
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataResult>($"/device/applicationcontext/serialnumber",
         customHeaders, queryParams);
 
-      if (result.Code == 0)
-        return result.DeviceDescriptor;
+      if (result.Code == 0 ) // && result. != null)
+        return result;
 
       log.LogDebug($"Failed to get device with Uid {serialNumber} result: {result.Code}, {result.Message}");
       return null;
@@ -70,7 +71,7 @@ namespace VSS.Productivity3D.Project.Proxy
       // should do a cache by shortRaptorAssetId
       log.LogDebug($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("shortRaptorAssetId", shortRaptorAssetId.ToString()) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataSingleResult>($"/device/shortRaptorAssetId",
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataResult>($"/device/applicationcontext/shortRaptorAssetId",
         customHeaders, queryParams);
 
       if (result.Code == 0)
@@ -90,7 +91,7 @@ namespace VSS.Productivity3D.Project.Proxy
       // should do a cache by deviceUid
       log.LogDebug($"{nameof(GetProjectsForDevice)} deviceUid: {deviceUid}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("deviceUid", deviceUid) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<ProjectDataResult>($"/project/applicationcontext/device",
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<ProjectDataResult>($"/project/applicationcontext/applicationcontext/device",
         customHeaders, queryParams);
 
       if (result.Code == 0)
@@ -121,7 +122,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
       using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(deviceUids))))
       {
-        var result = await SendMasterDataItemServiceDiscoveryNoCache<DeviceMatchingModel>("/devices/deviceuids", customHeaders, HttpMethod.Post, payload: ms);
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<DeviceMatchingModel>("/devices/applicationcontext/deviceuids", customHeaders, HttpMethod.Post, payload: ms);
         if (result.Code == 0)
           return result.deviceIdentifiers;
 
@@ -139,7 +140,7 @@ namespace VSS.Productivity3D.Project.Proxy
 
       using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(shortRaptorAssetIds))))
       {
-        var result = await SendMasterDataItemServiceDiscoveryNoCache<DeviceMatchingModel>("/devices/shortRaptorAssetIds", customHeaders, HttpMethod.Post, payload: ms);
+        var result = await SendMasterDataItemServiceDiscoveryNoCache<DeviceMatchingModel>("/devices/applicationcontext/shortRaptorAssetIds", customHeaders, HttpMethod.Post, payload: ms);
         if (result.Code == 0)
           return result.deviceIdentifiers;
 

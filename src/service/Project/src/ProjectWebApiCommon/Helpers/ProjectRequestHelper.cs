@@ -68,6 +68,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
+    /// Gets a Project, even if archived, return project even if null
+    /// </summary>
+    public static async Task<ProjectDatabaseModel> GetProjectEvenIfArchived(string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var project = (await projectRepo.GetProjectOnly(projectUid));
+
+      log.LogInformation($"Project projectUid: {projectUid} project {project} retrieved");
+      return project;
+    }
+
+    /// <summary>
     /// Gets a Project NO customer uid.
     /// </summary>
     public static async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId,
