@@ -29,7 +29,7 @@ namespace VSS.TRex.TAGFiles.Executors
     /// </summary>
     private readonly ITAGFileBufferQueue _queue = DIContext.Obtain<ITAGFileBufferQueue>();
 
-    private bool OutputInformationalRequestLogging = false;
+    private bool OutputInformationalRequestLogging = true;
 
     /// <summary>
     /// Receive a TAG file to be processed, validate TAG File Authorization for the file, and add it to the 
