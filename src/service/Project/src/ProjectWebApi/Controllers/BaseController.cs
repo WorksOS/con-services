@@ -33,41 +33,41 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary> base message number for ProjectService </summary>
     protected readonly int customErrorMessageOffset = 2000;
 
-    private ILogger<T> logger;
-    private ILoggerFactory loggerFactory;
-    private IServiceExceptionHandler serviceExceptionHandler;
+    private ILogger<T> _logger;
+    private ILoggerFactory _loggerFactory;
+    private IServiceExceptionHandler _serviceExceptionHandler;
 
-    private IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord;
-    private IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification;
-    private IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction;
-    private IProjectRepository projectRepo;
-    private IDeviceRepository deviceRepo;
-    private IFileRepository fileRepo;
-    private IDataOceanClient dataOceanClient;
-    private ITPaaSApplicationAuthentication authorization;
-    private ICwsProjectClient cwsProjectClient;
-    private ICwsDeviceClient cwsDeviceClient;
-    private IConfigurationStore configurationStore;
+    private IProductivity3dV1ProxyCoord _productivity3dV1ProxyCoord;
+    private IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
+    private IProductivity3dV2ProxyCompaction _productivity3dV2ProxyCompaction;
+    private IProjectRepository _projectRepo;
+    private IDeviceRepository _deviceRepo;
+    private IFileRepository _fileRepo;
+    private IDataOceanClient _dataOceanClient;
+    private ITPaaSApplicationAuthentication _authorization;
+    private ICwsProjectClient _cwsProjectClient;
+    private ICwsDeviceClient _cwsDeviceClient;
+    private IConfigurationStore _configurationStore;
 
-    protected ILogger<T> Logger => logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
-    protected ILoggerFactory LoggerFactory => loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
-    protected IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
+    protected ILogger<T> Logger => _logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
+    protected ILoggerFactory LoggerFactory => _loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
+    protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
     protected IConfigurationStore ConfigStore
     {
-      get => configurationStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
-      set => configurationStore = value;
+      get => _configurationStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+      set => _configurationStore = value;
     }
 
-    protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => productivity3dV1ProxyCoord ??= HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>();
-    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => productivity3dV2ProxyNotification ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>();
-    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => productivity3dV2ProxyCompaction ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>();
-    protected IProjectRepository ProjectRepo => projectRepo ??= HttpContext.RequestServices.GetService<IProjectRepository>();
-    protected IDeviceRepository DeviceRepo => deviceRepo ??= HttpContext.RequestServices.GetService<IDeviceRepository>();
-    protected IFileRepository FileRepo => fileRepo ??= HttpContext.RequestServices.GetService<IFileRepository>();
-    protected IDataOceanClient DataOceanClient => dataOceanClient ??= HttpContext.RequestServices.GetService<IDataOceanClient>();
-    protected ICwsProjectClient CwsProjectClient => cwsProjectClient ??= HttpContext.RequestServices.GetService<ICwsProjectClient>();
-    protected ICwsDeviceClient CwsDeviceClient => cwsDeviceClient ??= HttpContext.RequestServices.GetService<ICwsDeviceClient>();
-    protected ITPaaSApplicationAuthentication Authorization => authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
+    protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => _productivity3dV1ProxyCoord ??= HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>();
+    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => _productivity3dV2ProxyNotification ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>();
+    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => _productivity3dV2ProxyCompaction ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>();
+    protected IProjectRepository ProjectRepo => _projectRepo ??= HttpContext.RequestServices.GetService<IProjectRepository>();
+    protected IDeviceRepository DeviceRepo => _deviceRepo ??= HttpContext.RequestServices.GetService<IDeviceRepository>();
+    protected IFileRepository FileRepo => _fileRepo ??= HttpContext.RequestServices.GetService<IFileRepository>();
+    protected IDataOceanClient DataOceanClient => _dataOceanClient ??= HttpContext.RequestServices.GetService<IDataOceanClient>();
+    protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ??= HttpContext.RequestServices.GetService<ICwsProjectClient>();
+    protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ??= HttpContext.RequestServices.GetService<ICwsDeviceClient>();
+    protected ITPaaSApplicationAuthentication Authorization => _authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
 
     /// <summary>
     /// Gets the custom customHeaders for the request.

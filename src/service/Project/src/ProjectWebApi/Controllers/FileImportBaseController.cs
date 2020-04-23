@@ -37,7 +37,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// The request factory
     /// </summary>
-    private readonly IRequestFactory requestFactory;
+    private readonly IRequestFactory _requestFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
@@ -45,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public FileImportBaseController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
     {
-      this.requestFactory = requestFactory;
+      this._requestFactory = requestFactory;
 
       this.persistantTransferProxy = persistantTransferProxy(TransferProxyType.DesignImport);
       this.filterServiceProxy = filterServiceProxy;
@@ -133,7 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogDebug($"SetFileActivatedState: now {deactivatedFileList.Count} deactivated files, {missingUids.Count} missingUids");
 
       var projectSettingsRequest =
-        requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+        _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
           .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
       projectSettingsRequest.Validate();

@@ -16,14 +16,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class DeviceV1Controller : ProjectBaseController
   {
-    private readonly ICwsDeviceClient cwsDeviceClient;
+    private readonly ICwsDeviceClient _cwsDeviceClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     public DeviceV1Controller(ICwsDeviceClient cwsDeviceClient)
     {
-      this.cwsDeviceClient = cwsDeviceClient;
+      this._cwsDeviceClient = cwsDeviceClient;
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation(nameof(GetDeviceBySerialNumber));
       // CCSSSCON-207 executor and validation
-      var deviceResponseModel = await cwsDeviceClient.GetDeviceBySerialNumber(serialNumber);
+      var deviceResponseModel = await _cwsDeviceClient.GetDeviceBySerialNumber(serialNumber);
       if (deviceResponseModel == null)
         throw new NotImplementedException();
 
@@ -71,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // CCSSSCON-207 executor and validation
       var deviceFromRepo = await DeviceRepo.GetDevice(shortRaptorAssetId);
 
-      var deviceResponseModel = await cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID));
+      var deviceResponseModel = await _cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID));
       if (deviceResponseModel == null)
         throw new NotImplementedException();
 
@@ -100,8 +100,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation(nameof(GetProjectsForDevice));
 
       // CCSSSCON-207 executor and validation
-      var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid));
-      if (cwsDeviceClient == null)
+      var projectsFromCws = await _cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid));
+      if (_cwsDeviceClient == null)
         throw new NotImplementedException();
 
       var projectDataResult = new ProjectDataResult();
