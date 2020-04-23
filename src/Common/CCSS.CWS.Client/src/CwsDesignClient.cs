@@ -52,7 +52,8 @@ namespace CCSS.CWS.Client
 
       await UploadData(createFileResponse.UploadUrl, fileContents, customHeaders);
 
-      // TODO: What do we do about monitoring the status of the upload?
+     //We won't monitor status of upload as calibration/config files are small so should be quick.
+     //And this will be called as part of project creation.
 
       log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
       return createFileResponse;
