@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.DataOcean.Client;
 using VSS.FlowJSHandler;
@@ -51,10 +52,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// File import controller v6
     /// </summary>
-    public FileImportV6Controller(Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
-      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
-      IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
-      : base(persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+    public FileImportV6Controller(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+                                  IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
+                                  IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
+      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
     {
       this.notificationHubClient = notificationHubClient;
     }

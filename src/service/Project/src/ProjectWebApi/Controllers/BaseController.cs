@@ -52,7 +52,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected ILogger<T> Logger => logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
     protected ILoggerFactory LoggerFactory => loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
     protected IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
-    protected IConfigurationStore ConfigStore => configurationStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+    protected IConfigurationStore ConfigStore
+    {
+      get => configurationStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+      set => configurationStore = value;
+    }
+
     protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => productivity3dV1ProxyCoord ??= HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>();
     protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => productivity3dV2ProxyNotification ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>();
     protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => productivity3dV2ProxyCompaction ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>();

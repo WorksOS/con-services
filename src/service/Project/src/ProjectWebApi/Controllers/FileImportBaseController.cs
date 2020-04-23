@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Models;
@@ -41,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    public FileImportBaseController(Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportBaseController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
     {
       this.requestFactory = requestFactory;
@@ -50,6 +51,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
 
+      ConfigStore = config;
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
       DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
       UseTrexGatewayDesignImport = false;
