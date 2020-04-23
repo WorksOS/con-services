@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
       }
 
-      if (device == null && !string.IsNullOrEmpty(request.Ec520Serial))
+      if ((device == null || string.IsNullOrEmpty(device.DeviceUID) ) && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, project, device);
 
-      if (device == null)
+      if (device == null || string.IsNullOrEmpty(device.DeviceUID))
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
 
       return await HandleAutoImport(request, device);

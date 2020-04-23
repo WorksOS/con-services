@@ -1,4 +1,5 @@
 ﻿using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
 using CCSS.Productivity3D.Preferences.Abstractions;
 using CCSS.Productivity3D.Preferences.Abstractions.Interfaces;
 using CCSS.Productivity3D.Preferences.Abstractions.ResultsHandling;
@@ -64,7 +65,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IPreferenceRepository, PreferenceRepository>();
       services.AddTransient<IErrorCodesProvider, PreferenceErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
 
       //services.AddSingleton<CacheInvalidationService>();
