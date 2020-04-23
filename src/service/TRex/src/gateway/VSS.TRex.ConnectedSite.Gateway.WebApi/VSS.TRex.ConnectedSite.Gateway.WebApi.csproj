@@ -41,6 +41,7 @@
     <ProjectReference Include="..\..\interfaces\VSS.TRex.ConnectedSite.Gateway.Models\VSS.TRex.ConnectedSite.Gateway.Models.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
