@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
 
-    private static bool WarnOnTFAServiceDisabled = false;
+    private static bool WarnOnTFAServiceDisabled = true;
 
     private static readonly int minTagFileLength = DIContext.Obtain<IConfigurationStore>().GetValueInt("MIN_TAGFILE_LENGTH", Consts.kMinTagFileLengthDefault);
     private static readonly bool tfaServiceEnabled = DIContext.Obtain<IConfigurationStore>().GetValueBool("ENABLE_TFA_SERVICE", Consts.ENABLE_TFA_SERVICE);
