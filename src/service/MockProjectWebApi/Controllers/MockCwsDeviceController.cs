@@ -12,9 +12,9 @@ namespace MockProjectWebApi.Controllers
     public MockCwsDeviceController(ILoggerFactory loggerFactory) : base(loggerFactory)
     { }
 
-    [Route("api/v1/devices/serialnumber/{serialNumber}")]
+    [Route("api/v1/devices/serialnumber")]
     [HttpGet]
-    public DeviceResponseModel GetDeviceBySerialNumber(string serialNumber)
+    public DeviceResponseModel GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
       var deviceResponseModel = new DeviceResponseModel()
       {

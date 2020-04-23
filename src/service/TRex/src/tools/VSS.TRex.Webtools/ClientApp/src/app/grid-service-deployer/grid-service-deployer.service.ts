@@ -37,4 +37,12 @@ export class GridServiceDeployerService {
       console.log(result);
     });
   }
+
+  public deploySiteModelChangeProcessorService(): void {
+    let url = `${this.baseUrl}api/services/sitemodelchangeprocessorservice`;
+    console.log(url);
+    this.http.put<string>(url, null).subscribe((result) => {
+         console.log(result);
+    });
+  }
 }

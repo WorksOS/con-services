@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Common.Exceptions;
-using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
@@ -27,10 +24,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// </summary>
     public ReportTileController(IProductivity3dV2ProxyCompactionTile productivity3DProxyCompactionTile, IPreferenceProxy prefProxy, IFileImportProxy fileImportProxy,
       IMapTileGenerator tileGenerator, IMemoryCache cache, IConfigurationStore configStore,
-      IBoundingBoxHelper boundingBoxHelper, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
+      IBoundingBoxHelper boundingBoxHelper, ITPaaSApplicationAuthentication authn)
       : base(productivity3DProxyCompactionTile, prefProxy, fileImportProxy, tileGenerator, cache, configStore, boundingBoxHelper, authn)
-    {
-    }
+    { }
 
     /// <summary>
     /// This requests returns raw array of bytes with PNG without any diagnostic information. If it fails refer to the request with disgnostic info.
@@ -52,11 +48,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     /// <param name="volumeCalcType">Summary volumes calculation type</param>
     /// <param name="language"></param>   
     /// <param name="explicitFilters">If true then filters should not undergo mutation i.e. no lookbacks</param>
-    /// <returns>An HTTP response containing an error code is there is a failure, or a PNG image if the request succeeds.</returns>
     [ProjectUidVerifier]
-    [Route("api/v1/reporttiles/png")]
-    [HttpGet]
-    public async Task<FileResult> GetReportTileRaw(
+    [HttpGet("api/v1/reporttiles/png")]
+    public async Task<IActionResult> GetReportTileRaw(
       [FromQuery] TileOverlayType[] overlays,
       [FromQuery] int width,
       [FromQuery] int height,
@@ -72,15 +66,13 @@ namespace VSS.Tile.Service.WebApi.Controllers
       [FromQuery] string language = null,
       [FromQuery] bool explicitFilters = false)
     {
-      Log.LogDebug("GetReportTileRaw: " + Request.QueryString);
+      Log.LogDebug($"{nameof(GetReportTileRaw)}: " + Request.QueryString);
 
       //We need this check up front since accummulating the data (e.g. getting bbox) 
       //required for generating the tile uses this and gives exceptions
       if (overlays == null || overlays.Length == 0)
       {
-        throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
-            "At least one type of map tile overlay must be specified"));
+        return BadRequest(new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, "At least one type of map tile overlay must be specified"));
       }
 
       var tileResult = await GetGeneratedTile(projectUid, filterUid, cutFillDesignUid, volumeBaseUid, volumeTopUid,

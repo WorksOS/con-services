@@ -20,7 +20,7 @@ namespace VSS.Tile.Service.UnitTests.Service.Common
 
     public MapOverlayTests()
     {
-      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.Project.UnitTests.log"));
+      var loggerFactory = new LoggerFactory().AddSerilog(SerilogExtensions.Configure("CCSS.Tile.Service.UnitTests.log"));
       var serviceCollection = new ServiceCollection();
 
       serviceCollection.AddLogging();

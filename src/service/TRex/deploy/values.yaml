@@ -199,7 +199,7 @@ tinExportServer:
       target: 100
 
 utilities:
-  deploy: false
+  deploy: true
   replicaCount: 0
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
