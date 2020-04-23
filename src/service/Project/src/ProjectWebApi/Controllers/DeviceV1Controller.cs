@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Internal;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
@@ -159,7 +161,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var deviceIdsDisplay = string.Join(", ", deviceIds ?? new List<Guid>());
       Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Device location data for: {deviceIdsDisplay}");
 
-      return BadRequest("API not supported yet.");
+      var assets = MockDeviceRepository.GetAssets(deviceIds);
+
+      var resultSet = new List<AssetLocationData>(assets.Count);
+
+      foreach (var asset in assets)
+      {
+        resultSet.Add(new AssetLocationData
+        {
+          AssetUid = Guid.Parse(asset.AssetUID),
+          AssetIdentifier = asset.EquipmentVIN,
+          AssetSerialNumber = asset.SerialNumber,
+          AssetType = asset.AssetType,
+          LocationLastUpdatedUtc = asset.LastActionedUtc,
+          MachineName = asset.Name,
+          Latitude = 0,
+          Longitude = 0,
+        });
+      }
+
+      Logger.LogInformation($"Returning location data for {resultSet.Count} Assets.");
+      return Json(resultSet);
     }
   }
 }
