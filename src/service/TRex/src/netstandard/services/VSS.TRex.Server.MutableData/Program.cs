@@ -3,9 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.ServiceDiscovery;
 using VSS.ConfigurationStore;
+using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Proxy;
 using VSS.TRex.Alignments;
@@ -85,6 +88,9 @@ namespace VSS.TRex.Server.MutableData
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Mutable)))
 
         .Add(x => x.AddSingleton<ITAGFileBufferQueue>(factory => new TAGFileBufferQueue()))
+
+        .Add(x => x.AddSingleton<IWebRequest>(factory => 
+          new GracefulWebRequest(DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IConfigurationStore>())))
         .Complete();
     }
 
