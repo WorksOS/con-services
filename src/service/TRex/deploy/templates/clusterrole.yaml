@@ -9,3 +9,6 @@ rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["endpoints"]
   verbs: ["get"]
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "watch"]

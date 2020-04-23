@@ -1,3 +1,4 @@
+kubernetesNamespace: alpha
 TPAAS_AUTH_URL: https://identity-stg.trimble.com/i/oauth2
 TPAAS_APP_TOKEN: MGh1X25tYXlEQWFkMFdpY1hDekVHVTE3U2ZVYTppVWN3eEZ1cFRDRWFsaFVFOTRwWGhkVVNEa0Vh
 CONNECTED_SITE_URL: https://api-stg.trimble.com/t/trimble.com/cws/connectedsite
