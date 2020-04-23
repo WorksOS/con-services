@@ -6,9 +6,10 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
@@ -21,7 +22,6 @@ using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -31,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
     /// <summary> base message number for ProjectService </summary>
-    protected readonly int customErrorMessageOffset = 2000;
+    protected readonly int CustomErrorMessageOffset = 2000;
 
     private ILogger<T> _logger;
     private ILoggerFactory _loggerFactory;
@@ -124,7 +124,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       catch (Exception ex)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message, innerException: ex);
+          ContractExecutionStatesEnum.InternalProcessingError - CustomErrorMessageOffset, ex.Message, innerException: ex);
       }
       finally
       {
