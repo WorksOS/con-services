@@ -50,6 +50,7 @@ using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.GridFabric.Requests;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Volumes.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.Events;
 
 namespace VSS.TRex.Server.PSNode
 {
@@ -111,6 +112,7 @@ namespace VSS.TRex.Server.PSNode
         .Add(x => x.AddSingleton(new SubGridProcessingServer()))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
 
         // Create the cache to store the general sub grid results. Up to one million items, 1Gb RAM, MRU dead band fraction of one third
@@ -202,6 +204,8 @@ namespace VSS.TRex.Server.PSNode
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+      // Start listening to design state change notifications
+      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());

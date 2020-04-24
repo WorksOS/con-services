@@ -40,6 +40,7 @@ using VSS.TRex.SubGridTrees.Client;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Designs.GridFabric.Events;
 
 namespace VSS.TRex.Server.TileRendering
 {
@@ -117,6 +118,7 @@ namespace VSS.TRex.Server.TileRendering
         .Build()
         .Add(x => x.AddSingleton(new TileRenderingServer()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
 
         // Register the listener for site model attribute change notifications
@@ -181,6 +183,8 @@ namespace VSS.TRex.Server.TileRendering
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+      // Start listening to design state change notifications
+      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
 
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());

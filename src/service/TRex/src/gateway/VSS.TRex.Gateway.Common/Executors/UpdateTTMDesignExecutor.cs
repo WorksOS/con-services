@@ -67,7 +67,14 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           removedOk = DIContext.Obtain<ISurveyedSurfaceManager>().Remove(request.ProjectUid, request.DesignUid);
         }
-        if (!removedOk)
+
+        if (removedOk)
+        {
+          // Broadcast design now removed from cache
+          var sender = DIContext.Obtain<IDesignChangedEventSender>();
+          sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, request.ProjectUid, request.DesignUid, request.FileType, designRemoved: true);
+        }
+        else
         {
           throw CreateServiceException<UpdateTTMDesignExecutor>
             (HttpStatusCode.InternalServerError, ContractExecutionStatesEnum.InternalProcessingError, 

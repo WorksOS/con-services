@@ -41,6 +41,7 @@ using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
+using VSS.TRex.Designs.GridFabric.Events;
 
 namespace VSS.TRex.Server.Reports
 {
@@ -96,6 +97,7 @@ namespace VSS.TRex.Server.Reports
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
+        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))
         .Add(x => x.AddSingleton<IAlignmentManager>(factory => new AlignmentManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<IFilterSet>(factory => new FilterSet()))
@@ -152,6 +154,8 @@ namespace VSS.TRex.Server.Reports
 
     private static void DoServiceInitialisation()
     {
+      // Start listening to design state change notifications
+      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new IgniteNodeMetricsHeartBeatLogger(DIContext.Obtain<ITRexGridFactory>().Grid(StorageMutability.Immutable)));

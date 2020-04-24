@@ -24,6 +24,7 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Designs.GridFabric.Events;
 
 namespace VSS.TRex.Gateway.WebApi
 {
@@ -52,6 +53,7 @@ namespace VSS.TRex.Gateway.WebApi
 
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
+        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new SurveyedSurfaces.SurveyedSurfaces()))
         .Add(x => x.AddTransient<IAlignments>(factory => new Alignments.Alignments()))

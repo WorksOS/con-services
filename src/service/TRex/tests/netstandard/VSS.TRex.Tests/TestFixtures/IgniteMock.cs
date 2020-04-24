@@ -14,6 +14,8 @@ using Apache.Ignite.Core.Transactions;
 using Moq;
 using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Serialisation;
+using VSS.TRex.Designs.GridFabric.Events;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric;
 using VSS.TRex.GridFabric.Grids;
@@ -79,7 +81,15 @@ namespace VSS.TRex.Tests.TestFixtures
           messagingDictionary.Add(topic, listener);
         });
 
+      mockMessaging
+        .Setup(x => x.LocalListen(It.IsAny<IMessageListener<IDesignChangedEvent>>(), It.IsAny<object>()))
+        .Callback((IMessageListener<IDesignChangedEvent> listener, object topic) =>
+        {
+          messagingDictionary.Add(topic, listener);
+        });
+
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()));
+      mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<IDesignChangedEvent>>(), It.IsAny<object>()));
 
       mockMessaging
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))
@@ -101,8 +111,10 @@ namespace VSS.TRex.Tests.TestFixtures
             listener1.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else if (lstnr is SiteModelAttributesChangedEventListener listener2)
             listener2.Invoke(Guid.Empty, message as SiteModelAttributesChangedEvent);
+          else if (lstnr is DesignChangedEventListener listener3)
+            listener3.Invoke(Guid.Empty, message as DesignChangedEvent);
           else
-            throw new TRexException("Type of listener not SubGridListener or SiteModelAttributesChangedEventListener as expected.");
+            throw new TRexException("Type of listener not SubGridListener or SiteModelAttributesChangedEventListener or DesignChangedEvent as expected.");
         });
 
       mockClusterGroup = new Mock<IClusterGroup>(MockBehavior.Strict);

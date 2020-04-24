@@ -12,6 +12,7 @@ using VSS.TRex.Alignments;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.GridFabric.Grids;
@@ -58,6 +59,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
          .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
          .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
+         .Add(x => x.AddSingleton<IDesignChangedEventSender>(new DesignChangedEventSender()))
+         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.MutableGridName())))
          .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
          .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
          .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.MutableGridName())))
