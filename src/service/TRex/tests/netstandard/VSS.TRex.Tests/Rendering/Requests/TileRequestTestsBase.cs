@@ -89,12 +89,6 @@ namespace VSS.TRex.Tests.Rendering.Requests
 
     protected void CheckSimpleRenderTileResponse(TileRenderResponse response, DisplayMode? displayMode = null, string fileName = "", string compareToFile = "")
     {
-
-      if (!string.IsNullOrEmpty(compareToFile))
-      {
-        compareToFile = Path.Combine("c:\\temp", Path.GetFileName(compareToFile)); // get around path lenght problem
-      }
-
       response.Should().NotBeNull();
       response.Should().BeOfType<TileRenderResponse_Core2>();
 
