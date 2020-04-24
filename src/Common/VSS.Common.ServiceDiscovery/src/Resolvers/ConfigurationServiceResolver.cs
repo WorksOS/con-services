@@ -37,8 +37,6 @@ namespace VSS.Common.ServiceDiscovery.Resolvers
         return Task.FromResult(configValue);
       }
 
-      logger.LogWarning($"Could not find any service with name `{serviceName}` in Configuration");
-
       return Task.FromResult<string>(null);
     }
 

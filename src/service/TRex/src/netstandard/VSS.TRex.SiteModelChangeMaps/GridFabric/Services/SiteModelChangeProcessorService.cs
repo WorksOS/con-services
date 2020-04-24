@@ -149,6 +149,10 @@ namespace VSS.TRex.SiteModelChangeMaps.GridFabric.Services
           } while (!Aborted);
         }
       }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Site model change processor service unhandled exception");
+      }
       finally
       {
         Log.LogInformation($"{context.Name} completed executing");

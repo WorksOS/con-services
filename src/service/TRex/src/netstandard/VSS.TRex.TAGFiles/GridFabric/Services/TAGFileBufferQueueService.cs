@@ -14,6 +14,7 @@ using VSS.TRex.GridFabric.Services;
 using VSS.TRex.Storage.Caches;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.TAGFiles.Models;
+using System;
 
 namespace VSS.TRex.TAGFiles.GridFabric.Services
 {
@@ -113,6 +114,10 @@ namespace VSS.TRex.TAGFiles.GridFabric.Services
             //Log.LogInformation("Continuous query scan of items to process in TAGFileBufferQueue still active");
           } while (!aborted);
         }
+      }
+      catch(Exception e)
+      {
+        Log.LogError(e, "Tag file buffer service unhandled exception");
       }
       finally
       {
