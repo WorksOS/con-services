@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
@@ -36,16 +35,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IHttpContextAccessor HttpContextAccessor;
 
-    private readonly INotificationHubClient notificationHubClient;
+    private readonly INotificationHubClient _notificationHubClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV6Controller(IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
-      : base(configStore)
+    public ProjectV6Controller(IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
     {
       this.HttpContextAccessor = httpContextAccessor;
-      this.notificationHubClient = notificationHubClient;
+      this._notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
@@ -59,7 +57,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation("GetAllProjectsV6");
 
-      var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
+      var projects = (await GetProjectListForCustomer().ConfigureAwait(false)).ToImmutableList();
 
       return new ProjectV6DescriptorsListResult
       {
@@ -189,7 +187,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
-      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
+      await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
@@ -272,7 +270,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation("UpdateProjectV6. Invalidating 3D PM cache");
-      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
+      await _notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
@@ -354,7 +352,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
       if (!string.IsNullOrEmpty(customerUid))
-        await notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
+        await _notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
 
       Logger.LogInformation("ArchiveProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(

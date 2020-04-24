@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.MasterData.Project.WebAPI.Internal;
+using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
@@ -16,17 +17,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   ///     for the UI to get customer list etc as we have no CustomerSvc yet
   /// </summary>
   public class DeviceV1Controller : ProjectBaseController
-  {  
-
-    private readonly ICwsDeviceClient cwsDeviceClient;
+  {
+    private readonly ICwsDeviceClient _cwsDeviceClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public DeviceV1Controller(IConfigurationStore configStore, ICwsDeviceClient cwsDeviceClient)
-      : base(configStore)
+    public DeviceV1Controller(ICwsDeviceClient cwsDeviceClient)
     {
-      this.cwsDeviceClient = cwsDeviceClient;
+      this._cwsDeviceClient = cwsDeviceClient;
     }
 
     /// <summary>
@@ -37,80 +36,78 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     note that if it doesn't exist localDB it means that 
     ///     the user hasn't logged in to fill in our DB after adding the device to the account
     /// </summary>
-    [Route("api/v1/device/serialnumber")]
-    [HttpGet]
-    public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery]  string serialNumber)
+    [HttpGet("api/v1/device/serialnumber")]
+    public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
-      Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)}");
+      Logger.LogInformation(nameof(GetDeviceBySerialNumber));
       // CCSSSCON-207 executor and validation
-      var deviceResponseModel = await cwsDeviceClient.GetDeviceBySerialNumber(serialNumber);
+      var deviceResponseModel = await _cwsDeviceClient.GetDeviceBySerialNumber(serialNumber);
       if (deviceResponseModel == null)
         throw new NotImplementedException();
 
       var deviceFromRepo = await DeviceRepo.GetDevice(deviceResponseModel.Id);
 
-      var deviceDataResult = new DeviceDataSingleResult()
+      var deviceDataResult = new DeviceDataSingleResult
       {
-        DeviceDescriptor = new DeviceData()
+        DeviceDescriptor = new DeviceData
         {
-          CustomerUID = deviceResponseModel.AccountId, 
-          DeviceUID = deviceResponseModel.Id,
-          DeviceName = deviceResponseModel.DeviceName, 
-          SerialNumber = deviceResponseModel.SerialNumber,
-          Status = deviceResponseModel.Status,  
-          ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID
-        }
-      };
-      return deviceDataResult;
-    }
-
-    /// <summary>
-    /// Gets device by serialNumber, including Uid and shortId 
-    /// </summary>
-    [Route("api/v1/device/shortRaptorAssetId")]
-    [HttpGet]
-    public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
-    {
-      Logger.LogInformation($"{nameof(GetDevice)}");
-      // CCSSSCON-207 executor and validation
-      var deviceFromRepo = await DeviceRepo.GetDevice(shortRaptorAssetId); 
-      
-      var deviceResponseModel = await cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID));
-      if (deviceResponseModel == null)
-        throw new NotImplementedException();
-
-      
-      var deviceDataResult = new DeviceDataSingleResult()
-      {
-        DeviceDescriptor = new DeviceData()
-        {
-          CustomerUID = deviceResponseModel.AccountId, 
+          CustomerUID = deviceResponseModel.AccountId,
           DeviceUID = deviceResponseModel.Id,
           DeviceName = deviceResponseModel.DeviceName,
           SerialNumber = deviceResponseModel.SerialNumber,
-          Status = deviceResponseModel.Status, 
+          Status = deviceResponseModel.Status,
           ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID
         }
       };
+
       return deviceDataResult;
     }
 
     /// <summary>
     /// Gets device by serialNumber, including Uid and shortId 
     /// </summary>
-    [Route("api/v1/device/{deviceUid}/projects")]
-    [HttpGet]
+    [HttpGet("api/v1/device/shortRaptorAssetId")]
+    public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
+    {
+      Logger.LogInformation(nameof(GetDevice));
+      // CCSSSCON-207 executor and validation
+      var deviceFromRepo = await DeviceRepo.GetDevice(shortRaptorAssetId);
+
+      var deviceResponseModel = await _cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID));
+      if (deviceResponseModel == null)
+        throw new NotImplementedException();
+
+      var deviceDataResult = new DeviceDataSingleResult
+      {
+        DeviceDescriptor = new DeviceData
+        {
+          CustomerUID = deviceResponseModel.AccountId,
+          DeviceUID = deviceResponseModel.Id,
+          DeviceName = deviceResponseModel.DeviceName,
+          SerialNumber = deviceResponseModel.SerialNumber,
+          Status = deviceResponseModel.Status,
+          ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID
+        }
+      };
+
+      return deviceDataResult;
+    }
+
+    /// <summary>
+    /// Gets device by serialNumber, including Uid and shortId 
+    /// </summary>
+    [HttpGet("api/v1/device/{deviceUid}/projects")]
     public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid)
     {
-      Logger.LogInformation($"{nameof(GetProjectsForDevice)}");
+      Logger.LogInformation(nameof(GetProjectsForDevice));
 
       // CCSSSCON-207 executor and validation
-      var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid));
-      if (cwsDeviceClient == null)
+      var projectsFromCws = await _cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid));
+      if (_cwsDeviceClient == null)
         throw new NotImplementedException();
 
       var projectDataResult = new ProjectDataResult();
-      foreach(var projectCws in projectsFromCws.Projects)
+      foreach (var projectCws in projectsFromCws.Projects)
       {
         var project = await ProjectRepo.GetProject(projectCws.projectId);
 
@@ -122,7 +119,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           else
             projectDataResult.ProjectDescriptors.Add(AutoMapperUtility.Automapper.Map<ProjectData>(project));
         }
-      };      
+      }
 
       return projectDataResult;
     }
@@ -148,13 +145,43 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [ProducesResponseType(typeof(List<DeviceMatchingModel>), 200)]
     public async Task<IActionResult> GetMatchingDevices([FromBody] List<long> shortRaptorAssetIds)
     {
-      var assetIdDisplay = string.Join(", ", shortRaptorAssetIds ?? new List<long>());
-      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for shortRaptorAssetIds: {assetIdDisplay}");
+      var deviceIdsDisplay = string.Join(", ", shortRaptorAssetIds ?? new List<long>());
+      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Devices for shortRaptorAssetIds: {deviceIdsDisplay}");
 
       var devices = await DeviceRepo.GetDevices(shortRaptorAssetIds);
       return Json(DeviceMatchingModel.FromDeviceList(devices));
     }
 
+    /// <summary>
+    /// Get location data for a given set of Devices.
+    /// </summary>
+    [HttpPost("api/v1/devices/location")]
+    public IActionResult GetDeviceLocationData([FromBody] List<Guid> deviceIds)
+    {
+      var deviceIdsDisplay = string.Join(", ", deviceIds ?? new List<Guid>());
+      Logger.LogInformation($"{nameof(GetMatchingDevices)} Getting Device location data for: {deviceIdsDisplay}");
+
+      var assets = MockDeviceRepository.GetAssets(deviceIds);
+
+      var resultSet = new List<AssetLocationData>(assets.Count);
+
+      foreach (var asset in assets)
+      {
+        resultSet.Add(new AssetLocationData
+        {
+          AssetUid = Guid.Parse(asset.AssetUID),
+          AssetIdentifier = asset.EquipmentVIN,
+          AssetSerialNumber = asset.SerialNumber,
+          AssetType = asset.AssetType,
+          LocationLastUpdatedUtc = asset.LastActionedUtc,
+          MachineName = asset.Name,
+          Latitude = 0,
+          Longitude = 0,
+        });
+      }
+
+      Logger.LogInformation($"Returning location data for {resultSet.Count} Assets.");
+      return Json(resultSet);
+    }
   }
 }
-

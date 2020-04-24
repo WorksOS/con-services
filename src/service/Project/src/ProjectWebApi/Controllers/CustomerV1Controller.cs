@@ -3,9 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -18,17 +16,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   ///     for the UI to get customer list etc as we have no CustomerSvc yet
   /// </summary>
   public class CustomerV1Controller : ProjectBaseController
-  {  
-
-    private readonly ICwsAccountClient cwsAccountClient;
+  {
+    private readonly ICwsAccountClient _cwsAccountClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CustomerV1Controller(IConfigurationStore configStore, ICwsAccountClient cwsAccountClient)
-      : base(configStore)
+    public CustomerV1Controller(ICwsAccountClient cwsAccountClient)
     {
-      this.cwsAccountClient = cwsAccountClient;
+      this._cwsAccountClient = cwsAccountClient;
     }
 
     /// <summary>
@@ -38,8 +34,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1ListResult> GetCustomersForMe()
     {
-      Logger.LogInformation($"{nameof(GetCustomersForMe)}");
-      var customers = await cwsAccountClient.GetMyAccounts(new Guid(userId));
+      Logger.LogInformation(nameof(GetCustomersForMe));
+      var customers = await _cwsAccountClient.GetMyAccounts(new Guid(userId));
       return new CustomerV1ListResult
       {
         Customers = customers.Accounts.Select(c =>
@@ -56,8 +52,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1DeviceLicenseResult> GetCustomerDeviceLicense(string customerUid)
     {
-      Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)}");
-      var deviceLicenses = await cwsAccountClient.GetDeviceLicenses(new Guid(customerUid));
+      Logger.LogInformation(nameof(GetCustomerDeviceLicense));
+      var deviceLicenses = await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid));
 
       // CCSSSCON-207 may want to move this, and into executor
       //  Which endpoint does the UI use to actually select the project. 
@@ -75,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         await DeviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(device));
       }
 
-      return new CustomerV1DeviceLicenseResult(deviceLicenses.Total);    
+      return new CustomerV1DeviceLicenseResult(deviceLicenses.Total);
     }
   }
 }

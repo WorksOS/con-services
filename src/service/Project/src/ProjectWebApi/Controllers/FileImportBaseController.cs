@@ -37,21 +37,21 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// The request factory
     /// </summary>
-    private readonly IRequestFactory requestFactory;
+    private readonly IRequestFactory _requestFactory;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileImportBaseController"/> class.
     /// </summary>
-    public FileImportBaseController(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+    public FileImportBaseController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
       IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy, IRequestFactory requestFactory)
-    : base (configStore)
     {
-      this.requestFactory = requestFactory;
+      this._requestFactory = requestFactory;
 
       this.persistantTransferProxy = persistantTransferProxy(TransferProxyType.DesignImport);
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
 
+      ConfigStore = config;
       FileSpaceId = ConfigStore.GetValueString("TCCFILESPACEID");
       DataOceanRootFolderId = ConfigStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
       UseTrexGatewayDesignImport = false;
@@ -67,7 +67,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected async Task ValidateProjectId(string projectUid)
     {
-      var customerUid = LogCustomerDetails("GetProject", projectUid);
+      LogCustomerDetails("GetProject", projectUid);
       var project =
         (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => string.Equals(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase));
@@ -133,7 +133,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogDebug($"SetFileActivatedState: now {deactivatedFileList.Count} deactivated files, {missingUids.Count} missingUids");
 
       var projectSettingsRequest =
-        requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+        _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
           .CreateProjectSettingsRequest(projectUid, JsonConvert.SerializeObject(deactivatedFileList), ProjectSettingsType.ImportedFiles);
       projectSettingsRequest.Validate();
