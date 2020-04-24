@@ -8,6 +8,7 @@ using VSS.TRex.Common;
 using VSS.TRex.Filters.Models;
 using VSS.TRex.IO.Helpers;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 
 namespace VSS.TRex.SubGridTrees.Client
@@ -18,6 +19,15 @@ namespace VSS.TRex.SubGridTrees.Client
   public class ClientProgressiveHeightsLeafSubGrid : ClientLeafSubGrid, IClientProgressiveHeightsLeafSubGrid, IDisposable
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<ClientHeightLeafSubGrid>();
+
+    public static readonly float[,] NullHeights = InitialiseNullHeights();
+
+    private static float[,] InitialiseNullHeights()
+    {
+      var result = new float[SubGridTreeConsts.SubGridTreeDimension, SubGridTreeConsts.SubGridTreeDimension];
+      SubGridUtilities.SubGridDimensionalIterator((x, y) => result[x, y] = Consts.NullHeight);
+      return result;
+    }
 
     public const int MaxNumberOfHeightLayers = 1000;
 
@@ -40,6 +50,7 @@ namespace VSS.TRex.SubGridTrees.Client
         for (var i = 0; i < _numberOfHeightLayers; i++)
         {
           Heights.Add(GenericTwoDArrayCacheHelper<float>.Caches().Rent());
+          Array.Copy(NullHeights, 0, Heights[i], 0, SubGridTreeConsts.CellsPerSubGrid);
         }
 
         Clear();
