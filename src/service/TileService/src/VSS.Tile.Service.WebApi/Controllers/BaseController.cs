@@ -47,21 +47,9 @@ namespace VSS.Tile.Service.WebApi.Controllers
     private readonly IMemoryCache tileCache;
     private readonly TimeSpan tileCacheExpiration;
 
-
-    /// <summary>
-    /// Gets the custom headers for the request.
-    /// </summary>
     protected IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
-
-    /// <summary>
-    /// Gets the application logging interface.
-    /// </summary>
-    protected ILogger<T> Log => logger ?? (logger = HttpContext.RequestServices.GetService<ILogger<T>>());
-
-    /// <summary>
-    /// Gets the service exception handler.
-    /// </summary>
-    private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ?? (serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
+    protected ILogger<T> Log => logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
+    private IServiceExceptionHandler ServiceExceptionHandler => serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
 
     /// <summary>
     /// Default constructor.
@@ -82,41 +70,7 @@ namespace VSS.Tile.Service.WebApi.Controllers
     }
 
     public BaseController()
-    {
-    }
-
-    /// <summary>
-    /// Executes the request with exception handling.
-    /// </summary>
-    protected TResult WithServiceExceptionTryExecute<TResult>(Func<TResult> action) //where TResult : ContractExecutionResult
-    {
-      TResult result = default(TResult);
-      try
-      {
-        result = action.Invoke();
-        if (Log.IsTraceEnabled())
-          Log.LogTrace($"Executed {action.Method.Name} with result {JsonConvert.SerializeObject(result)}");
-      }
-      catch (ServiceException)
-      {
-        throw;
-      }
-      catch (Exception ex)
-      {
-        ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError - 2000, errorMessage1: ex.Message, innerException: ex);
-      }
-      finally
-      {
-        if (result is ContractExecutionResult)
-        {
-          var exResult = result as ContractExecutionResult;
-          Log.LogInformation($"Executed {action.Method.Name} with the result {exResult?.Code}");
-        }
-      }
-
-      return result;
-    }
+    {  }
 
     /// <summary>
     /// Executes the request asynchronously with exception handling.
@@ -142,9 +96,8 @@ namespace VSS.Tile.Service.WebApi.Controllers
       }
       finally
       {
-        if (result is ContractExecutionResult)
+        if (result is ContractExecutionResult exResult)
         {
-          var exResult = result as ContractExecutionResult;
           Log.LogInformation($"Executed {action.Method.Name} with the result {exResult?.Code}");
         }
       }

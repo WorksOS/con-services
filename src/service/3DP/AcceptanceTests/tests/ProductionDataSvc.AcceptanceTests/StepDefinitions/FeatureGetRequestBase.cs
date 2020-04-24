@@ -5,6 +5,7 @@ using Gherkin.Ast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using ProductionDataSvc.AcceptanceTests.Utils;
+using XnaFan.ImageComparison.Netcore.Common;
 using Xunit;
 using Xunit.Gherkin.Quick;
 
@@ -161,19 +162,7 @@ namespace ProductionDataSvc.AcceptanceTests.StepDefinitions
       var expFileName = string.Empty;
       var actFileName = string.Empty;
 
-      var differencePercent = ImageUtils.CompareImagesAndGetDifferencePercent(expectedTileData, actualTileData);
-
-      if (Math.Abs(differencePercent) >= allowedImageDifference)
-      {
-        Console.WriteLine($"Image difference in {responseName} data:");
-        Console.WriteLine($"ACTUAL: {Convert.ToBase64String(actualTileData)}");
-        Console.WriteLine($"EXPECTED: {Convert.ToBase64String(expectedTileData)}");
-
-        expFileName = "Expected_" + responseName + ".png";
-        actFileName = "Actual_" + responseName + ".png";
-
-        ImageUtils.SaveImageFiles(expectedTileData, actualTileData, expFileName, actFileName);
-      }
+      CommonUtils.CompareImages(responseName, allowedImageDifference, expectedTileData, actualTileData, out var differencePercent);
 
       Assert.True(Math.Abs(differencePercent) < allowedImageDifference, "Actual Difference:" + differencePercent * 100 + "% Expected tiles (" + expFileName + ") doesn't match actual tiles (" + actFileName + ")");
     }

@@ -93,8 +93,8 @@ mutableData:
     className: aws-efs
     
   environment:
-    enableTfa: false
-    enableTagFileArchiving: false
+    enableTfa: true
+    enableTagFileArchiving: true
     enableTagFileArchivingMetadata: false
     minTagFileLength: 99
     tagfileArchiveFolder: ""
@@ -199,7 +199,7 @@ tinExportServer:
       target: 100
 
 utilities:
-  deploy: false
+  deploy: true
   replicaCount: 0
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
@@ -209,7 +209,7 @@ utilities:
       memory: 1Gi
 
 webtools:
-  deploy: false
+  deploy: true
   replicaCount: 1
   javaHeapMaxSizeMb: 768
   javaHeapInitialSizeMb: 768  
