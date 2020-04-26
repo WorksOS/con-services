@@ -59,7 +59,9 @@ namespace VSS.TRex.SubGrids.GridFabric.Requests
                 // Construct the function to be used
                 var func = new SubGridsRequestComputeFuncAggregative<TSubGridsRequestArgument, TSubGridRequestsResponse>(TRexTask);
                 
-                // Invoke it
+                // Invoke it.
+                // Note that this is NOT asking the grid to perform a remote invocation of the request as this aggregative
+                // processing is already executing on the cluster node containing sub grids.
                 taskResult = func.Invoke(arg);
             }
             finally

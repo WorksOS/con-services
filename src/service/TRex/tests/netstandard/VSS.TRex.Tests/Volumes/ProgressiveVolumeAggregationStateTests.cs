@@ -4,7 +4,6 @@ using VSS.TRex.Geometry;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Volumes;
 using Xunit;
-using Xunit.Sdk;
 
 namespace VSS.TRex.Tests.Volumes
 {
@@ -186,7 +185,7 @@ namespace VSS.TRex.Tests.Volumes
     public void TestToString()
     {
       var state = new ProgressiveVolumeAggregationState(SubGridTreeConsts.DefaultCellSize);
-      state.ToString().Should().StartWith("Volume");
+      state.ToString().Should().StartWith("CellSize:");
     }
   }
 }

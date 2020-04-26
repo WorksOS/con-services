@@ -6,9 +6,10 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.DataOcean.Client;
@@ -21,7 +22,6 @@ using VSS.Serilog.Extensions;
 using VSS.TCCFileAccess;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
@@ -31,9 +31,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   public abstract class BaseController<T> : Controller where T : BaseController<T>
   {
     /// <summary> base message number for ProjectService </summary>
-    protected readonly int customErrorMessageOffset = 2000;
+    protected readonly int CustomErrorMessageOffset = 2000;
 
-  private ILogger<T> _logger;
+    private ILogger<T> _logger;
     private ILoggerFactory _loggerFactory;
     private IServiceExceptionHandler _serviceExceptionHandler;
 
@@ -47,55 +47,27 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private ITPaaSApplicationAuthentication _authorization;
     private ICwsProjectClient _cwsProjectClient;
     private ICwsDeviceClient _cwsDeviceClient;
+    private IConfigurationStore _configurationStore;
 
+    protected ILogger<T> Logger => _logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
+    protected ILoggerFactory LoggerFactory => _loggerFactory ??= HttpContext.RequestServices.GetService<ILoggerFactory>();
+    protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ??= HttpContext.RequestServices.GetService<IServiceExceptionHandler>();
+    protected IConfigurationStore ConfigStore
+    {
+      get => _configurationStore ??= HttpContext.RequestServices.GetService<IConfigurationStore>();
+      set => _configurationStore = value;
+    }
 
-    /// <summary> Gets the application logging interface. </summary>
-    protected ILogger<T> Logger => _logger ?? (_logger = HttpContext.RequestServices.GetService<ILogger<T>>());
-
-    /// <summary> Gets the type used to configure the logging system and create instances of ILogger from the registered ILoggerProviders. </summary>
-    protected ILoggerFactory LoggerFactory => _loggerFactory ?? (_loggerFactory = HttpContext.RequestServices.GetService<ILoggerFactory>());
-
-    /// <summary> Gets the service exception handler. </summary>
-    protected IServiceExceptionHandler ServiceExceptionHandler => _serviceExceptionHandler ?? (_serviceExceptionHandler = HttpContext.RequestServices.GetService<IServiceExceptionHandler>());
-
-    /// <summary> Gets the config store. </summary>
-    protected readonly IConfigurationStore ConfigStore;
-
-    /// <summary> Gets or sets the Productivity3d Coord proxy. </summary>
-    protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => _productivity3dV1ProxyCoord ?? (_productivity3dV1ProxyCoord = HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>());
-
-    /// <summary> Gets or sets the Productivity3d Notifications proxy. </summary>
-    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => _productivity3dV2ProxyNotification ?? (_productivity3dV2ProxyNotification = HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>());
-
-    /// <summary> Gets or sets the Productivity3d Compaction proxy. </summary>
-    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => _productivity3dV2ProxyCompaction ?? (_productivity3dV2ProxyCompaction = HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>());
-
-    /// <summary> Gets or sets the Project Repository.  </summary>
-    protected IProjectRepository ProjectRepo => _projectRepo ?? (_projectRepo = HttpContext.RequestServices.GetService<IProjectRepository>());
-
-    /// <summary> Gets or sets the Device Repository.  </summary>
-    protected IDeviceRepository DeviceRepo => _deviceRepo ?? (_deviceRepo = HttpContext.RequestServices.GetService<IDeviceRepository>());
-    
-    /// <summary> Gets or sets the TCC File Repository. </summary>
-    protected IFileRepository FileRepo => _fileRepo ?? (_fileRepo = HttpContext.RequestServices.GetService<IFileRepository>());
-
-    /// <summary>
-    /// Gets or sets the Data Ocean client agent.
-    /// </summary>
-    protected IDataOceanClient DataOceanClient => _dataOceanClient ?? (_dataOceanClient = HttpContext.RequestServices.GetService<IDataOceanClient>());
-
-    /// <summary>
-    /// Gets or sets the csw Project Client
-    /// </summary>
-    protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ?? (_cwsProjectClient = HttpContext.RequestServices.GetService<ICwsProjectClient>());
-
-    /// <summary>
-    /// Gets or sets the csw Device Client
-    /// </summary>
-    protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ?? (_cwsDeviceClient = HttpContext.RequestServices.GetService<ICwsDeviceClient>());
-
-    /// <summary> Gets or sets the TPaaS application authentication helper. </summary>
-    protected ITPaaSApplicationAuthentication Authorization => _authorization ?? (_authorization = HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>());
+    protected IProductivity3dV1ProxyCoord Productivity3dV1ProxyCoord => _productivity3dV1ProxyCoord ??= HttpContext.RequestServices.GetService<IProductivity3dV1ProxyCoord>();
+    protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => _productivity3dV2ProxyNotification ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>();
+    protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => _productivity3dV2ProxyCompaction ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>();
+    protected IProjectRepository ProjectRepo => _projectRepo ??= HttpContext.RequestServices.GetService<IProjectRepository>();
+    protected IDeviceRepository DeviceRepo => _deviceRepo ??= HttpContext.RequestServices.GetService<IDeviceRepository>();
+    protected IFileRepository FileRepo => _fileRepo ??= HttpContext.RequestServices.GetService<IFileRepository>();
+    protected IDataOceanClient DataOceanClient => _dataOceanClient ??= HttpContext.RequestServices.GetService<IDataOceanClient>();
+    protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ??= HttpContext.RequestServices.GetService<ICwsProjectClient>();
+    protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ??= HttpContext.RequestServices.GetService<ICwsDeviceClient>();
+    protected ITPaaSApplicationAuthentication Authorization => _authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
 
     /// <summary>
     /// Gets the custom customHeaders for the request.
@@ -124,17 +96,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(IConfigurationStore configStore)
-    {
-      ConfigStore = configStore;
-    }
+    protected BaseController()
+    { }
 
     /// <summary>
     /// With the service exception try execute.
     /// </summary>
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="action">The action.</param>
-    /// <returns></returns>
     protected async Task<TResult> WithServiceExceptionTryExecuteAsync<TResult>(Func
       <Task<TResult>> action)
       where TResult : ContractExecutionResult
@@ -154,7 +123,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       catch (Exception ex)
       {
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError,
-          ContractExecutionStatesEnum.InternalProcessingError - customErrorMessageOffset, ex.Message, innerException: ex);
+          ContractExecutionStatesEnum.InternalProcessingError - CustomErrorMessageOffset, ex.Message, innerException: ex);
       }
       finally
       {
@@ -167,7 +136,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets the account uid from the context.
     /// </summary>
-    /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect account uid value.</exception>
     private string GetCustomerUid()
     {
@@ -182,7 +150,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets the User uid/applicationID from the context.
     /// </summary>
-    /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect user Id value.</exception>
     private string GetUserId()
     {
@@ -197,7 +164,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets the users email address from the context.
     /// </summary>
-    /// <returns></returns>
     /// <exception cref="ArgumentException">Incorrect email address value.</exception>
     private string GetUserEmailAddress()
     {
@@ -214,9 +180,9 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId)
     {
-      var customerUid = LogCustomerDetails("GetProject by shortRaptorProjectId", shortRaptorProjectId);
+      LogCustomerDetails("GetProject by shortRaptorProjectId", shortRaptorProjectId);
       var project =
-        (await ProjectRepo.GetProjectsForCustomer(this.customerUid).ConfigureAwait(false)).FirstOrDefault(
+        (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).FirstOrDefault(
           p => p.ShortRaptorProjectId == shortRaptorProjectId);
 
       if (project == null)
@@ -232,29 +198,15 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Log the Customer and Project details.
     /// </summary>
-    /// <param name="functionName">Calling function name</param>
-    /// <param name="projectUid">The Project Uid</param>
-    /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
-    protected string LogCustomerDetails(string functionName, string projectUid = "")
-    {
+    protected void LogCustomerDetails(string functionName, string projectUid = "") =>
       Logger.LogInformation(
-        $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and projectUid={projectUid}");
-
-      return customerUid;
-    }
+        $"{functionName}: UserUID={userId}, CustomerUID={customerUid} and projectUid='{projectUid}'");
 
     /// <summary>
     /// Log the Customer and Project details.
     /// </summary>
-    /// <param name="functionName">Calling function name</param>
-    /// <param name="legacyProjectId">The Project Id from legacy</param>
-    /// <returns>Returns <see cref="TIDCustomPrincipal.CustomerUid"/></returns>
-    protected string LogCustomerDetails(string functionName, long legacyProjectId = 0)
-    {
+    protected void LogCustomerDetails(string functionName, long legacyProjectId = 0) =>
       Logger.LogInformation(
-        $"{functionName}: UserUID={userId}, CustomerUID={customerUid}  and legacyProjectId={legacyProjectId}");
-
-      return customerUid;
-    }
+        $"{functionName}: UserUID={userId}, CustomerUID={customerUid} and legacyProjectId='{legacyProjectId}'");
   }
 }

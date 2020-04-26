@@ -47,17 +47,17 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportV6Controller : FileImportBaseController
   {
-    private readonly INotificationHubClient notificationHubClient;
+    private readonly INotificationHubClient _notificationHubClient;
 
     /// <summary>
     /// File import controller v6
     /// </summary>
-    public FileImportV6Controller(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
-      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
-      IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
-      : base(configStore, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+    public FileImportV6Controller(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+                                  IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
+                                  IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
+      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
     {
-      this.notificationHubClient = notificationHubClient;
+      this._notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
@@ -413,7 +413,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(deleteImportedFile)
       );
 
-      await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+      await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
       Logger.LogInformation(
         $"{nameof(DeleteImportedFileV6)}: Completed successfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
@@ -596,7 +596,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           $"{nameof(UpsertFileInternal)}: Update completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
 
-      await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+      await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
       return importedFile;
     }
@@ -711,8 +711,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task<string> DefaultReferenceSurfaceName(IPreferenceProxy prefProxy, double offset, string parentName)
     {
-      const double ImperialFeetToMetres = 0.3048;
-      const double USFeetToMetres = 0.304800609601;
+      const double imperialFeetToMetres = 0.3048;
+      const double usFeetToMetres = 0.304800609601;
 
       var displayOffset = offset;
       var unitsString = string.Empty;
@@ -724,11 +724,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           unitsString = "m";
           break;
         case UnitsTypeEnum.Imperial:
-          displayOffset = offset / ImperialFeetToMetres;
+          displayOffset = offset / imperialFeetToMetres;
           unitsString = "ft";
           break;
         case UnitsTypeEnum.US:
-          displayOffset = offset / USFeetToMetres;
+          displayOffset = offset / usFeetToMetres;
           unitsString = "ft";
           break;
       }
@@ -841,7 +841,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task DoActivationAndNotification(string projectUid, Dictionary<Guid, bool> filesToUpdate)
     {
       var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
-      var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
+      var notificationTask = _notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
       var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
 
       await Task.WhenAll(notificationTask, raptorTask);

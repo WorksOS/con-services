@@ -3,9 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -18,15 +16,13 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   ///     for the UI to get customer list etc as we have no CustomerSvc yet
   /// </summary>
   public class CustomerV1Controller : ProjectBaseController
-  {  
-
+  {
     private readonly ICwsAccountClient cwsAccountClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public CustomerV1Controller(IConfigurationStore configStore, ICwsAccountClient cwsAccountClient)
-      : base(configStore)
+    public CustomerV1Controller(ICwsAccountClient cwsAccountClient)
     {
       this.cwsAccountClient = cwsAccountClient;
     }
@@ -38,7 +34,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1ListResult> GetCustomersForMe()
     {
-      Logger.LogInformation($"{nameof(GetCustomersForMe)}");
+      Logger.LogInformation(nameof(GetCustomersForMe));
       var customers = await cwsAccountClient.GetMyAccounts(new Guid(userId), customHeaders);
       return new CustomerV1ListResult
       {
@@ -75,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         await DeviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(device));
       }
 
-      return new CustomerV1DeviceLicenseResult(deviceLicenses.Total);    
+      return new CustomerV1DeviceLicenseResult(deviceLicenses.Total);
     }
   }
 }
