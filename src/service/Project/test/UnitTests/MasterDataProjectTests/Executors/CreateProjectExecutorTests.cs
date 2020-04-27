@@ -187,7 +187,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), customHeaders)).ReturnsAsync(createProjectResponseModel);
 
       var createFileResponseModel = new CreateFileResponseModel
       { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
