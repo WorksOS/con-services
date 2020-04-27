@@ -48,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV1: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, cwsAccountClient, projectProxy, deviceProxy)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders)
         .Process(request) as TagFileProcessingErrorResult;
       
       log.LogDebug("PostTagFileProcessingErrorV1: result:{0}", JsonConvert.SerializeObject(result));
@@ -84,7 +84,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug("PostTagFileProcessingErrorV2: v1Request:{0}", JsonConvert.SerializeObject(v1Request));
       v1Request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, configStore, cwsAccountClient, projectProxy, deviceProxy)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders)
         .Process(v1Request) as TagFileProcessingErrorResult;
 
       log.LogDebug("PostTagFileProcessingErrorV2: v1result:{0}", JsonConvert.SerializeObject(result));

@@ -17,14 +17,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class CustomerV1Controller : ProjectBaseController
   {
-    private readonly ICwsAccountClient _cwsAccountClient;
+    private readonly ICwsAccountClient cwsAccountClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     public CustomerV1Controller(ICwsAccountClient cwsAccountClient)
     {
-      this._cwsAccountClient = cwsAccountClient;
+      this.cwsAccountClient = cwsAccountClient;
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public async Task<CustomerV1ListResult> GetCustomersForMe()
     {
       Logger.LogInformation(nameof(GetCustomersForMe));
-      var customers = await _cwsAccountClient.GetMyAccounts(new Guid(userId));
+      var customers = await cwsAccountClient.GetMyAccounts(new Guid(userId), customHeaders);
       return new CustomerV1ListResult
       {
         Customers = customers.Accounts.Select(c =>
@@ -52,8 +52,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<CustomerV1DeviceLicenseResult> GetCustomerDeviceLicense(string customerUid)
     {
-      Logger.LogInformation(nameof(GetCustomerDeviceLicense));
-      var deviceLicenses = await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid));
+      Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)}");
+      var deviceLicenses = await cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), customHeaders);
 
       // CCSSSCON-207 may want to move this, and into executor
       //  Which endpoint does the UI use to actually select the project. 
@@ -61,7 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       //     These need to be loaded into the localDB device table so that shortRaptorAssetIds can be generated.
       //     The user, after adding devices must login to WorksOS to trigger this process,
       //        so that when tag files are loaded, the new deviceTRN+shortRaptorAssetId will be available
-      var deviceList = await CwsDeviceClient.GetDevicesForAccount(new Guid(customerUid));
+      var deviceList = await CwsDeviceClient.GetDevicesForAccount(new Guid(customerUid), customHeaders);
       foreach (var device in deviceList.Devices)
       {
         // if it exists, does nothing but return a count of 0

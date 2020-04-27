@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
@@ -87,7 +88,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
       }
 
-      if (device == null && !string.IsNullOrEmpty(request.Ec520Serial))
+      if ((device == null || string.IsNullOrEmpty(device.DeviceUID) ) && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
@@ -96,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, project, device);
 
-      if (device == null)
+      if (device == null || string.IsNullOrEmpty(device.DeviceUID))
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
 
       return await HandleAutoImport(request, device);
@@ -143,12 +144,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (deviceAccountDeviceLicenseTotal < 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 1);
 
-      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude);
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, out var errorCode);
       log.LogDebug(
         $"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 48);
+        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: errorCode);
 
       if (potentialProjects.Count > 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 49);

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Internal;
 using VSS.Productivity3D.AssetMgmt3D.Abstractions.Models;
@@ -18,14 +19,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class DeviceV1Controller : ProjectBaseController
   {
-    private readonly ICwsDeviceClient _cwsDeviceClient;
+    private readonly ICwsDeviceClient cwsDeviceClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     public DeviceV1Controller(ICwsDeviceClient cwsDeviceClient)
     {
-      this._cwsDeviceClient = cwsDeviceClient;
+      this.cwsDeviceClient = cwsDeviceClient;
     }
 
     /// <summary>
@@ -36,29 +37,22 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     note that if it doesn't exist localDB it means that 
     ///     the user hasn't logged in to fill in our DB after adding the device to the account
     /// </summary>
-    [HttpGet("api/v1/device/serialnumber")]
+    [HttpGet("api/v1/device/applicationcontext/serialnumber")]
     public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
-      Logger.LogInformation(nameof(GetDeviceBySerialNumber));
-      // CCSSSCON-207 executor and validation
-      var deviceResponseModel = await _cwsDeviceClient.GetDeviceBySerialNumber(serialNumber);
-      if (deviceResponseModel == null)
-        throw new NotImplementedException();
+      Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)} serialNumber {serialNumber}");
+      
+      var deviceSerial = new DeviceSerial(serialNumber);
+      deviceSerial.Validate();
 
-      var deviceFromRepo = await DeviceRepo.GetDevice(deviceResponseModel.Id);
+      var deviceDataResult = (await WithServiceExceptionTryExecuteAsync(() =>
+        RequestExecutorContainerFactory
+          .Build<GetDeviceBySerialExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
+            customerUid, userId, null, customHeaders, 
+            deviceRepo: DeviceRepo, cwsDeviceClient: CwsDeviceClient)
+          .ProcessAsync(deviceSerial)) as DeviceDataSingleResult
+      );
 
-      var deviceDataResult = new DeviceDataSingleResult
-      {
-        DeviceDescriptor = new DeviceData
-        {
-          CustomerUID = deviceResponseModel.AccountId,
-          DeviceUID = deviceResponseModel.Id,
-          DeviceName = deviceResponseModel.DeviceName,
-          SerialNumber = deviceResponseModel.SerialNumber,
-          Status = deviceResponseModel.Status,
-          ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID
-        }
-      };
 
       return deviceDataResult;
     }
@@ -66,14 +60,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets device by serialNumber, including Uid and shortId 
     /// </summary>
-    [HttpGet("api/v1/device/shortRaptorAssetId")]
+    [HttpGet("api/v1/device/applicationcontext/shortRaptorAssetId")]
     public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
     {
       Logger.LogInformation(nameof(GetDevice));
       // CCSSSCON-207 executor and validation
       var deviceFromRepo = await DeviceRepo.GetDevice(shortRaptorAssetId);
 
-      var deviceResponseModel = await _cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID));
+      var deviceResponseModel = await cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID), customHeaders);
       if (deviceResponseModel == null)
         throw new NotImplementedException();
 
@@ -96,14 +90,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets device by serialNumber, including Uid and shortId 
     /// </summary>
-    [HttpGet("api/v1/device/{deviceUid}/projects")]
+    [HttpGet("api/v1/device/applicationcontext/{deviceUid}/projects")]
     public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid)
     {
-      Logger.LogInformation(nameof(GetProjectsForDevice));
+      Logger.LogInformation($"{nameof(GetProjectsForDevice)}");
 
       // CCSSSCON-207 executor and validation
-      var projectsFromCws = await _cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid));
-      if (_cwsDeviceClient == null)
+      var projectsFromCws = await cwsDeviceClient.GetProjectsForDevice(new Guid(deviceUid), customHeaders);
+      if (projectsFromCws == null)
         throw new NotImplementedException();
 
       var projectDataResult = new ProjectDataResult();

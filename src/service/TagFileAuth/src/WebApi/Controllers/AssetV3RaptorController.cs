@@ -50,7 +50,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetAssetId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, configStore, cwsAccountClient, projectProxy, deviceProxy);
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
       var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
       _log.LogResult(nameof(GetAssetId), request: request, result: result);

@@ -106,7 +106,7 @@ namespace VSS.MasterData.ProjectTests.Executors
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(createProjectResponseModel);
       
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v2/projects");

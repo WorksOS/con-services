@@ -30,8 +30,14 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     public override bool RequireCustomerUid(HttpContext context)
     {
       var isApplicationContext = context.Request.Path.Value.ToLower().Contains("applicationcontext");
-
       var containsCustomerUid = context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid");
+
+      if (context.Request.Path.Value.ToLower().Contains("applicationcontext") && !containsCustomerUid)
+      {
+        log.LogDebug($"{nameof(RequireCustomerUid)} TFA ApplicationContext request doesn't require customerUid. path: {context.Request.Path}");
+        return false;
+      }
+
       if (isApplicationContext && context.Request.Method == "GET" && !containsCustomerUid)
       {
         log.LogDebug($"{nameof(RequireCustomerUid)} ApplicationContext request doesn't require customerUid. path: {context.Request.Path}");

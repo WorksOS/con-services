@@ -51,6 +51,53 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       });
     }
 
+    [Fact]
+    public void GetProjectConfigurations()
+    {
+      var projectUid = new Guid("560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97");
+      var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
+      {
+        ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>()
+        {
+          new ProjectConfigurationFileResponseModel()
+          {
+            FileName = "MyTestFilename.dc",
+            FileDownloadLink = "http//whatever",
+            FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
+            CreatedAt = DateTime.UtcNow.ToString(),
+            UpdatedAt = DateTime.UtcNow.ToString(),
+            Size = "66"
+          },
+          new ProjectConfigurationFileResponseModel()
+          {
+            FileName = "MyTestFilename.avoid.dxf",
+            FileDownloadLink = "http//whateverElse",
+            FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
+            CreatedAt = DateTime.UtcNow.ToString(),
+            UpdatedAt = DateTime.UtcNow.ToString(),
+            Size = "66"
+          }
+        }
+      };
+      string route = $"/projects/{TRNHelper.MakeTRN(projectUid)}/configuration";
+      var expectedUrl = $"{baseUrl}{route}";
+      mockServiceResolution.Setup(m => m.ResolveRemoteServiceEndpoint(
+        It.IsAny<string>(), It.IsAny<ApiType>(), It.IsAny<ApiVersion>(), route, It.IsAny<IList<KeyValuePair<string, string>>>())).Returns(Task.FromResult(expectedUrl));
+
+      MockUtilities.TestRequestSendsCorrectJson("Get a project calibration file", mockWebRequest, null, expectedUrl, HttpMethod.Get, projectConfigurationFileListResponse, async () =>
+      {
+        var client = ServiceProvider.GetRequiredService<ICwsProfileSettingsClient>();
+        var result = await client.GetProjectConfigurations(projectUid);
+
+        Assert.NotNull(result);
+        Assert.Equal(2, projectConfigurationFileListResponse.ProjectConfigurationFiles.Count);
+        Assert.Equal(projectConfigurationFileListResponse.ProjectConfigurationFiles[0].FileName, result.ProjectConfigurationFiles[0].FileName);
+        Assert.Equal(projectConfigurationFileListResponse.ProjectConfigurationFiles[0].FileType, result.ProjectConfigurationFiles[0].FileType);
+        Assert.Equal(projectConfigurationFileListResponse.ProjectConfigurationFiles[1].FileType, result.ProjectConfigurationFiles[1].FileType);
+        return true;
+      });
+    }
+
 
     [Fact]
     public void SaveProjectConfiguration()
