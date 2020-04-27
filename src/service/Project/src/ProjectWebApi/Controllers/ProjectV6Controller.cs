@@ -179,7 +179,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient)
+            cwsProjectClient:CwsProjectClient, cwsDesignClient:CwsDesignClient, 
+            cwsProfileSettingsClient:CwsProfileSettingsClient)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -264,7 +265,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
-            dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient)
+            dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient,
+            cwsDesignClient: CwsDesignClient, cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(project)
       );
 

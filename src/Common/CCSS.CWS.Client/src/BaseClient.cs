@@ -65,6 +65,12 @@ namespace CCSS.CWS.Client
       }
     }
 
+    protected Task UploadData(string uploadUrl, Stream payload,
+      IDictionary<string, string> customHeaders = null) 
+    {
+      return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
+    }
+
     protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,
       IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
     {

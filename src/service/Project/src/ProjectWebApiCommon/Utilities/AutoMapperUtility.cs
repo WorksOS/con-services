@@ -109,14 +109,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
 
           // cws clients
           cfg.CreateMap<CreateProjectEvent, CreateProjectRequestModel>()
-            .ForMember(dest => dest.accountId, opt => opt.MapFrom(src => src.CustomerUID))
-            .ForMember(dest => dest.projectName, opt => opt.MapFrom(src => src.ProjectName))
-            .ForMember(dest => dest.boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.CustomerUID))
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone))
+            .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
             ;
           cfg.CreateMap<UpdateProjectEvent, CreateProjectRequestModel>()
-            .ForMember(dest => dest.accountId, opt => opt.Ignore())
-            .ForMember(dest => dest.projectName, opt => opt.MapFrom(src => src.ProjectName))
-            .ForMember(dest => dest.boundary, opt => opt.Ignore()) // done externally
+            .ForMember(dest => dest.AccountId, opt => opt.Ignore())
+            .ForMember(dest => dest.ProjectName, opt => opt.MapFrom(src => src.ProjectName))
+            .ForMember(dest => dest.Timezone, opt => opt.MapFrom(src => src.ProjectTimezone)) // not sure if we can update timezone
+            .ForMember(dest => dest.Boundary, opt => opt.Ignore()) // done externally
             ;
 
           cfg.CreateMap<AccountResponseModel, CustomerData>()

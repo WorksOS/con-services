@@ -42,9 +42,10 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       var client = ServiceProvider.GetRequiredService<ICwsProjectClient>();
       var createProjectRequestModel = new CreateProjectRequestModel
       {             
-        accountId = stagingCustomerUid,
-        projectName = $"Merino test project {Guid.NewGuid()}",
-        boundary = new ProjectBoundary()
+        AccountId = stagingCustomerUid,
+        ProjectName = $"Merino test project {Guid.NewGuid()}",
+        Timezone = "New Zealand Standard Time",
+        Boundary = new ProjectBoundary()
         {
           type = "POLYGON",
           coordinates = new List<double[,]>() { { new double[,]

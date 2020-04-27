@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -37,6 +38,26 @@ namespace CCSS.CWS.Client
 
       log.LogDebug($"{nameof(CreateFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
       return createFileResponse;
-    }   
+    }
+    
+    /// <summary>
+    /// Creates file metadata in Data Ocean through CWS then uploads file contents.
+    /// </summary>
+    public async Task<CreateFileResponseModel> CreateAndUploadFile(Guid projectUid, CreateFileRequestModel createFileRequest, Stream fileContents, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileRequest {JsonConvert.SerializeObject(createFileRequest)}");
+
+      var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
+      var createFileResponse = await PostData<CreateFileRequestModel, CreateFileResponseModel>($"/projects/{projectTrn}/file", createFileRequest, null, customHeaders);
+
+      //We won't monitor status of upload as calibration/config files are small so should be quick.
+      //And this will be called as part of project creation.
+
+      //TODO: revisit when other project files are uploaded. See Data Ocean client - 3 steps: create file, call upload, monitor upload status.
+      await UploadData(createFileResponse.UploadUrl, fileContents, customHeaders);
+   
+      log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
+      return createFileResponse;
+    }
   }
 }
