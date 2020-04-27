@@ -10,7 +10,7 @@
     public const string PUSH_SERVICE = "push-service";
     public const string TILE_SERVICE = "tile-service";
     public const string TAGFIELAUTH_SERVICE = "tagfileauth-service";
-    public const string DEVICE_SERVICE = "device-service";
+    public const string DEVICE_SERVICE = "project-service"; // currently this is in the project service, once it gets itw own service it will need to change
     public const string TREX_SERVICE_IMMUTABLE = "trex-service-immutable";
     public const string TREX_SERVICE_MUTABLE = "trex-service-mutable";
     public const string TREX_SERVICE_CONNECTEDSITE = "trex-service-connectedsite";

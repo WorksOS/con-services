@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -29,8 +28,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV5TBCController(IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor)
-      : base(configStore)
+    public ProjectV5TBCController(IHttpContextAccessor httpContextAccessor)
     {
       this.httpContextAccessor = httpContextAccessor;
     }

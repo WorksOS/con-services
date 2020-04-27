@@ -22,14 +22,10 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     /// </summary>
     public static DeviceMatchingModel FromDeviceList(IEnumerable<Device> devices)
     {
-      var results = devices.Select(d =>
-      {
-        if (Guid.TryParse(d.DeviceUID, out var g))
-          return new KeyValuePair<Guid, long>(g, d.ShortRaptorAssetID);
-                
-        return new KeyValuePair<Guid, long>(Guid.Empty, d.ShortRaptorAssetID);
-      }).ToList();
-      
+      var results = devices.Select(d => Guid.TryParse(d.DeviceUID, out var g)
+                                     ? new KeyValuePair<Guid, long>(g, d.ShortRaptorAssetID)
+                                     : new KeyValuePair<Guid, long>(Guid.Empty, d.ShortRaptorAssetID)).ToList();
+
       return new DeviceMatchingModel
       {
         deviceIdentifiers = results

@@ -93,8 +93,8 @@ mutableData:
     className: aws-efs
     
   environment:
-    enableTfa: false
-    enableTagFileArchiving: false
+    enableTfa: true
+    enableTagFileArchiving: true
     enableTagFileArchivingMetadata: false
     minTagFileLength: 99
     tagfileArchiveFolder: ""

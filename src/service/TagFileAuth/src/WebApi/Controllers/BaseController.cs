@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
@@ -11,10 +13,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   /// </summary>
   public abstract class BaseController : Controller
   {
-    protected readonly IConfigurationStore configStore;
-    protected ICwsAccountClient cwsAccountClient;
-    protected IProjectProxy projectProxy;
-    protected IDeviceProxy deviceProxy;
+    protected readonly IConfigurationStore _configStore;
+    protected ICwsAccountClient _cwsAccountClient;
+    protected IProjectProxy _projectProxy;
+    protected IDeviceProxy _deviceProxy;
+    protected IDictionary<string, string> _customHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.
@@ -22,10 +25,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     protected BaseController(ILoggerFactory logger, IConfigurationStore configStore,
       ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
     {
-      this.configStore = configStore;
-      this.cwsAccountClient = cwsAccountClient;
-      this.projectProxy = projectProxy;
-      this.deviceProxy = deviceProxy;
+      _configStore = configStore;
+      _cwsAccountClient = cwsAccountClient;
+      _projectProxy = projectProxy;
+      _deviceProxy = deviceProxy;
     }
   }
 }

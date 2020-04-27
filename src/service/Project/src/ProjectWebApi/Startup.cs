@@ -1,5 +1,4 @@
 ﻿using System;
-using CCSS.CWS.Client;
 using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,10 +27,8 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
@@ -105,10 +102,9 @@ namespace VSS.MasterData.Project.WebAPI
         });
       });
 
-      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); 
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
-      services.AddTransient<ImportedFileUpdateService>(); 
-      
+      services.AddTransient<ImportedFileUpdateService>();
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
@@ -120,7 +116,7 @@ namespace VSS.MasterData.Project.WebAPI
       // See https://stackoverflow.com/questions/31389781/read-request-body-twice
       app.Use(next => context =>
       {
-        HttpRequestRewindExtensions.EnableBuffering(context.Request);
+        context.Request.EnableBuffering();
         return next(context);
       });
       serviceProvider = ServiceProvider;
@@ -128,15 +124,11 @@ namespace VSS.MasterData.Project.WebAPI
 
     private static ITransferProxy TransferProxyMethod(TransferProxyType type)
     {
-      switch (type)
+      return type switch
       {
-        case TransferProxyType.DesignImport:
-          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
-            "AWS_DESIGNIMPORT_BUCKET_NAME");
-        default:
-          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
-            "AWS_BUCKET_NAME");
-      }
+        TransferProxyType.DesignImport => new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"),
+        _ => new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")
+      };
     }
   }
 }

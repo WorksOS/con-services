@@ -40,6 +40,35 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(projectConfigurationFileResponseModel);
     }
 
+    public Task<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(Guid projectUid, IDictionary<string, string> customHeaders = null)
+    {
+      var projectConfigurationFileListResponse = new ProjectConfigurationFileListResponseModel
+      {
+        ProjectConfigurationFiles = new List<ProjectConfigurationFileResponseModel>()
+        {
+          new ProjectConfigurationFileResponseModel()
+          {
+            FileName = "MyTestFilename.dc",
+            FileDownloadLink = "http//whatever",
+            FileType = ProjectConfigurationFileType.CALIBRATION.ToString(),
+            CreatedAt = DateTime.UtcNow.ToString(),
+            UpdatedAt = DateTime.UtcNow.ToString(),
+            Size = "66"
+          },
+          new ProjectConfigurationFileResponseModel()
+          {
+            FileName = "MyTestFilename.avoid.dxf",
+            FileDownloadLink = "http//whateverElse",
+            FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
+            CreatedAt = DateTime.UtcNow.ToString(),
+            UpdatedAt = DateTime.UtcNow.ToString(),
+            Size = "66"
+          }
+        }
+      };
+      return Task.FromResult(projectConfigurationFileListResponse);
+    }
+
     public Task<ProjectConfigurationFileResponseModel> SaveProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType,
       ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IDictionary<string, string> customHeaders = null)
     {

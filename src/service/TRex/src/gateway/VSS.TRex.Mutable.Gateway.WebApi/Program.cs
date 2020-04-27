@@ -15,7 +15,8 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
       {
         typeof(VSS.TRex.TAGFiles.Executors.SubmitTAGFileExecutor),
         typeof(VSS.TRex.TAGFiles.GridFabric.NodeFilters.TAGProcessorRoleBasedNodeFilter),
-        typeof (VSS.TRex.TAGFiles.GridFabric.ComputeFuncs.SubmitTAGFileComputeFunc)
+        typeof(VSS.TRex.SiteModelChangeMaps.GridFabric.NodeFilters.SiteModelChangeProcessorRoleBasedNodeFilter),
+        typeof(VSS.TRex.TAGFiles.GridFabric.ComputeFuncs.SubmitTAGFileComputeFunc)
       };
 
       foreach (var asmType in AssemblyDependencies)

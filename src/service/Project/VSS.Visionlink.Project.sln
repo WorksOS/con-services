@@ -126,6 +126,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CCSS.CWS.Client", "..\..\Common\CCSS.CWS.Client\src\CCSS.CWS.Client.csproj", "{2FB56844-5536-4239-B382-9720EACC8E88}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockProjectWebApi", "..\MockProjectWebApi\MockProjectWebApi.csproj", "{D3273FE2-6FD3-47D6-A1C9-ADA821C2FDC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -308,6 +310,10 @@ Global
 		{2FB56844-5536-4239-B382-9720EACC8E88}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FB56844-5536-4239-B382-9720EACC8E88}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FB56844-5536-4239-B382-9720EACC8E88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3273FE2-6FD3-47D6-A1C9-ADA821C2FDC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3273FE2-6FD3-47D6-A1C9-ADA821C2FDC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3273FE2-6FD3-47D6-A1C9-ADA821C2FDC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3273FE2-6FD3-47D6-A1C9-ADA821C2FDC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -366,6 +372,7 @@ Global
 		{E92EA91B-FBAD-4AEE-8C92-7DBDF9EF2FD9} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{1FA95274-85C2-4F4C-9973-B798E4870B9B} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 		{2FB56844-5536-4239-B382-9720EACC8E88} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
+		{D3273FE2-6FD3-47D6-A1C9-ADA821C2FDC6} = {B5A1A9D8-19AB-47DD-80AB-1F2F82ED6734}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {25C1559E-35F7-42CA-B265-A63D8D5E412C}

@@ -50,11 +50,12 @@ namespace CCSS.CWS.Client
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
       var createFileResponse = await PostData<CreateFileRequestModel, CreateFileResponseModel>($"/projects/{projectTrn}/file", createFileRequest, null, customHeaders);
 
+      //We won't monitor status of upload as calibration/config files are small so should be quick.
+      //And this will be called as part of project creation.
+
+      //TODO: revisit when other project files are uploaded. See Data Ocean client - 3 steps: create file, call upload, monitor upload status.
       await UploadData(createFileResponse.UploadUrl, fileContents, customHeaders);
-
-     //We won't monitor status of upload as calibration/config files are small so should be quick.
-     //And this will be called as part of project creation.
-
+   
       log.LogDebug($"{nameof(CreateAndUploadFile)}: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
       return createFileResponse;
     }

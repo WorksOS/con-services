@@ -164,7 +164,7 @@ node ('jenkinsslave-pod') {
 			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 
 			//If we aren't running ATs archive test results now, otherwise they will be handled then.
-			if (!runTests) {
+			if (!runTests && !runIntegrationTests) {
 				archiveArtifacts artifacts: "TestResults/UnitTests/**/*.xml, TestResults/TestCoverage/*.xml", fingerprint: true
 			}
 
@@ -174,8 +174,13 @@ node ('jenkinsslave-pod') {
 			} 
 		}
 
-        if (runIntegrationTests)
-	    {
+		//Do not run integration tests if there is no folder in the expected location.
+		def integrationTestsFolderExists = fileExists "./${servicePath}/test/IntegrationTests"
+		if (!integrationTestsFolderExists)
+			runIntegrationTests = false
+
+		if (runIntegrationTests)
+		{
 			// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
 			// the volume to the bare metal host        
 			

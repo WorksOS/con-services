@@ -25,11 +25,11 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
   /// </summary>
   public class ProjectV6DescriptorsSingleResult : ContractExecutionResult
   {
-    private ProjectV6Descriptor _projectV4Descriptor;
+    private ProjectV6Descriptor _projectV6Descriptor;
 
-    public ProjectV6DescriptorsSingleResult(ProjectV6Descriptor projectV4Descriptor)
+    public ProjectV6DescriptorsSingleResult(ProjectV6Descriptor projectV6Descriptor)
     {
-      _projectV4Descriptor = projectV4Descriptor;
+      _projectV6Descriptor = projectV6Descriptor;
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// <value>
     /// The project descriptor.
     /// </value>
-    public ProjectV6Descriptor ProjectDescriptor { get { return _projectV4Descriptor; } set { _projectV4Descriptor = value; } }
+    public ProjectV6Descriptor ProjectDescriptor { get { return _projectV6Descriptor; } set { _projectV6Descriptor = value; } }
   }
 
 

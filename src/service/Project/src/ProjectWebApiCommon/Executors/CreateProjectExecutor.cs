@@ -42,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
         // CCSSSCON-141 what are exceptions/other error
-        var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+        var response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
         if (response != null && !string.IsNullOrEmpty(response.Id))
           createProjectEvent.ProjectUID = new Guid(response.Id);
         else

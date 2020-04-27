@@ -111,7 +111,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           createProjectRequestModel.AccountId = customerUid;
           createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
 
-          var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+          var response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
           if (response != null)
           {
             // CCSSSCON-214 what about exception/other error
@@ -130,14 +130,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           // CCSSSCON-214 what are errors?
           var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
-          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel);          
+          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel, customHeaders);          
         }
         if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
         {
           // CCSSSCON-214 what are errors?
           var boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
-          await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
+          await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary, customHeaders);
         }        
         return updateProjectEvent.ProjectUID.ToString();
       }
