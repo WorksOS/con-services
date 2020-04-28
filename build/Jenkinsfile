@@ -305,6 +305,8 @@ node ('jenkinsslave-pod') {
 	}
 	
 	stage ('Publish results') {
+        echo "currentBuild.result: ${currentBuild.result}"
+
 	    if (currentBuild.result=='SUCCESS') { 
 			sh "docker tag ${container} ${finalImage}"
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
@@ -320,11 +322,12 @@ node ('jenkinsslave-pod') {
 				sh "docker tag ${containerDb} ${dbFinalImage}"
 				sh "docker push ${dbFinalImage}"
 							
-			if (additionalImageTag != "None"){
-				sh "docker tag ${containerDb} ${ecrRepositoryDb}:${additionalImageTag}"
-				sh "docker push ${ecrRepositoryDb}:${additionalImageTag}"
+                if (additionalImageTag != "None"){
+                    sh "docker tag ${containerDb} ${ecrRepositoryDb}:${additionalImageTag}"
+                    sh "docker push ${ecrRepositoryDb}:${additionalImageTag}"
+                }
 			}
-			}
+
 			sh "mv ${servicePath}/deploy ${env.WORKSPACE}"
 			sh "ls -la"
 			archiveArtifacts artifacts: "deploy/**/*.*", fingerprint: true
