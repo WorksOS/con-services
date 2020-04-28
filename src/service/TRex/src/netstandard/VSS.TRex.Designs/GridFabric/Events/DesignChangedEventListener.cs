@@ -9,6 +9,7 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.Common;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Alignments.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.Events
 {
@@ -51,7 +52,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
           }
           else
           {
-            Log.LogError("No IDesignManager instance available from DIContext to send attributes change message to");
+            Log.LogWarning("No IDesignManager instance available from DIContext to send attributes change message to");
             return false;
           }
         }
@@ -65,10 +66,26 @@ namespace VSS.TRex.Designs.GridFabric.Events
           }
           else
           {
-            Log.LogError("No ISurveyedSurfaceManager instance available from DIContext to send attributes change message to");
+            Log.LogWarning("No ISurveyedSurfaceManager instance available from DIContext to send attributes change message to");
             return false;
           }
         }
+        else if (message.FileType == ImportedFileType.Alignment)
+        {
+          var alignment = DIContext.Obtain<IAlignmentManager>();
+          if (alignment != null)
+          {
+            if (message.DesignRemoved)
+              alignment.Remove(message.SiteModelUid, message.DesignUid);
+          }
+          else
+          {
+            // Note! not all listeners maybe interested in the design type removed so only log as warning 
+            Log.LogWarning("No IAlignmentManager instance available from DIContext to send attributes change message to");
+            return false;
+          }
+        }
+
 
       }
       catch (Exception e)

@@ -70,7 +70,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
         if (removedOk)
         {
-          // Broadcast design now removed from cache
+          // Broadcast to listeners that design has changed
           var sender = DIContext.Obtain<IDesignChangedEventSender>();
           sender.DesignStateChanged(DesignNotificationGridMutability.NotifyImmutable, request.ProjectUid, request.DesignUid, request.FileType, designRemoved: true);
         }
