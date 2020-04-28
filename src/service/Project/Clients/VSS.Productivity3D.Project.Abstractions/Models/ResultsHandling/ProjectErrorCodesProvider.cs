@@ -73,7 +73,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Unable to retrieve project settings from repository. Reason: {0} {1}.", 69);
       this.DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
       this.DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
-      //this.DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
+      this.DynamicAddwithOffset("Invalid serialNumber.", 72);
       this.DynamicAddwithOffset("Invalid geofence Types.", 73);
       this.DynamicAddwithOffset("Landfill projects are not supported.", 74);
       this.DynamicAddwithOffset("CreateImportedFile. DxfUnitsType is an unrecognized type.", 75);
@@ -125,7 +125,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Reference surface already exists", 121);
       this.DynamicAddwithOffset("This endpoint does not support importing reference surfaces", 122);
       this.DynamicAddwithOffset("Unable to retrieve existing file for the update", 123);
-
+      this.DynamicAddwithOffset("Device not found in ProfileX", 124);
+      this.DynamicAddwithOffset("Device not found in local storage", 125);
     }
   }
 }

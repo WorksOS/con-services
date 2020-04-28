@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("DeviceType is invalid", 30);
       DynamicAddwithOffset("Manual Import: The Projects account cannot have not have a free device entitlement.", 31);
       DynamicAddwithOffset("Multiple projects found", 32);
-      DynamicAddwithOffset("Unable to identify the EC or RadioSerial in the 3dPM system, and no tccOrgId provided", 33);
+      DynamicAddwithOffset("Unable to locate device by the EC or RadioSerial", 33);
       DynamicAddwithOffset("Failed to get project uid", 34);
       DynamicAddwithOffset("GetProjectUid internal error", 35);
       DynamicAddwithOffset("ProjectUid is present, but invalid", 36);
@@ -53,11 +53,11 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Manual Import: no intersecting projects found", 41);
       DynamicAddwithOffset("Manual Import: project does not intersect location and time provided", 42);
       DynamicAddwithOffset("Manual Import: cannot import to an archived project", 43);
-      DynamicAddwithOffset("unused2", 44);
-      DynamicAddwithOffset("unused3", 45);
+      DynamicAddwithOffset("No projects found at the location provided", 44);
+      DynamicAddwithOffset("Projects found at the location provided, however the device does not have access to it/those", 45);
       DynamicAddwithOffset("Manual Import: internal unhandled path", 46);
-      DynamicAddwithOffset("Auto Import: no assetis identifiable from the request", 47);
-      DynamicAddwithOffset("Auto Import: for this radioSerial, no intersecting projects found", 48);
+      DynamicAddwithOffset("Auto Import: unable to identify the device by this serialNumber", 47);
+      DynamicAddwithOffset("unused", 48);
       DynamicAddwithOffset("More than 1 project meets the location requirements", 49);
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
       DynamicAddwithOffset("Must contain a EC520 serial number", 51);

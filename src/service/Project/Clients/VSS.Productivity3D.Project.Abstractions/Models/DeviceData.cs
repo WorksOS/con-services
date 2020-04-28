@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using VSS.Common.Abstractions.MasterData.Interfaces;
+using VSS.MasterData.Models.Models;
 
 namespace VSS.Productivity3D.Project.Abstractions.Models
 {
   /// <summary>
   ///   Describes C2S2 Device
   /// </summary>
-  public class DeviceData  : IMasterDataModel
+  public class DeviceData  : BaseDataResult, IMasterDataModel
   {
     public string CustomerUID { get; set; }
     public string DeviceUID { get; set; }

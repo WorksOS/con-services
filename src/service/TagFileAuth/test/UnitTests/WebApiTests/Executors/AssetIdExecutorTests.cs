@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
@@ -68,9 +70,9 @@ namespace WebApiTests.Executors
       };
 
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, null)).ReturnsAsync(deviceDataToBeReturned);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceDataToBeReturned);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, null);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.AreEqual(serialNumberExpected, device.SerialNumber);
@@ -81,9 +83,9 @@ namespace WebApiTests.Executors
     public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(string serialNumberRequested)
     {
       var logger = ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, null)).ReturnsAsync((DeviceData)null);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync((DeviceData)null);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, null);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.IsNull(device);

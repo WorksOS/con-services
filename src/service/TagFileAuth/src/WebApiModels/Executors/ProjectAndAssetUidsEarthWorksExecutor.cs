@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -37,7 +37,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         throw new ServiceException(HttpStatusCode.BadRequest,
           GetProjectAndAssetUidsEarthWorksResult.FormatResult(uniqueCode: TagFileAuth.Models.ContractExecutionStatesEnum.SerializationError));
 
-      // a CB will have a RadioSerial, whose suffix defines the type
+      // a CB will have a RadioSerial, whose suffix defines the type.
+      //    however we probably don't need this as cws has a lookup by serialNumber only,
+      //    and due to suffixes, these should be unique over CB/EC
       var device = await dataRepository.GetDevice(request.RadioSerial);
       if (device == null)
         device = await dataRepository.GetDevice(request.Ec520Serial);
@@ -48,17 +50,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     }
 
     /// <summary>
-    /// EarthWorks cut/fill doesn't necessarily REQUIRE a subscription? CCSSSCON-207 how will this work in WorksOS?
+    /// EarthWorks cut/fill doesn't REQUIRE a subscription.
     /// </summary>
     private async Task<GetProjectAndAssetUidsEarthWorksResult> HandleCutFillExport(GetProjectAndAssetUidsEarthWorksRequest request,
       DeviceData device)
     {
-      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude);
+      var errorCode = 0;
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, out errorCode);
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
       if (!potentialProjects.Any())
-        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: 52);
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: errorCode);
 
       if (potentialProjects.Count > 1)
         return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);

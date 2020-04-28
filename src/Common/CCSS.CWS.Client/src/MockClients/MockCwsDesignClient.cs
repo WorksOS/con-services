@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -33,6 +34,20 @@ namespace CCSS.CWS.Client.MockClients
       };
 
       log.LogDebug($"{nameof(CreateFile)} Mock: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
+      return Task.FromResult(createFileResponse);
+    }
+
+    public Task<CreateFileResponseModel> CreateAndUploadFile(Guid projectUid, CreateFileRequestModel createFileRequest, Stream fileContents, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(CreateAndUploadFile)} Mock: createFileRequest {JsonConvert.SerializeObject(createFileRequest)}");
+
+      var createFileResponse = new CreateFileResponseModel
+      {
+        FileSpaceId = Guid.NewGuid().ToString(),
+        UploadUrl = "uploadeurl: FileSpaceId"
+      };
+
+      log.LogDebug($"{nameof(CreateAndUploadFile)} Mock: createFileResponse {JsonConvert.SerializeObject(createFileResponse)}");
       return Task.FromResult(createFileResponse);
     }
   }

@@ -33,10 +33,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public FileImportV5TBCController(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
-      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
-      IRequestFactory requestFactory)
-      : base(configStore, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+    public FileImportV5TBCController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+                                     IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
+                                     IRequestFactory requestFactory)
+      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
     // PUT: api/v5/projects/{id}/importedfiles

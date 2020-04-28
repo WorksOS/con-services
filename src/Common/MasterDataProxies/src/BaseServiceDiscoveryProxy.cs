@@ -27,7 +27,7 @@ namespace VSS.MasterData.Proxies
   /// </summary>
   public abstract class BaseServiceDiscoveryProxy : BaseProxy, IServiceDiscoveryProxy
   {
-    private readonly IWebRequest webRequest;
+    protected readonly IWebRequest webRequest;
     private readonly IServiceResolution serviceResolution;
     private const int DefaultLogMaxchar = 1000;
     protected readonly int logMaxChar = DefaultLogMaxchar;

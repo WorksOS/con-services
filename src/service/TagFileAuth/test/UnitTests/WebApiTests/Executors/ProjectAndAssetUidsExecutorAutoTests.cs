@@ -13,6 +13,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace WebApiTests.Executors
 {
@@ -200,7 +201,7 @@ namespace WebApiTests.Executors
           radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
           ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
           ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3048, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(48)
+          expectedGetProjectAndAssetUidsResult, expectedCode: 3044, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(44)
         );
     }
 
@@ -256,7 +257,7 @@ namespace WebApiTests.Executors
       GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
       )
     {
-      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(radioSerialDevice);
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(radioSerialDevice);
       if (radioSerialDevice != null)
       {
         projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(radioSerialDevice.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, null))
@@ -265,7 +266,7 @@ namespace WebApiTests.Executors
         cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(radioSerialDevice.CustomerUID), null)).ReturnsAsync(radioSerialDeviceLicenseResponseModel);
       }
 
-      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(ec520Device);
+      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(ec520Device);
       if (ec520Device != null)
       {
         projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(ec520Device.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, null))

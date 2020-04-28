@@ -9,6 +9,8 @@ namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
   {
     Task<ProjectConfigurationFileResponseModel> GetProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, IDictionary<string, string> customHeaders = null);
 
+    Task<ProjectConfigurationFileListResponseModel> GetProjectConfigurations(Guid projectUid, IDictionary<string, string> customHeaders = null);
+
     Task<ProjectConfigurationFileResponseModel> SaveProjectConfiguration(Guid projectUid, ProjectConfigurationFileType projectConfigurationFileType, 
       ProjectConfigurationFileRequestModel projectConfigurationFileRequest, IDictionary<string, string> customHeaders = null);
 

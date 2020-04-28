@@ -34,7 +34,7 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(CreateProject)}: createProjectRequest {JsonConvert.SerializeObject(createProjectRequest)}");
 
-      createProjectRequest.accountId = TRNHelper.MakeTRN(createProjectRequest.accountId, TRNHelper.TRN_ACCOUNT);
+      createProjectRequest.AccountId = TRNHelper.MakeTRN(createProjectRequest.AccountId, TRNHelper.TRN_ACCOUNT);
       var createProjectResponseModel = await PostData<CreateProjectRequestModel, CreateProjectResponseModel>($"/projects", createProjectRequest, null, customHeaders);
       createProjectResponseModel.Id = TRNHelper.ExtractGuidAsString(createProjectResponseModel.Id);
 
