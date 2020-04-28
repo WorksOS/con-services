@@ -26,7 +26,7 @@ namespace WebApiTests
       };
     }
 
-  [Fact]
+    [Fact(Skip = "todoMaverick Temporary ignore until we get TFA authenication key generated.")]
     public async System.Threading.Tasks.Task Manual_Sad_ProjectNotFound()
     {
       // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately
@@ -48,7 +48,7 @@ namespace WebApiTests
       ValidateResult(result, expectedGetProjectAndAssetUidsResult, 3038, "Unable to find the Project requested");
     }
 
-    [Fact]
+    [Fact(Skip = "todoMaverick Temporary ignore until we get TFA authenication key generated.")]
     public async System.Threading.Tasks.Task Auto_Sad_DeviceNotFound()
     {
       // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately

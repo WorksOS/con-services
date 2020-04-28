@@ -32,7 +32,7 @@ namespace WebApiTests.Executors
     // CCSSSCON-207 maybe some tests on the 2 device status?
 
 
-    [TestMethod]
+    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -87,7 +87,7 @@ namespace WebApiTests.Executors
       ValidateResult(result, expectedGetProjectAndAssetUidsResult, 0, "success");
     }
 
-    [TestMethod]
+    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
     public async Task TRexExecutor_Auto_Happy_EC520device_WithNoLicense_AndProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -126,7 +126,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod]
+    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
     public async Task TRexExecutor_Auto_Sad_EC520device_WithNoLicense_HasProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -166,7 +166,7 @@ namespace WebApiTests.Executors
     }
 
 
-    [TestMethod]
+    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndNoProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -205,7 +205,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod]
+    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndTooManyProject()
     {
       var projectUid = Guid.NewGuid().ToString();
