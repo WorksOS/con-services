@@ -47,6 +47,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private ITPaaSApplicationAuthentication _authorization;
     private ICwsProjectClient _cwsProjectClient;
     private ICwsDeviceClient _cwsDeviceClient;
+    private ICwsDesignClient _cwsDesignClient;
+    private ICwsProfileSettingsClient _cwsProfileSettingsClient;
     private IConfigurationStore _configurationStore;
 
     protected ILogger<T> Logger => _logger ??= HttpContext.RequestServices.GetService<ILogger<T>>();
@@ -67,6 +69,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected IDataOceanClient DataOceanClient => _dataOceanClient ??= HttpContext.RequestServices.GetService<IDataOceanClient>();
     protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ??= HttpContext.RequestServices.GetService<ICwsProjectClient>();
     protected ICwsDeviceClient CwsDeviceClient => _cwsDeviceClient ??= HttpContext.RequestServices.GetService<ICwsDeviceClient>();
+    protected ICwsDesignClient CwsDesignClient => _cwsDesignClient ??= HttpContext.RequestServices.GetService<ICwsDesignClient>();
+    protected ICwsProfileSettingsClient CwsProfileSettingsClient => _cwsProfileSettingsClient ??= HttpContext.RequestServices.GetService<ICwsProfileSettingsClient>();
     protected ITPaaSApplicationAuthentication Authorization => _authorization ??= HttpContext.RequestServices.GetService<ITPaaSApplicationAuthentication>();
 
     /// <summary>

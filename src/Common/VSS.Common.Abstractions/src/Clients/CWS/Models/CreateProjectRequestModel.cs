@@ -10,19 +10,25 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// Account TRN ID
     /// </summary>
     [JsonProperty("accountId")]
-    public string accountId { get; set; }
+    public string AccountId { get; set; }
 
     /// <summary>
     /// Project name
     /// </summary>
     [JsonProperty("projectName")]
-    public string projectName { get; set; }
+    public string ProjectName { get; set; }
+
+    /// <summary>
+    /// 3dp supports what types?
+    /// </summary>
+    [JsonProperty("timezone")]
+    public string Timezone { get; set; }
 
     /// <summary>
     /// 3dp supports what types?
     /// </summary>
     [JsonProperty("boundary")]
-    public ProjectBoundary boundary { get; set; }
+    public ProjectBoundary Boundary { get; set; }
 
   }
 
