@@ -118,7 +118,7 @@ namespace WebApiTests.Executors
           Name = "otherProject"
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
@@ -139,7 +139,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceData);
       cwsAccountClient.Setup(a => a.GetDeviceLicenses(new Guid(deviceData.CustomerUID), null)).ReturnsAsync(deviceLicenseResponseModel);
       
-      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(new List<ProjectData>());
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(new List<ProjectData>());
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(new List<ProjectData>());
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
@@ -176,7 +176,7 @@ namespace WebApiTests.Executors
           Name = "otherProject"
         }
       };
-      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(new List<ProjectData>());
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
@@ -205,7 +205,7 @@ namespace WebApiTests.Executors
           CustomerUID = _deviceCustomerUid,
           ProjectType = ProjectType.Standard
           }   };
-      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(projects);
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null)).ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
@@ -231,7 +231,7 @@ namespace WebApiTests.Executors
               CustomerUID = _deviceCustomerUid,
               ProjectType = ProjectType.Standard
           } };
-      projectProxy.Setup(d => d.GetIntersectingProjectsApplicationContext(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null))
+      projectProxy.Setup(d => d.GetIntersectingProjects(_deviceCustomerUid, It.IsAny<double>(), It.IsAny<double>(), null, null))
         .ReturnsAsync(projects);
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 

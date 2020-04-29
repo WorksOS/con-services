@@ -15,15 +15,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   {
     protected readonly IConfigurationStore _configStore;
     protected ICwsAccountClient _cwsAccountClient;
-    protected IProjectProxy _projectProxy;
-    protected IDeviceProxy _deviceProxy;
+    protected IProjectInternalProxy _projectProxy;
+    protected IDeviceInternalProxy _deviceProxy;
     protected IDictionary<string, string> _customHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     protected BaseController(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
     {
       _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;

@@ -49,8 +49,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         // CCSSSCON-216 temporary move to real endpoints when available
         .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
 
-        .AddTransient<IProjectProxy, ProjectV6Proxy>()
-        .AddTransient<IDeviceProxy, DeviceV1Proxy>()
+        .AddTransient<IProjectInternalProxy, ProjectInternalV6Proxy>()
+        .AddTransient<IDeviceInternalProxy, DeviceInternalV1Proxy>()
         .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();
       
       services.AddOpenTracing(builder =>

@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public ProjectV4Controller(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
       : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
     {
       _log = logger.CreateLogger<ProjectV4Controller>();

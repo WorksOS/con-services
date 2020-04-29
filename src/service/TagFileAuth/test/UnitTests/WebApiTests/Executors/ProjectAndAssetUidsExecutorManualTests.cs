@@ -399,8 +399,8 @@ namespace WebApiTests.Executors
       GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
   )
     {
-      projectProxy.Setup(p => p.GetProjectApplicationContext(request.ProjectUid, null)).ReturnsAsync(projectForProjectUid);
-      projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, null))
+      projectProxy.Setup(p => p.GetProject(request.ProjectUid, null)).ReturnsAsync(projectForProjectUid);
+      projectProxy.Setup(p => p.GetIntersectingProjects(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, null))
             .ReturnsAsync(projectListForProjectAccountUid);
       cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(projectAccountUid), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(projectDeviceLicenseResponseModel);
 

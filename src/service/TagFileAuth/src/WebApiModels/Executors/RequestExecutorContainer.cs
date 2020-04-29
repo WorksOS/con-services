@@ -28,8 +28,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected IDictionary<string, string> customHeaders;
 
     private ICwsAccountClient cwsAccountClient;
-    private IProjectProxy projectProxy;
-    private IDeviceProxy deviceProxy;
+    private IProjectInternalProxy projectProxy;
+    private IDeviceInternalProxy deviceProxy;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -85,7 +85,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///   Builds this instance for specified executor type.
     /// </summary>
     public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,      
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy,
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       IDictionary<string, string> customHeaders = null) 
       where TExecutor : RequestExecutorContainer, new()
     {

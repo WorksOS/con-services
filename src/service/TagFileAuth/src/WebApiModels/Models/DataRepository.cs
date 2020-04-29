@@ -29,17 +29,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     private readonly ICwsAccountClient _cwsAccountClient;
 
     // We need to use ProjectSvc IProjectProxy as thats where the project data is
-    private readonly IProjectProxy _projectProxy;
+    private readonly IProjectInternalProxy _projectProxy;
 
     // We need to use ProjectSvc IDeviceProxy 
     //    as when we get devices from IDeviceClient, 
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
-    private readonly IDeviceProxy _deviceProxy;
+    private readonly IDeviceInternalProxy _deviceProxy;
 
     private IDictionary<string, string> _customHeaders;
 
     public DataRepository(ILogger logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy,
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       IDictionary<string, string> customHeaders
       )
     {
@@ -81,7 +81,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _projectProxy.GetProjectApplicationContext(shortRaptorProjectId);
+        return await _projectProxy.GetProject(shortRaptorProjectId);
       }
       catch (Exception e)
       {
@@ -97,7 +97,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _projectProxy.GetProjectApplicationContext(projectUid, _customHeaders);
+        return await _projectProxy.GetProject(projectUid, _customHeaders);
       }
       catch (Exception e)
       {
@@ -165,7 +165,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(project.CustomerUID, latitude, longitude, project.ProjectUID));
+        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID));
         // should not be possible to get > 1 as call was limited by the projectUid       
         if (accountProjects == null || accountProjects.Count() != 1)
           return accountProjects;
@@ -207,7 +207,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this customer have which intersect the lat/long?
       try
       {
-        accountProjects = _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude).Result;
+        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude).Result;
         if (!accountProjects.Any())
         {
           errorCode = 44;
