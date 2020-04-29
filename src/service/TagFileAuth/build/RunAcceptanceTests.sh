@@ -11,7 +11,7 @@ sleep 20s
 echo "Run the AcceptanceTests solution"
 cd AcceptanceTests
 #dotnet publish --force VSS.TagFileAuth.Service.AcceptanceTests.sln
-dotnet test VSS.TagFileAuth.Service.AcceptanceTests.sln --logger \"nunit;LogFileName=acceptancetestresults.xml\"  --diag testlog.log
+dotnet test VSS.TagFileAuth.Service.AcceptanceTests.sln --logger \"nunit;LogFileName=acceptancetestresults.xml\" 
 
 echo " "
 echo " All acceptance tests completed"
