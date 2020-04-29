@@ -147,7 +147,7 @@ def main(argv):
     print("Build Result: %s" % (result))
  
     save_artifacts(s, url, build, id)
-    if result != "SUCCESS":
+    if result != "SUCCESS" or result != "UNSTABLE":
         sys.exit(2)
     sys.exit(0)
 

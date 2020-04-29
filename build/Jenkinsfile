@@ -300,7 +300,6 @@ node ('jenkinsslave-pod') {
 					}
 				}		
 			}
-		
 		}
 	}
 	
@@ -308,7 +307,9 @@ node ('jenkinsslave-pod') {
         echo "currentBuild.result: ${currentBuild.result}"
 
 	    if (currentBuild.result=='SUCCESS') { 
+            echo "Tagging Docker image as: ${container} ${finalImage}"
 			sh "docker tag ${container} ${finalImage}"
+
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker push ${finalImage}"
 			
@@ -318,7 +319,7 @@ node ('jenkinsslave-pod') {
 			}
 
 			if (buildDB)
-			{	
+			{
 				sh "docker tag ${containerDb} ${dbFinalImage}"
 				sh "docker push ${dbFinalImage}"
 							
