@@ -60,7 +60,6 @@ namespace VSS.TRex.Mutable.Gateway.WebApi
          .Add(x => x.AddTransient<IDesigns>(factory => new Designs.Storage.Designs()))
          .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
          .Add(x => x.AddSingleton<IDesignChangedEventSender>(new DesignChangedEventSender()))
-         .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.MutableGridName())))
          .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
          .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventSender>(new SiteModelAttributesChangedEventSender()))
          .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.MutableGridName())))

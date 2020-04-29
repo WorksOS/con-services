@@ -16,9 +16,11 @@ namespace VSS.TRex.Designs.GridFabric.Events
       public Guid DesignUid { get; set; } = Guid.Empty;
       public ImportedFileType FileType { get; set; }
       public bool DesignRemoved { get; set; }
+      private const byte VERSION_NUMBER = 1;
 
       public override void ToBinary(IBinaryRawWriter writer)
       {
+        VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
         writer.WriteGuid(SiteModelUid);
         writer.WriteGuid(DesignUid);
         writer.WriteInt((int)FileType);
@@ -27,6 +29,7 @@ namespace VSS.TRex.Designs.GridFabric.Events
 
       public override void FromBinary(IBinaryRawReader reader)
       {
+        VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
         SiteModelUid  = reader.ReadGuid() ?? Guid.Empty;
         DesignUid     = reader.ReadGuid() ?? Guid.Empty;
         FileType      = (ImportedFileType)reader.ReadInt();
