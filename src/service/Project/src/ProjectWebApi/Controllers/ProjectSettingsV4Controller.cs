@@ -38,6 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets the target project settings for a project and user.
     /// </summary>
     [Route("api/v4/projectsettings/{projectUid}")]
+    [Route("api/v6/projectsettings/{projectUid}")]
     [HttpGet]
     public async Task<ProjectSettingsResult> GetProjectSettingsTargets(string projectUid)
     {
@@ -48,6 +49,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets the target settings for a project and user.
     /// </summary>
     [Route("api/v4/projectcolors/{projectUid}")]
+    [Route("api/v6/projectcolors/{projectUid}")]
     [HttpGet]
     public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid)
     {
@@ -59,6 +61,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Upserts the target project settings for a project and user.
     /// </summary>
     [Route("api/v4/projectcolors")]
+    [Route("api/v6/projectcolors")]
     [HttpPut]
     public async Task<ProjectSettingsResult> UpsertProjectColors([FromBody]ProjectSettingsRequest request)
     {
@@ -92,6 +95,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Upserts the target project settings for a project and user.
     /// </summary>
     [Route("api/v4/projectsettings")]
+    [Route("api/v6/projectsettings")]
     [HttpPut]
     public async Task<ProjectSettingsResult> UpsertProjectSettings([FromBody]ProjectSettingsRequest request)
     {
