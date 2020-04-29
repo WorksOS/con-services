@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public AssetV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore, 
-      ICwsAccountClient cwsccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
       : base(logger, configStore, cwsccountClient, projectProxy, deviceProxy)
     {
       _log = logger.CreateLogger<AssetV3RaptorController>();

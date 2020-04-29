@@ -82,63 +82,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
     }
 
-    /// <summary>
-    /// Gets a project in applicationContext i.e. no customer. 
-    /// </summary>
-    /// <returns>A project data</returns>
-    [Route("api/v4/project/applicationcontext/{projectUid}")]
-    [Route("api/v6/project/applicationcontext/{projectUid}")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsSingleResult> GetProjectUidApplicationContextV6(string projectUid)
-    {
-      Logger.LogInformation($"{nameof(GetProjectUidApplicationContextV6)}");
-
-      var project = await ProjectRequestHelper.GetProjectEvenIfArchived(projectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-      return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
-    }
-
-    /// <summary>
-    /// Gets projects which this device has access to, from cws
-    ///    application token i.e. customHeaders will NOT include customerUid
-    ///    get this from localDB now.
-    ///       response to include customerUid
-    /// </summary>
-    [Route("api/v4/project/applicationcontext/shortId/{shortRaptorProjectId}")]
-    [Route("api/v6/project/applicationcontext/shortId/{shortRaptorProjectId}")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
-    {
-      Logger.LogInformation($"{nameof(GetProjectShortIdApplicationContextV6)}");
-
-      var project = await ProjectRequestHelper.GetProject(shortRaptorProjectId, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-      return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
-    }
-
-    /// <summary>
-    /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
-    ///   if projectUid, get it if it overlaps inC:\CCSS\SourceCode\azure_C2S3CON-207\src\service\Project\src\ProjectWebApi\kestrelsettings.json localDB
-    ///    else get overlapping projects in localDB for this CustomerUID
-    /// </summary>
-    /// <returns>project data list</returns>
-    [Route("api/v4/project/applicationcontext/intersecting")]
-    [Route("api/v6/project/applicationcontext/intersecting")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetIntersectingProjectsApplicationContextV6(string customerUid,
-       double latitude, double longitude)
-    {
-      Logger.LogInformation($"{nameof(GetIntersectingProjectsApplicationContextV6)}");
-
-      var projects = await ProjectRequestHelper.GetIntersectingProjects(
-        customerUid, latitude, longitude,
-        Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-      return new ProjectV6DescriptorsListResult
-      {
-        ProjectDescriptors = projects.Select(project =>
-            AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project))
-           .ToImmutableList()
-      };
-    }
-
     // POST: api/project
     /// <summary>
     /// Create Project
@@ -362,6 +305,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ConfigureAwait(false)));
 
     }
-    
   }
 }

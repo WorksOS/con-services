@@ -29,7 +29,8 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
-      var isApplicationContext = context.Request.Path.Value.ToLower().Contains("applicationcontext");
+      var isDeviceInternalControllerContext =  context.Request.Path.Value.ToLower().Contains("internal/v1/device");
+      var isProjectInternalControllerContext = context.Request.Path.Value.ToLower().Contains("internal/v6/project");
       var containsCustomerUid = context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid");
 
       if (context.Request.Path.Value.ToLower().Contains("applicationcontext") && !containsCustomerUid)
@@ -38,13 +39,14 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
         return false;
       }
 
-      if (isApplicationContext && context.Request.Method == "GET" && !containsCustomerUid)
+      if ((isDeviceInternalControllerContext || isProjectInternalControllerContext)
+          && context.Request.Method == "GET" && !containsCustomerUid)
       {
         log.LogDebug($"{nameof(RequireCustomerUid)} ApplicationContext request doesn't require customerUid. path: {context.Request.Path}");
         return false;
       }
 
       return true;
-    } 
+    }
   }
 }

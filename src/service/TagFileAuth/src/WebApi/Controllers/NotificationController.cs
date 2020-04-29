@@ -26,7 +26,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public NotificationController(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
       : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
     {
       log = logger.CreateLogger<NotificationController>();
