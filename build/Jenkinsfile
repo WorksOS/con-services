@@ -306,7 +306,7 @@ node ('jenkinsslave-pod') {
 	stage ('Publish results') {
         echo "currentBuild.result: ${currentBuild.result}"
 
-	    if (currentBuild.result=='SUCCESS') { 
+	    if (currentBuild.result=='SUCCESS' || currentBuild.result == 'UNSTABLE') { 
             echo "Tagging Docker image as: ${container} ${finalImage}"
 			sh "docker tag ${container} ${finalImage}"
 
