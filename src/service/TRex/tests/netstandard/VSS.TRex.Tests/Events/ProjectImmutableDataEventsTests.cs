@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using FluentAssertions;
+using VSS.MasterData.Models.Models;
+using VSS.TRex.Common.Types;
 using VSS.TRex.DI;
 using VSS.TRex.Events;
 using VSS.TRex.Events.Interfaces;
@@ -23,7 +26,7 @@ namespace VSS.TRex.Tests.Events
     public void Test_ProjectImmutableSiteModelTest()
     {
       var sourceSiteModel = new SiteModel(Guid.NewGuid(), false);
-      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(sourceSiteModel.PrimaryStorageProxy);  
+      var result = sourceSiteModel.SaveToPersistentStoreForTAGFileIngest(sourceSiteModel.PrimaryStorageProxy);
       Assert.True(result, "unable to save SiteModel to Persistent store");
 
       var targetSiteModel = new SiteModel(sourceSiteModel.ID, false);
@@ -62,14 +65,14 @@ namespace VSS.TRex.Tests.Events
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-60), 0);
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-30), 1);
       Assert.True(2 == events.MachineDesignNameIDStateEvents.Count(), $"List contains {events.MachineDesignNameIDStateEvents.Count()} MachineDesignName events, instead of 2");
-      
+
       var mutableStream = events.MachineDesignNameIDStateEvents.GetMutableStream();
       var targetEventList = Deserialize(mutableStream);
       Assert.Equal(2, targetEventList.Count());
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out DateTime dateTime, out int state);
       Assert.Equal(2, targetEventList.Count());
-      var evt = ((ProductionEvents<int>)targetEventList).Events[0];
+      var evt = ((ProductionEvents<int>) targetEventList).Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
 
@@ -78,11 +81,11 @@ namespace VSS.TRex.Tests.Events
       Assert.Equal(2, targetEventList.Count());
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out dateTime, out state);
-      evt = ((ProductionEvents<int>)targetEventList).Events[0];
+      evt = ((ProductionEvents<int>) targetEventList).Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
     }
-    
+
     [Fact]
     public void Test_ProjectImmutableDataEventsTests_Duplicates()
     {
@@ -102,7 +105,7 @@ namespace VSS.TRex.Tests.Events
       Assert.Equal(3, targetEventList.Count());
 
       events.MachineDesignNameIDStateEvents.GetStateAtIndex(0, out DateTime dateTime, out int state);
-      var evt = ((ProductionEvents<int>)targetEventList).Events[0];
+      var evt = ((ProductionEvents<int>) targetEventList).Events[0];
       Assert.Equal(state, evt.State);
       Assert.Equal(dateTime, evt.Date);
 
@@ -117,13 +120,13 @@ namespace VSS.TRex.Tests.Events
     }
 
     [Fact]
-    public void Test_ProjectImmutableDataEventsTests_SaveAndLoad()
+    public void Test_ProjectImmutableDataEventsTests_MachineDesignNameIDStateEvents_SaveAndLoad()
     {
       var siteModel = new SiteModel(Guid.Empty, false);
       var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
 
       DateTime referenceDate = DateTime.UtcNow;
-      
+
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-60), 0);
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-30), 1);
       events.MachineDesignNameIDStateEvents.PutValueAtDate(referenceDate.AddMinutes(-29), 1);
@@ -142,6 +145,159 @@ namespace VSS.TRex.Tests.Events
 
       resultantEvents.LoadFromStore(storageProxy);
       Assert.Equal(3, resultantEvents.Count());
+    }
+
+    public void Test_Events_Serialization<T>(Func<ProductionEventLists, IProductionEvents<T>> eventList, T evt1, T evt2)
+    {
+      var siteModel = new SiteModel(Guid.Empty, false);
+      var events = new ProductionEventLists(siteModel, MachineConsts.kNullInternalSiteModelMachineIndex);
+
+      var referenceDate = DateTime.UtcNow;
+
+      eventList(events).PutValueAtDate(referenceDate.AddMinutes(-60), evt1);
+      eventList(events).PutValueAtDate(referenceDate.AddMinutes(-30), evt2);
+
+      eventList(events).Count().Should().Be(2);
+
+      var storageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+      storageProxy.SetImmutableStorageProxy(new StorageProxy_Ignite_Transactional(StorageMutability.Immutable));
+      events.SaveMachineEventsToPersistentStore(storageProxy);
+      var resultantEvents = eventList(events); // events.GetEventList(ProductionEventType.GPSAccuracyChange);
+      resultantEvents.Count().Should().Be(2);
+
+      resultantEvents.LoadFromStore(storageProxy.ImmutableProxy);
+      resultantEvents.Count().Should().Be(2);
+
+      ((ProductionEvents<T>) resultantEvents).Events[0].State.Should().BeEquivalentTo(evt1);
+      ((ProductionEvents<T>) resultantEvents).Events[1].State.Should().BeEquivalentTo(evt2);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_GPSAccuracy_Serialization()
+    {
+      Test_Events_Serialization<GPSAccuracyAndTolerance>(events => events.GPSAccuracyAndToleranceStateEvents,
+        new GPSAccuracyAndTolerance(GPSAccuracy.Coarse, 50),
+        new GPSAccuracyAndTolerance(GPSAccuracy.Fine, 30));
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_TargetCCV_Serialization()
+    {
+      Test_Events_Serialization<short>(events => events.TargetCCVStateEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_TargetPassCount_Serialization()
+    {
+      Test_Events_Serialization<ushort>(events => events.TargetPassCountStateEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_TargetLiftThickness_Serialization()
+    {
+      Test_Events_Serialization<float>(events => events.TargetLiftThicknessStateEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_GPSModeChange_Serialization()
+    {
+      Test_Events_Serialization<GPSMode>(events => events.GPSModeStateEvents, GPSMode.Fixed, GPSMode.Float);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_VibrationStateChange_Serialization()
+    {
+      Test_Events_Serialization<VibrationState>(events => events.VibrationStateEvents, VibrationState.Off, VibrationState.On);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_AutoVibrationStateChange_Serialization()
+    {
+      Test_Events_Serialization<AutoVibrationState>(events => events.AutoVibrationStateEvents, AutoVibrationState.Off, AutoVibrationState.Auto);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_MachineGearChange_Serialization()
+    {
+      Test_Events_Serialization<MachineGear>(events => events.MachineGearStateEvents, MachineGear.Forward2, MachineGear.Neutral);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_MachineAutomaticsChange_Serialization()
+    {
+      Test_Events_Serialization<AutomaticsType>(events => events.MachineAutomaticsStateEvents, AutomaticsType.Automatics, AutomaticsType.Manual);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_MachineRMVJumpValueChange_Serialization()
+    {
+      Test_Events_Serialization<short>(events => events.RMVJumpThresholdEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_ICFlagsChange_Serialization()
+    {
+      Test_Events_Serialization<byte>(events => events.ICFlagsStateEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_ElevationMappingModeStateChange_Serialization()
+    {
+      Test_Events_Serialization<ElevationMappingMode>(events => events.ElevationMappingModeStateEvents, ElevationMappingMode.LatestElevation, ElevationMappingMode.MinimumElevation);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_PositioningTech_Serialization()
+    {
+      Test_Events_Serialization<PositioningTech>(events => events.PositioningTechStateEvents, PositioningTech.GPS, PositioningTech.UTS);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_TempWarningLevelMinChange_Serialization()
+    {
+      Test_Events_Serialization<ushort>(events => events.TargetMinMaterialTemperature, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_TempWarningLevelMaxChange_Serialization()
+    {
+      Test_Events_Serialization<ushort>(events => events.TargetMaxMaterialTemperature, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_TargetMDP_Serialization()
+    {
+      Test_Events_Serialization<short>(events => events.TargetMDPStateEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_LayerID_Serialization()
+    {
+      Test_Events_Serialization<ushort>(events => events.LayerIDStateEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_DesignOverride_Serialization()
+    {
+      Test_Events_Serialization<OverrideEvent<int>>(events => events.DesignOverrideEvents, new OverrideEvent<int>(DateTime.Now, 100), new OverrideEvent<int>(DateTime.Now.AddMinutes(1), 200));
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_LayerOverride_Serialization()
+    {
+      Test_Events_Serialization<OverrideEvent<ushort>>(events => events.LayerOverrideEvents, new OverrideEvent<ushort>(DateTime.Now, 100), new OverrideEvent<ushort>(DateTime.Now.AddMinutes(1), 200));
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_TargetCCA_Serialization()
+    {
+      Test_Events_Serialization<byte>(events => events.TargetCCAStateEvents, 100, 200);
+    }
+
+    [Fact]
+    public void Test_ProjectImmutableDataEventsTests_DesignChange_Serialization()
+    {
+      Test_Events_Serialization<int>(events => events.MachineDesignNameIDStateEvents, 100, 200);
     }
 
     [Fact]

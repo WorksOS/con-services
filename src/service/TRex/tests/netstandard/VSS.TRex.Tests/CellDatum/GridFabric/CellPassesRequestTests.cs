@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -18,6 +19,7 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
+using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -61,6 +63,7 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
       siteModel.MachinesTargetValues[bulldozerMachineIndex].VibrationStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, VibrationState.On);
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].GPSAccuracyAndToleranceStateEvents.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, new GPSAccuracyAndTolerance(GPSAccuracy.Fine, 20));
 
       var cellPasses = Enumerable.Range(1, count).Select(x =>
         new CellPass
@@ -136,6 +139,9 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         cellPass.Height.Should().Be(expectedHeight);
         cellPass.MachineSpeed.Should().Be(expectedMachineSpeed);
         cellPass.LastPassValidMDP.Should().Be(expectedMdp);
+
+        cellPass.GPSAccuracy.Should().Be(GPSAccuracy.Fine);
+        cellPass.GPSTolerance.Should().Be(20);
       }
     }
 
@@ -173,6 +179,46 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
         cellPass.FilteredPass.Height.Should().Be(expectedHeight);
         cellPass.FilteredPass.Ccv.Should().Be(expectedCcv);
         cellPass.FilteredPass.Mdp.Should().Be(expectedMdp);
+      }
+    }
+
+    [Fact]
+    public async Task Test_CellPassesRequest_ApplicationService_ExecuteData()
+    {
+      const int expectedCount = 20;
+      AddApplicationGridRouting();
+      AddClusterComputeGridRouting();
+
+      var baseTime = DateTime.UtcNow;
+      var siteModel = BuildTestSiteModel(baseTime, count: expectedCount);
+
+      var request = new CellPassesRequest_ApplicationService();
+
+      var arg = new CellPassesRequestArgument_ApplicationService(siteModel.ID, true, new XYZ(0.1, 0.1, 0), new FilterSet(new CombinedFilter()));
+      var response = await request.ExecuteAsync(arg);
+
+      response.Should().NotBeNull();
+      response.ReturnCode.Should().Be(CellPassesReturnCode.DataFound);
+      response.CellPasses.Count.Should().Be(expectedCount);
+
+      for (var idx = 0; idx < expectedCount; idx++)
+      {
+        var mockModifier = idx + 1;
+        var expectedTime = baseTime.AddMinutes(mockModifier);
+        var expectedHeight = 1.0f + mockModifier * 0.5f;
+        var expectedCcv = (short)(10 + 10 * mockModifier);
+        var expectedMachineSpeed = (ushort)(650 + mockModifier);
+        var expectedMdp = (short)(20 + 20 * mockModifier);
+
+        var cellPass = response.CellPasses[idx];
+        cellPass.LastPassValidCCV.Should().Be(expectedCcv);
+        cellPass.LastPassTime.Should().Be(expectedTime);
+        cellPass.Height.Should().Be(expectedHeight);
+        cellPass.MachineSpeed.Should().Be(expectedMachineSpeed);
+        cellPass.LastPassValidMDP.Should().Be(expectedMdp);
+
+        cellPass.GPSAccuracy.Should().Be(GPSAccuracy.Fine);
+        cellPass.GPSTolerance.Should().Be(20);
       }
     }
   }
