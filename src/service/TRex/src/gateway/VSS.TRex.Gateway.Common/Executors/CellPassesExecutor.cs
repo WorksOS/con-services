@@ -61,7 +61,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       var cellPasses = new List<CellPassesV2Result.FilteredPassData>();
       foreach (var cellPass in response.CellPasses)
+      {
         cellPasses.Add(ConvertCellPass(cellPass));
+      }
 
       var layer = new CellPassesV2Result.ProfileLayer
       {
@@ -80,9 +82,9 @@ namespace VSS.TRex.Gateway.Common.Executors
 
     private CellPassesV2Result.FilteredPassData ConvertCellPass(ClientCellProfileLeafSubgridRecord cellPass)
     {
-      var result = new CellPassesV2Result.FilteredPassData()
+      var result = new CellPassesV2Result.FilteredPassData
       {
-        FilteredPass = new CellPassesV2Result.CellPassValue()
+        FilteredPass = new CellPassesV2Result.CellPassValue
         {
           Time = cellPass.LastPassTime,
           Amplitude = cellPass.LastPassValidAmp,
@@ -98,7 +100,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           RadioLatency = byte.MaxValue, // Not present in cell pass
           
         },
-        TargetsValue = new CellPassesV2Result.CellTargetsValue()
+        TargetsValue = new CellPassesV2Result.CellTargetsValue
         {
           TargetCcv = cellPass.TargetCCV,
           TargetMdp = cellPass.TargetMDP,
@@ -107,7 +109,7 @@ namespace VSS.TRex.Gateway.Common.Executors
           TempWarningLevelMax = CellPassConsts.MaxMaterialTempValue, //Not present in cell pass
           TempWarningLevelMin = CellPassConsts.MinMaterialTempValue//Not present in cell pass
         },
-        EventsValue = new CellPassesV2Result.CellEventsValue()
+        EventsValue = new CellPassesV2Result.CellEventsValue
         {
           EventAutoVibrationState = AutoStateType.Unknown, // Not present in cell pass
           EventDesignNameId = cellPass.EventDesignNameID,
@@ -146,7 +148,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         case VibrationState.Off: return VibrationStateType.Off;
         case VibrationState.On: return VibrationStateType.On;
         case VibrationState.Invalid: return VibrationStateType.Invalid;
-        default: throw new ArgumentException($"Unknown TICVibrationState type: {cellPassEventVibrationState}");
+        default: throw new ArgumentException($"Unknown VibrationState type: {cellPassEventVibrationState}");
       }
     }
 
