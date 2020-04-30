@@ -45,7 +45,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var deviceDataResult = await WithServiceExceptionTryExecuteAsync(() =>
         RequestExecutorContainerFactory
           .Build<GetDeviceBySerialExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            customerUid, userId, null, customHeaders, 
+            headers: customHeaders, 
             deviceRepo: DeviceRepo, cwsDeviceClient: CwsDeviceClient)
           .ProcessAsync(deviceSerial)) as DeviceDataSingleResult;
 

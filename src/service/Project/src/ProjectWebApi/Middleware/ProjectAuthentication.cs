@@ -27,26 +27,19 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     /// calls coming from e.g. TFA which don't have a user/customer context
     ///    but instead use a TPaaS application context
     /// </summary>
-    public override bool RequireCustomerUid(HttpContext context)
+    public override bool InternalConnection(HttpContext context)
     {
       var isDeviceInternalControllerContext =  context.Request.Path.Value.ToLower().Contains("internal/v1/device");
       var isProjectInternalControllerContext = context.Request.Path.Value.ToLower().Contains("internal/v6/project");
-      var containsCustomerUid = context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid");
-
-      if (context.Request.Path.Value.ToLower().Contains("applicationcontext") && !containsCustomerUid)
-      {
-        log.LogDebug($"{nameof(RequireCustomerUid)} TFA ApplicationContext request doesn't require customerUid. path: {context.Request.Path}");
-        return false;
-      }
-
+      
       if ((isDeviceInternalControllerContext || isProjectInternalControllerContext)
-          && context.Request.Method == "GET" && !containsCustomerUid)
+          && context.Request.Method == "GET")
       {
-        log.LogDebug($"{nameof(RequireCustomerUid)} ApplicationContext request doesn't require customerUid. path: {context.Request.Path}");
-        return false;
+        log.LogDebug($"{nameof(InternalConnection)} Internal connection path: {context.Request.Path}");
+        return true;
       }
 
-      return true;
+      return false;
     }
   }
 }

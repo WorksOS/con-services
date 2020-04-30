@@ -11,6 +11,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Serilog.Extensions;
+using VSS.WebApi.Common;
 
 namespace WebApiTests.Executors
 {
@@ -23,6 +24,7 @@ namespace WebApiTests.Executors
     protected Mock<IProjectInternalProxy> projectProxy;
     protected Mock<ICwsAccountClient> cwsAccountClient;
     protected Mock<IDeviceInternalProxy> deviceProxy;
+    protected Mock<ITPaaSApplicationAuthentication> authorizationProxy;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
     [TestInitialize]
@@ -42,6 +44,7 @@ namespace WebApiTests.Executors
       projectProxy = new Mock<IProjectInternalProxy>();
       cwsAccountClient = new Mock<ICwsAccountClient>();
       deviceProxy = new Mock<IDeviceInternalProxy>();
+      authorizationProxy = new Mock<ITPaaSApplicationAuthentication>();
     }
   
   }

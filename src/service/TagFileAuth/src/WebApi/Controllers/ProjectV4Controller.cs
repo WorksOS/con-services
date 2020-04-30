@@ -10,6 +10,7 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -24,8 +25,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public ProjectV4Controller(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
-      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+        ITPaaSApplicationAuthentication authorization)
+      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization)
     {
       _log = logger.CreateLogger<ProjectV4Controller>();
     }
@@ -70,14 +72,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///           49 "More than 1 project meets the location requirements"
     ///            
     /// </returns>
-    [Route("api/v4/project/getUidsEarthWorks")]
+    [Route("internal/v4/project/getUidsEarthWorks")]
+    [Route("api/v4/project/getUidsEarthWorks")]  // todoJeannie temp during changeover to internal proxy
     [HttpPost]
     public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndDeviceUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {
       _log.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
       _log.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
@@ -129,7 +132,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///            49 "More than 1 project meets the location requirements"
     ///     
     /// </returns>
-    [Route("api/v4/project/getUids")]
+    [Route("internal/v4/project/getUids")]
+    [Route("api/v4/project/getUids")] // todoJeannie temp during changeover to internal proxy
     [HttpPost]
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndDeviceUids(
       [FromBody]GetProjectAndAssetUidsRequest request,
@@ -138,7 +142,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;

@@ -57,9 +57,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         return GetProjectAndAssetUidsResult.FormatResult(id.ProjectUid.ToString(), id.AssetUid.ToString());
       }
 
-      // todoMaverick temporarily get outta town if not in map
-      return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 33);
-
       ProjectData project = null;
 
       // manualImport, the project must be there and have deviceLicenses

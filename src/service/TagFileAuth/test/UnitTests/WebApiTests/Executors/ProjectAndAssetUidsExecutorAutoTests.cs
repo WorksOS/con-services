@@ -32,7 +32,7 @@ namespace WebApiTests.Executors
     // CCSSSCON-207 maybe some tests on the 2 device status?
 
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -79,7 +79,7 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       executor.CustomRadioSerialMapper = ServiceProvider.GetService<ICustomRadioSerialProjectMap>();
 
       var result = await executor.ProcessAsync(getProjectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
@@ -87,7 +87,7 @@ namespace WebApiTests.Executors
       ValidateResult(result, expectedGetProjectAndAssetUidsResult, 0, "success");
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Auto_Happy_EC520device_WithNoLicense_AndProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -126,7 +126,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Auto_Sad_EC520device_WithNoLicense_HasProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -166,7 +166,7 @@ namespace WebApiTests.Executors
     }
 
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndNoProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -205,7 +205,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndTooManyProject()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -278,7 +278,7 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       executor.CustomRadioSerialMapper = customRadioSerialMapper;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;

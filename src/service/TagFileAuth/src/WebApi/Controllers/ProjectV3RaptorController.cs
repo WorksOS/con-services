@@ -10,6 +10,7 @@ using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -24,8 +25,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor 
     /// </summary>
     public ProjectV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
-      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      ITPaaSApplicationAuthentication authorization)
+      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization)
     {
       log = logger.CreateLogger<ProjectV3RaptorController>();
     }
@@ -38,14 +40,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <returns>
     /// The shortRaptorProjectId if the device is inside a project otherwise -1.
     /// </returns>
-    [Route("api/v3/project/getId")]
+    [Route("api/v3/project/getId")]  // for Raptor, soon obsolete.
     [HttpPost]
     public async Task<GetProjectIdResult> GetProjectId([FromBody]GetProjectIdRequest request)
     {
       log.LogDebug($"{nameof(GetProjectId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
       var result = await executor.ProcessAsync(request) as GetProjectIdResult;
 
       log.LogResult(nameof(GetProjectId), request, result);      
@@ -59,14 +61,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <returns>
     /// The project boundary as a list of WGS84 lat/lng points in radians.
     /// </returns>
-    [Route("api/v3/project/getBoundary")]
+    [Route("api/v3/project/getBoundary")]  // for Raptor, soon obsolete.
     [HttpPost]
     public async Task<GetProjectBoundaryAtDateResult> PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
     {
       log.LogDebug($"{nameof(PostProjectBoundary)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
       var result = await executor.ProcessAsync(request) as GetProjectBoundaryAtDateResult;
 
       log.LogResult(nameof(PostProjectBoundary), request, result);
@@ -80,14 +82,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <returns>
     /// A list of  project boundaries, each boundary is a list of WGS84 lat/lng points in radians.
     /// </returns>
-    [Route("api/v3/project/getBoundaries")]
+    [Route("api/v3/project/getBoundaries")]  // for Raptor, soon obsolete.
     [HttpPost]
     public async Task<GetProjectBoundariesAtDateResult> PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
     {
       log.LogDebug($"{nameof(PostProjectBoundaries)}: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
       var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
 
       log.LogResult(nameof(PostProjectBoundaries), request, result);
