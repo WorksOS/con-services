@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -17,18 +16,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     protected ICwsAccountClient _cwsAccountClient;
     protected IProjectInternalProxy _projectProxy;
     protected IDeviceInternalProxy _deviceProxy;
-    protected IDictionary<string, string> _customHeaders => Request.Headers.GetCustomHeaders();
+    protected ITPaaSApplicationAuthentication _authorization;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     protected BaseController(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      ITPaaSApplicationAuthentication authorization)
     {
       _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
+      _authorization = authorization;
     }
   }
 }

@@ -8,8 +8,8 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
-using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
@@ -24,8 +24,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// Default constructor.
     /// </summary>
     public AssetV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore, 
-      ICwsAccountClient cwsccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy)
-      : base(logger, configStore, cwsccountClient, projectProxy, deviceProxy)
+      ICwsAccountClient cwsccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      ITPaaSApplicationAuthentication authorization)
+      : base(logger, configStore, cwsccountClient, projectProxy, deviceProxy, authorization)
     {
       _log = logger.CreateLogger<AssetV3RaptorController>();
     }
@@ -43,14 +44,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <returns>shortRaptorAssetId and/or serviceType and True for success, 
     ///          shortRaptorAssetId==-1, serviceType = 0 and False for failure</returns>
     /// <executor>AssetIdExecutor</executor>
-    [Route("api/v3/asset/getId")]
+    [Route("api/v3/asset/getId")]  // for Raptor, soon obsolete.
     [HttpPost]
     public async Task<GetAssetIdResult> GetAssetId([FromBody] GetAssetIdRequest request)
     {
       _log.LogDebug($"{nameof(GetAssetId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
       var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
       _log.LogResult(nameof(GetAssetId), request: request, result: result);

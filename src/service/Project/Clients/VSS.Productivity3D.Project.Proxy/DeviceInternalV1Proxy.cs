@@ -40,7 +40,7 @@ namespace VSS.Productivity3D.Project.Proxy
     public async Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null)
     {
       // CCSSSCON-115 at this stage we may not need to query also by device type. Question with Sankari re options
-      // called by TFA AssetIdExecutor, projectUidexe
+      // called by TFA AssetIdExecutor, projectUidExecutor
       // in ProjectSvc.DeviceV1Controller GetDevice
       // a) retrieve from cws using serialNumber which must get 
       //   Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber

@@ -51,7 +51,7 @@ namespace WebApiTests.Executors
     public async Task ProjectUidExecutor_InvalidParameters()
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() => executor.ProcessAsync((GetProjectAndAssetUidsEarthWorksRequest)null));
 
@@ -69,7 +69,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync((DeviceData)null);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
@@ -85,7 +85,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync((DeviceData)null);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, string.Empty, string.Empty, false, 3033);
@@ -122,7 +122,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, _deviceUid, _deviceCustomerUid, true, 3049);
@@ -143,7 +143,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(new List<ProjectData>());
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, _deviceUid, _deviceCustomerUid, false, 3044);
@@ -180,7 +180,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(new List<ProjectData>());
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, string.Empty, _deviceUid, _deviceCustomerUid, false, 3045);
@@ -209,7 +209,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceCustomerUid, true, 0);
@@ -236,7 +236,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetProjectsForDevice(_deviceUid, null)).ReturnsAsync(projects);
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_loggerFactory.CreateLogger<ProjectAndAssetUidsEarthWorksExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = await executor.ProcessAsync(_projectAndAssetUidsEarthWorksRequest) as GetProjectAndAssetUidsEarthWorksResult;
 
       ValidateResult(result, _projectUidToBeDiscovered, _deviceUid, _deviceCustomerUid, false, 0);

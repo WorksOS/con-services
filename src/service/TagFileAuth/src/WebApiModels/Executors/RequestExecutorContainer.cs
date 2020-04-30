@@ -11,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.WebApi.Common;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -30,6 +31,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     private ICwsAccountClient cwsAccountClient;
     private IProjectInternalProxy projectProxy;
     private IDeviceInternalProxy deviceProxy;
+    private ITPaaSApplicationAuthentication authorization;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -86,11 +88,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// </summary>
     public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,      
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      IDictionary<string, string> customHeaders = null) 
+      ITPaaSApplicationAuthentication authorization) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, customHeaders = customHeaders };
-        dataRepository = new DataRepository(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, customHeaders);
+      var executor = new TExecutor() { log = logger, configStore = configStore, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, authorization = authorization };
+        dataRepository = new DataRepository(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization);
       return executor;
     }
     

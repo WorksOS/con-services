@@ -32,7 +32,7 @@ namespace WebApiTests.Executors
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Happy_ProjectAccountLicense_CBDeviceAndNoLicense()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -74,7 +74,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Happy_ProjectAccountLicense_ECMDeviceAndNoLicense()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -116,7 +116,7 @@ namespace WebApiTests.Executors
           );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Happy_ProjectAccountLicense_NoDevice()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -158,7 +158,7 @@ namespace WebApiTests.Executors
           );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Sad_ProjectNotFound()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -200,7 +200,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Sad_ProjectArchived()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -243,7 +243,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Sad_ProjectAccountHasNoDeviceLicenses()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -285,7 +285,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Sad_Project_NoIntersectingProjectBoundaries()
     {
       var projectUid = Guid.NewGuid().ToString();
@@ -327,7 +327,7 @@ namespace WebApiTests.Executors
         );
     }
 
-    [TestMethod, Ignore("todoMaverick Temporary ignore until we get TFA authenication key generated.")]
+    [TestMethod]
     public async Task TRexExecutor_Manual_Sad_Project_TooManyIntersectingProjectBoundaries()
     {
       // this scenario should not be possible, this should be an internal error
@@ -381,7 +381,7 @@ namespace WebApiTests.Executors
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() =>
         executor.ProcessAsync((GetProjectAndAssetUidsRequest)null));
@@ -422,7 +422,7 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 

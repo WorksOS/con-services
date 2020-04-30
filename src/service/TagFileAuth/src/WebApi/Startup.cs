@@ -1,5 +1,4 @@
-﻿using CCSS.CWS.Client;
-using CCSS.CWS.Client.MockClients;
+﻿using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,10 +44,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddSingleton<IWebRequest, GracefulWebRequest>()
 
-        // Required for TIDAuthentication  
-        // CCSSSCON-216 temporary move to real endpoints when available
-        .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
+        .AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>()
+        .AddTransient<ITPaasProxy, TPaasProxy>()
 
+        .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
         .AddTransient<IProjectInternalProxy, ProjectInternalV6Proxy>()
         .AddTransient<IDeviceInternalProxy, DeviceInternalV1Proxy>()
         .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();
@@ -64,6 +63,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
-    { }
+    {  }
   }
 }

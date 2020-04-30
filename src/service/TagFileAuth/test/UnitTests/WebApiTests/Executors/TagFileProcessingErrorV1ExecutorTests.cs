@@ -18,7 +18,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -32,7 +32,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -46,7 +46,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -60,7 +60,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -78,7 +78,7 @@ namespace WebApiTests.Executors
       var loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
 
       var executor = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(loggerFactory.CreateLogger<TagFileProcessingErrorV1ExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
       var result = executor.Process(tagFileProcessingErrorRequest) as TagFileProcessingErrorResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
