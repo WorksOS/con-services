@@ -29,7 +29,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}: Loaded Device? {JsonConvert.SerializeObject(device)}");
 
       var deviceLicenseTotal = 0;
-      if (device?.Code != 0)
+      if (device?.Code == 0)
       {
         if (String.Compare(device.RelationStatus.ToString().ToUpper(), "ACTIVE", StringComparison.OrdinalIgnoreCase)!= 0)
           log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}: Device is not registered and claimed");

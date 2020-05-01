@@ -15,6 +15,11 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
     /// </value>
     public List<ProjectData> ProjectDescriptors { get; set; }
 
+    public ProjectDataResult()
+    {
+      ProjectDescriptors = new List<ProjectData>();
+    }
+
     public List<string> GetIdentifiers()
     {
       return ProjectDescriptors?

@@ -105,7 +105,6 @@ namespace WebApiTests.Executors
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
 
-
       await ExecuteManual
         (getProjectAndAssetUidsRequest,
           projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
