@@ -7,17 +7,15 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
   public class DeviceResponseModel : IMasterDataModel
   {
     //Note: There are other properties returned but we only want some of it
+    //    Would save us a lot of work if we could get accountId, and 2xstatus here
+    //   getdeviceBySerialNumber also has: deviceNickname, description NO deviceName
+    //   getdeviceByDeviceId also has: deviceNickname, description, accountName (null), deviceName, accountRegistrationStatus (null)
+
     /// <summary>
     /// Device TRN ID
     /// </summary>
     [JsonProperty("deviceId")]
     public string Id { get; set; }
-
-    /// <summary>
-    /// Account TRN ID
-    /// </summary>
-    [JsonProperty("accountId")]
-    public string AccountId { get; set; }
 
     /// <summary>
     /// deviceType
@@ -30,12 +28,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     /// </summary>
     [JsonProperty("deviceName")]
     public string DeviceName { get; set; }
-
-    /// <summary>
-    /// status (ACTIVE etal?)
-    /// </summary>
-    [JsonProperty("status")]
-    public string Status { get; set; }
 
     /// <summary>
     /// serial Number

@@ -46,19 +46,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
-      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
+      var projectListForProjectAccountUid = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors =  new List<ProjectData>() { projectOfInterest }};
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       //var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
+      var projectListForEC520 = (ProjectDataResult)null;
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
@@ -88,19 +88,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
-      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
+      var projectListForProjectAccountUid = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = string.Empty;
       var radioSerialDevice = (DeviceData)null;
-      var projectListForRadioSerial = (List<ProjectData>)null;
+      var projectListForRadioSerial = (ProjectDataResult)null;
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = new DeviceData { CustomerUID = ec520AccountUid, DeviceUID = ec520Uid };
-      var projectListForEC520 = new List<ProjectData>() { projectOfInterest };
+      var projectListForEC520 = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
@@ -130,19 +130,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.EC520, string.Empty, "ec520Serial", 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
-      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest };
+      var projectListForProjectAccountUid = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = string.Empty;
       var radioSerialDevice = (DeviceData)null;
-      var projectListForRadioSerial = (List<ProjectData>)null;
+      var projectListForRadioSerial = (ProjectDataResult)null;
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
+      var projectListForEC520 = (ProjectDataResult)null;
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, string.Empty);
@@ -172,19 +172,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = (ProjectData)null;
-      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectListForProjectAccountUid = new ProjectDataResult();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      var projectListForRadioSerial = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       //var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
+      var projectListForEC520 = (ProjectDataResult)null;
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
@@ -215,19 +215,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
-      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectListForProjectAccountUid = new ProjectDataResult();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice =new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      var projectListForRadioSerial = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       //var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
+      var projectListForEC520 = (ProjectDataResult)null;
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
@@ -257,19 +257,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
-      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectListForProjectAccountUid = new ProjectDataResult();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice =new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      var projectListForRadioSerial = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       //var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
+      var projectListForEC520 = (ProjectDataResult)null;
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
@@ -299,19 +299,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
-      var projectListForProjectAccountUid = new List<ProjectData>();
+      var projectListForProjectAccountUid = new ProjectDataResult();
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      var projectListForRadioSerial = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       //var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
+      var projectListForEC520 = (ProjectDataResult)null;
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
@@ -348,19 +348,19 @@ namespace WebApiTests.Executors
 
       var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
       var projectForProjectUid = projectOfInterest;
-      var projectListForProjectAccountUid = new List<ProjectData>() { projectOfInterest, projectOfInterest2 };
+      var projectListForProjectAccountUid = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest, projectOfInterest2 }};
       var projectDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
       var radioSerialDevice = new DeviceData() { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
+      var projectListForRadioSerial = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() { projectOfInterest }};
       //var radioSerialDeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var ec520Uid = Guid.NewGuid().ToString();
       //var ec520AccountUid = Guid.NewGuid().ToString();
       var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
+      var projectListForEC520 = (ProjectDataResult)null;
       //var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
@@ -392,9 +392,9 @@ namespace WebApiTests.Executors
     }
 
     private async Task ExecuteManual(GetProjectAndAssetUidsRequest request,
-      string projectAccountUid, ProjectData projectForProjectUid, List<ProjectData> projectListForProjectAccountUid, DeviceLicenseResponseModel projectDeviceLicenseResponseModel,
-      DeviceData radioSerialDevice, List<ProjectData> projectListForRadioSerial, // DeviceLicenseResponseModel radioSerialDeviceLicenseResponseModel,
-      DeviceData ec520Device, List<ProjectData> projectListForEC520, // DeviceLicenseResponseModel ec520DeviceLicenseResponseModel,
+      string projectAccountUid, ProjectData projectForProjectUid, ProjectDataResult projectListForProjectAccountUid, DeviceLicenseResponseModel projectDeviceLicenseResponseModel,
+      DeviceData radioSerialDevice, ProjectDataResult projectListForRadioSerial, // DeviceLicenseResponseModel radioSerialDeviceLicenseResponseModel,
+      DeviceData ec520Device, ProjectDataResult projectListForEC520, // DeviceLicenseResponseModel ec520DeviceLicenseResponseModel,
       ICustomRadioSerialProjectMap customRadioSerialProjectMap,
       GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
   )

@@ -70,6 +70,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///           44 "No projects found at the location provided"
     ///           45 "Projects found at the location provided, however the device does not have access to it/those"
     ///           49 "More than 1 project meets the location requirements"
+    ///
+    ///           100 "Unable to locate device by serialNumber in cws"
+    ///           101 "Unable to locate device in localDB"
+    ///           102 "Unable to locate any account for the device in cws"
+    ///           103 "There is >1 active account for the device in cws"
+    ///           104 "A problem occurred at the {0} endpoint. Exception: {1}"
     ///            
     /// </returns>
     [Route("internal/v4/project/getUidsEarthWorks")]
@@ -129,7 +135,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///            43 "Manual Import: cannot import to an archived project"
     ///            44 "No projects found at the location provided"
     ///            45 "Projects found at the location provided, however the device does not have access to it/those"
+    ///            47 "Auto Import: unable to identify the device by this serialNumber"
     ///            49 "More than 1 project meets the location requirements"
+    /// 
+    ///           100 "Unable to locate device by serialNumber in cws"
+    ///           101 "Unable to locate device in localDB"
+    ///           102 "Unable to locate any account for the device in cws"
+    ///           103 "There is >1 active account for the device in cws"
+    ///           104 "A problem occurred at the {0} endpoint. Exception: {1}"
     ///     
     /// </returns>
     [Route("internal/v4/project/getUids")]

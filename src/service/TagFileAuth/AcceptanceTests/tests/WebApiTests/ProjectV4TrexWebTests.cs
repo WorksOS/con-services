@@ -17,7 +17,7 @@ namespace WebApiTests
       // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately
       var projectUid = Guid.NewGuid().ToString();
       var CBRadioType = TagFileDeviceTypeEnum.SNM940;
-      var CBRadioserial = dimensionsRadioSerial;
+      var CBRadioserial = dimensionsSerial;
       var EC50Serial = string.Empty;
       double latitude = 89;
       double longitude = 130;

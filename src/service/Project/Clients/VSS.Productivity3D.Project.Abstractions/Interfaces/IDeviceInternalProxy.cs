@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {
@@ -9,6 +10,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces
   {
     Task<DeviceData> GetDevice(string serialNumber, IDictionary<string, string> customHeaders = null);
     Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null);
-    Task<List<ProjectData>> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null);
+    Task<ProjectDataResult> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null);
   }
 }

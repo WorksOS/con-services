@@ -126,6 +126,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
             .ForMember(dest => dest.name, opt => opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.type, opt => opt.MapFrom(c => CustomerType.Customer.ToString()))
             ;
+          cfg.CreateMap<VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project, ProjectData>()
+            .ForMember(dest => dest.ProjectGeofenceWKT, opt => opt.MapFrom(src => src.Boundary))
+            .ForMember(dest => dest.IanaTimeZone, opt => opt.MapFrom(src => src.ProjectTimeZoneIana))
+            ;
         }
       );
 

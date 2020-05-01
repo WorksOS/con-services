@@ -9,6 +9,7 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.WebApi.Common;
@@ -137,11 +138,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        var p = await _deviceProxy.GetProjectsForDevice(deviceUid, _authorization.CustomHeaders());
-        if (p != null)
+        var projects = await _deviceProxy.GetProjectsForDevice(deviceUid, _authorization.CustomHeaders());
+        if (projects?.Code != 0)
         {
-          // CCSSSCON-207, what should be the marketing requirements for dates here?
-          return p
+          return projects.ProjectDescriptors
             .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) && !x.IsArchived)
             .ToList();
         }
@@ -156,10 +156,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     // manual import, no time, optional device
-    public async Task<List<ProjectData>> GetIntersectingProjectsForManual(ProjectData project, double latitude, double longitude,
+    public async Task<ProjectDataResult> GetIntersectingProjectsForManual(ProjectData project, double latitude, double longitude,
       DeviceData device = null)
     {
-      var accountProjects = new List<ProjectData>();
+      var accountProjects = new ProjectDataResult();
       if (project == null || string.IsNullOrEmpty(project.ProjectUID))
         return accountProjects;
 
@@ -167,7 +167,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       {
         accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _authorization.CustomHeaders()));
         // should not be possible to get > 1 as call was limited by the projectUid       
-        if (accountProjects == null || accountProjects.Count() != 1)
+        if (accountProjects?.Code == 0 && accountProjects.ProjectDescriptors.Count() != 1)
           return accountProjects;
       }
       catch (Exception e)
@@ -183,8 +183,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _authorization.CustomHeaders()));
-        if (projectsAssociatedWithDevice.Any())
-          return projectsAssociatedWithDevice.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
+        if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
+        {
+          var result = new ProjectDataResult();
+          var gotIt = projectsAssociatedWithDevice.ProjectDescriptors.FirstOrDefault(p => p.ProjectUID == accountProjects.ProjectDescriptors[0].ProjectUID);
+          result.ProjectDescriptors.Add(gotIt);
+          return result;
+        }
 
         return accountProjects;
       }
@@ -196,11 +201,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
     }
 
-    public List<ProjectData> GetIntersectingProjectsForDevice(DeviceData device,
+    public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device,
       double latitude, double longitude, out int errorCode)
     {
       errorCode = 0;
-      var accountProjects = new List<ProjectData>();
+      var accountProjects = new ProjectDataResult();
       if (device == null || string.IsNullOrEmpty(device.CustomerUID) || string.IsNullOrEmpty(device.DeviceUID))
         return accountProjects;
 
@@ -208,7 +213,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders:_authorization.CustomHeaders()).Result;
-        if (!accountProjects.Any())
+        if (accountProjects?.Code != 0 || !accountProjects.ProjectDescriptors.Any())
         {
           errorCode = 44;
           return accountProjects;
@@ -224,10 +229,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this device have visibility to?
       try
       {
+        var intersectingProjectsForDevice = new ProjectDataResult();
         var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _authorization.CustomHeaders()).Result;
-        var intersection = projectsAssociatedWithDevice.Select(dp => dp.ProjectUID).Intersect(accountProjects.Select(ap => ap.ProjectUID));
-        var intersectingProjectsForDevice = projectsAssociatedWithDevice.Where(p => intersection.Contains(p.ProjectUID)).ToList();
-        if (!intersectingProjectsForDevice.Any())
+        if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
+        {
+          var intersection = projectsAssociatedWithDevice.ProjectDescriptors.Select(dp => dp.ProjectUID).Intersect(accountProjects.ProjectDescriptors.Select(ap => ap.ProjectUID));
+          intersectingProjectsForDevice.ProjectDescriptors = projectsAssociatedWithDevice.ProjectDescriptors.Where(p => intersection.Contains(p.ProjectUID)).ToList();
+        }
+
+        if (!intersectingProjectsForDevice.ProjectDescriptors.Any())
           errorCode = 45;
         return intersectingProjectsForDevice;
       }

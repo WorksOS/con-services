@@ -40,10 +40,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
 
         var deviceLicenseTotal = 0;
-        if (device != null)
+        if (device?.Code != 0)
           deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
 
-        if (device == null || deviceLicenseTotal < 1)
+        if (device?.Code != 0 || deviceLicenseTotal < 1)
           return GetProjectIdResult.CreateGetProjectIdResult(false, projectId);
 
         var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.latitude, request.longitude, out var errorCode);
@@ -54,12 +54,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //If zero found then returns -1
         //If one found then returns its id
         //If > 1 found then returns -2
-        if (!potentialProjects.Any())
+        if (!potentialProjects.ProjectDescriptors.Any())
           projectId = -1;
-        else if (potentialProjects.Count > 1)
+        else if (potentialProjects.ProjectDescriptors.Count > 1)
           projectId = -2;
         else
-          projectId = potentialProjects[0].ShortRaptorProjectId;
+          projectId = potentialProjects.ProjectDescriptors[0].ShortRaptorProjectId;
       }
 
       var result = projectId > 1;

@@ -13,38 +13,39 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
-  /// The executor which gets Device details from a) cws and b) localDB
+  /// The executor which gets the Device details from a) cws and b) localDB
   /// </summary>
-  public class GetDeviceBySerialExecutor : RequestExecutorContainer
+  public class GetDeviceByShortRaptorIdExecutor : RequestExecutorContainer
   {
     /// <summary>
     /// Processes the GetProjectSettings request
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var deviceSerial = CastRequestObjectTo<DeviceSerial>(item, errorCode: 68);
+      var shortRaptorId = CastRequestObjectTo<ShortRaptorId>(item, errorCode: 68);
 
       try
       {
-        var deviceResponseModel = await cwsDeviceClient.GetDeviceBySerialNumber(deviceSerial.SerialNumber, customHeaders);
-        if (deviceResponseModel == null)
-        {
-          var message = "Unable to locate device by serialNumber in cws";
-          log.LogInformation($"GetDeviceBySerialExecutor: {message}");
-          return new DeviceDataSingleResult(code: 100, message: message); 
-        }
-
-        var deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
-
-        var deviceFromRepo = await deviceRepo.GetDevice(deviceResponseModel.Id);
+        var deviceFromRepo = await deviceRepo.GetDevice(shortRaptorId.ShortRaptorAssetId);
         if (deviceFromRepo == null)
         {
           var message = "Unable to locate device in localDB";
-          log.LogInformation($"GetDeviceBySerialExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
+          log.LogInformation($"GetDeviceByShortRaptorIdExecutor: {message}");
+          return new DeviceDataSingleResult(code: 100, message: message);
+        }
+
+        var deviceData = new DeviceData() { DeviceUID = deviceFromRepo.DeviceUID, ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID };
+        
+        var deviceResponseModel = await cwsDeviceClient.GetDeviceByDeviceUid(new Guid(deviceFromRepo.DeviceUID), customHeaders);
+        if (deviceResponseModel == null)
+        {
+          var message = "Unable to locate device by serialNumber in cws";
+          log.LogInformation($"GetDeviceByShortRaptorIdExecutor: {message}");
           return new DeviceDataSingleResult(code: 101, message: message, deviceData);
         }
 
-        deviceData.ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID;
+        deviceData.DeviceName = deviceResponseModel.DeviceName;
+        deviceData.SerialNumber = deviceResponseModel.SerialNumber;
 
         // now get the customerId and 2xstatus
         // Note that this step may not be needed in future if/when WM can return these fields in cwsDeviceClient.GetDeviceBySerialNumber()
@@ -52,16 +53,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         if (deviceAccountListDataResult?.Accounts == null || !deviceAccountListDataResult.Accounts.Any())
         {
           var message = "Unable to locate any account for the device in cws";
-          log.LogInformation($"GetDeviceBySerialExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
-          return new DeviceDataSingleResult(code: 102, message: message, deviceData); 
+          log.LogInformation($"GetDeviceByShortRaptorIdExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
+          return new DeviceDataSingleResult(code: 102, message: message, deviceData);
         }
 
-        log.LogInformation($"GetDeviceBySerialExecutor: deviceAccountListDataResult {JsonConvert.SerializeObject(deviceAccountListDataResult)}");
+        log.LogInformation($"GetDeviceByShortRaptorIdExecutor: deviceAccountListDataResult {JsonConvert.SerializeObject(deviceAccountListDataResult)}");
         if (deviceAccountListDataResult.Accounts
           .Count(da => string.Compare(da.RelationStatus.ToString(), RelationStatusEnum.Active.ToString(), StringComparison.InvariantCultureIgnoreCase) == 0) > 1)
         {
           var message = "There is >1 active account for the device in cws";
-          log.LogInformation($"GetDeviceBySerialExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
+          log.LogInformation($"GetDeviceByShortRaptorIdExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
           return new DeviceDataSingleResult(code: 103, message: message, deviceData);
         }
 
@@ -70,12 +71,12 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         deviceData.CustomerUID = deviceCustomer.Id;
         deviceData.RelationStatus = deviceCustomer.RelationStatus;
         deviceData.TccDeviceStatus = deviceCustomer.TccDeviceStatus;
-        log.LogInformation($"GetDeviceBySerialExecutor: deviceData {JsonConvert.SerializeObject(deviceData)}");
-        return new DeviceDataSingleResult(deviceData); 
+        log.LogInformation($"GetDeviceByShortRaptorIdExecutor: deviceData {JsonConvert.SerializeObject(deviceData)}");
+        return new DeviceDataSingleResult(deviceData); //todo Maverick real number and message
       }
       catch (Exception e)
       {
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 104 - 2000, "getDeviceBySerialExecutor", e.Message);
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 104 - 2000, "getDeviceByShortRaptorIdExecutor", e.Message);
       }
 
       return null;

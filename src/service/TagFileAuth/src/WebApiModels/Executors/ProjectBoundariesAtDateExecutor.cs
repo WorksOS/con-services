@@ -29,15 +29,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}: Loaded Device? {JsonConvert.SerializeObject(device)}");
 
       var deviceLicenseTotal = 0;
-      if (device != null)
+      if (device?.Code != 0)
       {
-        if (string.Compare(device.Status, "Claimed", true)!= 0)
+        if (String.Compare(device.RelationStatus.ToString().ToUpper(), "ACTIVE", StringComparison.OrdinalIgnoreCase)!= 0)
           log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}: Device is not registered and claimed");
         else
           deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
       }
 
-      if (device == null || deviceLicenseTotal < 1)
+      if (device?.Code == 0 || deviceLicenseTotal < 1)
         return GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(result, projectBoundaryPackages);
 
       // claimed device and device owner account has valid licenses

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.Productivity3D.Project.Abstractions.Interfaces
 {
@@ -13,7 +14,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Interfaces
     
     Task<ProjectData> GetProject(long shortRaptorProjectId, IDictionary<string, string> customHeaders = null);
     
-    Task<List<ProjectData>> GetIntersectingProjects(string customerUid,
+    Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
         double latitude, double longitude, string projectUid = null, IDictionary<string, string> customHeaders = null);
 
   }

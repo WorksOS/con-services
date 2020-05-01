@@ -2,7 +2,7 @@
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 
-namespace VSS.Productivity3D.Project.Abstractions.Models
+namespace VSS.MasterData.Project.WebAPI.Common.Models
 {
   public class DeviceSerial
   {
@@ -11,9 +11,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models
     private DeviceSerial()
     { }
 
-    /// <summary>
-    /// Create instance of ProjectSettingsRequest
-    /// </summary>
     public DeviceSerial(string serialNumber)
     {
       SerialNumber = serialNumber;

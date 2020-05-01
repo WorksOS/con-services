@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -29,10 +30,8 @@ namespace CCSS.CWS.Client.MockClients
       var deviceResponseModel = new DeviceResponseModel()
       {
         Id = Guid.NewGuid().ToString(),
-        AccountId = Guid.NewGuid().ToString(),
         DeviceType = "EC520",
         DeviceName = "this is a device",
-        Status = "Active",
         SerialNumber = serialNumber
       };
       log.LogDebug($"{nameof(GetDeviceBySerialNumber)} Mock: deviceResponseModel {JsonConvert.SerializeObject(deviceResponseModel)}");
@@ -46,10 +45,8 @@ namespace CCSS.CWS.Client.MockClients
       var deviceResponseModel = new DeviceResponseModel()
       {
         Id = deviceUid.ToString(),
-        AccountId = Guid.NewGuid().ToString(),
         DeviceType = "EC520",
         DeviceName = "this is a device",
-        Status = "Active",
         SerialNumber = "56556565"
       };
 
@@ -68,10 +65,8 @@ namespace CCSS.CWS.Client.MockClients
           new DeviceResponseModel()
           {
             Id = Guid.NewGuid().ToString(),
-            AccountId = accountUid.ToString(),
             DeviceType = "EC520",
             DeviceName = "this is a device",
-            Status = "Active",
             SerialNumber = "56556565"
           }
         }
@@ -108,5 +103,26 @@ namespace CCSS.CWS.Client.MockClients
       return Task.FromResult(projectListResponseModel);
     }
 
+    public Task<DeviceAccountListResponseModel> GetAccountsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null)
+    {
+      log.LogDebug($"{nameof(GetAccountsForDevice)} Mock: deviceUid {deviceUid}");
+
+      var deviceAccountListResponseModel = new DeviceAccountListResponseModel()
+      {
+        Accounts = new List<DeviceAccountResponseModel>()
+        {
+          new DeviceAccountResponseModel()
+          {
+            Id = Guid.NewGuid().ToString(),
+            AccountName = "an account name",
+            RelationStatus = RelationStatusEnum.Active,
+            TccDeviceStatus = TCCDeviceStatusEnum.Pending
+          }
+        }
+      };
+
+      log.LogDebug($"{nameof(GetAccountsForDevice)} Mock: deviceAccountListResponseModel {JsonConvert.SerializeObject(deviceAccountListResponseModel)}");
+      return Task.FromResult(deviceAccountListResponseModel);
+    }
   }
 }
