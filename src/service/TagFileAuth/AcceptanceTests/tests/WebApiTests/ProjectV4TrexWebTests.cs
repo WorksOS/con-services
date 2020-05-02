@@ -1,8 +1,10 @@
 ﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using Xunit;
+using Assert = Xunit.Assert;
 
 namespace WebApiTests
 {
@@ -34,6 +36,7 @@ namespace WebApiTests
     }
 
     [Fact]
+    [Ignore] // todoJeannie
     public async System.Threading.Tasks.Task Auto_Sad_DeviceNotFound()
     {
       // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately
@@ -51,7 +54,7 @@ namespace WebApiTests
 
       var result = await tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
 
-      ValidateResult(result, expectedGetProjectAndAssetUidsResult, 3047, "Auto Import: unable to identify the device by this serialNumber");
+      ValidateResult(result, expectedGetProjectAndAssetUidsResult, 3100, "Unable to locate device by serialNumber in cws");
     }
 
     private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult,

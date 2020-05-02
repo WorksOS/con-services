@@ -40,11 +40,8 @@ namespace VSS.Productivity3D.Project.Proxy
       var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceData>($"/device/serialnumber",
         customHeaders, queryParams);
 
-      if (result.Code == 0 ) 
-        return result;
-
-      log.LogDebug($"{nameof(GetDevice)} Failed to get device with Uid {serialNumber} result: {result.Code}, {result.Message}");
-      return null;
+      log.LogDebug($"{nameof(GetDevice)} get device for serialNumber {serialNumber} result: {result.Code}, {result.Message}");
+      return result;
     }
 
     public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null)
@@ -71,7 +68,7 @@ namespace VSS.Productivity3D.Project.Proxy
     public async Task<DeviceCustomerSingleDataResult> GetAccountForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
     {
       // in ProjectSvc.DeviceController
-      // a) retrieve list of accounts from cws using DeviceTRN.
+      // a) retrieve account from cws using DeviceTRN.
       //    todoJeannie this is not available yet. waiting for cws/profileX
 
       // should do a cache by deviceUid
@@ -79,11 +76,8 @@ namespace VSS.Productivity3D.Project.Proxy
       var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceCustomerSingleDataResult>($"/device/{deviceUid}/account",
         customHeaders);
 
-      if (result.Code == 0)
-        return result;
-
-      log.LogDebug($"{nameof(GetAccountForDevice)} Failed to get customer for deviceUid {deviceUid} result: {result.Code}, {result.Message}");
-      return null;
+      log.LogDebug($"{nameof(GetAccountForDevice)} get account for deviceUid {deviceUid} result: {result.Code}, {result.Message}");
+      return result;
     }
 
     /// <summary>

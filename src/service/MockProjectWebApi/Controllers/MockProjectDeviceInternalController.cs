@@ -21,11 +21,10 @@ namespace MockProjectWebApi.Controllers
     public DeviceDataSingleResult GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
       Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)} serialNumber {serialNumber}");
-      DeviceData deviceData = null;
       if (serialNumber == ConstantsUtil.DIMENSIONS_SERIAL)
-        deviceData = new DeviceData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID };
+        return new DeviceDataSingleResult(new DeviceData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
 
-      return new DeviceDataSingleResult(){DeviceDescriptor = deviceData};
+      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws");
     }
 
     [HttpGet]
@@ -34,11 +33,10 @@ namespace MockProjectWebApi.Controllers
     public DeviceDataSingleResult GetDevice([FromQuery] int shortRaptorAssetId)
     {
       Logger.LogInformation($"{nameof(GetDevice)} serialNumber {shortRaptorAssetId}");
-      DeviceData deviceData = null;
       if (shortRaptorAssetId == ConstantsUtil.DIMENSIONS_PROJECT_ID)
-        deviceData = new DeviceData() { CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID };
+        return new DeviceDataSingleResult(new DeviceData() { CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
 
-      return new DeviceDataSingleResult() { DeviceDescriptor = deviceData };
+      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws");
     }
 
     [HttpGet]
@@ -47,13 +45,13 @@ namespace MockProjectWebApi.Controllers
     public ProjectDataListResult GetProjectsForDevice(string deviceUid)
     {
       Logger.LogInformation($"{nameof(GetProjectsForDevice)} deviceUid {deviceUid}");
- 
-      var projectDataListResult = new ProjectDataListResult(){ProjectDescriptors = new List<ProjectData>()};
-      if (deviceUid == ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID)
-        projectDataListResult.ProjectDescriptors
-          .Add(new ProjectData() { CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID, ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID, IsArchived = false });
 
-      return projectDataListResult;
+      if (deviceUid == ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID)
+        return new ProjectDataListResult() 
+          {ProjectDescriptors = new List<ProjectData>() 
+            {new ProjectData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID, ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID, IsArchived = false}}};
+
+      return new ProjectDataListResult(code: 105, message: "Unable to locate projects for device in cws");
     }
 
     // todoMaverick

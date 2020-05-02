@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Serilog;
-using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
@@ -25,21 +24,19 @@ namespace VSS.MasterData.ProjectTests.Executors
 {
   public class GetProjectsForDeviceExecutorTests
   {
-    private Dictionary<string, string> _customHeaders;
-    private IConfigurationStore _configStore;
-    private ILoggerFactory _logger;
-    private IServiceExceptionHandler _serviceExceptionHandler;
-    private IServiceProvider ServiceProvider;
-    private IServiceExceptionHandler ServiceExceptionHandler;
+    private readonly Dictionary<string, string> _customHeaders;
+    private readonly IConfigurationStore _configStore;
+    private readonly ILoggerFactory _logger;
+    private readonly IServiceExceptionHandler _serviceExceptionHandler;
 
-    private string _customerUid;
-    private string _deviceUid;
-    private string _projectUid;
-    private string _projectName;
-    private int _shortRaptorAssetId;
-    private string _boundaryString;
-    private ProjectBoundary _projectBoundary;
-    private string _timeZone;
+    private readonly string _customerUid;
+    private readonly string _deviceUid;
+    private readonly string _projectUid;
+    private readonly string _projectName;
+    private readonly int _shortRaptorAssetId;
+    private readonly string _boundaryString;
+    private readonly ProjectBoundary _projectBoundary;
+    private readonly string _timeZone;
 
 
     public GetProjectsForDeviceExecutorTests()
@@ -54,11 +51,11 @@ namespace VSS.MasterData.ProjectTests.Executors
         .AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddTransient<IErrorCodesProvider, ProjectErrorCodesProvider>();
 
-      ServiceProvider = serviceCollection.BuildServiceProvider();
-      ServiceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
-      _configStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
-      _logger = ServiceProvider.GetRequiredService<ILoggerFactory>();
-      _serviceExceptionHandler = ServiceProvider.GetRequiredService<IServiceExceptionHandler>();
+      IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+      _serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
+      _configStore = serviceProvider.GetRequiredService<IConfigurationStore>();
+      _logger = serviceProvider.GetRequiredService<ILoggerFactory>();
+      _serviceExceptionHandler = serviceProvider.GetRequiredService<IServiceExceptionHandler>();
       _customHeaders = new Dictionary<string, string>();
 
       _customerUid = Guid.NewGuid().ToString();
@@ -169,7 +166,7 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.Equal(105, response.Code);
       Assert.Equal("Unable to locate projects for device in cws", response.Message);
 
-      Assert.Null(response.ProjectDescriptors);
+      Assert.Empty(response.ProjectDescriptors);
     }
 
 
