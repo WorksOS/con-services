@@ -35,8 +35,7 @@ namespace WebApiTests
       ValidateResult(result, expectedGetProjectAndAssetUidsResult, 3038, "Unable to find the Project requested");
     }
 
-    [Fact]
-    [Ignore] // todoJeannie
+    [Fact(Skip= "todoJeannie need MockProjectebAPI deployed")]
     public async System.Threading.Tasks.Task Auto_Sad_DeviceNotFound()
     {
       // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately
