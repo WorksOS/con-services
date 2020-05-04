@@ -83,19 +83,21 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.RadioSerial))
       {
         device = await dataRepository.GetDevice(request.RadioSerial);
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
+        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
       if (device?.Code != 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
+        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, project, device);
 
-      if (device?.Code != 0)
+      if (device == null || device?.Code != 0)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
       return await HandleAutoImport(request, device);

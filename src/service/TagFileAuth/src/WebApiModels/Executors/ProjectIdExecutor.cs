@@ -37,7 +37,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (request.shortRaptorAssetId > 0)
       {
         var device = await dataRepository.GetDevice((int) request.shortRaptorAssetId);
-        log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
+        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by shortRaptorAssetId?: {request.shortRaptorAssetId} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
         var deviceLicenseTotal = 0;
         if (device?.Code != 0)

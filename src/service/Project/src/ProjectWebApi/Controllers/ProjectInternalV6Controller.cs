@@ -36,7 +36,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     /// <summary>
     /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
-    ///   if projectUid, get it if it overlaps inC:\CCSS\SourceCode\azure_C2S3CON-207\src\service\Project\src\ProjectWebApi\kestrelsettings.json localDB
+    ///   if projectUid, get it if it overlaps in localDB
     ///    else get overlapping projects in localDB for this CustomerUID
     /// </summary>
     /// <returns>project data list</returns>
@@ -88,7 +88,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
     /// <summary>
     /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
-    ///   if projectUid, get it if it overlaps inC:\CCSS\SourceCode\azure_C2S3CON-207\src\service\Project\src\ProjectWebApi\kestrelsettings.json localDB
+    ///   if projectUid, get it if it overlaps in localDB
     ///    else get overlapping projects in localDB for this CustomerUID
     /// </summary>
     /// <returns>project data list</returns>

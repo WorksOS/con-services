@@ -27,6 +27,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///     note that if it doesn't exist localDB it means that 
     ///     the user hasn't logged in to fill in our DB after adding the device to the account
     ///   c) to get accountId and 2xstatus temporarily needs to call cws.GetAccountsForDevice
+    ///   d) only returns 1 ACTIVE account, else error code
     /// </summary>
     [HttpGet("internal/v1/device/serialnumber")]
     public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery] string serialNumber)
@@ -49,6 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets device by shortRaptorAssetId, results include Uid and serialNumber
     ///  called by TFA ProjectBoundariesAtDateExecutor, ProjectIdExecutor
+    ///  Only returns 1 ACTIVE account, else error code
     /// </summary>
     [HttpGet("internal/v1/device/shortRaptorAssetId")]
     public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)

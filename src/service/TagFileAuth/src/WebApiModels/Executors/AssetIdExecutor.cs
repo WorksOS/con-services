@@ -56,9 +56,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       // Auto or Direct import i.e. no shortRaptorProjectId
-      // try to identify the device by it's serialNumber in cws. Need to get CustomerUid (cws) and shortRaptorAssetId (localDB)
+      // try to identify the device by it's serialNumber in cws. Device must be active. Need to get CustomerUid (cws) and shortRaptorAssetId (localDB)
       var device = await dataRepository.GetDevice(request.serialNumber);
-      log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
+      var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+      log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
       if (device?.Code == 0)
       {
@@ -80,6 +81,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var result = !((shortRaptorAssetId == -1) && (serviceType == 0));
       return GetAssetIdResult.CreateGetAssetIdResult(result, shortRaptorAssetId, serviceType);
     }
+    
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {
