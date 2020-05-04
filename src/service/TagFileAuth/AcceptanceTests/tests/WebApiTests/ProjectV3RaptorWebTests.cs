@@ -13,7 +13,7 @@ namespace WebApiTests
     {
       var projectUid = Guid.NewGuid().ToString();
       var CBRadioType = TagFileDeviceTypeEnum.SNM940;
-      var CBRadioserial = dimensionsRadioSerial;
+      var CBRadioserial = dimensionsSerial;
       var EC50Serial = string.Empty;
       double latitude = 89;
       double longitude = 130;

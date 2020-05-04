@@ -30,11 +30,16 @@ namespace MockProjectWebApi.Services
         new ProjectData {ShortRaptorProjectId = 1001152, ProjectUID = Guid.NewGuid().ToString()},
         new ProjectData {ShortRaptorProjectId = 1001153, ProjectUID = "b14bb927-3c10-47b2-b958-4ce7aabbc594", ProjectGeofenceWKT = "POLYGON((6.96461375644884 46.250301540882, 6.96643887353764 46.2509268520462, 6.97460415600528 46.2477169036207, 6.97269423208211 46.2470325441392, 6.96461375644884 46.250301540882))"},
         new ProjectData {
-          ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID,
           ProjectUID = ConstantsUtil.DIMENSIONS_PROJECT_UID,
+          ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_PROJECT_ID,
+          ProjectType = ProjectType.Standard,
+          Name = "DimensionsProject",
           ProjectTimeZone = "Pacific Standard Time",
           IanaTimeZone = "America/Los_Angeles",
-          ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))"
+          CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID,
+          ProjectGeofenceWKT = "POLYGON((-115.025723657623 36.2101347890754,-115.026281557098 36.2056332151707,-115.018041811005 36.205460072542,-115.017698488251 36.2102040420362, -115.025723657623 36.2101347890754))",
+          IsArchived = false
+          
         },
         new ProjectData {
           ShortRaptorProjectId = ConstantsUtil.DIMENSIONS_EMPTY_PROJECT_ID,

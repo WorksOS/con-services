@@ -6,6 +6,10 @@
     public const string DIMENSIONS_PROJECT_UID = "ff91dd40-1569-4765-a2bc-014321f76ace";
     public const string DIMENSIONS_CUSTOMER_UID = "87bdf851-44c5-e311-aa77-00505688274d";
 
+    public const string DIMENSIONS_SERIAL = "5051593854";
+    public const string DIMENSIONS_SERIAL_DEVICEUID = "039c1ee8-1f21-e311-9ee2-00505688274d";
+    public const int    DIMENSIONS_SERIAL_ASSETID = 667788;
+
     public const int CUSTOM_SETTINGS_DIMENSIONS_PROJECT_ID = 1001160;
     public const string CUSTOM_SETTINGS_DIMENSIONS_PROJECT_UID = "3335311a-f0e2-4dbe-8acd-f21135bafee4";
 

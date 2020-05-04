@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 
@@ -41,10 +40,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //    however we probably don't need this as cws has a lookup by serialNumber only,
       //    and due to suffixes, these should be unique over CB/EC
       var device = await dataRepository.GetDevice(request.RadioSerial);
-      if (device == null)
+      log.LogDebug($"{nameof(ProjectAndAssetUidsEarthWorksExecutor)}: Loaded device for RadioSerial? {JsonConvert.SerializeObject(device)}");
+
+      if (device?.Code != 0)
+      {
         device = await dataRepository.GetDevice(request.Ec520Serial);
-      if (device == null)
-        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: string.Empty, customerUid: string.Empty, uniqueCode: 33);
+        log.LogDebug($"{nameof(ProjectAndAssetUidsEarthWorksExecutor)}: Loaded device for Ec520? {JsonConvert.SerializeObject(device)}");
+      }
+
+      if (device?.Code != 0)
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: string.Empty, customerUid: string.Empty, uniqueCode: device?.Code ?? 33);
 
       return await HandleCutFillExport(request, device);
     }
@@ -60,16 +65,16 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug(
         $"{nameof(HandleCutFillExport)}: GotPotentialProjects: {JsonConvert.SerializeObject(potentialProjects)}");
 
-      if (!potentialProjects.Any())
+      if (!potentialProjects.ProjectDescriptors.Any())
         return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: device.CustomerUID, uniqueCode: errorCode);
 
-      if (potentialProjects.Count > 1)
-        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: potentialProjects[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
+      if (potentialProjects.ProjectDescriptors.Count > 1)
+        return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: device.DeviceUID, customerUid: potentialProjects.ProjectDescriptors[0].CustomerUID, hasValidSub: true, uniqueCode: 49);
       
       var deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
       return GetProjectAndAssetUidsEarthWorksResult.FormatResult(
-        potentialProjects[0].ProjectUID, device.DeviceUID,
-        potentialProjects[0].CustomerUID,
+        potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID,
+        potentialProjects.ProjectDescriptors[0].CustomerUID,
         (deviceLicenseTotal > 0));
     }
 

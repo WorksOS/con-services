@@ -31,7 +31,11 @@ namespace WebApiTests
     //if (request.RadioSerial == "5051593854")
     //  return new GetProjectAndAssetUidsEarthWorksResult(ConstantsUtil.DIMENSIONS_PROJECT_UID, "039c1ee8-1f21-e311-9ee2-00505688274d", ConstantsUtil.DIMENSIONS_CUSTOMER_UID, true);
 
-    protected string dimensionsRadioSerial = "5051593854";
+    protected string dimensionsSerial = "5051593854";
+    protected string dimensionsSerialDeviceUid = "039c1ee8-1f21-e311-9ee2-00505688274d";
+    protected string dimensionsProjectUid = "ff91dd40-1569-4765-a2bc-014321f76ace";
+    protected int dimensionsShortRaptorProjectId = 1001158;
+    protected string dimensionsCustomerUID = "87bdf851-44c5-e311-aa77-00505688274d";
 
     public ExecutorTestData()
     {

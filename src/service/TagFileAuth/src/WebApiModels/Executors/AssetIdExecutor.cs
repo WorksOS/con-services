@@ -60,9 +60,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var device = await dataRepository.GetDevice(request.serialNumber);
       log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
 
-      if (device != null)
+      if (device?.Code == 0)
       {
-        if (string.Compare(device.Status, "ACTIVE", true) == 0)
+        if (String.Compare(device.RelationStatus.ToString().ToUpper(), "ACTIVE", StringComparison.OrdinalIgnoreCase) == 0)
         {
           shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
           // CCSSSCON-207 If a devices account has only a free sub, then should we import tag files into it?

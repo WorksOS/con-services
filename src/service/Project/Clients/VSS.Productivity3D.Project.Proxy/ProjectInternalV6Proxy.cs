@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -85,7 +83,7 @@ namespace VSS.Productivity3D.Project.Proxy
       return null;
     }
 
-    public async Task<List<ProjectData>> GetIntersectingProjects(string customerUid,
+    public async Task<ProjectDataResult> GetIntersectingProjects(string customerUid,
         double latitude, double longitude, string projectUid = null, IDictionary<string, string> customHeaders = null)
     {
       // ProjectSvc.ProjectController should:
@@ -100,14 +98,8 @@ namespace VSS.Productivity3D.Project.Proxy
       var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>("/project/intersecting",
         customerUid, null, customHeaders, queryParameters);
 
-      if (result.Code == 0)
-        if (!string.IsNullOrEmpty(projectUid))
-          return result.ProjectDescriptors.Where(p => string.Compare(p.ProjectUID, projectUid, StringComparison.OrdinalIgnoreCase) == 0).ToList();
-        else
-          return result.ProjectDescriptors;
-
-      log.LogDebug($"Failed to get list of projects which intersect: {result.Code}, {result.Message}");
-      return null;
+      log.LogDebug($"{nameof(GetIntersectingProjects)} get list of projects which intersect: {result.Code}, {result.Message}");
+      return result;
     }
 
     /// <summary>

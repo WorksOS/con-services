@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
-using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
@@ -88,7 +87,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
       }
 
-      if ((device == null || string.IsNullOrEmpty(device.DeviceUID) ) && !string.IsNullOrEmpty(request.Ec520Serial))
+      if (device?.Code != 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
@@ -97,8 +96,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, project, device);
 
-      if (device == null || string.IsNullOrEmpty(device.DeviceUID))
-        return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
+      if (device?.Code != 0)
+        return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
       return await HandleAutoImport(request, device);
     }
@@ -116,7 +115,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  Can manually import tag files where we don't know the device
       //  Can manually import tag files where we don't know the device, and regardless of the device customers deviceEntitlement
       //  If device is available, it must be associated with the project
-      //  For ManualImport we want to maximise ability so don't bother checking deviceStatus?
+      //  For ManualImport we want to maximize ability so don't bother checking deviceStatus?
       // CCSSSCON-207 verify: about ignoring device status; ignoring device-Customer entitlement and requiring device-project association?
       //                      also no projectTime overlap? 
 
@@ -125,10 +124,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug(
         $"{nameof(HandleManualImport)}: GotIntersectingProjectsForManual: {JsonConvert.SerializeObject(intersectingProjects)}");
 
-      if (!intersectingProjects.Any())
+      if (!intersectingProjects.ProjectDescriptors.Any())
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceUID, uniqueCode: 41);
 
-      if (intersectingProjects.Count > 1)
+      if (intersectingProjects.ProjectDescriptors.Count > 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceUID, uniqueCode: 49);
 
       return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUID, device == null ? string.Empty : device.DeviceUID);
@@ -148,13 +147,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       log.LogDebug(
         $"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 
-      if (!potentialProjects.Any())
+      if (!potentialProjects.ProjectDescriptors.Any())
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: errorCode);
 
-      if (potentialProjects.Count > 1)
+      if (potentialProjects.ProjectDescriptors.Count > 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 49);
 
-      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects[0].ProjectUID, device.DeviceUID);
+      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID);
     }
     
     protected override ContractExecutionResult ProcessEx<T>(T item)

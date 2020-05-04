@@ -62,6 +62,15 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
       DynamicAddwithOffset("Must contain a EC520 serial number", 51);
       DynamicAddwithOffset("Asset found, but has no valid subscriptions", 52);
+
+      // these error numbers come from calls to projectService
+      DynamicAddwithOffset("Unable to locate device by serialNumber in cws", 100);
+      DynamicAddwithOffset("Unable to locate device in localDB", 101);
+      DynamicAddwithOffset("Unable to locate any account for the device in cws", 102);
+      DynamicAddwithOffset("There is >1 active account for the device in cws", 103);
+      DynamicAddwithOffset("A problem occurred at the {0} endpoint. Exception: {1}", 104);
+      DynamicAddwithOffset("Unable to locate projects for device in cws", 105);
+      DynamicAddwithOffset("Project accountId differs between WorksOS and WorksManager", 106);
     }
 
     /// <summary>
