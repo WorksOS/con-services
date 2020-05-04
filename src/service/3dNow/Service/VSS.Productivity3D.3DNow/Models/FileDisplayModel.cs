@@ -1,5 +1,4 @@
 ﻿using VSS.Visionlink.Interfaces.Events.MasterData.Models;
-using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Now3D.Models
 {
