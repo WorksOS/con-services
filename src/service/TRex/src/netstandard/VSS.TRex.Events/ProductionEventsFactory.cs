@@ -38,7 +38,12 @@ namespace VSS.TRex.Events
         case ProductionEventType.GPSAccuracyChange:
           return new ProductionEvents<GPSAccuracyAndTolerance>(machineID, siteModelID, eventType,
             (w, s) => { w.Write(s.GPSTolerance); w.Write((byte)s.GPSAccuracy); },
-            r => new GPSAccuracyAndTolerance((GPSAccuracy)r.ReadByte(), r.ReadUInt16()),
+            r =>
+            {
+              var tolerance = r.ReadUInt16();
+              var accuracy = (GPSAccuracy) r.ReadByte();
+              return new GPSAccuracyAndTolerance(accuracy, tolerance);
+            },
             ProductionEventStateEqualityComparer.Equals);
 
         case ProductionEventType.PositioningTech: return new ProductionEvents<PositioningTech>(machineID, siteModelID, eventType, (w, s) => w.Write((byte)s), r => (PositioningTech)r.ReadByte(), ProductionEventStateEqualityComparer.Equals);
