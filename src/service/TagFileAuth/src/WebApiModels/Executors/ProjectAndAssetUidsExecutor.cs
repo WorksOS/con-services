@@ -25,7 +25,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///            either the projects customer has a paying-devicePackage (>0 i.e. not Free)
     ///              or the asset (if provided) Customer has a paying-devicePackage AND the project is owned by the same customer
     ///          and the location is inside the project
-    ///             the time of location is not limited to the project start/end time (CCSSSCON-207 still under discussion)
     /// 
     ///  b) Auto Import
     ///     a deviceSerial provided.
@@ -116,8 +115,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  Can manually import tag files where we don't know the device, and regardless of the device customers deviceEntitlement
       //  If device is available, it must be associated with the project
       //  For ManualImport we want to maximize ability so don't bother checking deviceStatus?
-      // CCSSSCON-207 verify: about ignoring device status; ignoring device-Customer entitlement and requiring device-project association?
-      //                      also no projectTime overlap? 
 
       var intersectingProjects = await dataRepository.GetIntersectingProjectsForManual(project, request.Latitude,
             request.Longitude, device);

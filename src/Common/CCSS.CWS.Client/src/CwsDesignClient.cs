@@ -14,7 +14,7 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace CCSS.CWS.Client
 {
   /// <summary>
-  /// These use the cws cws-designmanager controller
+  /// These use the cws-DesignManager controller
   ///   See comments in CwsAccountClient re TRN/Guid conversions
   /// </summary>
   public class CwsDesignClient : CwsDesignManagerClient, ICwsDesignClient
@@ -25,7 +25,6 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// POST http://api-stg.trimble.com/t/trimble.com/cws-designmanager-stg/1.0/projects/{projectId}/file
     ///   user token
     ///   used by ProjectSvc v6 and v5TBC
     /// </summary>

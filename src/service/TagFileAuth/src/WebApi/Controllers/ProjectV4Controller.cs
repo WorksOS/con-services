@@ -79,7 +79,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///            
     /// </returns>
     [Route("internal/v4/project/getUidsEarthWorks")]
-    [Route("api/v4/project/getUidsEarthWorks")]  // todoJeannie temp during changeover to internal proxy
     [HttpPost]
     public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndDeviceUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {
@@ -146,7 +145,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///     
     /// </returns>
     [Route("internal/v4/project/getUids")]
-    [Route("api/v4/project/getUids")] // todoJeannie temp during changeover to internal proxy
     [HttpPost]
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndDeviceUids(
       [FromBody]GetProjectAndAssetUidsRequest request,

@@ -19,9 +19,9 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/users/me
     ///   user token
-    ///   todoMaaverick userId is used for our caching. It must match the userId in the JWT. JWT should be in the customHeaders and should be a user token, not application token.
+    ///   userId is used for our caching. It must match the userId in the JWT. JWT should be in the customHeaders and should be a user token, not application token.
+    /// used by our preferenceService to get details from ProfileX via cws
     /// </summary>
     public Task<UserResponseModel> GetUser(Guid userId, IDictionary<string, string> customHeaders = null)
     {

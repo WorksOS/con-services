@@ -42,7 +42,6 @@ namespace MockProjectWebApi.Controllers
     /// </summary>
     /// <returns>The list of mocked projects</returns>
     [Route("internal/v6/project/{projectUid}")]
-    [Route("api/v6/project/applicationcontext/{projectUid}")] // todoJeannie obsolete once ProjectSvc changes merged to master
     [HttpGet]
     public ProjectDataSingleResult GetMockProject(Guid projectUid)
     {
@@ -57,7 +56,6 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked projects</returns>
     [HttpGet]
     [Route("internal/v6/project/shortId/{shortRaptorProjectId}")]
-    [Route("api/v6/project/applicationcontext/shortId/{shortRaptorProjectId}")] // todoJeannie obsolete once ProjectSvc changes merged to master
     public ProjectDataSingleResult GetMockProjectByShortId(int shortRaptorProjectId)
     {
       Logger.LogInformation($"{nameof(GetMockProjectByShortId)}: shortRaptorProjectId={shortRaptorProjectId}");
@@ -71,7 +69,6 @@ namespace MockProjectWebApi.Controllers
     /// <returns>The list of mocked projects</returns>
     [HttpGet]
     [Route("internal/v6/project/intersecting")]
-    [Route("api/v6/project/applicationcontext/intersecting")] // todoJeannie obsolete once ProjectSvc changes merged to master
     public ProjectDataResult GetMockIntersectingProjects(string customerUid,
        double latitude, double longitude, DateTime? timeOfPosition = null)
     {

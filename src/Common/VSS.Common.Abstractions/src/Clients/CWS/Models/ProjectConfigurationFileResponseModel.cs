@@ -38,7 +38,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
 
 
     /// <summary>
-    /// todoJeannie what is this?
+    /// this can be used for checksum validation
     /// </summary>
     [JsonProperty("md5")]
     public string Md5 { get; set; }

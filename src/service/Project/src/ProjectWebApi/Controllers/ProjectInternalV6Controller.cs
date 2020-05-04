@@ -61,7 +61,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <returns>A project data</returns>
     [Route("internal/v6/project/{projectUid}")]
-    [Route("api/v6/project/applicationcontext/{projectUid}")] // todoJeannie obsolete once ProjectSvc changes merged to master
     [HttpGet]
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectByUid(string projectUid)
     {
@@ -78,7 +77,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///       response to include customerUid
     /// </summary>
     [Route("internal/v6/project/shortId/{shortRaptorProjectId}")]
-    [Route("api/v6/project/applicationcontext/shortId/{shortRaptorProjectId}")] // todoJeannie obsolete once ProjectSvc changes merged to master
     [HttpGet]
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectByShortId(long shortRaptorProjectId)
     {
@@ -95,7 +93,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     /// <returns>project data list</returns>
     [Route("internal/v6/project/intersecting")]
-    [Route("api/v6/project/applicationcontext/intersecting")]  // todoJeannie obsolete once ProjectSvc changes merged to master
     [HttpGet]
     public async Task<ProjectV6DescriptorsListResult> GetIntersectingProjects(string customerUid,
        double latitude, double longitude)

@@ -72,7 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         deviceData.RelationStatus = deviceCustomer.RelationStatus;
         deviceData.TccDeviceStatus = deviceCustomer.TccDeviceStatus;
         log.LogInformation($"GetDeviceByShortRaptorIdExecutor: deviceData {JsonConvert.SerializeObject(deviceData)}");
-        return new DeviceDataSingleResult(deviceData); //todo Maverick real number and message
+        return new DeviceDataSingleResult(deviceData); 
       }
       catch (Exception e)
       {

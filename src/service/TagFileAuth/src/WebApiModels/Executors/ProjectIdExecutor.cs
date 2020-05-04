@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///      which belong to the devices owningCustomerUid,
     ///          for the location, time
     ///          and that the device is assigned to,
-    ///          and that the device is licensed (and claimed? CCSSSCON-207).
+    ///          and that the device is licensed (and claimed?).
     ///  
     ///  assumption: A customers projects cannot overlap spatially at the same point-in-time
     ///                  - this is controlled on project creation

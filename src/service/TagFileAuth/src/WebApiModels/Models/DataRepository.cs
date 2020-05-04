@@ -117,7 +117,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         var p = await _projectProxy.GetProjects(customerUid, _authorization.CustomHeaders());
         if (p != null)
         {
-          // CCSSSCON-207, what should be the marketing requirements for dates here?
           return p
               .Where(x => !x.IsArchived)
               .ToList();

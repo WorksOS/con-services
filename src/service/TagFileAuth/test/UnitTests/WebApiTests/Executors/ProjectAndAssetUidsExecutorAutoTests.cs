@@ -29,9 +29,6 @@ namespace WebApiTests.Executors
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
     }
 
-    // CCSSSCON-207 maybe some tests on the 2 device status?
-
-
     [TestMethod]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndProject()
     {
