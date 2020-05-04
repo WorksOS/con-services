@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using CCSS.CWS.Client.MockClients;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Common.ServiceDiscovery;
@@ -49,15 +51,15 @@ namespace VSS.Productivity3D.Now3D
       services.AddMvc();
 
       // Required for authentication
-      services.AddTransient<ICustomerProxy, CustomerProxy>();
+      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddTransient<IWebRequest, GracefulWebRequest>();
 
       services.AddServiceDiscovery();
-      services.AddTransient<IProjectProxy, ProjectV4Proxy>();
+      services.AddTransient<IProjectProxy, ProjectV6Proxy>();
       services.AddTransient<IFilterServiceProxy, FilterV1Proxy>();
-      services.AddTransient<IFileImportProxy, FileImportV4Proxy>();
+      services.AddTransient<IFileImportProxy, FileImportV6Proxy>();
 
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, Now3DExecutionStates>();
@@ -75,10 +77,9 @@ namespace VSS.Productivity3D.Now3D
     }
 
     /// <inheritdoc />
-    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory factory)
+    protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
       app.UseFilterMiddleware<Now3DAuthentication>();
-      app.UseMvc();
     }
   }
 }
