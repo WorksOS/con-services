@@ -547,6 +547,60 @@ namespace VSS.TRex.Tests.Caching
     }
 
     [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_DesignChangeInvalidation()
+    {
+      var projectUid = Guid.NewGuid();
+      var gridDataType = Types.GridDataType.PassCount;
+      var designUid = Guid.NewGuid();
+      Guid[] includedSurveyedSurfaces = new Guid[] { designUid };
+
+      using (var cache = new TRexSpatialMemoryCache(20000, 1000000, 0.5))
+      {
+        // Create a context with a included design and validate that a design change causes the appropriate invalidation
+        var testGuid = Guid.NewGuid();
+        var context =  cache.LocateOrCreateContext(projectUid, SpatialCacheFingerprint.ConstructFingerprint(projectUid, gridDataType,null, includedSurveyedSurfaces));
+
+        Assert.True(context.MarkedForRemoval == true, "Empty contents should be marked for removal");
+
+        // Add content to context
+        TRexSpatialMemoryCacheContextTests_Element[,] items = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+        for (int i = 0; i < 100; i++)
+        {
+          for (int j = 0; j < 100; j++)
+          {
+            items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+            {
+              CacheOriginX = (int)(i * SubGridTreeConsts.SubGridTreeDimension),
+              CacheOriginY = (int)(j * SubGridTreeConsts.SubGridTreeDimension),
+              SizeInBytes = 1
+            };
+
+            cache.Add(context, items[i, j]);
+          }
+        }
+
+        Assert.True(context.MarkedForRemoval == false, "Contents should not be marked for removal");
+        Assert.True(context.TokenCount == 10000, "Token count incorrect after addition");
+
+        cache.InvalidateDueToDesignChange(projectUid, designUid);
+
+        int count = 10000;
+        // Remove the items
+        for (int i = 0; i < 100; i++)
+        {
+          for (int j = 0; j < 100; j++)
+          {
+            cache.Remove(context, items[i, j]);
+            Assert.True(context.TokenCount == --count, $"Count incorrect at index {i}, {j}, count = {count}, tokenCount = {context.TokenCount}");
+          }
+        }
+
+        Assert.True(context.MarkedForRemoval == true, "Empty context should be marked for removal");
+        Assert.True(context.TokenCount == 0, "Token count incorrect after invalidation");
+      }
+    }
+
+    [Fact]
     public void Test_TRexSpatialMemoryCacheTests_Disposable()
     {
       using (var cache = new TRexSpatialMemoryCache(10, 1000000, 0.5))

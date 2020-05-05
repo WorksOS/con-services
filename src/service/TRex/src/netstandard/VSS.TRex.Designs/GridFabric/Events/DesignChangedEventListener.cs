@@ -10,6 +10,7 @@ using VSS.TRex.Common;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Caching.Interfaces;
 
 namespace VSS.TRex.Designs.GridFabric.Events
 {
@@ -86,6 +87,8 @@ namespace VSS.TRex.Designs.GridFabric.Events
           }
         }
 
+        // Advise the spatial memory general sub grid result cache of the change so it can invalidate cached derivatives
+        DIContext.Obtain<ITRexSpatialMemoryCache>()?.InvalidateDueToDesignChange(message.SiteModelUid, message.DesignUid);
 
       }
       catch (Exception e)

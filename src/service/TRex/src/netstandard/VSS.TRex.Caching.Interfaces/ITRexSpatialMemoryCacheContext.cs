@@ -35,6 +35,8 @@ namespace VSS.TRex.Caching.Interfaces
 
     void InvalidateSubGridNoLock(int originX, int originY, out bool subGridPresentForInvalidation);
 
+    void InvalidateAllSubGridsNoLock();
+
     void MarkForRemoval(DateTime markedForRemovalAtUtc);
 
     void Reanimate();
