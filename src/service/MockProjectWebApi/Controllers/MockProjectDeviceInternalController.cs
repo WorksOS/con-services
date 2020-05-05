@@ -23,7 +23,7 @@ namespace MockProjectWebApi.Controllers
       if (serialNumber == ConstantsUtil.DIMENSIONS_SERIAL)
         return new DeviceDataSingleResult(new DeviceData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
 
-      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws");
+      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws", new DeviceData());
     }
 
     [HttpGet]
@@ -34,7 +34,7 @@ namespace MockProjectWebApi.Controllers
       if (shortRaptorAssetId == ConstantsUtil.DIMENSIONS_PROJECT_ID)
         return new DeviceDataSingleResult(new DeviceData() { CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
 
-      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws");
+      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws", new DeviceData());
     }
 
     [HttpGet]

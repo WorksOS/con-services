@@ -11,12 +11,13 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       _deviceData = null;
     }
 
-    public DeviceDataSingleResult(int code, string message, DeviceData deviceData)
+    public DeviceDataSingleResult(int code, string message, DeviceData deviceData = null)
     {
       Code = code;
       Message = message;
       _deviceData = deviceData;
-      _deviceData.Code = code;
+      if (_deviceData != null)
+        _deviceData.Code = code;
     }
 
     public DeviceDataSingleResult(DeviceData deviceData)

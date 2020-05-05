@@ -31,7 +31,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           var message = "Unable to locate device in localDB";
           log.LogInformation($"GetDeviceByShortRaptorIdExecutor: {message}");
-          return new DeviceDataSingleResult(code: 100, message: message);
+          return new DeviceDataSingleResult(code: 100, message: message, new DeviceData());
         }
 
         var deviceData = new DeviceData() { DeviceUID = deviceFromRepo.DeviceUID, ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID };
