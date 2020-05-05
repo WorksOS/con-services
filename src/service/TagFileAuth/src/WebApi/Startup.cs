@@ -1,4 +1,5 @@
-﻿using CCSS.CWS.Client.MockClients;
+﻿using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -47,7 +48,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>()
         .AddTransient<ITPaasProxy, TPaasProxy>()
 
-        .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
+        .AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY)
         .AddTransient<IProjectInternalProxy, ProjectInternalV6Proxy>()
         .AddTransient<IDeviceInternalProxy, DeviceInternalV1Proxy>()
         .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();

@@ -1,4 +1,5 @@
 ﻿using System;
+using CCSS.CWS.Client;
 using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -89,11 +90,12 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
       // CCSSSCON-216 temporary move to real endpoints when available
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
-      services.AddTransient<ICwsProjectClient, MockCwsProjectClient>();
-      services.AddTransient<ICwsDeviceClient, MockCwsDeviceClient>();
-      services.AddTransient<ICwsDesignClient, MockCwsDesignClient>();
-      services.AddTransient<ICwsProfileSettingsClient, MockCwsProfileSettingsClient>();
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
+      services.AddCwsClient<ICwsProjectClient, CwsProjectClient, MockCwsProjectClient>(CwsClientMockExtensionMethods.MOCK_PROJECT_KEY);
+      services.AddCwsClient<ICwsDeviceClient, CwsDeviceClient, MockCwsDeviceClient>(CwsClientMockExtensionMethods.MOCK_DEVICE_KEY);
+      services.AddCwsClient<ICwsDesignClient, CwsDesignClient, MockCwsDesignClient>(CwsClientMockExtensionMethods.MOCK_DESIGN_KEY);
+      services.AddCwsClient<ICwsProfileSettingsClient, CwsProfileSettingsClient, MockCwsProfileSettingsClient>(CwsClientMockExtensionMethods.MOCK_PROFILE_KEY);
+
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>

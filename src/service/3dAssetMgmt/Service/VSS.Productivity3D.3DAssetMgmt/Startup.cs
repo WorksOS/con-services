@@ -1,4 +1,5 @@
-﻿using CCSS.CWS.Client.MockClients;
+﻿using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +42,7 @@ namespace VSS.Productivity3D.AssetMgmt3D
 
       // Required for TIDAuthentication  
       // CCSSSCON-216 temporary move to real endpoints when available
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
       services.AddTransient<IProjectProxy, ProjectV6Proxy>();
 
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
