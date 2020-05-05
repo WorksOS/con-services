@@ -29,7 +29,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       return CheckTPaaS();
     }
 
-    [Fact(Skip = "waiting on CCSSSCON-115")]
+    [Fact(Skip = "manual testing only")]
     public async Task GetDeviceBySerialNumberTest()
     {
       // (new version of GetDevicesBySerialNumber will allow an application token . Setup test with applicationToken
@@ -53,7 +53,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       // Assert.Equal(expectedStatus, device.Status);
     }
 
-    [Fact(Skip = "waiting on CCSSSCON-114")]
+    [Fact(Skip = "manual testing only")]
     public async Task GetDeviceByDeviceUidTest()
     {
       // (new version of GetDevicesBySerialNumber will allow an application token . Setup test with applicationToken
@@ -68,34 +68,28 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       var device = await client.GetDeviceByDeviceUid(deviceUid, CustomHeaders());
 
       Assert.NotNull(device);
-      //Assert.Equal(expectedAccountId, device.AccountId);
       Assert.Equal(expectedName, device.DeviceName);
       Assert.Equal(expectedType, device.DeviceType);
       Assert.Equal(deviceUid.ToString(), device.Id);
       Assert.Equal(expectedSerialNumber, device.SerialNumber);
-      //Assert.Equal(expectedStatus, device.Status);
     }
 
-    [Fact(Skip = "waiting on CCSSSCON-136")]
+    [Fact(Skip = "manual testing only")]
     public async Task GetDevicesForAccountTest()
     {
       // (new version of GetDevicesForAccount will allow an application token . Setup test with applicationToken
-      var accountClient = ServiceProvider.GetRequiredService<ICwsAccountClient>();
-      var accountListResponseModel = await accountClient.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
-      Assert.NotNull(accountListResponseModel);
-      Assert.True(accountListResponseModel.Accounts.Count > 0);
+      //var accountClient = ServiceProvider.GetRequiredService<ICwsAccountClient>();
+      //var accountListResponseModel = await accountClient.GetMyAccounts(TRNHelper.ExtractGuid(userId).Value, CustomHeaders());
+      //Assert.NotNull(accountListResponseModel);
+      //Assert.True(accountListResponseModel.Accounts.Count > 0);
+      var testAccountTRN = "af5a9262-1e29-42df-b199-e2b881a89c88";
 
       var client = ServiceProvider.GetRequiredService<ICwsDeviceClient>();
-      var deviceList = await client.GetDevicesForAccount(new Guid(accountListResponseModel.Accounts[0].Id), CustomHeaders());
+      var deviceList = await client.GetDevicesForAccount(new Guid(testAccountTRN), CustomHeaders());
 
       Assert.NotNull(deviceList);
       Assert.True(deviceList.Devices.Count >= 0);
     }
 
-    [Fact(Skip = "waiting on CCSSSCON-???")]
-    public void GetProjectsForDeviceTest()
-    {
-      throw new NotImplementedException();
-    }
   }
 }

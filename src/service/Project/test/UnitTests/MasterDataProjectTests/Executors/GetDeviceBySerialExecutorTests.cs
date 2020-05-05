@@ -164,7 +164,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.NotNull(response);
       Assert.Equal(100, response.Code);
       Assert.Equal("Unable to locate device by serialNumber in cws", response.Message);
-      Assert.Null(response.DeviceDescriptor);
     }
 
     [Fact]

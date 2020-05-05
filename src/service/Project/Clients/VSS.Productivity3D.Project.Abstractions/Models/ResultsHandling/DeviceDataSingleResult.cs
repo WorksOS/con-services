@@ -16,7 +16,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       Code = code;
       Message = message;
       _deviceData = deviceData;
-      if (_deviceData != null ) 
+      if (_deviceData != null)
         _deviceData.Code = code;
     }
 

@@ -20,7 +20,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     { 
       if ( ShortRaptorAssetId < 1)
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(9999, "Invalid shortRaptorAssetId.")); // todoMaverick find a number an d message
+          new ContractExecutionResult(127, "Invalid shortRaptorAssetId."));
     }
   }
 }

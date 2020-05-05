@@ -40,12 +40,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //    however we probably don't need this as cws has a lookup by serialNumber only,
       //    and due to suffixes, these should be unique over CB/EC
       var device = await dataRepository.GetDevice(request.RadioSerial);
-      log.LogDebug($"{nameof(ProjectAndAssetUidsEarthWorksExecutor)}: Loaded device for RadioSerial? {JsonConvert.SerializeObject(device)}");
+      var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+      log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: { JsonConvert.SerializeObject(device)} {deviceStatus}");
 
       if (device?.Code != 0)
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
-        log.LogDebug($"{nameof(ProjectAndAssetUidsEarthWorksExecutor)}: Loaded device for Ec520? {JsonConvert.SerializeObject(device)}");
+        deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: { JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
       if (device?.Code != 0)

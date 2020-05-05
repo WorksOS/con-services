@@ -60,14 +60,16 @@ namespace CCSS.CWS.Client.MockClients
 
       var deviceListResponseModel = new DeviceListResponseModel()
       {
-        Devices = new List<DeviceResponseModel>()
+        Devices = new List<DeviceFromListResponseModel>()
         {
-          new DeviceResponseModel()
+          new DeviceFromListResponseModel()
           {
             Id = Guid.NewGuid().ToString(),
             DeviceType = "EC520",
             DeviceName = "this is a device",
-            SerialNumber = "56556565"
+            SerialNumber = "56556565",
+            RelationStatus = RelationStatusEnum.Active,
+            TccDeviceStatus = TCCDeviceStatusEnum.Pending
           }
         }
       };

@@ -201,8 +201,6 @@ namespace VSS.MasterData.ProjectTests.Executors
       Assert.NotNull(response);
       Assert.Equal(100, response.Code);
       Assert.Equal("Unable to locate device in localDB", response.Message);
-
-      Assert.Null(response.DeviceDescriptor);
     }
 
     [Fact]

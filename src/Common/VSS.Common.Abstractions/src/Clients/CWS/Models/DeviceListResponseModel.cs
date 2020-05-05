@@ -9,14 +9,14 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
   {
     public DeviceListResponseModel()
     {
-      Devices = new List<DeviceResponseModel>();
+      Devices = new List<DeviceFromListResponseModel>();
     }
 
     /// <summary>
     /// Devices
     /// </summary>
     [JsonProperty("devices")]
-    public List<DeviceResponseModel> Devices { get; set; }
+    public List<DeviceFromListResponseModel> Devices { get; set; }
 
     /// <summary>
     /// Returned as true if the result has more records to display. Helps in pagination. False implies that there are no more records to display.
@@ -31,8 +31,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
                                             ?? new List<string>();
   }
 
-  /* Example response:
-   * CCSSSCON-136 etc format not available yet
+  /* Example response:   
    {
     "hasMore": true,
     "devices": [

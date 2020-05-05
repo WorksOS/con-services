@@ -21,7 +21,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     { 
       if (string.IsNullOrEmpty(DeviceUid) || !Guid.TryParse(DeviceUid, out var guid))
         throw new ServiceException(HttpStatusCode.BadRequest,
-          new ContractExecutionResult(999, "Invalid deviceUid.")); // todoMaverick
+          new ContractExecutionResult(126, "Invalid deviceUid."));
     }
   }
 }

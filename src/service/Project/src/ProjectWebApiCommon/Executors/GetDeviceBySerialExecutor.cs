@@ -26,15 +26,17 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       try
       {
+        var deviceData = new DeviceData();
+
         var deviceResponseModel = await cwsDeviceClient.GetDeviceBySerialNumber(deviceSerial.SerialNumber, customHeaders);
         if (deviceResponseModel == null)
         {
           var message = "Unable to locate device by serialNumber in cws";
           log.LogInformation($"GetDeviceBySerialExecutor: {message}");
-          return new DeviceDataSingleResult(code: 100, message: message); 
+          return new DeviceDataSingleResult(code: 100, message: message, deviceData); 
         }
 
-        var deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
+        deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
 
         var deviceFromRepo = await deviceRepo.GetDevice(deviceResponseModel.Id);
         if (deviceFromRepo == null)

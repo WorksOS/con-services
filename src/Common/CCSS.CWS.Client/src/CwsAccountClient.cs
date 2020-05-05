@@ -15,9 +15,9 @@ namespace CCSS.CWS.Client
 {
   /// <summary>
   /// CWS identifies entities using a rather long TRN, 
-  ///      however internally we would prefer to use a Guid: to minimise code changes adndistance from cws swap-out
-  /// Since ProfileX (where the TRNs come from) are currently only in 1 region, and there is no antiicipated date to do multi-regions,
-  ///      we can hide the TRN-complexity inside these CWSclients, and extract the unique Guid to pass around WorksOS/3dp
+  ///      however internally we would prefer to use a Guid: to minimize code changes and distance from potential cws swap-out
+  /// Since ProfileX (where the TRNs come from) are currently only in 1 region, and there is no anticipated date to do multi-regions,
+  ///      we can hide the TRN-complexity inside these cwsClients, and extract the unique Guid to pass around WorksOS/3dp
   /// </summary>
   public class CwsAccountClient : CwsProfileManagerClient, ICwsAccountClient
   {
@@ -27,18 +27,14 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/users/me/accounts
     ///   user token
-    ///   todoWM
-    ///       I get 10 accounts using an application token
-    ///       I get 1 if using user token(account == "trn::profilex:us-west-2:account:158ef953-4967-4af7-81cc-952d47cb6c6f")
+    ///   Observation: If you use an application token you get 10 accounts, but for user token you get 1. We will only use a user token
     /// </summary>
     public async Task<AccountListResponseModel> GetMyAccounts(Guid userUid, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(GetMyAccounts)}: userUid {userUid}");
 
       var accountListResponseModel = await GetData<AccountListResponseModel>("/users/me/accounts", null, userUid, null, customHeaders);
-      // todoMaveric what if error?
       foreach (var account in accountListResponseModel.Accounts)
       {
         account.Id = TRNHelper.ExtractGuidAsString(account.Id);
@@ -49,7 +45,6 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0/users/me/accounts
     ///   user token
     /// </summary>
     public async Task<AccountResponseModel> GetMyAccount(Guid userUid, Guid customerUid, IDictionary<string, string> customHeaders = null)
@@ -68,10 +63,9 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
-    /// https://api.trimble.com/t/trimble.com/cws-profilemanager/1.0/accounts/{accountId}/devicelicense
     ///   application token and user token
     ///   used by UI to determine functionality allowed by user user token
-    ///   used by TFA CCSSSCON-207? application token            
+    ///   used by TFA using an application token            
     /// </summary>
     public Task<DeviceLicenseResponseModel> GetDeviceLicenses(Guid customerUid, IDictionary<string, string> customHeaders = null)
     {

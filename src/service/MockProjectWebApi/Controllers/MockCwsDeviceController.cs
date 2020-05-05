@@ -37,7 +37,7 @@ namespace MockProjectWebApi.Controllers
     [HttpGet]
     public DeviceListResponseModel GetDevicesForAccount(string accountTrn)
     {
-      var deviceListResponseModel = new DeviceListResponseModel() {Devices = new List<DeviceResponseModel>() {new DeviceResponseModel() {Id = Guid.NewGuid().ToString(), DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = "56556565"}}};
+      var deviceListResponseModel = new DeviceListResponseModel() {Devices = new List<DeviceFromListResponseModel>() {new DeviceFromListResponseModel() {Id = Guid.NewGuid().ToString(), DeviceType = "EC520", DeviceName = "this is a device", SerialNumber = "56556565"}}};
 
       Logger.LogInformation($"{nameof(GetDevicesForAccount)}: accountTrn {accountTrn}. deviceListResponseModel {JsonConvert.SerializeObject(deviceListResponseModel)}");
       return deviceListResponseModel;

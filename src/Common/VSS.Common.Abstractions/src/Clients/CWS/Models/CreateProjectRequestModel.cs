@@ -2,8 +2,6 @@
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  // CCSSSCON-23 this doesn't include start and end dates or description
-  //  marketing are still going back and forth on these
   public class CreateProjectRequestModel
   {
     /// <summary>

@@ -22,11 +22,12 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets device by serialNumber
     ///  called by TFA AssetIdExecutor, ProjectAndAssetUidsEarthWorksExecutor, ProjectAndAssetUidsEarthWorksExecutor
-    ///   a) retrieve from cws using serialNumber which must get DeviceTRN 
-    ///   b) get from localDB shortRaptorAssetId so we can fill it into response
+    ///   a) retrieve from cws using serialNumber, response includes DeviceTRN 
+    ///   b) get shortRaptorAssetId from localDB so we can add it into response
     ///     note that if it doesn't exist localDB it means that 
     ///     the user hasn't logged in to fill in our DB after adding the device to the account
     ///   c) to get accountId and 2xstatus temporarily needs to call cws.GetAccountsForDevice
+    ///   d) only returns 1 ACTIVE account, else error code
     /// </summary>
     [HttpGet("internal/v1/device/serialnumber")]
     public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery] string serialNumber)
@@ -49,6 +50,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets device by shortRaptorAssetId, results include Uid and serialNumber
     ///  called by TFA ProjectBoundariesAtDateExecutor, ProjectIdExecutor
+    ///  Only returns 1 ACTIVE account, else error code
     /// </summary>
     [HttpGet("internal/v1/device/shortRaptorAssetId")]
     public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
@@ -91,28 +93,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       return projectDataListResult;
     }
-
-    // todoMaverick
-    ///// <summary>
-    ///// Gets accounts with their association (if any) to the device
-    /////    todoMaverick this is a temporary kludge until cws/profileX get around a bug in profileX
-    ///// </summary>
-    //[HttpGet("internal/v1/device/{deviceUid}/accounts")]
-    //public async Task<DeviceCustomerListDataResult> GetAccountsForDevice(string deviceUid)
-    //{
-    //  Logger.LogInformation($"{nameof(GetAccountsForDevice)}");
-    //  throw new NotImplementedException();
-    //}
-
-    ///// <summary>
-    ///// Gets account with its association to the device
-    /////    this will be the final fix, once cws/profileX makes this possible
-    ///// </summary>
-    //[HttpGet("internal/v1/device/{deviceUid}/account")]
-    //public async Task<DeviceCustomerListDataResult> GetAccountForDevice(string deviceUid)
-    //{
-    //  Logger.LogInformation($"{nameof(GetAccountForDevice)}");
-    //  throw new NotImplementedException();
-    //}  
   }
 }

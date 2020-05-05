@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///      which belong to the devices owningCustomerUid,
     ///          for the location, time
     ///          and that the device is assigned to,
-    ///          and that the device is licensed (and claimed? CCSSSCON-207).
+    ///          and that the device is licensed (and claimed?).
     ///  
     ///  assumption: A customers projects cannot overlap spatially at the same point-in-time
     ///                  - this is controlled on project creation
@@ -37,7 +37,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (request.shortRaptorAssetId > 0)
       {
         var device = await dataRepository.GetDevice((int) request.shortRaptorAssetId);
-        log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
+        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by shortRaptorAssetId?: {request.shortRaptorAssetId} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
         var deviceLicenseTotal = 0;
         if (device?.Code != 0)

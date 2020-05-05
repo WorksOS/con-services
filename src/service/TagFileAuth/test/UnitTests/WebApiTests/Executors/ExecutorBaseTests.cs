@@ -26,6 +26,7 @@ namespace WebApiTests.Executors
     protected Mock<IDeviceInternalProxy> deviceProxy;
     protected Mock<ITPaaSApplicationAuthentication> authorizationProxy;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected ILoggerFactory loggerFactory;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -45,6 +46,7 @@ namespace WebApiTests.Executors
       cwsAccountClient = new Mock<ICwsAccountClient>();
       deviceProxy = new Mock<IDeviceInternalProxy>();
       authorizationProxy = new Mock<ITPaaSApplicationAuthentication>();
+      loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
     }
   
   }

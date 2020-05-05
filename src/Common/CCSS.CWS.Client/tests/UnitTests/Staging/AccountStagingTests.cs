@@ -30,7 +30,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       return CheckTPaaS();
     }
 
-    [Fact(Skip = "Can be used for testing and debugging")]
+    [Fact(Skip = "manual testing only")]
     public async Task GetMyAccountsTest()
     {
       var client = ServiceProvider.GetRequiredService<ICwsAccountClient>();
@@ -43,7 +43,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       Assert.Single(result.Accounts.Where(a => string.Compare(a.Id, expectedAccountId, true) == 0));
     }
        
-   [Fact(Skip = "Can be used for testing and debugging")]
+   [Fact(Skip = "manual testing only")]
    //[Fact]
     public async Task GetDeviceAccountsTest()
     {
