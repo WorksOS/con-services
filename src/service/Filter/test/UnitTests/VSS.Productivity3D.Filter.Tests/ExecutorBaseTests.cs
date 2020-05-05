@@ -39,7 +39,7 @@ namespace VSS.Productivity3D.Filter.Tests
 
                        // Required for TIDAuthentication  
                        // CCSSSCON-216 temporary move to MockProjectWebApi when real is available
-                       .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
+                       .AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY)
 
                        .AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>()
                        .AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>()

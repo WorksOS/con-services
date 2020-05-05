@@ -65,7 +65,7 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IPreferenceRepository, PreferenceRepository>();
       services.AddTransient<IErrorCodesProvider, PreferenceErrorCodesProvider>();
       services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
 
       //services.AddSingleton<CacheInvalidationService>();
