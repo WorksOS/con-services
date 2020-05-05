@@ -1,3 +1,0 @@
-JAEGER_SERVICE_NAME: Tagfile Dump Service
-productivity3d-service: https://api.trimble.com/t/trimble.com/vss-3dproductivity/2.0
-AWS_ALL_TAGFILE_BUCKET_NAME: ccss-tag-file-archive-prod

@@ -1,3 +1,0 @@
-JAEGER_SERVICE_NAME: Tagfile Dump Service
-AWS_ALL_TAGFILE_BUCKET_NAME: ccss-tag-file-archive
-TAG_FILE_FORWARD_URL: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0

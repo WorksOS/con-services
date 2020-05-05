@@ -1,9 +1,0 @@
-﻿{
-  "LogLevel": {
-    "Default": "Debug",
-    "Microsoft": "Warning",
-    "OpenTracing.Contrib.NetCore.AspNetCore": "Warning",
-    "System": "Warning"
-  },
-  "server.urls": "http://*:80"
-}
