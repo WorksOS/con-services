@@ -59,6 +59,7 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
+    /// 2020_05_05 this is probably obsolete now as devices will at best be done 1 at-a-time CCSSSCON-314
     /// used when UI calls ProjectSvc.GetCustomerDeviceLicense() 
     /// to load devices for account into DB (to generate shortRaptorAssetId)
     ///                 response fields: DeviceTRN
