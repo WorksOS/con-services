@@ -37,7 +37,7 @@ namespace VSS.WebApi.Common
       app.UseExceptionTrap();
       app.UseFilterMiddleware<RequestIDMiddleware>();
 
-      // todoMaverick
+      // CCSSSCON-223
       //app.UseSwagger();
       ////Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
       //app.UseSwaggerUI(c =>
@@ -100,6 +100,7 @@ namespace VSS.WebApi.Common
       return builder;
     }
 
+    private static object _lock = new object();
 
     public static IServiceCollection AddJaeger(this IServiceCollection collection, string service_title)
     {
@@ -134,10 +135,17 @@ namespace VSS.WebApi.Common
           .Build();
         }
 
-        GlobalTracer.Register(tracer);
+        lock (_lock)
+        {
+          if (!GlobalTracer.IsRegistered())
+          {
+            GlobalTracer.Register(tracer);
+          }
+        }
 
         return tracer;
       });
+
       return collection;
     }
 

@@ -11,8 +11,11 @@ namespace VSS.TRex.Common
   /// <summary>
   /// Provides an interface to transferProxy for read or write.
   /// </summary>
-  public static class S3FileTransfer 
+  public static class S3FileTransfer
   {
+
+    const string S3DirectorySeparator = "/";
+
     private static readonly ILogger Log = Logging.Logger.CreateLogger("S3FileTransfer");
 
     /// <summary>
@@ -23,7 +26,7 @@ namespace VSS.TRex.Common
     /// <param name="targetPath"></param>
     public static async Task<bool> ReadFile(Guid siteModelUid, string fileName, string targetPath)
     {
-      var s3Path = $"{siteModelUid.ToString()}/{fileName}";
+      var s3Path = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
       FileStreamResult fileStreamResult;
 
       try
@@ -45,9 +48,12 @@ namespace VSS.TRex.Common
       try
       {
         var targetFullPath = Path.Combine(targetPath, fileName);
-        using (var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
+        using (fileStreamResult.FileStream)
         {
-          fileStreamResult.FileStream.CopyTo(targetFileStream);
+          using (var targetFileStream = File.Create(targetFullPath, (int)fileStreamResult.FileStream.Length))
+          {
+            fileStreamResult.FileStream.CopyTo(targetFileStream);
+          }
         }
       }
       catch (Exception e)
@@ -120,8 +126,31 @@ namespace VSS.TRex.Common
       if (destinationFileName != null)
         fileName = destinationFileName;
 
-      var s3FullPath = $"{siteModelUid.ToString()}/{fileName}";
+      var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
       return WriteFile(localFullPath, s3FullPath);
     }
+
+    /// <summary>
+    ///  Remove file from storage
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="fileName"></param>
+    /// <returns></returns>
+    public static bool RemoveFileFromBucket(Guid siteModelUid, string fileName)
+    {
+      bool res;
+      try
+      {
+        var s3FullPath = $"{siteModelUid}{S3DirectorySeparator}{fileName}";
+        res = DIContext.Obtain<ITransferProxy>().RemoveFromBucket(s3FullPath);
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, $"Exception removing file from storage. file: {fileName} :");
+        return false;
+      }
+      return res;
+    }
+
   }
 }

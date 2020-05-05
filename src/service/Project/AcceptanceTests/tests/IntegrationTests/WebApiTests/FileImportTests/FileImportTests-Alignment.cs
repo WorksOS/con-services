@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using IntegrationTests.UtilityClasses;
 using TestUtility;
-using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using Xunit;
 
 namespace IntegrationTests.WebApiTests.FileImportTests
@@ -21,11 +21,10 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);
@@ -50,11 +49,10 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);
@@ -91,11 +89,10 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);
@@ -128,11 +125,10 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);
@@ -163,11 +159,10 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var ts = new TestSupport();
       var customerUid = Guid.NewGuid();
       var startDateTime = ts.FirstEventDate;
-      var endDateTime = new DateTime(9999, 12, 31);
       ts.IsPublishToWebApi = true;
       var projectEventArray = new[] {
-       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectStartDate                            | ProjectEndDate                             | ProjectBoundary          | CustomerUID   |",
-      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time |{startDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {endDateTime:yyyy-MM-ddTHH:mm:ss.fffffff}  | {Boundaries.Boundary1}   | {customerUid} |" };
+       "| EventType            | EventDate   | ProjectName   | ProjectType | ProjectTimezone           | ProjectBoundary          | CustomerUID   |",
+      $"| CreateProjectRequest | 0d+09:00:00 | {testText}    | Standard    | New Zealand Standard Time | {Boundaries.Boundary1}   | {customerUid} |" };
       await ts.PublishEventCollection(projectEventArray);
 
       var importFile = new ImportFile(uriRoot);

@@ -2,36 +2,31 @@
 
 namespace VSS.Common.Abstractions.Clients.CWS.Models
 {
-  // todoMaverick this doesn't include start and end dates. 
-  //  Steve says this is as expected.
   public class CreateProjectRequestModel
   {
     /// <summary>
     /// Account TRN ID
     /// </summary>
     [JsonProperty("accountId")]
-    public string accountId { get; set; }
+    public string AccountId { get; set; }
 
     /// <summary>
     /// Project name
     /// </summary>
     [JsonProperty("projectName")]
-    public string projectName { get; set; }
+    public string ProjectName { get; set; }
 
     /// <summary>
-    /// cws example = "America/Denver"
-    ///    this field is optional. We should never set it.
-    ///    cws has its own set which it uses internally, and calculates off the boundary
-    ///    3dp has a different set, so we'll just use our own
+    /// 3dp supports what types?
     /// </summary>
-    //[JsonProperty("timezone")]
-    //public string timezone { get; set; }
+    [JsonProperty("timezone")]
+    public string Timezone { get; set; }
 
     /// <summary>
     /// 3dp supports what types?
     /// </summary>
     [JsonProperty("boundary")]
-    public ProjectBoundary boundary { get; set; }
+    public ProjectBoundary Boundary { get; set; }
 
   }
 
@@ -39,7 +34,7 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     {
       "accountId": "{{accountId}}",
       "projectName": "{{projectName}}",
-      "timezone": "America/Denver",
+      // "timezone": "America/Denver",
       "boundary": {
         "type": "Polygon",
         "coordinates": [

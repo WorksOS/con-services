@@ -14,6 +14,7 @@ using VSS.MasterData.Proxies;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Proxy;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI
@@ -43,9 +44,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
         .AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>()
         .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
         .AddSingleton<IWebRequest, GracefulWebRequest>()
-        .AddTransient<ICwsAccountClient, MockCwsAccountClient>()
-        .AddTransient<IProjectProxy, ProjectV6Proxy>()
-        .AddTransient<IDeviceProxy, DeviceV1Proxy>();
+
+        .AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>()
+        .AddTransient<ITPaasProxy, TPaasProxy>()
+
+        .AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY)
+        .AddTransient<IProjectInternalProxy, ProjectInternalV6Proxy>()
+        .AddTransient<IDeviceInternalProxy, DeviceInternalV1Proxy>()
+        .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();
       
       services.AddOpenTracing(builder =>
       {
@@ -58,6 +64,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
-    { }
+    {  }
   }
 }

@@ -48,7 +48,7 @@ namespace CCSS.CWS.Client
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters);
+        return await SendMasterDataItemServiceDiscoveryNoCache<TRes>(route, customHeaders, HttpMethod.Post, parameters, ms);
       }
     }
 
@@ -61,8 +61,14 @@ namespace CCSS.CWS.Client
 
       using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
       {
-        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters);
+        await SendMasterDataItemServiceDiscoveryNoCache(route, customHeaders, HttpMethod.Post, parameters, ms);
       }
+    }
+
+    protected Task UploadData(string uploadUrl, Stream payload,
+      IDictionary<string, string> customHeaders = null) 
+    {
+      return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
 
     protected Task<TRes> DeleteData<TRes>(string route, IList<KeyValuePair<string, string>> parameters = null,

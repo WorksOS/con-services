@@ -15,6 +15,7 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the post.
     /// </summary>
     [Route("api/v1/coordsystem/validation")]
+    [Route("api/v2/coordsystem/validation")]
     [HttpPost]
     public CoordinateSystemSettingsResult DummyCoordsystemValidationPost(
       [FromBody] CoordinateSystemFileValidationRequest request)
@@ -47,6 +48,7 @@ namespace MockProjectWebApi.Controllers
     /// Dummies the post.
     /// </summary>
     [Route("api/v1/coordsystem")]
+    [Route("api/v2/coordsystem")]
     [HttpPost]
     public CoordinateSystemSettingsResult DummyCoordsystemPost([FromBody] CoordinateSystemFile request)
     {

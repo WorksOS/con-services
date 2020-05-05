@@ -16,7 +16,9 @@ using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Project.WebAPI.Factories;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Project.Abstractions.Utilities;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.TRex.Gateway.Common.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -31,10 +33,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public FileImportV5TBCController(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
-      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
-      IRequestFactory requestFactory)
-      : base(configStore, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+    public FileImportV5TBCController(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+                                     IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
+                                     IRequestFactory requestFactory)
+      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
     { }
 
     // PUT: api/v5/projects/{id}/importedfiles

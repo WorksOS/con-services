@@ -32,12 +32,13 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       
       var createProjectRequestModel = new CreateProjectRequestModel
       {
-        accountId = customerUid.ToString(),
-        projectName = "my first project",        
-        boundary = new ProjectBoundary()
+        AccountId = customerUid.ToString(),
+        ProjectName = "my first project",    
+        Timezone = "Mountain Standard Time",
+        Boundary = new ProjectBoundary()
         {
           type = "Polygon",
-          coordinates = new List<double[,]>() { { new double[2, 2] { { 180, 90 }, { 180, 90 } } } } 
+          coordinates = new List<double[,]>() { { new double[,] { { 150.3, 1.2 }, { 150.4, 1.2 }, { 150.4, 1.3 }, { 150.4, 1.4 }, { 150.3, 1.2 } } } }
         }
       };
 
@@ -99,7 +100,7 @@ namespace CCSS.CWS.Client.UnitTests.Mocked
       var projectBoundary = new ProjectBoundary()
       {
         type = "Polygon",
-        coordinates = new List<double[,]>() { { new double[2, 2] { { 180, 90 }, { 180, 90 } } } }
+        coordinates = new List<double[,]>() { { new double[,] { { 151.3, 1.2 }, { 151.4, 1.2 }, { 151.4, 1.3 }, { 151.4, 1.4 }, { 151.3, 1.2 } } } }
       };
 
       string route = $"/projects/{projectTrn}/boundary";

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
@@ -22,30 +21,24 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class ProjectSettingsV4Controller : BaseController<ProjectSettingsV4Controller>
   {
-    /// <summary>
-    /// The request factory
-    /// </summary>
-    private readonly IRequestFactory requestFactory;
-
-    private readonly INotificationHubClient notificationHubClient;
+    private readonly IRequestFactory _requestFactory;
+    private readonly INotificationHubClient _notificationHubClient;
 
 
     /// <summary>
     /// Default constructor
     /// </summary>
-    public ProjectSettingsV4Controller(IConfigurationStore configStore, IRequestFactory requestFactory, INotificationHubClient notificationHubClient) 
-      : base (configStore)
+    public ProjectSettingsV4Controller(IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
     {
-      this.requestFactory = requestFactory;
-      this.notificationHubClient = notificationHubClient;
+      this._requestFactory = requestFactory;
+      this._notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
     /// Gets the target project settings for a project and user.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
     [Route("api/v4/projectsettings/{projectUid}")]
+    [Route("api/v6/projectsettings/{projectUid}")]
     [HttpGet]
     public async Task<ProjectSettingsResult> GetProjectSettingsTargets(string projectUid)
     {
@@ -55,9 +48,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Gets the target settings for a project and user.
     /// </summary>
-    /// <param name="projectUid">The project uid.</param>
-    /// <returns></returns>
     [Route("api/v4/projectcolors/{projectUid}")]
+    [Route("api/v6/projectcolors/{projectUid}")]
     [HttpGet]
     public async Task<ProjectSettingsResult> GetProjectSettings(string projectUid)
     {
@@ -68,8 +60,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Upserts the target project settings for a project and user.
     /// </summary>
-    /// <returns></returns>
     [Route("api/v4/projectcolors")]
+    [Route("api/v6/projectcolors")]
     [HttpPut]
     public async Task<ProjectSettingsResult> UpsertProjectColors([FromBody]ProjectSettingsRequest request)
     {
@@ -80,7 +72,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       request.ProjectSettingsType = ProjectSettingsType.Colors;
 
-      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+      var projectSettingsRequest = _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
           .CustomerUid(customerUid))
         .CreateProjectSettingsRequest(request.projectUid, request.Settings, request.ProjectSettingsType);
       projectSettingsRequest.Validate();
@@ -102,8 +94,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Upserts the target project settings for a project and user.
     /// </summary>
-    /// <returns></returns>
     [Route("api/v4/projectsettings")]
+    [Route("api/v6/projectsettings")]
     [HttpPut]
     public async Task<ProjectSettingsResult> UpsertProjectSettings([FromBody]ProjectSettingsRequest request)
     {
@@ -114,7 +106,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       request.ProjectSettingsType = ProjectSettingsType.Targets;
 
-      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+      var projectSettingsRequest = _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
             .CustomerUid(customerUid))
           .CreateProjectSettingsRequest(request.projectUid, request.Settings, request.ProjectSettingsType);
       projectSettingsRequest.Validate();
@@ -139,7 +131,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 68);
       LogCustomerDetails("GetProjectSettings", projectUid);
 
-      var projectSettingsRequest = requestFactory.Create<ProjectSettingsRequestHelper>(r => r
+      var projectSettingsRequest = _requestFactory.Create<ProjectSettingsRequestHelper>(r => r
           .CustomerUid(customerUid))
         .CreateProjectSettingsRequest(projectUid, string.Empty, settingsType);
       projectSettingsRequest.Validate();
@@ -160,11 +152,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       // You'd like to think these are in the format of a guid, but a simple check will stop any cast exceptions
 
       var userTask = Guid.TryParse(userUid, out var u)
-        ? notificationHubClient.Notify(new UserChangedNotification(u))
+        ? _notificationHubClient.Notify(new UserChangedNotification(u))
         : Task.CompletedTask;
 
       var projectTask = Guid.TryParse(projectUid, out var p)
-        ? notificationHubClient.Notify(new ProjectChangedNotification(p))
+        ? _notificationHubClient.Notify(new ProjectChangedNotification(p))
         : Task.CompletedTask;
 
       return Task.WhenAll(userTask, projectTask);

@@ -1,4 +1,5 @@
-﻿using CCSS.CWS.Client.MockClients;
+﻿using CCSS.CWS.Client;
+using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,7 +49,11 @@ namespace VSS.Tile.Service.WebApi
     {
       // Add framework services.
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>(); // used in TID auth for customer/user validation
+
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
+
       services.AddTransient<IErrorCodesProvider, ContractExecutionStatesEnum>();//Replace with custom error codes provider if required
       services.AddTransient<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();

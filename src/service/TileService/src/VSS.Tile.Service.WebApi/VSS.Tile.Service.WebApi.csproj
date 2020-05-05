@@ -19,7 +19,7 @@
     <DocumentationFile>bin\Debug\netcoreapp3.1\VSS.Tile.Service.WebApi.xml</DocumentationFile>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <WarningsAsErrors />
-    <NoWarn>1701;1702;1591</NoWarn>
+    <NoWarn>1701;1702;1591;1573</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

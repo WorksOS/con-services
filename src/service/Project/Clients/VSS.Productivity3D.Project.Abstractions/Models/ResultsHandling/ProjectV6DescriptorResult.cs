@@ -2,7 +2,7 @@
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
-namespace VSS.MasterData.Project.WebAPI.Common.Models
+namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
 {
 
   /// <summary>
@@ -25,11 +25,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
   /// </summary>
   public class ProjectV6DescriptorsSingleResult : ContractExecutionResult
   {
-    private ProjectV6Descriptor _projectV4Descriptor;
+    private ProjectV6Descriptor _projectV6Descriptor;
 
-    public ProjectV6DescriptorsSingleResult(ProjectV6Descriptor projectV4Descriptor)
+    public ProjectV6DescriptorsSingleResult(ProjectV6Descriptor projectV6Descriptor)
     {
-      this._projectV4Descriptor = projectV4Descriptor;
+      _projectV6Descriptor = projectV6Descriptor;
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <value>
     /// The project descriptor.
     /// </value>
-    public ProjectV6Descriptor ProjectDescriptor { get { return _projectV4Descriptor; } set { _projectV4Descriptor = value; } }
+    public ProjectV6Descriptor ProjectDescriptor { get { return _projectV6Descriptor; } set { _projectV6Descriptor = value; } }
   }
 
 
@@ -77,7 +77,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// <value>
     /// The name of the project type.
     /// </value>
-    public string ProjectTypeName => this.ProjectType.ToString();
+    public string ProjectTypeName => ProjectType.ToString();
 
     /// <summary>
     /// Gets or sets the name of the project.
@@ -86,14 +86,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The name.
     /// </value>
     public string Name { get; set; }
-    
-    /// <summary>
-    /// Gets or sets the Description of the project.
-    /// </summary>
-    /// <value>
-    /// The Description.
-    /// </value>
-    public string Description { get; set; }
 
     /// <summary>
     /// Gets or sets the project time zone.
@@ -112,29 +104,13 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     public string IanaTimeZone { get; set; }
 
     /// <summary>
-    /// Gets or sets the start date.
-    /// </summary>
-    /// <value>
-    /// The start date.
-    /// </value>
-    public string StartDate { get; set; }
-
-    /// <summary>
-    /// Gets or sets the end date.
-    /// </summary>
-    /// <value>
-    /// The end date.
-    /// </value>
-    public string EndDate { get; set; }
-    
-    /// <summary>
     /// Gets or sets the CustomerUID which the project is associated with
     /// </summary>
     /// <value>
     /// The Customer UID.
     /// </value>
     public string CustomerUid { get; set; }
-     
+
 
     /// <summary>
     /// Gets or sets the project geofence.
@@ -143,7 +119,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     /// The project geofence in WKT format.
     /// </value>
     public string ProjectGeofenceWKT { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the CoordinateSystem FileName which the project is associated with
     /// </summary>
@@ -165,19 +141,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Models
     {
       var otherProject = obj as ProjectV6Descriptor;
       if (otherProject == null) return false;
-      return otherProject.ProjectUid == this.ProjectUid
-             && otherProject.ShortRaptorProjectId == this.ShortRaptorProjectId
-             && otherProject.ProjectType == this.ProjectType
-             && otherProject.Name == this.Name
-             && otherProject.Description == this.Description
-             && otherProject.ProjectTimeZone == this.ProjectTimeZone
-             && otherProject.IanaTimeZone == this.IanaTimeZone
-             && otherProject.StartDate == this.StartDate
-             && otherProject.EndDate == this.EndDate
-             && otherProject.CustomerUid == this.CustomerUid
-             && otherProject.ProjectGeofenceWKT == this.ProjectGeofenceWKT
-             && otherProject.CoordinateSystemFileName == this.CoordinateSystemFileName
-             && otherProject.IsArchived == this.IsArchived
+      return otherProject.ProjectUid == ProjectUid
+             && otherProject.ShortRaptorProjectId == ShortRaptorProjectId
+             && otherProject.ProjectType == ProjectType
+             && otherProject.Name == Name
+             && otherProject.ProjectTimeZone == ProjectTimeZone
+             && otherProject.IanaTimeZone == IanaTimeZone
+             && otherProject.CustomerUid == CustomerUid
+             && otherProject.ProjectGeofenceWKT == ProjectGeofenceWKT
+             && otherProject.CoordinateSystemFileName == CoordinateSystemFileName
+             && otherProject.IsArchived == IsArchived
           ;
     }
 

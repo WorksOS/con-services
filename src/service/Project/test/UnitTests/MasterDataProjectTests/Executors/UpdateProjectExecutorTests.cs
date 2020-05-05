@@ -12,12 +12,12 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.DataOcean.Client;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Repositories.DBModels;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Models.Coord.ResultHandling;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
 using VSS.TCCFileAccess;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -75,14 +75,12 @@ namespace VSS.MasterData.ProjectTests.Executors
       if (existingProject.ProjectUID != null)
       {
         var updateProjectRequest = UpdateProjectRequest.CreateUpdateProjectRequest
-        (projectUid, existingProject.ProjectType, existingProject.Name, existingProject.Description,
-          existingProject.EndDate,
-          null, null,
+        (projectUid, existingProject.ProjectType, existingProject.Name, null, null,
           _updatedBoundaryString);
         var updateProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectRequest);
         updateProjectEvent.ActionUTC = DateTime.UtcNow;
 
-        // todoMaverick need to send update to cws only if boundary/name changed
+        // CCSSSCON-214 need to send update to cws only if boundary/name changed
         //var createProjectResponseModel = new CreateProjectResponseModel() { Id = "trn::profilex:us-west-2:account:560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
         var projectClient = new Mock<ICwsProjectClient>();
         //projectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
@@ -126,10 +124,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         CoordinateSystemFileName = coordinateSystemFileName,
         CoordinateSystemFileContent = coordinateSystemFileContent,
         CustomerUID = Guid.NewGuid(),
-        ProjectName = "projectName",
-        Description = "this is the description",
-        ProjectStartDate = new DateTime(2017, 01, 20),
-        ProjectEndDate = new DateTime(2017, 02, 15),
+        ProjectName = "projectName",       
         ProjectTimezone = "NZ whatsup",
         ProjectBoundary = _boundaryString,
         ActionUTC = DateTime.UtcNow
@@ -140,13 +135,12 @@ namespace VSS.MasterData.ProjectTests.Executors
       projectRepo.Setup(pr => pr.GetProjectOnly(It.IsAny<string>()))
         .ReturnsAsync(new ProjectDatabaseModel { ShortRaptorProjectId = 999 });
       projectRepo.Setup(pr =>
-          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(),
-            It.IsAny<string>()))
+          pr.DoesPolygonOverlap(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
         .ReturnsAsync(false);
 
       var createProjectResponseModel = new CreateProjectResponseModel() { Id = "560c2a6c-6b7e-48d8-b1a5-e4009e2d4c97" };
       var cwsProjectClient = new Mock<ICwsProjectClient>();
-      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), null)).ReturnsAsync(createProjectResponseModel);
+      cwsProjectClient.Setup(pr => pr.CreateProject(It.IsAny<CreateProjectRequestModel>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(createProjectResponseModel);
 
       var httpContextAccessor = new HttpContextAccessor { HttpContext = new DefaultHttpContext() };
       httpContextAccessor.HttpContext.Request.Path = new PathString("/api/v6/projects");

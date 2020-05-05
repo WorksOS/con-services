@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///      which belong to the devices owningCustomerUid,
     ///          for the location, time
     ///          and that the device is assigned to,
-    ///          and that the device is licensed (and claimed? todoMaverick).
+    ///          and that the device is licensed (and claimed?).
     ///  
     ///  assumption: A customers projects cannot overlap spatially at the same point-in-time
     ///                  - this is controlled on project creation
@@ -37,17 +37,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (request.shortRaptorAssetId > 0)
       {
         var device = await dataRepository.GetDevice((int) request.shortRaptorAssetId);
-        log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
+        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by shortRaptorAssetId?: {request.shortRaptorAssetId} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
         var deviceLicenseTotal = 0;
-        if (device != null)
+        if (device?.Code != 0)
           deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
 
-        if (device == null || deviceLicenseTotal < 1)
+        if (device?.Code != 0 || deviceLicenseTotal < 1)
           return GetProjectIdResult.CreateGetProjectIdResult(false, projectId);
 
-        var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device,
-          request.latitude, request.longitude, request.timeOfPosition);
+        var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.latitude, request.longitude, out var errorCode);
         log.LogDebug($"{nameof(ProjectIdExecutor)}: Loaded projects which lat/long is within {JsonConvert.SerializeObject(potentialProjects)}");
          
 
@@ -55,12 +55,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         //If zero found then returns -1
         //If one found then returns its id
         //If > 1 found then returns -2
-        if (!potentialProjects.Any())
+        if (!potentialProjects.ProjectDescriptors.Any())
           projectId = -1;
-        else if (potentialProjects.Count > 1)
+        else if (potentialProjects.ProjectDescriptors.Count > 1)
           projectId = -2;
         else
-          projectId = potentialProjects[0].ShortRaptorProjectId;
+          projectId = potentialProjects.ProjectDescriptors[0].ShortRaptorProjectId;
       }
 
       var result = projectId > 1;

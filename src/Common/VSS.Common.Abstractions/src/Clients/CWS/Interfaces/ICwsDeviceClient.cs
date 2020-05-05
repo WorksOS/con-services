@@ -11,5 +11,6 @@ namespace VSS.Common.Abstractions.Clients.CWS.Interfaces
     Task<DeviceResponseModel> GetDeviceByDeviceUid(Guid deviceUid, IDictionary<string, string> customHeaders = null);
     Task<DeviceListResponseModel> GetDevicesForAccount(Guid accountUid, IDictionary<string, string> customHeaders = null);
     Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null);
+    Task<DeviceAccountListResponseModel> GetAccountsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null);
   }
 }

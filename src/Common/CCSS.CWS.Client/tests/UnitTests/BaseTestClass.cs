@@ -72,8 +72,7 @@ namespace CCSS.CWS.Client.UnitTests
       try
       {
         var token = ServiceProvider.GetService<ITPaaSApplicationAuthentication>().GetApplicationBearerToken();
-        //todomaverick
-        //TODO: set userId from JWT
+        //set userId from JWT
         //string authorization = context.Request.Headers["X-Jwt-Assertion"];
         //var jwtToken = new TPaaSJWT(authorization);
         //userId = jwtToken.IsApplicationToken ? jwtToken.ApplicationId : jwtToken.UserUid.ToString();
@@ -84,7 +83,7 @@ namespace CCSS.CWS.Client.UnitTests
       }
       catch (Exception e)
       {
-        // No point running the tests if tpass is offline or not authenticating
+        // No point running the tests if tPasS is offline or not authenticating
         return false;
       }
     }

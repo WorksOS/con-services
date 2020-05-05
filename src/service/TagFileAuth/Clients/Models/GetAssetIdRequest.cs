@@ -7,7 +7,7 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 namespace VSS.Productivity3D.TagFileAuth.Models
 {
   /// <summary>
-  /// The request representation used to request the shortRaptorAssetID and serviceType (which we will fake for C2S3)
+  /// The request representation used to request the shortRaptorAssetID and serviceType 
   /// for a given machine whose tag-files are to be processed.
   /// The id of the project into which the tag-file data should be processed:
   ///             value of -1 indicates 'unknown' i.e. when the tag-files are being automatically processed.
@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
     /// <summary>
     /// The device type of the machine.
     ///           Valid values are 0=Manual Device (John Doe machines)
-    ///           and SNM940/SNM941/EC520. todoMaverick we don't have a lookup by serialNumber
+    ///           and SNM940/SNM941/EC520. 
     /// </summary>
     [JsonProperty(PropertyName = "deviceType", Required = Required.Always)]
     public int deviceType { get; set; }

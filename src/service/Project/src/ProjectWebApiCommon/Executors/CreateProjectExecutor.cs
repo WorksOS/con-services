@@ -19,11 +19,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
   public class CreateProjectExecutor : RequestExecutorContainer
   {
     /// <summary>
-    /// Save for potential rollback
-    /// </summary>
-    protected string subscriptionUidAssigned;
-
-    /// <summary>
     /// Processes the CreateProjectEvent
     /// </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
@@ -36,23 +31,22 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       log.LogDebug($"Testing if there are overlapping projects for project {createProjectEvent.ProjectName}");
       await ProjectRequestHelper.DoesProjectOverlap(createProjectEvent.CustomerUID.ToString(),
-        createProjectEvent.ProjectUID,
-        createProjectEvent.ProjectStartDate, createProjectEvent.ProjectEndDate, createProjectEvent.ProjectBoundary,
+        createProjectEvent.ProjectUID, createProjectEvent.ProjectBoundary,
         log, serviceExceptionHandler, projectRepo);
 
       // Write to WM first to obtain their ProjectTRN to use as ProjectUid for our DB etc
       try
       {
-        // todo convert from ours to WM Project TimeZone?
+        // don't send our timezone, we only need it for WorksOS. WM has their own, calculated from the boundary, for their own uses.
         var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(createProjectEvent);
-        createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
+        createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(createProjectEvent.ProjectBoundary);
 
-        var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+        // CCSSSCON-141 what are exceptions/other error
+        var response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
         if (response != null && !string.IsNullOrEmpty(response.Id))
           createProjectEvent.ProjectUID = new Guid(response.Id);
         else
-          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7); // todoMaverick eception for bad return
-        // todoMaverick what about exception/other error
+          serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);       
       }
       catch (Exception e)
       {
@@ -68,7 +62,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       await ProjectRequestHelper.CreateCoordSystemInProductivity3dAndTcc(
         createProjectEvent.ProjectUID, createProjectEvent.ShortRaptorProjectId, createProjectEvent.CoordinateSystemFileName,
         createProjectEvent.CoordinateSystemFileContent, true, log, serviceExceptionHandler, customerUid, customHeaders,
-        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
+        projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn, 
+        cwsDesignClient, cwsProfileSettingsClient).ConfigureAwait(false);
       log.LogDebug($"CreateProject: Created project {createProjectEvent.ProjectUID}");
       
       log.LogDebug("CreateProject. completed successfully");

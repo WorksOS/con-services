@@ -26,18 +26,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var projectBoundaryPackages = new List<ProjectBoundaryPackage>();
 
       var device = await dataRepository.GetDevice((int) request.shortRaptorAssetId);
-      log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}: Loaded Device? {JsonConvert.SerializeObject(device)}");
+      var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+      log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by shortRaptorAssetId?: {request.shortRaptorAssetId} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
       var deviceLicenseTotal = 0;
-      if (device != null)
-      {
-        if (string.Compare(device.Status, "Claimed", true)!= 0)
-          log.LogDebug($"{nameof(ProjectBoundariesAtDateExecutor)}: Device is not registered and claimed");
-        else
-          deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
-      }
+      if (device?.Code == 0)
+        deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
 
-      if (device == null || deviceLicenseTotal < 1)
+      if (device?.Code != 0 || deviceLicenseTotal < 1)
         return GetProjectBoundariesAtDateResult.CreateGetProjectBoundariesAtDateResult(result, projectBoundaryPackages);
 
       // claimed device and device owner account has valid licenses
@@ -53,7 +49,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         foreach (var p in projects)
         {
-          var boundaryFence = new TWGS84FenceContainer {FencePoints = dataRepository.ParseBoundaryData(p.GeometryWKT)};
+          var boundaryFence = new TWGS84FenceContainer {FencePoints = dataRepository.ParseBoundaryData(p.ProjectGeofenceWKT)};
           if (boundaryFence.FencePoints.Length > 0)
           {
             projectBoundaryPackages.Add(new ProjectBoundaryPackage {ProjectID = p.ShortRaptorProjectId, Boundary = boundaryFence});

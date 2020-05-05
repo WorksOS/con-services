@@ -14,18 +14,24 @@ export class GridServiceDeployerComponent {
   ) { }
 
   public deployTagFileQueue() {
-    console.log(`Deploying tagfile buffer queue`);
+    console.log(`Deploying tagfile buffer queue service`);
     this.gridServiceDeployerService.deployTagFileBufferQueueService();
   }
 
   public deployMutableSegmentRetirementQueue() {
-    console.log(`Deploying mutable segment retirement queue`);
+    console.log(`Deploying mutable segment retirement queue service`);
+    this.gridServiceDeployerService.deployMutableSegmentRetirementQueueService();
+    }
+
+  public deploySiteModelChangeProcessorService() {
+    console.log(`Deploying site model change processor service`);
     this.gridServiceDeployerService.deployMutableSegmentRetirementQueueService();
   }
 
   public deployAllServices() {
     this.deployTagFileQueue();
     this.deployMutableSegmentRetirementQueue();
+    this.deploySiteModelChangeProcessorService();
   }
 }
 

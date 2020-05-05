@@ -1,11 +1,9 @@
-﻿extern alias MySqlDataAlias; 
+﻿extern alias MySqlDataAlias;
 using Dapper;
-using MySql.Data.MySqlClient;
 using RepositoryTests.Internal;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using MySqlDataAlias::MySql.Data.MySqlClient;
 
 namespace RepositoryTests
 {
@@ -33,7 +31,7 @@ namespace RepositoryTests
       const string tableName = "Project";
       var columnNames = new List<string>
           {
-            "ProjectUID", "CustomerUID", "ShortRaptorProjectID", "Name", "Description", "fk_ProjectTypeID", "StartDate", "EndDate", "ProjectTimeZone", "ProjectTimeZoneIana", "Boundary", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC", "IsArchived", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ProjectUID", "CustomerUID", "ShortRaptorProjectID", "Name", "fk_ProjectTypeID", "ProjectTimeZone", "ProjectTimeZoneIana", "Boundary", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC", "IsArchived", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }
@@ -44,7 +42,7 @@ namespace RepositoryTests
       const string tableName = "ProjectHistory";
       var columnNames = new List<string>
           {
-            "ProjectUID", "CustomerUID", "ShortRaptorProjectID", "Name", "Description", "fk_ProjectTypeID", "StartDate", "EndDate", "ProjectTimeZone", "ProjectTimeZoneIana", "Boundary", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC", "IsArchived", "LastActionedUTC", "InsertUTC", "UpdateUTC"
+            "ProjectUID", "CustomerUID", "ShortRaptorProjectID", "Name", "fk_ProjectTypeID", "ProjectTimeZone", "ProjectTimeZoneIana", "Boundary", "CoordinateSystemFileName", "CoordinateSystemLastActionedUTC", "IsArchived", "LastActionedUTC", "InsertUTC", "UpdateUTC"
           };
       CheckSchema(tableName, columnNames);
     }

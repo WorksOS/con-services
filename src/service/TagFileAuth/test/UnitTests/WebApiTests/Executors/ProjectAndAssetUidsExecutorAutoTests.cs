@@ -12,6 +12,8 @@ using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace WebApiTests.Executors
 {
@@ -27,88 +29,88 @@ namespace WebApiTests.Executors
       _loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
     }
 
-    // todoMaverick maybe some tests on the 2 device status?
-
-
     [TestMethod]
     public async Task TRexExecutor_Auto_Happy_CBdevice_WithLicense_AndProject()
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData
-      {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
-      };
+      var projectOfInterest = new ProjectData {ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid};
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int) TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
-      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
-      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
+      var radioSerialDevice = new DeviceData {CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid};
+      var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() {projectOfInterest}};
+      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 1};
 
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
-      var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
-      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+      var ec520Device = (DeviceData) null;
+      var projectListForEC520 = (ProjectDataResult) null;
+      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, radioSerialDeviceUid);
 
 
       await ExecuteAuto
-        (getProjectAndAssetUidsRequest,
-          //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
-          radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
-          ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
-          expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
-        );
+      (getProjectAndAssetUidsRequest,
+        //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+        radioSerialDeviceUid, radioSerialAccountUid, radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
+        ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+      );
     }
 
+    [TestMethod]
+    public async Task TRexExecutor_Auto_Happy_RadioSerialMapOverride()
+    {
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int) TagFileDeviceTypeEnum.SNM940, "123", string.Empty, 0, 0, DateTime.MinValue);
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult("896c7a36-e079-4b67-a79c-b209398f01ca", "b00c62b3-4eee-472e-9814-c31379e94bd5");
+
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+      executor.CustomRadioSerialMapper = ServiceProvider.GetService<ICustomRadioSerialProjectMap>();
+
+      var result = await executor.ProcessAsync(getProjectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
+
+      ValidateResult(result, expectedGetProjectAndAssetUidsResult, 0, "success");
+    }
 
     [TestMethod]
     public async Task TRexExecutor_Auto_Happy_EC520device_WithNoLicense_AndProject()
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData
-      {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
-      };
+      var projectOfInterest = new ProjectData {ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid};
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", "ec520Serial", 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int) TagFileDeviceTypeEnum.SNM940, "snm940Serial", "ec520Serial", 91, 181, DateTime.UtcNow.AddDays(-3));
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
-      var radioSerialDevice = (DeviceData)null;
-      var projectListForRadioSerial = new List<ProjectData>();
-      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
+      var radioSerialDevice = (DeviceData) null;
+      var projectListForRadioSerial = new ProjectDataResult();
+      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 0};
 
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
-      var ec520Device = new DeviceData { CustomerUID = ec520AccountUid, DeviceUID = ec520Uid };
-      var projectListForEC520 = new List<ProjectData>() { projectOfInterest };
-      var ec520DeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
+      var ec520Device = new DeviceData {CustomerUID = ec520AccountUid, DeviceUID = ec520Uid};
+      var projectListForEC520 = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() {projectOfInterest}};
+      var ec520DeviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 1};
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(projectUid, ec520Uid);
 
 
       await ExecuteAuto
-        (getProjectAndAssetUidsRequest,
-          //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
-          radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
-          ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
-          expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
-        );
+      (getProjectAndAssetUidsRequest,
+        //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+        radioSerialDeviceUid, radioSerialAccountUid, radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
+        ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        expectedGetProjectAndAssetUidsResult, expectedCode: 0, expectedMessage: "success"
+      );
     }
 
     [TestMethod]
@@ -116,39 +118,67 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData
-      {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
-      };
+      var projectOfInterest = new ProjectData {ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid};
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int) TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
-      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest };
-      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 0 };
+      var radioSerialDevice = new DeviceData {CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid};
+      var projectListForRadioSerial = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() {projectOfInterest}};
+
+      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 0};
 
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
-      var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
-      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+      var ec520Device = (DeviceData) null;
+      var projectListForEC520 = (ProjectDataResult) null;
+      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
 
       await ExecuteAuto
-        (getProjectAndAssetUidsRequest,
-          //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
-          radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
-          ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3001, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(1)
-        );
+      (getProjectAndAssetUidsRequest,
+        //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+        radioSerialDeviceUid, radioSerialAccountUid, radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
+        ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        expectedGetProjectAndAssetUidsResult, expectedCode: 3001, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(1)
+      );
+    }
+
+    [TestMethod]
+    public async Task TRexExecutor_Auto_Sad_EC520device_DeviceNotActive()
+    {
+      var projectUid = Guid.NewGuid().ToString();
+      var projectAccountUid = Guid.NewGuid().ToString();
+      var projectOfInterest = new ProjectData { ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid };
+
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
+
+      var radioSerialDeviceUid = Guid.NewGuid().ToString();
+      var radioSerialAccountUid = Guid.NewGuid().ToString();
+      var radioSerialDevice = new DeviceData { Code = 100, Message = "Unable to locate device by serialNumber in cws" };
+      var projectListForRadioSerial = new ProjectDataResult() { ProjectDescriptors = new List<ProjectData>() { projectOfInterest } };
+      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
+
+      var ec520Uid = Guid.NewGuid().ToString();
+      var ec520AccountUid = Guid.NewGuid().ToString();
+      var ec520Device = (DeviceData)null;
+      var projectListForEC520 = (ProjectDataResult)null;
+      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+
+      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+
+      await ExecuteAuto
+      (getProjectAndAssetUidsRequest,
+        //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+        radioSerialDeviceUid, radioSerialAccountUid, radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
+        ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        expectedGetProjectAndAssetUidsResult, expectedCode: 3100, expectedMessage: "Unable to locate device by serialNumber in cws"
+      );
     }
 
 
@@ -157,39 +187,33 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData
-      {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
-      };
+      var projectOfInterest = new ProjectData {ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid};
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int) TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
-      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>();
-      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
+      var radioSerialDevice = new DeviceData {CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid};
+      var projectListForRadioSerial = new ProjectDataResult();
+      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 1};
 
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
-      var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
-      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+      var ec520Device = (DeviceData) null;
+      var projectListForEC520 = (ProjectDataResult) null;
+      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
 
       await ExecuteAuto
-        (getProjectAndAssetUidsRequest,
-          //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
-          radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
-          ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3048, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(48)
-        );
+      (getProjectAndAssetUidsRequest,
+        //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+        radioSerialDeviceUid, radioSerialAccountUid, radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
+        ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        expectedGetProjectAndAssetUidsResult, expectedCode: 3044, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(44)
+      );
     }
 
     [TestMethod]
@@ -197,68 +221,56 @@ namespace WebApiTests.Executors
     {
       var projectUid = Guid.NewGuid().ToString();
       var projectAccountUid = Guid.NewGuid().ToString();
-      var projectOfInterest = new ProjectData
-      {
-        ProjectUID = projectUid,
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
-      };
-      var projectOfInterest2 = new ProjectData
-      {
-        ProjectUID = Guid.NewGuid().ToString(),
-        ProjectType = ProjectType.Standard,
-        CustomerUID = projectAccountUid,
-        StartDate = DateTime.UtcNow.AddDays(-4).ToString(),
-        EndDate = DateTime.UtcNow.AddDays(-3).ToString()
-      };
+      var projectOfInterest = new ProjectData {ProjectUID = projectUid, ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid};
+      var projectOfInterest2 = new ProjectData {ProjectUID = Guid.NewGuid().ToString(), ProjectType = ProjectType.Standard, CustomerUID = projectAccountUid};
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int)TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.Parse(projectOfInterest.StartDate).AddDays(1));
+      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(string.Empty, (int) TagFileDeviceTypeEnum.SNM940, "snm940Serial", string.Empty, 91, 181, DateTime.UtcNow.AddDays(-3));
 
       var radioSerialDeviceUid = Guid.NewGuid().ToString();
       var radioSerialAccountUid = Guid.NewGuid().ToString();
-      var radioSerialDevice = new DeviceData { CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid };
-      var projectListForRadioSerial = new List<ProjectData>() { projectOfInterest, projectOfInterest2 };
-      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() { Total = 1 };
+      var radioSerialDevice = new DeviceData {CustomerUID = radioSerialAccountUid, DeviceUID = radioSerialDeviceUid};
+      var projectListForRadioSerial = new ProjectDataResult() {ProjectDescriptors = new List<ProjectData>() {projectOfInterest, projectOfInterest2}};
+      var radioSerialDeviceLicenseResponseModel = new DeviceLicenseResponseModel() {Total = 1};
 
       var ec520Uid = Guid.NewGuid().ToString();
       var ec520AccountUid = Guid.NewGuid().ToString();
-      var ec520Device = (DeviceData)null;
-      var projectListForEC520 = (List<ProjectData>)null;
-      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel)null;
+      var ec520Device = (DeviceData) null;
+      var projectListForEC520 = (ProjectDataResult) null;
+      var ec520DeviceLicenseResponseModel = (DeviceLicenseResponseModel) null;
 
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, radioSerialDeviceUid);
 
 
       await ExecuteAuto
-        (getProjectAndAssetUidsRequest,
-          //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
-          radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
-          ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
-          expectedGetProjectAndAssetUidsResult, expectedCode: 3049, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(49)
-        );
+      (getProjectAndAssetUidsRequest,
+        //projectAccountUid, projectForProjectUid, projectListForProjectAccountUid, projectDeviceLicenseResponseModel,
+        radioSerialDeviceUid, radioSerialAccountUid, radioSerialDevice, projectListForRadioSerial, radioSerialDeviceLicenseResponseModel,
+        ec520Device, projectListForEC520, ec520DeviceLicenseResponseModel,
+        ServiceProvider.GetService<ICustomRadioSerialProjectMap>(),
+        expectedGetProjectAndAssetUidsResult, expectedCode: 3049, expectedMessage: ContractExecutionStatesEnum.FirstNameWithOffset(49)
+      );
     }
 
     private async Task ExecuteAuto(GetProjectAndAssetUidsRequest request,
-      DeviceData radioSerialDevice, List<ProjectData> projectListForRadioSerial, DeviceLicenseResponseModel radioSerialDeviceLicenseResponseModel,
-      DeviceData ec520Device, List<ProjectData> projectListForEC520, DeviceLicenseResponseModel ec520DeviceLicenseResponseModel,
+      string radioSerialDeviceUid, string radioSerialcustomerUid, DeviceData radioSerialDevice, ProjectDataResult projectListForRadioSerial, DeviceLicenseResponseModel radioSerialDeviceLicenseResponseModel,
+      DeviceData ec520Device, ProjectDataResult projectListForEC520, DeviceLicenseResponseModel ec520DeviceLicenseResponseModel,
+      ICustomRadioSerialProjectMap customRadioSerialMapper,
       GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
-      )
+    )
     {
-      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, null)).ReturnsAsync(radioSerialDevice);
+      deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(radioSerialDevice);
       if (radioSerialDevice != null)
       {
-        projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(radioSerialDevice.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<DateTime?>(), null))
+        projectProxy.Setup(p => p.GetIntersectingProjects(radioSerialDevice.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, null))
           .ReturnsAsync(projectListForRadioSerial);
-        deviceProxy.Setup(d => d.GetProjectsForDevice(radioSerialDevice.DeviceUID, null)).ReturnsAsync(projectListForRadioSerial);
-        cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(radioSerialDevice.CustomerUID), null)).ReturnsAsync(radioSerialDeviceLicenseResponseModel);
+        deviceProxy.Setup(d => d.GetProjectsForDevice(radioSerialDeviceUid, null)).ReturnsAsync(projectListForRadioSerial);
+        cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(radioSerialcustomerUid), null)).ReturnsAsync(radioSerialDeviceLicenseResponseModel);
       }
 
-      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, null)).ReturnsAsync(ec520Device);
+      deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(ec520Device);
       if (ec520Device != null)
       {
-        projectProxy.Setup(p => p.GetIntersectingProjectsApplicationContext(ec520Device.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, It.IsAny<DateTime?>(), null))
+        projectProxy.Setup(p => p.GetIntersectingProjects(ec520Device.CustomerUID, It.IsAny<double>(), It.IsAny<double>(), null, null))
           .ReturnsAsync(projectListForEC520);
         deviceProxy.Setup(d => d.GetProjectsForDevice(ec520Device.DeviceUID, null)).ReturnsAsync(projectListForEC520);
         cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(ec520Device.CustomerUID), null)).ReturnsAsync(ec520DeviceLicenseResponseModel);
@@ -267,7 +279,9 @@ namespace WebApiTests.Executors
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object);
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+      executor.CustomRadioSerialMapper = customRadioSerialMapper;
+
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
       ValidateResult(result, expectedGetProjectAndAssetUidsResult, expectedCode, expectedMessage);

@@ -101,6 +101,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IPegasusClient pegasusClient;
     protected ICwsProjectClient cwsProjectClient;
     protected ICwsDeviceClient cwsDeviceClient;
+    protected ICwsDesignClient cwsDesignClient;
+    protected ICwsProfileSettingsClient cwsProfileSettingsClient;
 
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
@@ -180,7 +182,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IFileRepository fileRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
-      ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null)
+      ICwsProjectClient cwsProjectClient = null, ICwsDeviceClient cwsDeviceClient = null,
+      ICwsDesignClient cwsDesignClient=null, ICwsProfileSettingsClient cwsProfileSettingsClient=null)
     {
       log = logger;
       this.configStore = configStore;
@@ -205,6 +208,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.pegasusClient = pegasusClient;
       this.cwsProjectClient = cwsProjectClient;
       this.cwsDeviceClient = cwsDeviceClient;
+      this.cwsDesignClient = cwsDesignClient;
+      this.cwsProfileSettingsClient = cwsProfileSettingsClient;
     }
 
     /// <summary>

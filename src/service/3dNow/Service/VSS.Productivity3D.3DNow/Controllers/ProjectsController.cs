@@ -4,26 +4,31 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Now3D.Models;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.VisionLink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.Productivity3D.Now3D.Controllers
 {
   public class ProjectsController : BaseController
   {
-    private readonly ICustomerProxy customerProxy;
+    private readonly ICwsAccountClient accountProxy;
     private readonly IProjectProxy projectProxy;
     private readonly IFileImportProxy fileImportProxy;
 
-    public ProjectsController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, ICustomerProxy customerProxy, IProjectProxy projectProxy, IFileImportProxy fileImportProxy)
+    public ProjectsController(ILoggerFactory loggerFactory, IServiceExceptionHandler serviceExceptionHandler, ICwsAccountClient accountProxy, IProjectProxy projectProxy, IFileImportProxy fileImportProxy)
       :base(loggerFactory, serviceExceptionHandler)
     {
-      this.customerProxy = customerProxy;
+      this.accountProxy = accountProxy;
       this.projectProxy = projectProxy;
       this.fileImportProxy = fileImportProxy;
     }
@@ -37,9 +42,9 @@ namespace VSS.Productivity3D.Now3D.Controllers
     [ProducesResponseType(typeof(List<CustomerDisplayModel>), 200)]
     public async Task<IActionResult> GetMasterDataModels()
     {
-      var customers = await customerProxy.GetCustomersForMe(UserId, CustomHeaders);
+      var customers = await accountProxy.GetMyAccounts(Guid.Parse(UserId), CustomHeaders);
 
-      var results = await ExecuteAgainstMultiple(customers.customer, GetCustomerModel);
+      var results = await ExecuteAgainstMultiple(customers.Accounts, GetAccountModel);
 
       return Json(results);
     }
@@ -47,12 +52,12 @@ namespace VSS.Productivity3D.Now3D.Controllers
     /// <summary>
     /// For a customer master data model, populate customer display model with project information
     /// </summary>
-    private async Task<CustomerDisplayModel> GetCustomerModel(CustomerData customerData)
+    private async Task<CustomerDisplayModel> GetAccountModel(AccountResponseModel accountData)
     {
       var customerModel = new CustomerDisplayModel
       {
-        CustomerName = customerData.name,
-        CustomerUid = customerData.uid
+        CustomerName = accountData.Name,
+        CustomerUid = accountData.Id
       };
 
       var headers = CustomHeaders;
@@ -60,9 +65,9 @@ namespace VSS.Productivity3D.Now3D.Controllers
       if (headers.ContainsKey(HeaderConstants.X_VISION_LINK_CUSTOMER_UID))
         headers.Remove(HeaderConstants.X_VISION_LINK_CUSTOMER_UID);
       
-      headers.Add(HeaderConstants.X_VISION_LINK_CUSTOMER_UID, customerData.uid);
+      headers.Add(HeaderConstants.X_VISION_LINK_CUSTOMER_UID, accountData.Id);
 
-      var projects = await projectProxy.GetProjectsV4(customerData.uid, headers);
+      var projects = await projectProxy.GetProjects(accountData.Id, headers);
 
       customerModel.Projects = await ExecuteAgainstMultiple(projects, y => GetProjectModel(y, headers));
 
@@ -77,11 +82,11 @@ namespace VSS.Productivity3D.Now3D.Controllers
       var projectModel = new ProjectDisplayModel
       {
         ProjectName = project.Name,
-        ProjectUid = project.ProjectUid,
+        ProjectUid = project.ProjectUID,
         IsActive = !project.IsArchived
       };
 
-      var files = await fileImportProxy.GetFiles(project.ProjectUid, UserId, headers);
+      var files = await fileImportProxy.GetFiles(project.ProjectUID, UserId, headers);
 
       foreach (var fileData in files.Where(f => f.ImportedFileType == ImportedFileType.DesignSurface))
       {

@@ -1,5 +1,6 @@
 ﻿using System;
 using VSS.TRex.Cells;
+using VSS.TRex.Common;
 using VSS.TRex.Common.Models;
 using VSS.TRex.Filters.Interfaces;
 using VSS.TRex.Geometry;
@@ -22,6 +23,8 @@ namespace VSS.TRex.Volumes
    *
    * Should always have a time range?
    *
+   *  WIP1: Minimum elevation mode is not yet taken into account here
+   *  WIP2: Surveyed surfaces are not yet taken into account here
    */
   public class ProgressiveVolumesSubGridRetriever : SubGridRetrieverBase, ISubGridRetriever
   {
@@ -107,7 +110,7 @@ namespace VSS.TRex.Volumes
         };
 
         _reversingCellPassIterator = new SubGridSegmentCellPassIterator_NonStatic(_reversingSegmentIterator, _maxNumberOfPassesToReturn);
-        _reversingCellPassIterator.SetTimeRange(true, DateTime.MinValue, StartDate);
+        _reversingCellPassIterator.SetTimeRange(true, DateTime.MinValue, StartDate.AddTicks(-100));
 
         _commonCellPassStackExaminationDone = true;
       }
@@ -189,27 +192,15 @@ namespace VSS.TRex.Volumes
           _reversingCellPassIterator.SetIteratorElevationRange(_filterAnnex.ElevationRangeBottomElevationForCell, _filterAnnex.ElevationRangeTopElevationForCell);
         }
 
-        // Ask for the first cell pass from the iterator according to the configured date range.
-        var haveFirstCellPass = _cellPassIterator.GetNextCellPass(ref _firstCellPass);
-
         // Ask for the first cell pass prior to the date range using the reversing iterator
-        var havePriorToFirstCellPass = _cellPassIterator.GetNextCellPass(ref _priorToFirstCellPass);
+        var havePriorToFirstCellPass = _reversingCellPassIterator.GetNextCellPass(ref _priorToFirstCellPass);
 
+        var previousMarchingHeight = Consts.NullHeight;
         if (havePriorToFirstCellPass)
         {
           // There is a prior ground elevation to use for the first height progressing
           _progressiveClientSubGrid.AssignFilteredValue(0, stripeIndex, j, _priorToFirstCellPass.Height);
-        }
-
-        if (!haveFirstCellPass)
-        {
-          // There are further cell passes. If there is a prior cell pass then all further progressive heights are the same value
-          for (var i = 1; i < _progressiveClientSubGrid.NumberOfHeightLayers; i++)
-          {
-            _progressiveClientSubGrid.AssignFilteredValue(i, stripeIndex, j, _priorToFirstCellPass.Height);
-          }
-
-          continue;
+          previousMarchingHeight = _priorToFirstCellPass.Height;
         }
 
         if (_progressiveClientSubGrid.NumberOfHeightLayers < 2)
@@ -217,9 +208,8 @@ namespace VSS.TRex.Volumes
           continue; // Nothing more to do in this cell
         }
 
-        var marchingDate = StartDate + Interval;
-        var marchingIndex = 1;
-        var previousMarchingHeight = _firstCellPass.Height;
+        var marchingDate = StartDate;
+        var marchingIndex = 0;
 
         // Advance through cell passes pausing as each date increment is passed to set the appropriate height value into the sub grid
         while (_cellPassIterator.MayHaveMoreFilterableCellPasses() && _cellPassIterator.GetNextCellPass(ref _currentCellPass))
@@ -233,8 +223,9 @@ namespace VSS.TRex.Volumes
           // Record this cell pass height at the marching date if it is at the exact time of <marchingDate>, otherwise use
           // previousMarchingHeight as this will be the correct height for this marching date
           _progressiveClientSubGrid.AssignFilteredValue(marchingIndex, stripeIndex, j,
-                                                        _currentCellPass.Time == marchingDate ? _currentCellPass.Height : previousMarchingHeight);
+            _currentCellPass.Time == marchingDate ? _currentCellPass.Height : previousMarchingHeight);
 
+          previousMarchingHeight = _currentCellPass.Height;
           marchingIndex++;
           marchingDate += Interval;
 
@@ -242,12 +233,12 @@ namespace VSS.TRex.Volumes
           {
             break; // There is no more work to do
           }
+        }
 
-          // Fill in any progression dates beyond the last cell pass extracted
-          for (var i = marchingIndex; i < _progressiveClientSubGrid.NumberOfHeightLayers; i++)
-          {
-            _progressiveClientSubGrid.AssignFilteredValue(i, stripeIndex, j, _currentCellPass.Height);
-          }
+        // Fill in any progression dates beyond the last cell pass extracted
+        for (var i = marchingIndex; i < _progressiveClientSubGrid.NumberOfHeightLayers; i++)
+        {
+          _progressiveClientSubGrid.AssignFilteredValue(i, stripeIndex, j, previousMarchingHeight);
         }
       }
     }

@@ -1,0 +1,2 @@
+MYSQL_DATABASE_NAME: Alpha-Preference
+JAEGER_SERVICE_NAME: Alpha Preference Service API

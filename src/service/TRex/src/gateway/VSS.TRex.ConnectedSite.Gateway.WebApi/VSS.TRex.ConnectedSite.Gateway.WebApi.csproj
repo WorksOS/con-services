@@ -10,11 +10,21 @@
     <PackageId>TRexConnectedSiteGatewayWebApi</PackageId>
     <RootNamespace>VSS.TRex.ConnectedSite.Gateway.WebApi</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileFile>..\..\..\build\Dockerfile.debug</DockerfileFile>
+    <DockerfileContext>..\..\..\..</DockerfileContext>
+    <DockerfileRunEnvironmentFiles>settings.env</DockerfileRunEnvironmentFiles>
+    <DockerfileBuildArguments>--no-cache --build-arg SERVICE_PATH=src/service/TRex --build-arg COMPONENT=ConnectedSiteGateway</DockerfileBuildArguments>
+    <DockerfileRunArguments>--entrypoint "dotnet VSS.TRex.ConnectedSite.Gateway.WebApi.dll"</DockerfileRunArguments>
+    <DockerDebuggeeWorkingDirectory>/trex</DockerDebuggeeWorkingDirectory>
+    <DockerfileFastModeStage>runtime_container</DockerfileFastModeStage>
+    <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel.Transport.Libuv" Version="3.1.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.8" />
     <PackageReference Include="OpenTracing.Contrib.NetCore" Version="0.6.2" />  
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
     <PackageReference Include="Apache.Ignite" Version="2.8.0" />
@@ -31,6 +41,7 @@
     <ProjectReference Include="..\..\interfaces\VSS.TRex.ConnectedSite.Gateway.Models\VSS.TRex.ConnectedSite.Gateway.Models.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.DI\VSS.TRex.DI.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Logging\VSS.TRex.Logging.csproj" />
+    <ProjectReference Include="..\..\netstandard\VSS.TRex.SiteModelChangeMaps\VSS.TRex.SiteModelChangeMaps.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles.Models\VSS.TRex.TAGFiles.Models.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.TAGFiles\VSS.TRex.TAGFiles.csproj" />
     <ProjectReference Include="..\..\netstandard\VSS.TRex.Types\VSS.TRex.Types.csproj" />
@@ -57,4 +68,4 @@
     <WarningsAsErrors />
   </PropertyGroup>
 
-</Project>
+</Project> 

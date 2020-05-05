@@ -11,6 +11,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.WebApi.Common;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -25,9 +26,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     protected ILogger log;
     private IConfigurationStore configStore;
+    protected IDictionary<string, string> customHeaders;
+
     private ICwsAccountClient cwsAccountClient;
-    private IProjectProxy projectProxy;
-    private IDeviceProxy deviceProxy;
+    private IProjectInternalProxy projectProxy;
+    private IDeviceInternalProxy deviceProxy;
+    private ITPaaSApplicationAuthentication authorization;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -35,17 +39,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected ServiceTypeMappings serviceTypeMappings = new ServiceTypeMappings();
 
     protected static DataRepository dataRepository = null;
-    
 
-    /// <summary>
-    ///   Generates the errorlist for instantiated executor.
-    /// </summary>
-    /// <returns>List of errors with corresponding descriptions.</returns>
-    public List<Tuple<int, string>> GenerateErrorlist()
-    {
-      return (from object enumVal in Enum.GetValues(typeof(ContractExecutionStatesEnum))
-              select new Tuple<int, string>((int)enumVal, enumVal.ToString())).ToList();
-    }
+    protected readonly ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
 
     /// <summary>
@@ -82,12 +77,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy) 
+    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,      
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      ITPaaSApplicationAuthentication authorization) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy};
-        dataRepository = new DataRepository(logger, configStore, cwsAccountClient, projectProxy, deviceProxy);
+      var executor = new TExecutor() { log = logger, configStore = configStore, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, authorization = authorization };
+        dataRepository = new DataRepository(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization);
       return executor;
     }
     

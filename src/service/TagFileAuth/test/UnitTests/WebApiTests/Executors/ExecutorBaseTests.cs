@@ -9,7 +9,9 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Serilog.Extensions;
+using VSS.WebApi.Common;
 
 namespace WebApiTests.Executors
 {
@@ -19,10 +21,12 @@ namespace WebApiTests.Executors
     protected IConfigurationStore ConfigStore;
 
     protected IServiceProvider ServiceProvider;
-    protected Mock<IProjectProxy> projectProxy;
+    protected Mock<IProjectInternalProxy> projectProxy;
     protected Mock<ICwsAccountClient> cwsAccountClient;
-    protected Mock<IDeviceProxy> deviceProxy;
+    protected Mock<IDeviceInternalProxy> deviceProxy;
+    protected Mock<ITPaaSApplicationAuthentication> authorizationProxy;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
+    protected ILoggerFactory loggerFactory;
 
     [TestInitialize]
     public virtual void InitTest()
@@ -32,13 +36,17 @@ namespace WebApiTests.Executors
       serviceCollection
         .AddLogging()
         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.TagFileAuth.WepApiTests.log")))
-        .AddSingleton<IConfigurationStore, GenericConfiguration>();
+        .AddSingleton<IConfigurationStore, GenericConfiguration>()
+        .AddSingleton<ICustomRadioSerialProjectMap, CustomRadioSerialProjectMap>();
+
       ServiceProvider = serviceCollection.BuildServiceProvider();
       ConfigStore = ServiceProvider.GetRequiredService<IConfigurationStore>();
 
-      projectProxy = new Mock<IProjectProxy>();
+      projectProxy = new Mock<IProjectInternalProxy>();
       cwsAccountClient = new Mock<ICwsAccountClient>();
-      deviceProxy = new Mock<IDeviceProxy>();
+      deviceProxy = new Mock<IDeviceInternalProxy>();
+      authorizationProxy = new Mock<ITPaaSApplicationAuthentication>();
+      loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
     }
   
   }

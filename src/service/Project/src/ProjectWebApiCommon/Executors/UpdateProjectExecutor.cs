@@ -38,27 +38,26 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
       await ProjectRequestHelper.ValidateCoordSystemInProductivity3D(updateProjectEvent, serviceExceptionHandler, customHeaders, productivity3dV1ProxyCoord).ConfigureAwait(false);
 
-      // todoMaverick theres a bug if endDate is extended, it needs to re-check overlap
+      // CCSSSCON-213 theres a bug if endDate is extended, it needs to re-check overlap
       if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
       {
         await ProjectRequestHelper.DoesProjectOverlap(existing.CustomerUID, updateProjectEvent.ProjectUID,
-          existing.StartDate, updateProjectEvent.ProjectEndDate, updateProjectEvent.ProjectBoundary,
-          log, serviceExceptionHandler, projectRepo);
+          updateProjectEvent.ProjectBoundary, log, serviceExceptionHandler, projectRepo);
       }
 
       if (existing != null && existing.ProjectType != updateProjectEvent.ProjectType)
-        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7); // todoMaverick only 1 projectType now
+        serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 7);
 
       log.LogDebug($"UpdateProject: passed validation {updateProjectEvent.ProjectUID}");
 
       // create/update in Cws
       try
       {
+        // CCSSSCON-214 what kind of errors?
         var projectUid = await UpdateCws(existing, updateProjectEvent);
         if (!string.IsNullOrEmpty(projectUid)) // no error, may have been a create project
           updateProjectEvent.ProjectUID = new Guid(projectUid);
-        // todoMaverick what kind of errors?
       }
       catch (Exception e)
       {
@@ -77,7 +76,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
           existing.ShortRaptorProjectId,
           updateProjectEvent.CoordinateSystemFileName, updateProjectEvent.CoordinateSystemFileContent, false,
           log, serviceExceptionHandler, customerUid, customHeaders,
-          projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn).ConfigureAwait(false);
+          projectRepo, productivity3dV1ProxyCoord, configStore, fileRepo, dataOceanClient, authn,
+          cwsDesignClient, cwsProfileSettingsClient).ConfigureAwait(false);
         log.LogDebug("UpdateProject: CreateCoordSystemInProductivity3dAndTcc succeeded");
       }         
 
@@ -100,7 +100,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       return new ContractExecutionResult();
     }
 
-    // todoMaverick if actually creating, then need to write to WM first to obtain the ProjectUid for our DB 
+    // if actually creating, then need to write to WM first to obtain the ProjectUid for our DB 
     private async Task<string> UpdateCws(ProjectDatabaseModel existing, UpdateProjectEvent updateProjectEvent)
     {
       if (existing == null)
@@ -108,15 +108,15 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         try
         {
           var createProjectRequestModel = AutoMapperUtility.Automapper.Map<CreateProjectRequestModel>(updateProjectEvent);
-          createProjectRequestModel.accountId = customerUid;
-          createProjectRequestModel.boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
+          createProjectRequestModel.AccountId = customerUid;
+          createProjectRequestModel.Boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
 
-          var response = await cwsProjectClient.CreateProject(createProjectRequestModel);
+          var response = await cwsProjectClient.CreateProject(createProjectRequestModel, customHeaders);
           if (response != null)
           {
+            // CCSSSCON-214 what about exception/other error
             updateProjectEvent.ProjectUID = new Guid(response.Id);
-            return response.Id;
-            // todoMaverick what about exception/other error
+            return response.Id;            
           }
         }
         catch (Exception e)
@@ -126,23 +126,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       }
       else
       {
-        // todoMaverick may need to check start and end dates if we add them
-        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0
-          || string.Compare(existing.Description, updateProjectEvent.Description, true) != 0)
+        if (string.Compare(existing.Name, updateProjectEvent.ProjectName, true) != 0)
         {
-          // todoMaverick how to update endDate and Description?
+          // CCSSSCON-214 what are errors?
           var updateProjectDetailsRequestModel = new UpdateProjectDetailsRequestModel() { projectName = updateProjectEvent.ProjectName };
-          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel);
-          // todoMaverick what are errors?
+          await cwsProjectClient.UpdateProjectDetails(updateProjectEvent.ProjectUID, updateProjectDetailsRequestModel, customHeaders);          
         }
         if (!string.IsNullOrEmpty(updateProjectEvent.ProjectBoundary) && string.Compare(existing.Boundary,
             updateProjectEvent.ProjectBoundary, StringComparison.OrdinalIgnoreCase) != 0)
         {
+          // CCSSSCON-214 what are errors?
           var boundary = RepositoryHelper.MapProjectBoundary(updateProjectEvent.ProjectBoundary);
-          await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary);
-          // todoMaverick what are errors?
-        }
-        // todoMaverick what about exception/other error
+          await cwsProjectClient.UpdateProjectBoundary(updateProjectEvent.ProjectUID, boundary, customHeaders);
+        }        
         return updateProjectEvent.ProjectUID.ToString();
       }
       return null;
@@ -156,10 +152,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       {
         // rollback changes to Project
         var rollbackProjectEvent = AutoMapperUtility.Automapper.Map<UpdateProjectEvent>(updateProjectEvent);
-        rollbackProjectEvent.ProjectEndDate = existing.EndDate;
         rollbackProjectEvent.ProjectTimezone = existing.ProjectTimeZone;
         rollbackProjectEvent.ProjectName = existing.Name;
-        rollbackProjectEvent.Description = existing.Description;
         rollbackProjectEvent.ProjectType = existing.ProjectType;
         rollbackProjectEvent.ProjectBoundary = existing.Boundary;
         rollbackProjectEvent.CoordinateSystemFileName = existing.CoordinateSystemFileName;

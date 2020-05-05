@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 environment: alpha
 
-rootDomain: k8s.vspengg.com
+rootDomain: eks.ccss.cloud
 
 globalConfig: 3dapp-alpha
 
@@ -31,5 +31,5 @@ ingress:
   hosts:
     - 3dnow
   annotations:
-    kubernetes.io/ingress.class: nginx-public
-    external-dns.alpha.kubernetes.io/target: eks-public.vspengg.com
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/target: eks.ccss.cloud

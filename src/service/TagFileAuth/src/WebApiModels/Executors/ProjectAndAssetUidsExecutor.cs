@@ -8,6 +8,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 {
@@ -16,6 +17,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public class ProjectAndAssetUidsExecutor : RequestExecutorContainer
   {
+    public ICustomRadioSerialProjectMap CustomRadioSerialMapper { get; set; }
 
     ///  <summary>
     ///  There are 2 modes this may be called in:
@@ -23,16 +25,20 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     ///            either the projects customer has a paying-devicePackage (>0 i.e. not Free)
     ///              or the asset (if provided) Customer has a paying-devicePackage AND the project is owned by the same customer
     ///          and the location is inside the project
-    ///             the time of location is not limited to the project start/end time (todoMaverick still under discussion)
     /// 
     ///  b) Auto Import
     ///     a deviceSerial provided.
-    ///     This must be resolveable and it's customer must have paying-devicePackage
+    ///     This must be resolvable and its customer must have paying-devicePackage
     ///     A customers active projects cannot overlap spatially at the same point-in-time
     ///                  therefore this should legitimately retrieve max of ONE match
     ///    
     ///  if a deviceSerial/dtype is provided and can be resolved, the deviceUid will also be returned.
-    ///  Archived projects are not considered, also note that there are only standard projects available     /// 
+    ///  Archived projects are not considered, also note that there are only standard projects available
+    ///
+    ///  TFA has the capability to be provided a radio/device type -> Asset/Project map to cover special cases
+    ///  where a device has no provisioning but we want to bring it into a known project. In this case, if the
+    ///  radio serial number and device type are found in the map, the item is processed as if were a manual
+    ///  import into the project, under the asset, located in the map
     ///  </summary>
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
@@ -41,6 +47,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
           GetProjectAndAssetUidsResult.FormatResult(uniqueCode: TagFileAuth.Models.ContractExecutionStatesEnum.SerializationError));
+      }
+
+      // Radio serial -> Asset/Project override
+      if (CustomRadioSerialMapper.LocateAsset(request.RadioSerial, request.DeviceType, out var id))
+      {
+        return GetProjectAndAssetUidsResult.FormatResult(id.ProjectUid.ToString(), id.AssetUid.ToString());
       }
 
       ProjectData project = null;
@@ -71,20 +83,22 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.RadioSerial))
       {
         device = await dataRepository.GetDevice(request.RadioSerial);
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
+        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
-      if (device == null && !string.IsNullOrEmpty(request.Ec520Serial))
+      if (device?.Code != 0 && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {(device == null ? "Not Found" : JsonConvert.SerializeObject(device))}");
+        var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, project, device);
 
-      if (device == null)
-        return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: 47);
+      if (device == null || device?.Code != 0)
+        return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
       return await HandleAutoImport(request, device);
     }
@@ -102,19 +116,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       //  Can manually import tag files where we don't know the device
       //  Can manually import tag files where we don't know the device, and regardless of the device customers deviceEntitlement
       //  If device is available, it must be associated with the project
-      //  For ManualImport we want to maximise ability so don't bother checking deviceStatus?
-      // todoMaverick verify: about ignoring device status; ignoring device-Customer entitlement and requiring device-project association?
-      //                      also no projectTime overlap? 
-      
+      //  For ManualImport we want to maximize ability so don't bother checking deviceStatus?
+
       var intersectingProjects = await dataRepository.GetIntersectingProjectsForManual(project, request.Latitude,
             request.Longitude, device);
       log.LogDebug(
         $"{nameof(HandleManualImport)}: GotIntersectingProjectsForManual: {JsonConvert.SerializeObject(intersectingProjects)}");
 
-      if (!intersectingProjects.Any())
+      if (!intersectingProjects.ProjectDescriptors.Any())
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceUID, uniqueCode: 41);
 
-      if (intersectingProjects.Count > 1)
+      if (intersectingProjects.ProjectDescriptors.Count > 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device == null ? string.Empty : device.DeviceUID, uniqueCode: 49);
 
       return GetProjectAndAssetUidsResult.FormatResult(project.ProjectUID, device == null ? string.Empty : device.DeviceUID);
@@ -130,18 +142,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (deviceAccountDeviceLicenseTotal < 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 1);
 
-      var potentialProjects = await dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude,
-        request.Longitude, request.TimeOfPosition);
+      var potentialProjects = dataRepository.GetIntersectingProjectsForDevice(device, request.Latitude, request.Longitude, out var errorCode);
       log.LogDebug(
         $"{nameof(HandleAutoImport)}: GotIntersectingProjectsForDevice: {JsonConvert.SerializeObject(potentialProjects)}");
 
-      if (!potentialProjects.Any())
-        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 48);
+      if (!potentialProjects.ProjectDescriptors.Any())
+        return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: errorCode);
 
-      if (potentialProjects.Count > 1)
+      if (potentialProjects.ProjectDescriptors.Count > 1)
         return GetProjectAndAssetUidsResult.FormatResult(assetUid: device.DeviceUID, uniqueCode: 49);
 
-      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects[0].ProjectUID, device.DeviceUID);
+      return GetProjectAndAssetUidsResult.FormatResult(potentialProjects.ProjectDescriptors[0].ProjectUID, device.DeviceUID);
     }
     
     protected override ContractExecutionResult ProcessEx<T>(T item)

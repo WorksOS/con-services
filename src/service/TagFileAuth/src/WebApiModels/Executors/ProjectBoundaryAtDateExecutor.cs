@@ -27,10 +27,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
       if (project != null)
       {
-        if (DateTime.Parse(project.StartDate) <= request.tagFileUTC.Date && request.tagFileUTC.Date <= DateTime.Parse(project.EndDate) &&
-               !string.IsNullOrEmpty(project.GeometryWKT))
+        if (!string.IsNullOrEmpty(project.ProjectGeofenceWKT))
         {
-          projectBoundary.FencePoints = dataRepository.ParseBoundaryData(project.GeometryWKT);
+          projectBoundary.FencePoints = dataRepository.ParseBoundaryData(project.ProjectGeofenceWKT);
           log.LogDebug(
             $"{nameof(ProjectBoundaryAtDateExecutor)}: Loaded projectBoundary.FencePoints? {JsonConvert.SerializeObject(projectBoundary.FencePoints)}");
 

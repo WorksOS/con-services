@@ -1,5 +1,5 @@
 ﻿using VSS.MasterData.Models.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.Productivity3D.Project.Abstractions.Utilities;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Models
 {

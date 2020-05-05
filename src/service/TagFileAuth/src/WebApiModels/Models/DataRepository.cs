@@ -9,15 +9,17 @@ using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
   /// <summary>
   /// Represents abstract container for all request executors.
   /// Uses abstract factory pattern to separate executor logic from
-  ///   controller logic for testability and possible executor versioning.
+  ///   controller logic for testability and possible executor version.
   /// </summary>
   public class DataRepository : IDataRepository
   {
@@ -28,21 +30,26 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     private readonly ICwsAccountClient _cwsAccountClient;
 
     // We need to use ProjectSvc IProjectProxy as thats where the project data is
-    private readonly IProjectProxy _projectProxy;
+    private readonly IProjectInternalProxy _projectProxy;
 
     // We need to use ProjectSvc IDeviceProxy 
     //    as when we get devices from IDeviceClient, 
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
-    private readonly IDeviceProxy _deviceProxy;
+    private readonly IDeviceInternalProxy _deviceProxy;
+
+    private ITPaaSApplicationAuthentication _authorization;
 
     public DataRepository(ILogger logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectProxy projectProxy, IDeviceProxy deviceProxy)
+      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      ITPaaSApplicationAuthentication authorization
+      )
     {
       _log = logger;
       _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
+      _authorization = authorization;
     }
 
     #region account
@@ -54,7 +61,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid)))?.Total ?? 0;
+        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), _authorization.CustomHeaders()))?.Total ?? 0;
       }
       catch (Exception e)
       {
@@ -75,7 +82,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _projectProxy.GetProjectApplicationContext(shortRaptorProjectId);
+        return await _projectProxy.GetProject(shortRaptorProjectId, _authorization.CustomHeaders());
       }
       catch (Exception e)
       {
@@ -91,7 +98,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _projectProxy.GetProjectApplicationContext(projectUid);
+        return await _projectProxy.GetProject(projectUid, _authorization.CustomHeaders());
       }
       catch (Exception e)
       {
@@ -107,12 +114,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        var p = await _projectProxy.GetProjects(customerUid);
+        var p = await _projectProxy.GetProjects(customerUid, _authorization.CustomHeaders());
         if (p != null)
         {
-          // todoMaverick, what should be the marketing requirements for dates here?
           return p
-              .Where(x => DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)
+              .Where(x => !x.IsArchived)
               .ToList();
         }
         return null;
@@ -131,13 +137,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        var p = await _deviceProxy.GetProjectsForDevice(deviceUid);
-        if (p != null)
+        var projects = await _deviceProxy.GetProjectsForDevice(deviceUid, _authorization.CustomHeaders());
+        if (projects?.Code != 0)
         {
-          // todoMaverick, what should be the marketing requirements for dates here?
-          return p
-            .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) &&
-                DateTime.Parse(x.StartDate) <= validAtDate.Date && validAtDate.Date <= DateTime.Parse(x.EndDate) && !x.IsArchived)
+          return projects.ProjectDescriptors
+            .Where(x => (string.Compare(x.CustomerUID, customerUid, true) == 0) && !x.IsArchived)
             .ToList();
         }
         return null;
@@ -151,18 +155,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     }
 
     // manual import, no time, optional device
-    public async Task<List<ProjectData>> GetIntersectingProjectsForManual(ProjectData project, double latitude, double longitude,
+    public async Task<ProjectDataResult> GetIntersectingProjectsForManual(ProjectData project, double latitude, double longitude,
       DeviceData device = null)
     {
-      var accountProjects = new List<ProjectData>();
+      var accountProjects = new ProjectDataResult();
       if (project == null || string.IsNullOrEmpty(project.ProjectUID))
         return accountProjects;
 
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(project.CustomerUID, latitude, longitude, project.ProjectUID));
+        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _authorization.CustomHeaders()));
         // should not be possible to get > 1 as call was limited by the projectUid       
-        if (accountProjects == null || accountProjects.Count() != 1)
+        if (accountProjects?.Code == 0 && accountProjects.ProjectDescriptors.Count() != 1)
           return accountProjects;
       }
       catch (Exception e)
@@ -177,9 +181,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
-        if (projectsAssociatedWithDevice.Any())
-          return projectsAssociatedWithDevice.Where(p => p.ProjectUID == accountProjects[0].ProjectUID).ToList();
+        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _authorization.CustomHeaders()));
+        if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
+        {
+          var result = new ProjectDataResult();
+          var gotIt = projectsAssociatedWithDevice.ProjectDescriptors.FirstOrDefault(p => p.ProjectUID == accountProjects.ProjectDescriptors[0].ProjectUID);
+          result.ProjectDescriptors.Add(gotIt);
+          return result;
+        }
 
         return accountProjects;
       }
@@ -191,19 +200,23 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       }
     }
 
-    public async Task<List<ProjectData>> GetIntersectingProjectsForDevice(DeviceData device,
-      double latitude, double longitude, DateTime timeOfPosition)
+    public ProjectDataResult GetIntersectingProjectsForDevice(DeviceData device,
+      double latitude, double longitude, out int errorCode)
     {
-      var accountProjects = new List<ProjectData>();
+      errorCode = 0;
+      var accountProjects = new ProjectDataResult();
       if (device == null || string.IsNullOrEmpty(device.CustomerUID) || string.IsNullOrEmpty(device.DeviceUID))
         return accountProjects;
 
       // what projects does this customer have which intersect the lat/long?
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjectsApplicationContext(device.CustomerUID, latitude, longitude, timeOfPosition: timeOfPosition));
-        if (!accountProjects.Any())
+        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders:_authorization.CustomHeaders()).Result;
+        if (accountProjects?.Code != 0 || !accountProjects.ProjectDescriptors.Any())
+        {
+          errorCode = 44;
           return accountProjects;
+        }
       }
       catch (Exception e)
       {
@@ -215,9 +228,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this device have visibility to?
       try
       {
-        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID));
-        var intersection = projectsAssociatedWithDevice.Select(dp => dp.ProjectUID).Intersect(accountProjects.Select(ap => ap.ProjectUID));
-        return projectsAssociatedWithDevice.Where(p => intersection.Contains(p.ProjectUID)).ToList();
+        var intersectingProjectsForDevice = new ProjectDataResult();
+        var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _authorization.CustomHeaders()).Result;
+        if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
+        {
+          var intersection = projectsAssociatedWithDevice.ProjectDescriptors.Select(dp => dp.ProjectUID).Intersect(accountProjects.ProjectDescriptors.Select(ap => ap.ProjectUID));
+          intersectingProjectsForDevice.ProjectDescriptors = projectsAssociatedWithDevice.ProjectDescriptors.Where(p => intersection.Contains(p.ProjectUID)).ToList();
+        }
+
+        if (!intersectingProjectsForDevice.ProjectDescriptors.Any())
+          errorCode = 45;
+        return intersectingProjectsForDevice;
       }
       catch (Exception e)
       {
@@ -240,7 +261,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _deviceProxy.GetDevice(serialNumber);
+        return await _deviceProxy.GetDevice(serialNumber, _authorization.CustomHeaders());
       }
       catch (Exception e)
       {
@@ -256,7 +277,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _deviceProxy.GetDevice(shortRaptorAssetId);
+        return await _deviceProxy.GetDevice(shortRaptorAssetId, _authorization.CustomHeaders());
       }
       catch (Exception e)
       {

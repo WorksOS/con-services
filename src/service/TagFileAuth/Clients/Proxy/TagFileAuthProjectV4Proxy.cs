@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.TagFileAuth.Proxy
 
     public override ApiVersion Version => ApiVersion.V4;
 
-    public override ApiType Type => ApiType.Public;
+    public override ApiType Type => ApiType.Private;
 
     public override string CacheLifeKey => "TAGFILEAUTH_CACHE_LIFE"; // not used
 

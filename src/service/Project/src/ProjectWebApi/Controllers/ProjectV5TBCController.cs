@@ -4,11 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 
 namespace VSS.MasterData.Project.WebAPI.Controllers
@@ -29,8 +28,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV5TBCController(IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor)
-      : base(configStore)
+    public ProjectV5TBCController(IHttpContextAccessor httpContextAccessor)
     {
       this.httpContextAccessor = httpContextAccessor;
     }
@@ -85,7 +83,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders, 
             Productivity3dV1ProxyCoord, projectRepo: ProjectRepo,
             fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient)
+            cwsProjectClient: CwsProjectClient, cwsDeviceClient: CwsDeviceClient, cwsDesignClient: CwsDesignClient,
+            cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(createProjectEvent)
       );
 

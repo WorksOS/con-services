@@ -12,7 +12,7 @@ namespace MockProjectWebApi.Controllers
     public MockProjectDeviceController(ILoggerFactory loggerFactory)
     : base(loggerFactory)
     {
-    }
+    }    
 
     [HttpPost("api/v1/devices/deviceuids")]
     [ProducesResponseType(typeof(List<DeviceMatchingModel>), 200)]

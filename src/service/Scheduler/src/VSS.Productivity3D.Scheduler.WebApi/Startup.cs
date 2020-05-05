@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading;
+using CCSS.CWS.Client;
 using CCSS.CWS.Client.MockClients;
 using Hangfire;
 using Hangfire.MySql;
@@ -76,7 +77,11 @@ namespace VSS.Productivity3D.Scheduler.WebApi
 
       services.AddTransient<IApiClient, ApiClient>();
       services.AddTransient<ITransferProxy, TransferProxy>();
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
+
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, SchedulerErrorCodesProvider>();

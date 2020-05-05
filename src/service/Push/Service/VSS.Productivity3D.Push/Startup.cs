@@ -46,8 +46,10 @@ namespace VSS.Productivity3D.Push
     {
      services.AddMvc();
 
-      // Required for authentication
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
+
       services.AddSingleton<IConfigurationStore, GenericConfiguration>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IErrorCodesProvider, PushResult>();

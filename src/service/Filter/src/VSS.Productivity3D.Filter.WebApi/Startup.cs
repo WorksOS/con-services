@@ -93,7 +93,10 @@ namespace VSS.Productivity3D.Filter.WebApi
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
       services.AddTransient<IProjectProxy, ProjectV6Proxy>();
       services.AddTransient<IFileImportProxy, FileImportV6Proxy>();
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+
+      // Required for TIDAuthentication  
+      // CCSSSCON-216 temporary move to real endpoints when available
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 

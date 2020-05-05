@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
@@ -21,6 +22,8 @@ using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
+using CwsModels = VSS.Common.Abstractions.Clients.CWS.Models;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -68,6 +71,18 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     }
 
     /// <summary>
+    /// Gets a Project, even if archived, return project even if null
+    /// </summary>
+    public static async Task<ProjectDatabaseModel> GetProjectEvenIfArchived(string projectUid,
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
+    {
+      var project = (await projectRepo.GetProjectOnly(projectUid));
+
+      log.LogInformation($"Project projectUid: {projectUid} project {project} retrieved");
+      return project;
+    }
+
+    /// <summary>
     /// Gets a Project NO customer uid.
     /// </summary>
     public static async Task<ProjectDatabaseModel> GetProject(long shortRaptorProjectId,
@@ -86,22 +101,19 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
       string customerUid, double latitude, double longitude, 
-      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo,
-      DateTime? timeOfPosition = null)
+      ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
-      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude, timeOfPosition)).ToList();        ;
+      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList();        ;
 
       log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
       return projects;
     }
 
-    public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, DateTime projectStartDate,
-      DateTime projectEndDate, string databaseProjectBoundary,
+    public static async Task<bool> DoesProjectOverlap(string customerUid, Guid projectUid, string databaseProjectBoundary,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var overlaps =
-        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary,
-          projectStartDate, projectEndDate, projectUid == Guid.Empty ? string.Empty : projectUid.ToString());
+        await projectRepo.DoesPolygonOverlap(customerUid, databaseProjectBoundary, projectUid == Guid.Empty ? string.Empty : projectUid.ToString());
       if (overlaps)
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 43);
 
@@ -164,7 +176,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
       IDictionary<string, string> customHeaders,
       IProjectRepository projectRepo, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
-      IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn)
+      IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
+      ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient)
     {
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
@@ -219,6 +232,16 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               ms, rootFolder, customerUid, projectUid.ToString(),
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
               log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
+          }
+          //save to CWS
+          using (var ms = new MemoryStream(coordinateSystemFileContent))
+          {
+            // use User token for CWS. If app token required use auth.CustomHeaders()   
+            var result = await cwsDesignClient.CreateAndUploadFile(projectUid, new CwsModels.CreateFileRequestModel { FileName= coordinateSystemFileName }, ms, customHeaders);
+            var request = new ProjectConfigurationFileRequestModel { MachineControlFilespaceId = result.FileSpaceId};
+            await (isCreate ? 
+              cwsProfileSettingsClient.SaveProjectConfiguration(projectUid, CwsModels.ProjectConfigurationFileType.CALIBRATION, request, customHeaders) : 
+              cwsProfileSettingsClient.UpdateProjectConfiguration(projectUid, CwsModels.ProjectConfigurationFileType.CALIBRATION, request, customHeaders));
           }
         }
         catch (Exception e)

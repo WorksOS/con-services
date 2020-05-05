@@ -30,7 +30,10 @@ using VSS.Productivity.Push.Models.Notifications.Changes;
 using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Models.Enums;
 using VSS.Productivity3D.Project.Abstractions.Extensions;
+using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Productivity3D.Project.Abstractions.Utilities;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
@@ -44,22 +47,23 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   /// </summary>
   public class FileImportV6Controller : FileImportBaseController
   {
-    private readonly INotificationHubClient notificationHubClient;
+    private readonly INotificationHubClient _notificationHubClient;
 
     /// <summary>
     /// File import controller v6
     /// </summary>
-    public FileImportV6Controller(IConfigurationStore configStore, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
-      IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
-      IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
-      : base(configStore, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
+    public FileImportV6Controller(IConfigurationStore config, Func<TransferProxyType, ITransferProxy> persistantTransferProxy,
+                                  IFilterServiceProxy filterServiceProxy, ITRexImportFileProxy tRexImportFileProxy,
+                                  IRequestFactory requestFactory, INotificationHubClient notificationHubClient)
+      : base(config, persistantTransferProxy, filterServiceProxy, tRexImportFileProxy, requestFactory)
     {
-      this.notificationHubClient = notificationHubClient;
+      this._notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
     /// Gets a list of imported files for a project. The list includes files of all types.
     /// </summary>
+    [Route("api/v4/importedfiles")] // temporary kludge until ccssscon-219 
     [Route("api/v6/importedfiles")]
     [HttpGet]
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV6([FromQuery] string projectUid)
@@ -75,6 +79,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Used as a callback by Flow.JS
     /// </summary>
+    [Route("api/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [HttpGet]
     public ActionResult Upload()
@@ -85,6 +90,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <summary>
     /// Upload a file, and do processing synchronously
     /// </summary>
+    [Route("api/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [HttpPost]
     [FlowUpload(Extensions = new[]
@@ -137,6 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns>Schedule Job Result with a Job ID</returns>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("api/v4/importedfile/background")]
     [Route("api/v6/importedfile/background")]
     [HttpPost]
     [HttpPut]
@@ -214,6 +221,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="transferProxyFunc"></param>
     /// <param name="schedulerProxy"></param>
     /// <remarks>Import a design file for a project, once the file has been uploaded to AWS</remarks>
+    [Route("internal/v4/importedfile")]
     [Route("internal/v6/importedfile")]
     [HttpGet]
     public async Task<ImportedFileDescriptorSingleResult> InternalImportedFileV6(
@@ -275,6 +283,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   notify RaptorWebAPI.
     /// </summary>
     // I don't believe this endpoint is used anymore
+    [Route("api/v4/importedfile")]
+    [Route("internal/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [Route("internal/v6/importedfile")]
     [HttpPut]
@@ -318,6 +328,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>
     /// Intended for use by 3rd party connected systems that wish to avoid using FlowJS file upload framework.
     /// </remarks>
+    [Route("api/v4/importedfile/direct")]
     [Route("api/v6/importedfile/direct")]
     [HttpPost]
     [DisableFormValueModelBinding]
@@ -364,6 +375,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///      As of this writing, the file will remain there, even after deletion
     /// </summary>
     /// <remarks>Deletes existing imported file</remarks>
+    [Route("api/v4/importedfile")]
     [Route("api/v6/importedfile")]
     [HttpDelete]
     public async Task<ContractExecutionResult> DeleteImportedFileV6(
@@ -401,7 +413,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ProcessAsync(deleteImportedFile)
       );
 
-      await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+      await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
       Logger.LogInformation(
         $"{nameof(DeleteImportedFileV6)}: Completed successfully. projectUid {projectUid} importedFileUid: {importedFileUid}");
@@ -584,7 +596,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           $"{nameof(UpsertFileInternal)}: Update completed successfully. Response: {JsonConvert.SerializeObject(importedFile)}");
       }
 
-      await notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
+      await _notificationHubClient.Notify(new ProjectChangedNotification(projectUid));
 
       return importedFile;
     }
@@ -699,8 +711,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <returns></returns>
     private async Task<string> DefaultReferenceSurfaceName(IPreferenceProxy prefProxy, double offset, string parentName)
     {
-      const double ImperialFeetToMetres = 0.3048;
-      const double USFeetToMetres = 0.304800609601;
+      const double imperialFeetToMetres = 0.3048;
+      const double usFeetToMetres = 0.304800609601;
 
       var displayOffset = offset;
       var unitsString = string.Empty;
@@ -712,11 +724,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           unitsString = "m";
           break;
         case UnitsTypeEnum.Imperial:
-          displayOffset = offset / ImperialFeetToMetres;
+          displayOffset = offset / imperialFeetToMetres;
           unitsString = "ft";
           break;
         case UnitsTypeEnum.US:
-          displayOffset = offset / USFeetToMetres;
+          displayOffset = offset / usFeetToMetres;
           unitsString = "ft";
           break;
       }
@@ -829,7 +841,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task DoActivationAndNotification(string projectUid, Dictionary<Guid, bool> filesToUpdate)
     {
       var dbUpdateResult = await SetFileActivatedState(projectUid, filesToUpdate);
-      var notificationTask = notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
+      var notificationTask = _notificationHubClient.Notify(new ProjectChangedNotification(Guid.Parse(projectUid)));
       var raptorTask = NotifyRaptorUpdateFile(new Guid(projectUid), dbUpdateResult);
 
       await Task.WhenAll(notificationTask, raptorTask);

@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Project.WebAPI.Common.Executors;
 using VSS.MasterData.Project.WebAPI.Common.Helpers;
 using VSS.MasterData.Project.WebAPI.Common.Internal;
-using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.MasterData.Proxies;
 using VSS.Productivity.Push.Models.Notifications.Changes;
+using VSS.Productivity3D.Project.Abstractions.Models;
+using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Scheduler.Abstractions;
 using VSS.Productivity3D.Scheduler.Models;
@@ -35,29 +35,29 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// </summary>
     protected readonly IHttpContextAccessor HttpContextAccessor;
 
-    private readonly INotificationHubClient notificationHubClient;
+    private readonly INotificationHubClient _notificationHubClient;
 
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV6Controller(IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
-      : base(configStore)
+    public ProjectV6Controller(IHttpContextAccessor httpContextAccessor, INotificationHubClient notificationHubClient)
     {
       this.HttpContextAccessor = httpContextAccessor;
-      this.notificationHubClient = notificationHubClient;
+      this._notificationHubClient = notificationHubClient;
     }
 
     /// <summary>
     /// Gets a list of projects for a customer. The list includes projects of all project types
     ///        and both active and archived projects.
     /// </summary>
+    [Route("api/v4/project")] // temporary kludge until ccssscon-219 
     [Route("api/v6/project")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsListResult> GetProjectsV6()
     {
       Logger.LogInformation("GetAllProjectsV6");
 
-      var projects = (await GetProjectList().ConfigureAwait(false)).ToImmutableList();
+      var projects = (await GetProjectListForCustomer().ConfigureAwait(false)).ToImmutableList();
 
       return new ProjectV6DescriptorsListResult
       {
@@ -71,6 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Gets a project for a customer. 
     /// </summary>
     /// <returns>A project data</returns>
+    [Route("api/v4/project/{projectUid}")]
     [Route("api/v6/project/{projectUid}")]
     [HttpGet]
     public async Task<ProjectV6DescriptorsSingleResult> GetProjectV6(string projectUid)
@@ -79,61 +80,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
      
       var project = await ProjectRequestHelper.GetProject(projectUid.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
       return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
-    }
-
-    /// <summary>
-    /// Gets a project in applicationContext i.e. no customer. 
-    /// </summary>
-    /// <returns>A project data</returns>
-    [Route("api/v6/project/applicationcontext/{projectUid}")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsSingleResult> GetProjectUidApplicationContextV6(string projectUid)
-    {
-      Logger.LogInformation($"{nameof(GetProjectUidApplicationContextV6)}");
-
-      var project = await ProjectRequestHelper.GetProjectOnly(projectUid.ToString(), Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-      return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
-    }
-
-    /// <summary>
-    /// Gets projects which this device has access to, from cws
-    ///    application token i.e. customHeaders will NOT include customerUid
-    ///    get this from localDB now.
-    ///       response to include customerUid
-    /// </summary>
-    [Route("api/v6/project/applicationcontext/{shortRaptorProjectId}")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsSingleResult> GetProjectShortIdApplicationContextV6(long shortRaptorProjectId)
-    {
-      Logger.LogInformation($"{nameof(GetProjectShortIdApplicationContextV6)}");
-
-      var project = await ProjectRequestHelper.GetProject(shortRaptorProjectId, Logger, ServiceExceptionHandler, ProjectRepo).ConfigureAwait(false);
-      return new ProjectV6DescriptorsSingleResult(AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project));
-    }
-
-    /// <summary>
-    /// Gets intersecting projects in localDB . applicationContext i.e. no customer. 
-    ///   if projectUid, get it if it overlaps in localDB
-    ///    else get overlapping projects in localDB for this CustomerUID
-    /// </summary>
-    /// <returns>project data list</returns>
-    [Route("api/v6/project/applicationcontext/intersecting")]
-    [HttpGet]
-    public async Task<ProjectV6DescriptorsListResult> GetIntersectingProjectsApplicationContextV6(string customerUid,
-       double latitude, double longitude, DateTime? timeOfPosition = null)
-    {
-      Logger.LogInformation($"{nameof(GetIntersectingProjectsApplicationContextV6)}");
-
-      var projects = await ProjectRequestHelper.GetIntersectingProjects(
-        customerUid, latitude, longitude,
-        Logger, ServiceExceptionHandler, ProjectRepo,
-        timeOfPosition).ConfigureAwait(false);
-      return new ProjectV6DescriptorsListResult
-      {
-        ProjectDescriptors = projects.Select(project =>
-            AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(project))
-           .ToImmutableList()
-      };
     }
 
     // POST: api/project
@@ -146,6 +92,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Create new project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("internal/v4/project")]
+    [Route("api/v4/project")]
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPost]
@@ -157,10 +105,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       Logger.LogInformation($"{nameof(CreateProject)} projectRequest: {0}", JsonConvert.SerializeObject(projectRequest));
 
       if (projectRequest.CustomerUID == null) projectRequest.CustomerUID = new Guid(customerUid);
-      
-      // todoMaverick, no, we need the trn from WM
-      //if (projectRequest.ProjectUID == null) projectRequest.ProjectUID = Guid.NewGuid().ToString();
-
+   
       var createProjectEvent = AutoMapperUtility.Automapper.Map<CreateProjectEvent>(projectRequest);
       createProjectEvent.ActionUTC = DateTime.UtcNow;
       ProjectDataValidator.Validate(createProjectEvent, ProjectRepo, ServiceExceptionHandler);
@@ -177,7 +122,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo,
             dataOceanClient: DataOceanClient, authn: Authorization,
-            cwsProjectClient: CwsProjectClient)
+            cwsProjectClient:CwsProjectClient, cwsDesignClient:CwsDesignClient, 
+            cwsProfileSettingsClient:CwsProfileSettingsClient)
           .ProcessAsync(createProjectEvent)
       );
 
@@ -185,7 +131,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
         AutoMapperUtility.Automapper.Map<ProjectV6Descriptor>(await ProjectRequestHelper.GetProject(createProjectEvent.ProjectUID.ToString(), customerUid, Logger, ServiceExceptionHandler, ProjectRepo)
           .ConfigureAwait(false)));
 
-      await notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
+      await _notificationHubClient.Notify(new CustomerChangedNotification(projectRequest.CustomerUID.Value));
 
       Logger.LogResult(this.ToString(), JsonConvert.SerializeObject(projectRequest), result);
       return result;
@@ -197,6 +143,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRequest">The project request model to be used</param>
     /// <param name="scheduler">The scheduler used to queue the job</param>
     /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
+    [Route("api/v4/project/background")]
     [Route("api/v6/project/background")]
     [HttpPost]
     public async Task<ScheduleJobResult> RequestCreateProjectBackgroundJob([FromBody] CreateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
@@ -235,6 +182,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Updates existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("internal/v4/project")]
+    [Route("api/v4/project")]
     [Route("internal/v6/project")]
     [Route("api/v6/project")]
     [HttpPut]
@@ -259,13 +208,14 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
             customerUid, userId, null, customHeaders,
             productivity3dV1ProxyCoord: Productivity3dV1ProxyCoord,
             projectRepo: ProjectRepo, fileRepo: FileRepo, httpContextAccessor: HttpContextAccessor,
-            dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient)
+            dataOceanClient: DataOceanClient, authn: Authorization, cwsProjectClient: CwsProjectClient,
+            cwsDesignClient: CwsDesignClient, cwsProfileSettingsClient: CwsProfileSettingsClient)
           .ProcessAsync(project)
       );
 
       //invalidate cache in TRex/Raptor
       Logger.LogInformation("UpdateProjectV6. Invalidating 3D PM cache");
-      await notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
+      await _notificationHubClient.Notify(new ProjectChangedNotification(project.ProjectUID));
 
       Logger.LogInformation("UpdateProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
@@ -279,6 +229,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <param name="projectRequest">The project request model to be used in the update</param>
     /// <param name="scheduler">The scheduler used to queue the job</param>
     /// <returns>Scheduler Job Result, containing the Job ID To poll via the Scheduler</returns>
+    [Route("api/v4/project/background")]
     [Route("api/v6/project/background")]
     [HttpPut]
     public async Task<ScheduleJobResult> RequestUpdateProjectBackgroundJob([FromBody] UpdateProjectRequest projectRequest, [FromServices] ISchedulerProxy scheduler)
@@ -324,6 +275,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// <remarks>Deletes existing project</remarks>
     /// <response code="200">Ok</response>
     /// <response code="400">Bad request</response>
+    [Route("api/v4/project/{projectUid}")]
     [Route("api/v6/project/{projectUid}")]
     [HttpDelete]
     public async Task<ProjectV6DescriptorsSingleResult> ArchiveProjectV6([FromRoute] string projectUid)
@@ -342,10 +294,10 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       if (isDeleted == 0)
         ServiceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 66);
 
-      // todoMaverick archive in cws
+      // CCSSSCON-144 and CCSSSCON-32 call new archive endpoint in cws
 
       if (!string.IsNullOrEmpty(customerUid))
-        await notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
+        await _notificationHubClient.Notify(new CustomerChangedNotification(new Guid(customerUid)));
 
       Logger.LogInformation("ArchiveProjectV6. Completed successfully");
       return new ProjectV6DescriptorsSingleResult(
@@ -353,6 +305,5 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .ConfigureAwait(false)));
 
     }
-    
   }
 }

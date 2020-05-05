@@ -28,10 +28,8 @@ using VSS.Productivity3D.Filter.Abstractions.Interfaces;
 using VSS.Productivity3D.Filter.Proxy;
 using VSS.Productivity3D.Productivity3D.Abstractions.Interfaces;
 using VSS.Productivity3D.Productivity3D.Proxy;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Interfaces.Repository;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Productivity3D.Project.Proxy;
 using VSS.Productivity3D.Project.Repository;
 using VSS.Productivity3D.Push.Abstractions.Notifications;
 using VSS.Productivity3D.Push.Clients.Notifications;
@@ -91,10 +89,13 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
-      // todoMaverick move to real endpoints when available
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
-      services.AddTransient<ICwsProjectClient, MockCwsProjectClient>();
-      services.AddTransient<ICwsDeviceClient, MockCwsDeviceClient>();
+      // CCSSSCON-216 temporary move to real endpoints when available
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
+      services.AddCwsClient<ICwsProjectClient, CwsProjectClient, MockCwsProjectClient>(CwsClientMockExtensionMethods.MOCK_PROJECT_KEY);
+      services.AddCwsClient<ICwsDeviceClient, CwsDeviceClient, MockCwsDeviceClient>(CwsClientMockExtensionMethods.MOCK_DEVICE_KEY);
+      services.AddCwsClient<ICwsDesignClient, CwsDesignClient, MockCwsDesignClient>(CwsClientMockExtensionMethods.MOCK_DESIGN_KEY);
+      services.AddCwsClient<ICwsProfileSettingsClient, CwsProfileSettingsClient, MockCwsProfileSettingsClient>(CwsClientMockExtensionMethods.MOCK_PROFILE_KEY);
+
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>
@@ -103,10 +104,9 @@ namespace VSS.MasterData.Project.WebAPI
         });
       });
 
-      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>(); 
+      services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
-      services.AddTransient<ImportedFileUpdateService>(); 
-      
+      services.AddTransient<ImportedFileUpdateService>();
     }
 
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
@@ -118,7 +118,7 @@ namespace VSS.MasterData.Project.WebAPI
       // See https://stackoverflow.com/questions/31389781/read-request-body-twice
       app.Use(next => context =>
       {
-        HttpRequestRewindExtensions.EnableBuffering(context.Request);
+        context.Request.EnableBuffering();
         return next(context);
       });
       serviceProvider = ServiceProvider;
@@ -126,15 +126,11 @@ namespace VSS.MasterData.Project.WebAPI
 
     private static ITransferProxy TransferProxyMethod(TransferProxyType type)
     {
-      switch (type)
+      return type switch
       {
-        case TransferProxyType.DesignImport:
-          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
-            "AWS_DESIGNIMPORT_BUCKET_NAME");
-        default:
-          return new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(),
-            "AWS_BUCKET_NAME");
-      }
+        TransferProxyType.DesignImport => new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"),
+        _ => new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")
+      };
     }
   }
 }

@@ -445,7 +445,7 @@ namespace VSS.TRex.SubGrids.Executors
       // Request production data only, or hybrid production data and surveyed surface data sub grids
       ProdDataMask?.ScanAllSetBitsAsSubGridAddresses(address =>
       {
-        // Is this sub grid is the responsibility of this server?
+        // Is this sub grid the responsibility of this server?
         if (!primaryPartitionMap[address.ToSpatialPartitionDescriptor()])
           return;
 

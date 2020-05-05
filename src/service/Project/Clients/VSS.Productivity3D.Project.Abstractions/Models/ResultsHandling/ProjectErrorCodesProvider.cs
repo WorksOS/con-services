@@ -18,10 +18,6 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Invalid ProjectTimezone.", 10);
       this.DynamicAddwithOffset("Missing ProjectName.", 11);
       this.DynamicAddwithOffset("ProjectName is longer than the 255 characters allowed.", 12);
-      this.DynamicAddwithOffset("Description is longer than the 2000 characters allowed.", 13);
-      this.DynamicAddwithOffset("Missing ProjectStartDate.", 14);
-      this.DynamicAddwithOffset("Missing ProjectEndDate.", 15);
-      this.DynamicAddwithOffset("Project start date must be earlier than end date.", 16);
       this.DynamicAddwithOffset("Project timezone cannot be updated.", 17);
       this.DynamicAddwithOffset("CustomerUID parameter differs to the requesting CustomerUID. Impersonation is not supported.", 18);
       this.DynamicAddwithOffset("Missing CustomerUID.", 19);
@@ -77,7 +73,7 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Unable to retrieve project settings from repository. Reason: {0} {1}.", 69);
       this.DynamicAddwithOffset("Unable to validate project settings with raptor. Reason: {0} {1}.", 70);
       this.DynamicAddwithOffset("Unable to update project settings with raptor. Reason: {0} {1}.", 71);
-      //this.DynamicAddwithOffset("Unable to create Kafka event. Reason: {0}.", 72);
+      this.DynamicAddwithOffset("Invalid serialNumber.", 72);
       this.DynamicAddwithOffset("Invalid geofence Types.", 73);
       this.DynamicAddwithOffset("Landfill projects are not supported.", 74);
       this.DynamicAddwithOffset("CreateImportedFile. DxfUnitsType is an unrecognized type.", 75);
@@ -129,7 +125,10 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Reference surface already exists", 121);
       this.DynamicAddwithOffset("This endpoint does not support importing reference surfaces", 122);
       this.DynamicAddwithOffset("Unable to retrieve existing file for the update", 123);
-
+      this.DynamicAddwithOffset("Device not found in ProfileX", 124);
+      this.DynamicAddwithOffset("Device not found in local storage", 125);
+      this.DynamicAddwithOffset("Invalid DeviceUid", 126);
+      this.DynamicAddwithOffset("Invalid ShortRaptorAssetId", 127);
     }
   }
 }

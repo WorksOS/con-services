@@ -38,6 +38,8 @@ namespace TestUtility
 
       mySqlServer = Environment.GetEnvironmentVariable("MYSQL_SERVER_NAME_VSPDB");
 
+      //mySqlServer = "localhost"; // use for debugging locally
+
       UpdateConnectionString();
     }
 

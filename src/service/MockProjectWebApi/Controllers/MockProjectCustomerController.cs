@@ -34,7 +34,9 @@ namespace MockProjectWebApi.Controllers
       };
     }
 
-    [HttpGet("api/v1/customer/license/{customerUid}")]
+    [HttpGet]
+    [Route("api/v1/customer/license/{customerUid}")]
+    [Route("api/v1/customer/applicationcontext/license/{customerUid}")]
     public CustomerV1DeviceLicenseResult GetCustomerDeviceLicense(string customerUid)
     {
       Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)} for customerUid: {customerUid}");

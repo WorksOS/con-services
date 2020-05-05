@@ -43,6 +43,11 @@ node ('jenkinsslave-pod') {
 				description: 'Run Unit Tests',
 				name: 'RUN_UNITTESTS'
 			),
+            booleanParam(
+				defaultValue: false,
+				description: 'Run Integration Tests',
+				name: 'RUN_INTEGRATIONTESTS'
+			)
 		])
 	])
 
@@ -77,6 +82,7 @@ node ('jenkinsslave-pod') {
 	def buildDB = params.BUILD_DB
 	def runTests = params.RUN_ACCTEST
 	def runUnitTests = params.RUN_UNITTESTS
+    def runIntegrationTests = params.RUN_INTEGRATIONTESTS
 	def additionalImageTag = params.IMAGE_TAG
 	if (additionalImageTag == "None")
 		if (branchName == "master")
@@ -158,7 +164,7 @@ node ('jenkinsslave-pod') {
 			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
 
 			//If we aren't running ATs archive test results now, otherwise they will be handled then.
-			if (!runTests) {
+			if (!runTests && !runIntegrationTests) {
 				archiveArtifacts artifacts: "TestResults/UnitTests/**/*.xml, TestResults/TestCoverage/*.xml", fingerprint: true
 			}
 
@@ -167,6 +173,62 @@ node ('jenkinsslave-pod') {
 				stash name: "build-test-results"
 			} 
 		}
+
+		//Do not run integration tests if there is no folder in the expected location.
+		def integrationTestsFolderExists = fileExists "./${servicePath}/test/IntegrationTests"
+		if (!integrationTestsFolderExists)
+			runIntegrationTests = false
+
+		if (runIntegrationTests)
+		{
+			// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+			// the volume to the bare metal host        
+			
+			//Create results directory in workspace
+			dir("TestResults") {}
+			
+			// Currently we need to execute the tests like this, because the pipeline docker plugin being aware of DIND, and attempting to map
+			// the volume to the bare metal host
+			
+			//Do not modify this unless you know the difference between ' and " in bash
+			// (https://www.gnu.org/software/bash/manual/html_node/Quoting.html#Quoting) see (https://gist.github.com/fuhbar/d00d11297a48b892684da34360e4135a) for Jenkinsfile 
+			// specific escaping examples. One day we might be able to test solutions (and have the results go to a specific directory) rather than specific projects, negating the need for such a complex command.
+			// Coverlet bug link https://github.com/tonerdo/coverlet/issues/33
+			def testCommand = $/docker run -v ${env.WORKSPACE}/TestResults:/TestResults ${build_container.id} bash -c 'cd /build//$+servicePath+$//test && ls IntegrationTests/**/*Tests.csproj | xargs -I@ -t dotnet test @ ${targetFramework} /p:CopyLocalLockFileAssemblies=true /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutputDirectory=/TestResults/TestCoverage/ --test-adapter-path:. --logger:"nunit;LogFilePath=/TestResults/@.xml"'/$
+			
+			// **/ //Here to help syntax hilighting in VSCode
+
+			//Run the test command generated above
+			sh(script: testCommand)
+
+			sh "ls ${env.WORKSPACE}/TestResults"
+			
+			//Publish test results to Jenkins, set build stability according to configured thresholds
+			//See https://jenkins.io/doc/pipeline/steps/xunit/#xunit-publish-xunit-test-result-report for DSL Guide
+			// step([$class: 'XUnitBuilder',
+			// 		thresholds: [
+			// 			[$class: 'FailedThreshold', failureThreshold: '0', unstableThreshold: '1'],
+			// 			[$class: 'SkippedThreshold', unstableThreshold: '1']
+			// 		],
+			// 		tools: [[$class: 'XUnitDotNetTestType', pattern: 'TestResults/UnitTests/**/*.xml']]])
+
+			xunit(
+				thresholds: [failed(failureThreshold: '1000', unstableThreshold: '1'), skipped(unstableThreshold: '1')],
+				tools: [NUnit3(pattern: 'TestResults/IntegrationTests/**/*.xml')]
+			)
+
+			cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'TestResults/TestCoverage/*.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+
+			//If we aren't running ATs archive test results now, otherwise they will be handled then.
+			if (!runTests) {
+				archiveArtifacts artifacts: "TestResults/IntegrationTests/**/*.xml, TestResults/TestCoverage/*.xml", fingerprint: true
+			}
+
+			//Stash results for publication to vsts after acceptance/integration tests have run
+			dir("TestResults") {
+				stash name: "build-test-results"
+			} 
+        }
 	}
 	
 	stage('Preparing runtime image') {
@@ -180,7 +242,7 @@ node ('jenkinsslave-pod') {
 		}
 	}
 
-	//Do not run acceptance tests if ther eis no dockerfile - mockapi is an example
+	//Do not run acceptance tests if there is no dockerfile - mockapi is an example
 	def dockerTestsFileExists = fileExists "./${servicePath}/build/Dockerfile.tests"
 	if (!dockerTestsFileExists)
 		runTests = false
@@ -238,13 +300,16 @@ node ('jenkinsslave-pod') {
 					}
 				}		
 			}
-		
 		}
 	}
 	
 	stage ('Publish results') {
-	    if (currentBuild.result=='SUCCESS') { 
+        echo "currentBuild.result: ${currentBuild.result}"
+
+	    if (currentBuild.result=='SUCCESS' || currentBuild.result == 'UNSTABLE') { 
+            echo "Tagging Docker image as: ${container} ${finalImage}"
 			sh "docker tag ${container} ${finalImage}"
+
 			sh "eval \$(aws ecr get-login --region us-west-2 --no-include-email)"
 			sh "docker push ${finalImage}"
 			
@@ -254,15 +319,16 @@ node ('jenkinsslave-pod') {
 			}
 
 			if (buildDB)
-			{	
+			{
 				sh "docker tag ${containerDb} ${dbFinalImage}"
 				sh "docker push ${dbFinalImage}"
 							
-			if (additionalImageTag != "None"){
-				sh "docker tag ${containerDb} ${ecrRepositoryDb}:${additionalImageTag}"
-				sh "docker push ${ecrRepositoryDb}:${additionalImageTag}"
+                if (additionalImageTag != "None"){
+                    sh "docker tag ${containerDb} ${ecrRepositoryDb}:${additionalImageTag}"
+                    sh "docker push ${ecrRepositoryDb}:${additionalImageTag}"
+                }
 			}
-			}
+
 			sh "mv ${servicePath}/deploy ${env.WORKSPACE}"
 			sh "ls -la"
 			archiveArtifacts artifacts: "deploy/**/*.*", fingerprint: true
