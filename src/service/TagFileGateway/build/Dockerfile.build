@@ -1,0 +1,7 @@
+FROM 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-3.1-sdk 
+ARG SERVICE_PATH
+
+COPY . /build/
+WORKDIR /build
+
+RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/Service/VSS.Productivity3D.TagFileGateway/VSS.Productivity3D.TagFileGateway.csproj -o /build/artifacts/TagFileForwarder --framework netcoreapp3.1 --runtime linux-x64
