@@ -23,6 +23,15 @@ namespace VSS.MasterData.Project.WebAPI.Middleware
     {
     }
 
+    public override bool RequireCustomerUid(HttpContext context)
+    {
+      var path = context.Request.Path.Value.ToLower();
+      var isCustomersEndpoint = path.Contains("/accounthierarchy") || path.Contains("/me");
+      if (isCustomersEndpoint)
+        return false;
+      return true;
+    }
+
     /// <summary>
     /// calls coming from e.g. TFA which don't have a user/customer context
     ///    but instead use a TPaaS application context
