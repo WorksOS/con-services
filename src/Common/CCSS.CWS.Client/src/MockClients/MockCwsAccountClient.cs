@@ -36,6 +36,11 @@ namespace CCSS.CWS.Client.MockClients
           {
             Id = Daves3dDemoCustomerUid,
             Name = "3D Demo customer"
+          },
+          new AccountResponseModel
+          {
+            Id = "158ef953-4967-4af7-81cc-952d47cb6c6f",
+            Name = "WM test Trimble CEC march 26"
           }
         }
       };
