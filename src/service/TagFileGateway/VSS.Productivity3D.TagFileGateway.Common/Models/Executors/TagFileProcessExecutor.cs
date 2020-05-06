@@ -11,8 +11,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
   {
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
-      var request = item as CompactionTagFileRequest;
-      if (request == null)
+      if (!(item is CompactionTagFileRequest request))
       {
         Logger.LogWarning("Empty request passed");
         return ContractExecutionResult.ErrorResult("Empty Request");
@@ -22,7 +21,9 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
 
       Logger.LogInformation($"Received Tag File with filename: {request.FileName}. TCC Org: {request.OrgId}. Data Length: {request.Data.Length}");
 
-      using (var data = new MemoryStream(request.Data))
+      var result = await TagFileForwarder.SendTagFileDirect(request);
+
+      await using (var data = new MemoryStream(request.Data))
       {
         Logger.LogInformation($"Uploading Tag File {request.FileName}");
         var path = GetS3Key(request.FileName, request.OrgId);
@@ -33,15 +34,10 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
         Logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
       }
 
-      if (TagFileForwarder.IsEnabled)
-      {
-        var result = await TagFileForwarder.SendTagFileDirect(request);
-      }
-
-      return new ContractExecutionResult(0);
+      return result;
     }
 
-    private string GetS3Key( string tagFileName, string tccOrgId)
+    public static string GetS3Key( string tagFileName, string tccOrgId)
     {
       //Example tagfile name: 0415J010SW--HOUK IR 29 16--170731225438.tag
       //Format: <display or ECM serial>--<machine name>--yyMMddhhmmss.tag

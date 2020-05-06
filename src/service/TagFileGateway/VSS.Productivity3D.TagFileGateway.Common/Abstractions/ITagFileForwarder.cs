@@ -7,7 +7,6 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Abstractions
 {
   public interface ITagFileForwarder
   {
-    bool IsEnabled { get; }
     Task<ContractExecutionResult> SendTagFileDirect(CompactionTagFileRequest compactionTagFileRequest,
       IDictionary<string, string> customHeaders = null);
     Task<ContractExecutionResult> SendTagFileNonDirect(CompactionTagFileRequest compactionTagFileRequest,

@@ -8,7 +8,7 @@ using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Proxies;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.TagFileForwarder.Controllers
+namespace VSS.Productivity3D.TagFileGateway.Controllers
 {
   public abstract class BaseController : Controller
   {

@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using VSS.Productivity3D.TagFileForwarder;
 using VSS.WebApi.Common;
 
-namespace VSS.Productivity3D.TagFileForwarder
+namespace VSS.Productivity3D.TagFileGateway
 {
   /// <summary>
   /// VSS.Productivity3D.TagFileForwarder program.

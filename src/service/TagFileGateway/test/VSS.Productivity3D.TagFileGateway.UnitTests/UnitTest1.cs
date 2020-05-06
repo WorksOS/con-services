@@ -7,10 +7,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Serilog;
+using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Proxy;
@@ -59,32 +62,15 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
     }
 
     [TestMethod]
-    public void TestEnabled()
-    {
-      _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("mock-url");
-
-      var forwarder = _serviceProvider.GetService<ITagFileForwarder>() as TagFileForwarderProxy;
-      forwarder.Should().NotBeNull();
-      forwarder.IsEnabled.Should().BeTrue();
-    }
-
-    [TestMethod]
-    public void TestDisabled()
-    {
-      _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("");
-
-      var forwarder = _serviceProvider.GetService<ITagFileForwarder>() as TagFileForwarderProxy;
-      forwarder.Should().NotBeNull();
-      forwarder.IsEnabled.Should().BeFalse();
-    }
-
-    [TestMethod]
     public void TestDirectSuccess()
     {
       _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("mock-url");
 
       // Setup a single tag file send
-      var forwarder = new Mock<TagFileForwarderProxy>(_mockStore.Object, _logger) {CallBase = true};
+      var forwarder = new Mock<TagFileForwarderProxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object)
+      {
+        CallBase = true
+      };
       forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
           "/tagfiles/direct",
           It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
@@ -107,7 +93,10 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("mock-url");
 
       // Setup a single tag file send
-      var forwarder = new Mock<TagFileForwarderProxy>(_mockStore.Object, _logger) {CallBase = true};
+      var forwarder = new Mock<TagFileForwarderProxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object)
+      {
+        CallBase = true
+      };
       forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
           "/tagfiles",
           It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
@@ -131,7 +120,10 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("mock-url");
 
       // Setup a non zero result for first try, then success on second try
-      var forwarder = new Mock<TagFileForwarderProxy>(_mockStore.Object, _logger) {CallBase = true};
+      var forwarder = new Mock<TagFileForwarderProxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object)
+      {
+        CallBase = true
+      };
       forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
           "/tagfiles",
           It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
@@ -163,7 +155,10 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("mock-url");
 
       // Setup a non zero result for first try, then success on second try
-      var forwarder = new Mock<TagFileForwarderProxy>(_mockStore.Object, _logger) {CallBase = true};
+      var forwarder = new Mock<TagFileForwarderProxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object)
+      {
+        CallBase = true
+      };
       forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
           "/tagfiles",
           It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
@@ -193,7 +188,10 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("mock-url");
 
       // Setup a non zero result for first try, then success on second try
-      var forwarder = new Mock<TagFileForwarderProxy>(_mockStore.Object, _logger) {CallBase = true};
+      var forwarder = new Mock<TagFileForwarderProxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object)
+      {
+        CallBase = true
+      };
       forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
           "/tagfiles",
           It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))
@@ -222,7 +220,10 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       _mockStore.Setup(m => m.GetValueString(It.Is<string>(s => s == "TAG_FILE_FORWARD_URL"), It.IsAny<string>())).Returns("mock-url");
 
       // Setup a non zero result for first try, then success on second try
-      var forwarder = new Mock<TagFileForwarderProxy>(_mockStore.Object, _logger) {CallBase = true};
+      var forwarder = new Mock<TagFileForwarderProxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object)
+      {
+        CallBase = true
+      };
       forwarder.Setup(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
           "/tagfiles",
           It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))))

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 
-namespace VSS.Productivity3D.TagFileForwarder.Controllers
+namespace VSS.Productivity3D.TagFileGateway.Controllers
 {
   // Hide from swagger
   [ApiExplorerSettings(IgnoreApi=true)]

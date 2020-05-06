@@ -1,36 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.ServiceDiscovery.Constants;
+using VSS.Common.Abstractions.ServiceDiscovery.Enums;
+using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies;
+using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 
 namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
 {
-  public class TagFileForwarderProxy : BaseProxy, ITagFileForwarder
+  public class TagFileForwarderProxy : BaseServiceDiscoveryProxy, ITagFileForwarder
   {
     private const int MAX_RETRIES = 3;
-    private const string URL_KEY = "TAG_FILE_FORWARD_URL";
-    private readonly string _url; 
-    public TagFileForwarderProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache) : base(configurationStore, logger, dataCache)
-    {
-      _url = configurationStore.GetValueString(URL_KEY, null);
-      IsEnabled = !string.IsNullOrEmpty(_url);
-      if(IsEnabled)
-        log.LogInformation($"Tag File Forwarding forwarding to {_url}");
-    }
 
-    public TagFileForwarderProxy(IConfigurationStore configurationStore, ILoggerFactory logger) : this(configurationStore, logger, null)
+    public override bool IsInsideAuthBoundary => true;
+    public override ApiService InternalServiceType => ApiService.TRexMutableGateway;
+    public override string ExternalServiceName => null;
+    public override ApiVersion Version => ApiVersion.V2;
+    public override ApiType Type => ApiType.Public;
+    public override string CacheLifeKey => "TAG_FILE_FORWARD_CACHE_KEY";
+
+    public TagFileForwarderProxy(IWebRequest webRequest, 
+        IConfigurationStore configurationStore, 
+        ILoggerFactory logger, 
+        IDataCache dataCache, 
+        IServiceResolution serviceResolution) 
+      : base(webRequest, configurationStore, logger, dataCache, serviceResolution)
     {
     }
-
-    public bool IsEnabled { get; private set; }
 
     public Task<ContractExecutionResult> SendTagFileDirect(CompactionTagFileRequest compactionTagFileRequest, IDictionary<string, string> customHeaders = null)
     {
@@ -45,10 +52,11 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
     /// <summary>
     /// This method is created so we can test the retry logic, but we can't mock the base proxy class currently
     /// </summary>
-    public virtual Task<ContractExecutionResult> SendSingleTagFile(CompactionTagFileRequest request, string route, IDictionary<string, string> customHeaders)
+    public virtual async Task<ContractExecutionResult> SendSingleTagFile(CompactionTagFileRequest request, string route, IDictionary<string, string> customHeaders)
     {
       // Only use 1 retry here, we will handle retries ourselves
-      return SendRequest<ContractExecutionResult>(URL_KEY, JsonConvert.SerializeObject(request), customHeaders, route, HttpMethod.Post, null, null, 1);
+      await using var ms = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(request)));
+      return await SendMasterDataItemServiceDiscoveryNoCache<ContractExecutionResult>("/tagfiles", customHeaders, HttpMethod.Post, null, ms, 1);
     }
 
     private async Task<ContractExecutionResult> SendTagFileWithRetry(CompactionTagFileRequest request, string route, IDictionary<string, string> customHeaders, int maxRetries = MAX_RETRIES)
@@ -88,8 +96,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
         retry++;
       }
 
-      return result ?? (new ContractExecutionResult(1, $"No response from Server {_url}"));
+      return result ?? (new ContractExecutionResult(1, $"No response from Server {InternalServiceType}"));
     }
-
   }
 }
