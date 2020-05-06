@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -14,7 +15,8 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
       protected ILogger Logger { get; private set; }
       protected IConfigurationStore ConfigStore { get; private set; }
       protected IDataCache DataCache { get; private set; }
-
+      protected ITagFileForwarder TagFileForwarder { get; private set; }
+      protected ITransferProxy TransferProxy { get; private set; }
       protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
       /// <summary> </summary>
@@ -29,21 +31,19 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
       public static TExecutor Build<TExecutor>(ILogger logger, 
         IConfigurationStore configStore, 
         IDataCache dataCache, 
-        ITagFileForwarder tagFileForwarder) 
+        ITagFileForwarder tagFileForwarder,
+        ITransferProxy transferProxy) 
         where TExecutor : RequestExecutorContainer, new()
       {
         var executor = new TExecutor()
         {
           Logger = logger,
           ConfigStore = configStore,
-          DataCache = dataCache
+          DataCache = dataCache,
+          TagFileForwarder = tagFileForwarder,
+          TransferProxy = transferProxy
         };
         return executor;
       }
-    }
-
-    public class TagFileProcessExecutor : RequestExecutorContainer
-    {
-
     }
 }
