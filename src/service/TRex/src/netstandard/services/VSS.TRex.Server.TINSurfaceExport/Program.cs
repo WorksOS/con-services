@@ -10,6 +10,7 @@ using VSS.TRex.Common.Interfaces;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DataSmoothing;
 using VSS.TRex.Designs;
+using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
 using VSS.TRex.Exports.Servers.Client;
@@ -106,6 +107,7 @@ namespace VSS.TRex.Server.TINSurfaceExport
       .Build()
       .Add(x => x.AddSingleton(new TINSurfaceExportRequestServer()))
       .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Immutable)))
+      .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
       .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Immutable)))
 
         // Register the listener for site model attribute change notifications
@@ -164,7 +166,8 @@ namespace VSS.TRex.Server.TINSurfaceExport
     {
       // Start listening to site model change notifications
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
-
+      // Start listening to design state change notifications
+      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
       // Register the heartbeat loggers
       DIContext.Obtain<ITRexHeartBeatLogger>().AddContext(new MemoryHeartBeatLogger());
     }
