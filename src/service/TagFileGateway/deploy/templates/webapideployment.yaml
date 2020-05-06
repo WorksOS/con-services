@@ -17,7 +17,7 @@ spec:
         app: {{ $name }}
     spec:
       containers:
-      - image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/ccss-tagfileforwarder:{{ .Values.image.tag }}
+      - image: 300213723870.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-tagfilegateway-webapi:{{ .Values.image.tag }}
         name: {{ $name }}    
         resources:
 {{ toYaml .Values.resources | indent 12 }}

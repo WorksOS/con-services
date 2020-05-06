@@ -4,7 +4,7 @@ ARG SERVICE_PATH
 COPY . /build/
 WORKDIR /build
 
-RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/Service/VSS.Productivity3D.TagFileGateway/VSS.Productivity3D.TagFileGateway.csproj -o /build/artifacts/TagFileForwarder --framework netcoreapp3.1 --runtime linux-x64
+RUN dotnet publish /nowarn:CS1591 ./$SERVICE_PATH/Service/VSS.Productivity3D.TagFileGateway/VSS.Productivity3D.TagFileGateway.csproj -o /build/artifacts/TagFileGateway --framework netcoreapp3.1 --runtime linux-x64
 
 FROM 300213723870.dkr.ecr.us-west-2.amazonaws.com/base-images:dotnet-3.1-runtime
 
@@ -29,7 +29,7 @@ WORKDIR /app
 ENV ASPNETCORE_URLS http://*:80
 EXPOSE 80
 
-COPY --from=builder /build/artifacts/TagFileForwarder .
+COPY --from=builder /build/artifacts/TagFileGateway .
 
 
 ENTRYPOINT ["dotnet", "VSS.Productivity3D.TagFileGateway.dll"]

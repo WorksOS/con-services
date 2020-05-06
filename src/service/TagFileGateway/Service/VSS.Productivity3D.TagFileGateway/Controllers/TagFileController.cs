@@ -14,41 +14,57 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
 {
   public class TagFileController : Controller
   {
+    private readonly ILogger<TagFileController> _logger;
+
+    public TagFileController(ILogger<TagFileController> logger)
+    {
+      _logger = logger;
+    }
 
     [Route("api/v2/tagfiles")]
     [HttpPost]
     public async Task<ContractExecutionResult> PostTagFileNonDirectSubmission([FromBody] CompactionTagFileRequest request, 
-      [FromServices] ILogger logger, 
+      [FromServices] ILoggerFactory loggerFactory, 
       [FromServices] IConfigurationStore configStore, 
       [FromServices] IDataCache dataCache, 
       [FromServices] ITagFileForwarder tagFileForwarder,
       [FromServices] ITransferProxy transferProxy)
     {
-      logger.LogInformation($"Attempting to process non-Direct tag file {request?.FileName}");
+      _logger.LogInformation($"Attempting to process non-Direct tag file {request?.FileName}");
       var result = await RequestExecutorContainer
-        .Build<TagFileProcessExecutor>(logger, configStore, dataCache, tagFileForwarder, transferProxy)
+        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxy)
         .ProcessAsync(request);
 
-      logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
-      return result;
+      _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
+
+      
+      // If we uploaded, return a successful result
+      // (as the tag file may not have been processed for legitimate reasons)
+      // We don't want the machine sending tag files over and over again in this instance
+      return new ContractExecutionResult();
     }
 
     [Route("api/v2/tagfiles/direct")]
     [HttpPost]
     public async Task<ContractExecutionResult> PostTagFileDirectSubmission([FromBody] CompactionTagFileRequest request,
-      [FromServices] ILogger logger, 
+      [FromServices] ILoggerFactory loggerFactory, 
       [FromServices] IConfigurationStore configStore, 
       [FromServices] IDataCache dataCache, 
       [FromServices] ITagFileForwarder tagFileForwarder,
       [FromServices] ITransferProxy transferProxy)
     {
-      logger.LogInformation($"Attempting to process Direct tag file {request?.FileName}");
+      _logger.LogInformation($"Attempting to process Direct tag file {request?.FileName}");
       var result = await RequestExecutorContainer
-        .Build<TagFileProcessExecutor>(logger, configStore, dataCache, tagFileForwarder, transferProxy)
+        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxy)
         .ProcessAsync(request);
 
-      logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
-      return result;
+      _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
+
+      
+      // If we uploaded, return a successful result
+      // (as the tag file may not have been processed for legitimate reasons)
+      // We don't want the machine sending tag files over and over again in this instance
+      return new ContractExecutionResult();
     }
   }
 }

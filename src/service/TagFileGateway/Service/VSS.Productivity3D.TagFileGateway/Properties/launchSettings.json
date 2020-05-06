@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "VSS.Productivity3D.TagFileForwarder": {
+    "VSS.Productivity3D.TagFileGateway": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

@@ -99,7 +99,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Visionlink.Interfaces",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileGateway.UnitTests", "test\VSS.Productivity3D.TagFileGateway.UnitTests\VSS.Productivity3D.TagFileGateway.UnitTests.csproj", "{21FAF545-326A-40A7-8973-3835EE18CF4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSS.Productivity3D.TagFileGateway.Common", "VSS.Productivity3D.TagFileGateway.Common\VSS.Productivity3D.TagFileGateway.Common.csproj", "{D3DE730C-88A6-40BE-B978-3CE187F59DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSS.Productivity3D.TagFileGateway.Common", "VSS.Productivity3D.TagFileGateway.Common\VSS.Productivity3D.TagFileGateway.Common.csproj", "{D3DE730C-88A6-40BE-B978-3CE187F59DDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
