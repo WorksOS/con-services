@@ -37,10 +37,10 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     public override bool InternalConnection(HttpContext context)
     {
       //HACK allow internal connections without authn for tagfile submission by the harvester
-
+      // TAG Files come via TPAAS endpoints
       return
-        context.Request.Path.Value.Contains("api/v2/tagfiles") && context.Request.Method == "POST" &&
-        context.Request.HttpContext.Connection.RemoteIpAddress.ToString().StartsWith("10.") &&
+        context.Request.Path.Value.Contains("tagfiles") && 
+        context.Request.Method == "POST" &&
         !context.Request.Headers.ContainsKey("X-Jwt-Assertion") &&
         !context.Request.Headers.ContainsKey("Authorization");
     }
@@ -54,7 +54,7 @@ namespace VSS.Productivity3D.Common.Filters.Authentication
     /// </summary>
     public override bool RequireCustomerUid(HttpContext context)
     {
-      var isTagFile = context.Request.Path.Value.ToLower().Contains("api/v2/tagfiles");
+      var isTagFile = context.Request.Path.Value.ToLower().Contains("tagfiles");
       var isPatch = context.Request.Path.Value.ToLower().Contains("/device/patches");
 
       var containsCustomerUid = context.Request.Headers.ContainsKey("X-VisionLink-CustomerUid");
