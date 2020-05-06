@@ -527,6 +527,9 @@ namespace VSS.TRex.Tests.Caching
           }
         }
 
+        for (var i = 0; i < context.TokenCount; i++)
+          Assert.True(cache.MRUList.IsValid(i), $"Item should be valid at index {i}, MRUList");
+
         cache.InvalidateDueToProductionDataIngest(Guid.Empty, mask);
 
         for (var i = 0; i < context.TokenCount; i++)
