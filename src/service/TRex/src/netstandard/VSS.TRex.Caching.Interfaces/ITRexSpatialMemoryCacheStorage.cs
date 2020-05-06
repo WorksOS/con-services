@@ -10,5 +10,6 @@
     void EvictOneLRUItemWithLock();
     void Invalidate(int index);
     bool IsEmpty();
+    bool IsValid(int index);
   }
 }

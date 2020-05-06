@@ -497,76 +497,10 @@ namespace VSS.TRex.Tests.Caching
         // and validate that a change bitmask causes appropriate invalidation
         var context = cache.LocateOrCreateContext(Guid.Empty, "fingerprint");
 
-        TRexSpatialMemoryCacheContextTests_Element[,] items = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
-        for (int i = 0; i < 100; i++)
+        var items = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+        for (var i = 0; i < 100; i++)
         {
-          for (int j = 0; j < 100; j++)
-          {
-            items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
-            {
-              CacheOriginX = (int) (i * SubGridTreeConsts.SubGridTreeDimension),
-              CacheOriginY = (int) (j * SubGridTreeConsts.SubGridTreeDimension),
-              SizeInBytes = 1
-            };
-
-            cache.Add(context, items[i, j]);
-          }
-        }
-
-        Assert.True(context.TokenCount == 10000, "Token count incorrect after addition");
-
-        // Create the bitmask
-        ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
-
-        for (int i = 0; i < 100; i++)
-        {
-          for (int j = 0; j < 100; j++)
-            cache.Add(context, new TRexSpatialMemoryCacheContextTests_Element
-            {
-              CacheOriginX = (int) (i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
-              CacheOriginY = (int) (j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridLocalKeyMask,
-              SizeInBytes = 1
-            });
-        }
-
-        cache.InvalidateDueToProductionDataIngest(Guid.Empty, mask);
-
-        int count = 10000;
-        // Remove the items
-        for (int i = 0; i < 100; i++)
-        {
-          for (int j = 0; j < 100; j++)
-          {
-            cache.Remove(context, items[i, j]);
-            Assert.True(context.TokenCount == --count, $"Count incorrect at index {i}, {j}, count = {count}, tokenCount = {context.TokenCount}");
-          }
-        }
-
-        Assert.True(context.TokenCount == 0, "Token count incorrect after invalidation");
-      }
-    }
-
-    [Fact]
-    public void Test_TRexSpatialMemoryCacheTests_DesignChangeInvalidation()
-    {
-      var projectUid = Guid.NewGuid();
-      var gridDataType = Types.GridDataType.PassCount;
-      var designUid = Guid.NewGuid();
-      Guid[] includedSurveyedSurfaces = new Guid[] { designUid };
-
-      using (var cache = new TRexSpatialMemoryCache(20000, 1000000, 0.5))
-      {
-        // Create a context with a included design and validate that a design change causes the appropriate invalidation
-        var testGuid = Guid.NewGuid();
-        var context =  cache.LocateOrCreateContext(projectUid, SpatialCacheFingerprint.ConstructFingerprint(projectUid, gridDataType,null, includedSurveyedSurfaces));
-
-        Assert.True(context.MarkedForRemoval == true, "Empty contents should be marked for removal");
-
-        // Add content to context
-        TRexSpatialMemoryCacheContextTests_Element[,] items = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
-        for (int i = 0; i < 100; i++)
-        {
-          for (int j = 0; j < 100; j++)
+          for (var j = 0; j < 100; j++)
           {
             items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
             {
@@ -579,24 +513,114 @@ namespace VSS.TRex.Tests.Caching
           }
         }
 
-        Assert.True(context.MarkedForRemoval == false, "Contents should not be marked for removal");
         Assert.True(context.TokenCount == 10000, "Token count incorrect after addition");
 
+        // Create the bitmask
+        ISubGridTreeBitMask mask = new SubGridTreeSubGridExistenceBitMask();
+
+        for (var i = 0; i < 100; i++)
+        {
+          for (var j = 0; j < 100; j++)
+          {
+            mask[(i * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridIndexBitsPerLevel,
+                 (j * SubGridTreeConsts.SubGridTreeDimension) >> SubGridTreeConsts.SubGridIndexBitsPerLevel] = true;
+          }
+        }
+
+        cache.InvalidateDueToProductionDataIngest(Guid.Empty, mask);
+
+        for (var i = 0; i < context.TokenCount; i++)
+          Assert.False(cache.MRUList.IsValid(i), $"Item should be invalidated at index {i}, MRUList");
+      }
+    }
+
+    [Fact]
+    public void Test_TRexSpatialMemoryCacheTests_DesignChangeInvalidation()
+    {
+      var projectUid = Guid.NewGuid();
+      var gridDataType = Types.GridDataType.PassCount;
+      var designUid = Guid.NewGuid();
+      var designUid2 = Guid.NewGuid();
+      Guid[] includedSurveyedSurfaces = new Guid[] { designUid };
+      Guid[] includedSurveyedSurfaces2 = new Guid[] { designUid2};
+
+      using (var cache = new TRexSpatialMemoryCache(20000, 1000000, 0.5))
+      {
+        // Create a context with a included design and validate that a design change causes the appropriate invalidation
+        var testGuid = Guid.NewGuid();
+        var context =  cache.LocateOrCreateContext(projectUid, SpatialCacheFingerprint.ConstructFingerprint(projectUid, gridDataType,null, includedSurveyedSurfaces));
+        // this content will remain in cache as it uses a different design
+        var context2 = cache.LocateOrCreateContext(projectUid, SpatialCacheFingerprint.ConstructFingerprint(projectUid, gridDataType, null, includedSurveyedSurfaces2));
+
+        Assert.True(context.MarkedForRemoval == true, "Empty contents should be marked for removal");
+
+        TRexSpatialMemoryCacheContextTests_Element[,] items = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+        TRexSpatialMemoryCacheContextTests_Element[,] items2 = new TRexSpatialMemoryCacheContextTests_Element[100, 100];
+
+        // Add content to our 2 contexts
+        for (var k = 1; k < 3; k++)
+        {
+          for (var i = 0; i < 100; i++)
+          {
+            for (var j = 0; j < 100; j++)
+            {
+              if (k == 1)
+              {
+                items[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+                {
+                  CacheOriginX = (int)(i * SubGridTreeConsts.SubGridTreeDimension),
+                  CacheOriginY = (int)(j * SubGridTreeConsts.SubGridTreeDimension),
+                  SizeInBytes = 1
+                };
+                cache.Add(context, items[i, j]);
+              }
+              else
+              {
+                items2[i, j] = new TRexSpatialMemoryCacheContextTests_Element
+                {
+                  CacheOriginX = (int)(i * SubGridTreeConsts.SubGridTreeDimension),
+                  CacheOriginY = (int)(j * SubGridTreeConsts.SubGridTreeDimension),
+                  SizeInBytes = 1
+                };
+                cache.Add(context2, items2[i, j]);
+              }
+            }
+          }
+        }
+
+        // verify items added OK
+        Assert.True(context.MarkedForRemoval == false, "Context should not be marked for removal");
+        Assert.True(context.TokenCount == 10000, "Token count incorrect after addition");
+        Assert.True(context2.MarkedForRemoval == false, "Context2 should not be marked for removal");
+        Assert.True(context2.TokenCount == 10000, "Token count incorrect after addition of context2");
+
+        // invalidate first of the 2 contexts added
         cache.InvalidateDueToDesignChange(projectUid, designUid);
 
         int count = 10000;
-        // Remove the items
-        for (int i = 0; i < 100; i++)
+
+        for (var i = 0; i < context.TokenCount; i++)
+          Assert.False(cache.MRUList.IsValid(i), $"Item should be invalidated at index {i}, for first context");
+
+        for (var i = count; i < count + context2.TokenCount; i++)
+          Assert.True(cache.MRUList.IsValid(i) == true, $"Item should be valid at index {i}, for context2");
+
+        // Remove the items from first context
+        for (var i = 0; i < 100; i++)
         {
-          for (int j = 0; j < 100; j++)
+          for (var j = 0; j < 100; j++)
           {
             cache.Remove(context, items[i, j]);
             Assert.True(context.TokenCount == --count, $"Count incorrect at index {i}, {j}, count = {count}, tokenCount = {context.TokenCount}");
           }
-        }
+        };
 
+        //Test context is removed
         Assert.True(context.MarkedForRemoval == true, "Empty context should be marked for removal");
         Assert.True(context.TokenCount == 0, "Token count incorrect after invalidation");
+        // Test context2 remains
+        Assert.True(context2.MarkedForRemoval == false, "Context2 should not be marked for removal");
+        Assert.True(context2.TokenCount == 10000, "Token count incorrect after test");
       }
     }
 

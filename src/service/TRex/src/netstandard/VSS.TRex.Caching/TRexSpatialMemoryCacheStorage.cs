@@ -244,5 +244,7 @@ namespace VSS.TRex.Caching
     }
 
     public bool IsEmpty() => MRUHead == -1;
+
+    public bool IsValid(int index) => Items[index].Valid;
   }
 }
