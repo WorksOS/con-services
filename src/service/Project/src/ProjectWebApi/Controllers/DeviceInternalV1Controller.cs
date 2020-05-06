@@ -48,6 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
+    /// Obsolete (CCSSSCON-314) but leave in place for now - just in case 
     /// Gets device by shortRaptorAssetId, results include Uid and serialNumber
     ///  called by TFA ProjectBoundariesAtDateExecutor, ProjectIdExecutor
     ///  Only returns 1 ACTIVE account, else error code

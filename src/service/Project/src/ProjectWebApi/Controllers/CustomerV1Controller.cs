@@ -83,14 +83,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       Logger.LogInformation($"{nameof(GetCustomerDeviceLicense)}");
       var deviceLicenses = await cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), customHeaders);
-      var deviceList = await CwsDeviceClient.GetDevicesForAccount(new Guid(customerUid), customHeaders);
-      foreach (var device in deviceList.Devices)
-      {
-        // if device exists, does nothing but return a count of 0
-        //  don't store customerUid, so that we don't need to move the device if ownership changes.
-        await DeviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(device));
-      }
-
       return new CustomerV1DeviceLicenseResult(deviceLicenses.Total);
     }
   }

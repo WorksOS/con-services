@@ -7,8 +7,10 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
+using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -37,6 +39,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         }
 
         deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
+
+        // store deviceUid and a shortRaptorAssetId will be assigned. Raptor may be obsolete, but this for now will allow various tests to pass
+        await deviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(deviceData));
 
         var deviceFromRepo = await deviceRepo.GetDevice(deviceResponseModel.Id);
         if (deviceFromRepo == null)
