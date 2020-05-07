@@ -24,8 +24,6 @@ data:
 #SERVICE DISCOVERY REFERENCES
   assetdetails_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-UnifiedFleet/1.0
   assetsummary_public_v1: https://alpha1ufl.myvisionlink.com/t/trimble.com/ccss-3d-alpha-assetutilization/1.1 
-  productivity3d_service_public_v1: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/1.0
-  productivity3d_service_public_v2: https://api-stg.trimble.com/t/trimble.com/ccss-3d-alpha-productivity/2.0
   cws_profilemanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilemanager-stg/1.0
   cws_designmanager_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-designmanager-stg/1.0
   cws_profilesettings_public_v1: https://api-stg.trimble.com/t/trimble.com/cws-profilesettings-stg/1.0
