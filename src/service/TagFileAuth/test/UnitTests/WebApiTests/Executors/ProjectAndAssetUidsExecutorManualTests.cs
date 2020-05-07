@@ -380,7 +380,7 @@ namespace WebApiTests.Executors
     {
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, customHeaders);
 
       var ex = await Assert.ThrowsExceptionAsync<ServiceException>(() =>
         executor.ProcessAsync((GetProjectAndAssetUidsRequest)null));
@@ -398,8 +398,8 @@ namespace WebApiTests.Executors
       GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult, int expectedCode, string expectedMessage
   )
     {
-      projectProxy.Setup(p => p.GetProject(request.ProjectUid, null)).ReturnsAsync(projectForProjectUid);
-      projectProxy.Setup(p => p.GetIntersectingProjects(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, null))
+      projectProxy.Setup(p => p.GetProject(request.ProjectUid, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(projectForProjectUid);
+      projectProxy.Setup(p => p.GetIntersectingProjects(projectAccountUid, It.IsAny<double>(), It.IsAny<double>(), request.ProjectUid, It.IsAny<Dictionary<string, string>>()))
             .ReturnsAsync(projectListForProjectAccountUid);
       cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(projectAccountUid), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(projectDeviceLicenseResponseModel);
 
@@ -407,21 +407,21 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(request.RadioSerial, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(radioSerialDevice);
       if (radioSerialDevice != null)
       {
-        deviceProxy.Setup(d => d.GetProjectsForDevice(radioSerialDevice.DeviceUID, null)).ReturnsAsync(projectListForRadioSerial);
+        deviceProxy.Setup(d => d.GetProjectsForDevice(radioSerialDevice.DeviceUID, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(projectListForRadioSerial);
         // cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(radioSerialDevice.CustomerUID), null)).ReturnsAsync(radioSerialDeviceLicenseResponseModel);  
       }
 
       deviceProxy.Setup(d => d.GetDevice(request.Ec520Serial, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(ec520Device);
       if (ec520Device != null)
       {
-        deviceProxy.Setup(d => d.GetProjectsForDevice(ec520Device.DeviceUID, null)).ReturnsAsync(projectListForEC520);
+        deviceProxy.Setup(d => d.GetProjectsForDevice(ec520Device.DeviceUID, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(projectListForEC520);
         // cwsAccountClient.Setup(p => p.GetDeviceLicenses(new Guid(ec520Device.CustomerUID), null)).ReturnsAsync(ec520DeviceLicenseResponseModel);
       }
 
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
         _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, customHeaders);
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 

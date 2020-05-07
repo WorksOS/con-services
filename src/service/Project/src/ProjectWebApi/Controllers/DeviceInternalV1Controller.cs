@@ -30,7 +30,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///   d) only returns 1 ACTIVE account, else error code
     /// </summary>
     [HttpGet("internal/v1/device/serialnumber")]
-    public async Task<DeviceDataSingleResult> GetDeviceBySerialNumber([FromQuery] string serialNumber)
+    public async Task<DeviceDescriptorSingleResult> GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
       Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)} serialNumber {serialNumber}");
       
@@ -42,7 +42,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<GetDeviceBySerialExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             headers: customHeaders, 
             deviceRepo: DeviceRepo, cwsDeviceClient: CwsDeviceClient)
-          .ProcessAsync(deviceSerial)) as DeviceDataSingleResult;
+          .ProcessAsync(deviceSerial)) as DeviceDescriptorSingleResult;
 
       return deviceDataResult;
     }
@@ -54,7 +54,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     ///  Only returns 1 ACTIVE account, else error code
     /// </summary>
     [HttpGet("internal/v1/device/shortRaptorAssetId")]
-    public async Task<DeviceDataSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
+    public async Task<DeviceDescriptorSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
     {
       Logger.LogInformation($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
 
@@ -66,7 +66,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           .Build<GetDeviceByShortRaptorIdExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
             headers: customHeaders,
             deviceRepo: DeviceRepo, cwsDeviceClient: CwsDeviceClient)
-          .ProcessAsync(shortRaptorId)) as DeviceDataSingleResult;
+          .ProcessAsync(shortRaptorId)) as DeviceDescriptorSingleResult;
 
       return deviceDataResult;
     }

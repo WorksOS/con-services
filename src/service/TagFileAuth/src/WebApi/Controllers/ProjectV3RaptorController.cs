@@ -47,7 +47,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug($"{nameof(GetProjectId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectIdResult;
 
       log.LogResult(nameof(GetProjectId), request, result);      
@@ -68,7 +68,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug($"{nameof(PostProjectBoundary)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectBoundaryAtDateResult;
 
       log.LogResult(nameof(PostProjectBoundary), request, result);
@@ -89,7 +89,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       log.LogDebug($"{nameof(PostProjectBoundaries)}: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
 
       log.LogResult(nameof(PostProjectBoundaries), request, result);

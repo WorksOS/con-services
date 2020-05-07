@@ -52,6 +52,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       // Radio serial -> Asset/Project override
       if (CustomRadioSerialMapper.LocateAsset(request.RadioSerial, request.DeviceType, out var id))
       {
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: LocateAsset id {JsonConvert.SerializeObject(id)}");
         return GetProjectAndAssetUidsResult.FormatResult(id.ProjectUid.ToString(), id.AssetUid.ToString());
       }
 
@@ -87,7 +88,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
         log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
-      if (device?.Code != 0 && !string.IsNullOrEmpty(request.Ec520Serial))
+      if ((device == null || device?.Code != 0 || device?.DeviceUID == null) && !string.IsNullOrEmpty(request.Ec520Serial))
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
         var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
@@ -97,7 +98,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       if (!string.IsNullOrEmpty(request.ProjectUid))
         return await HandleManualImport(request, project, device);
 
-      if (device == null || device?.Code != 0)
+      if (device == null || device?.Code != 0 || device?.DeviceUID == null)
         return GetProjectAndAssetUidsResult.FormatResult(uniqueCode: device?.Code ?? 47);
 
       return await HandleAutoImport(request, device);

@@ -88,7 +88,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
       _log.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
@@ -158,7 +158,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _log.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;

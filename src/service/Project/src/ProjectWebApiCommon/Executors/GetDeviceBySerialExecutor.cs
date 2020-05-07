@@ -35,7 +35,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           var message = "Unable to locate device by serialNumber in cws";
           log.LogInformation($"GetDeviceBySerialExecutor: {message}");
-          return new DeviceDataSingleResult(code: 100, message: message, deviceData); 
+          return new DeviceDescriptorSingleResult(code: 100, message: message, deviceData); 
         }
 
         deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
@@ -48,7 +48,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           var message = "Unable to locate device in localDB";
           log.LogInformation($"GetDeviceBySerialExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
-          return new DeviceDataSingleResult(code: 101, message: message, deviceData);
+          return new DeviceDescriptorSingleResult(code: 101, message: message, deviceData);
         }
 
         deviceData.ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID;
@@ -60,7 +60,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           var message = "Unable to locate any account for the device in cws";
           log.LogInformation($"GetDeviceBySerialExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
-          return new DeviceDataSingleResult(code: 102, message: message, deviceData); 
+          return new DeviceDescriptorSingleResult(code: 102, message: message, deviceData); 
         }
 
         log.LogInformation($"GetDeviceBySerialExecutor: deviceAccountListDataResult {JsonConvert.SerializeObject(deviceAccountListDataResult)}");
@@ -69,7 +69,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         {
           var message = "There is >1 active account for the device in cws";
           log.LogInformation($"GetDeviceBySerialExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
-          return new DeviceDataSingleResult(code: 103, message: message, deviceData);
+          return new DeviceDescriptorSingleResult(code: 103, message: message, deviceData);
         }
 
         var deviceCustomer = deviceAccountListDataResult.Accounts
@@ -78,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         deviceData.RelationStatus = deviceCustomer.RelationStatus;
         deviceData.TccDeviceStatus = deviceCustomer.TccDeviceStatus;
         log.LogInformation($"GetDeviceBySerialExecutor: deviceData {JsonConvert.SerializeObject(deviceData)}");
-        return new DeviceDataSingleResult(deviceData); 
+        return new DeviceDescriptorSingleResult(deviceData); 
       }
       catch (Exception e)
       {

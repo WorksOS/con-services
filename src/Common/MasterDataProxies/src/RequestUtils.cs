@@ -88,5 +88,19 @@ namespace VSS.MasterData.Proxies
         headers.Remove(headerKey);
       }
     }
+
+    public static IDictionary<string, string> GetCustomHeaders(this IHeaderDictionary headers, string[] keys)
+    {
+      var customHeaders = new Dictionary<string, string>();
+      
+      foreach (var key in keys)
+      {
+        if (headers.ContainsKey(key))
+        {
+          customHeaders.Add(key, headers[key]);
+        }
+      }
+      return customHeaders;
+    }
   }
 }

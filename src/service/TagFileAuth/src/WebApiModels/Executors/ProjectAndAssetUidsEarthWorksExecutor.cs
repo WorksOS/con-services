@@ -43,14 +43,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
       log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by RadioSerial?: {request.RadioSerial} device: { JsonConvert.SerializeObject(device)} {deviceStatus}");
 
-      if (device?.Code != 0)
+      if (device == null || device?.Code != 0 || device?.DeviceUID == null)
       {
         device = await dataRepository.GetDevice(request.Ec520Serial);
-        deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
-        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: { JsonConvert.SerializeObject(device)} {deviceStatus}");
+        deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: {contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+        log.LogDebug($"{nameof(ProjectAndAssetUidsExecutor)}: Found by Ec520Serial?: {request.Ec520Serial} device: {JsonConvert.SerializeObject(device)} {deviceStatus}");
       }
 
-      if (device?.Code != 0)
+      if (device == null || device?.Code != 0 || device?.DeviceUID == null)
         return GetProjectAndAssetUidsEarthWorksResult.FormatResult(assetUid: string.Empty, customerUid: string.Empty, uniqueCode: device?.Code ?? 33);
 
       return await HandleCutFillExport(request, device);

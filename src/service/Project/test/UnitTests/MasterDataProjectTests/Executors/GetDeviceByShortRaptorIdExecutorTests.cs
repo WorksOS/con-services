@@ -91,7 +91,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         headers: _customHeaders,
         deviceRepo: deviceRepo.Object, cwsDeviceClient: cwsDeviceClient.Object);
       var response = await getDeviceBySerialExecutor.ProcessAsync(new ShortRaptorId(_shortRaptorAssetId))
-        as DeviceDataSingleResult;
+        as DeviceDescriptorSingleResult;
 
       Assert.NotNull(response);
       Assert.Equal(0, response.Code);
@@ -128,7 +128,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         headers: _customHeaders,
         deviceRepo: deviceRepo.Object, cwsDeviceClient: cwsDeviceClient.Object);
       var response = await getDeviceBySerialExecutor.ProcessAsync(new ShortRaptorId(_shortRaptorAssetId))
-        as DeviceDataSingleResult;
+        as DeviceDescriptorSingleResult;
 
       Assert.NotNull(response);
       Assert.Equal(0, response.Code);
@@ -162,7 +162,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         headers: _customHeaders,
         deviceRepo: deviceRepo.Object, cwsDeviceClient: cwsDeviceClient.Object);
       var response = await getDeviceBySerialExecutor.ProcessAsync(new ShortRaptorId(_shortRaptorAssetId))
-        as DeviceDataSingleResult;
+        as DeviceDescriptorSingleResult;
 
       Assert.NotNull(response);
       Assert.Equal(101, response.Code);
@@ -196,7 +196,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         headers: _customHeaders,
         deviceRepo: deviceRepo.Object, cwsDeviceClient: cwsDeviceClient.Object);
       var response = await getDeviceBySerialExecutor.ProcessAsync(new ShortRaptorId(_shortRaptorAssetId))
-        as DeviceDataSingleResult;
+        as DeviceDescriptorSingleResult;
 
       Assert.NotNull(response);
       Assert.Equal(100, response.Code);
@@ -223,7 +223,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         headers: _customHeaders,
         deviceRepo: deviceRepo.Object, cwsDeviceClient: cwsDeviceClient.Object);
       var response = await getDeviceBySerialExecutor.ProcessAsync(new ShortRaptorId(_shortRaptorAssetId))
-        as DeviceDataSingleResult;
+        as DeviceDescriptorSingleResult;
 
       Assert.NotNull(response);
       Assert.Equal(102, response.Code);
@@ -266,7 +266,7 @@ namespace VSS.MasterData.ProjectTests.Executors
         headers: _customHeaders,
         deviceRepo: deviceRepo.Object, cwsDeviceClient: cwsDeviceClient.Object);
       var response = await getDeviceBySerialExecutor.ProcessAsync(new ShortRaptorId(_shortRaptorAssetId))
-        as DeviceDataSingleResult;
+        as DeviceDescriptorSingleResult;
 
       Assert.NotNull(response);
       Assert.Equal(103, response.Code);
