@@ -22,6 +22,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     public bool MachineDesignsModified { get; set; }
     public bool ProofingRunsModified { get; set; }
     public bool AlignmentsModified { get; set; }
+    public bool SiteModelMarkedForDeletion { get; set; }
 
 
     /// <summary>
@@ -43,6 +44,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       writer.WriteBoolean(ProofingRunsModified);
       writer.WriteByteArray(ExistenceMapChangeMask);
       writer.WriteBoolean(AlignmentsModified);
+      writer.WriteBoolean(SiteModelMarkedForDeletion);
     }
 
     public override void FromBinary(IBinaryRawReader reader)
@@ -58,6 +60,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       ProofingRunsModified = reader.ReadBoolean();
       ExistenceMapChangeMask = reader.ReadByteArray();
       AlignmentsModified = reader.ReadBoolean();
+      SiteModelMarkedForDeletion = reader.ReadBoolean();
     }
   }
 }

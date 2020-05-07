@@ -19,6 +19,7 @@ using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.Machines.Interfaces;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGridTrees;
@@ -66,7 +67,8 @@ namespace VSS.TRex.SiteModels
     public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
     //private const string kSubGridVersionMapFileName = "SubGridVersionMap";
 
-    private const byte VERSION_NUMBER = 1;
+    private const byte VERSION_NUMBER = 2;
+    private static byte[] VERSION_NUMBERS = {1, 2};
 
     /// <summary>
     /// Governs which TRex storage representation (mutable or immutable) the Grid member within the site model instance will supply
@@ -100,6 +102,25 @@ namespace VSS.TRex.SiteModels
     /// Gets/sets transient state for this site model. Transient site models are not persisted.
     /// </summary>
     public bool IsTransient { get; private set; } = true;
+
+    /// <summary>
+    /// Flags this site model as marked for deletion. Any request to obtain this site model should fail with this flag set
+    /// </summary>
+    public bool IsMarkedForDeletion { get; private set; } = false;
+
+    public void MarkForDeletion()
+    {
+      // Note this site model as being prepared for deletion
+      IsMarkedForDeletion = true;
+
+      // Save the deletion state to persistent storage. This will be reflected to the immutable proxy if this is the mutable context
+      SaveMetadataToPersistentStore(PrimaryStorageProxy);
+
+      // Advise the grid that this site model is being deleted
+
+      var sender = DIContext.Obtain<ISiteModelAttributesChangedEventSender>();
+      sender.ModelAttributesChanged(SiteModelNotificationEventGridMutability.NotifyAll, ID, siteModelMarkedForDeletion: true);
+    }
 
     private readonly object machineLoadLockObject = new object();
     private readonly object siteProofingRunLockObject = new object();
@@ -530,13 +551,17 @@ versionMap = null;
       SiteModelExtent.Write(writer);
 
       writer.Write(LastModifiedDate.ToBinary());
+
+      // <<< Added in Version 2 >>>
+
+      writer.Write(IsMarkedForDeletion);
     }
 
     public void Read(BinaryReader reader)
     {
 // Read the SiteModel attributes
 
-      VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
+      var version = VersionSerializationHelper.CheckVersionsByte(reader, VERSION_NUMBERS);
 
 // Read the ID of the data model from the stream.
 // If the site model already has an assigned ID then
@@ -563,6 +588,11 @@ versionMap = null;
       SiteModelExtent.Read(reader);
 
       LastModifiedDate = DateTime.FromBinary(reader.ReadInt64());
+
+      if (version >= 2)
+      {
+        IsMarkedForDeletion = reader.ReadBoolean();
+      }
     }
 
     /// <summary>
@@ -593,7 +623,7 @@ versionMap = null;
     /// <returns></returns>
     public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
     {
-      bool Result = true;
+      var Result = true;
 
       lock (this)
       {
@@ -636,7 +666,7 @@ Result = false;
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
       var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName,
-        FileSystemStreamType.ProductionDataXML, out MemoryStream MS);
+        FileSystemStreamType.ProductionDataXML, out var MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
       {
@@ -1067,7 +1097,7 @@ return localVersionMap;
         MachineCount = Machines?.Count ?? 0,
         DesignCount = Designs?.Count ?? 0,
         SurveyedSurfaceCount = SurveyedSurfaces?.Count ?? 0,
-        AlignmentCount = Alignments?.Count ?? 0,
+        AlignmentCount = Alignments?.Count ?? 0
       };
     }
 

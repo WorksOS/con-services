@@ -22,6 +22,8 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
 
     bool AlignmentsModified { get; }
 
+    bool SiteModelMarkedForDeletion { get; set; }
+
     byte[] ExistenceMapChangeMask { get; }
   }
 }

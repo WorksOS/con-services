@@ -39,6 +39,10 @@ namespace VSS.TRex.SiteModels.Interfaces
     /// </summary>
     bool IsTransient { get; }
 
+    bool IsMarkedForDeletion { get; }
+
+    void MarkForDeletion();
+
     /// <summary>
     /// The grid data for this site model
     /// </summary>

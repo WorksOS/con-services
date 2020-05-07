@@ -33,6 +33,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
     /// <param name="machineDesignsModified"></param>
     /// <param name="proofingRunsModified"></param>
     /// <param name="alignmentsChanged"></param>
+    /// <param name="siteModelMarkedForDeletion"></param>
     public void ModelAttributesChanged(SiteModelNotificationEventGridMutability targetGrids,
       Guid siteModelID,
       bool existenceMapChanged = false,
@@ -44,7 +45,8 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
       bool machineTargetValuesChanged = false,
       bool machineDesignsModified = false,
       bool proofingRunsModified = false,
-      bool alignmentsChanged = false)
+      bool alignmentsChanged = false,
+      bool siteModelMarkedForDeletion = false)
     {
       var gridFactory = DIContext.Obtain<ITRexGridFactory>();
       var evt = new SiteModelAttributesChangedEvent
@@ -60,6 +62,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Events
         MachineDesignsModified = machineDesignsModified,
         ProofingRunsModified = proofingRunsModified,
         AlignmentsModified = alignmentsChanged,
+        SiteModelMarkedForDeletion = siteModelMarkedForDeletion
       };
 
       if ((targetGrids & SiteModelNotificationEventGridMutability.NotifyImmutable) != 0)
