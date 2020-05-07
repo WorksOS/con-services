@@ -9,8 +9,8 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
 {
     public class TagFileProcessExecutor : RequestExecutorContainer
     {
-        private const string CONNECTION_ERROR_FOLDER = ".Backend Connection Error";
-        private const string INVALID_TAG_FILE_FOLDER = ".Invalid Tag File Name";
+        public const string CONNECTION_ERROR_FOLDER = ".Backend Connection Error";
+        public const string INVALID_TAG_FILE_FOLDER = ".Invalid Tag File Name";
 
         protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
         {

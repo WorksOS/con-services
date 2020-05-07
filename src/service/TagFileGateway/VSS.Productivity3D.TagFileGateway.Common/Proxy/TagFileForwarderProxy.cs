@@ -91,7 +91,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
                 catch (Exception e)
                 {
                     // Let the exception bubble up
-                    if (retry >= MAX_RETRIES)
+                    if (retry > MAX_RETRIES)
                       throw;
 
                     log.LogWarning($"Failed to upload Tag File, retry count {retry} of {MAX_RETRIES}. Exception ({e.GetType().Name}): {e.Message}");
