@@ -36,7 +36,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
     public Guid AssetOverride = Guid.Empty;
 
 
-    public Task SubmitSingleTAGFile(Guid projectId, Guid assetId, string fileName)
+    public Task SubmitSingleTAGFile(Guid projectId, Guid assetId, string fileName, bool treatAsJohnDoe)
     {
       _submitTagFileRequest ??= new SubmitTAGFileRequest();
       SubmitTAGFileRequestArgument arg;
@@ -51,7 +51,8 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           ProjectID = projectId,
           AssetID = assetId,
           TagFileContent = bytes,
-          TAGFileName = Path.GetFileName(fileName)
+          TAGFileName = Path.GetFileName(fileName),
+          TreatAsJohnDoe = treatAsJohnDoe
         };
       }
 
@@ -60,7 +61,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       return _submitTagFileRequest.ExecuteAsync(arg);
     }
 
-    public Task ProcessSingleTAGFile(Guid projectId, string fileName, Guid assetId)
+    public Task ProcessSingleTAGFile(Guid projectId, string fileName, Guid assetId, bool treatAsJohnDoe)
     {
       //   Machine machine = new Machine(null, "TestName", "TestHardwareID", 0, 0, Guid.NewGuid(), 0, false);
       var machineId = AssetOverride == Guid.Empty ? assetId : AssetOverride;
@@ -83,7 +84,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
               FileName = Path.GetFileName(fileName),
                             TagFileContent = bytes,
                             AssetId = machineId,
-                            IsJohnDoe = false
+                            IsJohnDoe = treatAsJohnDoe
             }
           }
         };
@@ -118,7 +119,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       return _processTagFileRequest.ExecuteAsync(arg);
     }
 
-    public void SubmitTAGFiles(Guid projectId, List<string> files)
+    public void SubmitTAGFiles(Guid projectId, List<string> files, bool treatAsJohnDoe)
     {
       // Assemble list of unique machines from the TAG file names using the hardware serial number to distinguish them
       var machineGuids = files.Select(x => x.Split('-')[0]).Distinct().ToDictionary(k => k, v => Guid.NewGuid());
@@ -129,7 +130,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       foreach (var file in files)
       {
         var machineId = AssetOverride == Guid.Empty ? machineGuids[file.Split('-')[0]] : AssetOverride;
-        taskList.Add(SubmitSingleTAGFile(projectId, machineId, file));
+        taskList.Add(SubmitSingleTAGFile(projectId, machineId, file, treatAsJohnDoe));
       }
 
       Task.WhenAll(taskList);
@@ -152,7 +153,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       }
     }
 
-    public void ProcessSortedTAGFilesInFolder(Guid projectId, string folder)
+    public void ProcessSortedTAGFilesInFolder(Guid projectId, string folder, bool treatAsJohnDoe)
     {
       var fileNamesFromFolders = new List<List<string>>();
       CollectTAGFilesInFolder(folder, fileNamesFromFolders);
@@ -160,41 +161,41 @@ namespace VSS.TRex.Tools.TagfileSubmitter
       var combinedList = new List<string>();
       fileNamesFromFolders.ForEach(x => combinedList.AddRange(x));
       combinedList.Sort(new TAGFileNameComparer());
-      SubmitTAGFiles(projectId, combinedList);
+      SubmitTAGFiles(projectId, combinedList, treatAsJohnDoe);
 
 //      fileNamesFromFolders.ForEach(x => x.Sort(new TAGFileNameComparer()));
 //      fileNamesFromFolders.ForEach(x => SubmitTAGFiles(projectId, x));
     }
 
-    public void ProcessTAGFilesInFolder(Guid projectId, string folder)
+    public void ProcessTAGFilesInFolder(Guid projectId, string folder, bool treatAsJohnDoe)
     {
       // If it is a single file, just process it
       if (File.Exists(folder))
       {
         // ProcessTAGFiles(projectID, new string[] { folder });
-        SubmitTAGFiles(projectId, new List<string> { folder });
+        SubmitTAGFiles(projectId, new List<string> { folder }, treatAsJohnDoe);
       }
       else
       {
         var folders = Directory.GetDirectories(folder);
         foreach (var f in folders)
         {
-          ProcessTAGFilesInFolder(projectId, f);
+          ProcessTAGFilesInFolder(projectId, f, treatAsJohnDoe);
         }
 
         // ProcessTAGFiles(projectID, Directory.GetFiles(folder, "*.tag"));
-        SubmitTAGFiles(projectId, Directory.GetFiles(folder, "*.tag").ToList());
+        SubmitTAGFiles(projectId, Directory.GetFiles(folder, "*.tag").ToList(), treatAsJohnDoe);
       }
     }
 
-    public void ProcessMachine333TAGFiles(Guid projectId)
+    public void ProcessMachine333TAGFiles(Guid projectId, bool treatAsJohnDoe)
     {
-      ProcessSortedTAGFilesInFolder(projectId, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine333");
+      ProcessSortedTAGFilesInFolder(projectId, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine333", treatAsJohnDoe);
     }
 
-    public void ProcessMachine10101TAGFiles(Guid projectId)
+    public void ProcessMachine10101TAGFiles(Guid projectId, bool treatAsJohnDoe)
     {
-      ProcessSortedTAGFilesInFolder(projectId, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine10101");
+      ProcessSortedTAGFilesInFolder(projectId, TestCommonConsts.TestDataFilePath() + "TAGFiles\\Machine10101", treatAsJohnDoe);
     }
   }
 }
