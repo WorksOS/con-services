@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using VSS.Productivity3D.TagFileGateway.Common.Models.Executors;
+﻿using VSS.Productivity3D.TagFileGateway.Common.Models.Executors;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace VSS.Productivity3D.TagFileGateway.UnitTests
 {
-  [TestClass]
   public class TagFileKeyTests
   {
-    [TestMethod]
+    [Fact]
     public void TestValidKey()
     {
       var tagFileName = "abc123sn--my machine--161230235959.tag";
@@ -18,7 +18,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       Assert.AreEqual(expected, s3Key);
     }
 
-    [TestMethod]
+    [Fact]
     public void TestInvalidKey()
     {
       var tagFileName = "my invalid tag file.tag";

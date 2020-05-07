@@ -18,10 +18,10 @@ using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Proxy;
 using VSS.Serilog.Extensions;
+using Xunit;
 
 namespace VSS.Productivity3D.TagFileGateway.UnitTests
 {
-    [TestClass]
     public class TagFileGatewayTests
     {
         private static IServiceProvider _serviceProvider;
@@ -41,8 +41,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
           };
 
 
-        [ClassInitialize]
-        public static void ClassInit(TestContext context)
+        public TagFileGatewayTests()
         {
             _serviceProvider = new ServiceCollection()
               .AddLogging()
@@ -59,7 +58,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
             _customHeaders = new Dictionary<string, string>();
         }
 
-        [TestMethod]
+        [Fact]
         public void TestDirectSuccess()
         {
             // Setup a single tag file send
@@ -83,7 +82,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
               It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNonDirectSuccess()
         {
             // Setup a single tag file send
@@ -107,7 +106,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
               It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Once);
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNonZeroFailure()
         {
             var callCount = 0;
@@ -140,7 +139,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
               It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(2));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestNullFailure()
         {
             var callCount = 0;
@@ -171,7 +170,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
               It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(2));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestExceptionFailure()
         {
             var callCount = 0;
@@ -202,7 +201,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
               It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(2));
         }
 
-        [TestMethod]
+        [Fact]
         public void TestMulitpleFailures()
         {
             // Setup a non zero result for first try, then success on second try
