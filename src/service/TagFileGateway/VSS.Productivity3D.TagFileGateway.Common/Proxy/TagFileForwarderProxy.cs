@@ -77,13 +77,9 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
                     {
                         log.LogWarning($"Empty result returned. Retry count {retry} of {MAX_RETRIES}");
                     }
-                    else if (result.Code != 0)
-                    {
-                        log.LogWarning($"Non Zero result returned, Error Code: {result.Code}, Message: {result.Message}. Retry count {retry} of {MAX_RETRIES}");
-                    }
                     else
                     {
-                        // Good result
+                        // Valid result
                         log.LogInformation($"Tag File {request.FileName} uploaded. Retry count {retry} of {MAX_RETRIES}");
                         return result;
                     }
@@ -97,8 +93,6 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
                     log.LogWarning($"Failed to upload Tag File, retry count {retry} of {MAX_RETRIES}. Exception ({e.GetType().Name}): {e.Message}");
                     result = new ContractExecutionResult(1, e.Message);
                 }
-
-                
             }
 
             return result ?? (new ContractExecutionResult(1, $"No response from Server {InternalServiceType}"));
