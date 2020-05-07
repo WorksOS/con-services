@@ -95,8 +95,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           }
           catch
           {
-            Console.WriteLine($"Invalid TreatAsJohnDoe flag {args[3]}");
-            return;
+            Console.WriteLine($"Invalid TreatAsJohnDoe flag {args[3]}, setting to false");
           }
 
           try
