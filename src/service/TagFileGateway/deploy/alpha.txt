@@ -1,0 +1,2 @@
+JAEGER_SERVICE_NAME: Tagfile Gateway Service
+AWS_ALL_TAGFILE_BUCKET_NAME: s3-pdxa-rpd-tagfile-archive

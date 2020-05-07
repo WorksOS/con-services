@@ -14,6 +14,7 @@
     Push,
     Tile,
     TagFileAuth,
-    Device
+    Device,
+    TRexMutableGateway
   }
 }
