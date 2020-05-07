@@ -119,7 +119,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
 
         _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {tagFile?.FileName}");
 
-        if(result.Code == 0)
+        if(result != null)
           return Ok();
         // Note sure if we return bad request or not on failed processing - will updated if needed
         return BadRequest();
