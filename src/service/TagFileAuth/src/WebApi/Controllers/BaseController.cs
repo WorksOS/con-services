@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -24,7 +25,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <summary>
     /// Default constructor.
     /// </summary>
-    protected BaseController(ILoggerFactory logger, IConfigurationStore configStore,
+    protected BaseController(ILoggerFactory logger, IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       ITPaaSApplicationAuthentication authorization)
     {
@@ -35,13 +36,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 
       // this is to pass along the requestID created on startup in the RequestIDMiddleware 
       string[] keys = {
+        HeaderConstants.X_VSS_REQUEST_ID,
         //HeaderConstants.X_REQUEST_ID,
         //HeaderConstants.REQUEST_ID,
-        HeaderConstants.X_VSS_REQUEST_ID,
         //HeaderConstants.X_JWT_ASSERTION
       };
-
-      _customHeaders = authorization.CustomHeaders().MergeDifference(Request.Headers.GetCustomHeaders(keys));
+      _customHeaders = authorization.CustomHeaders().MergeDifference(httpContextAccessor.HttpContext.Request.Headers.GetCustomHeaders(keys));
     }
   }
 }

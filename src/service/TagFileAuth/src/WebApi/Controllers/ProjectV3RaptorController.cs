@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -24,10 +25,10 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// <summary>
     /// Default constructor 
     /// </summary>
-    public ProjectV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore,
+    public ProjectV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
       ITPaaSApplicationAuthentication authorization)
-      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization)
+      : base(logger, configStore, httpContextAccessor, cwsAccountClient, projectProxy, deviceProxy, authorization)
     {
       log = logger.CreateLogger<ProjectV3RaptorController>();
     }
