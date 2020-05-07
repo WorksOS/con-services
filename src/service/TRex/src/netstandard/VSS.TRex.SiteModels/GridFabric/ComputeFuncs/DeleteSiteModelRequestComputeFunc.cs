@@ -35,7 +35,7 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
         if (!request.ExecuteAsync().WaitAndUnwrapException())
           Log.LogError($"Request execution failed");
         
-        return request.GriddedReportRequestResponse;
+        return request.Response;
       }
       finally
       {
