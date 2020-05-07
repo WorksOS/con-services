@@ -5,25 +5,21 @@ using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi
 {
-  public static class Program
-  {
-    public static void Main(string[] args)
+    public static class Program
     {
-      CreateHostBuilder(args).Build()
-                             .Run();
-    }
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build()
+                                   .Run();
+        }
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-      Host.CreateDefaultBuilder(args)
-          .ConfigureLogging((hostingContext, config) =>
-          {
-            config.ClearProviders();
-          })
-          .ConfigureWebHostDefaults(webBuilder =>
-          {
-            webBuilder.UseLibuv(opts => opts.ThreadCount = 32)
-                      .BuildKestrelWebHost()
-                      .UseStartup<Startup>();
-          });
-  }
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+          Host.CreateDefaultBuilder(args)
+              .ConfigureWebHostDefaults(webBuilder =>
+              {
+                  webBuilder.UseLibuv(opts => opts.ThreadCount = 32)
+                        .BuildKestrelWebHost()
+                        .UseStartup<Startup>();
+              });
+    }
 }
