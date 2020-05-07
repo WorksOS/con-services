@@ -4,15 +4,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-<ItemGroup>
-    <ProjectReference Include="..\..\..\..\Common\ConfigurationStore\src\VSS.ConfigurationStore.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\LoggingExtensions\SerilogExtensions\VSS.Serilog.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\MasterDataModels\src\VSS.MasterData.Models.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\MasterDataProxies\src\VSS.MasterData.Proxies.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
-    <ProjectReference Include="..\..\..\..\Common\VSS.Common.Abstractions\src\VSS.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Service\VSS.Productivity3D.TagFileGateway\VSS.Productivity3D.TagFileGateway.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.6.0" />
@@ -38,6 +29,11 @@
     <PackageReference Include="OpenCover" Version="4.6.519" />
     <PackageReference Include="coverlet.msbuild" Version="2.0.1" />
     <!-- END -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Common\Productivity3DModels\src\VSS.Productivity3D.Models.csproj" />
+    <ProjectReference Include="..\..\..\VSS.Productivity3D.TagFileGateway.Common\VSS.Productivity3D.TagFileGateway.Common.csproj" />
   </ItemGroup>
 
 </Project>
