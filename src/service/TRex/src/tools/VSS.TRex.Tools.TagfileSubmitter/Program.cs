@@ -78,7 +78,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
           try
           {
-            if (args.Length > 2)
+            if (args.Length > 2 && !string.IsNullOrWhiteSpace(args[2]))
               processor.AssetOverride = Guid.Parse(args[2]);
           }
           catch
@@ -106,6 +106,9 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           {
             Console.WriteLine($"Exception: {e}");
           }
+
+          // Console.WriteLine("Press any key");
+          // Console.ReadKey();
 
           // ProcessMachine10101TAGFiles(projectID);
           // ProcessMachine333TAGFiles(projectID);
