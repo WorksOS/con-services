@@ -1,0 +1,1 @@
+dotnet "..\src\tools\VSS.TRex.Tools.TAGfileSubmitter\bin\debug\netcoreapp3.1\VSS.TRex.Tools.TAGFileSubmittor.dll" "{FD41560C-3333-4181-96EB-D2AD93190F01}" "J:\PP\Construction\Office software\SiteVision Office\Test Files\VisionLink Data\Southern Motorway\TAYLORS COMP\Machine Control Data\.Production-Data\All TagFiles" "" true

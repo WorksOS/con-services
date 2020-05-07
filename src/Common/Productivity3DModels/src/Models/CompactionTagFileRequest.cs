@@ -35,6 +35,12 @@ namespace VSS.Productivity3D.Models.Models
     public string OrgId { get; set; }
 
     /// <summary>
+    /// Indicates that this TAG file should be treated as from a John Doe asset when processed.
+    /// Optional: Defaults to false
+    /// </summary>
+    public bool TreatAsJohnDoe { get; set; }
+
+    /// <summary>
     /// Validates all properties
     /// </summary>
     public override void Validate()

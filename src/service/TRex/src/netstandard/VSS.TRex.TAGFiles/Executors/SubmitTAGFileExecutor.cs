@@ -40,8 +40,9 @@ namespace VSS.TRex.TAGFiles.Executors
     /// <param name="tagFileName">Name of the physical tag file for archiving and logging</param>
     /// <param name="tagFileContent">The content of the TAG file to be processed, expressed as a byte array</param>
     /// <param name="tccOrgId">Used by TFA service to match VL customer to TCC org when looking for project if multiple projects and/or machine ID not in tag file</param>
+    /// <param name="treatAsJohnDoe">The TAG file will be processed as if it were a john doe machine is projectId is also specified</param>
     /// <returns></returns>
-    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId)
+    public async Task<SubmitTAGFileResponse> ExecuteAsync(Guid? projectId, Guid? assetId, string tagFileName, byte[] tagFileContent, string tccOrgId, bool treatAsJohnDoe)
     {
       if (OutputInformationalRequestLogging)
         Log.LogInformation($"#In# SubmitTAGFileResponse. Processing {tagFileName} TAG file into ProjectUID:{projectId}, asset:{assetId}");
@@ -66,7 +67,7 @@ namespace VSS.TRex.TAGFiles.Executors
             tagFileName = tagFileName,
             tagFileContent = tagFileContent,
             tccOrgId = tccOrgId,
-            IsJohnDoe = false // default
+            IsJohnDoe = treatAsJohnDoe
           };
 
           // Validate tag file submission

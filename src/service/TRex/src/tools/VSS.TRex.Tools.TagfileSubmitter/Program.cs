@@ -52,7 +52,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
           // Pull relevant arguments off the command line
           if (args.Length < 2)
           {
-            Console.WriteLine("Usage: ProcessTAGFiles <ProjectUID> <FolderPath>");
+            Console.WriteLine("Usage: ProcessTAGFiles <ProjectUID> <FolderPath> <AssetIDOverride> <TreatAsJohnDoe>");
             Console.ReadKey();
             return;
           }
@@ -78,7 +78,7 @@ namespace VSS.TRex.Tools.TagfileSubmitter
 
           try
           {
-            if (args.Length > 2)
+            if (args.Length > 2 && !string.IsNullOrWhiteSpace(args[2]))
               processor.AssetOverride = Guid.Parse(args[2]);
           }
           catch
@@ -87,14 +87,28 @@ namespace VSS.TRex.Tools.TagfileSubmitter
             return;
           }
 
+          var treatAsJohnDoe = false;
           try
           {
-            processor.ProcessSortedTAGFilesInFolder(projectId, folderPath);
+            if (args.Length > 3)
+              treatAsJohnDoe = bool.Parse(args[3]);
+          }
+          catch
+          {
+            Console.WriteLine($"Invalid TreatAsJohnDoe flag {args[3]}, setting to false");
+          }
+
+          try
+          {
+            processor.ProcessSortedTAGFilesInFolder(projectId, folderPath, treatAsJohnDoe);
           }
           catch (Exception e)
           {
             Console.WriteLine($"Exception: {e}");
           }
+
+          // Console.WriteLine("Press any key");
+          // Console.ReadKey();
 
           // ProcessMachine10101TAGFiles(projectID);
           // ProcessMachine333TAGFiles(projectID);

@@ -24,7 +24,7 @@ namespace VSS.TRex.TAGFiles.GridFabric.ComputeFuncs
     public SubmitTAGFileResponse Invoke(SubmitTAGFileRequestArgument arg)
     {
       var executor = new SubmitTAGFileExecutor();
-      return executor.ExecuteAsync(arg.ProjectID, arg.AssetID, arg.TAGFileName, arg.TagFileContent, arg.TCCOrgID).WaitAndUnwrapException();
+      return executor.ExecuteAsync(arg.ProjectID, arg.AssetID, arg.TAGFileName, arg.TagFileContent, arg.TCCOrgID, arg.TreatAsJohnDoe).WaitAndUnwrapException();
     }
   }
 }
