@@ -1,14 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog.Extensions.Logging;
 using VSS.Common.Abstractions.Configuration;
-using VSS.Serilog.Extensions;
+using VSS.WebApi.Common;
 
 namespace MockProjectWebApi
 {
@@ -23,32 +20,12 @@ namespace MockProjectWebApi
 
     public static void Main()
     {
-      var libuvConfigured = int.TryParse(Environment.GetEnvironmentVariable(LIBUV_THREAD_COUNT), out var libuvThreads);
-      var host = new WebHostBuilder()
-        .UseKestrel()
-        .UseContentRoot(Directory.GetCurrentDirectory())
-        .UseLibuv(opts =>
-        {
-          if (libuvConfigured)
-          {
-            opts.ThreadCount = libuvThreads;
-          }
-        })
-        .UseStartup<Startup>()
-        .ConfigureLogging((hostContext, loggingBuilder) =>
-        {
-          loggingBuilder.AddProvider(
-            p => new SerilogLoggerProvider(
-              SerilogExtensions.Configure("VSS.3DProductivity.MockWebAPI.log", httpContextAccessor: p.GetService<IHttpContextAccessor>())));
-        })
-        .UseUrls("http://0.0.0.0:5001")
-        .Build();
+      var host = CreateHostBuilder(null).Build();
 
       var configuration = host.Services.GetRequiredService<IConfigurationStore>();
 
       var log = host.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
       log.LogInformation("Productivity3D service starting");
-      log.LogInformation($"Num Libuv Threads = {(libuvConfigured ? libuvThreads.ToString() : "Default")}");
 
       if (int.TryParse(configuration.GetValueString(MAX_WORKER_THREADS), out var maxWorkers) &&
           int.TryParse(configuration.GetValueString(MAX_IO_THREADS), out var maxIo))
@@ -89,5 +66,16 @@ namespace MockProjectWebApi
 
       host.Run();
     }
+
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+      Host.CreateDefaultBuilder(args)
+          .ConfigureWebHostDefaults(webBuilder =>
+          {
+            webBuilder.UseLibuv(opts => opts.ThreadCount = 32)
+                      .BuildKestrelWebHost()
+                      .UseStartup<Startup>()
+                      .UseUrls("http://0.0.0.0:5001");
+          })
+    ;
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using VSS.WebApi.Common;
 
 namespace VSS.Tile.Service.WebApi
@@ -14,6 +15,10 @@ namespace VSS.Tile.Service.WebApi
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
       Host.CreateDefaultBuilder(args)
+          .ConfigureLogging((hostingContext, config) =>
+          {
+            config.ClearProviders();
+          })
           .ConfigureWebHostDefaults(webBuilder =>
           {
             webBuilder.UseLibuv(opts => opts.ThreadCount = 32)
