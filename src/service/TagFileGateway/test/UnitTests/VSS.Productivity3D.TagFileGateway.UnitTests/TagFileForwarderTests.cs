@@ -111,7 +111,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
         public void TestNonZeroFailure()
         {
             var callCount = 0;
-            // Setup a non zero result for first try, then success on second try
+            // Setup a non zero result for first try, which should be returned
             var forwarder = new Mock<TagFileForwarderProxy>(new Mock<IWebRequest>().Object, _mockStore.Object, _logger, new Mock<IDataCache>().Object, new Mock<IServiceResolution>().Object)
             {
                 CallBase = true
@@ -122,22 +122,19 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
               .Callback(() => callCount++)
               .Returns(() =>
               {
-                  if (callCount == 1)
-                      return Task.FromResult(new ContractExecutionResult(1));
-                  else
-                      return Task.FromResult(new ContractExecutionResult(0));
+                    return Task.FromResult(new ContractExecutionResult(1));
               });
 
             // Test
             var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
 
-            // Validate - should be ok, but 2 calls
+            // Validate - should be ok
             result.Should().NotBeNull();
-            result.Code.Should().Be(0);
+            result.Code.Should().Be(1);
 
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles",
-              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(2));
+              It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(1));
         }
 
         [Fact]
