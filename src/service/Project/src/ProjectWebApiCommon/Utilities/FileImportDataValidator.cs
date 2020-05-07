@@ -38,7 +38,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
       }
 
       var validType = (importedFileType >= ImportedFileType.Linework && importedFileType <= ImportedFileType.Alignment)
-                      || importedFileType == ImportedFileType.ReferenceSurface || importedFileType == ImportedFileType.GeoTiff;
+                      || importedFileType == ImportedFileType.ReferenceSurface || importedFileType == ImportedFileType.GeoTiff
+                      || (importedFileType >= ImportedFileType.Calibration && importedFileType <= ImportedFileType.GcsCalibration);
       if (!validType)
       {
         throw new ServiceException(HttpStatusCode.BadRequest,
@@ -53,7 +54,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               importedFileType == ImportedFileType.DesignSurface && fileExtension == ".ttm" ||
               importedFileType == ImportedFileType.SurveyedSurface && fileExtension == ".ttm" ||
               importedFileType == ImportedFileType.Alignment && fileExtension == ".svl" ||
-              importedFileType == ImportedFileType.GeoTiff && fileExtension == ".tif"))
+              importedFileType == ImportedFileType.GeoTiff && fileExtension == ".tif" ||
+              importedFileType == ImportedFileType.Calibration && (fileExtension == ".dc" || fileExtension == ".cal") ||
+              importedFileType == ImportedFileType.Geoid && fileExtension == ".ggf" ||
+              importedFileType == ImportedFileType.ControlPoints && (fileExtension == ".cpz" || fileExtension == ".csv") ||
+              importedFileType == ImportedFileType.AvoidanceZone && (fileExtension == ".svl" || fileExtension == ".dxf") ||
+              importedFileType == ImportedFileType.FeatureCode && (fileExtension == ".fcl" || fileExtension == ".fxl") ||
+              importedFileType == ImportedFileType.SiteConfiguration && fileExtension == ".xml" ||
+              importedFileType == ImportedFileType.GcsCalibration && fileExtension == ".cfg")) 
         {
           throw new ServiceException(HttpStatusCode.BadRequest,
             new ContractExecutionResult(ProjectErrorCodesProvider.GetErrorNumberwithOffset(32),
