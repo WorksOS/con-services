@@ -47,7 +47,7 @@ namespace VSS.TRex.Gateway.Common.Executors
 
       try
       {
-        log.LogInformation($"#In# TagFileExecutor. Process tagfile:{request.FileName}, Project:{request.ProjectUid}, TCCOrgID:{request.OrgId}");
+        log.LogInformation($"#In# TagFileExecutor. Process tag file:{request.FileName}, Project:{request.ProjectUid}, TCCOrgID:{request.OrgId}, TreatAsJohnDoe = {request.TreatAsJohnDoe}");
 
         var submitRequest = new SubmitTAGFileRequest();
 
@@ -55,6 +55,7 @@ namespace VSS.TRex.Gateway.Common.Executors
         {
           ProjectID = request.ProjectUid,
           AssetID = null, // not available via TagFileController APIs
+          TreatAsJohnDoe = request.TreatAsJohnDoe,
           TAGFileName = request.FileName,
           TagFileContent = request.Data,
           TCCOrgID = request.OrgId
