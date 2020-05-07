@@ -29,7 +29,9 @@ namespace VSS.WebApi.Common
       if (services == null) { throw new ArgumentNullException(nameof(services)); }
       
       // Guard against BaseStartup::ServiceVersion not being implemented in Startup.cs; else the following call to setup Swagger fails with 'null value for key'.
-      if (string.IsNullOrEmpty(version)) { version = "v1"; }
+      // Hard code to v1, as it's not important (our endpoints have quite differening versions)
+      // This must match whats provided in the SwaggerEndpoint call
+      version = "v1";
       
       //Configure swagger
       services.AddSwaggerGen(c =>
