@@ -11,7 +11,7 @@ using VSS.Serilog.Extensions.Enrichers;
 
 namespace VSS.Serilog.Extensions
 {
-  public class SerilogExtensions
+  public static class SerilogExtensions
   {
     /// <summary>
     /// Create and setup Serilog configuration, including custom enrichers and filters.

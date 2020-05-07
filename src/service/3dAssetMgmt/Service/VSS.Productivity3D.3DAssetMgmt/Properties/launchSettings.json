@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "VSS.Productivity3D.Now3D": {
+    "WebAPI": {
       "commandName": "Project",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
