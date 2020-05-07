@@ -162,7 +162,8 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       {
         if (WarnOnTFAServiceDisabled)
           Log.LogWarning("SubmitTAGFileResponse.ValidSubmission. EnableTFAService disabled. Bypassing TFS validation checks");
-        if (tagDetail.projectId != Guid.Empty) // do we have what we need
+
+        if (tagDetail.projectId != null && tagDetail.projectId != Guid.Empty) // do we have what we need
         {
           if (tagDetail.assetId == null || tagDetail.assetId == Guid.Empty)
             tagDetail.IsJohnDoe = true;
@@ -173,7 +174,16 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         return new ContractExecutionResult((int)TRexTagFileResultCode.TRexBadRequestMissingProjectUid, "TRexTagFileResultCode.TRexBadRequestMissingProjectUid");         
       }
 
-      // Contact TFA service to validate tagfile details
+      // If the TFA service is enabled, but the TAG file has attributes that allow project and asset (or JohnDoe status) to be determined, then
+      // allow the TAG file to be processed without additional TFA involvement
+
+      if (tagDetail.projectId != null && tagDetail.projectId != Guid.Empty) 
+      {
+        if ((tagDetail.assetId != null && tagDetail.assetId == Guid.Empty) || tagDetail.IsJohnDoe)
+          return new ContractExecutionResult((int)TRexTagFileResultCode.Valid);
+      }
+
+      // Contact TFA service to validate tag file details
       var tfaResult = await CheckFileIsProcessible(tagDetail, tagFilePresScan).ConfigureAwait(false);
       return new ContractExecutionResult((int)tfaResult.Code, tfaResult.Message);
     }
