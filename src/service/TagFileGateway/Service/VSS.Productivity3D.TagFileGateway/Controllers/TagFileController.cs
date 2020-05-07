@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -51,7 +52,7 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
     }
 
     [Route("api/v2/tagfiles/sns")]
-    public async Task<IActionResult> PostSnsTagFile([FromBody] SnsPayload payload,  
+    public async Task<IActionResult> PostSnsTagFile(  
       [FromServices] IWebRequest webRequest,
       [FromServices] ILoggerFactory loggerFactory, 
       [FromServices] IConfigurationStore configStore, 
@@ -59,8 +60,15 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       [FromServices] ITagFileForwarder tagFileForwarder,
       [FromServices] ITransferProxy transferProxy)
     {
+      // https://forums.aws.amazon.com/thread.jspa?threadID=69413
+      // AWS SNS is in text/plain, not application/json - so need to parse manually
+      var payloadMs = new MemoryStream();
+      await Request.Body.CopyToAsync(payloadMs);
+      var payload = JsonConvert.DeserializeObject<SnsPayload>(Encoding.UTF8.GetString(payloadMs.ToArray()));
+
       if (payload == null)
         return BadRequest();
+
       _logger.LogInformation($"Sns message type: {payload.Type}, topic: {payload.TopicArn}");
       if (payload.Type == SnsPayload.SubscriptionType)
       {
@@ -73,6 +81,12 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       {
         // Got a tag file
         var tagFile = JsonConvert.DeserializeObject<SnsTagFile>(payload.Message);
+        if (tagFile == null)
+        {
+          _logger.LogWarning($"Could not convert to Tag File Model. JSON: {payload.Message}");
+          return BadRequest();
+        }
+
         byte[] data;
         if(!string.IsNullOrEmpty(tagFile.DownloadUrl))
         {
@@ -93,7 +107,10 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
           data = tagFile.Data;
         }
 
-        var request = new CompactionTagFileRequest() {Data = data, FileName = tagFile.FileName, OrgId = tagFile.OrgId,};
+        var request = new CompactionTagFileRequest
+        {
+          Data = data, FileName = tagFile.FileName, OrgId = tagFile.OrgId
+        };
 
         _logger.LogInformation($"Attempting to process sns tag file {tagFile?.FileName}");
         var result = await RequestExecutorContainer
