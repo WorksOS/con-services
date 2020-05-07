@@ -37,8 +37,8 @@ namespace VSS.Productivity3D.Project.Proxy
     {
       log.LogDebug($"{nameof(GetDevice)} serialNumber: {serialNumber}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("serialNumber", serialNumber) };
-      var result = await GetMasterDataItemServiceDiscovery<DeviceDataSingleResult>($"/device/serialnumber",
-        serialNumber, null,
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataSingleResult>($"/device/serialnumber",
+        //serialNumber, null,
         customHeaders, queryParams);
 
       log.LogDebug($"{nameof(GetDevice)} get device for serialNumber {serialNumber} result: {result.Code}, {result.Message}");

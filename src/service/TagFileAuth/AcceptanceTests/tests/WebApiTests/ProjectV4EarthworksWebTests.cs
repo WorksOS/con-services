@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
@@ -8,35 +9,33 @@ namespace WebApiTests
 {
   public class ProjectV4EarthworksWebTests : ExecutorTestData
   {
-    [Fact(Skip = "CCSSSCON-207 no time now")]
-    public async System.Threading.Tasks.Task Manual_Sad_ProjectNotFound()
+    [Fact(Skip = "until mockProjectWebApi deployed")]
+    public async Task Auto_Happy()
     {
-      var projectUid = Guid.NewGuid().ToString();
-      var CBRadioType = TagFileDeviceTypeEnum.SNM940;
+      // this test can be made to work through TFA service, through to ProjectSvc - if you setup environment variables appropriately
       var CBRadioserial = dimensionsSerial;
       var EC50Serial = string.Empty;
       double latitude = 89;
       double longitude = 130;
       var tagFileTimestamp = DateTime.UtcNow.AddDays(-10);
 
-      var getProjectAndAssetUidsRequest = new GetProjectAndAssetUidsRequest(projectUid, (int)CBRadioType, CBRadioserial,
+      var getProjectAndAssetUidsEarthWorksRequest = new GetProjectAndAssetUidsEarthWorksRequest(CBRadioserial,
         EC50Serial, latitude, longitude, tagFileTimestamp);
-      getProjectAndAssetUidsRequest.Validate();
-      var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult(string.Empty, string.Empty);
+      getProjectAndAssetUidsEarthWorksRequest.Validate();
+      var expectedGetProjectAndAssetUidsEarthWorksResult = new GetProjectAndAssetUidsEarthWorksResult(dimensionsProjectUid, dimensionsSerialDeviceUid, dimensionsCustomerUID, true, 0, "success");
 
-      var result = await tagFileAuthProjectProxy.GetProjectAndAssetUids(getProjectAndAssetUidsRequest);
+      var result = await tagFileAuthProjectProxy.GetProjectAndAssetUidsEarthWorks(getProjectAndAssetUidsEarthWorksRequest);
 
-      ValidateResult(result, expectedGetProjectAndAssetUidsResult, 3038, "Unable to find the Project requested");
+      ValidateResult(result, expectedGetProjectAndAssetUidsEarthWorksResult);
     }
 
-    private void ValidateResult(GetProjectAndAssetUidsResult actualResult, GetProjectAndAssetUidsResult expectedGetProjectAndAssetUidsResult,
-      int resultCode, string resultMessage)
+    private void ValidateResult(GetProjectAndAssetUidsEarthWorksResult actualResult, GetProjectAndAssetUidsEarthWorksResult expectedGetProjectAndAssetUidsEarthWorksResult)
     {
       Assert.NotNull(actualResult);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.ProjectUid, actualResult.ProjectUid);
-      Assert.Equal(expectedGetProjectAndAssetUidsResult.DeviceUid, actualResult.DeviceUid);
-      Assert.Equal(resultCode, actualResult.Code);
-      Assert.Equal(resultMessage, actualResult.Message);
+      Assert.Equal(expectedGetProjectAndAssetUidsEarthWorksResult.ProjectUid, actualResult.ProjectUid);
+      Assert.Equal(expectedGetProjectAndAssetUidsEarthWorksResult.AssetUid, actualResult.AssetUid);
+      Assert.Equal(expectedGetProjectAndAssetUidsEarthWorksResult.Code, actualResult.Code);
+      Assert.Equal(expectedGetProjectAndAssetUidsEarthWorksResult.Message, actualResult.Message);
     }
   }
 }

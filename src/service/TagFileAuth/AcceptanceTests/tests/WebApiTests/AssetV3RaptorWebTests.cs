@@ -8,7 +8,7 @@ namespace WebApiTests
 {
   public class AssetV3RaptorWebTests : ExecutorTestData
   {
-    [Fact(Skip = "CCSSSCON-207 no time now")]
+    [Fact(Skip = "Raptor will no longer be supported")]
     public async System.Threading.Tasks.Task Manual_Sad_ProjectNotFound()
     {
       var projectUid = Guid.NewGuid().ToString();

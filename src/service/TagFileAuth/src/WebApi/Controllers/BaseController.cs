@@ -35,13 +35,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       _deviceProxy = deviceProxy;
 
       // this is to pass along the requestID created on startup in the RequestIDMiddleware 
-      string[] keys = {
-        HeaderConstants.X_VSS_REQUEST_ID,
-        //HeaderConstants.X_REQUEST_ID,
-        //HeaderConstants.REQUEST_ID,
-        //HeaderConstants.X_JWT_ASSERTION
-      };
-      _customHeaders = authorization.CustomHeaders().MergeDifference(httpContextAccessor.HttpContext.Request.Headers.GetCustomHeaders(keys));
+      _customHeaders = authorization.CustomHeaders().MergeDifference(httpContextAccessor.HttpContext.Request.Headers.GetCustomHeaders(new string[] { HeaderConstants.X_VSS_REQUEST_ID }));
     }
   }
 }
