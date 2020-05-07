@@ -24,7 +24,7 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
       var tagFileName = "my invalid tag file.tag";
 
       // In s3 we store the tag files under the machine, then the machine with yyMMdd, then the tag file
-      var expected = "invalid/my invalid tag file.tag";
+      var expected = $"{TagFileProcessExecutor.INVALID_TAG_FILE_FOLDER}/my invalid tag file.tag";
       var s3Key = TagFileProcessExecutor.GetS3Key(tagFileName);
 
       Assert.AreEqual(expected, s3Key);

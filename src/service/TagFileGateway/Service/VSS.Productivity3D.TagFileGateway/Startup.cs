@@ -32,7 +32,7 @@ namespace VSS.Productivity3D.TagFileGateway
         public override string ServiceName => "Tag File Gateway API";
 
         /// <inheritdoc />
-        public override string ServiceDescription => "A service to Dump TAG Files to S3";
+        public override string ServiceDescription => "A service to Accept TAG Files";
 
         /// <inheritdoc />
         public override string ServiceVersion => "v1";

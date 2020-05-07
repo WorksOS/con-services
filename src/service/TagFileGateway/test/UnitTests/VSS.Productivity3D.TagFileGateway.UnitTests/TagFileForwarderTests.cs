@@ -19,6 +19,7 @@ using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
 using VSS.Productivity3D.TagFileGateway.Common.Proxy;
 using VSS.Serilog.Extensions;
 using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace VSS.Productivity3D.TagFileGateway.UnitTests
 {
@@ -217,12 +218,19 @@ namespace VSS.Productivity3D.TagFileGateway.UnitTests
                   throw new Exception("mock-message");
               });
 
-            var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
+            var exception = false;
+            try
+            {
+              var result = forwarder.Object.SendTagFileNonDirect(request, _customHeaders).Result;
 
-            result.Should().NotBeNull();
-            result.Code.Should().Be(1);
-            result.Message.Should().Be("mock-message");
+            }
+            catch (Exception e)
+            {
+              exception = true;
+            }
 
+            exception.Should().BeTrue();
+          
             forwarder.Verify(m => m.SendSingleTagFile(It.Is<CompactionTagFileRequest>(r => r == request),
               "/tagfiles",
               It.Is<IDictionary<string, string>>(d => Equals(d, _customHeaders))), Times.Exactly(3));

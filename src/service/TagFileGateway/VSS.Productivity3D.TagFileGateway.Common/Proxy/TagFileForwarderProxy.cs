@@ -69,6 +69,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
             // If an error still occurs, return the last error to the caller
             while (retry <= MAX_RETRIES)
             {
+                retry++;
                 try
                 {
                     result = await SendSingleTagFile(request, route, customHeaders);
@@ -89,11 +90,15 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Proxy
                 }
                 catch (Exception e)
                 {
+                    // Let the exception bubble up
+                    if (retry > MAX_RETRIES)
+                      throw;
+
                     log.LogWarning($"Failed to upload Tag File, retry count {retry} of {MAX_RETRIES}. Exception ({e.GetType().Name}): {e.Message}");
                     result = new ContractExecutionResult(1, e.Message);
                 }
 
-                retry++;
+                
             }
 
             return result ?? (new ContractExecutionResult(1, $"No response from Server {InternalServiceType}"));

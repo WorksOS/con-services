@@ -9,6 +9,9 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
 {
     public class TagFileProcessExecutor : RequestExecutorContainer
     {
+        public const string CONNECTION_ERROR_FOLDER = ".Backend Connection Error";
+        public const string INVALID_TAG_FILE_FOLDER = ".Invalid Tag File Name";
+
         protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
         {
             if (!(item is CompactionTagFileRequest request))
@@ -21,17 +24,35 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
 
             Logger.LogInformation($"Received Tag File with filename: {request.FileName}. TCC Org: {request.OrgId}. Data Length: {request.Data.Length}");
 
-            var result = await TagFileForwarder.SendTagFileDirect(request);
+            var result = ContractExecutionResult.ErrorResult("Not processed");
+            var failedToConnect = false;
+            try
+            {
+              result = await TagFileForwarder.SendTagFileDirect(request);
+            }
+            catch (Exception e)
+            {
+              Logger.LogError(e, $"Failed to process tag file {request.FileName}");
+              failedToConnect = true;
+            }
 
+            // If we failed to connect to trex, we want to put the tag file in a separate folder for reprocessing
+            // If the tag file was accepted, and not processed for a real reason (e.g seed position outside boundary, or no subscription)
+            // Then we can to archive it, as it was successfully processed with no change to the datamodel
             await using (var data = new MemoryStream(request.Data))
             {
                 Logger.LogInformation($"Uploading Tag File {request.FileName}");
                 var path = GetS3Key(request.FileName);
 
+                if (failedToConnect)
+                    path = $"{CONNECTION_ERROR_FOLDER}/{path}";
+
                 TransferProxy.Upload(data, path);
                 Logger.LogInformation($"Successfully uploaded Tag File {request.FileName}");
             }
 
+            if(failedToConnect) 
+              return ContractExecutionResult.ErrorResult("Failed to connect to backend");
             return result;
         }
 
@@ -45,7 +66,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Models.Executors
             var parts = tagFileName.Split(new string[] { separator }, StringSplitOptions.None);
             if (parts.Length < 3)
             {
-                return $"invalid/{tagFileName}";
+                return $"{INVALID_TAG_FILE_FOLDER}/{tagFileName}";
             }
             var nameWithoutTime = tagFileName.Substring(0, tagFileName.Length - 10);
             //TCC org ID is not provided with direct submission from machines
