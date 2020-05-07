@@ -16,6 +16,7 @@ spec:
       labels:
         app: {{ $name }}
     spec:
+      serviceAccount: {{ .Values.environment }}-service-account  
       containers:
       - image: 940327799086.dkr.ecr.us-west-2.amazonaws.com/rpd-ccss-tagfilegateway-webapi:{{ .Values.image.tag }}
         name: {{ $name }}    
