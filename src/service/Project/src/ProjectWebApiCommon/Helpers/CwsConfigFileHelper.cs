@@ -95,38 +95,47 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <summary>
     /// Deletes a project configuration file from CWS.
     /// </summary>
-    public static async Task DeleteFileFromCws(Guid projectUid, ImportedFileType importedFileType, string filename,
-      ICwsProfileSettingsClient cwsProfileSettingsClient, IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders)
+    public static async Task DeleteFileFromCws(Guid projectUid, ImportedFileType importedFileType, string filename, ICwsDesignClient cwsDesignClient,
+      ICwsProfileSettingsClient cwsProfileSettingsClient, IServiceExceptionHandler serviceExceptionHandler, IWebClientWrapper webClient, IDictionary<string, string> customHeaders)
     {
       var existingFile = await GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
       if (existingFile != null)
       {
-        if (!string.IsNullOrEmpty(existingFile.FileName) && !string.IsNullOrEmpty(existingFile.SiteCollectorFileName))
+        // If 2 files then need to download the other file then delete the given file then upload and save the other file.
+        bool twoFiles = !string.IsNullOrEmpty(existingFile.FileName) && !string.IsNullOrEmpty(existingFile.SiteCollectorFileName);
+        string otherFilename = null;
+        byte[] otherFileContents = null;
+        if (twoFiles)
         {
-          // If 2 files then need to do an update to delete only one of them
-          var fileType = _cwsFileTypeMap[importedFileType];
-          var request = new ProjectConfigurationFileRequestModel();
+          // Download the other file
+          string downloadLink = null;
+          
           if (existingFile.FileName == filename)
           {
-            //TODO: We don't have the ids so can't remove one id.
-            request.MachineControlFilespaceId = null;
-           //request.SiteCollectorFilespaceId = existingFile.SiteCollectorFilespaceId;
+            downloadLink = existingFile.SiteCollectorFileDownloadLink;
+            otherFilename = existingFile.SiteCollectorFileName;
           }
           else if (existingFile.SiteCollectorFileName == filename)
           {
-            //TODO: We don't have the ids so can't remove one id.
-            //request.MachineControlFilespaceId = existingFile.FilespaceId;
-            request.SiteCollectorFilespaceId = null;
+            downloadLink = existingFile.FileDownloadLink;
+            otherFilename = existingFile.FileName;
           }
           else
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
           }
-          await cwsProfileSettingsClient.UpdateProjectConfiguration(projectUid, fileType, request, customHeaders);
+
+          otherFileContents = webClient.DownloadData(downloadLink);
         }
-        else
+        // Delete the CWS config
+        await cwsProfileSettingsClient.DeleteProjectConfiguration(projectUid, _cwsFileTypeMap[importedFileType], customHeaders);
+        if (twoFiles)
         {
-          await cwsProfileSettingsClient.DeleteProjectConfiguration(projectUid, _cwsFileTypeMap[importedFileType], customHeaders);
+          // Upload the other file. These are small files so should be ok to do in memory.
+          using (var ms = new MemoryStream(otherFileContents))
+          {
+            await SaveFileToCws(projectUid, otherFilename, ms, importedFileType, cwsDesignClient, cwsProfileSettingsClient, customHeaders);
+          }
         }
       }
       else

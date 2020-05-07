@@ -57,7 +57,7 @@ namespace VSS.MasterData.ProjectTests
             FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
             CreatedAt = DateTime.UtcNow.ToString(),
             UpdatedAt = DateTime.UtcNow.ToString(),
-            Size = "66"
+            Size = "99"
           }
         }
       };
@@ -79,7 +79,7 @@ namespace VSS.MasterData.ProjectTests
     }
 
     [Fact]
-    public async Task DeleteCwsImportedFile_HappyPath1()
+    public async Task DeleteCwsImportedFile_HappyPath_OneFile()
     {
       var projectUid = Guid.NewGuid();
       var customHeaders = new Dictionary<string, string>();
@@ -92,6 +92,10 @@ namespace VSS.MasterData.ProjectTests
       var serviceDescriptor = ServiceCollection.First(s => s.ServiceType == typeof(IProjectRepository));
       ServiceCollection.Remove(serviceDescriptor);
       ServiceCollection.AddSingleton(mockProjectRepo.Object);
+
+      var mockCwsDesignClient = new Mock<ICwsDesignClient>();
+      ServiceCollection
+        .AddSingleton(mockCwsDesignClient.Object);
 
       var filename = "MyTestFilename.avoid.svl";
       var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
@@ -113,15 +117,16 @@ namespace VSS.MasterData.ProjectTests
       ServiceProvider = ServiceCollection.BuildServiceProvider();
 
       var mockPegasusClient = new Mock<IPegasusClient>();
+      var mockWebClient = new Mock<IWebClientWrapper>();
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, filename, mockPegasusClient.Object);
+      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, filename, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     [Fact]
-    public async Task DeleteCwsImportedFile_HappyPath2()
+    public async Task DeleteCwsImportedFile_HappyPath_OneOfTwoFiles()
     {
       var projectUid = Guid.NewGuid();
       var customHeaders = new Dictionary<string, string>();
@@ -134,6 +139,14 @@ namespace VSS.MasterData.ProjectTests
       var serviceDescriptor = ServiceCollection.First(s => s.ServiceType == typeof(IProjectRepository));
       ServiceCollection.Remove(serviceDescriptor);
       ServiceCollection.AddSingleton(mockProjectRepo.Object);
+
+      var createFileResponseModel = new CreateFileResponseModel
+        { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
+      var mockCwsDesignClient = new Mock<ICwsDesignClient>();
+      mockCwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), customHeaders))
+        .ReturnsAsync(createFileResponseModel);
+      ServiceCollection
+        .AddSingleton(mockCwsDesignClient.Object);
 
       var filename1 = "MyTestFilename.avoid.svl";
       var filename2 = "MyTestFilename.avoid.dxf";
@@ -155,29 +168,31 @@ namespace VSS.MasterData.ProjectTests
         FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
-        Size = "66"
+        Size = "99"
       };
       var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
       mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel1);
-      //TODO: Fix once known how to do this single file deletion
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+        .Returns(Task.CompletedTask);
       var request = new ProjectConfigurationFileRequestModel{SiteCollectorFilespaceId = Guid.NewGuid().ToString()};
-      mockCwsProfileSettingsClient.Setup(ps => ps.UpdateProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, request, customHeaders))
+      mockCwsProfileSettingsClient.Setup(ps => ps.SaveProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, request, customHeaders))
         .ReturnsAsync(projectConfigurationFileResponseModel2);
       ServiceCollection
         .AddSingleton(mockCwsProfileSettingsClient.Object);
       ServiceProvider = ServiceCollection.BuildServiceProvider();
 
       var mockPegasusClient = new Mock<IPegasusClient>();
+      var mockWebClient = new Mock<IWebClientWrapper>();
+      mockWebClient.Setup(w => w.DownloadData(It.IsAny<string>())).Returns(new byte[] {1, 2, 3, 4});
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, filename1, mockPegasusClient.Object);
+      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, filename1, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
     [Theory]
-    //Filename must match the name of the file is Resources folder of unit tests
     [InlineData(ImportedFileType.Calibration, "MyTestCalibration.dc", ProjectConfigurationFileType.CALIBRATION)]
     [InlineData(ImportedFileType.Calibration, "MyTestCalibration.cal", ProjectConfigurationFileType.CALIBRATION)]
     [InlineData(ImportedFileType.AvoidanceZone, "MyTestAvoidanceZone.svl", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
@@ -235,9 +250,74 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(projectConfigurationFileResponseModel, result.ProjectConfigFileDescriptor);
     }
 
-    //TODO: Fix deletion as Priyanga's email
-    //TODO: Create with 2 files i.e. update for 2nd
-    //TODO: Update test with each file type - UpsertImportedFileV6
+    [Theory]
+    [InlineData(ImportedFileType.Calibration, "MyTestCalibration.dc", ProjectConfigurationFileType.CALIBRATION)]
+    [InlineData(ImportedFileType.Calibration, "MyTestCalibration.cal", ProjectConfigurationFileType.CALIBRATION)]
+    [InlineData(ImportedFileType.AvoidanceZone, "MyTestAvoidanceZone.svl", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
+    [InlineData(ImportedFileType.AvoidanceZone, "MyTestAvoidanceZone.dxf", ProjectConfigurationFileType.AVOIDANCE_ZONE)]
+    [InlineData(ImportedFileType.ControlPoints, "MyTestControlPoints.cpz", ProjectConfigurationFileType.CONTROL_POINTS)]
+    [InlineData(ImportedFileType.ControlPoints, "MyTestControlPoints.csv", ProjectConfigurationFileType.CONTROL_POINTS)]
+    [InlineData(ImportedFileType.Geoid, "MyTestGeoid.ggf", ProjectConfigurationFileType.GEOID)]
+    [InlineData(ImportedFileType.FeatureCode, "MyTestFeatureCode.fxl", ProjectConfigurationFileType.FEATURE_CODE)]
+    [InlineData(ImportedFileType.SiteConfiguration, "MyTestSiteConfiguration.xml", ProjectConfigurationFileType.SITE_CONFIGURATION)]
+    [InlineData(ImportedFileType.GcsCalibration, "MyTestGcsCalibration.cfg", ProjectConfigurationFileType.GCS_CALIBRATION)]
+    public async Task UpdateCwsImportedFile_HappyPath_UpsertImportedFileV6(ImportedFileType importedFileType, string filename, ProjectConfigurationFileType fileType)
+    {
+      var projectUid = Guid.NewGuid();
+      var customHeaders = new Dictionary<string, string>();
+
+      var createFileResponseModel = new CreateFileResponseModel
+      { FileSpaceId = "2c171c20-ca7a-45d9-a6d6-744ac39adf9b", UploadUrl = "an upload url" };
+      var mockCwsDesignClient = new Mock<ICwsDesignClient>();
+      mockCwsDesignClient.Setup(d => d.CreateAndUploadFile(It.IsAny<Guid>(), It.IsAny<CreateFileRequestModel>(), It.IsAny<Stream>(), customHeaders))
+        .ReturnsAsync(createFileResponseModel);
+      ServiceCollection
+        .AddSingleton(mockCwsDesignClient.Object);
+
+      var createProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      {
+        FileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : $"{filename}-original",
+        FileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
+        SiteCollectorFileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? $"{filename}-original" : null,
+        SiteCollectorFileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse" : null,
+        FileType = fileType.ToString(),
+        CreatedAt = DateTime.UtcNow.ToString(),
+        UpdatedAt = DateTime.UtcNow.ToString(),
+        Size = "66"
+      };
+      var updateProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      {
+        FileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : filename,
+        FileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever/updated",
+        SiteCollectorFileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? filename : null,
+        SiteCollectorFileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse/updated" : null,
+        FileType = fileType.ToString(),
+        CreatedAt = DateTime.UtcNow.ToString(),
+        UpdatedAt = DateTime.UtcNow.ToString(),
+        Size = "99"
+      };
+      var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, fileType, customHeaders))
+        .ReturnsAsync(createProjectConfigurationFileResponseModel);
+      mockCwsProfileSettingsClient.Setup(ps => ps.UpdateProjectConfiguration(projectUid, fileType, It.IsAny<ProjectConfigurationFileRequestModel>(), customHeaders))
+        .ReturnsAsync(updateProjectConfigurationFileResponseModel);
+      ServiceCollection
+        .AddSingleton(mockCwsProfileSettingsClient.Object);
+      ServiceProvider = ServiceCollection.BuildServiceProvider();
+
+      var flowFile = new FlowFile();
+      flowFile.flowFilename = filename;
+      flowFile.path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Resources/{filename}";
+
+      var controller = CreateFileImportV6Controller();
+      var result = await controller.UpsertImportedFileV6(null, flowFile, projectUid, importedFileType, DxfUnitsType.Meters, DateTime.UtcNow, DateTime.UtcNow);
+      Assert.NotNull(result);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
+      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+      Assert.Null(result.ImportedFileDescriptor);
+      Assert.NotNull(result.ProjectConfigFileDescriptor);
+      Assert.Equal(updateProjectConfigurationFileResponseModel, result.ProjectConfigFileDescriptor);
+    }
 
 
     private FileImportV6Controller CreateFileImportV6Controller()

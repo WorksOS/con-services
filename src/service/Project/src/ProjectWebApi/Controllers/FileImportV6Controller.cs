@@ -391,7 +391,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromQuery] Guid? importedFileUid, // for 3dpm imported files
       [FromQuery] ImportedFileType? importedFileType, // for CWS project configuration files
       [FromQuery] string filename, // for CWS project configuration files
-      [FromServices] IPegasusClient pegasusClient)
+      [FromServices] IPegasusClient pegasusClient,
+      [FromServices] IWebClientWrapper webClient)
     {
       Logger.LogInformation($"{nameof(DeleteImportedFileV6)}: projectUid {projectUid} importedFileUid: {importedFileUid} importedFileType: {importedFileType}");
 
@@ -399,7 +400,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       if (importedFileType.HasValue && CwsConfigFileHelper.isCwsFileType(importedFileType.Value))
       {
-        await CwsConfigFileHelper.DeleteFileFromCws(projectUid, importedFileType.Value, filename, CwsProfileSettingsClient, ServiceExceptionHandler, customHeaders);
+        await CwsConfigFileHelper.DeleteFileFromCws(projectUid, importedFileType.Value, filename, CwsDesignClient, 
+          CwsProfileSettingsClient, ServiceExceptionHandler, webClient, customHeaders);
         Logger.LogInformation(
           $"{nameof(DeleteImportedFileV6)}: Completed successfully. projectUid {projectUid} importedFileType: {importedFileType}");
         return new ContractExecutionResult();

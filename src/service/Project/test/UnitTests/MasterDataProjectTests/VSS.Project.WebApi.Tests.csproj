@@ -49,10 +49,10 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\MyAvoidanceZone.dxf">
+    <None Update="Resources\MyTestAvoidanceZone.dxf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\MyAvoidanceZone.svl">
+    <None Update="Resources\MyTestAvoidanceZone.svl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\MyTestCalibration.cal">
@@ -67,7 +67,7 @@
     <None Update="Resources\MyTestControlPoints.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\MyTestFeaureCode.fxl">
+    <None Update="Resources\MyTestFeatureCode.fxl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\MyTestGcsCalibration.cfg">

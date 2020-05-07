@@ -94,6 +94,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<ICwsDeviceClient, MockCwsDeviceClient>();
       services.AddTransient<ICwsDesignClient, MockCwsDesignClient>();
       services.AddTransient<ICwsProfileSettingsClient, MockCwsProfileSettingsClient>();
+      services.AddTransient<IWebClientWrapper, WebClientWrapper>();
       services.AddOpenTracing(builder =>
       {
         builder.ConfigureAspNetCore(options =>
