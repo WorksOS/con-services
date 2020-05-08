@@ -138,7 +138,7 @@ namespace VSS.TRex.SiteModelChangeMaps
 
         if (siteModel == null)
         {
-          Log.LogError($"Site model {item.ProjectUID} does not exist. Aborting");
+          Log.LogError($"Site model {item.ProjectUID} does not exist [deleted?]. Aborting");
           return false;
         }
 

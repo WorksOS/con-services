@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -150,7 +151,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
     private static ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)
     {
-      if (cacheDictionary.TryGetValue(cacheName, out var cache))
+      if (CacheDictionary.TryGetValue(cacheName, out var cache))
         return (ICache<TK, TV>)cache;
 
       var mockCache = new Mock<ICache<TK, TV>>(MockBehavior.Strict);
@@ -179,7 +180,9 @@ namespace VSS.TRex.Tests.TestFixtures
         return false;
       });
 
-      cacheDictionary.Add(cacheName, mockCache.Object);
+      CacheDictionary.Add(cacheName, mockCache.Object);
+      MockedCacheDictionaries.Add(mockCacheDictionary);
+
       return mockCache.Object;
     }
 
@@ -203,7 +206,16 @@ namespace VSS.TRex.Tests.TestFixtures
       mockIgnite.Setup(x => x.GetCache<TK, TV>(It.IsAny<string>()));
     }
 
-    private static Dictionary<string, object> cacheDictionary; // object = ICache<TK, TV>
+    /// <summary>
+    /// A dictionary mapping cache names to mocked caches
+    /// </summary>
+    public static Dictionary<string, object> CacheDictionary; // object = ICache<TK, TV>
+    
+    /// <summary>
+    /// A list of the dictionaries containing all mocked cache entries, useful for tests that want to look at
+    /// the caches in terms of a collection
+    /// </summary>
+    public static List<IDictionary> MockedCacheDictionaries; 
 
     /// <summary>
     /// Removes and recreates any dynamic content contained in the Ignite mock. References to the mocked Ignite context are accessed via the TRex
@@ -212,7 +224,8 @@ namespace VSS.TRex.Tests.TestFixtures
     public static void ResetDynamicMockedIgniteContent()
     {
       // Create the dictionary to contain all the mocked caches
-      cacheDictionary = new Dictionary<string, object>(); 
+      CacheDictionary = new Dictionary<string, object>();
+      MockedCacheDictionaries = new List<IDictionary>();
 
       // Create the mocked cache for the existence maps cache and any other cache using this signature
       AddMockedCacheToIgniteMock<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();
@@ -223,7 +236,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the site model segment retirement queue and any other cache using this signature
       AddMockedCacheToIgniteMock<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>();
 
-      // Create the mocked cache for the subgrid spatial data in the site model and any other cache using this signature
+      // Create the mocked cache for the sub grid spatial data in the site model and any other cache using this signature
       AddMockedCacheToIgniteMock<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>();
 
       // Create the mocked cache for the site model machine change maps and any other cache using this signature

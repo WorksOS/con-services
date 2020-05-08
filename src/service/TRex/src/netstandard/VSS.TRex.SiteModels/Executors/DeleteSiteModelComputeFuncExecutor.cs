@@ -72,7 +72,7 @@ namespace VSS.TRex.SiteModels.Executors
       // 13. Site model machine designs list for the site model
       // 14. The coordinate system for the site model
 
-
+      Response.Result = DeleteSiteModelResult.OK;
       return true;
     }
   }
