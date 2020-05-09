@@ -5,6 +5,7 @@ using Apache.Ignite.Core;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using VSS.MasterData.Models.Models;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs;
@@ -82,14 +83,25 @@ namespace VSS.TRex.Tests.TestFixtures
 
     public new void SetupFixture()
     {
-      var igniteMock = new IgniteMock();
+      var mutableIgniteMock = new IgniteMock_Mutable();
+      var immutableIgniteMock = new IgniteMock_Immutable();
 
       DIBuilder
         .Continue()
         .Add(TRexGridFactory.AddGridFactoriesToDI)
 
         // Override the main Ignite grid factory method DI'ed from TRexGridFactory.AddGridFactoriesToDI()
-        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) => igniteMock.mockIgnite.Object))
+        .Add(x => x.AddSingleton<Func<string, IgniteConfiguration, IIgnite>>(factory => (gridName, cfg) =>
+        {
+          if (true == gridName?.Equals(TRexGrids.MutableGridName()))
+            return mutableIgniteMock.mockIgnite.Object;
+
+          if (true == gridName?.Equals(TRexGrids.ImmutableGridName()))
+            return immutableIgniteMock.mockIgnite.Object;
+
+          throw new TRexException($"{gridName} is an unknown grid to create a reference for.");
+        }))
+
         .Add(x => x.AddSingleton<IPipelineProcessorFactory>(new PipelineProcessorFactory()))
         .Add(x => x.AddSingleton<Func<PipelineProcessorPipelineStyle, ISubGridPipelineBase>>(provider => SubGridPipelineFactoryMethod))
         .Add(x => x.AddSingleton<Func<PipelineProcessorTaskStyle, ITRexTask>>(provider => SubGridTaskFactoryMethod))
@@ -104,15 +116,26 @@ namespace VSS.TRex.Tests.TestFixtures
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
-        .Add(x => x.AddSingleton(igniteMock.mockCompute))
-        .Add(x => x.AddSingleton(igniteMock.mockIgnite))
+        .Add(x => x.AddSingleton<Func<StorageMutability, IgniteMock>>(mutability =>
+        {
+          return mutability switch
+          {
+            StorageMutability.Mutable => mutableIgniteMock,
+            StorageMutability.Immutable => immutableIgniteMock
+          };
+        }))
         .Complete();
+
+      // Now that mocked ignite contexts are available, re-inject the proxy cache factories so they take notice of the ignite mocks
+      // Note that the dynamic content of the Ignite mock must be instantiated first
+      mutableIgniteMock.ResetDynamicMockedIgniteContent();
+      immutableIgniteMock.ResetDynamicMockedIgniteContent();
+
+      DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
 
       // Start the 'mocked' listener
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
       DIContext.Obtain<IDesignChangedEventListener>().StartListening();
-
-      IgniteMock.ResetDynamicMockedIgniteContent();
     }
 
     /// <summary>
@@ -259,7 +282,7 @@ namespace VSS.TRex.Tests.TestFixtures
     /// an initial bulldozer machine to it
     /// </summary>
     /// <returns></returns>
-    public static ISiteModel NewEmptyModel()
+    public static ISiteModel NewEmptyModel(bool addDefaultMachine = true)
     {
       var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(DITagFileFixture.NewSiteModelGuid, true);
 
@@ -267,7 +290,11 @@ namespace VSS.TRex.Tests.TestFixtures
       siteModel.StorageRepresentationToSupply.Should().Be(StorageMutability.Immutable);
       siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
-      _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      if (addDefaultMachine)
+      {
+        _ = siteModel.Machines.CreateNew("Bulldozer", "", MachineType.Dozer, DeviceTypeEnum.SNM940, false, Guid.NewGuid());
+      }
+
       return siteModel;
     }
 
