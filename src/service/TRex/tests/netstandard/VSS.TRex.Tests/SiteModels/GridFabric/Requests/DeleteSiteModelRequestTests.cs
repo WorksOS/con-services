@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using FluentAssertions;
+using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.Storage;
 using VSS.TRex.Geometry;
+using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
@@ -20,12 +22,12 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
   [UnitTestCoveredRequest(RequestType = typeof(DeleteSiteModelRequest))]
   public class DeleteSiteModelRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
+    private void AddApplicationGridRouting() => IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
 
     private bool IsModelEmpty(ISiteModel model)
-    {
+    { 
       // Check that there are no elements in the storage proxy for the site model
-      foreach (var cache in IgniteMock.MockedCacheDictionaries)
+      foreach (var cache in IgniteMock.Immutable.MockedCacheDictionaries)
       {
         if (cache.Keys.Count > 0)
           return false;
@@ -68,6 +70,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SaveMetadataToPersistentStore(model.PrimaryStorageProxy);
+      IsModelEmpty(model).Should().BeFalse();
 
       DeleteTheModel(model);
     }
@@ -81,6 +84,38 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
+      IsModelEmpty(model).Should().BeFalse();
+
+      DeleteTheModel(model);
+    }
+
+    [Fact]
+    public void DeleteModel_WithMachines()
+    {
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      model.Should().NotBeNull();
+
+      model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 1, false)); new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
+      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
+
+      IsModelEmpty(model).Should().BeFalse();
+
+      DeleteTheModel(model);
+    }
+
+    [Fact]
+    public void DeleteModel_WithMachineEvents()
+    {
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      model.Should().NotBeNull();
+
+      model.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(DateTime.UtcNow, AutoVibrationState.Auto);
+      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
+
       IsModelEmpty(model).Should().BeFalse();
 
       DeleteTheModel(model);
@@ -224,7 +259,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     }
 
     [Fact]
-    public void DeleteModelWithTagFile()
+    public void DeleteModel_WithTagFile()
     {
       var tagFiles = new[]
       {

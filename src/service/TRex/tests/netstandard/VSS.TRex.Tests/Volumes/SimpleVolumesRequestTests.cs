@@ -75,11 +75,11 @@ namespace VSS.TRex.Tests.Volumes
       response.BoundingExtentGrid.Should().BeEquivalentTo(BoundingWorldExtent3D.Null());
     }
 
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<SimpleVolumesRequestComputeFunc_ApplicationService, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<SimpleVolumesRequestComputeFunc_ApplicationService, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SimpleVolumesRequestComputeFunc_ClusterCompute, SimpleVolumesRequestArgument, SimpleVolumesResponse>();
     }
 
     [Fact]

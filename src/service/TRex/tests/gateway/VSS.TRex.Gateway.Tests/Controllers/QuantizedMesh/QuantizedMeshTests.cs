@@ -25,16 +25,16 @@ namespace VSS.TRex.Gateway.Tests.Controllers.QuantizedMesh
 
   public class QuantizedMeshTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
-    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     private void AddRoutings()

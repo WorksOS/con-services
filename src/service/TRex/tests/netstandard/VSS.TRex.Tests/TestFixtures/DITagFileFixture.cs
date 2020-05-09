@@ -73,7 +73,7 @@ namespace VSS.TRex.Tests.TestFixtures
       return converter;
     }
 
-    private static void AddProxyCacheFactoriesToDI()
+    public static void AddProxyCacheFactoriesToDI()
     {
       DIBuilder
         .Continue()

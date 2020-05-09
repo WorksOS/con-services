@@ -17,7 +17,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(DesignElevationPatchRequest))]
   public class DesignProfilingElevationPatchRequestsTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     [Fact]

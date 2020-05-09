@@ -14,15 +14,15 @@ namespace VSS.TRex.Tests.Exports.Surfaces.GridFabric
   public class TINSurfaceRequestTestsBase
   {
     private void AddApplicationGridRouting() 
-      => IgniteMock.AddApplicationGridRouting<TINSurfaceRequestComputeFunc, TINSurfaceRequestArgument, TINSurfaceResult>();
+      => IgniteMock.Immutable.AddApplicationGridRouting<TINSurfaceRequestComputeFunc, TINSurfaceRequestArgument, TINSurfaceResult>();
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
-    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     protected void AddGridRouting()

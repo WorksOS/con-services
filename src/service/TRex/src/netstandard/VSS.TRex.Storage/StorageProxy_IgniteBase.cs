@@ -90,7 +90,8 @@ namespace VSS.TRex.Storage
     {
       Mutability = mutability;
 
-      ignite = DIContext.Obtain<ITRexGridFactory>()?.Grid(mutability);
+      var factory = DIContext.Obtain<ITRexGridFactory>();
+      ignite = factory?.Grid(mutability);
     }
 
     /// <summary>

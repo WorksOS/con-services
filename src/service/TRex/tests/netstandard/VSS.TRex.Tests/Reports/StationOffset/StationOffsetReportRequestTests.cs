@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
   {
     private const float ELEVATION_INCREMENT_1_0 = 1.0f;
 
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
     <IComputeFunc<StationOffsetReportRequestArgument_ApplicationService,
         StationOffsetReportRequestResponse_ApplicationService>, 
       StationOffsetReportRequestArgument_ApplicationService, 
@@ -35,13 +35,13 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting
+      IgniteMock.Immutable.AddClusterComputeGridRouting
       <IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute,
           StationOffsetReportRequestResponse_ClusterCompute>,
         StationOffsetReportRequestArgument_ClusterCompute,
         StationOffsetReportRequestResponse_ClusterCompute>();
 
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
     private StationOffsetReportRequestArgument_ApplicationService SimpleStationOffsetReportRequestArgument_ApplicationService(ISiteModel siteModel, bool withOverrides)

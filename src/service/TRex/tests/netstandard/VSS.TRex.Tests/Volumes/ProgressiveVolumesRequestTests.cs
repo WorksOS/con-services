@@ -34,14 +34,14 @@ namespace VSS.TRex.Tests.Volumes
   {
     private const float ELEVATION_INCREMENT_0_5 = 0.5f;
 
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<ProgressiveVolumesRequestComputeFunc_ApplicationService, ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>();
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<ProgressiveVolumesRequestComputeFunc_ApplicationService, ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>();
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting<ProgressiveVolumesRequestComputeFunc_ClusterCompute, ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<ProgressiveVolumesRequestComputeFunc_ClusterCompute, ProgressiveVolumesRequestArgument, ProgressiveVolumesResponse>();
     }
 
-    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
 

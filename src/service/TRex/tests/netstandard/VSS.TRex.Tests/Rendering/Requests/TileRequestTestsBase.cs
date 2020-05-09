@@ -29,16 +29,16 @@ namespace VSS.TRex.Tests.Rendering.Requests
 {
   public class TileRequestTestsBase 
   {
-    protected void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
+    protected void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <TileRenderRequestComputeFunc, TileRenderRequestArgument, TileRenderResponse>();
 
     protected void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridsRequestComputeFuncProgressive<SubGridsRequestArgument, SubGridRequestsResponse>, SubGridsRequestArgument, SubGridRequestsResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
-    protected void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    protected void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
 
     protected TileRenderRequestArgument SimpleTileRequestArgument(ISiteModel siteModel, DisplayMode displayMode, IPlanViewPalette palette = null, CellPassAttributeFilter attributeFilter = null)
