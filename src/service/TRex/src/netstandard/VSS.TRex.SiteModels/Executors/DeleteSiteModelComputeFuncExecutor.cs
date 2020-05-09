@@ -4,7 +4,9 @@ using Microsoft.Extensions.Logging;
 using VSS.TRex.DI;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.Types;
 
 namespace VSS.TRex.SiteModels.Executors
 {
@@ -56,21 +58,29 @@ namespace VSS.TRex.SiteModels.Executors
       // by requests to SiteModels.GetSiteModel()
       _siteModel.MarkForDeletion();
 
-      // Begin executing the deletion process. The aspects to be deleted are:
-      // 1. All sub grids containing processed cell data
-      // 2. The existence map for the spatial sub grids
-      // 3. Event lists for all machines in the site model
-      // 4. The base metadata for the site model
-      // 5. The persistent store for the site model itself
-      // 6. All machine change maps for the site model
-      // 7. The designs store for the site model
-      // 8. The surveyed surfaces store for the site model
-      // 9. The alignments store for the site model
-      // 10. All proofing runs for the site model
-      // 11. All machines for the site model
-      // 12. Site model machine designs index for the site model
-      // 13. Site model machine designs list for the site model
-      // 14. The coordinate system for the site model
+      // Obtain a private storage proxy to perform deletion operations in
+      var storageProxy = DIContext.Obtain<IStorageProxyFactory>().MutableGridStorage();
+
+      // Begin executing the deletion process. The aspects to be deleted are, in order:
+      // All sub grids containing processed cell data
+      // The existence map for the spatial sub grids
+      // Event lists for all machines in the site model
+      // All machines for the site model
+      // The surveyed surfaces store for the site model
+      // The alignments store for the site model
+      // All proofing runs for the site model
+      // Site model machine designs index for the site model
+      // Site model machine designs list for the site model
+      // The designs store for the site model
+      // The coordinate system for the site model
+      // The base metadata for the site model
+      // The persistent store for the site model itself
+
+      var productionDataXmlResult = _siteModel.RemoveMetadataFromPersistentStore(storageProxy);
+      if (!productionDataXmlResult)
+      {
+        Log.LogError($"Unable to remove site model persistent store");
+      }
 
       Response.Result = DeleteSiteModelResult.OK;
       return true;

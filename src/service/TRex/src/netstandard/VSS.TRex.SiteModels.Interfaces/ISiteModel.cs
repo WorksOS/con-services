@@ -134,6 +134,8 @@ IGenericSubGridTree_Long VersionMap { get; }
     bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy);
     FileSystemErrorStatus LoadFromPersistentStore();
 
+    bool RemoveMetadataFromPersistentStore(IStorageProxy storageProxy);
+
     /// <summary>
     /// GetAdjustedDataModelSpatialExtents returns the bounding extent of the production data held in the 
     /// data model expanded to include the bounding extents of the surveyed surfaces associated with the 

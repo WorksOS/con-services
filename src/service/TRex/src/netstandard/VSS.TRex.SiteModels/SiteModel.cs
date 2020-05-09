@@ -617,6 +617,26 @@ versionMap = null;
     }
 
     /// <summary>
+    /// Saves only the core metadata about the site model to the persistent store
+    /// </summary>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool RemoveMetadataFromPersistentStore(IStorageProxy storageProxy)
+    {
+      using (var stream = this.ToStream())
+      {
+        if (storageProxy.RemoveStreamFromPersistentStore(ID, FileSystemStreamType.ProductionDataXML, kSiteModelXMLFileName) == FileSystemErrorStatus.OK)
+        {
+          storageProxy.Commit();
+          return true;
+        }
+      }
+
+      Log.LogError($"Failed to remove site model metadata for site model {ID} from persistent store");
+      return false;
+    }
+
+    /// <summary>
     /// Save the site model metadata and core mutated state driven by TAG file ingest
     /// </summary>
     /// <param name="storageProxy"></param>
