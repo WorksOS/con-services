@@ -24,9 +24,22 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
   {
     private void AddApplicationGridRouting() => IgniteMock.Mutable.AddApplicationGridRouting<DeleteSiteModelRequestComputeFunc, DeleteSiteModelRequestArgument, DeleteSiteModelRequestResponse>();
 
+    public DeleteSiteModelRequestTests()
+    {
+      // This reset all modified content in the Ignite mocks between tests
+      DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
+    }
+
     private bool IsModelEmpty(ISiteModel model)
     { 
-      // Check that there are no elements in the storage proxy for the site model
+      // Check that there are no elements in the storage proxy for the site model in the mutable grid
+      foreach (var cache in IgniteMock.Mutable.MockedCacheDictionaries)
+      {
+        if (cache.Keys.Count > 0)
+          return false;
+      }
+
+      // Check that there are no elements in the storage proxy for the site model in the immutable grid
       foreach (var cache in IgniteMock.Immutable.MockedCacheDictionaries)
       {
         if (cache.Keys.Count > 0)
@@ -53,12 +66,29 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       VerifyModelIsEmpty(model);
     }
 
+    private void SaveAndVerifyNotEmpty(ISiteModel model)
+    {
+      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
+      model.PrimaryStorageProxy.Commit();
+      IsModelEmpty(model).Should().BeFalse();
+    }
 
     [Fact]
     public void Creation()
     {
       var req = new DeleteSiteModelRequest();
       req.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void EmptyNonCommittedModelIsEmpty()
+    {
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      model.Should().NotBeNull();
+
+      IsModelEmpty(model).Should().BeTrue();
     }
 
     [Fact]
@@ -83,8 +113,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       model.Should().NotBeNull();
 
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -98,9 +127,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 1, false)); new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -114,9 +141,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(DateTime.UtcNow, AutoVibrationState.Auto);
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -130,9 +155,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SiteProofingRuns.Add(new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1)));
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -146,9 +169,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SiteModelMachineDesigns.Add(new SiteModelMachineDesign(-1, "Test Name"));
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -161,10 +182,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       model.Should().NotBeNull();
 
-      model.SiteModelDesigns.Add(new SiteModelDesign("Test name", new BoundingWorldExtent3D(0, 0, 1, 1))); 
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      model.SiteModelDesigns.Add(new SiteModelDesign("Test name", new BoundingWorldExtent3D(0, 0, 1, 1)));
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -178,9 +197,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.Designs.Add(new Design(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1)));
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -194,9 +211,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.SurveyedSurfaces.Add(new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "", ""), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1)));
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -210,9 +225,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.Alignments.Add(new Alignment(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1)));
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -235,9 +248,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
         csibStream, null);
 
       model.CSIB().Should().NotBeEmpty();
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -251,9 +262,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       model.ExistenceMap[0, 0] = true;
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }
@@ -269,9 +278,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       model.Should().NotBeNull();
 
-      model.SaveToPersistentStoreForTAGFileIngest(model.PrimaryStorageProxy);
-
-      IsModelEmpty(model).Should().BeFalse();
+      SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
     }

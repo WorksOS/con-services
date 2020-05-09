@@ -126,16 +126,25 @@ namespace VSS.TRex.Tests.TestFixtures
         }))
         .Complete();
 
-      // Now that mocked ignite contexts are available, re-inject the proxy cache factories so they take notice of the ignite mocks
-      // Note that the dynamic content of the Ignite mock must be instantiated first
-      mutableIgniteMock.ResetDynamicMockedIgniteContent();
-      immutableIgniteMock.ResetDynamicMockedIgniteContent();
-
-      DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
+      ResetDynamicMockedIgniteContent();
 
       // Start the 'mocked' listener
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
       DIContext.Obtain<IDesignChangedEventListener>().StartListening();
+    }
+
+    public static void ResetDynamicMockedIgniteContent()
+    {
+      // Now that mocked ignite contexts are available, re-inject the proxy cache factories so they take notice of the ignite mocks
+      // Note that the dynamic content of the Ignite mock must be instantiated first
+      IgniteMock.Mutable.ResetDynamicMockedIgniteContent();
+      IgniteMock.Immutable.ResetDynamicMockedIgniteContent();
+
+      // Recreate procy caches based on the newly created cache contexts
+      DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
+
+      // Create a new site models instance so that it recreates storage contexts
+      DIBuilder.Continue().Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels())).Complete();
     }
 
     /// <summary>

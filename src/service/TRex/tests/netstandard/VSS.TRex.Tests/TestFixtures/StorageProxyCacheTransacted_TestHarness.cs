@@ -65,15 +65,14 @@ namespace VSS.TRex.Tests.TestFixtures
     /// </summary>
     public override void Clear()
     {
-      // Do nothing - retain the information within the storage proxy for test purposes
-    }
-
-    /// <summary>
-    /// Provide a means for tests to forcibly clear the proxy cache if required.
-    /// </summary>
-    public void ForceClear()
-    {
-      base.Clear();
+      if (!string.IsNullOrEmpty(base.Name))
+      {
+        base.Clear();
+      }
+      else
+      {
+        // Do nothing - retain the information within the storage proxy for test purposes
+      }
     }
 
     /// <summary>
