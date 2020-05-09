@@ -28,10 +28,18 @@ namespace VSS.TRex.Tests.TestFixtures
     /// </summary>
     public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
-      // Do nothing on purpose
-      numDeleted = 0;
-      numUpdated = 0;
-      numBytesWritten = 0;
+      if (string.IsNullOrEmpty(base.Name))
+      {
+        // Do nothing on purpose
+        numDeleted = 0;
+        numUpdated = 0;
+        numBytesWritten = 0;
+      }
+      else
+      {
+        // Use the mocked cache
+        base.Commit(out numDeleted, out numUpdated, out numBytesWritten);
+      }
     }
 
     /// <summary>
