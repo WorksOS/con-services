@@ -16,7 +16,7 @@ namespace VSS.TRex.Storage
     {
         private readonly ICache<TK, TV> Cache;
       
-        public virtual string Name => Cache.Name;
+        public virtual string Name => Cache?.Name ?? "";
 
         public virtual void Commit()
         {
