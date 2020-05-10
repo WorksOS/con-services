@@ -109,21 +109,21 @@ namespace VSS.TRex.Tests.TestFixtures
         .Build();
 
       // Set up a singleton storage proxy for mutable and immutable contexts for tests
-      var mutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
-      var immutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
+      //var mutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+      //var immutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
 
       DIBuilder
         .Continue()
 
         // Add the factory to create a single storage proxy instance.
-        .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => mutability == StorageMutability.Mutable ? mutableStorageProxy : immutableStorageProxy))
+        //.Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => mutability == StorageMutability.Mutable ? mutableStorageProxy : immutableStorageProxy))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Build();
     }
 
     public new void SetupFixture()
     {
-      var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
+//      var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
       var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
 
       DIBuilder
@@ -135,12 +135,13 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
         .Add(x => x.AddSingleton<ISiteModelFactory>(new SiteModelFactory()))
+        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(factory => new SiteModelMetadataManager(StorageMutability.Mutable)))
 
         .Add(x => x.AddTransient<ISurveyedSurfaces>(factory => new TRex.SurveyedSurfaces.SurveyedSurfaces()))
 
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
-        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(mockSiteModelMetadataManager.Object))
+//        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(mockSiteModelMetadataManager.Object))
 
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))

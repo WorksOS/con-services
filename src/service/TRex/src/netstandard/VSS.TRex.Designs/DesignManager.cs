@@ -80,10 +80,8 @@ namespace VSS.TRex.Designs
     {
       try
       {
-        using (var stream = designs.ToStream())
-        {
-          WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs);
-        }
+        using var stream = designs.ToStream();
+        WriteStorageProxy.WriteStreamToPersistentStore(siteModelID, DESIGNS_STREAM_NAME, FileSystemStreamType.Designs, stream, designs);
         WriteStorageProxy.Commit();
 
         // Notify the mutable and immutable grid listeners that attributes of this site model have changed
@@ -136,6 +134,24 @@ namespace VSS.TRex.Designs
       Store(siteModelID, designs);
 
       return result;
+    }
+
+    /// <summary>
+    /// Remove the design list for a site model from the persistent store
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool Remove(Guid siteModelID, IStorageProxy storageProxy)
+    {
+      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelID, FileSystemStreamType.Designs, DESIGNS_STREAM_NAME);
+
+      if (result != FileSystemErrorStatus.OK)
+      {
+        Log.LogInformation($"Removing designs list from project {siteModelID} failed with error {result}");
+      }
+
+      return result == FileSystemErrorStatus.OK;
     }
   }
 }

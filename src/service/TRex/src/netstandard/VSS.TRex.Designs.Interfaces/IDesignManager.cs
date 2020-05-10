@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Designs.Interfaces
 {
@@ -23,5 +24,13 @@ namespace VSS.TRex.Designs.Interfaces
     /// <param name="designID"></param>
     /// <returns></returns>
     bool Remove(Guid siteModelID, Guid designID);
+
+    /// <summary>
+    /// Remove the design list for a site model from the persistent store
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    bool Remove(Guid siteModelID, IStorageProxy storageProxy);
   }
 }

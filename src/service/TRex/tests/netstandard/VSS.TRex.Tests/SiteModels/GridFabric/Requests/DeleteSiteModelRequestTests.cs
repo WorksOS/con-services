@@ -2,17 +2,18 @@
 using System.IO;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
-using VSS.TRex.Alignments;
+using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.CoordinateSystems;
+using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Designs.Storage;
+using VSS.TRex.DI;
 using VSS.TRex.Geometry;
 using VSS.TRex.Machines;
 using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.SurveyedSurfaces;
+using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using Xunit;
@@ -31,22 +32,24 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     }
 
     private bool IsModelEmpty(ISiteModel model)
-    { 
+    {
+      var mutableEmpty = true;
       // Check that there are no elements in the storage proxy for the site model in the mutable grid
       foreach (var cache in IgniteMock.Mutable.MockedCacheDictionaries)
       {
         if (cache.Keys.Count > 0)
-          return false;
+          mutableEmpty = false;
       }
 
       // Check that there are no elements in the storage proxy for the site model in the immutable grid
+      var immutableEmpty = true;
       foreach (var cache in IgniteMock.Immutable.MockedCacheDictionaries)
       {
         if (cache.Keys.Count > 0)
-          return false;
+          immutableEmpty = false;
       }
 
-      return true;
+      return mutableEmpty && immutableEmpty;
     }
 
     private void VerifyModelIsEmpty(ISiteModel model)
@@ -96,10 +99,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      model.SaveMetadataToPersistentStore(model.PrimaryStorageProxy);
+      model.SaveMetadataToPersistentStore(model.PrimaryStorageProxy, true);
       IsModelEmpty(model).Should().BeFalse();
 
       DeleteTheModel(model);
@@ -110,7 +113,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
       SaveAndVerifyNotEmpty(model);
@@ -123,7 +126,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
       model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 1, false)); new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
@@ -137,7 +140,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(true);
       model.Should().NotBeNull();
 
       model.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(DateTime.UtcNow, AutoVibrationState.Auto);
@@ -151,7 +154,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
       model.SiteProofingRuns.Add(new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1)));
@@ -165,7 +168,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
       model.SiteModelMachineDesigns.Add(new SiteModelMachineDesign(-1, "Test Name"));
@@ -179,7 +182,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
       model.SiteModelDesigns.Add(new SiteModelDesign("Test name", new BoundingWorldExtent3D(0, 0, 1, 1)));
@@ -193,10 +196,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      model.Designs.Add(new Design(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1)));
+      DIContext.Obtain<IDesignManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
@@ -207,10 +210,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      model.SurveyedSurfaces.Add(new SurveyedSurface(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "", ""), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1)));
+      DIContext.Obtain<ISurveyedSurfaceManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
@@ -221,10 +224,10 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      model.Alignments.Add(new Alignment(Guid.NewGuid(), new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1)));
+      DIContext.Obtain<IAlignmentManager>().Add(model.ID, new DesignDescriptor(Guid.NewGuid(), "", ""), new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
@@ -235,7 +238,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
       var csibStream = new MemoryStream();
@@ -243,7 +246,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       csibStream.Position = 0;
 
       model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
-        CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
+        CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
         FileSystemStreamType.CoordinateSystemCSIB,
         csibStream, null);
 
@@ -254,11 +257,25 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     }
 
     [Fact]
+    public void DeleteModel_WithSummaryMetadata()
+    {
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
+      model.Should().NotBeNull();
+
+      DIContext.Obtain<ISiteModelMetadataManager>().Add(model.ID, new SiteModelMetadata());
+      SaveAndVerifyNotEmpty(model);
+
+      DeleteTheModel(model);
+    }
+
+    [Fact]
     public void DeleteModel_WithExistenceMap()
     {
       AddApplicationGridRouting();
 
-      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
+      var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
       model.ExistenceMap[0, 0] = true;

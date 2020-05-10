@@ -63,8 +63,8 @@ namespace VSS.TRex.SiteModels
   {
     private static readonly ILogger Log = Logging.Logger.CreateLogger<SiteModel>();
 
-    public const string kSiteModelXMLFileName = "ProductionDataModel.XML";
-    public const string kSubGridExistenceMapFileName = "SubGridExistenceMap";
+    public const string SiteModelXMLFileName = "ProductionDataModel.XML";
+    public const string SubGridExistenceMapFileName = "SubGridExistenceMap";
     //private const string kSubGridVersionMapFileName = "SubGridVersionMap";
 
     private const byte VERSION_NUMBER = 2;
@@ -193,7 +193,7 @@ namespace VSS.TRex.SiteModels
         return csib = string.Empty;
 
       var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID,
-        CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName,
+        CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName,
         FileSystemStreamType.CoordinateSystemCSIB,
         out MemoryStream csibStream);
 
@@ -599,15 +599,20 @@ versionMap = null;
     /// Saves only the core metadata about the site model to the persistent store
     /// </summary>
     /// <param name="storageProxy"></param>
+    /// <param name="commitNow"></param>
     /// <returns></returns>
-    public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy)
+    public bool SaveMetadataToPersistentStore(IStorageProxy storageProxy, bool commitNow = true)
     {
       using (var stream = this.ToStream())
       {
-        if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML,
+        if (storageProxy.WriteStreamToPersistentStore(ID, SiteModelXMLFileName, FileSystemStreamType.ProductionDataXML,
               stream, this) == FileSystemErrorStatus.OK)
         {
-          storageProxy.Commit();
+          if (commitNow)
+          {
+            storageProxy.Commit();
+          }
+
           return true;
         }
       }
@@ -623,13 +628,10 @@ versionMap = null;
     /// <returns></returns>
     public bool RemoveMetadataFromPersistentStore(IStorageProxy storageProxy)
     {
-      using (var stream = this.ToStream())
+      if (storageProxy.RemoveStreamFromPersistentStore(ID, FileSystemStreamType.ProductionDataXML, SiteModelXMLFileName) == FileSystemErrorStatus.OK)
       {
-        if (storageProxy.RemoveStreamFromPersistentStore(ID, FileSystemStreamType.ProductionDataXML, kSiteModelXMLFileName) == FileSystemErrorStatus.OK)
-        {
-          storageProxy.Commit();
-          return true;
-        }
+        storageProxy.Commit();
+        return true;
       }
 
       Log.LogError($"Failed to remove site model metadata for site model {ID} from persistent store");
@@ -643,24 +645,19 @@ versionMap = null;
     /// <returns></returns>
     public bool SaveToPersistentStoreForTAGFileIngest(IStorageProxy storageProxy)
     {
-      var Result = true;
+      var result = true;
 
       lock (this)
       {
-        using (var stream = this.ToStream())
+        if (!SaveMetadataToPersistentStore(storageProxy, false))
         {
-          if (storageProxy.WriteStreamToPersistentStore(ID, kSiteModelXMLFileName,
-                FileSystemStreamType.ProductionDataXML, stream, this) != FileSystemErrorStatus.OK)
-          {
-            Log.LogError($"Failed to save site model metadata for site model {ID} to persistent store");
-            Result = false;
-          }
+          result = false;
         }
 
         if (ExistenceMapLoaded && SaveProductionDataExistenceMapToStorage(storageProxy) != FileSystemErrorStatus.OK)
         {
           Log.LogError($"Failed to save existence map for site model {ID} to persistent store");
-          Result = false;
+          result = false;
         }
 
 /* VersionMap commented out in interim pending consistency scope review
@@ -677,15 +674,15 @@ Result = false;
         _siteModelDesigns?.SaveToPersistentStore(ID, storageProxy);
       }
 
-      if (!Result)
+      if (!result)
         Log.LogError($"Failed to save site model for project {ID} to persistent store");
 
-      return Result;
+      return result;
     }
 
     public FileSystemErrorStatus LoadFromPersistentStore()
     {
-      var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSiteModelXMLFileName,
+      var Result = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, SiteModelXMLFileName,
         FileSystemStreamType.ProductionDataXML, out var MS);
 
       if (Result == FileSystemErrorStatus.OK && MS != null)
@@ -724,12 +721,28 @@ Result = false;
       {
         using (var stream = existenceMap.ToStream())
         {
-          result = storageProxy.WriteStreamToPersistentStore(ID, kSubGridExistenceMapFileName,
+          result = storageProxy.WriteStreamToPersistentStore(ID, SubGridExistenceMapFileName,
             FileSystemStreamType.SubGridExistenceMap, stream, existenceMap);
         }
       }
 
       return result;
+    }
+
+    /// <summary>
+    /// Removes the existence map from persistent storage for the site model
+    /// </summary>
+    /// <returns></returns>
+    public bool RemoveProductionDataExistenceMapFromStorage(IStorageProxy storageProxy)
+    {
+       var result = storageProxy.RemoveStreamFromPersistentStore(ID, FileSystemStreamType.SubGridExistenceMap, SubGridExistenceMapFileName);
+
+       if (result != FileSystemErrorStatus.OK)
+       {
+         Log.LogInformation($"Failed to remove existence map from storage for project {ID} with error {result}");
+       }
+
+       return result == FileSystemErrorStatus.OK;
     }
 
     /// <summary>
@@ -752,7 +765,7 @@ Result = false;
         var localExistenceMap = new SubGridTreeSubGridExistenceBitMask();
 
 // Read its content from storage 
-        var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, kSubGridExistenceMapFileName,
+        var readResult = PrimaryStorageProxy.ReadStreamFromPersistentStore(ID, SubGridExistenceMapFileName,
           FileSystemStreamType.SubGridExistenceMap, out var MS);
 
         if (MS != null)

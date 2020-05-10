@@ -11,15 +11,13 @@ namespace VSS.TRex.Storage
   public class StorageProxyFactory : IStorageProxyFactory
   {
     /// <summary>
-    /// Creates the storage proxy to be used. Currently hard wired to the Ignite storage proxy,
-    /// should be replaced with the type from Dependency Injection when implemented.
+    /// Creates the storage proxy to be used. 
     /// This factory method provides access to the mutable grid storage
     /// </summary>
     /// <returns></returns>
     public IStorageProxy MutableGridStorage()
     {
-      var injectedProxyFactory = DIContext.Obtain<Func<StorageMutability, IStorageProxy>>();
-      var proxy = injectedProxyFactory?.Invoke(StorageMutability.Mutable) ?? new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+      var proxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
 
       // Establish any available immutable storage proxy into the mutable storage proxy to allow transparent
       // promotion of data changes in the mutable data store to the immutable data store.
@@ -29,20 +27,17 @@ namespace VSS.TRex.Storage
     }
 
     /// <summary>
-    /// Creates the storage proxy to be used. Currently hard wired to the Ignite storage proxy,
-    /// should be replaced with the type from Dependency Injection when implemented.
+    /// Creates the storage proxy to be used. 
     /// This factory method provides access to the immutable grid storage
     /// </summary>
     /// <returns></returns>
     public IStorageProxy ImmutableGridStorage()
     {
-      var injectedProxyFactory = DIContext.Obtain<Func<StorageMutability, IStorageProxy>>();
-      return injectedProxyFactory?.Invoke(StorageMutability.Immutable) ?? new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
+      return new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
     }
 
     /// <summary>
-    /// Creates the storage proxy to be used. Currently hard wired to the Ignite storage proxy,
-    /// should be replaced with the type from Dependency Injection when implemented.
+    /// Creates the storage proxy to be used. 
     /// This factory method provides access to the immutable grid storage
     /// </summary>
     /// <returns></returns>

@@ -50,6 +50,14 @@ namespace VSS.TRex.Storage.Interfaces
       FileSystemStreamType streamType,
       string streamName);
 
+    FileSystemErrorStatus RemoveSpatialStreamFromPersistentStore(Guid dataModelID,
+      string streamName,
+      int subGridX, int subGridY,
+      long segmentStartDateTicks,
+      long segmentEndDateTicks,
+      long version,
+      FileSystemStreamType streamType);
+
     void SetImmutableStorageProxy(IStorageProxy immutableProxy);
 
     IStorageProxy ImmutableProxy { get; }

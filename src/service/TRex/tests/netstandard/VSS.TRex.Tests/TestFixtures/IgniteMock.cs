@@ -24,6 +24,7 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
@@ -180,6 +181,12 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockCache.Setup(x => x.Put(It.IsAny<TK>(), It.IsAny<TV>())).Callback((TK key, TV value) =>
       {
+        // Ignite behaviour is writing an existing key updates the value with no error
+        if (mockCacheDictionary.ContainsKey(key))
+        {
+          mockCacheDictionary.Remove(key);
+        }
+
         mockCacheDictionary.Add(key, value);
       });
 
@@ -199,6 +206,17 @@ namespace VSS.TRex.Tests.TestFixtures
       mockCache.Setup(x => x.RemoveAll(It.IsAny<IEnumerable<TK>>())).Callback((IEnumerable<TK> keys) =>
       {
         keys.ForEach(key => mockCacheDictionary.Remove(key));
+      });
+
+      mockCache.Setup(x => x.Remove(It.IsAny<TK>())).Returns((TK key) =>
+      {
+        if (mockCacheDictionary.ContainsKey(key))
+        {
+          mockCacheDictionary.Remove(key);
+          return true;
+        }
+
+        return false;
       });
 
       mockCache.Setup(x => x.PutAll(It.IsAny<IEnumerable<KeyValuePair<TK, TV>>>())).Callback((IEnumerable<KeyValuePair<TK, TV>> values) =>
@@ -268,6 +286,9 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the mocked cache for the change map buffer queue that sites between the tag file ingest pipeline and the machine change maps processor
       AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>();
+
+      // Create the mocked cache for the summary site model meta data
+      AddMockedCacheToIgniteMock<Guid, ISiteModelMetadata>();
     }
 
     private void TestIBinarizableSerializationForItem(object item)

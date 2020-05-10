@@ -67,7 +67,7 @@ namespace VSS.TRex.SiteModels
     {
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
-      writer.Write((int) Count);
+      writer.Write((int)Count);
       for (int i = 0; i < Count; i++)
         this[i].Write(writer);
     }
@@ -100,10 +100,24 @@ namespace VSS.TRex.SiteModels
     /// </summary>
     public void SaveToPersistentStore(IStorageProxy storageProxy)
     {
-      using (var stream = this.ToStream())
-      {
-        storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, stream, this);
-      }
+      using var stream = this.ToStream();
+      storageProxy.WriteStreamToPersistentStore(DataModelID, MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames, stream, this);
+    }
+
+    /// <summary>
+    /// Removes the content of the machine designs list from the persistent store
+    /// </summary>
+    public void RemoveFromPersistentStore(IStorageProxy storageProxy)
+    {
+      RemoveFromPersistentStore(DataModelID, storageProxy);
+    }
+
+    /// <summary>
+    /// Removes the content of the machine designs list from the persistent store
+    /// </summary>
+    public static void RemoveFromPersistentStore(Guid dataModelId, IStorageProxy storageProxy)
+    {
+      storageProxy.RemoveStreamFromPersistentStore(dataModelId, FileSystemStreamType.MachineDesignNames, MACHINE_DESIGN_LIST_STREAM_NAME);
     }
 
     /// <summary>

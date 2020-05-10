@@ -677,6 +677,27 @@ namespace VSS.TRex.SubGridTrees.Server
              return Result;
         }
 
+        public bool RemoveSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegmentInfo segmentInfo)
+        {
+          var fsError = storageProxy.RemoveSpatialStreamFromPersistentStore
+          (Owner.ID, fileName, OriginX, OriginY,
+            segmentInfo.StartTime.Ticks,
+            segmentInfo.EndTime.Ticks,
+            segmentInfo.Version,
+            FileSystemStreamType.SubGridSegment);
+
+          var result = fsError == FileSystemErrorStatus.OK;
+
+          if (!result)
+          {
+            Log.LogError(fsError == FileSystemErrorStatus.FileDoesNotExist
+              ? $"Expected leaf sub grid segment {fileName}, model {Owner.ID} does not exist."
+              : $"Unable to load leaf sub grid segment {fileName}, model {Owner.ID}. Details: {fsError}");
+          }
+
+          return result;
+        }
+
         public bool SaveDirectoryToStream(Stream stream)
         {
           using (var writer = new BinaryWriter(stream, Encoding.UTF8, true))
@@ -795,6 +816,35 @@ namespace VSS.TRex.SubGridTrees.Server
             {
               SMS?.Dispose();
             }
+        }
+
+        /// <summary>
+        /// Deletes the directory file from the persistent store
+        /// </summary>
+        /// <param name="storage"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public bool RemoveDirectoryFromStorage(IStorageProxy storage, string fileName)
+        {
+            var FSError = storage.RemoveSpatialStreamFromPersistentStore(Owner.ID, fileName, OriginX, OriginY, -1, -1, _version,
+            FileSystemStreamType.SubGridDirectory);
+
+            if (FSError != FileSystemErrorStatus.OK)
+            {
+                if (FSError == FileSystemErrorStatus.FileDoesNotExist)
+                { 
+                    Log.LogError($"Expected leaf sub grid file {fileName} does not exist.");
+                }
+                else if (FSError != FileSystemErrorStatus.SpatialStreamIndexGranuleLocationNull &&
+                         FSError != FileSystemErrorStatus.GranuleDoesNotExist)
+                {
+                  Log.LogWarning($"Unable to load leaf sub grid file '{fileName}'. Details: {FSError}");
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         public void Integrate(IServerLeafSubGrid source,
