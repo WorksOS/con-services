@@ -83,7 +83,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISerialisedByteArrayWrapper> listener, object topic) =>
         {
-          messagingDictionary.Add(topic, listener);
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
         });
 
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()));
@@ -92,14 +95,20 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISiteModelAttributesChangedEvent> listener, object topic) =>
         {
-          messagingDictionary.Add(topic, listener);
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
         });
 
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<IDesignChangedEvent>>(), It.IsAny<object>()))
         .Callback((IMessageListener<IDesignChangedEvent> listener, object topic) =>
         {
-          messagingDictionary.Add(topic, listener);
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
         });
 
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()));
@@ -109,7 +118,12 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))
         .Callback((object message, object topic) =>
         {
-          messagingDictionary.TryGetValue(topic, out var lstnr);
+          object lstnr;
+          lock (messagingDictionary)
+          {
+            messagingDictionary.TryGetValue(topic, out lstnr);
+          }
+
           if (lstnr is SubGridListener listener)
             listener.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else
@@ -121,7 +135,12 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.SendOrdered(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<TimeSpan?>()))
         .Callback((object message, object topic, TimeSpan? timeSpan) =>
         {
-          messagingDictionary.TryGetValue(topic, out var lstnr);
+          object lstnr;
+          lock (messagingDictionary)
+          {
+            messagingDictionary.TryGetValue(topic, out lstnr);
+          }
+
           if (lstnr is SubGridListener listener1)
             listener1.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else if (lstnr is SiteModelAttributesChangedEventListener listener2)
@@ -166,8 +185,11 @@ namespace VSS.TRex.Tests.TestFixtures
 
     private ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)
     {
-      if (CacheDictionary.TryGetValue(cacheName, out var cache))
-        return (ICache<TK, TV>)cache;
+      lock (CacheDictionary)
+      {
+        if (CacheDictionary.TryGetValue(cacheName, out var cache))
+          return (ICache<TK, TV>) cache;
+      }
 
       var mockCache = new Mock<ICache<TK, TV>>(MockBehavior.Strict);
       var mockCacheDictionary = new Dictionary<TK, TV>();
@@ -238,16 +260,26 @@ namespace VSS.TRex.Tests.TestFixtures
       {
         values.ForEach(value =>
         {
-          // Ignite behaviour is writing an existing key updates the value with no error
-          if (mockCacheDictionary.ContainsKey(value.Key))
-            mockCacheDictionary[value.Key] = value.Value;
-          else
-            mockCacheDictionary.Add(value.Key, value.Value);
+          lock (mockCacheDictionary)
+          {
+            // Ignite behaviour is writing an existing key updates the value with no error
+            if (mockCacheDictionary.ContainsKey(value.Key))
+              mockCacheDictionary[value.Key] = value.Value;
+            else
+              mockCacheDictionary.Add(value.Key, value.Value);
+          }
         });
       });
 
-      CacheDictionary.Add(cacheName, mockCache.Object);
-      MockedCacheDictionaries.Add(mockCacheDictionary);
+      lock (CacheDictionary)
+      {
+        CacheDictionary.Add(cacheName, mockCache.Object);
+      }
+
+      lock (MockedCacheDictionaries)
+      {
+        MockedCacheDictionaries.Add(mockCacheDictionary);
+      }
 
       return mockCache.Object;
     }
@@ -256,12 +288,10 @@ namespace VSS.TRex.Tests.TestFixtures
     {
       mockIgnite
         .Setup(x => x.GetOrCreateCache<TK, TV>(It.IsAny<CacheConfiguration>()))
-        .Returns((CacheConfiguration cfg) => 
-            BuildMockForCache<TK, TV>(cfg.Name));
+        .Returns((CacheConfiguration cfg) => BuildMockForCache<TK, TV>(cfg.Name));
       mockIgnite
         .Setup(x => x.GetCache<TK, TV>(It.IsAny<string>()))
-        .Returns((string cacheName) => 
-          BuildMockForCache<TK, TV>(cacheName));
+        .Returns((string cacheName) => BuildMockForCache<TK, TV>(cacheName));
     }
 
     public void RemoveMockedCacheFromIgniteMock<TK, TV>()

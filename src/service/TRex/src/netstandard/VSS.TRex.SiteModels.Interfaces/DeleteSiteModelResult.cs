@@ -9,6 +9,10 @@
     FailedToRemoveSubGrids,
     FailedToRemoveProjectMetadata,
     FailedToCommitPrimaryElementRemoval,
-    FailedToCommitExistenceMapRemoval
+    FailedToCommitExistenceMapRemoval,
+    FailedToRemoveSiteDesigns,
+    FailedToRemoveSurveyedSurfaces,
+    FailedToRemoveAlignments,
+    FailedToRemoveCSIB
   }
 }
