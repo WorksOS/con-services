@@ -5,10 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -119,7 +119,7 @@ namespace VSS.MasterData.ProjectTests
       var mockPegasusClient = new Mock<IPegasusClient>();
       var mockWebClient = new Mock<IWebClientWrapper>();
       var controller = CreateFileImportV6Controller();
-      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, filename, mockPegasusClient.Object, mockWebClient.Object);
+      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
       Assert.NotNull(result);
       Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
@@ -192,6 +192,52 @@ namespace VSS.MasterData.ProjectTests
       Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
     }
 
+    [Fact]
+    public async Task DeleteCwsImportedFile_HappyPath_TwoFiles()
+    {
+      var projectUid = Guid.NewGuid();
+      var customHeaders = new Dictionary<string, string>();
+
+      var project = new Productivity3D.Project.Abstractions.Models.DatabaseModels.Project() { CustomerUID = Guid.NewGuid().ToString(), ProjectUID = projectUid.ToString(), ShortRaptorProjectId = 999 };
+      var projectList = new List<Productivity3D.Project.Abstractions.Models.DatabaseModels.Project> { project };
+      var mockProjectRepo = new Mock<IProjectRepository>();
+      mockProjectRepo.Setup(ps => ps.GetProjectsForCustomer(It.IsAny<string>())).ReturnsAsync(projectList);
+      //Remove the real project repo set up in base class and replace with mock
+      var serviceDescriptor = ServiceCollection.First(s => s.ServiceType == typeof(IProjectRepository));
+      ServiceCollection.Remove(serviceDescriptor);
+      ServiceCollection.AddSingleton(mockProjectRepo.Object);
+
+      var filename1 = "MyTestFilename.avoid.svl";
+      var filename2 = "MyTestFilename.avoid.dxf";
+      var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
+      {
+        FileName = filename1,
+        FileDownloadLink = "http//whatever",
+        SiteCollectorFileName = filename2,
+        SiteCollectorFileDownloadLink = "http//whateverelse",
+        FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString(),
+        CreatedAt = DateTime.UtcNow.ToString(),
+        UpdatedAt = DateTime.UtcNow.ToString(),
+        Size = "66"
+      };
+      var mockCwsProfileSettingsClient = new Mock<ICwsProfileSettingsClient>();
+      mockCwsProfileSettingsClient.Setup(ps => ps.GetProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+        .ReturnsAsync(projectConfigurationFileResponseModel);
+      mockCwsProfileSettingsClient.Setup(ps => ps.DeleteProjectConfiguration(projectUid, ProjectConfigurationFileType.AVOIDANCE_ZONE, customHeaders))
+        .Returns(Task.CompletedTask);
+      ServiceCollection
+        .AddSingleton(mockCwsProfileSettingsClient.Object);
+      ServiceProvider = ServiceCollection.BuildServiceProvider();
+
+      var mockPegasusClient = new Mock<IPegasusClient>();
+      var mockWebClient = new Mock<IWebClientWrapper>();
+      var controller = CreateFileImportV6Controller();
+      var result = await controller.DeleteImportedFileV6(projectUid, null, ImportedFileType.AvoidanceZone, null, mockPegasusClient.Object, mockWebClient.Object);
+      Assert.NotNull(result);
+      Assert.Equal(ContractExecutionStatesEnum.ExecutedSuccessfully, result.Code);
+      Assert.Equal(ContractExecutionResult.DefaultMessage, result.Message);
+    }
+
     [Theory]
     [InlineData(ImportedFileType.Calibration, "MyTestCalibration.dc", ProjectConfigurationFileType.CALIBRATION)]
     [InlineData(ImportedFileType.Calibration, "MyTestCalibration.cal", ProjectConfigurationFileType.CALIBRATION)]
@@ -218,10 +264,10 @@ namespace VSS.MasterData.ProjectTests
 
       var projectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
       {
-        FileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ?null :  filename,
-        FileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
-        SiteCollectorFileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? filename : null,
-        SiteCollectorFileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse" :null,
+        FileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ?null :  filename,
+        FileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
+        SiteCollectorFileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? filename : null,
+        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse" :null,
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
@@ -276,10 +322,10 @@ namespace VSS.MasterData.ProjectTests
 
       var createProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
       {
-        FileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : $"{filename}-original",
-        FileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
-        SiteCollectorFileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? $"{filename}-original" : null,
-        SiteCollectorFileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse" : null,
+        FileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : $"{filename}-original",
+        FileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever",
+        SiteCollectorFileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? $"{filename}-original" : null,
+        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse" : null,
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),
@@ -287,10 +333,10 @@ namespace VSS.MasterData.ProjectTests
       };
       var updateProjectConfigurationFileResponseModel = new ProjectConfigurationFileResponseModel
       {
-        FileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : filename,
-        FileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever/updated",
-        SiteCollectorFileName = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? filename : null,
-        SiteCollectorFileDownloadLink = CwsConfigFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse/updated" : null,
+        FileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : filename,
+        FileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? null : "http//whatever/updated",
+        SiteCollectorFileName = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? filename : null,
+        SiteCollectorFileDownloadLink = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? "http://whateverelse/updated" : null,
         FileType = fileType.ToString(),
         CreatedAt = DateTime.UtcNow.ToString(),
         UpdatedAt = DateTime.UtcNow.ToString(),

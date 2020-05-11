@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.CWS.Client;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Models.Handlers;
@@ -51,7 +52,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var fileType = _cwsFileTypeMap[importedFileType];
       var result = await cwsDesignClient.CreateAndUploadFile(projectUid, new CreateFileRequestModel { FileName = filename }, fileContents, customHeaders);
       var request = new ProjectConfigurationFileRequestModel();
-      if (isSiteCollectorType(importedFileType, filename))
+      if (ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename))
       {
         request.SiteCollectorFilespaceId = result.FileSpaceId;
       }
@@ -77,7 +78,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (existingFile == null)
         return null;
 
-      var matches = isSiteCollectorType(importedFileType, filename) ? existingFile.SiteCollectorFileName == filename : existingFile.FileName == filename;
+      var matches = ProjectConfigurationFileHelper.isSiteCollectorType(importedFileType, filename) ? existingFile.SiteCollectorFileName == filename : existingFile.FileName == filename;
       return matches ? existingFile : null;
     }
 
@@ -101,8 +102,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       var existingFile = await GetCwsFile(projectUid, importedFileType, cwsProfileSettingsClient, customHeaders);
       if (existingFile != null)
       {
-        // If 2 files then need to download the other file then delete the given file then upload and save the other file.
-        bool twoFiles = !string.IsNullOrEmpty(existingFile.FileName) && !string.IsNullOrEmpty(existingFile.SiteCollectorFileName);
+        // If 2 files and filename provided then need to download the other file then delete the given file then upload and save the other file.
+        // Otherwise just delete the project config file.
+        bool twoFiles = !string.IsNullOrEmpty(existingFile.FileName) && !string.IsNullOrEmpty(existingFile.SiteCollectorFileName) && !string.IsNullOrEmpty(filename);
         string otherFilename = null;
         byte[] otherFileContents = null;
         if (twoFiles)
@@ -142,36 +144,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       {
         serviceExceptionHandler.ThrowServiceException(HttpStatusCode.BadRequest, 56);
       }
-    }
-
-    /// <summary>
-    /// Returns true if the imported file type is a CWS project configuration file type
-    /// </summary>
-    public static bool isCwsFileType(ImportedFileType importedFileType)
-    {
-      switch (importedFileType)
-      {
-        case ImportedFileType.Calibration:
-        case ImportedFileType.AvoidanceZone:
-        case ImportedFileType.ControlPoints:
-        case ImportedFileType.Geoid:
-        case ImportedFileType.FeatureCode:
-        case ImportedFileType.SiteConfiguration:
-        case ImportedFileType.GcsCalibration:
-          return true;
-        default:
-          return false;
-      }
-    }
-
-    /// <summary>
-    /// Determines if the file is a site collector or machine control type
-    /// </summary>
-    public static bool isSiteCollectorType(ImportedFileType importedFileType, string filename)
-    {
-      var fileExtension = Path.GetExtension(filename).ToLower();
-      return ((importedFileType == ImportedFileType.ControlPoints && fileExtension == ".csv") ||
-              (importedFileType == ImportedFileType.AvoidanceZone && fileExtension == ".dxf"));
     }
   }
 }

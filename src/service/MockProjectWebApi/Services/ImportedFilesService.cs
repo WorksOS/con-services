@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MockProjectWebApi.Utils;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
@@ -9,10 +10,41 @@ namespace MockProjectWebApi.Services
   public class ImportedFilesService : IImportedFilesService
   {
     public Dictionary<string, List<FileData>> ImportedFiles;
+    public Dictionary<string, List<ProjectConfigurationFileResponseModel>> ProjectConfigFiles;
 
     public ImportedFilesService()
     {
       CreateTestData();
+      CreateCwsTestData();
+    }
+
+    private void CreateCwsTestData()
+    {
+      ProjectConfigFiles = new Dictionary<string, List<ProjectConfigurationFileResponseModel>>();
+      var dimensionsProjectConfigFiles = new List<ProjectConfigurationFileResponseModel>
+      {
+        new ProjectConfigurationFileResponseModel
+        {
+          FileName = "dimensions.dc",
+          FileDownloadLink = "mock download link",
+          FileType = ProjectConfigurationFileType.CALIBRATION.ToString()
+        },
+        new ProjectConfigurationFileResponseModel
+        {
+          FileName = "dimensions.avoid.svl",
+          FileDownloadLink = "mock download link",
+          SiteCollectorFileName = "dimensions.avoid.dxf",
+          SiteCollectorFileDownloadLink = "mock download link",
+          FileType = ProjectConfigurationFileType.AVOIDANCE_ZONE.ToString()
+        },
+        new ProjectConfigurationFileResponseModel
+        {
+          FileName = "dimensions.ggf",
+          FileDownloadLink = "mock download link",
+          FileType = ProjectConfigurationFileType.GEOID.ToString()
+        }
+      };
+      ProjectConfigFiles.Add(ConstantsUtil.DIMENSIONS_PROJECT_UID, dimensionsProjectConfigFiles);
     }
 
     private void CreateTestData()

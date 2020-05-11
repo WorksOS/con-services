@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using CCSS.CWS.Client;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 using Microsoft.Extensions.Logging;
@@ -70,7 +71,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpGet]
     public async Task<ImportedFileDescriptorListResult> GetImportedFilesV6([FromQuery] string projectUid, [FromQuery] bool getProjectCalibrationFiles=false)
     {
-      Logger.LogInformation($"{nameof(GetImportedFilesV6)}");
+      Logger.LogInformation($"{nameof(GetImportedFilesV6)}: projectUid={projectUid} getProjectCalibrationFiles={getProjectCalibrationFiles}");
       var result = new ImportedFileDescriptorListResult();
       if (getProjectCalibrationFiles)
       {
@@ -394,11 +395,11 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       [FromServices] IPegasusClient pegasusClient,
       [FromServices] IWebClientWrapper webClient)
     {
-      Logger.LogInformation($"{nameof(DeleteImportedFileV6)}: projectUid {projectUid} importedFileUid: {importedFileUid} importedFileType: {importedFileType}");
+      Logger.LogInformation($"{nameof(DeleteImportedFileV6)}: projectUid {projectUid} importedFileUid: {importedFileUid} importedFileType: {importedFileType} filename: {filename}");
 
       await ValidateProjectId(projectUid.ToString());
 
-      if (importedFileType.HasValue && CwsConfigFileHelper.isCwsFileType(importedFileType.Value))
+      if (importedFileType.HasValue && ProjectConfigurationFileHelper.isCwsFileType(importedFileType.Value))
       {
         await CwsConfigFileHelper.DeleteFileFromCws(projectUid, importedFileType.Value, filename, CwsDesignClient, 
           CwsProfileSettingsClient, ServiceExceptionHandler, webClient, customHeaders);
@@ -488,7 +489,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     {
       ImportedFileDescriptorSingleResult importedFile = null;
 
-      if (CwsConfigFileHelper.isCwsFileType(importedFileType))
+      if (ProjectConfigurationFileHelper.isCwsFileType(importedFileType))
       { 
         Logger.LogInformation($"{nameof(UpsertFileInternal)}. Found a CWS file type");
         // Only save to CWS. 3dpm doesn't use these files.
@@ -649,7 +650,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private async Task ValidateFileDoesNotExist(string projectUid, string filename, ImportedFileType importedFileType, DateTime? surveyedUtc, Guid? parentUid, double? offset)
     {
       var fileExists = false;
-      if (CwsConfigFileHelper.isCwsFileType(importedFileType))
+      if (ProjectConfigurationFileHelper.isCwsFileType(importedFileType))
       {
         var existingFile = await CwsConfigFileHelper.GetCwsFile(new Guid( projectUid), filename, importedFileType, CwsProfileSettingsClient, customHeaders);
         fileExists = existingFile != null;
