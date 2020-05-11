@@ -27,6 +27,7 @@ export class UploadDataComponent {
   public selectedFiles: any;
   public projectUid: string;
   public orgUid: string;
+  public treatAsJohnDoe: boolean;
   private fileCount: number = 0;
   public isFinishEnabled: boolean = false;
 
@@ -85,8 +86,9 @@ export class UploadDataComponent {
       fileName: this.selectedFiles[this.fileCount].name,
       data: data,
       ProjectUid: this.projectUid,
-      OrgId: this.orgUid
-  } as ITagFileRequest;
+      OrgId: this.orgUid,
+      TreatAsJohnDoe: this.treatAsJohnDoe
+    } as ITagFileRequest;
 
 
     this.uploadDataService.addTagfile(tagToUpload).subscribe( () =>

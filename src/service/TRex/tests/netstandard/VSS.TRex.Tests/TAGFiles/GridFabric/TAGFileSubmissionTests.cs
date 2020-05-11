@@ -64,7 +64,8 @@ namespace TAGFiles.Tests
         AssetID = assetID,
         TagFileContent = TagFileContent(tagFileName),
         TAGFileName = tagFileName,
-        TCCOrgID = ""
+        TCCOrgID = "",
+        TreatAsJohnDoe = false
       };
     }
 

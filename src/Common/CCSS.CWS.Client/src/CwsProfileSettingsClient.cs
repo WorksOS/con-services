@@ -109,7 +109,6 @@ namespace CCSS.CWS.Client
     {
       log.LogDebug($"{nameof(DeleteProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
-      // todo sometime cache these TRNs
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
       return DeleteData($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, customHeaders);
     }

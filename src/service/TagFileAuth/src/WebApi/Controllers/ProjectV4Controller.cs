@@ -38,7 +38,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///      to obtain data to enable it to generate a Cut/fill or other map from 3dpService. 
     ///   This step tries to identify a unique projectUid.
     /// 
-    /// EC and/or radio, location and possibly TCCOrgID are provided.
+    /// EC and/or radio, location are provided.
     /// 
     /// Get the ProjectUid 
     ///     which belongs to the devices Customer and 
@@ -48,6 +48,9 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///          1) if there is no traditional sub, they may get cutfill for surveyed surfaces only
     ///          2) if there is a traditional sub they get production data as well
     ///          3) there may be a completely new type of subscription, specific to EarthWorks cutfill ...
+    ///
+    ///  "Only tag files from devices which have been claimed (i.e Device has logged with appropriate account) will be considered for manual or auto tag file ingress"
+    ///
     /// </summary>
     /// <returns>
     /// The project Uid which satisfies spatial requirements
@@ -79,7 +82,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///            
     /// </returns>
     [Route("internal/v4/project/getUidsEarthWorks")]
-    [Route("api/v4/project/getUidsEarthWorks")]  // todoJeannie temp during changeover to internal proxy
     [HttpPost]
     public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndDeviceUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {
@@ -97,6 +99,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     /// This endpoint is used by TRex to identify a project to assign a tag file to.
     ///      It is called for each tag file, with as much information as is available e.g. device; location; projectUid
     ///      Attempts to identify a unique project which the tag file could be applied to, also to identify the device
+    ///      "Only tag files from devices which have been claimed (i.e Device has logged with appropriate account) will be considered for manual or auto tag file ingress"
+    /// 
     ///     On error returns:
     ///         If validation of request fails, returns BadRequest plus a unique error code and message
     ///         If it fails to identify/verify a project, returns BadRequest plus a unique error code and message
@@ -146,7 +150,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     ///     
     /// </returns>
     [Route("internal/v4/project/getUids")]
-    [Route("api/v4/project/getUids")] // todoJeannie temp during changeover to internal proxy
     [HttpPost]
     public async Task<GetProjectAndAssetUidsResult> GetProjectAndDeviceUids(
       [FromBody]GetProjectAndAssetUidsRequest request,

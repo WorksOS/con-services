@@ -40,6 +40,7 @@ using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
+using VSS.TRex.Designs.GridFabric.Events;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -98,6 +99,8 @@ namespace VSS.TRex.Tests.TestFixtures
         // Register the listener for site model attribute change notifications
         .Add(x => x.AddSingleton<ISiteModelAttributesChangedEventListener>(new SiteModelAttributesChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IDesignFiles>(new DesignFiles()))
+        .Add(x => x.AddSingleton<IDesignChangedEventSender>(new DesignChangedEventSender()))
+        .Add(x => x.AddSingleton<IDesignChangedEventListener>(new DesignChangedEventListener(TRexGrids.ImmutableGridName())))
         .Add(x => x.AddSingleton<IOptimisedTTMProfilerFactory>(new OptimisedTTMProfilerFactory()))
         .Add(x => x.AddSingleton<IDesignClassFactory>(new DesignClassFactory()))
         .Add(x => x.AddSingleton<IConvertCoordinates>(new ConvertCoordinates()))
@@ -107,6 +110,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Start the 'mocked' listener
       DIContext.Obtain<ISiteModelAttributesChangedEventListener>().StartListening();
+      DIContext.Obtain<IDesignChangedEventListener>().StartListening();
 
       IgniteMock.ResetDynamicMockedIgniteContent();
     }

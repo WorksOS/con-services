@@ -34,7 +34,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
       return CheckTPaaS();
     }
 
-    [Fact(Skip= "test waiting on C2S3CON-205")]
+    [Fact(Skip= "manual testing only")]
     public async Task CreateFileTest()
     {
       // test requires a user token.
@@ -54,7 +54,7 @@ namespace CCSS.CWS.Client.UnitTests.Staging
         Assert.Contains(HttpStatusCode.BadRequest.ToString(), e.Message);
         Assert.Contains(":9056,", e.Message);
         /*
-         * This call returns: (possibly because this is application context?) todoJeannie need a list of errors
+         * This call returns: (possibly because this is application context?) 
          * BadRequest {"status":400,"code":9056,"message":"Bad request","moreInfo":"Please provide this id to support, while contacting, TraceId 5e9a82a7ad9caf287518ec873da80845","timestamp":1587184295988}
          * 
          * Postman returns:

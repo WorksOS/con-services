@@ -100,6 +100,7 @@ namespace VSS.Common.Abstractions.ServiceDiscovery
         ApiService.Tile => Constants.ServiceNameConstants.TILE_SERVICE,
         ApiService.TagFileAuth => Constants.ServiceNameConstants.TAGFIELAUTH_SERVICE,
         ApiService.Device => Constants.ServiceNameConstants.DEVICE_SERVICE,
+        ApiService.TRexMutableGateway => Constants.ServiceNameConstants.TREX_SERVICE_MUTABLE,
         _ => throw new ArgumentOutOfRangeException(nameof(service), service, null)
       };
     }

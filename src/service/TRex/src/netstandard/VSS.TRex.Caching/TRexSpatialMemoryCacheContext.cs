@@ -210,6 +210,30 @@ namespace VSS.TRex.Caching
     }
 
     /// <summary>
+    /// Invalidates all subgrids for context
+    /// </summary>
+    public void InvalidateAllSubGridsNoLock()
+    {
+      // Empty contexts are ignored
+      if (TokenCount > 0)
+      {
+        ContextTokens.ScanAllSubGrids(leaf =>
+        {
+          SubGridTrees.Core.Utilities.SubGridUtilities.SubGridDimensionalIterator((x, y) =>
+          {
+            var contextToken = ((IGenericLeafSubGrid<int>)leaf).Items[x, y];
+            if (contextToken != 0)
+            {
+              // Note: the index in the ContextTokens tree is 1-based, so account for that in the call to Invalidate
+              MRUList.Invalidate(contextToken - 1);
+            }
+          });
+          return true;
+        });
+      }
+    }
+
+    /// <summary>
     /// Mark this context as a candidate for removal
     /// </summary>
     public void MarkForRemoval(DateTime markedForRemovalAtUtc)

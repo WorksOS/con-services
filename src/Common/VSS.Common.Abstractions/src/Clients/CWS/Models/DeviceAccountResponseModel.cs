@@ -14,21 +14,12 @@ namespace VSS.Common.Abstractions.Clients.CWS.Models
     [JsonProperty("accountId")]
     public string Id { get; set; }
 
-    /// <summary>
-    /// Account name
-    /// </summary>
     [JsonProperty("accountName")]
     public string AccountName { get; set; }
 
-    /// <summary>
-    /// relationStatus
-    /// </summary>
     [JsonProperty("relationStatus")]
     public RelationStatusEnum RelationStatus { get; set; }
 
-    /// <summary>
-    /// tccDeviceStatus
-    /// </summary>
     [JsonProperty("tccDeviceStatus")]
     public TCCDeviceStatusEnum TccDeviceStatus { get; set; }
     

@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Util;
+using Serilog;
 using Serilog.Extensions.Logging;
 using VSS.Serilog.Extensions;
 
@@ -37,13 +38,13 @@ namespace VSS.WebApi.Common
       app.UseExceptionTrap();
       app.UseFilterMiddleware<RequestIDMiddleware>();
 
-      // CCSSSCON-223
-      //app.UseSwagger();
+      app.UseSwagger();
       ////Swagger documentation can be viewed with http://localhost:5000/swagger/v1/swagger.json
-      //app.UseSwaggerUI(c =>
-      //{
-      //  c.SwaggerEndpoint("/swagger/v1/swagger.json", serviceTitle);
-      //});
+      app.UseSwaggerUI(c =>
+      {
+        // This version must match the version in BaseStartup
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", serviceTitle);
+      });
 
       app.UseFilterMiddleware<RequestTraceMiddleware>();
       //TIDAuthentication added by those servicesd which need it
@@ -53,19 +54,19 @@ namespace VSS.WebApi.Common
 
     public static IWebHostBuilder BuildKestrelWebHost(this IWebHostBuilder builder)
     {
-      var kestrelConfig = new ConfigurationBuilder()
+      var config = new ConfigurationBuilder()
         .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
         .AddJsonFile("kestrelsettings.json", optional: true, reloadOnChange: false)
         .Build();
 
       builder
         .UseContentRoot(Directory.GetCurrentDirectory())
-        .UseConfiguration(kestrelConfig)
+        .UseConfiguration(config)
         .ConfigureLogging((hostContext, loggingBuilder) =>
         {
           loggingBuilder.AddProvider(
             p => new SerilogLoggerProvider(
-              SerilogExtensions.Configure(config: kestrelConfig, httpContextAccessor: p.GetService<IHttpContextAccessor>())));
+              SerilogExtensions.Configure(config: config, httpContextAccessor: p.GetService<IHttpContextAccessor>())));
         });
 
       ThreadPool.SetMaxThreads(1024, 2048);

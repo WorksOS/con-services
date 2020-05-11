@@ -127,6 +127,8 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
       this.DynamicAddwithOffset("Unable to retrieve existing file for the update", 123);
       this.DynamicAddwithOffset("Device not found in ProfileX", 124);
       this.DynamicAddwithOffset("Device not found in local storage", 125);
+      this.DynamicAddwithOffset("Invalid DeviceUid", 126);
+      this.DynamicAddwithOffset("Invalid ShortRaptorAssetId", 127);
     }
   }
 }

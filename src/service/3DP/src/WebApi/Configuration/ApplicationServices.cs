@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using CCSS.CWS.Client;
 using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +67,7 @@ namespace VSS.Productivity3D.WebApi
 
       // Required for TIDAuthentication  
       // CCSSSCON-216 temporary move to real endpoints when available
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>("MOCK_CWS_ACCOUNT");
 
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IPreferenceProxy, PreferenceProxy>();

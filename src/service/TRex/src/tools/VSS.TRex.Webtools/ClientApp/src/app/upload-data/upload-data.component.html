@@ -31,10 +31,14 @@
     </file-drop>
   </div>
   <div>
-    <button type="button" class="btn btn-success btn-xs"
-            (click)="uploadTagFiles()">
-      <span class="glyphicon glyphicon-upload"></span> Upload
-    </button>
+      <input type="checkbox" [(ngModel)]="treatAsJohnDoe">
+      <label> Treat TAG files as from John Doe assets</label>
+  </div>
+  <div>
+      <button type="button" class="btn btn-success btn-xs"
+              (click)="uploadTagFiles()">
+          <span class="glyphicon glyphicon-upload"></span> Upload
+      </button>
   </div>
   <div class="upload-table">
     <table class="table">

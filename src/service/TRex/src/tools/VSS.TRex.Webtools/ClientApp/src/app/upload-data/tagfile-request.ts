@@ -4,4 +4,5 @@ export interface ITagFileRequest {
   data: string;
   ProjectUid: string;
   OrgId: string;
+  TreatAsJohnDoe: boolean;
 }

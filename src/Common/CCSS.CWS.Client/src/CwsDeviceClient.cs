@@ -13,10 +13,14 @@ using VSS.MasterData.Proxies.Interfaces;
 namespace CCSS.CWS.Client
 {
   /// <summary>
-  ///  These use the cws cws-devicegateway controller
+  ///  These use the cws-ProfileManager controller
   /// </summary>
   public class CwsDeviceClient : CwsProfileManagerClient, ICwsDeviceClient
   {
+    // todoJeannie ProfileX throws exception on anything much over 20 (note that default is 10)
+    private int FromRow = 0;
+    private int RowCount = 20;
+
     public CwsDeviceClient(IWebRequest gracefulClient, IConfigurationStore configuration, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(gracefulClient, configuration, logger, dataCache, serviceResolution)
     { }
@@ -55,6 +59,7 @@ namespace CCSS.CWS.Client
     }
 
     /// <summary>
+    /// 2020_05_05 this is probably obsolete now as devices will at best be done 1 at-a-time CCSSSCON-314
     /// used when UI calls ProjectSvc.GetCustomerDeviceLicense() 
     /// to load devices for account into DB (to generate shortRaptorAssetId)
     ///                 response fields: DeviceTRN
@@ -64,7 +69,10 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetDevicesForAccount)}: accountUid {accountUid}");
 
       var accountTrn = TRNHelper.MakeTRN(accountUid, TRNHelper.TRN_ACCOUNT);
-      var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices?includeTccRegistrationStatus=true", accountUid, null, null, customHeaders);
+      var queryParameters = WithLimits(FromRow, RowCount);
+      queryParameters.Add(new KeyValuePair<string, string>("includeTccRegistrationStatus", "true"));
+
+      var deviceListResponseModel = await GetData<DeviceListResponseModel>($"/accounts/{accountTrn}/devices", accountUid, null, queryParameters, customHeaders);
       foreach (var device in deviceListResponseModel.Devices)
         device.Id = TRNHelper.ExtractGuidAsString(device.Id);
 
@@ -81,7 +89,8 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectsForDevice)}: deviceUid {deviceUid}");
 
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
-      var projectListResponseModel = await GetData<ProjectListResponseModel>($"/device/{deviceTrn}/projects", deviceUid, null, null, customHeaders);
+      var queryParameters = WithLimits(FromRow, RowCount);
+      var projectListResponseModel = await GetData<ProjectListResponseModel>($"/device/{deviceTrn}/projects", deviceUid, null, queryParameters, customHeaders);
       foreach (var project in projectListResponseModel.Projects)
       {
         project.accountId = TRNHelper.ExtractGuidAsString(project.accountId);
@@ -101,12 +110,21 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetAccountsForDevice)}: deviceUid {deviceUid}");
 
       var deviceTrn = TRNHelper.MakeTRN(deviceUid, TRNHelper.TRN_DEVICE);
-      var deviceCustomerListResponseModel = await GetData<DeviceAccountListResponseModel>($"/devices/{deviceTrn}/accounts", deviceUid, null, null, customHeaders);
-      foreach (var account in deviceCustomerListResponseModel.Accounts)
+      var queryParameters = WithLimits(FromRow, RowCount);
+      var deviceAccountListResponseModel = await GetData<DeviceAccountListResponseModel>($"/devices/{deviceTrn}/accounts", deviceUid, null, queryParameters, customHeaders);
+      foreach (var account in deviceAccountListResponseModel.Accounts)
         account.Id = TRNHelper.ExtractGuidAsString(account.Id);
 
-      log.LogDebug($"{nameof(GetAccountsForDevice)}: deviceCustomerListResponseModel {JsonConvert.SerializeObject(deviceCustomerListResponseModel)}");
-      return deviceCustomerListResponseModel;
+      log.LogDebug($"{nameof(GetAccountsForDevice)}: deviceAccountListResponseModel {JsonConvert.SerializeObject(deviceAccountListResponseModel)}");
+      return deviceAccountListResponseModel;
+    }
+
+    private List<KeyValuePair<string, string>> WithLimits(int fromRow, int rowCount)
+    {
+      return new List<KeyValuePair<string, string>> 
+        { new KeyValuePair<string, string>("from", fromRow.ToString()), 
+          new KeyValuePair<string, string>("limit", rowCount.ToString())
+        };
     }
   }
 }

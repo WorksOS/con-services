@@ -24,6 +24,7 @@ using VSS.TRex.SiteModels.Interfaces.Events;
 using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
+using VSS.TRex.Designs.GridFabric.Events;
 
 namespace VSS.TRex.Gateway.WebApi
 {

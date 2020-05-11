@@ -33,7 +33,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
         if (project != null)
         {
-          // CCSSSCON-207 I believe deviceType will always be Manual when shortRaptorProjectId is provided 
+          // DeviceType will always be Manual when shortRaptorProjectId is provided 
           //  If a projects account (for manual import) has only a free sub, I don't believe the UI should allow it to get here.
           //  However, if it does, then should we allow manually importing tag files into project where the account has no deviceLicenses? 
           //   Assuming no here.
@@ -56,16 +56,17 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       }
 
       // Auto or Direct import i.e. no shortRaptorProjectId
-      // try to identify the device by it's serialNumber in cws. Need to get CustomerUid (cws) and shortRaptorAssetId (localDB)
+      // try to identify the device by it's serialNumber in cws. Device must be active. Need to get CustomerUid (cws) and shortRaptorAssetId (localDB)
       var device = await dataRepository.GetDevice(request.serialNumber);
-      log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)}");
+      var deviceStatus = (device?.Code == 0) ? string.Empty : $"Not found: deviceErrorCode: {device?.Code} message: { contractExecutionStatesEnum.FirstNameWithOffset(device?.Code ?? 0)}";
+      log.LogDebug($"{nameof(AssetIdExecutor)}: Loaded device? {JsonConvert.SerializeObject(device)} {deviceStatus}");
 
       if (device?.Code == 0)
       {
-        if (String.Compare(device.RelationStatus.ToString().ToUpper(), "ACTIVE", StringComparison.OrdinalIgnoreCase) == 0)
+        if (string.Compare(device.RelationStatus.ToString().ToUpper(), "ACTIVE", StringComparison.OrdinalIgnoreCase) == 0)
         {
           shortRaptorAssetId = device.ShortRaptorAssetId ?? -1;
-          // CCSSSCON-207 If a devices account has only a free sub, then should we import tag files into it?
+          // todoJeannie If a devices account has only a free sub, then should we import tag files into it?
           int deviceLicenseTotal = await dataRepository.GetDeviceLicenses(device.CustomerUID);
           if (deviceLicenseTotal > 0)
             serviceType = serviceTypeMappings.serviceTypes.Find(st => st.name == "3D Project Monitoring").CGEnum;
@@ -80,6 +81,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       var result = !((shortRaptorAssetId == -1) && (serviceType == 0));
       return GetAssetIdResult.CreateGetAssetIdResult(result, shortRaptorAssetId, serviceType);
     }
+    
 
     protected override ContractExecutionResult ProcessEx<T>(T item)
     {

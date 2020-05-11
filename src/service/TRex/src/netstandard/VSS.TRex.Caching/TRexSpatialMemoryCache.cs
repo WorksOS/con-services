@@ -342,5 +342,45 @@ namespace VSS.TRex.Caching
     {
       _contextRemover.Dispose();
     }
+
+    /// <summary>
+    /// Invalidate subgrids associated with the design changed.
+    /// </summary>
+    public void InvalidateDueToDesignChange(Guid projectUid, Guid designUid)
+    {
+      List<ITRexSpatialMemoryCacheContext> projectContexts;
+
+      // Obtain the list of contexts for this project
+      lock (_contexts)
+      {
+        if (_projectContexts.TryGetValue(projectUid, out projectContexts))
+        {
+          // Make a clone of this list to facilitate working through the evictions without holding
+          // a long term lock on the global set of contexts
+          projectContexts = new List<ITRexSpatialMemoryCacheContext>(projectContexts);
+        }
+      }
+
+      if (projectContexts == null || projectContexts.Count <= 0)
+        return;
+
+      var numInvalidatedContexts = 0;
+      // Walk through the cloned list of contexts evicting all relevant element per the supplied mask
+      // Only hold a Contexts lock for the duration of a single context. 'Eviction' is really marking the 
+      // element as dirty to amortize the effort in executing the invalidation across cache accessor contexts.
+      foreach (var context in projectContexts)
+      {
+        lock (context)
+        {
+          if (context.FingerPrint.Contains(designUid.ToString()))
+          {
+            context.InvalidateAllSubGridsNoLock();
+            numInvalidatedContexts++;
+          }
+        }
+      }
+      Log.LogInformation($"Invalidating subgrids due to design change for Project:{projectUid},  Design{designUid}, #ContextsInvalidated:{numInvalidatedContexts}");
+    }
+
   }
 }

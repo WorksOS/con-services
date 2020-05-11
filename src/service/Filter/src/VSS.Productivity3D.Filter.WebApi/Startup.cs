@@ -96,7 +96,7 @@ namespace VSS.Productivity3D.Filter.WebApi
 
       // Required for TIDAuthentication  
       // CCSSSCON-216 temporary move to real endpoints when available
-      services.AddTransient<ICwsAccountClient, MockCwsAccountClient>();
+      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
 

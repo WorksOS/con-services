@@ -39,17 +39,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected ServiceTypeMappings serviceTypeMappings = new ServiceTypeMappings();
 
     protected static DataRepository dataRepository = null;
-    
 
-    /// <summary>
-    ///   Generates the errorlist for instantiated executor.
-    /// </summary>
-    /// <returns>List of errors with corresponding descriptions.</returns>
-    public List<Tuple<int, string>> GenerateErrorlist()
-    {
-      return (from object enumVal in Enum.GetValues(typeof(ContractExecutionStatesEnum))
-              select new Tuple<int, string>((int)enumVal, enumVal.ToString())).ToList();
-    }
+    protected readonly ContractExecutionStatesEnum contractExecutionStatesEnum = new ContractExecutionStatesEnum();
 
 
     /// <summary>
