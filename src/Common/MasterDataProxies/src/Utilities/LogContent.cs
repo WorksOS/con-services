@@ -7,7 +7,7 @@ namespace VSS.MasterData.Proxies
   {
     private static readonly Regex _regexLineEndings = new Regex(@"\r\n?|\n", RegexOptions.Compiled);
 
-    private static readonly Func<string, bool, string> ReplaceLineEndings = (str, replace) => replace ? _regexLineEndings.Replace(str, @"\r\n") : str;
+    private static readonly Func<string, bool, string> _replaceLineEndings = (str, replace) => replace ? _regexLineEndings.Replace(str, @"\r\n") : str;
 
     /// <summary>
     /// Truncates a string to the max length provided.
@@ -20,8 +20,8 @@ namespace VSS.MasterData.Proxies
       if (string.IsNullOrEmpty(str)) return str;
 
       return str.Length <= maxLength || maxLength <= 0
-        ? ReplaceLineEndings(str, replaceLineEndings)
-        : ReplaceLineEndings(str.Substring(0, maxLength) + "...", replaceLineEndings);
+        ? _replaceLineEndings(str, replaceLineEndings)
+        : _replaceLineEndings(str.Substring(0, maxLength) + "...", replaceLineEndings);
     }
   }
 }

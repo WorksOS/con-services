@@ -1,12 +1,10 @@
 ﻿using System;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -69,6 +67,5 @@ namespace VSS.MasterData.Proxies
 
       return tPaasOauthResult;
     }
-
   }
 }

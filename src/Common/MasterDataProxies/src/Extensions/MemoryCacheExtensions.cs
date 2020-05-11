@@ -16,9 +16,9 @@ namespace VSS.MasterData.Proxies
     public static MemoryCacheEntryOptions GetCacheOptions(this MemoryCacheEntryOptions opts, string cacheLifeKey, IConfigurationStore configurationStore,
       ILogger log)
     {
-      const string DEFAULT_TIMESPAN_MESSAGE = "Using default 15 mins.";
+      const string defaultTimespanMessage = "Using default 15 mins.";
 
-      string cacheLife = configurationStore.GetValueString(cacheLifeKey);
+      var cacheLife = configurationStore.GetValueString(cacheLifeKey);
 
       if (log.IsTraceEnabled())
         log.LogTrace($"Cache Life: {cacheLifeKey}: {cacheLife}");
@@ -26,13 +26,13 @@ namespace VSS.MasterData.Proxies
       if (string.IsNullOrEmpty(cacheLife))
       {
         log.LogWarning(
-          $"Your application is missing an environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
+          $"Your application is missing an environment variable {cacheLifeKey}. {defaultTimespanMessage}");
         cacheLife = "00:15:00";
       }
 
       if (!TimeSpan.TryParse(cacheLife, out var result))
       {
-        log.LogWarning($"Invalid timespan for environment variable {cacheLifeKey}. {DEFAULT_TIMESPAN_MESSAGE}");
+        log.LogWarning($"Invalid timespan for environment variable {cacheLifeKey}. {defaultTimespanMessage}");
         result = new TimeSpan(0, 15, 0);
       }
 

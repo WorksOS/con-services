@@ -39,36 +39,35 @@ namespace VSS.Common.Abstractions.Http
     /// <summary>
     /// If a header is prefixed with this, it will be considered a valid internal header
     /// </summary>
-    public static List<string> InternalHeaderPrefix => new List<string> {X_VSS_SERVICE_OVERRIDE_PREFIX};
+    public static List<string> InternalHeaderPrefix => new List<string> { X_VSS_SERVICE_OVERRIDE_PREFIX };
 
     /// <summary>
-    ///   Headers to be kept when we make a request to any services developed by our team (e.g Filter / Project)
+    /// Headers to be kept when we make a request to any services developed by our team (e.g Filter / Project)
     /// </summary>
     public static List<string> InternalHeaders => new List<string>
     {
-      X_VISION_LINK_CUSTOMER_UID,
-      X_VISION_LINK_USER_UID,
-      X_VISION_LINK_CLEAR_CACHE,
-      X_REQUEST_ID,
-      REQUEST_ID,
-      X_VSS_REQUEST_ID,
-      X_JWT_ASSERTION,
-      AUTHORIZATION // Can be removed once we are using service discovery everywhere
+        AUTHORIZATION, // Can be removed once we are using service discovery everywhere
+        REQUEST_ID,
+        X_JWT_ASSERTION,
+        X_REQUEST_ID,
+        X_VISION_LINK_CLEAR_CACHE,
+        X_VISION_LINK_CUSTOMER_UID,
+        X_VISION_LINK_USER_UID,
+        X_VSS_REQUEST_ID
     };
 
     /// <summary>
-    ///   Headers to be kept when a request is made to a service outside of our Service Infrastructure (e.g Customer API / ALK
-    ///   Maps)
+    /// Headers to be kept when a request is made to a service outside of our Service Infrastructure (e.g Customer API / ALK Maps)
     /// </summary>
     public static List<string> ExternalHeaders => new List<string>
     {
-      X_VISION_LINK_CUSTOMER_UID,
-      X_VISION_LINK_USER_UID,
-      X_VISION_LINK_CLEAR_CACHE,
-      AUTHORIZATION,
-      X_REQUEST_ID,
-      REQUEST_ID,
-      X_VSS_REQUEST_ID
+        AUTHORIZATION,
+        REQUEST_ID,
+        X_REQUEST_ID,
+        X_VISION_LINK_CLEAR_CACHE,
+        X_VISION_LINK_CUSTOMER_UID,
+        X_VISION_LINK_USER_UID,
+        X_VSS_REQUEST_ID
     };
   }
 }
