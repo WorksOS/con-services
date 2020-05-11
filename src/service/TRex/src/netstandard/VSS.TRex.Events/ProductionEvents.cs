@@ -540,6 +540,18 @@ namespace VSS.TRex.Events
       EventsChanged = false;
     }
 
+    public void RemoveFromStore(IStorageProxy storageProxy)
+    {
+      var result = storageProxy.RemoveStreamFromPersistentStore(SiteModelID, FileSystemStreamType.Events, EventChangeListPersistantFileName());
+
+      if (result != FileSystemErrorStatus.OK)
+      {
+        Log.LogInformation($"Error {result} occurred removing {EventChangeListPersistantFileName()} from project {SiteModelID}");
+      }
+
+      EventsChanged = false;
+    }
+
     /// <summary>
     /// Loads the event list by requesting its serialized representation from the persistent store and 
     /// deserializing it into the event list

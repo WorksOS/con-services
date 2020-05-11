@@ -144,7 +144,10 @@ namespace VSS.TRex.SiteModels.Executors
       _siteModel.RemoveProductionDataExistenceMapFromStorage(storageProxy);
 
       // Remove all events lists for machine from the site model
-      // TODO: Implement...
+      foreach (var machine in _siteModel.Machines)
+      {
+        _siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].RemoveMachineEventsFromPersistentStore(storageProxy);
+      }
 
       // Remove the machines list for the site model
       MachinesList.RemoveFromPersistentStore(_siteModel.ID, storageProxy);
