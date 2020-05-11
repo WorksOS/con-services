@@ -118,6 +118,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
     public new void SetupFixture()
     {
+      var mockSiteModelMetadataManager = new Mock<ISiteModelMetadataManager>();
       var mockSiteModelAttributesChangedEventSender = new Mock<ISiteModelAttributesChangedEventSender>();
 
       DIBuilder
@@ -135,6 +136,7 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Add(x => x.AddSingleton<IProductionEventsFactory>(new ProductionEventsFactory()))
         .Add(x => x.AddSingleton<IMutabilityConverter>(new MutabilityConverter()))
+        .Add(x => x.AddSingleton<ISiteModelMetadataManager>(mockSiteModelMetadataManager.Object))
 
         .Add(x => x.AddSingleton<IDesignManager>(factory => new DesignManager(StorageMutability.Mutable)))
         .Add(x => x.AddSingleton<ISurveyedSurfaceManager>(factory => new SurveyedSurfaceManager(StorageMutability.Mutable)))
