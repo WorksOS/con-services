@@ -108,10 +108,15 @@ namespace VSS.TRex.Tests.TestFixtures
 
         .Build();
 
+      // Set up a singleton storage proxy for mutable and immutable contexts for tests when there is no Ignite mock available
+      var mutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+      var immutableStorageProxy = new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
+
       DIBuilder
         .Continue()
 
         // Add the factory to create a single storage proxy instance.
+        .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => mutability == StorageMutability.Mutable ? mutableStorageProxy : immutableStorageProxy))
         .Add(x => x.AddSingleton<IStorageProxyFactory>(new StorageProxyFactory()))
         .Build();
     }

@@ -17,7 +17,8 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public IStorageProxy MutableGridStorage()
     {
-      var proxy = new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
+      var injectedProxyFactory = DIContext.Obtain<Func<StorageMutability, IStorageProxy>>();
+      var proxy = injectedProxyFactory?.Invoke(StorageMutability.Mutable) ?? new StorageProxy_Ignite_Transactional(StorageMutability.Mutable);
 
       // Establish any available immutable storage proxy into the mutable storage proxy to allow transparent
       // promotion of data changes in the mutable data store to the immutable data store.
@@ -33,7 +34,8 @@ namespace VSS.TRex.Storage
     /// <returns></returns>
     public IStorageProxy ImmutableGridStorage()
     {
-      return new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
+      var injectedProxyFactory = DIContext.Obtain<Func<StorageMutability, IStorageProxy>>();
+      return injectedProxyFactory?.Invoke(StorageMutability.Immutable) ?? new StorageProxy_Ignite_Transactional(StorageMutability.Immutable);
     }
 
     /// <summary>
