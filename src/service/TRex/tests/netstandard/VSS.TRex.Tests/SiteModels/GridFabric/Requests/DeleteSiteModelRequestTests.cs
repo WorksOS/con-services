@@ -13,6 +13,7 @@ using VSS.TRex.SiteModels;
 using VSS.TRex.SiteModels.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -292,12 +293,38 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
         Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
       };
 
+      AddApplicationGridRouting();
+
       var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
       model.Should().NotBeNull();
 
       SaveAndVerifyNotEmpty(model);
 
+      // Delete project requests must be made to the mutabnle grid
+      model.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       DeleteTheModel(model);
+    }
+
+    [Fact]
+    public void DeleteModel_WithTagFile_FailWithIncorrectGrid()
+    {
+      var tagFiles = new[]
+      {
+        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
+      };
+
+      AddApplicationGridRouting();
+
+      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
+      model.Should().NotBeNull();
+
+      SaveAndVerifyNotEmpty(model);
+
+      var request = new DeleteSiteModelRequest();
+      var response = request.Execute(new DeleteSiteModelRequestArgument { ProjectID = model.ID });
+
+      response.Result.Should().Be(DeleteSiteModelResult.RequestNotMadeToMutableGrid);
     }
   }
 }

@@ -23,12 +23,17 @@ namespace VSS.TRex.Storage
 
     private static readonly bool UseAsyncTasksForStorageProxyIgniteTransactionalCommits = DIContext.Obtain<IConfigurationStore>()
       .GetValueBool("USE_SYNC_TASKS_FOR_STORAGE_PROXY_IGNITE_TRANSACTIONAL_COMMITS", true);
+
+    private static long InternalIDCounter = 0;
+    private long IDCounter = 0;
+
     /// <summary>
     /// Constructor that obtains references to the mutable and immutable, spatial and non-spatial caches present in the grid
     /// </summary>
     /// <param name="mutability"></param>
     public StorageProxy_Ignite_Transactional(StorageMutability mutability) : base(mutability)
     {
+      IDCounter = InternalIDCounter++;
     }
 
     private bool CommitAsync(out int numDeleted, out int numUpdated, out long numBytesWritten)

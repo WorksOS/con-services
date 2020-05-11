@@ -719,11 +719,9 @@ Result = false;
 
       if (existenceMap != null)
       {
-        using (var stream = existenceMap.ToStream())
-        {
-          result = storageProxy.WriteStreamToPersistentStore(ID, SubGridExistenceMapFileName,
-            FileSystemStreamType.SubGridExistenceMap, stream, existenceMap);
-        }
+        using var stream = existenceMap.ToStream();
+        result = storageProxy.WriteStreamToPersistentStore(ID, SubGridExistenceMapFileName,
+          FileSystemStreamType.SubGridExistenceMap, stream, existenceMap);
       }
 
       return result;

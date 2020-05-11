@@ -183,11 +183,9 @@ namespace VSS.TRex.Tests.TestFixtures
       {
         // Ignite behaviour is writing an existing key updates the value with no error
         if (mockCacheDictionary.ContainsKey(key))
-        {
-          mockCacheDictionary.Remove(key);
-        }
-
-        mockCacheDictionary.Add(key, value);
+          mockCacheDictionary[key] = value;
+        else
+          mockCacheDictionary.Add(key, value);
       });
 
       mockCache.Setup(x => x.PutIfAbsent(It.IsAny<TK>(), It.IsAny<TV>())).Returns((TK key, TV value) =>
@@ -221,7 +219,14 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockCache.Setup(x => x.PutAll(It.IsAny<IEnumerable<KeyValuePair<TK, TV>>>())).Callback((IEnumerable<KeyValuePair<TK, TV>> values) =>
       {
-        values.ForEach(value => mockCacheDictionary[value.Key] = value.Value);
+        values.ForEach(value =>
+        {
+          // Ignite behaviour is writing an existing key updates the value with no error
+          if (mockCacheDictionary.ContainsKey(value.Key))
+            mockCacheDictionary[value.Key] = value.Value;
+          else
+            mockCacheDictionary.Add(value.Key, value.Value);
+        });
       });
 
       CacheDictionary.Add(cacheName, mockCache.Object);
