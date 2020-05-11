@@ -28,7 +28,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
     public DeleteSiteModelRequestTests()
     {
-      // This reset all modified content in the Ignite mocks between tests
+      // This resets all modified content in the Ignite mocks between tests
       DITAGFileAndSubGridRequestsWithIgniteFixture.ResetDynamicMockedIgniteContent();
     }
 

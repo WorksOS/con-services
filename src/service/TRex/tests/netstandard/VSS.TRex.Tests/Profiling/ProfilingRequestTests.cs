@@ -92,6 +92,8 @@ namespace VSS.TRex.Tests.Profiling
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMinMaterialTemperature.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 652);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMaxMaterialTemperature.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 655);
 
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
+
       //Set up cell passes
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass
@@ -108,6 +110,7 @@ namespace VSS.TRex.Tests.Profiling
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       return siteModel;

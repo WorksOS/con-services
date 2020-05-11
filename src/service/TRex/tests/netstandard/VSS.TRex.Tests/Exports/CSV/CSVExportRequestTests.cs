@@ -15,12 +15,15 @@ using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Filters;
+using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.Arguments;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
 using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
+using VSS.TRex.SubGridTrees.Server;
+using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.Types;
 
 namespace VSS.TRex.Tests.Exports.CSV
@@ -77,6 +80,7 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID));
@@ -117,6 +121,18 @@ namespace VSS.TRex.Tests.Exports.CSV
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses(siteModel,
         SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses);
+
+      var invalidatedStreams = new List<ISubGridSpatialAffinityKey>();
+      siteModel.ExistenceMap.ScanAllSubGrids(leaf =>
+      {
+        if (leaf is IServerLeafSubGrid serverLeaf)
+          (serverLeaf.Owner as ServerSubGridTree).SaveLeafSubGrid(serverLeaf, siteModel.PrimaryStorageProxy, invalidatedStreams);
+
+        return true;
+      });
+
+      siteModel.PrimaryStorageProxy.Commit();
+
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       var response = await request.ExecuteAsync(SimpleCSVExportRequestArgument(siteModel.ID, OutputTypes.PassCountAllPasses));

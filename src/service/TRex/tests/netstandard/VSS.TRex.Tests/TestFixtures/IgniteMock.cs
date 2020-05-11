@@ -174,26 +174,36 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockCache.Setup(x => x.Get(It.IsAny<TK>())).Returns((TK key) =>
       {
-        if (mockCacheDictionary.TryGetValue(key, out var value))
-          return value;
+        lock (mockCacheDictionary)
+        {
+          if (mockCacheDictionary.TryGetValue(key, out var value))
+            return value;
+        }
+
         throw new KeyNotFoundException($"Key {key} not found in mock cache");
       });
 
       mockCache.Setup(x => x.Put(It.IsAny<TK>(), It.IsAny<TV>())).Callback((TK key, TV value) =>
       {
-        // Ignite behaviour is writing an existing key updates the value with no error
-        if (mockCacheDictionary.ContainsKey(key))
-          mockCacheDictionary[key] = value;
-        else
-          mockCacheDictionary.Add(key, value);
+        lock (mockCacheDictionary)
+        {
+          // Ignite behaviour is writing an existing key updates the value with no error
+          if (mockCacheDictionary.ContainsKey(key))
+            mockCacheDictionary[key] = value;
+          else
+            mockCacheDictionary.Add(key, value);
+        }
       });
 
       mockCache.Setup(x => x.PutIfAbsent(It.IsAny<TK>(), It.IsAny<TV>())).Returns((TK key, TV value) =>
       {
-        if (!mockCacheDictionary.ContainsKey(key))
+        lock (mockCacheDictionary)
         {
-          mockCacheDictionary.Add(key, value);
-          return true;
+          if (!mockCacheDictionary.ContainsKey(key))
+          {
+            mockCacheDictionary.Add(key, value);
+            return true;
+          }
         }
 
         return false;
@@ -203,15 +213,22 @@ namespace VSS.TRex.Tests.TestFixtures
 
       mockCache.Setup(x => x.RemoveAll(It.IsAny<IEnumerable<TK>>())).Callback((IEnumerable<TK> keys) =>
       {
-        keys.ForEach(key => mockCacheDictionary.Remove(key));
+        lock (mockCacheDictionary)
+        {
+          keys.ForEach(key => mockCacheDictionary.Remove(key));
+        }
       });
 
       mockCache.Setup(x => x.Remove(It.IsAny<TK>())).Returns((TK key) =>
       {
-        if (mockCacheDictionary.ContainsKey(key))
+        lock (mockCacheDictionary)
         {
-          mockCacheDictionary.Remove(key);
-          return true;
+          if (mockCacheDictionary.ContainsKey(key))
+          {
+            mockCacheDictionary.Remove(key);
+
+            return true;
+          }
         }
 
         return false;

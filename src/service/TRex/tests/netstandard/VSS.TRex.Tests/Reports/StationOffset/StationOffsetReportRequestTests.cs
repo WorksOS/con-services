@@ -116,9 +116,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
       // vibrationState is needed to get cmv values
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(baseTime, VibrationState.On);
       siteModel.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(baseTime, AutoVibrationState.Manual);
+
+      siteModel.MachinesTargetValues[0].SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass
@@ -132,6 +135,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       return siteModel;

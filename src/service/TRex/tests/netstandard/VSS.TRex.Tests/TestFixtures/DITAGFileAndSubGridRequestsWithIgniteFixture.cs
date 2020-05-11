@@ -42,6 +42,7 @@ using VSS.TRex.SubGrids.Responses;
 using VSS.TRex.Volumes.Executors.Tasks;
 using VSS.TRex.Volumes.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Events;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Tests.TestFixtures
 {
@@ -143,8 +144,16 @@ namespace VSS.TRex.Tests.TestFixtures
       // Recreate procy caches based on the newly created cache contexts
       DITAGFileAndSubGridRequestsFixture.AddProxyCacheFactoriesToDI();
 
+
+
       // Create a new site models instance so that it recreates storage contexts
-      DIBuilder.Continue().Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels())).Complete();
+      // Also remove the singleton proxy cache factory injected as a part of the DITagFileFixture. This fixture supplies a 
+      // full ignite mock with standard storage proxy factory
+      DIBuilder
+        .Continue()
+        .Add(x => x.AddSingleton<ISiteModels>(new TRex.SiteModels.SiteModels()))
+        .Add(x => x.AddSingleton<Func<StorageMutability, IStorageProxy>>(factory => mutability => null))
+        .Complete();
     }
 
     /// <summary>

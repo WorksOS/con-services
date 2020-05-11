@@ -48,6 +48,8 @@ namespace VSS.TRex.Tests.LiftAnalysis
       siteModel.MachinesTargetValues[bulldozerMachineIndex].LayerIDStateEvents.PutValueAtDate(baseTime.AddMinutes(5).AddSeconds(1), LAYER_ID2);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].StartEndRecordedDataEvents.PutValueAtDate(baseTime.AddMinutes(11), ProductionEventType.EndEvent);
 
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
+
       var cellPasses = Enumerable.Range(1, 10).Select(x =>
         new CellPass
         {
@@ -60,6 +62,7 @@ namespace VSS.TRex.Tests.LiftAnalysis
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       return siteModel;
