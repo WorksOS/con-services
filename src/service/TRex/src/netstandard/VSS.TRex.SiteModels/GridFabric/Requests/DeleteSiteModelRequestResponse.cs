@@ -13,6 +13,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
     private static byte VERSION_NUMBER = 1;
 
     public DeleteSiteModelResult Result;
+    public long NumRemovedElements;
 
     public DeleteSiteModelRequestResponse()
     {
@@ -27,6 +28,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.EmitVersionByte(writer, VERSION_NUMBER);
 
       writer.WriteInt((int)Result);
+      writer.WriteLong(NumRemovedElements);
     }
 
     /// <summary>
@@ -38,6 +40,7 @@ namespace VSS.TRex.SiteModels.GridFabric.Requests
       VersionSerializationHelper.CheckVersionByte(reader, VERSION_NUMBER);
 
       Result = (DeleteSiteModelResult)reader.ReadInt();
+      NumRemovedElements = reader.ReadLong();
     }
   }
 }

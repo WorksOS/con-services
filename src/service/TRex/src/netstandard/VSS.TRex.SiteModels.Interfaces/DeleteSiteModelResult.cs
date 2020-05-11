@@ -6,7 +6,9 @@
     UnknownError,
     UnhandledException,
     RequestNotMadeToMutableGrid,
-    FailedToRemoveSubGridSegment,
-    FailedToRemoveSubGridDirectory,
+    FailedToRemoveSubGrids,
+    FailedToRemoveProjectMetadata,
+    FailedToCommitPrimaryElementRemoval,
+    FailedToCommitExistenceMapRemoval
   }
 }

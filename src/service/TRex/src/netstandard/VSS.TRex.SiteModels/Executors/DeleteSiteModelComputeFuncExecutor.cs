@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Alignments.Interfaces;
 using VSS.TRex.CoordinateSystems;
@@ -9,6 +10,7 @@ using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
+using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.SubGridTrees.Server;
 using VSS.TRex.SubGridTrees.Server.Interfaces;
 using VSS.TRex.SurveyedSurfaces.Interfaces;
@@ -57,8 +59,11 @@ namespace VSS.TRex.SiteModels.Executors
 
       if (Response.Result != DeleteSiteModelResult.OK)
       {
+        Log.LogInformation($"Deleting site model {_siteModel.ID}: Initial execution response state not OK ({Response.Result}) - aborting request");
         return false;
       }
+
+      Log.LogInformation($"Deleting site model {_siteModel.ID}: Initiating");
 
       // Instruct the site model to mark itself for deletion. Once completed, the site model will no longer be returned 
       // by requests to SiteModels.GetSiteModel()
@@ -69,7 +74,6 @@ namespace VSS.TRex.SiteModels.Executors
 
       // Begin executing the deletion process. The aspects to be deleted are, in order:
       // All sub grids containing processed cell data
-      // The existence map for the spatial sub grids
       // Event lists for all machines in the site model
       // All machines for the site model
       // All proofing runs for the site model
@@ -79,74 +83,55 @@ namespace VSS.TRex.SiteModels.Executors
       // The surveyed surfaces store for the site model
       // The alignments store for the site model
       // The coordinate system for the site model
+      // The existence map for the spatial sub grids [this is done late to aid fault recovery]
       // The base metadata for the site model
       // The persistent store for the site model itself
 
-      //*************************************************
-      // Remove the segments for all sub grid directories
-      // Todo: The implementation could be refactored into ServerSubGridTree
+      //*********************************************************
+      // Remove all sub grids (directory and segment information)
+      //*********************************************************
 
-      var subGridSegmentRemovalSuccessful = true;
-      _siteModel.Grid.ScanAllSubGrids(leaf =>
+      var subGridRemovalSuccessful = true;
+
+      _siteModel.ExistenceMap.ScanAllSetBitsAsSubGridAddresses(address =>
       {
-        if (leaf is IServerLeafSubGrid serverLeaf)
+        var filename = ServerSubGridTree.GetLeafSubGridFullFileName(address);
+        var leaf = new ServerSubGridTreeLeaf(_siteModel.Grid, null, SubGridTreeConsts.SubGridTreeLevels, StorageMutability.Mutable)
         {
-          serverLeaf.Directory.SegmentDirectory.ForEach(segmentInfo =>
+          OriginX = address.X,
+          OriginY = address.Y
+        };
+        leaf.LoadDirectoryFromFile(storageProxy, filename);
+
+        leaf.Directory.SegmentDirectory.ForEach(segmentInfo =>
+        {
+          var segmentFilename = ServerSubGridTree.GetLeafSubGridSegmentFullFileName(leaf.OriginAsCellAddress(), segmentInfo);
+          if (!leaf.RemoveSegmentFromStorage(storageProxy, segmentFilename, segmentInfo))
           {
-            var filename = ServerSubGridTree.GetLeafSubGridSegmentFullFileName(leaf.OriginAsCellAddress(), segmentInfo);
-            serverLeaf.RemoveSegmentFromStorage(storageProxy, filename, segmentInfo);
-          });
-        }
-        else
-        {
-          Log.LogError($"Failed to obtain server sub grid leaf from ISubGrid: {leaf.Moniker()}");
-          subGridSegmentRemovalSuccessful = false;
-          return false;
-        }
+            Log.LogError($"Failed to remove segment {segmentFilename} sub grid: {leaf.Moniker()}");
+            subGridRemovalSuccessful = false;
+          }
+        });
 
-        return true;
+        if (!leaf.RemoveDirectoryFromStorage(storageProxy, filename))
+        {
+          Log.LogError($"Failed to remove directory for server sub grid leaf: {leaf.Moniker()}");
+          subGridRemovalSuccessful = false;
+        }
       });
 
-      if (!subGridSegmentRemovalSuccessful)
+      if (!subGridRemovalSuccessful)
       {
+        Response.Result = DeleteSiteModelResult.FailedToRemoveSubGrids;
         return false;
       }
 
-      // ****************************************
-      // Remove the directories for all sub grids
-      // Todo: The implementation could be refactored into ServerSubGridTree
-
-      var subGridDirectoryRemovalSuccessful = true;
-      _siteModel.Grid.ScanAllSubGrids(leaf =>
-      {
-        if (leaf is IServerLeafSubGrid serverLeaf)
-        {
-          var filename = ServerSubGridTree.GetLeafSubGridFullFileName(leaf.OriginAsCellAddress());
-          serverLeaf.RemoveDirectoryFromStorage(storageProxy, filename);
-        }
-        else
-        {
-          Log.LogError($"Failed to obtain server sub grid leaf from ISubGrid: {leaf.Moniker()}");
-          subGridDirectoryRemovalSuccessful = false;
-          return false;
-        }
-
-        return true;
-      });
-
-      if (!subGridDirectoryRemovalSuccessful)
-      {
-        return false;
-      }
-
-      // ************************
-      // Remove the existence map
-      _siteModel.RemoveProductionDataExistenceMapFromStorage(storageProxy);
-
+      // *******************************************************
       // Remove all events lists for machine from the site model
+      // *******************************************************
       foreach (var machine in _siteModel.Machines)
       {
-        _siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex].RemoveMachineEventsFromPersistentStore(storageProxy);
+        _siteModel.MachinesTargetValues[machine.InternalSiteModelMachineIndex]?.RemoveMachineEventsFromPersistentStore(storageProxy);
       }
 
       // Remove the machines list for the site model
@@ -171,19 +156,62 @@ namespace VSS.TRex.SiteModels.Executors
       DIContext.Obtain<IAlignmentManager>().Remove(_siteModel.ID, storageProxy);
 
       // Remove the coordinate system from the site model
-      // TODO: CSIB add/remove/read support could be wrapped into a more central location (currently here, Add CSIB and SiteModel class)
+      // TODO: CSIB add/remove/read support could be wrapped into a more central location (currently here, Add CSIB activity and SiteModel class)
       storageProxy.RemoveStreamFromPersistentStore(_siteModel.ID, FileSystemStreamType.CoordinateSystemCSIB, CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName);
 
-      // Remove the site model meta data entry for the site model
-      // TODO: This is a non transacted operation and should be facaded with the storage proxy cache pattern
-      DIContext.Obtain<ISiteModelMetadataManager>().Remove(_siteModel.ID);
+      // Commit all assembled deletion stages before removing existence map and metadata. This helps recovery from errors
+      // in the commit process resulting in partial deletion.
 
+      if (!storageProxy.Commit(out var numDeleted, out _, out _))
+      {
+        Response.Result = DeleteSiteModelResult.FailedToCommitExistenceMapRemoval;
+        Log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to commit primary element removal");
+        return false;
+      }
+
+      Response.NumRemovedElements = numDeleted;
+
+      Log.LogInformation($"Deleting site model {_siteModel.ID}: Primary commit removed {numDeleted} elements");
+
+      // Remove the site model meta data entry for the site model
+      // TODO: This is a non transacted operation and should be facaded with the storage proxy cache pattern as an internal implementation concern
+      DIContext.Obtain<ISiteModelMetadataManager>().Remove(_siteModel.ID);
+      Response.NumRemovedElements++;
+
+      //*************************
+      // Remove the existence map
+      //*************************
+      _siteModel.RemoveProductionDataExistenceMapFromStorage(storageProxy);
+
+      if (!storageProxy.Commit(out _, out _, out _))
+      {
+        Response.Result = DeleteSiteModelResult.FailedToCommitExistenceMapRemoval;
+        Log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to commit existence map removal");
+        return false;
+      }
+
+      Response.NumRemovedElements++;
+
+      //************************************************************
       // Remove the site model persistent storage for the site model
+      //************************************************************
       var productionDataXmlResult = _siteModel.RemoveMetadataFromPersistentStore(storageProxy);
       if (!productionDataXmlResult)
       {
-        Log.LogError($"Unable to remove site model persistent store");
+        Response.Result = DeleteSiteModelResult.FailedToRemoveProjectMetadata;
+        Log.LogError($"Deleting site model {_siteModel.ID}: Unable to remove site model persistent store");
+        return false;
       }
+
+      if (!storageProxy.Commit(out _, out _, out _))
+      {
+        Log.LogInformation($"Deleting site model {_siteModel.ID}: Failed to commit site model metadata removal");
+        return false;
+      }
+
+      Response.NumRemovedElements++;
+
+      Log.LogInformation($"Deleting site model {_siteModel.ID}: Complete");
 
       Response.Result = DeleteSiteModelResult.OK;
       return true;
