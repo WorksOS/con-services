@@ -3,16 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
-using VSS.WebApi.Common;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
@@ -20,21 +16,14 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
   /// <summary>
   /// Notification controller for tag file errors and misc alarms
   /// </summary>
-  public class NotificationController : BaseController
+  public class NotificationController : BaseController<NotificationController>
   {
-    private readonly ILogger log;
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public NotificationController(ILoggerFactory logger, IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      ITPaaSApplicationAuthentication authorization)
-      : base(logger, configStore, httpContextAccessor, cwsAccountClient, projectProxy, deviceProxy, authorization)
-    {
-      log = logger.CreateLogger<NotificationController>();
-    }
-    
+    public NotificationController()
+    { }
+
     /// <summary>
     /// Writes to the log for the given tag file processing error. 
     /// </summary>
@@ -48,13 +37,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV1Request request)
     {
-      log.LogDebug("PostTagFileProcessingErrorV1: request:{0}", JsonConvert.SerializeObject(request));
+      Logger.LogDebug("PostTagFileProcessingErrorV1: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders)
         .Process(request) as TagFileProcessingErrorResult;
-      
-      log.LogDebug("PostTagFileProcessingErrorV1: result:{0}", JsonConvert.SerializeObject(result));
+
+      Logger.LogDebug("PostTagFileProcessingErrorV1: result:{0}", JsonConvert.SerializeObject(result));
       return result;
     }
 
@@ -73,7 +62,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public TagFileProcessingErrorResult PostTagFileProcessingError([FromBody] TagFileProcessingErrorV2Request request)
     {
-      log.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
+      Logger.LogDebug("PostTagFileProcessingErrorV2: request:{0}", JsonConvert.SerializeObject(request));
 
       if (!request.assetId.HasValue || request.assetId <= 0)
       {
@@ -84,13 +73,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 
       var v1Request = TagFileProcessingErrorV1Request.CreateTagFileProcessingErrorRequest(request.assetId.Value, request.tagFileName,
           (int)request.error);
-      log.LogDebug("PostTagFileProcessingErrorV2: v1Request:{0}", JsonConvert.SerializeObject(v1Request));
+      Logger.LogDebug("PostTagFileProcessingErrorV2: v1Request:{0}", JsonConvert.SerializeObject(v1Request));
       v1Request.Validate();
 
-      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders)
+      var result = RequestExecutorContainer.Build<TagFileProcessingErrorV1Executor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders)
         .Process(v1Request) as TagFileProcessingErrorResult;
 
-      log.LogDebug("PostTagFileProcessingErrorV2: v1result:{0}", JsonConvert.SerializeObject(result));
+      Logger.LogDebug("PostTagFileProcessingErrorV2: v1result:{0}", JsonConvert.SerializeObject(result));
       return result;
     }
 
@@ -101,7 +90,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public ContractExecutionResult PostAppAlarm([FromBody] AppAlarmMessage request)
     {
-      log.LogWarning("PostAppAlarm: request:{0}", JsonConvert.SerializeObject(request));
+      Logger.LogWarning("PostAppAlarm: request:{0}", JsonConvert.SerializeObject(request));
       request.Validate();
       return new ContractExecutionResult();
     }

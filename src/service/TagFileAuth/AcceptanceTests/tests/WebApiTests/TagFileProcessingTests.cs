@@ -13,7 +13,7 @@ namespace WebApiTests
     private readonly Msg msg = new Msg();
 
     [Fact]
-    public void NoValidCells_InValidPosition()
+    public void Notification_NoValidCells_InValidPosition()
     {
       msg.Title("TagfileError Test 1", "TagFile Error NoValidCells InValidPosition");
       var ts = new TestSupport { IsPublishToWebApi = true};
@@ -22,7 +22,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void NoValidCells_OnGroundFlagNotSet()
+    public void Notification_NoValidCells_OnGroundFlagNotSet()
     {
       msg.Title("TagfileError Test 2", "TagFileError NoValidCells OnGroundFlag NotSet");
       var ts = new TestSupport { IsPublishToWebApi = true };
@@ -31,7 +31,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void ProjectID_InvalidLLHNEPosition()
+    public void Notification_ProjectID_InvalidLLHNEPosition()
     {
       msg.Title("TagfileError Test 3", "TagFileError ProjectID Invalid LLH NE Position");
       var ts = new TestSupport { IsPublishToWebApi = true };
@@ -40,7 +40,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void ProjectID_MultipleProjects()
+    public void Notification_ProjectID_MultipleProjects()
     {
       msg.Title("TagfileError Test 4", "TagFileError ProjectID MultipleProjects");
       var ts = new TestSupport { IsPublishToWebApi = true };
@@ -49,7 +49,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void ProjectID_NoMatchingArea()
+    public void Notification_ProjectID_NoMatchingArea()
     {
       msg.Title("TagfileError Test 5", "TagFileError ProjectID No Matching Area");
       var ts = new TestSupport { IsPublishToWebApi = true };
@@ -58,7 +58,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void ProjectID_NoMatchingDateTime()
+    public void Notification_ProjectID_NoMatchingDateTime()
     {
       msg.Title("TagfileError Test 6", "TagFileError ProjectID NoMatching DateTime");
       var ts = new TestSupport { IsPublishToWebApi = true };
@@ -67,7 +67,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void UnknownCell()
+    public void Notification_UnknownCell()
     {
       msg.Title("TagfileError Test 7", "TagFileError UnknownCell");
       var ts = new TestSupport { IsPublishToWebApi = true };
@@ -76,7 +76,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void UnknownProject()
+    public void Notification_UnknownProject()
     {
       msg.Title("TagfileError Test 8", "TagFileError UnknownProject");
       var ts = new TestSupport { IsPublishToWebApi = true };
@@ -85,7 +85,7 @@ namespace WebApiTests
     }
 
     [Fact]
-    public void CoordConversion_Failure()
+    public void Notification_CoordConversion_Failure()
     {
       msg.Title("TagfileError Test 13", "TagFileError CoordConversion Failure");
       var ts = new TestSupport { IsPublishToWebApi = true };

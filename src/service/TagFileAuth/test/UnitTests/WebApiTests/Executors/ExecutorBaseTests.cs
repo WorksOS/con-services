@@ -12,6 +12,7 @@ using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Serilog.Extensions;
+using VSS.WebApi.Common;
 
 namespace WebApiTests.Executors
 {
@@ -22,9 +23,10 @@ namespace WebApiTests.Executors
 
     protected IServiceProvider ServiceProvider;
     protected Mock<IProjectInternalProxy> projectProxy;
+    protected Mock<ITPaaSApplicationAuthentication> authorization;
     protected Mock<ICwsAccountClient> cwsAccountClient;
     protected Mock<IDeviceInternalProxy> deviceProxy;
-    protected IDictionary<string, string> customHeaders;
+    protected IDictionary<string, string> requestCustomHeaders;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected ILoggerFactory loggerFactory;
 
@@ -45,8 +47,9 @@ namespace WebApiTests.Executors
       projectProxy = new Mock<IProjectInternalProxy>();
       cwsAccountClient = new Mock<ICwsAccountClient>();
       deviceProxy = new Mock<IDeviceInternalProxy>();
-      customHeaders = new Dictionary<string, string>();
+      requestCustomHeaders = new Dictionary<string, string>();
       loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      authorization = new Mock<ITPaaSApplicationAuthentication>();
     }
   
   }

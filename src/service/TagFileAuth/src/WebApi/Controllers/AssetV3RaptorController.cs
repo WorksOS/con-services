@@ -3,34 +3,23 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
-using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   /// <summary>
   /// Asset controller for C2S2 solution, to support Raptor.
   /// </summary>
-  public class AssetV3RaptorController : BaseController
+  public class AssetV3RaptorController : BaseController<AssetV3RaptorController>
   {
-    private readonly ILogger _log;
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public AssetV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore, IHttpContextAccessor httpContextAccessor,
-      ICwsAccountClient cwsccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      ITPaaSApplicationAuthentication authorization)
-      : base(logger, configStore, httpContextAccessor, cwsccountClient, projectProxy, deviceProxy, authorization)
-    {
-      _log = logger.CreateLogger<AssetV3RaptorController>();
-    }
+    public AssetV3RaptorController()
+    { }
 
     /// <summary>
     ///   Gets the shortRaptorAssetId and serviceType satisfying requirements
@@ -49,13 +38,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetAssetIdResult> GetAssetId([FromBody] GetAssetIdRequest request)
     {
-      _log.LogDebug($"{nameof(GetAssetId)}: request: {JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"{nameof(GetAssetId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _customHeaders);
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetAssetIdResult;
 
-      _log.LogResult(nameof(GetAssetId), request: request, result: result);
+      Logger.LogResult(nameof(GetAssetId), request: request, result: result);
       return result;
     }
   }

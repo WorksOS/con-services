@@ -10,6 +10,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Enums;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
+using VSS.WebApi.Common;
 using ContractExecutionStatesEnum = VSS.Productivity3D.TagFileAuth.Models.ContractExecutionStatesEnum;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
@@ -24,7 +25,8 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     protected ILogger log;
     private IConfigurationStore configStore;
-    protected IDictionary<string, string> customHeaders;
+    private ITPaaSApplicationAuthentication authorization;
+    private IDictionary<string, string> requestCustomHeaders;
 
     private ICwsAccountClient cwsAccountClient;
     private IProjectInternalProxy projectProxy;
@@ -74,13 +76,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,      
+    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      IDictionary<string, string> customHeaders) 
+      IDictionary<string, string> requestCustomHeaders) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, customHeaders = customHeaders};
-        dataRepository = new DataRepository(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, customHeaders);
+      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders};
+        dataRepository = new DataRepository(logger, configStore, authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
       return executor;
     }
     

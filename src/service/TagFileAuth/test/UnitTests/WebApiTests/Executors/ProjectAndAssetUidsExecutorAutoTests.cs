@@ -70,8 +70,8 @@ namespace WebApiTests.Executors
       var expectedGetProjectAndAssetUidsResult = new GetProjectAndAssetUidsResult("896c7a36-e079-4b67-a79c-b209398f01ca", "b00c62b3-4eee-472e-9814-c31379e94bd5");
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
-        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, customHeaders);
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore, authorization.Object,
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       executor.CustomRadioSerialMapper = ServiceProvider.GetService<ICustomRadioSerialProjectMap>();
 
       var result = await executor.ProcessAsync(getProjectAndAssetUidsRequest) as GetProjectAndAssetUidsResult;
@@ -278,8 +278,8 @@ namespace WebApiTests.Executors
 
 
       var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(
-        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore,
-        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, customHeaders);
+        _loggerFactory.CreateLogger<ProjectAndAssetUidsExecutorManualTests>(), ConfigStore, authorization.Object,
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       executor.CustomRadioSerialMapper = customRadioSerialMapper;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;

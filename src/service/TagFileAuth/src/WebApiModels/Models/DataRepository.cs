@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,13 @@ using System.Threading.Tasks;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
+using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 {
@@ -28,7 +31,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
     private readonly ICwsAccountClient _cwsAccountClient;
 
-    // We need to use ProjectSvc IProjectProxy as thats where the project data is
+    // We need to use ProjectSvc IProjectProxy as that's where the project data is
     private readonly IProjectInternalProxy _projectProxy;
 
     // We need to use ProjectSvc IDeviceProxy 
@@ -36,18 +39,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceInternalProxy _deviceProxy;
 
-    private IDictionary<string, string> _customHeaders;
+    private IDictionary<string, string> _mergedCustomHeaders;
 
-    public DataRepository(ILogger logger, IConfigurationStore configStore,
+    public DataRepository(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      IDictionary<string, string> customHeaders )
+      IDictionary<string, string> requestCustomHeaders )
     {
       _log = logger;
       _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
-      _customHeaders = customHeaders;
+      _mergedCustomHeaders = authorization.CustomHeaders().MergeDifference(requestCustomHeaders);
     }
 
     #region account
@@ -59,7 +62,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), _customHeaders))?.Total ?? 0;
+        return (await _cwsAccountClient.GetDeviceLicenses(new Guid(customerUid), _mergedCustomHeaders))?.Total ?? 0;
       }
       catch (Exception e)
       {
@@ -80,7 +83,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _projectProxy.GetProject(shortRaptorProjectId, _customHeaders);
+        return await _projectProxy.GetProject(shortRaptorProjectId, _mergedCustomHeaders);
       }
       catch (Exception e)
       {
@@ -96,7 +99,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _projectProxy.GetProject(projectUid, _customHeaders);
+        return await _projectProxy.GetProject(projectUid, _mergedCustomHeaders);
       }
       catch (Exception e)
       {
@@ -112,7 +115,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        var p = await _projectProxy.GetProjects(customerUid, _customHeaders);
+        var p = await _projectProxy.GetProjects(customerUid, _mergedCustomHeaders);
         if (p != null)
         {
           return p
@@ -136,7 +139,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
 
-        var projects = await _deviceProxy.GetProjectsForDevice(deviceUid, _customHeaders);
+        var projects = await _deviceProxy.GetProjectsForDevice(deviceUid, _mergedCustomHeaders);
         if (projects?.Code != 0)
         {
           return projects.ProjectDescriptors
@@ -163,7 +166,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _customHeaders));
+        accountProjects = (await _projectProxy.GetIntersectingProjects(project.CustomerUID, latitude, longitude, project.ProjectUID, _mergedCustomHeaders));
         // should not be possible to get > 1 as call was limited by the projectUid       
         if (accountProjects?.Code == 0 && accountProjects.ProjectDescriptors.Count() != 1)
           return accountProjects;
@@ -180,7 +183,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
       try
       {
-        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _customHeaders));
+        var projectsAssociatedWithDevice = (await _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders));
         if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
         {
           var result = new ProjectDataResult();
@@ -210,7 +213,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       // what projects does this customer have which intersect the lat/long?
       try
       {
-        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders: _customHeaders).Result;
+        accountProjects = _projectProxy.GetIntersectingProjects(device.CustomerUID, latitude, longitude, customHeaders: _mergedCustomHeaders).Result;
         if (accountProjects?.Code != 0 || !accountProjects.ProjectDescriptors.Any())
         {
           errorCode = 44;
@@ -228,7 +231,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         var intersectingProjectsForDevice = new ProjectDataResult();
-        var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _customHeaders).Result;
+        var projectsAssociatedWithDevice = _deviceProxy.GetProjectsForDevice(device.DeviceUID, _mergedCustomHeaders).Result;
         if (projectsAssociatedWithDevice?.Code == 0 && projectsAssociatedWithDevice.ProjectDescriptors.Any())
         {
           var intersection = projectsAssociatedWithDevice.ProjectDescriptors.Select(dp => dp.ProjectUID).Intersect(accountProjects.ProjectDescriptors.Select(ap => ap.ProjectUID));
@@ -260,7 +263,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _deviceProxy.GetDevice(serialNumber, _customHeaders);
+        return await _deviceProxy.GetDevice(serialNumber, _mergedCustomHeaders);
       }
       catch (Exception e)
       {
@@ -276,7 +279,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
         return null;
       try
       {
-        return await _deviceProxy.GetDevice(shortRaptorAssetId, _customHeaders);
+        return await _deviceProxy.GetDevice(shortRaptorAssetId, _mergedCustomHeaders);
       }
       catch (Exception e)
       {
