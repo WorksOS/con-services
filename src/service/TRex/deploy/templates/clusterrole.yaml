@@ -1,7 +1,7 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ template "trex.name" . }}-clusterrole
+  name: {{ template "trex.name" . }}-{{ .Values.environment }}-clusterrole
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
