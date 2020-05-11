@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -34,11 +32,10 @@ namespace VSS.MasterData.Proxies
     public Task<AssetSummary> GetAssetSummary(string assetUid, IDictionary<string, string> customHeaders = null)
     {
       return GetMasterDataItemServiceDiscovery<AssetSummary>("details/summary", assetUid, null,
-        customHeaders, 
+        customHeaders,
         new List<KeyValuePair<string, string>>{new KeyValuePair<string, string>("assetUid", assetUid),
           new KeyValuePair<string, string>( "date",DateTime.UtcNow.ToString("M/d/yy"))
         });
     }
   }
-  
 }

@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Proxies.Interfaces;
 
@@ -38,8 +35,6 @@ namespace VSS.MasterData.Proxies
       var payloadToSend = JsonConvert.SerializeObject(emailModel);
       log.LogDebug($"SendEmail: {JsonConvert.SerializeObject(emailModel)}");
       return GetMasterDataStreamItemServiceDiscoveryNoCache("", customHeaders, HttpMethod.Post, payload: payloadToSend);
-
-
     }
   }
 }

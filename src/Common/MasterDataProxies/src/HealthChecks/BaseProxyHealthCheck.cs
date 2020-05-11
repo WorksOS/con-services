@@ -15,25 +15,27 @@ namespace VSS.MasterData.Proxies
 
     protected override ValueTask<HealthCheckResult> CheckAsync(CancellationToken cancellationToken = new CancellationToken())
     {
-      lock (lockObj)
+      lock (_lockObj)
       {
-        if (BaseProxyHealthCheck.statuses.Any(v => !v.Value))
-          return new ValueTask<HealthCheckResult>(HealthCheckResult.Degraded(statuses.Where(v => !v.Value)
+        if (_statuses.Any(v => !v.Value))
+        {
+          return new ValueTask<HealthCheckResult>(HealthCheckResult.Degraded(_statuses.Where(v => !v.Value)
             .Select(v => v.Key.FullName).Aggregate((s, s1) => $"{s};{s1}")));
+        }
+
         return new ValueTask<HealthCheckResult>(HealthCheckResult.Healthy());
       }
     }
 
     public static void SetStatus(bool status, Type objectType)
     {
-      lock (lockObj)
+      lock (_lockObj)
       {
-
-        statuses[objectType] = status;
+        _statuses[objectType] = status;
       }
     }
 
-    private static object lockObj = new object();
-    private static Dictionary<Type, bool> statuses = new Dictionary<Type, bool>();
+    private static object _lockObj = new object();
+    private static Dictionary<Type, bool> _statuses = new Dictionary<Type, bool>();
   }
 }

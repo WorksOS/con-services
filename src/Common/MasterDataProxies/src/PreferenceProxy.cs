@@ -1,13 +1,10 @@
 ﻿using System;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling;
 using VSS.MasterData.Proxies.Interfaces;
@@ -45,7 +42,5 @@ namespace VSS.MasterData.Proxies
 
       return response == null ? null : JsonConvert.DeserializeObject<UserPreferenceData>(response.PreferenceJson);
     }
-
-
   }
 }

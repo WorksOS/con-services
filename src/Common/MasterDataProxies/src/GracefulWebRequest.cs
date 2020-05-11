@@ -18,7 +18,7 @@ namespace VSS.MasterData.Proxies
   public class GracefulWebRequest : IWebRequest
   {
     private readonly ILogger _log;
-    private const int DefaultLogMaxChar = 1000;
+    private const int _defaultLogMaxChar = 1000;
     private readonly int _logMaxChar;
 
     private static readonly HttpClientHandler _handler = new HttpClientHandler
@@ -27,10 +27,10 @@ namespace VSS.MasterData.Proxies
     };
 
     //TODO since our apps is a mix of netcore 2.0, netcore 2.1 and net 4.7.1 this should be replaced with httpclient factory once all services are using the same target
-    private static readonly HttpClient httpClient = new HttpClient(_handler) { Timeout = TimeSpan.FromMinutes(30) };
+    private static readonly HttpClient _httpClient = new HttpClient(_handler) { Timeout = TimeSpan.FromMinutes(30) };
 
     //Any 200 code is ok.
-    private static readonly List<HttpStatusCode> okCodes = new List<HttpStatusCode>
+    private static readonly List<HttpStatusCode> _okCodes = new List<HttpStatusCode>
     {
       HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Accepted, HttpStatusCode.NonAuthoritativeInformation,
       HttpStatusCode.NoContent, HttpStatusCode.ResetContent, HttpStatusCode.PartialContent
@@ -39,7 +39,7 @@ namespace VSS.MasterData.Proxies
     public GracefulWebRequest(ILoggerFactory logger, IConfigurationStore configStore)
     {
       _log = logger.CreateLogger<GracefulWebRequest>();
-      _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxChar);
+      _logMaxChar = configStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxChar);
     }
 
     private Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, HttpMethod method,
@@ -50,36 +50,39 @@ namespace VSS.MasterData.Proxies
         if (dictionary != null)
         {
           foreach (var customHeader in dictionary)
+          {
             if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
+            {
               _log.LogWarning($"Can't add header {customHeader.Key}");
+            }
+          }
         }
 
-        if (!x.Headers.Contains(HeaderConstants.ACCEPT))
+        if (!x.Headers.Contains(HeaderConstants.ACCEPT) && !x.Headers.TryAddWithoutValidation(HeaderConstants.ACCEPT, "*/*"))
         {
-          if (!x.Headers.TryAddWithoutValidation(HeaderConstants.ACCEPT, "*/*"))
-            _log.LogWarning("Can't add Accept header");
+          _log.LogWarning("Can't add Accept header");
         }
       }
 
       // If we retry a request that uses a stream payload, it will not reset the position to 0
       // Causing an empty body to be sent (which is invalid for POST requests).
-      if (requestStream != null && requestStream.CanSeek)
+      if (requestStream?.CanSeek == true)
         requestStream.Seek(0, SeekOrigin.Begin);
 
       if (method == HttpMethod.Get)
-        return httpClient.GetAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, _log);
+        return _httpClient.GetAsync(endpoint, timeout, x => ApplyHeaders(customHeaders, x), _log);
 
       if (method == HttpMethod.Post || method == HttpMethod.Put)
-        return httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
-          x => { ApplyHeaders(customHeaders, x); }, _log);
+      {
+        return _httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
+          x => ApplyHeaders(customHeaders, x), _log);
+      }
 
       if (method == HttpMethod.Delete)
-        return httpClient.DeleteAsync(endpoint, timeout, x => { ApplyHeaders(customHeaders, x); }, _log);
+        return _httpClient.DeleteAsync(endpoint, timeout, x => ApplyHeaders(customHeaders, x), _log);
 
       throw new ArgumentException($"Unknown HTTP method {method}");
     }
-
-
 
     /// <summary>
     /// Execute a request
@@ -105,7 +108,7 @@ namespace VSS.MasterData.Proxies
         $"has payloadStream: {payloadStream != null}, length: {payloadStream?.Length ?? 0}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
-      if (payloadStream != null && !payloadStream.CanSeek && retries > 0)
+      if (payloadStream?.CanSeek == false && retries > 0)
       {
         _log.LogWarning(
           $"Attempting a HTTP {method} with a Stream ({payloadStream.GetType().Name}) that doesn't not support seeking, disabling retries");
@@ -125,7 +128,7 @@ namespace VSS.MasterData.Proxies
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payloadStream, timeout);
           _log.LogDebug($"Request to {endpoint} completed with statuscode {result.StatusCode} and content length {result.Content.Headers.ContentLength}");
 
-          if (!okCodes.Contains(result.StatusCode))
+          if (!_okCodes.Contains(result.StatusCode))
           {
             var contents = await result.Content.ReadAsStringAsync();
             var serviceException = ParseServiceError(result.StatusCode, contents);
@@ -180,7 +183,7 @@ namespace VSS.MasterData.Proxies
       _log.LogDebug($"ExecuteRequest() T({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
-      if (payload != null && !payload.CanSeek && retries > 0)
+      if (payload?.CanSeek == false && retries > 0)
       {
         _log.LogWarning(
           $"Attempting a HTTP {method} with a Stream ({payload.GetType().Name}) that doesn't not support seeking, disabling retries");
@@ -197,7 +200,7 @@ namespace VSS.MasterData.Proxies
           _log.LogDebug($"Request to {endpoint} completed");
 
           var contents = await result.Content.ReadAsStringAsync();
-          if (!okCodes.Contains(result.StatusCode))
+          if (!_okCodes.Contains(result.StatusCode))
           {
             _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents.Truncate(_logMaxChar)}");
 
@@ -252,7 +255,7 @@ namespace VSS.MasterData.Proxies
       _log.LogDebug($"ExecuteRequest() ({method}) : endpoint {endpoint} customHeaders {customHeaders.LogHeaders(_logMaxChar)}");
 
       // We can't retry if we get a stream that doesn't support seeking (should be rare, but handle it incase)
-      if (payload != null && !payload.CanSeek && retries > 0)
+      if (payload?.CanSeek == false && retries > 0)
       {
         _log.LogWarning(
           $"Attempting a HTTP {method} with a Stream ({payload.GetType().Name}) that doesn't not support seeking, disabling retries");
@@ -268,7 +271,7 @@ namespace VSS.MasterData.Proxies
           var result = await ExecuteRequestInternal(endpoint, method, customHeaders, payload, timeout);
           _log.LogDebug($"Request to {endpoint} completed");
 
-          if (!okCodes.Contains(result.StatusCode))
+          if (!_okCodes.Contains(result.StatusCode))
           {
             var contents = await result.Content.ReadAsStringAsync();
             _log.LogDebug($"Request returned non-ok code {result.StatusCode} with response {contents.Truncate(_logMaxChar)}");
