@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -38,8 +39,9 @@ namespace TestUtility
     public readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings
     {
       DateTimeZoneHandling = DateTimeZoneHandling.Unspecified,
-      NullValueHandling = NullValueHandling.Ignore
-    };
+      NullValueHandling = NullValueHandling.Ignore,
+      ContractResolver = new CamelCasePropertyNamesContractResolver()
+  };
 
     private readonly Random rndNumber = new Random();
     private readonly object syncLock = new object();

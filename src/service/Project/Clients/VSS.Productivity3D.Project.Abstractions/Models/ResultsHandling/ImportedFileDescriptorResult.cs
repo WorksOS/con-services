@@ -39,6 +39,11 @@ namespace VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling
   /// </summary>
   public class ImportedFileDescriptorSingleResult : ContractExecutionResult
   {
+    public ImportedFileDescriptorSingleResult()
+    {
+
+    }
+
     public ImportedFileDescriptorSingleResult(ImportedFileDescriptor importedFileDescriptor)
     {
       ImportedFileDescriptor = importedFileDescriptor;
