@@ -4,6 +4,9 @@
   {
     OK,
     UnknownError,
-    RequestNotMadeToMutableGrid
+    UnhandledException,
+    RequestNotMadeToMutableGrid,
+    FailedToRemoveSubGridSegment,
+    FailedToRemoveSubGridDirectory,
   }
 }

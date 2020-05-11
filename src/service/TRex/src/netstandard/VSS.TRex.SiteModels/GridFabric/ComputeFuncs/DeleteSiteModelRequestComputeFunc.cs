@@ -1,9 +1,11 @@
-﻿using Apache.Ignite.Core.Compute;
+﻿using System;
+using Apache.Ignite.Core.Compute;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx.Synchronous;
 using VSS.TRex.GridFabric.ComputeFuncs;
 using VSS.TRex.SiteModels.Executors;
 using VSS.TRex.SiteModels.GridFabric.Requests;
+using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
 {
@@ -28,18 +30,26 @@ namespace VSS.TRex.SiteModels.GridFabric.ComputeFuncs
 
       try
       {
-        var request = new DeleteSiteModelComputeFuncExecutor(arg);
+        try
+        {
+          var request = new DeleteSiteModelComputeFuncExecutor(arg);
 
-        Log.LogInformation("Executing request.ExecuteAsync()");
+          Log.LogInformation("Executing request.ExecuteAsync()");
 
-        if (!request.ExecuteAsync().WaitAndUnwrapException())
-          Log.LogError($"Request execution failed");
-        
-        return request.Response;
+          if (!request.ExecuteAsync().WaitAndUnwrapException())
+            Log.LogError($"Request execution failed");
+
+          return request.Response;
+        }
+        finally
+        {
+          Log.LogInformation("Exiting GridRequestComputeFunc.Invoke()");
+        }
       }
-      finally
+      catch (Exception e)
       {
-        Log.LogInformation("Exiting GridRequestComputeFunc.Invoke()");
+        Log.LogError(e, $"Unhandled exception in {nameof(Invoke)}");
+        return new DeleteSiteModelRequestResponse {Result = DeleteSiteModelResult.UnhandledException};
       }
     }
   }

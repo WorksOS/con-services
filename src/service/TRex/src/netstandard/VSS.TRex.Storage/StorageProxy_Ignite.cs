@@ -330,6 +330,8 @@ namespace VSS.TRex.Storage
           return FileSystemErrorStatus.GranuleDoesNotExist;
         }
 
+        ImmutableProxy?.RemoveSpatialStreamFromPersistentStore(dataModelId, streamName, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks, version, streamType);
+
         return FileSystemErrorStatus.OK;
       }
       catch (Exception e)

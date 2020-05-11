@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using FluentAssertions;
 using VSS.MasterData.Models.Models;
 using VSS.TRex.Alignments.Interfaces;
@@ -34,23 +35,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
     private bool IsModelEmpty(ISiteModel model)
     {
-      var mutableEmpty = true;
-      // Check that there are no elements in the storage proxy for the site model in the mutable grid
-      foreach (var cache in IgniteMock.Mutable.MockedCacheDictionaries)
-      {
-        if (cache.Keys.Count > 0)
-          mutableEmpty = false;
-      }
-
-      // Check that there are no elements in the storage proxy for the site model in the immutable grid
-      var immutableEmpty = true;
-      foreach (var cache in IgniteMock.Immutable.MockedCacheDictionaries)
-      {
-        if (cache.Keys.Count > 0)
-          immutableEmpty = false;
-      }
-
-      return mutableEmpty && immutableEmpty;
+      return !IgniteMock.Mutable.MockedCacheDictionaries.Any(cache => cache.Keys.Count > 0) &&
+             !IgniteMock.Immutable.MockedCacheDictionaries.Any(cache => cache.Keys.Count > 0);
     }
 
     private void VerifyModelIsEmpty(ISiteModel model)
@@ -300,7 +286,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       SaveAndVerifyNotEmpty(model);
 
-      // Delete project requests must be made to the mutabnle grid
+      // Delete project requests must be made to the mutable grid
       model.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       DeleteTheModel(model);

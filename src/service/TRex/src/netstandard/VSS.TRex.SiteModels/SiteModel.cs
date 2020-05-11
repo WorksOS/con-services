@@ -223,7 +223,7 @@ namespace VSS.TRex.SiteModels
       // Allow lazy loading of the machine event lists to occur organically.
       // Any requests holding references to events lists will continue to do so as the lists themselves
       // wont be garbage collected until all request references to them are relinquished
-      get => machinesTargetValues ?? (machinesTargetValues = new MachinesProductionEventLists(this, Machines.Count));
+      get => machinesTargetValues ??= new MachinesProductionEventLists(this, Machines.Count);
     }
 
     public bool MachineTargetValuesLoaded => machinesTargetValues != null;
