@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ namespace WebApiTests.Executors
       var assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
      
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+        authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -46,7 +47,7 @@ namespace WebApiTests.Executors
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceData);
       
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+        authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");
@@ -71,7 +72,7 @@ namespace WebApiTests.Executors
       var logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
       deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceDataToBeReturned);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.AreEqual(serialNumberExpected, device.SerialNumber);
@@ -84,7 +85,7 @@ namespace WebApiTests.Executors
       var logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
       deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync((DeviceData)null);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+      var dataRepository = new DataRepository(logger, ConfigStore, authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.IsNull(device);
@@ -98,8 +99,8 @@ namespace WebApiTests.Executors
       var deviceData = new DeviceData { Code = expectedDeviceErrorCode, Message = expectedMessage };
       deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceData);
      
-      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
-        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, authorizationProxy.Object);
+      var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore, authorization.Object,
+        cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
 
       Assert.IsNotNull(result, "executor returned nothing");

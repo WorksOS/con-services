@@ -1,42 +1,32 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.RadioSerialMap;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
-using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller.
   /// </summary>
-  public class ProjectV4Controller : BaseController
+  public class ProjectV4Controller : BaseController<ProjectV4Controller>
   {
-    private readonly ILogger _log;
-
     /// <summary>
     /// Default constructor.
     /// </summary>
-    public ProjectV4Controller(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-        ITPaaSApplicationAuthentication authorization)
-      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization)
-    {
-      _log = logger.CreateLogger<ProjectV4Controller>();
-    }
+    public ProjectV4Controller()
+    { }
 
     /// <summary>
     /// This endpoint is used by CTCTs Earthworks product.
     ///   It allows an operator, once or twice a day
     ///      to obtain data to enable it to generate a Cut/fill or other map from 3dpService. 
-    ///   This step tries to identify a unique projectUid.
+    ///   This step tries to identify a unique projectUid from knowledge of the device, it's customer and the location provided.
     /// 
     /// EC and/or radio, location are provided.
     /// 
@@ -85,19 +75,26 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectAndAssetUidsEarthWorksResult> GetProjectAndDeviceUidsEarthWorks([FromBody]GetProjectAndAssetUidsEarthWorksRequest request)
     {
-      _log.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"{nameof(GetProjectAndDeviceUidsEarthWorks)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
   
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsEarthWorksExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsEarthWorksResult;
 
-      _log.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
+      Logger.LogResult(nameof(GetProjectAndDeviceUidsEarthWorks), request, result);
       return result;
     }
 
     /// <summary>
     /// This endpoint is used by TRex to identify a project to assign a tag file to.
     ///      It is called for each tag file, with as much information as is available e.g. device; location; projectUid
+    ///
+    ///      If the ProjectUid is provided, this means a user is attempting to 'manually' imported the file into this Project via the UI.
+    ///
+    ///      If no ProjectUid is provided, this means the tag file is coming from an 'Auto' source, either from
+    ///         a) the TCC GCS endpoint, via harvester, via the 'auto' 3dp endpoint
+    ///         b) or direct from a device, currently via the 'direct' 3dp endpoint
+    /// 
     ///      Attempts to identify a unique project which the tag file could be applied to, also to identify the device
     ///      "Only tag files from devices which have been claimed (i.e Device has logged with appropriate account) will be considered for manual or auto tag file ingress"
     /// 
@@ -155,15 +152,15 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
       [FromBody]GetProjectAndAssetUidsRequest request,
       [FromServices] ICustomRadioSerialProjectMap customRadioSerialProjectMap)
     {
-      _log.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"{nameof(GetProjectAndDeviceUids)}: request:{JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(_log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectAndAssetUidsExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
       executor.CustomRadioSerialMapper = customRadioSerialProjectMap;
 
       var result = await executor.ProcessAsync(request) as GetProjectAndAssetUidsResult;
 
-      _log.LogResult(nameof(GetProjectAndDeviceUids), request, result);
+      Logger.LogResult(nameof(GetProjectAndDeviceUids), request, result);
       return result;
     }
 

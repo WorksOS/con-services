@@ -1,36 +1,26 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
-using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Utilities;
-using VSS.WebApi.Common;
 
 namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
 {
   /// <summary>
   /// Project controller for C2S2 solution, to support Raptor.
   /// </summary>
-  public class ProjectV3RaptorController : BaseController
+  public class ProjectV3RaptorController : BaseController<ProjectV3RaptorController>
   {
-    private readonly ILogger log;
-
     /// <summary>
     /// Default constructor 
     /// </summary>
-    public ProjectV3RaptorController(ILoggerFactory logger, IConfigurationStore configStore,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      ITPaaSApplicationAuthentication authorization)
-      : base(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization)
-    {
-      log = logger.CreateLogger<ProjectV3RaptorController>();
-    }
+    public ProjectV3RaptorController()
+    { }
 
     /// <summary>
     /// Gets the shortRaptorProjectId for the project whose boundary the location is inside at the given date time. 
@@ -44,13 +34,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectIdResult> GetProjectId([FromBody]GetProjectIdRequest request)
     {
-      log.LogDebug($"{nameof(GetProjectId)}: request: {JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"{nameof(GetProjectId)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectIdResult;
 
-      log.LogResult(nameof(GetProjectId), request, result);      
+      Logger.LogResult(nameof(GetProjectId), request, result);      
       return result;
     }
 
@@ -65,13 +55,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectBoundaryAtDateResult> PostProjectBoundary([FromBody]GetProjectBoundaryAtDateRequest request)
     {
-      log.LogDebug($"{nameof(PostProjectBoundary)}: request: {JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"{nameof(PostProjectBoundary)}: request: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectBoundaryAtDateExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectBoundaryAtDateResult;
 
-      log.LogResult(nameof(PostProjectBoundary), request, result);
+      Logger.LogResult(nameof(PostProjectBoundary), request, result);
       return result;
     }
 
@@ -86,13 +76,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     [HttpPost]
     public async Task<GetProjectBoundariesAtDateResult> PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
     {
-      log.LogDebug($"{nameof(PostProjectBoundaries)}: {JsonConvert.SerializeObject(request)}");
+      Logger.LogDebug($"{nameof(PostProjectBoundaries)}: {JsonConvert.SerializeObject(request)}");
       request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(log, _configStore, _cwsAccountClient, _projectProxy, _deviceProxy, _authorization);
+      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
       var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
 
-      log.LogResult(nameof(PostProjectBoundaries), request, result);
+      Logger.LogResult(nameof(PostProjectBoundaries), request, result);
       return result;
     }
   }

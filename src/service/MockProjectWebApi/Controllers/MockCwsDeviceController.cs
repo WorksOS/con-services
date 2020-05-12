@@ -13,7 +13,7 @@ namespace MockProjectWebApi.Controllers
     {
     }
 
-    [Route("api/v1/devices/serialnumber")]
+    [Route("api/v1/devices/getDeviceWithSerialNumber")]
     [HttpGet]
     public DeviceResponseModel GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
@@ -44,7 +44,7 @@ namespace MockProjectWebApi.Controllers
     }
 
 
-    [Route("api/v1/device/{deviceTrn}/projects")]
+    [Route("api/v1/devices/{deviceTrn}/projects")]
     [HttpGet]
     public ProjectListResponseModel GetProjectsForDevice(string deviceTrn)
     {

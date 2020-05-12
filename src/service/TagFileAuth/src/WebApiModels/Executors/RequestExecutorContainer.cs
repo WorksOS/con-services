@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
@@ -26,12 +25,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
 
     protected ILogger log;
     private IConfigurationStore configStore;
-    protected IDictionary<string, string> customHeaders;
+    private ITPaaSApplicationAuthentication authorization;
+    private IDictionary<string, string> requestCustomHeaders;
 
     private ICwsAccountClient cwsAccountClient;
     private IProjectInternalProxy projectProxy;
     private IDeviceInternalProxy deviceProxy;
-    private ITPaaSApplicationAuthentication authorization;
 
     /// <summary>
     /// allows mapping between CG (which Raptor requires) and NG
@@ -77,13 +76,13 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     ///   Builds this instance for specified executor type.
     /// </summary>
-    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore,      
+    public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      ITPaaSApplicationAuthentication authorization) 
+      IDictionary<string, string> requestCustomHeaders) 
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, authorization = authorization };
-        dataRepository = new DataRepository(logger, configStore, cwsAccountClient, projectProxy, deviceProxy, authorization);
+      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders};
+        dataRepository = new DataRepository(logger, configStore, authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
       return executor;
     }
     

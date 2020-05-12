@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -22,9 +23,10 @@ namespace WebApiTests.Executors
 
     protected IServiceProvider ServiceProvider;
     protected Mock<IProjectInternalProxy> projectProxy;
+    protected Mock<ITPaaSApplicationAuthentication> authorization;
     protected Mock<ICwsAccountClient> cwsAccountClient;
     protected Mock<IDeviceInternalProxy> deviceProxy;
-    protected Mock<ITPaaSApplicationAuthentication> authorizationProxy;
+    protected IDictionary<string, string> requestCustomHeaders;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected ILoggerFactory loggerFactory;
 
@@ -45,8 +47,9 @@ namespace WebApiTests.Executors
       projectProxy = new Mock<IProjectInternalProxy>();
       cwsAccountClient = new Mock<ICwsAccountClient>();
       deviceProxy = new Mock<IDeviceInternalProxy>();
-      authorizationProxy = new Mock<ITPaaSApplicationAuthentication>();
+      requestCustomHeaders = new Dictionary<string, string>();
       loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
+      authorization = new Mock<ITPaaSApplicationAuthentication>();
     }
   
   }

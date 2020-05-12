@@ -17,24 +17,24 @@ namespace MockProjectWebApi.Controllers
 
     [HttpGet]
     [Route("internal/v1/device/serialnumber")] 
-    public DeviceDataSingleResult GetDeviceBySerialNumber([FromQuery] string serialNumber)
+    public DeviceDescriptorSingleResult GetDeviceBySerialNumber([FromQuery] string serialNumber)
     {
       Logger.LogInformation($"{nameof(GetDeviceBySerialNumber)} serialNumber {serialNumber}");
       if (serialNumber == ConstantsUtil.DIMENSIONS_SERIAL)
-        return new DeviceDataSingleResult(new DeviceData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
+        return new DeviceDescriptorSingleResult(new DeviceData() {CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
 
-      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws", new DeviceData());
+      return new DeviceDescriptorSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws", new DeviceData());
     }
 
     [HttpGet]
     [Route("internal/v1/device/shortRaptorAssetId")]
-    public DeviceDataSingleResult GetDevice([FromQuery] int shortRaptorAssetId)
+    public DeviceDescriptorSingleResult GetDevice([FromQuery] int shortRaptorAssetId)
     {
       Logger.LogInformation($"{nameof(GetDevice)} serialNumber {shortRaptorAssetId}");
       if (shortRaptorAssetId == ConstantsUtil.DIMENSIONS_PROJECT_ID)
-        return new DeviceDataSingleResult(new DeviceData() { CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
+        return new DeviceDescriptorSingleResult(new DeviceData() { CustomerUID = ConstantsUtil.DIMENSIONS_CUSTOMER_UID, DeviceUID = ConstantsUtil.DIMENSIONS_SERIAL_DEVICEUID, SerialNumber = ConstantsUtil.DIMENSIONS_SERIAL, ShortRaptorAssetId = ConstantsUtil.DIMENSIONS_SERIAL_ASSETID });
 
-      return new DeviceDataSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws", new DeviceData());
+      return new DeviceDescriptorSingleResult(code: 100, message: "Unable to locate device by serialNumber in cws", new DeviceData());
     }
 
     [HttpGet]

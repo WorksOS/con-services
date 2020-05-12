@@ -37,46 +37,34 @@ namespace VSS.Productivity3D.Project.Proxy
     {
       log.LogDebug($"{nameof(GetDevice)} serialNumber: {serialNumber}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("serialNumber", serialNumber) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceData>($"/device/serialnumber",
+      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceDataSingleResult>($"/device/serialnumber",
+        //serialNumber, null,
         customHeaders, queryParams);
 
       log.LogDebug($"{nameof(GetDevice)} get device for serialNumber {serialNumber} result: {result.Code}, {result.Message}");
-      return result;
+      return result.DeviceDescriptor;
     }
 
     public async Task<DeviceData> GetDevice(int shortRaptorAssetId, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
       var queryParams = new List<KeyValuePair<string, string>> { new KeyValuePair<string, string>("shortRaptorAssetId", shortRaptorAssetId.ToString()) };
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceData>($"/device/shortRaptorAssetId",
+      var result = await GetMasterDataItemServiceDiscovery<DeviceDataSingleResult>($"/device/shortRaptorAssetId",
+        shortRaptorAssetId.ToString(), null,
         customHeaders, queryParams);
 
       log.LogDebug($"{nameof(GetDevice)} get device for shortRaptorAssetId {shortRaptorAssetId} result: {result.Code}, {result.Message}");
-      return result;
+      return result.DeviceDescriptor;
     }
     
     public async Task<ProjectDataResult> GetProjectsForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
     {
       log.LogDebug($"{nameof(GetProjectsForDevice)} deviceUid: {deviceUid}");
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<ProjectDataResult>($"/device/{deviceUid}/projects",
+      var result = await GetMasterDataItemServiceDiscovery<ProjectDataResult>($"/device/{deviceUid}/projects",
+        deviceUid, null,
         customHeaders);
 
       log.LogDebug($"{nameof(GetProjectsForDevice)} get projects for deviceUid {deviceUid} result: {result.Code}, {result.Message}");
-      return result;
-    }
-
-    public async Task<DeviceCustomerSingleDataResult> GetAccountForDevice(string deviceUid, IDictionary<string, string> customHeaders = null)
-    {
-      // in ProjectSvc.DeviceController
-      // a) retrieve account from cws using DeviceTRN.
-      //    todoJeannie this is not available yet. waiting for cws/profileX
-
-      // should do a cache by deviceUid
-      log.LogDebug($"{nameof(GetAccountForDevice)} deviceUid: {deviceUid}");
-      var result = await GetMasterDataItemServiceDiscoveryNoCache<DeviceCustomerSingleDataResult>($"/device/{deviceUid}/account",
-        customHeaders);
-
-      log.LogDebug($"{nameof(GetAccountForDevice)} get account for deviceUid {deviceUid} result: {result.Code}, {result.Message}");
       return result;
     }
 

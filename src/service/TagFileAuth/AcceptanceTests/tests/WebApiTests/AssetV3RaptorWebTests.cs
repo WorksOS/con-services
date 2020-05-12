@@ -8,8 +8,8 @@ namespace WebApiTests
 {
   public class AssetV3RaptorWebTests : ExecutorTestData
   {
-    [Fact(Skip = "CCSSSCON-207 no time now")]
-    public async System.Threading.Tasks.Task Manual_Sad_ProjectNotFound()
+    [Fact(Skip = "Raptor will no longer be supported")]
+    public async System.Threading.Tasks.Task ProjectProvided_Sad_ProjectNotFound()
     {
       var projectUid = Guid.NewGuid().ToString();
       var CBRadioType = TagFileDeviceTypeEnum.SNM940;
