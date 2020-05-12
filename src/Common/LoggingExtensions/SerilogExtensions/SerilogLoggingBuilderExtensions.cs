@@ -24,6 +24,9 @@ namespace VSS.Serilog.Extensions
 
       builder.Services.AddSingleton<ILoggerProvider, T>(factory);
 
+      // Temporary fix to correct the Logging Builder not picking up the minimum logging level set in SerilogExtensions::Configure().
+      builder.SetMinimumLevel(LogLevel.Debug);
+
       return builder;
     }
   }
