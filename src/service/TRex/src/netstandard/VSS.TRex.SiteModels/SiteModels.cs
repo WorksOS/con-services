@@ -31,10 +31,10 @@ namespace VSS.TRex.SiteModels
     private IStorageProxy _PrimaryImmutableStorageProxy;
     private IStorageProxyFactory _StorageProxyFactory;
 
-    private IStorageProxyFactory StorageProxyFactory => _StorageProxyFactory ?? (_StorageProxyFactory = DIContext.Obtain<IStorageProxyFactory>());
+    private IStorageProxyFactory StorageProxyFactory => _StorageProxyFactory ??= DIContext.Obtain<IStorageProxyFactory>();
 
-    public IStorageProxy PrimaryMutableStorageProxy => _PrimaryMutableStorageProxy ?? (_PrimaryMutableStorageProxy = StorageProxyFactory.MutableGridStorage());
-    public IStorageProxy PrimaryImmutableStorageProxy => _PrimaryImmutableStorageProxy ?? (_PrimaryImmutableStorageProxy = StorageProxyFactory.ImmutableGridStorage());
+    public IStorageProxy PrimaryMutableStorageProxy => _PrimaryMutableStorageProxy ??= StorageProxyFactory.MutableGridStorage();
+    public IStorageProxy PrimaryImmutableStorageProxy => _PrimaryImmutableStorageProxy ??= StorageProxyFactory.ImmutableGridStorage();
 
     public IStorageProxy PrimaryStorageProxy(StorageMutability mutability)
     {

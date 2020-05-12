@@ -5,6 +5,7 @@
     OK,
     UnknownError,
     UnhandledException,
+    UnableToLocateSiteModel,
     RequestNotMadeToMutableGrid,
     FailedToRemoveSubGrids,
     FailedToRemoveProjectMetadata,

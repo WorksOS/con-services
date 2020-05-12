@@ -40,6 +40,14 @@ namespace VSS.TRex.SiteModels.Executors
       if (arg != null)
         _siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(arg.ProjectID);
 
+      if (_siteModel == null)
+      {
+        Response.Result = DeleteSiteModelResult.UnableToLocateSiteModel;
+        return;
+      }
+
+      _siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
+
       // Deletion is only supported in the context of the mutable grid for coordination
       if (_siteModel.PrimaryStorageProxy.Mutability != StorageMutability.Mutable)
       {
