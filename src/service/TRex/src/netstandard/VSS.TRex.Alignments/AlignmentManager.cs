@@ -148,7 +148,7 @@ namespace VSS.TRex.Alignments
 
       if (result != FileSystemErrorStatus.OK)
       {
-        Log.LogInformation($"Removing designs list from project {siteModelID} failed with error {result}");
+        Log.LogInformation($"Removing alignments list from project {siteModelID} failed with error {result}");
       }
 
       return result == FileSystemErrorStatus.OK;
