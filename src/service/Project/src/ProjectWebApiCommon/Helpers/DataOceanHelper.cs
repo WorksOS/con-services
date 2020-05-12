@@ -46,11 +46,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 
         try
         {
-          log.LogInformation($"{nameof(WriteFileToDataOcean)}: dataOceanPath {dataOceanPath} dataOceanFileName {dataOceanFileName}");
+          log.LogInformation($"{nameof(WriteFileToDataOcean)}: dataOceanPath: '{dataOceanPath}', dataOceanFileName: '{dataOceanFileName}'");
 
           folderAlreadyExists = await dataOceanClient.FolderExists(dataOceanPath, customHeaders);
 
-          if (folderAlreadyExists == false)
+          if (!folderAlreadyExists)
           {
             await dataOceanClient.MakeFolder(dataOceanPath, customHeaders);
           }
@@ -63,7 +63,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
             e.Message);
         }
 
-        if (ccPutFileResult == false)
+        if (!ccPutFileResult)
         {
           serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 116);
         }
@@ -103,7 +103,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
           return ImportedFileInternalResult.CreateImportedFileInternalResult(HttpStatusCode.InternalServerError, 57, "dataOceanClient.DeleteFile", e.Message);
         }
 
-        if (ccDeleteFileResult == false)
+        if (!ccDeleteFileResult)
         {
           log.LogWarning(
             $"{nameof(DeleteFileFromDataOcean)}: failed to delete {fileName} (importedFileUid:{importedFileUid}).");

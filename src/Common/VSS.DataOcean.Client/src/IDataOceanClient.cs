@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.DataOcean.Client.Models;
 
 namespace VSS.DataOcean.Client
