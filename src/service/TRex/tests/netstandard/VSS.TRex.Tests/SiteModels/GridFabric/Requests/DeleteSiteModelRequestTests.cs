@@ -57,7 +57,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var modelId = model.ID;
 
       var request = new DeleteSiteModelRequest();
-      var response = request.Execute(new DeleteSiteModelRequestArgument { ProjectID = modelId });
+      var response = request.Execute(new DeleteSiteModelRequestArgument {ProjectID = modelId});
 
       response.Result.Should().Be(DeleteSiteModelResult.OK);
 
@@ -124,7 +124,8 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       var model = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel(false);
       model.Should().NotBeNull();
 
-      model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 1, false)); new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
+      model.Machines.Add(new Machine("Test Delete Machine", "HardwareId", MachineType.Dozer, DeviceTypeEnum.SNM940, Guid.NewGuid(), 1, false));
+      new SiteProofingRun("Test Proofing Run", 0, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow, new BoundingWorldExtent3D(0, 0, 1, 1));
       SaveAndVerifyNotEmpty(model);
 
       DeleteTheModel(model);
@@ -237,7 +238,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
       model.Should().NotBeNull();
 
       var csibStream = new MemoryStream();
-      csibStream.Write(new byte[] { 70, 71, 72, 73 }, 0, 4);
+      csibStream.Write(new byte[] {70, 71, 72, 73}, 0, 4);
       csibStream.Position = 0;
 
       model.PrimaryStorageProxy.WriteStreamToPersistentStore(model.ID,
@@ -282,10 +283,7 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
     [Fact]
     public void DeleteModel_WithTagFile()
     {
-      var tagFiles = new[]
-      {
-        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
-      };
+      var tagFiles = new[] {Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),};
 
       AddApplicationGridRouting();
 
@@ -299,27 +297,5 @@ namespace VSS.TRex.Tests.SiteModels.GridFabric.Requests
 
       DeleteTheModel(model);
     }
-
-    [Fact]
-    public void DeleteModel_WithTagFile_FailWithIncorrectGrid()
-    {
-      var tagFiles = new[]
-      {
-        Path.Combine(TestHelper.CommonTestDataPath, "TestTAGFile.tag"),
-      };
-
-      AddApplicationGridRouting();
-
-      var model = DITAGFileAndSubGridRequestsFixture.BuildModel(tagFiles, out _);
-      model.Should().NotBeNull();
-
-      SaveAndVerifyNotEmpty(model);
-
-      var request = new DeleteSiteModelRequest();
-      var response = request.Execute(new DeleteSiteModelRequestArgument { ProjectID = model.ID });
-
-      response.Result.Should().Be(DeleteSiteModelResult.RequestNotMadeToMutableGrid);
-    }
   }
 }
-
