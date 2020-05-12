@@ -93,15 +93,14 @@ export class DeleteProjectComponent {
             case 1: return "OK";
             case 2: return "UnhandledException";
             case 3: return "UnableToLocateSiteModel";
-            case 4: return "RequestNotMadeToMutableGrid";
-            case 5: return "FailedToRemoveSubGrids";
-            case 6: return "FailedToRemoveProjectMetadata";
-            case 7: return "FailedToCommitPrimaryElementRemoval";
-            case 8: return "FailedToCommitExistenceMapRemoval";
-            case 9: return "FailedToRemoveSiteDesigns";
-            case 10: return "FailedToRemoveSurveyedSurfaces";
-            case 11: return "FailedToRemoveAlignments";
-            case 12: return "FailedToRemoveCSIB";
+            case 4: return "FailedToRemoveSubGrids";
+            case 5: return "FailedToRemoveProjectMetadata";
+            case 6: return "FailedToCommitPrimaryElementRemoval";
+            case 7: return "FailedToCommitExistenceMapRemoval";
+            case 8: return "FailedToRemoveSiteDesigns";
+            case 9: return "FailedToRemoveSurveyedSurfaces";
+            case 10: return "FailedToRemoveAlignments";
+            case 11: return "FailedToRemoveCSIB";
             default:
                 return `Unknown: ${result}`;
         }

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using VSS.TRex.Alignments.Interfaces;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.DI;
@@ -49,9 +50,10 @@ namespace VSS.TRex.SiteModels.Executors
       _siteModel.SetStorageRepresentationToSupply(StorageMutability.Mutable);
 
       // Deletion is only supported in the context of the mutable grid for coordination
-      if (_siteModel.PrimaryStorageProxy.Mutability != StorageMutability.Mutable)
+      if (_siteModel.PrimaryStorageProxy.Mutability != StorageMutability.Mutable
+      || _siteModel.PrimaryStorageProxy.ImmutableProxy == null)
       {
-        Response.Result = DeleteSiteModelResult.RequestNotMadeToMutableGrid;
+        throw new TRexException($"Deletion is only supported in the context of the mutable grid for coordination");
       }
     }
 

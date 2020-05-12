@@ -6,14 +6,13 @@
     OK = 1,
     UnhandledException = 2,
     UnableToLocateSiteModel = 3,
-    RequestNotMadeToMutableGrid = 4,
-    FailedToRemoveSubGrids = 5,
-    FailedToRemoveProjectMetadata = 6,
-    FailedToCommitPrimaryElementRemoval = 7,
-    FailedToCommitExistenceMapRemoval = 8,
-    FailedToRemoveSiteDesigns = 9,
-    FailedToRemoveSurveyedSurfaces = 10,
-    FailedToRemoveAlignments = 11,
-    FailedToRemoveCSIB = 12
+    FailedToRemoveSubGrids = 4,
+    FailedToRemoveProjectMetadata = 5,
+    FailedToCommitPrimaryElementRemoval = 6,
+    FailedToCommitExistenceMapRemoval = 7,
+    FailedToRemoveSiteDesigns = 8,
+    FailedToRemoveSurveyedSurfaces = 9,
+    FailedToRemoveAlignments = 10,
+    FailedToRemoveCSIB = 11
   }
 }
