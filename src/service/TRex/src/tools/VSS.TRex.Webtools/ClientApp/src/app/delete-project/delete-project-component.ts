@@ -12,10 +12,15 @@ export class DeleteProjectComponent {
 
     public projectUid: string;
 
+    public candidateProjectUid: string;
+
     public projectMetadata: ISiteModelMetadata;
 
     public allProjectsMetadata: ISiteModelMetadata[] = [];
 
+    public confirmationMessage: string = "";
+
+    public confirmDeleteProject: boolean = false;
 
     constructor(
         private deleteProjectService: DeleteProjectService,
@@ -35,8 +40,32 @@ export class DeleteProjectComponent {
         return -1;
     }
 
+    public selectProject(): void {
+        this.projectUid = this.candidateProjectUid;
+
+        if (this.projectUid === "" || this.projectUid === undefined) {
+            this.confirmationMessage = "No project selected for deletion";
+        } else {
+            this.confirmationMessage = `Project ${this.projectUid} selected for deletion`;
+        }
+    }
+
     public deleteProject(): void {
-        this.deleteProjectService.deleteProject(this.projectUid);
+        if (this.projectUid === "" || this.projectUid === undefined) {
+            this.confirmationMessage = "No project selected for deletion";
+        } else {
+            if (this.confirmDeleteProject === false) {
+                this.confirmationMessage = `Must confirm intent to delete project ${this.projectUid}`;
+            } else {
+                this.deleteProjectService.deleteProject(this.projectUid).subscribe(result => {
+                    this.confirmationMessage = `Deletion response for project ${this.projectUid}: Result = ${result.deleteSiteModelResult} with ${result.numRemovedElements} removed elements.`;
+                    this.confirmDeleteProject = false;
+                    this.projectUid = "";
+                    this.candidateProjectUid = "";
+                    this.getAllProjectMetadata();
+                });
+            }
+        }
     }
 
     public getAllProjectMetadata(): void {
@@ -46,12 +75,12 @@ export class DeleteProjectComponent {
                 metadata.forEach(data => result.push(data));
                 this.allProjectsMetadata = result;
                 this.projectMetadata = this.allProjectsMetadata[this.getIndexOfSelectedProjectMetadata()];
-                this.projectUid = this.projectMetadata.id;
+                this.candidateProjectUid = "";
             });
     }
 
     public projectMetadataChanged(event: any): void {
-        this.projectUid = this.projectMetadata.id;
+        this.candidateProjectUid = this.projectMetadata.id;
     }
 
     public updateAllProjectsMetadata(): void {

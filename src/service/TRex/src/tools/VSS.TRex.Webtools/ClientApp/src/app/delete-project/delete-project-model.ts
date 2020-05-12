@@ -1,6 +1,6 @@
 export class DeleteSiteModelRequestResponse
 { 
-  DeleteSiteModelResult: string = "";
-  NumRemovedElements: number = -1;
+  deleteSiteModelResult: string = "";
+  numRemovedElements: number = -1;
 }
 

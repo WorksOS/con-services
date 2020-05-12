@@ -2,7 +2,7 @@
 <h2>Use with extreme caution</h2>
 <h2>TRex will remove all information it owns related to a project in an irreversible, scorched earth, manner. </h2>
 <p>
-    Project UID: <input [(ngModel)]="projectUid" size="37" type="text" value="" />
+    Candidate Project UID: <input [(ngModel)]="candidateProjectUid" size="37" type="text" value="" />
     <button (click)="selectProject()">Select</button>
     Available Projects({{allProjectsMetadata.length}}):
     <select id="projectMetadata" name="projectMetadata" [(ngModel)]="projectMetadata" (change)="projectMetadataChanged($event)">
@@ -12,4 +12,6 @@
     </select>
     <button (click)="updateAllProjectsMetadata()">Update Metadata</button>
 </p>
+<br/><label><input type="checkbox" [(ngModel)]="confirmDeleteProject">Confirm delete project:</label>
+<p>{{confirmationMessage}}</p>
 <button (click)="deleteProject()">Delete Project</button>
