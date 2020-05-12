@@ -9,9 +9,11 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CCSS.CWS.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using TestUtility.Model;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
@@ -73,27 +75,49 @@ namespace TestUtility
     {
       var fileDescriptor = ts.ConvertImportFileArrayToObject(importFileArray, row);
 
-      ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = fileDescriptor;
-
-      var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
-      var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
-
-      var uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
-
-      switch (fileDescriptor.ImportedFileTypeName)
+      string uri = null;
+      if (ProjectConfigurationFileHelper.isCwsFileType(fileDescriptor.ImportedFileType))
       {
-        case "SurveyedSurface":
-          uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
-          break;
-        case "Linework":
-          uri = $"{uri}&DxfUnitsType={fileDescriptor.DxfUnitsType}";
-          break;
-        case "ReferenceSurface":
-          uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
-          break;
-        case "GeoTiff":
-          uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
-          break;
+        ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor = new ProjectConfigurationFileResponseModel {FileName = fileDescriptor.Name};
+
+        uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={DateTime.UtcNow}&fileUpdatedUtc={DateTime.UtcNow}";
+
+        if (importOptions.HttpMethod == HttpMethod.Delete)
+        {
+          uri = $"{uri}&filename={fileDescriptor.Name}";
+        }
+      }
+      else
+      {
+        ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor = fileDescriptor;
+
+        if (importOptions.HttpMethod == HttpMethod.Delete)
+        {
+          uri = $"api/v6/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
+        }
+        else
+        {
+          var createdDt = fileDescriptor.FileCreatedUtc.ToString(CultureInfo.InvariantCulture);
+          var updatedDt = fileDescriptor.FileUpdatedUtc.ToString(CultureInfo.InvariantCulture);
+
+          uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={createdDt}&fileUpdatedUtc={updatedDt}";
+
+          switch (fileDescriptor.ImportedFileTypeName)
+          {
+            case "SurveyedSurface":
+              uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+              break;
+            case "Linework":
+              uri = $"{uri}&DxfUnitsType={fileDescriptor.DxfUnitsType}";
+              break;
+            case "ReferenceSurface":
+              uri = $"{uri}&ParentUid={fileDescriptor.ParentUid}&Offset={fileDescriptor.Offset}";
+              break;
+            case "GeoTiff":
+              uri = $"{uri}&SurveyedUtc={fileDescriptor.SurveyedUtc:yyyy-MM-ddTHH:mm:ss.fffffff}";
+              break;
+          }
+        }
       }
 
       if (importOptions.QueryParams != null)
@@ -102,11 +126,6 @@ namespace TestUtility
         {
           uri = $"{uri}&{param}";
         }
-      }
-
-      if (importOptions.HttpMethod == HttpMethod.Delete)
-      {
-        uri = $"api/v6/importedfile?projectUid={fileDescriptor.ProjectUid}&importedFileUid={ImportedFileUid}";
       }
 
       string response;
@@ -120,7 +139,17 @@ namespace TestUtility
         response = await UploadFilesToWebApi(fileDescriptor.Name, uri, fileDescriptor.CustomerUid, importOptions.HttpMethod, statusCode);
 
         if (fileDescriptor.ImportedFileType != ImportedFileType.ReferenceSurface)
-          ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);  // Change expected result
+        {
+          // Change expected result - fix filename
+          if (ProjectConfigurationFileHelper.isCwsFileType(fileDescriptor.ImportedFileType))
+          {
+            ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName);
+          }
+          else
+          {
+            ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name = Path.GetFileName(ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor.Name);
+          }
+        }
       }
 
       return JsonConvert.DeserializeObject<ImportedFileDescriptorSingleResult>(response, new JsonSerializerSettings

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.CSharp.RuntimeBinder;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels;
@@ -51,6 +52,8 @@ namespace TestUtility
     private static readonly object _shortRaptorProjectIDLock = new object();
 
     private static int _currentShortRaptorProjectID;
+
+    public ImportedFileDescriptorListResult ExpectedProjectConfigFileDescriptorsListResult;
 
     static TestSupport()
     {
@@ -469,6 +472,16 @@ namespace TestUtility
           {
             cpCoordinateSystemFileName = eventObject.CoordinateSystem;
             cpCoordinateSystemFileContent = Encoding.ASCII.GetBytes(_testConfig.coordinateSystem);
+            ExpectedProjectConfigFileDescriptorsListResult = new ImportedFileDescriptorListResult
+            {
+              ProjectConfigFileDescriptors = new List<ProjectConfigurationFileResponseModel>
+              {
+                new ProjectConfigurationFileResponseModel
+                {
+                  FileName = cpCoordinateSystemFileName
+                }
+              }.ToImmutableList()
+            };
           }
            
           if (HasProperty(eventObject, "CustomerUID"))
@@ -554,7 +567,17 @@ namespace TestUtility
           }
 
           importedFileDescriptor.ImportedFileType = Enum.Parse<ImportedFileType>((string)eventObject.ImportedFileType);
-           jsonString = JsonConvert.SerializeObject(importedFileDescriptor, JsonSettings);
+          jsonString = JsonConvert.SerializeObject(importedFileDescriptor, JsonSettings);
+          break;
+        case "ProjectConfigurationFileResponseModel":
+          var importedFileDescriptor2 = new ImportedFileDescriptor
+          {
+            CustomerUid = eventObject.CustomerUid,
+            ProjectUid = eventObject.ProjectUid,
+            Name = eventObject.Name,
+            ImportedFileType = Enum.Parse<ImportedFileType>((string)eventObject.ImportedFileType)
+          };
+          jsonString = JsonConvert.SerializeObject(importedFileDescriptor2, JsonSettings);
           break;
       }
       return jsonString;

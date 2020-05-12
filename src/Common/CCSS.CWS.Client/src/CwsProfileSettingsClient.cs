@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -46,8 +47,21 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
-      var projectConfigurationFileResponse = await GetData<ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
+      ProjectConfigurationFileResponseModel projectConfigurationFileResponse = null;
+      try
+      {
+        projectConfigurationFileResponse = await GetData<ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, null, null, customHeaders);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return null;
+        }
 
+        throw;
+      }
+      
       log.LogDebug($"{nameof(GetProjectConfiguration)}: projectConfigurationFileResponse {JsonConvert.SerializeObject(projectConfigurationFileResponse)}");
       return projectConfigurationFileResponse;
     }
@@ -63,8 +77,20 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(GetProjectConfigurations)}: projectUid {projectUid}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
-      var projectConfigurationFileListResponse = await GetData<ProjectConfigurationFileListResponseModel>($"/projects/{projectTrn}/configuration", null, null, null, customHeaders);
+      ProjectConfigurationFileListResponseModel projectConfigurationFileListResponse = null;
+      try 
+      {
+        projectConfigurationFileListResponse = await GetData<ProjectConfigurationFileListResponseModel>($"/projects/{projectTrn}/configuration", null, null, null, customHeaders);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return null;
+        }
 
+        throw;
+      }
       log.LogDebug($"{nameof(GetProjectConfigurations)}: projectConfigurationFileListResponse {JsonConvert.SerializeObject(projectConfigurationFileListResponse)}");
       return projectConfigurationFileListResponse;
     }
@@ -95,7 +121,20 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType} projectConfigurationFileRequest {JsonConvert.SerializeObject(projectConfigurationFileRequest)}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
-      var projectConfigurationResponse = await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
+      ProjectConfigurationFileResponseModel projectConfigurationResponse = null;
+      try
+      {
+        projectConfigurationResponse = await UpdateData<ProjectConfigurationFileRequestModel, ProjectConfigurationFileResponseModel>($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", projectConfigurationFileRequest, null, customHeaders);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return null;
+        }
+
+        throw;
+      }
 
       log.LogDebug($"{nameof(UpdateProjectConfiguration)}: projectConfigurationResponse {JsonConvert.SerializeObject(projectConfigurationResponse)}");
       return projectConfigurationResponse;
@@ -110,7 +149,19 @@ namespace CCSS.CWS.Client
       log.LogDebug($"{nameof(DeleteProjectConfiguration)}: projectUid {projectUid} projectConfigurationFileType {projectConfigurationFileType}");
 
       var projectTrn = TRNHelper.MakeTRN(projectUid, TRNHelper.TRN_PROJECT);
-      return DeleteData($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, customHeaders);
+      try
+      {
+        return DeleteData($"/projects/{projectTrn}/configuration/{projectConfigurationFileType.ToString().ToUpper()}", null, customHeaders);
+      }
+      catch (HttpRequestException e)
+      {
+        if (e.Message.Contains("404") || e.Message.Contains("NotFound"))
+        {
+          return Task.CompletedTask;
+        }
+
+        throw;
+      }
     }
   }
 }
