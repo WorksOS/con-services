@@ -112,7 +112,7 @@ namespace VSS.TRex.SiteModels.Executors
     /// <returns></returns>
     public async Task<bool> ExecuteAsync()
     {
-      _log.LogInformation($"Performing Execute for DataModel:{_deleteSiteModelRequestArgument.ProjectID}");
+      _log.LogInformation($"Performing Execute for DataModel:{_deleteSiteModelRequestArgument?.ProjectID}");
 
       if (Response.Result != DeleteSiteModelResult.OK)
       {

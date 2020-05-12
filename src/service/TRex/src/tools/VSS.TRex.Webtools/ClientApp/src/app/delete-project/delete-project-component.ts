@@ -89,8 +89,8 @@ export class DeleteProjectComponent {
 
     private deleteResultStatusAsString(result: number): string {
         switch (result) {
-            case 0: return "OK";
-            case 1: return "UnknownError";
+            case 0: return "UnknownError";
+            case 1: return "OK";
             case 2: return "UnhandledException";
             case 3: return "UnableToLocateSiteModel";
             case 4: return "RequestNotMadeToMutableGrid";

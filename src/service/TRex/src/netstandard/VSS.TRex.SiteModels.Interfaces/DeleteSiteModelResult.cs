@@ -2,8 +2,8 @@
 {
   public enum DeleteSiteModelResult
   {
-    OK = 0,
-    UnknownError = 1,
+    UnknownError = 0,
+    OK = 1,
     UnhandledException = 2,
     UnableToLocateSiteModel = 3,
     RequestNotMadeToMutableGrid = 4,

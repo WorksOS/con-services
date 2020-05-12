@@ -547,6 +547,7 @@ namespace VSS.TRex.Events
       if (result != FileSystemErrorStatus.OK)
       {
         Log.LogInformation($"Error {result} occurred removing {EventChangeListPersistantFileName()} from project {SiteModelID}");
+        return;
       }
 
       EventsChanged = false;
