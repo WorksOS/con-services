@@ -1,6 +1,6 @@
 export class DeleteSiteModelRequestResponse {
     constructor() {
-        this.deleteSiteModelResult = "";
+        this.result = -1;
         this.numRemovedElements = -1;
     }
 }

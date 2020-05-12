@@ -57,8 +57,8 @@ export class DeleteProjectComponent {
             if (this.confirmDeleteProject === false) {
                 this.confirmationMessage = `Must confirm intent to delete project ${this.projectUid}`;
             } else {
-                this.deleteProjectService.deleteProject(this.projectUid).subscribe(result => {
-                    this.confirmationMessage = `Deletion response for project ${this.projectUid}: Result = ${result.deleteSiteModelResult} with ${result.numRemovedElements} removed elements.`;
+                this.deleteProjectService.deleteProject(this.projectUid).subscribe(response => {
+                    this.confirmationMessage = `Deletion response for project ${this.projectUid}: Result = ${this.deleteResultStatusAsString(response.result)} with ${response.numRemovedElements} removed elements.`;
                     this.confirmDeleteProject = false;
                     this.projectUid = "";
                     this.candidateProjectUid = "";
@@ -85,6 +85,26 @@ export class DeleteProjectComponent {
 
     public updateAllProjectsMetadata(): void {
         this.getAllProjectMetadata();
+    }
+
+    private deleteResultStatusAsString(result: number): string {
+        switch (result) {
+            case 0: return "OK";
+            case 1: return "UnknownError";
+            case 2: return "UnhandledException";
+            case 3: return "UnableToLocateSiteModel";
+            case 4: return "RequestNotMadeToMutableGrid";
+            case 5: return "FailedToRemoveSubGrids";
+            case 6: return "FailedToRemoveProjectMetadata";
+            case 7: return "FailedToCommitPrimaryElementRemoval";
+            case 8: return "FailedToCommitExistenceMapRemoval";
+            case 9: return "FailedToRemoveSiteDesigns";
+            case 10: return "FailedToRemoveSurveyedSurfaces";
+            case 11: return "FailedToRemoveAlignments";
+            case 12: return "FailedToRemoveCSIB";
+            default:
+                return `Unknown: ${result}`;
+        }
     }
 }
 

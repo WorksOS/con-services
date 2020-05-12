@@ -2,18 +2,18 @@
 {
   public enum DeleteSiteModelResult
   {
-    OK,
-    UnknownError,
-    UnhandledException,
-    UnableToLocateSiteModel,
-    RequestNotMadeToMutableGrid,
-    FailedToRemoveSubGrids,
-    FailedToRemoveProjectMetadata,
-    FailedToCommitPrimaryElementRemoval,
-    FailedToCommitExistenceMapRemoval,
-    FailedToRemoveSiteDesigns,
-    FailedToRemoveSurveyedSurfaces,
-    FailedToRemoveAlignments,
-    FailedToRemoveCSIB
+    OK = 0,
+    UnknownError = 1,
+    UnhandledException = 2,
+    UnableToLocateSiteModel = 3,
+    RequestNotMadeToMutableGrid = 4,
+    FailedToRemoveSubGrids = 5,
+    FailedToRemoveProjectMetadata = 6,
+    FailedToCommitPrimaryElementRemoval = 7,
+    FailedToCommitExistenceMapRemoval = 8,
+    FailedToRemoveSiteDesigns = 9,
+    FailedToRemoveSurveyedSurfaces = 10,
+    FailedToRemoveAlignments = 11,
+    FailedToRemoveCSIB = 12
   }
 }
