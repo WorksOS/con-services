@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.SurveyedSurfaces.Interfaces
 {
@@ -27,5 +28,13 @@ namespace VSS.TRex.SurveyedSurfaces.Interfaces
     /// <param name="surveySurfaceUid"></param>
     /// <returns></returns>
     bool Remove(Guid siteModelUid, Guid surveySurfaceUid);
+
+    /// <summary>
+    /// Remove the surveyed surface list for a site model from the persistent store
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    bool Remove(Guid siteModelID, IStorageProxy storageProxy);
   }
 }

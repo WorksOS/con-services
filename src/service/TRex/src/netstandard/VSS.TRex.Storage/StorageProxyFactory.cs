@@ -11,8 +11,7 @@ namespace VSS.TRex.Storage
   public class StorageProxyFactory : IStorageProxyFactory
   {
     /// <summary>
-    /// Creates the storage proxy to be used. Currently hard wired to the Ignite storage proxy,
-    /// should be replaced with the type from Dependency Injection when implemented.
+    /// Creates the storage proxy to be used. 
     /// This factory method provides access to the mutable grid storage
     /// </summary>
     /// <returns></returns>
@@ -29,8 +28,7 @@ namespace VSS.TRex.Storage
     }
 
     /// <summary>
-    /// Creates the storage proxy to be used. Currently hard wired to the Ignite storage proxy,
-    /// should be replaced with the type from Dependency Injection when implemented.
+    /// Creates the storage proxy to be used. 
     /// This factory method provides access to the immutable grid storage
     /// </summary>
     /// <returns></returns>
@@ -41,8 +39,7 @@ namespace VSS.TRex.Storage
     }
 
     /// <summary>
-    /// Creates the storage proxy to be used. Currently hard wired to the Ignite storage proxy,
-    /// should be replaced with the type from Dependency Injection when implemented.
+    /// Creates the storage proxy to be used. 
     /// This factory method provides access to the immutable grid storage
     /// </summary>
     /// <returns></returns>

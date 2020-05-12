@@ -20,6 +20,7 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.ResultHandling;
 using VSS.TRex.Reports.Gridded.GridFabric;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -100,7 +101,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       request.Validate();
 
       // Mock the export request functionality to return an empty gridded report reponse to stimulate the desired success
-      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      var mockCompute = IgniteMock.Immutable.mockCompute;
       mockCompute.Setup(x => x.ApplyAsync(It.IsAny<GriddedReportRequestComputeFunc>(), It.IsAny<GriddedReportRequestArgument>(), It.IsAny<CancellationToken>())).Returns((GriddedReportRequestComputeFunc func, GriddedReportRequestArgument argument, CancellationToken token) => Task.FromResult(new GriddedReportRequestResponse()));
 
       var executor = RequestExecutorContainer

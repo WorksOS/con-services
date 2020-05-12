@@ -304,6 +304,18 @@ namespace VSS.TRex.Events
       }
     }
 
+    public void RemoveMachineEventsFromPersistentStore(IStorageProxy storageProxy)
+    {
+      if (SiteModel.IsTransient)
+        throw new TRexPersistencyException($"Site model {SiteModel.ID} is a transient site model. Transient site models may not remove events from the persistent store.");
+
+      foreach (var evt in ProductionEventTypeValues)
+      {
+        LoadFromStore(GetEventList(evt), evt, storageProxy);
+        allEventsForMachine[(int)evt]?.RemoveFromStore(storageProxy);
+      }
+    }
+
     /// <summary>
     /// Forces all event lists to be loaded for a machine. This is an in-efficient approach and should only be called
     /// if all lists are required, and doing so is more desirable than using lazy loading for event lists
@@ -312,7 +324,7 @@ namespace VSS.TRex.Events
     /// <returns></returns>
     public bool LoadEventsForMachine(IStorageProxy storageProxy)
     {
-      foreach (ProductionEventType evt in ProductionEventTypeValues)
+      foreach (var evt in ProductionEventTypeValues)
       {
         Log.LogDebug($"Loading {evt} events for machine {_internalSiteModelMachineIndex} in project {SiteModel.ID}");
 

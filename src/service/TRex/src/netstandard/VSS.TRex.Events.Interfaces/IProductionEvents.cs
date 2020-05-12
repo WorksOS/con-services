@@ -17,6 +17,7 @@ namespace VSS.TRex.Events.Interfaces
     MemoryStream GetImmutableStream();
 
     void SaveToStore(IStorageProxy storageProxy);
+    void RemoveFromStore(IStorageProxy storageProxy);
 
     ProductionEventType EventListType { get; }
 

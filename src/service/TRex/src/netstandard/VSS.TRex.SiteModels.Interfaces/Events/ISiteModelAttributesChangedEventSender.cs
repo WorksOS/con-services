@@ -13,6 +13,6 @@ namespace VSS.TRex.SiteModels.Interfaces.Events
       bool existenceMapChanged = false, ISubGridTreeBitMask existenceMapChangeMask = null,
       bool designsChanged = false, bool surveyedSurfacesChanged = false, bool CsibChanged = false,
       bool machinesChanged = false, bool machineTargetValuesChanged = false, bool machineDesignsModified = false, 
-      bool proofingRunsModified = false, bool alignmentsChanged = false);
+      bool proofingRunsModified = false, bool alignmentsChanged = false, bool siteModelMarkedForDeletion = false);
   }
 }

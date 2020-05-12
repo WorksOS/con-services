@@ -51,9 +51,9 @@ namespace VSS.TRex.Tests.Servers.Server
         CacheConfiguration = mockedConfigs
       };
 
-      // Ge the mocked Ignite instance and add the configuration to it
-      var ignite = DIContext.Obtain<Mock<IIgnite>>();
-      ignite.Setup(x => x.GetConfiguration()).Returns(igniteConfiguration);
+      // Get the mocked Ignite instance and add the configuration to it
+      IgniteMock.Immutable.mockIgnite.Setup(x => x.GetConfiguration()).Returns(igniteConfiguration);
+      IgniteMock.Mutable.mockIgnite.Setup(x => x.GetConfiguration()).Returns(igniteConfiguration);
     }
   }
 

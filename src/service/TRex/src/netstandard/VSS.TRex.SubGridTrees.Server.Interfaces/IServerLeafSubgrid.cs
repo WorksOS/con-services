@@ -51,6 +51,9 @@ namespace VSS.TRex.SubGridTrees.Server.Interfaces
 
         bool LoadSegmentFromStorage(IStorageProxy storageProxy, string FileName, ISubGridCellPassesDataSegment Segment, bool loadLatestData, bool loadAllPasses);
 
+        bool RemoveSegmentFromStorage(IStorageProxy storageProxy, string fileName, ISubGridCellPassesDataSegmentInfo segment);
+        bool RemoveDirectoryFromStorage(IStorageProxy storageProxy, string fileName);
+
         void Integrate(IServerLeafSubGrid source, ISubGridSegmentIterator iterator, bool integratingIntoIntermediaryGrid);
 
         bool HasAllCellPasses();

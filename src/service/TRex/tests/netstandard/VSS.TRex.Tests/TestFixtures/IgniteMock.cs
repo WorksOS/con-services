@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -13,6 +14,7 @@ using Apache.Ignite.Core.Messaging;
 using Apache.Ignite.Core.Transactions;
 using Moq;
 using VSS.TRex.Common.Exceptions;
+using VSS.TRex.Common.Extensions;
 using VSS.TRex.Common.Serialisation;
 using VSS.TRex.Designs.GridFabric.Events;
 using VSS.TRex.Designs.Interfaces;
@@ -22,7 +24,9 @@ using VSS.TRex.GridFabric.Grids;
 using VSS.TRex.GridFabric.Interfaces;
 using VSS.TRex.SiteModelChangeMaps.Interfaces.GridFabric.Queues;
 using VSS.TRex.SiteModels.GridFabric.Events;
+using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SiteModels.Interfaces.Events;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.SubGrids.GridFabric.Listeners;
 using VSS.TRex.TAGFiles.Models;
 using VSS.TRex.Tests.BinarizableSerialization;
@@ -44,6 +48,16 @@ namespace VSS.TRex.Tests.TestFixtures
     public Mock<IIgnite> mockIgnite { get; }
     public Mock<ITransactions> mockTransactions { get; }
     public Mock<ITransaction> mockTransaction { get; }
+
+    /// <summary>
+    /// Returns any mocked mutable Ignite instance injected via the TRex grid factory
+    /// </summary>
+    public static IgniteMock Mutable => DIContext.Obtain<Func<StorageMutability, IgniteMock>>()(StorageMutability.Mutable);
+
+    /// <summary>
+    /// Returns any mocked immutable Ignite instance injected via the TRex grid factory
+    /// </summary>
+    public static IgniteMock Immutable => DIContext.Obtain<Func<StorageMutability, IgniteMock>>()(StorageMutability.Immutable);
 
     /// <summary>
     /// Constructor that creates the collection of mocks that together mock the Ignite infrastructure layer in TRex
@@ -69,7 +83,10 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISerialisedByteArrayWrapper> listener, object topic) =>
         {
-          messagingDictionary.Add(topic, listener);
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
         });
 
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISerialisedByteArrayWrapper>>(), It.IsAny<object>()));
@@ -78,14 +95,20 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()))
         .Callback((IMessageListener<ISiteModelAttributesChangedEvent> listener, object topic) =>
         {
-          messagingDictionary.Add(topic, listener);
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
         });
 
       mockMessaging
         .Setup(x => x.LocalListen(It.IsAny<IMessageListener<IDesignChangedEvent>>(), It.IsAny<object>()))
         .Callback((IMessageListener<IDesignChangedEvent> listener, object topic) =>
         {
-          messagingDictionary.Add(topic, listener);
+          lock (messagingDictionary)
+          {
+            messagingDictionary.Add(topic, listener);
+          }
         });
 
       mockMessaging.Setup(x => x.StopLocalListen(It.IsAny<IMessageListener<ISiteModelAttributesChangedEvent>>(), It.IsAny<object>()));
@@ -95,18 +118,29 @@ namespace VSS.TRex.Tests.TestFixtures
         .Setup(x => x.Send(It.IsAny<object>(), It.IsAny<object>()))
         .Callback((object message, object topic) =>
         {
-          messagingDictionary.TryGetValue(topic, out var lstnr);
+          object lstnr;
+          lock (messagingDictionary)
+          {
+            messagingDictionary.TryGetValue(topic, out lstnr);
+          }
+
           if (lstnr is SubGridListener listener)
             listener.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else
-            throw new TRexException($"Type of listener ({lstnr}) not SubGridListener as expected.");
+            if (lstnr != null)
+              throw new TRexException($"Type of listener ({lstnr}) not SubGridListener as expected.");
         });
 
       mockMessaging
         .Setup(x => x.SendOrdered(It.IsAny<object>(), It.IsAny<object>(), It.IsAny<TimeSpan?>()))
         .Callback((object message, object topic, TimeSpan? timeSpan) =>
         {
-          messagingDictionary.TryGetValue(topic, out var lstnr);
+          object lstnr;
+          lock (messagingDictionary)
+          {
+            messagingDictionary.TryGetValue(topic, out lstnr);
+          }
+
           if (lstnr is SubGridListener listener1)
             listener1.Invoke(Guid.Empty, message as SerialisedByteArrayWrapper);
           else if (lstnr is SiteModelAttributesChangedEventListener listener2)
@@ -114,7 +148,8 @@ namespace VSS.TRex.Tests.TestFixtures
           else if (lstnr is DesignChangedEventListener listener3)
             listener3.Invoke(Guid.Empty, message as DesignChangedEvent);
           else
-            throw new TRexException("Type of listener not SubGridListener or SiteModelAttributesChangedEventListener or DesignChangedEvent as expected.");
+            if (lstnr != null)
+              throw new TRexException($"Type of listener ({lstnr}) not SubGridListener or SiteModelAttributesChangedEventListener or DesignChangedEvent as expected.");
         });
 
       mockClusterGroup = new Mock<IClusterGroup>(MockBehavior.Strict);
@@ -148,45 +183,109 @@ namespace VSS.TRex.Tests.TestFixtures
       mockIgnite.Setup(x => x.GetTransactions()).Returns(mockTransactions.Object);
     }
 
-    private static ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)
+    private ICache<TK, TV> BuildMockForCache<TK, TV>(string cacheName)
     {
-      if (cacheDictionary.TryGetValue(cacheName, out var cache))
-        return (ICache<TK, TV>)cache;
+      lock (CacheDictionary)
+      {
+        if (CacheDictionary.TryGetValue(cacheName, out var cache))
+          return (ICache<TK, TV>) cache;
+      }
 
       var mockCache = new Mock<ICache<TK, TV>>(MockBehavior.Strict);
       var mockCacheDictionary = new Dictionary<TK, TV>();
 
       mockCache.Setup(x => x.Get(It.IsAny<TK>())).Returns((TK key) =>
       {
-        if (mockCacheDictionary.TryGetValue(key, out var value))
-          return value;
+        lock (mockCacheDictionary)
+        {
+          if (mockCacheDictionary.TryGetValue(key, out var value))
+            return value;
+        }
+
         throw new KeyNotFoundException($"Key {key} not found in mock cache");
       });
 
       mockCache.Setup(x => x.Put(It.IsAny<TK>(), It.IsAny<TV>())).Callback((TK key, TV value) =>
       {
-        mockCacheDictionary.Add(key, value);
+        lock (mockCacheDictionary)
+        {
+          // Ignite behaviour is writing an existing key updates the value with no error
+          if (mockCacheDictionary.ContainsKey(key))
+            mockCacheDictionary[key] = value;
+          else
+            mockCacheDictionary.Add(key, value);
+        }
       });
 
       mockCache.Setup(x => x.PutIfAbsent(It.IsAny<TK>(), It.IsAny<TV>())).Returns((TK key, TV value) =>
       {
-        if (!mockCacheDictionary.ContainsKey(key))
+        lock (mockCacheDictionary)
         {
-          mockCacheDictionary.Add(key, value);
-          return true;
+          if (!mockCacheDictionary.ContainsKey(key))
+          {
+            mockCacheDictionary.Add(key, value);
+            return true;
+          }
         }
 
         return false;
       });
 
-      cacheDictionary.Add(cacheName, mockCache.Object);
+      mockCache.Setup(x => x.Name).Returns(cacheName);
+
+      mockCache.Setup(x => x.RemoveAll(It.IsAny<IEnumerable<TK>>())).Callback((IEnumerable<TK> keys) =>
+      {
+        lock (mockCacheDictionary)
+        {
+          keys.ForEach(key => mockCacheDictionary.Remove(key));
+        }
+      });
+
+      mockCache.Setup(x => x.Remove(It.IsAny<TK>())).Returns((TK key) =>
+      {
+        lock (mockCacheDictionary)
+        {
+          if (mockCacheDictionary.ContainsKey(key))
+          {
+            mockCacheDictionary.Remove(key);
+
+            return true;
+          }
+        }
+
+        return false;
+      });
+
+      mockCache.Setup(x => x.PutAll(It.IsAny<IEnumerable<KeyValuePair<TK, TV>>>())).Callback((IEnumerable<KeyValuePair<TK, TV>> values) =>
+      {
+        values.ForEach(value =>
+        {
+          lock (mockCacheDictionary)
+          {
+            // Ignite behaviour is writing an existing key updates the value with no error
+            if (mockCacheDictionary.ContainsKey(value.Key))
+              mockCacheDictionary[value.Key] = value.Value;
+            else
+              mockCacheDictionary.Add(value.Key, value.Value);
+          }
+        });
+      });
+
+      lock (CacheDictionary)
+      {
+        CacheDictionary.Add(cacheName, mockCache.Object);
+      }
+
+      lock (MockedCacheDictionaries)
+      {
+        MockedCacheDictionaries.Add(mockCacheDictionary);
+      }
+
       return mockCache.Object;
     }
 
-    public static void AddMockedCacheToIgniteMock<TK, TV>()
+    public void AddMockedCacheToIgniteMock<TK, TV>()
     {
-      var mockIgnite = DIContext.Obtain<Mock<IIgnite>>();
-
       mockIgnite
         .Setup(x => x.GetOrCreateCache<TK, TV>(It.IsAny<CacheConfiguration>()))
         .Returns((CacheConfiguration cfg) => BuildMockForCache<TK, TV>(cfg.Name));
@@ -195,24 +294,32 @@ namespace VSS.TRex.Tests.TestFixtures
         .Returns((string cacheName) => BuildMockForCache<TK, TV>(cacheName));
     }
 
-    public static void RemoveMockedCacheFromIgniteMock<TK, TV>()
+    public void RemoveMockedCacheFromIgniteMock<TK, TV>()
     {
-      var mockIgnite = DIContext.Obtain<Mock<IIgnite>>();
-
       mockIgnite.Setup(x => x.GetOrCreateCache<TK, TV>(It.IsAny<CacheConfiguration>()));
       mockIgnite.Setup(x => x.GetCache<TK, TV>(It.IsAny<string>()));
     }
 
-    private static Dictionary<string, object> cacheDictionary; // object = ICache<TK, TV>
+    /// <summary>
+    /// A dictionary mapping cache names to mocked caches
+    /// </summary>
+    public Dictionary<string, object> CacheDictionary; // object = ICache<TK, TV>
+    
+    /// <summary>
+    /// A list of the dictionaries containing all mocked cache entries, useful for tests that want to look at
+    /// the caches in terms of a collection
+    /// </summary>
+    public List<IDictionary> MockedCacheDictionaries; 
 
     /// <summary>
     /// Removes and recreates any dynamic content contained in the Ignite mock. References to the mocked Ignite context are accessed via the TRex
     /// Dependency Injection layer.
     /// </summary>
-    public static void ResetDynamicMockedIgniteContent()
+    public void ResetDynamicMockedIgniteContent()
     {
       // Create the dictionary to contain all the mocked caches
-      cacheDictionary = new Dictionary<string, object>(); 
+      CacheDictionary = new Dictionary<string, object>();
+      MockedCacheDictionaries = new List<IDictionary>();
 
       // Create the mocked cache for the existence maps cache and any other cache using this signature
       AddMockedCacheToIgniteMock<INonSpatialAffinityKey, ISerialisedByteArrayWrapper>();
@@ -223,7 +330,7 @@ namespace VSS.TRex.Tests.TestFixtures
       // Create the mocked cache for the site model segment retirement queue and any other cache using this signature
       AddMockedCacheToIgniteMock<ISegmentRetirementQueueKey, SegmentRetirementQueueItem>();
 
-      // Create the mocked cache for the subgrid spatial data in the site model and any other cache using this signature
+      // Create the mocked cache for the sub grid spatial data in the site model and any other cache using this signature
       AddMockedCacheToIgniteMock<ISubGridSpatialAffinityKey, ISerialisedByteArrayWrapper>();
 
       // Create the mocked cache for the site model machine change maps and any other cache using this signature
@@ -231,9 +338,12 @@ namespace VSS.TRex.Tests.TestFixtures
 
       // Create the mocked cache for the change map buffer queue that sites between the tag file ingest pipeline and the machine change maps processor
       AddMockedCacheToIgniteMock<ISiteModelChangeBufferQueueKey, ISiteModelChangeBufferQueueItem>();
+
+      // Create the mocked cache for the summary site model meta data
+      AddMockedCacheToIgniteMock<Guid, ISiteModelMetadata>();
     }
 
-    private static void TestIBinarizableSerializationForItem(object item)
+    private void TestIBinarizableSerializationForItem(object item)
     {
       if (item is IBinarizable)
       {
@@ -249,10 +359,8 @@ namespace VSS.TRex.Tests.TestFixtures
       }
     }
 
-    public static void AddApplicationGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
+    public void AddApplicationGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
     {
-      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
-
       mockCompute.Setup(x => x.Apply(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
       {
         // exercise serialize/deserialize of func and argument before invoking function
@@ -287,10 +395,8 @@ namespace VSS.TRex.Tests.TestFixtures
       mockCompute.Setup(x => x.ApplyAsync(It.IsAny<TCompute>(), It.IsAny<TArgument>(), It.IsAny<CancellationToken>())).Returns((TCompute func, TArgument argument, CancellationToken token) => mockCompute.Object.ApplyAsync(func, argument));
     }
 
-    public static void AddClusterComputeGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
+    public void AddClusterComputeGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TArgument, TResponse>
     {
-      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
-
       mockCompute.Setup(x => x.Apply(It.IsAny<TCompute>(), It.IsAny<TArgument>())).Returns((TCompute func, TArgument argument) =>
       {
         // exercise serialize/deserialize of func and argument before invoking function
@@ -338,10 +444,8 @@ namespace VSS.TRex.Tests.TestFixtures
       });
     }
 
-    public static void AddClusterComputeSpatialAffinityGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TResponse>, IComputeFuncArgument<TArgument>
+    public void AddClusterComputeSpatialAffinityGridRouting<TCompute, TArgument, TResponse>() where TCompute : IComputeFunc<TResponse>, IComputeFuncArgument<TArgument>
     {
-      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
-
       mockCompute.Setup(x => x.AffinityCall(It.IsAny<string>(), It.IsAny<object>(), It.IsAny<TCompute>())).Returns((string cacheName, object key, TCompute func) =>
       {
         // exercise serialize/deserialize of func and argument before invoking function
@@ -368,5 +472,15 @@ namespace VSS.TRex.Tests.TestFixtures
         return Task.FromResult(response);
       });
     }
+  }
+
+  public class IgniteMock_Immutable : IgniteMock
+  {
+
+  }
+
+  public class IgniteMock_Mutable : IgniteMock
+  {
+
   }
 }

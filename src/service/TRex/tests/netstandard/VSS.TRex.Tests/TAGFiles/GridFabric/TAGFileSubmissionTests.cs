@@ -53,7 +53,7 @@ namespace TAGFiles.Tests
         .Add(x => x.AddSingleton<ITAGFileBufferQueue>(mockTagFileBufferQueue.Object))
         .Complete();
 
-      IgniteMock.AddApplicationGridRouting<IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>, SubmitTAGFileRequestArgument, SubmitTAGFileResponse>();
+      IgniteMock.Mutable.AddApplicationGridRouting<IComputeFunc<SubmitTAGFileRequestArgument, SubmitTAGFileResponse>, SubmitTAGFileRequestArgument, SubmitTAGFileResponse>();
     }
 
     private SubmitTAGFileRequestArgument RequestArgument(Guid assetID, string tagFileName)

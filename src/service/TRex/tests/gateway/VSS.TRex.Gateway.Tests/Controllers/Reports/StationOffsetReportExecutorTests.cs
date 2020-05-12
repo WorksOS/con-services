@@ -21,6 +21,7 @@ using VSS.TRex.Reports.Gridded.GridFabric;
 using VSS.TRex.Reports.StationOffset.GridFabric.Arguments;
 using VSS.TRex.Reports.StationOffset.GridFabric.ComputeFuncs;
 using VSS.TRex.Reports.StationOffset.GridFabric.Responses;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -97,7 +98,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Reports
       request.Validate();
 
       // Mock the export request functionality to return an empty report reponse to stimulate the desired success
-      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      var mockCompute = IgniteMock.Immutable.mockCompute;
       mockCompute.Setup(x => x.ApplyAsync(It.IsAny<StationOffsetReportRequestComputeFunc_ApplicationService>(), It.IsAny<StationOffsetReportRequestArgument_ApplicationService>(), It.IsAny<CancellationToken>()))
         .Returns((StationOffsetReportRequestComputeFunc_ApplicationService func, StationOffsetReportRequestArgument_ApplicationService argument, CancellationToken token) => Task.FromResult(new StationOffsetReportRequestResponse_ApplicationService()));
 

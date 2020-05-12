@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Amazon.S3.Model.Internal.MarshallTransformations;
 using Apache.Ignite.Core.Cache;
 using Moq;
 using VSS.TRex.Storage;
@@ -21,13 +22,19 @@ namespace VSS.TRex.Tests.TestFixtures
     /// Override the name property which extracts the cache name from the storage proxy. Test harnesses don;t have a valid cache
     /// reference so just return a dummy name for the cache.
     /// </summary>
-    public override string Name => "StorageProxyCacheTransacted_TestHarness";
+    public override string Name => HasCache ? base.Name : "StorageProxyCacheTransacted_TestHarness";
 
     /// <summary>
     /// Override the commit behaviour to make it a null operation for unit test activities
     /// </summary>
     public override void Commit(out int numDeleted, out int numUpdated, out long numBytesWritten)
     {
+      if (HasCache)
+      {
+        base.Commit(out numDeleted, out numUpdated, out numBytesWritten);
+        return;
+      }
+
       // Do nothing on purpose
       numDeleted = 0;
       numUpdated = 0;
@@ -42,6 +49,11 @@ namespace VSS.TRex.Tests.TestFixtures
     /// <returns></returns>
     public override TV Get(TK key)
     {
+      if (HasCache)
+      {
+        return base.Get(key);
+      }
+
       lock (PendingTransactedWrites)
       {
         if (PendingTransactedWrites.TryGetValue(key, out var value))
@@ -57,15 +69,14 @@ namespace VSS.TRex.Tests.TestFixtures
     /// </summary>
     public override void Clear()
     {
-      // Do nothing - retain the information within the storage proxy for test purposes
-    }
-
-    /// <summary>
-    /// Provide a means for tests to forcibly clear the proxy cache if required.
-    /// </summary>
-    public void ForceClear()
-    {
-      base.Clear();
+      if (HasCache)
+      {
+        base.Clear();
+      }
+      else
+      {
+        // Do nothing - retain the information within the storage proxy for test purposes
+      }
     }
 
     /// <summary>

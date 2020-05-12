@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using VSS.TRex.Designs.TTM;
 using VSS.TRex.DI;
 using VSS.TRex.Logging;
+using VSS.TRex.SiteModels.GridFabric.Requests;
 using VSS.TRex.SiteModels.Interfaces;
 
 namespace VSS.TRex.Webtools.Controllers
@@ -74,6 +75,26 @@ namespace VSS.TRex.Webtools.Controllers
     public JsonResult GetSubGridCount(string siteModelID)
     {
       return new JsonResult(DIContext.Obtain<ISiteModels>().GetSiteModel(Guid.Parse(siteModelID))?.ExistenceMap.CountBits() ?? 0);
+    }
+
+    /// <summary>
+    /// Deletes all information related to the project held in TRex. This operation is irreversible
+    /// </summary>
+    /// <param name="siteModelId">Grid to return status for</param>
+    /// <returns></returns>
+    [HttpDelete("{siteModelID}")]
+    public async Task<JsonResult> DeleteProject(string siteModelID)
+    {
+      Guid.TryParse(siteModelID, out var siteModelUid);
+
+      var deleter = new DeleteSiteModelRequest();
+      var response = await deleter.ExecuteAsync(new DeleteSiteModelRequestArgument
+      {
+        ExternalDescriptor = Guid.NewGuid(), 
+        ProjectID = siteModelUid
+      });
+
+      return new JsonResult(response);
     }
 
     /// <summary>

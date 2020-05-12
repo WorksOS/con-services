@@ -21,6 +21,7 @@ using VSS.TRex.Exports.CSV.GridFabric;
 using VSS.TRex.Gateway.Common.Converters;
 using VSS.TRex.Gateway.Common.Executors;
 using VSS.TRex.Gateway.Common.Requests;
+using VSS.TRex.Storage.Models;
 using VSS.TRex.Tests.TestFixtures;
 using Xunit;
 
@@ -104,7 +105,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
       // Mock the CSV export request functionality to return a null CSV export reponse to stimulate tyhe desired internal processing error
-      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      var mockCompute = IgniteMock.Immutable.mockCompute;
       mockCompute.Setup(x => x.ApplyAsync(It.IsAny<CSVExportRequestComputeFunc>(), It.IsAny<CSVExportRequestArgument>(), It.IsAny<CancellationToken>())).Returns((CSVExportRequestComputeFunc func, CSVExportRequestArgument argument, CancellationToken token) => Task.FromResult<CSVExportRequestResponse>(null));
 
       var executor = RequestExecutorContainer
@@ -142,7 +143,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.CSVExport
       var compactionCSVExportRequest = AutoMapperUtility.Automapper.Map<CompactionCSVExportRequest>(request);
 
       // Mock the CSV export request functionality to return a null CSV export reponse to stimulate tyhe desired internal processing error
-      var mockCompute = DIContext.Obtain<Mock<ICompute>>();
+      var mockCompute = IgniteMock.Immutable.mockCompute;
       mockCompute.Setup(x => x.ApplyAsync(It.IsAny<CSVExportRequestComputeFunc>(), It.IsAny<CSVExportRequestArgument>(), It.IsAny<CancellationToken>())).Returns((CSVExportRequestComputeFunc func, CSVExportRequestArgument argument, CancellationToken token) => Task.FromResult<CSVExportRequestResponse>(null));
 
       var executor = RequestExecutorContainer

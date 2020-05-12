@@ -298,6 +298,51 @@ namespace VSS.TRex.Storage
     }
 
     /// <summary>
+    /// Removes a spatial stream from the persistent store identified by its spatial descriptor attributes
+    /// </summary>
+    /// <param name="dataModelId"></param>
+    /// <param name="streamName"></param>
+    /// <param name="subGridX"></param>
+    /// <param name="subGridY"></param>
+    /// <param name="segmentStartDateTicks"></param>
+    /// <param name="segmentEndDateTicks"></param>
+    /// <param name="version"></param>
+    /// <param name="streamType"></param>
+    /// <returns></returns>
+    public FileSystemErrorStatus RemoveSpatialStreamFromPersistentStore(Guid dataModelId,
+      string streamName,
+      int subGridX, int subGridY,
+      long segmentStartDateTicks,
+      long segmentEndDateTicks,
+      long version,
+      FileSystemStreamType streamType)
+    {
+      try
+      {
+        var cacheKey = new SubGridSpatialAffinityKey(version, dataModelId, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks);
+
+        try
+        {
+          SpatialCache(streamType).Remove(cacheKey);
+        }
+        catch (KeyNotFoundException)
+        {
+          return FileSystemErrorStatus.GranuleDoesNotExist;
+        }
+
+        ImmutableProxy?.RemoveSpatialStreamFromPersistentStore(dataModelId, streamName, subGridX, subGridY, segmentStartDateTicks, segmentEndDateTicks, version, streamType);
+
+        return FileSystemErrorStatus.OK;
+      }
+      catch (Exception e)
+      {
+        Log.LogError(e, "Exception occurred:");
+
+        return FileSystemErrorStatus.UnknownFailureRemovingFileFromFS;
+      }
+    }
+
+    /// <summary>
     /// Sets a reference to a storage proxy that proxies the immutable data store for this mutable data store
     /// </summary>
     /// <param name="immutableProxy"></param>

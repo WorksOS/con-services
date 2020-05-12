@@ -64,13 +64,11 @@ namespace VSS.TRex.SurveyedSurfaces
     /// <param name="surveyedSurfaces"></param>
     private void Store(Guid siteModelUid, ISurveyedSurfaces surveyedSurfaces)
     {
-      using (var stream = surveyedSurfaces.ToStream())
+      using var stream = surveyedSurfaces.ToStream();
+      if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME,
+        FileSystemStreamType.SurveyedSurfaces, stream, this) == FileSystemErrorStatus.OK)
       {
-        if (_writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, SURVEYED_SURFACE_STREAM_NAME,
-          FileSystemStreamType.SurveyedSurfaces, stream, this) == FileSystemErrorStatus.OK)
-        {
-          _writeStorageProxy.Commit();
-        }
+        _writeStorageProxy.Commit();
       }
 
       // Notify the  grid listeners that attributes of this site model have changed.
@@ -120,6 +118,24 @@ namespace VSS.TRex.SurveyedSurfaces
       Store(siteModelUid, ss);
 
       return result;
+    }
+
+    /// <summary>
+    /// Remove the surveyed surface list for a site model from the persistent store
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool Remove(Guid siteModelID, IStorageProxy storageProxy)
+    {
+      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelID, FileSystemStreamType.Designs, SURVEYED_SURFACE_STREAM_NAME);
+
+      if (result != FileSystemErrorStatus.OK)
+      {
+        Log.LogInformation($"Removing surveyed surfaces list from project {siteModelID} failed with error {result}");
+      }
+
+      return result == FileSystemErrorStatus.OK;
     }
   }
 }

@@ -23,7 +23,7 @@ namespace VSS.TRex.Tests.TAGFiles.GridFabric
         .Continue()
         .Complete();
 
-      IgniteMock.AddApplicationGridRouting<IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>, ProcessTAGFileRequestArgument, ProcessTAGFileResponse>();
+      IgniteMock.Mutable.AddApplicationGridRouting<IComputeFunc<ProcessTAGFileRequestArgument, ProcessTAGFileResponse>, ProcessTAGFileRequestArgument, ProcessTAGFileResponse>();
     }
 
     [Fact]
