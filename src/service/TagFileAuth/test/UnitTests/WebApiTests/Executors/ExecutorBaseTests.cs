@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,7 +27,7 @@ namespace WebApiTests.Executors
     protected Mock<ITPaaSApplicationAuthentication> authorization;
     protected Mock<ICwsAccountClient> cwsAccountClient;
     protected Mock<IDeviceInternalProxy> deviceProxy;
-    protected IDictionary<string, string> requestCustomHeaders;
+    protected IHeaderDictionary requestCustomHeaders;
     protected static ContractExecutionStatesEnum ContractExecutionStatesEnum = new ContractExecutionStatesEnum();
     protected ILoggerFactory loggerFactory;
 
@@ -34,7 +35,7 @@ namespace WebApiTests.Executors
     public virtual void InitTest()
     {
       var serviceCollection = new ServiceCollection();
-      
+
       serviceCollection
         .AddLogging()
         .AddSingleton(new LoggerFactory().AddSerilog(SerilogExtensions.Configure("VSS.TagFileAuth.WepApiTests.log")))
@@ -47,10 +48,9 @@ namespace WebApiTests.Executors
       projectProxy = new Mock<IProjectInternalProxy>();
       cwsAccountClient = new Mock<ICwsAccountClient>();
       deviceProxy = new Mock<IDeviceInternalProxy>();
-      requestCustomHeaders = new Dictionary<string, string>();
+      requestCustomHeaders = new HeaderDictionary();
       loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
       authorization = new Mock<ITPaaSApplicationAuthentication>();
     }
-  
   }
 }

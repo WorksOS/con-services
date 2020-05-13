@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -39,8 +39,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// LoggerFactory factory for use by executor
     /// </summary>
-    private readonly ILoggerFactory logger;
-    private ILogger log;
+    private readonly ILoggerFactory _logger;
+    private readonly ILogger _log;
 
     /// <summary>
     /// Where to get environment variables, connection string etc. from
@@ -60,7 +60,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     /// <summary>
     /// Gets the custom headers for the request.
     /// </summary>
-    private IDictionary<string, string> CustomHeaders => Request.Headers.GetCustomHeaders();
+    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Gets the User uid/applicationID from the context.
@@ -90,8 +90,8 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
 #if RAPTOR
       this.raptorClient = raptorClient;
 #endif
-      this.logger = logger;
-      log = logger.CreateLogger<ReportController>();
+      this._logger = logger;
+      _log = logger.CreateLogger<ReportController>();
       this.configStore = configStore;
       this.tRexCompactionDataProxy = tRexCompactionDataProxy;
       this.fileImportProxy = fileImportProxy;
@@ -126,7 +126,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public ExportResult PostExportCsvReport([FromBody] ExportGridCSV request)
     {
-      log.LogDebug($"{nameof(PostExportCsvReport)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportCsvReport)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 #if RAPTOR
@@ -142,12 +142,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<ExportResult> PostExportReport([FromBody] ExportReport request)
     {
-      log.LogDebug($"{nameof(PostExportReport)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportReport)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 
       return await RequestExecutorContainerFactory.Build<ExportReportExecutor>(
-          logger,
+          _logger,
 #if RAPTOR
           raptorClient,
           null,
@@ -171,10 +171,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<PassCountSummaryResult> PostExportSummaryPasscounts([FromBody] PassCounts request)
     {
-      log.LogDebug($"{nameof(PostExportSummaryPasscounts)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryPasscounts)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return await RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummaryPassCountsExecutor>(_logger,
 #if RAPTOR
             raptorClient, 
 #endif
@@ -198,7 +198,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<PassCountDetailedResult> PostExportDetailedPasscounts([FromBody] PassCounts request)
     {
-      log.LogDebug($"{nameof(PostExportDetailedPasscounts)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportDetailedPasscounts)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       //pass count settings required for detailed report
@@ -208,7 +208,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
           new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError,
             "Pass count settings required for detailed pass count report"));
       }
-      return await RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<DetailedPassCountExecutor>(_logger,
 #if RAPTOR
             raptorClient, 
 #endif
@@ -229,10 +229,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<CMVSummaryResult> PostExportSummaryCmv([FromBody] CMVRequest request)
     {
-      log.LogDebug($"{nameof(PostExportSummaryCmv)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryCmv)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummaryCMVExecutor>(_logger,
 #if RAPTOR
             raptorClient, 
 #endif
@@ -253,10 +253,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<CMVDetailedResult> PostExportDetailedCmv([FromBody] CMVRequest request)
     {
-      log.LogDebug($"{nameof(PostExportDetailedCmv)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportDetailedCmv)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return await RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<DetailedCMVExecutor>(_logger,
 #if RAPTOR
             raptorClient, 
 #endif
@@ -277,14 +277,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<ProjectStatisticsResult> PostProjectStatistics([FromBody] ProjectStatisticsRequest request)
     {
-      log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostProjectStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       if (!request.ProjectUid.HasValue)
         request.ProjectUid = await ((RaptorPrincipal) User).GetProjectUid(request.ProjectId ?? -1);
 
       request.Validate();
 
-      var projectStatisticsHelper = new ProjectStatisticsHelper(logger, configStore, fileImportProxy, tRexCompactionDataProxy
+      var projectStatisticsHelper = new ProjectStatisticsHelper(_logger, configStore, fileImportProxy, tRexCompactionDataProxy
 #if RAPTOR
         , raptorClient
 #endif
@@ -310,11 +310,11 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<SummaryVolumesResult> PostExportSummaryVolumes([FromBody] SummaryVolumesRequest request)
     {
-      log.LogDebug($"{nameof(PostExportSummaryVolumes)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryVolumes)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
       return await
-        RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(logger,
+        RequestExecutorContainerFactory.Build<SummaryVolumesExecutor>(_logger,
 #if RAPTOR
             raptorClient,
 #endif
@@ -335,7 +335,7 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public SummaryThicknessResult PostExportSummaryThickness([FromBody] SummaryParametersBase request)
     {
-      log.LogDebug($"{nameof(PostExportSummaryThickness)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryThickness)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 #if RAPTOR
@@ -360,10 +360,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<SpeedSummaryResult> PostExportSummarySpeed([FromBody] SummarySpeedRequest request)
     {
-      log.LogDebug($"{nameof(PostExportSummarySpeed)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummarySpeed)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return await RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummarySpeedExecutor>(_logger,
 #if RAPTOR
             raptorClient, 
 #endif
@@ -383,10 +383,10 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<CMVChangeSummaryResult> PostExportSummaryCmvChange([FromBody] CMVChangeSummaryRequest request)
     {
-      log.LogDebug($"{nameof(PostExportSummaryCmvChange)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportSummaryCmvChange)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
-      return await RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<CMVChangeSummaryExecutor>(_logger,
 #if RAPTOR
             raptorClient, 
 #endif
@@ -406,12 +406,12 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<ElevationStatisticsResult> PostExportElevationStatistics([FromBody] ElevationStatisticsRequest request)
     {
-      log.LogDebug($"{nameof(PostExportElevationStatistics)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportElevationStatistics)}: {JsonConvert.SerializeObject(request)}");
 
       request.Validate();
 
       return
-        await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(logger,
+        await RequestExecutorContainerFactory.Build<ElevationStatisticsExecutor>(_logger,
 #if RAPTOR
             raptorClient,
 #endif
@@ -432,14 +432,14 @@ namespace VSS.Productivity3D.WebApi.Report.Controllers
     [HttpPost]
     public async Task<CCASummaryResult> PostExportCcaSummary([FromBody] CCARequest request)
     {
-      log.LogDebug($"{nameof(PostExportCcaSummary)}: {JsonConvert.SerializeObject(request)}");
+      _log.LogDebug($"{nameof(PostExportCcaSummary)}: {JsonConvert.SerializeObject(request)}");
 
       if (configStore.GetValueBool("ENABLE_TREX_GATEWAY_CCA") ?? false)
         request.ProjectUid = await GetProjectUid(request.ProjectId ?? VelociraptorConstants.NO_PROJECT_ID);
 
       request.Validate();
 
-      return await RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(logger,
+      return await RequestExecutorContainerFactory.Build<SummaryCCAExecutor>(_logger,
 #if RAPTOR
             raptorClient, 
 #endif

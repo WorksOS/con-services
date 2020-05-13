@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace VSS.WebApi.Common
 {
   public interface ITPaaSApplicationAuthentication
   {
     string GetApplicationBearerToken();
-    IDictionary<string, string> CustomHeaders();
-    IDictionary<string, string> CustomHeadersJWT();
-    IDictionary<string, string> CustomHeadersJWTAndBearer();
-
-
+    IHeaderDictionary CustomHeaders();
+    IHeaderDictionary CustomHeadersJWT();
+    IHeaderDictionary CustomHeadersJWTAndBearer();
   }
 }

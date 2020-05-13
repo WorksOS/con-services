@@ -1,8 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
@@ -26,7 +27,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     protected ILogger log;
     private IConfigurationStore configStore;
     private ITPaaSApplicationAuthentication authorization;
-    private IDictionary<string, string> requestCustomHeaders;
+    private IHeaderDictionary requestCustomHeaders;
 
     private ICwsAccountClient cwsAccountClient;
     private IProjectInternalProxy projectProxy;
@@ -45,7 +46,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// <summary>
     /// Processes the specified item. This is the main method to execute real action.
     /// </summary>
-    protected abstract ContractExecutionResult ProcessEx<T>(T item); 
+    protected abstract ContractExecutionResult ProcessEx<T>(T item);
 
     protected abstract Task<ContractExecutionResult> ProcessAsyncEx<T>(T item);
 
@@ -54,7 +55,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       throw new NotImplementedException();
     }
 
-    /// <summary> </summary>
     public ContractExecutionResult Process<T>(T item)
     {
       if (item == null)
@@ -63,8 +63,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       return ProcessEx(item);
     }
 
-
-    /// <summary> </summary>
     public async Task<ContractExecutionResult> ProcessAsync<T>(T item)
     {
       if (item == null)
@@ -78,13 +76,12 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
     /// </summary>
     public static TExecutor Build<TExecutor>(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      IDictionary<string, string> requestCustomHeaders) 
+      IHeaderDictionary requestCustomHeaders)
       where TExecutor : RequestExecutorContainer, new()
     {
-      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders};
-        dataRepository = new DataRepository(logger, configStore, authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
+      var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders };
+      dataRepository = new DataRepository(logger, configStore, authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
       return executor;
     }
-    
   }
 }

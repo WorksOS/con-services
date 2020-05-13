@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,6 +8,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
@@ -30,7 +30,7 @@ namespace VSS.MasterData.Proxies.UnitTests
     {
       public Task Handle(IHttpContext context, Func<Task> next)
       {
-        context.Response = HttpResponse.CreateWithMessage(HttpResponseCode.Ok, "Empty Response", context.Request.Headers.KeepAliveConnection());
+        context.Response = uhttpsharp.HttpResponse.CreateWithMessage(HttpResponseCode.Ok, "Empty Response", context.Request.Headers.KeepAliveConnection());
 
         return Task.Factory.GetCompleted();
       }
@@ -64,10 +64,10 @@ namespace VSS.MasterData.Proxies.UnitTests
       {
         unchecked
         {
-          var hashCode = (String != null ? String.GetHashCode() : 0);
+          var hashCode = String != null ? String.GetHashCode() : 0;
           hashCode = (hashCode * 397) ^ Number.GetHashCode();
-          hashCode = (hashCode * 397) ^ (Binary != null ? Binary.GetHashCode() : 0);
-          hashCode = (hashCode * 397) ^ (Unicode != null ? Unicode.GetHashCode() : 0);
+          hashCode = (hashCode * 397) ^ (Binary?.GetHashCode() ?? 0);
+          hashCode = (hashCode * 397) ^ (Unicode?.GetHashCode() ?? 0);
           return hashCode;
         }
       }
@@ -131,13 +131,12 @@ namespace VSS.MasterData.Proxies.UnitTests
     /// </summary>
     private static string CalculateMD5(Stream stream)
     {
-      using (var md5 = MD5.Create())
-      {
-        stream.Seek(0, SeekOrigin.Begin);
-        var hash = md5.ComputeHash(stream);
-        stream.Seek(0, SeekOrigin.Begin);
-        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-      }
+      using var md5 = MD5.Create();
+      stream.Seek(0, SeekOrigin.Begin);
+      var hash = md5.ComputeHash(stream);
+      stream.Seek(0, SeekOrigin.Begin);
+
+      return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
     }
 
     /// <summary>
@@ -154,12 +153,11 @@ namespace VSS.MasterData.Proxies.UnitTests
 
       bool ValidatePostedData(IHttpContext c)
       {
-
         var requestStream = new MemoryStream(c.Request.Post.Raw);
         requestPassed = validateBodyFunc(requestStream);
         // Validate the content type passed, this should not be modified
-        if (string.Compare(c.Request.Headers.GetByName(HeaderNames.ContentType), contentType,
-              StringComparison.CurrentCultureIgnoreCase) != 0)
+        if (!string.Equals(c.Request.Headers.GetByName(HeaderNames.ContentType), contentType,
+              StringComparison.CurrentCultureIgnoreCase))
         {
           Console.WriteLine($"Execpted Content Type : '{contentType}' but got '{c.Request.Headers.GetByName(HeaderNames.ContentType)}' - Failed!");
           return false;
@@ -169,7 +167,7 @@ namespace VSS.MasterData.Proxies.UnitTests
 
       using (CreateServer(port, ValidatePostedData))
       {
-        var headers = new Dictionary<string, string>
+        var headers = new HeaderDictionary
         {
           [HeaderNames.ContentType] = contentType
         };

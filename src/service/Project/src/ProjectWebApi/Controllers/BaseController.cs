@@ -5,6 +5,7 @@ using System.Net;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -80,7 +81,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     /// Following #83476 we are deliberately passing the x-jwt-assertion header on all requests regardless of whether they're 
     /// 'internal' or not.
     /// </remarks>
-    protected IDictionary<string, string> customHeaders => Request.Headers.GetCustomHeaders();
+    protected IHeaderDictionary customHeaders => Request.Headers.GetCustomHeaders();
 
     /// <summary>
     /// Gets the customer uid from the current context

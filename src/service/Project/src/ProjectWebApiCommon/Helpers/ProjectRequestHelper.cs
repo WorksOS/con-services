@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using VSS.AWS.TransferProxy.Interfaces;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
+using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Extensions;
 using VSS.Common.Exceptions;
@@ -22,8 +24,6 @@ using VSS.Visionlink.Interfaces.Events.MasterData.Interfaces;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using VSS.WebApi.Common;
 using ProjectDatabaseModel = VSS.Productivity3D.Project.Abstractions.Models.DatabaseModels.Project;
-using CwsModels = VSS.Common.Abstractions.Clients.CWS.Models;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Helpers
 {
@@ -128,7 +128,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// validate CoordinateSystem if provided
     /// </summary>
     public static async Task<bool> ValidateCoordSystemInProductivity3D(IProjectEvent project,
-    IServiceExceptionHandler serviceExceptionHandler, IDictionary<string, string> customHeaders,
+    IServiceExceptionHandler serviceExceptionHandler, IHeaderDictionary customHeaders,
     IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord)
     {
       var csFileName = project is CreateProjectEvent
@@ -174,7 +174,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       string coordinateSystemFileName,
       byte[] coordinateSystemFileContent, bool isCreate,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, string customerUid,
-      IDictionary<string, string> customHeaders,
+      IHeaderDictionary customHeaders,
       IProjectRepository projectRepo, IProductivity3dV1ProxyCoord productivity3dV1ProxyCoord, IConfigurationStore configStore,
       IFileRepository fileRepo, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn,
       ICwsDesignClient cwsDesignClient, ICwsProfileSettingsClient cwsProfileSettingsClient)
@@ -182,7 +182,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       if (!string.IsNullOrEmpty(coordinateSystemFileName))
       {
         var headers = customHeaders;
-        headers.TryGetValue("X-VisionLink-ClearCache", out string caching);
+        headers.TryGetValue("X-VisionLink-ClearCache", out var caching);
         if (string.IsNullOrEmpty(caching)) // may already have been set by acceptance tests
           headers.Add("X-VisionLink-ClearCache", "true");
 

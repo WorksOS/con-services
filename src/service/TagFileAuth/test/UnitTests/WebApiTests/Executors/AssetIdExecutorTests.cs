@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -17,7 +15,7 @@ namespace WebApiTests.Executors
   [TestClass]
   public class AssetIdExecutorTests : ExecutorBaseTests
   {
-    
+
     [TestMethod]
     public void GetLogger()
     {
@@ -28,7 +26,7 @@ namespace WebApiTests.Executors
     public async Task CanCallAssetIDExecutorNoValidInput()
     {
       var assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "");
-     
+
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
         authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
@@ -42,10 +40,10 @@ namespace WebApiTests.Executors
     public async Task CanCallAssetIDExecutorWithRadioSerialWithManualDeviceType()
     {
       var assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
-      
+
       var deviceData = new DeviceData();
-      deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceData);
-      
+      deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceData);
+
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore,
         authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;
@@ -70,7 +68,7 @@ namespace WebApiTests.Executors
       };
 
       var logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceDataToBeReturned);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceDataToBeReturned);
 
       var dataRepository = new DataRepository(logger, ConfigStore, authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
 
@@ -83,7 +81,7 @@ namespace WebApiTests.Executors
     public async Task AssetUidExecutor_GetAssetDevice_UnHappyPath(string serialNumberRequested)
     {
       var logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
-      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<Dictionary<string, string>>())).ReturnsAsync((DeviceData)null);
+      deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<HeaderDictionary>())).ReturnsAsync((DeviceData)null);
 
       var dataRepository = new DataRepository(logger, ConfigStore, authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
 
@@ -97,8 +95,8 @@ namespace WebApiTests.Executors
     {
       var assetIdRequest = GetAssetIdRequest.CreateGetAssetIdRequest(-1, 0, "3k45LK");
       var deviceData = new DeviceData { Code = expectedDeviceErrorCode, Message = expectedMessage };
-      deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<Dictionary<string, string>>())).ReturnsAsync(deviceData);
-     
+      deviceProxy.Setup(d => d.GetDevice(It.IsAny<string>(), It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceData);
+
       var executor = RequestExecutorContainer.Build<AssetIdExecutor>(loggerFactory.CreateLogger<AssetIdExecutorTests>(), ConfigStore, authorization.Object,
         cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
       var result = await executor.ProcessAsync(assetIdRequest) as GetAssetIdResult;

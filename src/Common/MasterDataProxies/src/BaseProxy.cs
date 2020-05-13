@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -29,7 +30,7 @@ namespace VSS.MasterData.Proxies
     protected readonly ILogger log;
     protected readonly ILoggerFactory logger;
 
-    private const int _defaultLogMaxChar = 1000;
+    private const int DEFAULT_LOG_MAX_CHAR = 1000;
     protected readonly int _logMaxChar;
 
     protected BaseProxy(IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache)
@@ -38,7 +39,7 @@ namespace VSS.MasterData.Proxies
       this.logger = logger;
       this.configurationStore = configurationStore;
       _dataCache = dataCache;
-      _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxChar);
+      _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DEFAULT_LOG_MAX_CHAR);
     }
 
     /// <summary>
@@ -49,10 +50,10 @@ namespace VSS.MasterData.Proxies
       log = logger.CreateLogger<BaseProxy>();
       this.logger = logger;
       this.configurationStore = configurationStore;
-      _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxChar);
+      _logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DEFAULT_LOG_MAX_CHAR);
     }
 
-    private async Task<T> SendRequestInternal<T>(string url, IDictionary<string, string> customHeaders,
+    private async Task<T> SendRequestInternal<T>(string url, IHeaderDictionary customHeaders,
       HttpMethod method = null, string payload = null, Stream streamPayload = null, int? timeout = null, int retries = 3)
     {
       // Default to POST
@@ -107,7 +108,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="timeout">Optional timeout in milliseconds for the request</param>
     /// <param name="retries">How many times to retry the request (optional)</param>
     /// <returns>The item</returns>
-    protected Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
+    protected Task<T> SendRequest<T>(string urlKey, string payload, IHeaderDictionary customHeaders,
       string route = null, HttpMethod method = null, string queryParameters = null, int? timeout = null, int retries = 3)
     {
       log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters.Truncate(_logMaxChar)} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders(_logMaxChar)}");
@@ -124,7 +125,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="method">Http method, defaults to POST</param>
     /// <param name="queryParameters">Query parameters (optional)</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, string payload, IDictionary<string, string> customHeaders,
+    protected async Task<T> SendRequest<T>(string urlKey, string payload, IHeaderDictionary customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null)
     {
       log.LogDebug($"{nameof(SendRequest)}: Executing {urlKey} ({method}) {route} {queryParameters.LogHeaders(_logMaxChar)} {payload.Truncate(_logMaxChar)} {customHeaders.LogHeaders(_logMaxChar)}");
@@ -140,7 +141,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
-    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
+    protected async Task<T> SendRequest<T>(string urlKey, Stream payload, IHeaderDictionary customHeaders,
       string route = null, HttpMethod method = null, IDictionary<string, string> queryParameters = null) => await SendRequestInternal<T>(await ExtractUrl(urlKey, route, queryParameters), customHeaders, method,
         streamPayload: payload);
 
@@ -154,14 +155,13 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams"></param>
     /// <param name="method">Http method, defaults to POST</param>
     /// <returns>The item</returns>
-    protected Task<T> SendRequest<T>(string urlKey, Stream payload, IDictionary<string, string> customHeaders,
-      string route = null, IDictionary<string, string> queryParams = null, HttpMethod method = null)
+    protected Task<T> SendRequest<T>(string urlKey, Stream payload, IHeaderDictionary customHeaders, string route = null, HttpMethod method = null)
     {
       return SendRequestInternal<T>(ExtractUrl(urlKey, route, string.Empty), customHeaders, method,
         streamPayload: payload);
     }
 
-    private async Task<TK> GetObjectsFromMasterdata<TK>(string urlKey, IDictionary<string, string> customHeaders,
+    private async Task<TK> GetObjectsFromMasterdata<TK>(string urlKey, IHeaderDictionary customHeaders,
       string queryParams = null, string route = null)
     {
       TK result;
@@ -191,8 +191,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="queryParams">Query parameters for the request (optional)</param>
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
-    protected Task<T> GetMasterDataItem<T>(string urlKey, IDictionary<string, string> customHeaders,
-      string queryParams = null, string route = null)
+    protected Task<T> GetMasterDataItem<T>(string urlKey, IHeaderDictionary customHeaders, string queryParams = null, string route = null)
     {
       return GetObjectsFromMasterdata<T>(urlKey, customHeaders, queryParams, route);
     }
@@ -208,7 +207,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of items</returns>
     protected async Task<Stream> GetMasterDataStreamContent(string urlKey,
-      IDictionary<string, string> customHeaders, HttpMethod method = null, string payload = null,
+      IHeaderDictionary customHeaders, HttpMethod method = null, string payload = null,
       string queryParams = null, string route = null)
     {
       Stream result;
@@ -252,7 +251,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
     protected Task<T> GetMasterDataItem<T>(string uid, string userId, string cacheLifeKey, string urlKey,
-      IDictionary<string, string> customHeaders, string route = null) where T : class, IMasterDataModel
+      IHeaderDictionary customHeaders, string route = null) where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
         () => GetMasterDataItem<T>(urlKey, customHeaders, null, route));
@@ -273,7 +272,7 @@ namespace VSS.MasterData.Proxies
     ///   or
     ///   Incorrect expiration time parameter
     /// </exception>
-    protected async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey, IDictionary<string, string> customHeaders, Func<Task<T>> action) where T : class, IMasterDataModel
+    protected async Task<T> WithMemoryCacheExecute<T>(string uid, string userId, object cacheLifeKey, IHeaderDictionary customHeaders, Func<Task<T>> action) where T : class, IMasterDataModel
     {
       if (_dataCache == null)
         throw new InvalidOperationException("This method requires a cache; use the correct constructor");
@@ -287,7 +286,6 @@ namespace VSS.MasterData.Proxies
       }
       else
       {
-        var cacheKey = GetCacheKey<T>(uid, userId);
         var opts = new MemoryCacheEntryOptions();
 
         switch (cacheLifeKey)
@@ -301,6 +299,9 @@ namespace VSS.MasterData.Proxies
           default:
             throw new InvalidOperationException("Incorrect expiration time parameter");
         }
+
+        var keyPrefix = typeof(T).Name;
+        var cacheKey = string.IsNullOrEmpty(userId) ? $"{keyPrefix} {uid}" : $"{keyPrefix} {uid} {userId}";
 
         T result = default;
 
@@ -346,7 +347,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>Master data item</returns>
     protected Task<T> GetMasterDataItem<T>(string uid, string userId, TimeSpan cacheLifeKey, string urlKey,
-      IDictionary<string, string> customHeaders, string route = null) where T : class, IMasterDataModel
+      IHeaderDictionary customHeaders, string route = null) where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
         () => GetMasterDataItem<T>(urlKey, customHeaders, null, route));
@@ -365,7 +366,7 @@ namespace VSS.MasterData.Proxies
     /// <param name="route">Additional routing to add to the base URL (optional)</param>
     /// <returns>List of Master data items</returns>
     protected Task<T> GetContainedMasterDataList<T>(string uid, string userId, string cacheLifeKey, string urlKey,
-      IDictionary<string, string> customHeaders, string queryParams = null, string route = null) where T : class, IMasterDataModel
+      IHeaderDictionary customHeaders, string queryParams = null, string route = null) where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, cacheLifeKey, customHeaders,
         () => GetMasterDataItem<T>(urlKey, customHeaders, queryParams, route));
@@ -425,58 +426,29 @@ namespace VSS.MasterData.Proxies
     }
 
     /// <summary>
-    ///   Gets the cache key. MemoryCache is shared so we need to construct a unique cache key by uid and type of item.
-    /// </summary>
-    /// <typeparam name="T">The type of item being cached</typeparam>
-    /// <param name="uid">The uid of the item being cached</param>
-    /// <param name="userId">The user ID, only required if caching per user</param>
-    /// <returns>The cache key to use.</returns>
-    private string GetCacheKey<T>(string uid, string userId)
-    {
-      var keyPrefix = typeof(T).Name;
-      return string.IsNullOrEmpty(userId) ? $"{keyPrefix} {uid}" : $"{keyPrefix} {uid} {userId}";
-    }
-
-    /// <summary>
     ///   Clears an item from the cache if requested in the headers.
     /// </summary>
     /// <typeparam name="T">The type of item being cached</typeparam>
     /// <param name="uid">The item to remove from the cache</param>
-    /// <param name="userId">The user ID</param>
     /// <param name="customHeaders">The request headers</param>
-    private void ClearCacheIfRequired<T>(string uid, string userId, IDictionary<string, string> customHeaders)
+    private void ClearCacheIfRequired<T>(string uid, IHeaderDictionary customHeaders)
     {
       if (IfCacheNeedsToBeInvalidated(customHeaders))
-        ClearCacheItem<T>(uid, userId);
+      {
+        ClearCacheByTag(uid);
+      }
     }
 
     /// <summary>
     ///   Determines if the cache needs to be invalidated.
     /// </summary>
     /// <param name="customHeaders">The custom headers.</param>
-    /// <returns></returns>
-    private bool IfCacheNeedsToBeInvalidated(IDictionary<string, string> customHeaders)
+    private bool IfCacheNeedsToBeInvalidated(IHeaderDictionary customHeaders)
     {
       if (customHeaders == null)
         return false;
       customHeaders.TryGetValue("X-VisionLink-ClearCache", out var caching);
       return !string.IsNullOrEmpty(caching) && caching == "true";
-    }
-
-    /// <summary>
-    ///   Clears an item from the cache
-    /// </summary>
-    /// <typeparam name="T">The type of item being cached</typeparam>
-    /// <param name="uid">The uid of the item to remove from the cache</param>
-    /// <param name="userId">The user ID, only required if caching per user</param>
-    [Obsolete("Use the ClearCacheByTag method, which isn't dependent on the Type T")]
-    protected void ClearCacheItem<T>(string uid, string userId)
-    {
-      if (_dataCache == null)
-        throw new InvalidOperationException("This method requires a cache; use the correct constructor");
-      var cacheKey = GetCacheKey<T>(uid, userId);
-      log.LogDebug($"{nameof(ClearCacheItem)}: Clearing item from cache: {cacheKey}");
-      _dataCache.RemoveByKey(cacheKey);
     }
 
     /// <summary>
@@ -498,9 +470,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <returns>The item</returns>
     private async Task<TU> GetItemFromList<TU>(string listUid,
-      Func<string, IDictionary<string, string>, Task<List<TU>>> getList,
+      Func<string, IHeaderDictionary, Task<List<TU>>> getList,
       Func<TU, bool> itemSelector,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       var list = await getList(listUid, customHeaders);
       return list.SingleOrDefault(itemSelector);
@@ -517,9 +489,9 @@ namespace VSS.MasterData.Proxies
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     /// <returns>The item</returns>
     private async Task<TU> GetItemFromList<TU>(string listUid, string userId,
-      Func<string, string, IDictionary<string, string>, Task<List<TU>>> getList,
+      Func<string, string, IHeaderDictionary, Task<List<TU>>> getList,
       Func<TU, bool> itemSelector,
-      IDictionary<string, string> customHeaders = null)
+      IHeaderDictionary customHeaders = null)
     {
       var list = await getList(listUid, userId, customHeaders);
       return list.SingleOrDefault(itemSelector);
@@ -557,14 +529,14 @@ namespace VSS.MasterData.Proxies
     /// <param name="listUid">The uid for the get request, also the cache key</param>
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
     public async Task<TU> GetItemWithRetry<T, TU>(
-      Func<string, IDictionary<string, string>, Task<List<TU>>> getList,
+      Func<string, IHeaderDictionary, Task<List<TU>>> getList,
       Func<TU, bool> itemSelector,
-      string listUid, IDictionary<string, string> customHeaders = null)
+      string listUid, IHeaderDictionary customHeaders = null)
     {
       var item = await GetItemFromList(listUid, getList, itemSelector, customHeaders);
       if (item == null)
       {
-        ClearCacheItem<T>(listUid, null);
+        ClearCacheByTag(listUid);
         item = await GetItemFromList(listUid, getList, itemSelector, customHeaders);
       }
 
@@ -583,16 +555,15 @@ namespace VSS.MasterData.Proxies
     /// <param name="listUid">The uid for the get request, also the cache key</param>
     /// <param name="userId">The user uid</param>
     /// <param name="customHeaders">Custom headers for the request (authorization, userUid and customerUid)</param>
-    /// <returns></returns>
     public async Task<TU> GetItemWithRetry<T, TU>(
-      Func<string, string, IDictionary<string, string>, Task<List<TU>>> getList,
+      Func<string, string, IHeaderDictionary, Task<List<TU>>> getList,
       Func<TU, bool> itemSelector, string listUid,
-      string userId, IDictionary<string, string> customHeaders = null)
+      string userId, IHeaderDictionary customHeaders = null)
     {
       var item = await GetItemFromList(listUid, userId, getList, itemSelector, customHeaders);
       if (item == null)
       {
-        ClearCacheItem<T>(listUid, userId);
+        ClearCacheByTag(listUid);
         item = await GetItemFromList(listUid, userId, getList, itemSelector, customHeaders);
       }
 

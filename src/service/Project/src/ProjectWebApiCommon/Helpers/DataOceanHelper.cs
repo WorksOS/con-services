@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -80,7 +80,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// Deletes the importedFile from DataOcean
     /// </summary>
     public static async Task<ImportedFileInternalResult> DeleteFileFromDataOcean(
-      string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid, 
+      string fileName, string rootFolder, string customerUid, Guid projectUid, Guid importedFileUid,
       ILogger log, IDataOceanClient dataOceanClient, ITPaaSApplicationAuthentication authn, IConfigurationStore configStore)
     {
       var dataOceanEnabled = configStore.GetValueBool("ENABLE_DATA_OCEAN", false);
@@ -119,14 +119,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       return null;
     }
 
-    public static IDictionary<string, string> CustomHeaders(ITPaaSApplicationAuthentication authn)
+    public static IHeaderDictionary CustomHeaders(ITPaaSApplicationAuthentication authn) => new HeaderDictionary
     {
-      return new Dictionary<string, string>
-      {
-        {"Content-Type", ContentTypeConstants.ApplicationJson},
-        {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"},
-        {"Accept", "*/*" }
-      };
-    }
+      {"Content-Type", ContentTypeConstants.ApplicationJson},
+      {"Authorization", $"Bearer {authn.GetApplicationBearerToken()}"},
+      {"Accept", "*/*" }
+    };
   }
 }

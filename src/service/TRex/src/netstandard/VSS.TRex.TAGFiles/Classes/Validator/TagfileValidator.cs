@@ -17,6 +17,7 @@ using System.IO;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
+using Microsoft.AspNetCore.Http;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -34,7 +35,6 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     ///    to validates licensing etc
     ///      and lookup assetId and projectId 
     /// </summary>
-    /// <returns></returns>
     private static async Task<GetProjectAndAssetUidsResult> ValidateWithTfa(GetProjectAndAssetUidsRequest getProjectAndAssetUidsRequest)
     {
       Log.LogInformation($"#Progress# ValidateWithTFA. Calling TFA service to validate tagfile permissions:{JsonConvert.SerializeObject(getProjectAndAssetUidsRequest)}");
@@ -43,7 +43,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       GetProjectAndAssetUidsResult tfaResult;
       try
       {
-        var customHeaders = new Dictionary<string, string>();
+        var customHeaders = new HeaderDictionary();
         tfaResult = await tfa.GetProjectAndAssetUids(getProjectAndAssetUidsRequest, customHeaders).ConfigureAwait(false);
       }
       catch (Exception e)

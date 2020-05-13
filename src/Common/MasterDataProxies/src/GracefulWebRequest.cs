@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
@@ -43,15 +44,15 @@ namespace VSS.MasterData.Proxies
     }
 
     private Task<HttpResponseMessage> ExecuteRequestInternal(string endpoint, HttpMethod method,
-      IDictionary<string, string> customHeaders, Stream requestStream = null, int? timeout = null)
+      IHeaderDictionary customHeaders, Stream requestStream = null, int? timeout = null)
     {
-      void ApplyHeaders(IDictionary<string, string> dictionary, HttpRequestMessage x)
+      void ApplyHeaders(IHeaderDictionary dictionary, HttpRequestMessage x)
       {
         if (dictionary != null)
         {
           foreach (var customHeader in dictionary)
           {
-            if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value))
+            if (!x.Headers.TryAddWithoutValidation(customHeader.Key, (IEnumerable<string>)customHeader.Value))
             {
               _log.LogWarning($"Can't add header {customHeader.Key}");
             }
@@ -74,7 +75,7 @@ namespace VSS.MasterData.Proxies
 
       if (method == HttpMethod.Post || method == HttpMethod.Put)
       {
-        return _httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
+        return _httpClient.PostAsync(endpoint, requestStream, method, null, timeout,
           x => ApplyHeaders(customHeaders, x), _log);
       }
 
@@ -98,7 +99,7 @@ namespace VSS.MasterData.Proxies
     /// <exception cref="HttpRequestException">If the Status Code from the request is not 200.</exception>
     /// <returns>A stream content representing the result returned from the endpoint if successful, otherwise null</returns>
     public async Task<HttpContent> ExecuteRequestAsStreamContent(string endpoint, HttpMethod method,
-      IDictionary<string, string> customHeaders = null, Stream payloadStream = null,
+      IHeaderDictionary customHeaders = null, Stream payloadStream = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       _log.LogDebug(
@@ -171,9 +172,8 @@ namespace VSS.MasterData.Proxies
     /// <param name="suppressExceptionLogging">if set to <c>true</c> [suppress exception logging].</param>
     /// <exception cref="ArgumentException">If the Method is POST/PUT and the Payload is null.</exception>
     /// <exception cref="HttpRequestException">If the Status Code from the request is not 200.</exception>
-    /// <returns></returns>
     public async Task<T> ExecuteRequest<T>(string endpoint, Stream payload = null,
-      IDictionary<string, string> customHeaders = null, HttpMethod method = null,
+      IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       // Default to POST
@@ -245,7 +245,7 @@ namespace VSS.MasterData.Proxies
     /// <exception cref="HttpRequestException">If the Status Code from the request is not any code in the 200's.</exception>
     /// <returns></returns>
     public async Task ExecuteRequest(string endpoint, Stream payload = null,
-      IDictionary<string, string> customHeaders = null, HttpMethod method = null,
+      IHeaderDictionary customHeaders = null, HttpMethod method = null,
       int? timeout = null, int retries = 3, bool suppressExceptionLogging = false)
     {
       //Default to POST

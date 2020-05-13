@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using VSS.Productivity3D.Common.Interfaces;
@@ -49,8 +50,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       );
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>(),
+          It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(expectedGetAssetOnDesignPeriodsExecutorResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(true);
 
@@ -59,8 +60,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
-      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      var assetMatches = new List<KeyValuePair<Guid, long>> { new KeyValuePair<Guid, long>(assetUid, assetId) };
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(assetMatches);
 
       // GetAssetOnDesignPeriodsExecutor will call GetMachineIdsExecutor
@@ -79,7 +80,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         "Wrong legacyAssetId");
       Assert.AreEqual(expectedGetAssetOnDesignPeriodsExecutorResult.AssetOnDesignPeriods[0].StartDate, result.AssetOnDesignPeriods[0].StartDate,
         "Wrong StartDate");
-      Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignPeriods[0].OnMachineDesignId,"Wrong onMachineDesignId");
+      Assert.AreEqual(NULL_RAPTOR_MACHINE_DESIGN_ID, result.AssetOnDesignPeriods[0].OnMachineDesignId, "Wrong onMachineDesignId");
       Assert.AreEqual(expectedGetAssetOnDesignPeriodsExecutorResult.AssetOnDesignPeriods[0].OnMachineDesignName, result.AssetOnDesignPeriods[0].OnMachineDesignName, "Wrong onMachineDesignName");
 
       // there's some funny giggery-pokery in the executor to join up any dis-jointed periods
@@ -110,8 +111,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       );
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<IHeaderDictionary>(),
+          It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(expectedGetAssetOnDesignPeriodsExecutorResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(true);
 
@@ -120,8 +121,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
       // for GetMachineIdsExecutor
-      var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
-      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      var assetMatches = new List<KeyValuePair<Guid, long>> { new KeyValuePair<Guid, long>(assetUid, assetId) };
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(assetMatches);
 
       // GetAssetOnDesignPeriodsExecutor will call GetMachineIdsExecutor
@@ -193,8 +194,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       );
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<HeaderDictionary>(),
+          It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(expectedGetAssetOnDesignPeriodsExecutorResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(true);
 
@@ -213,7 +214,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
       };
-      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
+      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(assetMatches);
 
       // GetAssetOnDesignPeriodsExecutor will call GetMachineIdsExecutor
@@ -266,8 +267,8 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       );
       tRexProxy.Setup(x => x.SendDataGetRequest<MachineDesignsExecutionResult>(projectIds.ProjectUid.ToString(),
           It.IsAny<string>(),
-          It.IsAny<IDictionary<string, string>>(),
-          It.IsAny<IDictionary<string, string>>()))
+          It.IsAny<HeaderDictionary>(),
+          It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(expectedGetAssetOnDesignPeriodsExecutorResult);
       configStore.Setup(x => x.GetValueBool("ENABLE_TREX_GATEWAY_MACHINEDESIGNS")).Returns(true);
 
@@ -348,7 +349,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
 
       // for GetMachineIdsExecutor
       var assetMatches = new List<KeyValuePair<Guid, long>> {new KeyValuePair<Guid, long>(assetUid, assetId)};
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
+      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(assetMatches);
      
       var executor = RequestExecutorContainerFactory
@@ -481,7 +482,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
         new KeyValuePair<Guid, long>(assetUid3Good, assetId3Good)
       };
-      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<IDictionary<string, string>>()))
+      assetProxy.Setup(x => x.GetMatchingAssets(It.IsAny<List<long>>(), It.IsAny<HeaderDictionary>()))
         .ReturnsAsync(assetMatches);
 
       var executor = RequestExecutorContainerFactory

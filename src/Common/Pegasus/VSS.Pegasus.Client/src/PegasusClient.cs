@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Polly;
@@ -87,7 +88,7 @@ namespace VSS.Pegasus.Client
     /// <param name="customHeaders"></param>
     /// <param name="setJobIdAction"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
-    public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
+    public async Task<TileMetadata> GenerateDxfTiles(string dcFileName, string dxfFileName, DxfUnitsType dxfUnitsType, IHeaderDictionary customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
       Log.LogInformation($"{nameof(GenerateDxfTiles)}: dcFileName={dcFileName}, dxfFileName={dxfFileName}, dxfUnitsType={dxfUnitsType}");
 
@@ -150,7 +151,7 @@ namespace VSS.Pegasus.Client
     /// <param name="geoTiffFileName">The path and file name of the GeoTIFF file</param>
     /// <param name="customHeaders"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
-    public async Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
+    public async Task<TileMetadata> GenerateGeoTiffTiles(string geoTiffFileName, IHeaderDictionary customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
       Log.LogInformation($"{nameof(GenerateGeoTiffTiles)}: geoTiffFileName={geoTiffFileName}");
 
@@ -190,7 +191,7 @@ namespace VSS.Pegasus.Client
     /// <param name="createExecutionMessage">The details of tile generation for Pegasus</param>
     /// <param name="customHeaders"></param>
     /// <returns>Metadata for the generated tiles including the zoom range</returns>
-    private async Task<TileMetadata> GenerateTiles(string fileName, CreateExecutionMessage createExecutionMessage, IDictionary<string, string> customHeaders, Action<IDictionary<string, string>> setJobIdAction)
+    private async Task<TileMetadata> GenerateTiles(string fileName, CreateExecutionMessage createExecutionMessage, IHeaderDictionary customHeaders, Action<IDictionary<string, string>> setJobIdAction)
     {
       TileMetadata metadata = null;
 
@@ -341,7 +342,7 @@ namespace VSS.Pegasus.Client
     /// Deletes generated tiles for the given file
     /// </summary>
     /// <returns>True if successfully deleted otherwise false</returns>
-    public Task<bool> DeleteTiles(string fullFileName, IDictionary<string, string> customHeaders)
+    public Task<bool> DeleteTiles(string fullFileName, IHeaderDictionary customHeaders)
     {
       //In DataOcean this is actually a multi-file not a folder
       var tileFullFileName = new DataOceanFileUtil(fullFileName).GeneratedTilesFolder;

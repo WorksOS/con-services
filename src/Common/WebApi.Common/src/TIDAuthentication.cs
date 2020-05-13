@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Authentication.JWT;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
@@ -72,7 +71,7 @@ namespace VSS.WebApi.Common
 
         // todoJeannie temporary to look into user info while we test.
         log.LogDebug($"{nameof(Invoke)}: TIDAuth context Headers {JsonConvert.SerializeObject(context.Request.Headers, Formatting.None)}");
-        
+
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
         log.LogDebug($"{nameof(Invoke)}: TIDAuth authorization {JsonConvert.SerializeObject(authorization)}");
 
@@ -185,7 +184,7 @@ namespace VSS.WebApi.Common
     /// Creates a TID principal. Override in a service to create custom service principals.
     /// </summary>
     public virtual TIDCustomPrincipal CreatePrincipal(string userUid, string customerUid, string customerName, string userEmail,
-      bool isApplicationContext, IDictionary<string, string> contextHeaders, string tpaasApplicationName = "")
+      bool isApplicationContext, IHeaderDictionary contextHeaders, string tpaasApplicationName = "")
     {
       return new TIDCustomPrincipal(new GenericIdentity(userUid), customerUid, customerName, userEmail, isApplicationContext, tpaasApplicationName);
     }

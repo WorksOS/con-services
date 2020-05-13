@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using VSS.Common.Abstractions.Http;
@@ -14,20 +14,19 @@ namespace VSS.MasterData.Proxies
   internal static class HttpClientExtensions
   {
     public static Task<HttpResponseMessage> GetAsync
-      (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction, ILogger log) =>
-      SendAsync(httpClient, new HttpRequestMessage(HttpMethod.Get, uri), timeout, preAction, log);
+        (this HttpClient httpClient, string uri, int? timeout, Action<HttpRequestMessage> preAction, ILogger log) =>
+        SendAsync(httpClient, new HttpRequestMessage(HttpMethod.Get, uri), timeout, preAction, log);
 
-    public static Task<HttpResponseMessage> PostAsync
-    (this HttpClient httpClient, string uri, Stream requestStream, HttpMethod method,
-      IDictionary<string, string> customHeaders, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
+    public static Task<HttpResponseMessage> PostAsync(this HttpClient httpClient, string uri, Stream requestStream, HttpMethod method,
+      IHeaderDictionary customHeaders, int? timeout, Action<HttpRequestMessage> preAction, ILogger log)
     {
       //Default to JSON content type
       HttpContent content = null;
       if (requestStream != null)
       {
-        const string defaultContentType = ContentTypeConstants.ApplicationJson;
+        const string DEFAULT_CONTENT_TYPE = ContentTypeConstants.ApplicationJson;
 
-        var contentType = MediaTypeHeaderValue.Parse(defaultContentType);
+        var contentType = MediaTypeHeaderValue.Parse(DEFAULT_CONTENT_TYPE);
         if (customHeaders?.ContainsKey(HeaderNames.ContentType) == true)
         {
           if (MediaTypeHeaderValue.TryParse(customHeaders[HeaderNames.ContentType], out var ct))

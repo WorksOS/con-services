@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Cache.Interfaces;
@@ -30,7 +30,7 @@ namespace VSS.MasterData.Proxies
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => String.Empty;
 
-    public Task<Stream> SendEmail(EmailModel emailModel, IDictionary<string, string> customHeaders = null)
+    public Task<Stream> SendEmail(EmailModel emailModel, IHeaderDictionary customHeaders = null)
     {
       var payloadToSend = JsonConvert.SerializeObject(emailModel);
       log.LogDebug($"SendEmail: {JsonConvert.SerializeObject(emailModel)}");

@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
@@ -39,7 +40,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     public static async Task<AddFileResult> NotifyRaptorAddFile(long? projectId, Guid projectUid,
       ImportedFileType importedFileType, DxfUnitsType dxfUnitsType, FileDescriptor fileDescriptor, long importedFileId,
       Guid importedFileUid, bool isCreate,
-      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
+      ILogger log, IHeaderDictionary headers, IServiceExceptionHandler serviceExceptionHandler,
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, IProjectRepository projectRepo)
     {
       AddFileResult notificationResult = null;
@@ -88,7 +89,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <returns></returns>
     public static async Task<ImportedFileInternalResult> NotifyRaptorDeleteFile(Guid projectUid, ImportedFileType importedFileType,
       Guid importedFileUid, FileDescriptor fileDescriptor, long importedFileId, long? legacyImportedFileId,
-      ILogger log, IDictionary<string, string> headers, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification)
+      ILogger log, IHeaderDictionary headers, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification)
     {
       BaseMasterDataResult notificationResult = null;
       try
@@ -122,7 +123,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <returns></returns>
     public static async Task<ContractExecutionResult> NotifyTRexAddFile(Guid projectUid,
       ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
-      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
+      ILogger log, IHeaderDictionary headers, IServiceExceptionHandler serviceExceptionHandler,
       ITRexImportFileProxy tRexImportFileProxy, IProjectRepository projectRepo
     )
     {
@@ -174,7 +175,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     public static async Task<ContractExecutionResult> NotifyTRexUpdateFile(Guid projectUid,
       ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
-      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
+      ILogger log, IHeaderDictionary headers, IServiceExceptionHandler serviceExceptionHandler,
       ITRexImportFileProxy tRexImportFileProxy)
     {
       var result = new ContractExecutionResult();
@@ -206,7 +207,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// <returns></returns>
     public static async Task<ContractExecutionResult> NotifyTRexDeleteFile(Guid projectUid,
       ImportedFileType importedFileType, string filename, Guid importedFileUid, DateTime? surveyedUtc,
-      ILogger log, IDictionary<string, string> headers, IServiceExceptionHandler serviceExceptionHandler,
+      ILogger log, IHeaderDictionary headers, IServiceExceptionHandler serviceExceptionHandler,
       ITRexImportFileProxy tRexImportFileProxy)
     {
       var result = new ContractExecutionResult();
@@ -239,7 +240,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     /// </summary>
     /// <returns>The generated file name</returns>
     public static async Task<string> CreateGeneratedDxfFile(string customerUid, Guid projectUid, Guid alignmentUid, IProductivity3dV2ProxyCompaction productivity3DV2ProxyCompaction,
-      IDictionary<string, string> headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn,
+      IHeaderDictionary headers, ILogger log, IServiceExceptionHandler serviceExceptionHandler, ITPaaSApplicationAuthentication authn,
       IDataOceanClient dataOceanClient, IConfigurationStore configStore, string fileName, string rootFolder)
     {
       var generatedName = DataOceanFileUtil.GeneratedFileName(fileName, ImportedFileType.Alignment);

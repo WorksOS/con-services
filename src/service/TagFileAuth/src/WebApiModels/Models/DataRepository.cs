@@ -39,18 +39,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     //    we need to write them into ProjectSvc local db to generate the shortRaptorAssetId
     private readonly IDeviceInternalProxy _deviceProxy;
 
-    private IDictionary<string, string> _mergedCustomHeaders;
+    private IHeaderDictionary _mergedCustomHeaders;
 
     public DataRepository(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
       ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      IDictionary<string, string> requestCustomHeaders )
+      IHeaderDictionary requestCustomHeaders )
     {
       _log = logger;
       _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
-      _mergedCustomHeaders = authorization.CustomHeaders().MergeDifference(requestCustomHeaders);
+      _mergedCustomHeaders = (IHeaderDictionary)authorization.CustomHeaders().MergeDifference(requestCustomHeaders);
     }
 
     #region account

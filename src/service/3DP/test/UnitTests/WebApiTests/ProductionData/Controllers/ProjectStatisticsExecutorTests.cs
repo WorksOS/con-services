@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,7 +14,6 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Common.Interfaces;
 using VSS.Productivity3D.Common.Models;
 using VSS.Productivity3D.Models.Models;
-using VSS.Productivity3D.Models.ResultHandling;
 using VSS.Productivity3D.Productivity3D.Models.Compaction.ResultHandling;
 using VSS.Productivity3D.WebApi.Models.Report.Executors;
 using VSS.Serilog.Extensions;
@@ -31,7 +31,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
   {
     private static IServiceProvider serviceProvider;
     private static ILoggerFactory logger;
-    private static Dictionary<string, string> _customHeaders;
+    private static IHeaderDictionary _customHeaders;
 
     [ClassInitialize]
     public static void ClassInit(TestContext context)
@@ -42,7 +42,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
                         .BuildServiceProvider();
 
       logger = serviceProvider.GetRequiredService<ILoggerFactory>();
-      _customHeaders = new Dictionary<string, string>();
+      _customHeaders = new HeaderDictionary();
     }
 
     [TestMethod]
@@ -93,7 +93,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         extents = new BoundingBox3DGrid(10, 500, 0, 20, 510, 0)
       };
       var tRexProxy = new Mock<ITRexCompactionDataProxy>();
-      tRexProxy.Setup(x => x.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(It.IsAny<ProjectStatisticsTRexRequest>(), It.IsAny<string>(), It.IsAny<IDictionary<string, string>>(), false))
+      tRexProxy.Setup(x => x.SendDataPostRequest<ProjectStatisticsResult, ProjectStatisticsTRexRequest>(It.IsAny<ProjectStatisticsTRexRequest>(), It.IsAny<string>(), It.IsAny<IHeaderDictionary>(), false))
         .ReturnsAsync((expectedResult));
 
 
