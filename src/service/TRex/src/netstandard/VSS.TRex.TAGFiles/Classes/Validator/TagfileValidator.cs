@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Common.Abstractions.Configuration;
 using VSS.MasterData.Models.Models;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Enums;
-using VSS.TRex.Common;
-using VSS.TRex.DI;
-using VSS.TRex.Common.Utilities;
-using VSS.TRex.TAGFiles.Executors;
-using VSS.TRex.TAGFiles.Types;
-using System.IO;
 using VSS.Productivity3D.TagFileAuth.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
-using Microsoft.AspNetCore.Http;
+using VSS.TRex.Common;
+using VSS.TRex.Common.Utilities;
+using VSS.TRex.DI;
+using VSS.TRex.TAGFiles.Executors;
+using VSS.TRex.TAGFiles.Types;
 
 namespace VSS.TRex.TAGFiles.Classes.Validator
 {
@@ -39,7 +38,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     {
       Log.LogInformation($"#Progress# ValidateWithTFA. Calling TFA service to validate tagfile permissions:{JsonConvert.SerializeObject(getProjectAndAssetUidsRequest)}");
       var tfa = DIContext.Obtain<ITagFileAuthProjectProxy>();
-      
+
       GetProjectAndAssetUidsResult tfaResult;
       try
       {
@@ -48,9 +47,9 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       }
       catch (Exception e)
       {
-        return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, (int) TRexTagFileResultCode.TfaException, e.Message);
+        return new GetProjectAndAssetUidsResult(string.Empty, string.Empty, (int)TRexTagFileResultCode.TfaException, e.Message);
       }
-      
+
       return tfaResult;
     }
 
@@ -119,7 +118,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
       var tfaResult = await ValidateWithTfa(tfaRequest).ConfigureAwait(false);
 
       Log.LogInformation($"#Progress# CheckFileIsProcessible. TFA GetProjectAndAssetUids returned for {tagDetail.tagFileName} tfaResult: {JsonConvert.SerializeObject(tfaResult)}");
-      if (tfaResult?.Code == (int) TRexTagFileResultCode.Valid)
+      if (tfaResult?.Code == (int)TRexTagFileResultCode.Valid)
       {
         // if not overriding take TFA projectid
         if ((tagDetail.projectId == null || tagDetail.projectId == Guid.Empty) && (Guid.Parse(tfaResult.ProjectUid) != Guid.Empty))
@@ -128,7 +127,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
         }
 
         // take what TFA gives us including an empty guid which is a JohnDoe
-        tagDetail.assetId = tfaResult.DeviceUid == string.Empty ? Guid.Empty :(Guid.Parse(tfaResult.DeviceUid));
+        tagDetail.assetId = tfaResult.DeviceUid == string.Empty ? Guid.Empty : (Guid.Parse(tfaResult.DeviceUid));
 
         // Check For JohnDoe machines. if you get a valid pass and no assetid it means it had a manual3dlicense
         if (tagDetail.assetId == Guid.Empty)
@@ -147,7 +146,7 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
     {
       // Perform some Validation Checks
       if (tagDetail.tagFileContent.Length <= minTagFileLength)
-        return new ContractExecutionResult((int) TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
+        return new ContractExecutionResult((int)TRexTagFileResultCode.TRexInvalidTagfile, TRexTagFileResultCode.TRexInvalidTagfile.ToString());
 
       var tagFilePresScan = new TAGFilePreScan();
 
@@ -169,15 +168,15 @@ namespace VSS.TRex.TAGFiles.Classes.Validator
             tagDetail.IsJohnDoe = true;
           return new ContractExecutionResult((int)TRexTagFileResultCode.Valid);
         }
-        
+
         // cannot process without asset and project id
-        return new ContractExecutionResult((int)TRexTagFileResultCode.TRexBadRequestMissingProjectUid, "TRexTagFileResultCode.TRexBadRequestMissingProjectUid");         
+        return new ContractExecutionResult((int)TRexTagFileResultCode.TRexBadRequestMissingProjectUid, "TRexTagFileResultCode.TRexBadRequestMissingProjectUid");
       }
 
       // If the TFA service is enabled, but the TAG file has attributes that allow project and asset (or JohnDoe status) to be determined, then
       // allow the TAG file to be processed without additional TFA involvement
 
-      if (tagDetail.projectId != null && tagDetail.projectId != Guid.Empty) 
+      if (tagDetail.projectId != null && tagDetail.projectId != Guid.Empty)
       {
         if ((tagDetail.assetId != null && tagDetail.assetId == Guid.Empty) || tagDetail.IsJohnDoe)
           return new ContractExecutionResult((int)TRexTagFileResultCode.Valid);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Server;
@@ -90,7 +89,7 @@ namespace VSS.Productivity3D.Scheduler.Jobs.DxfTileJob
         {"Authorization", $"Bearer {authentication.GetApplicationBearerToken()}"}
       };
 
-    protected void SetJobValues(IDictionary<string, string> setJobIdAction)
+    protected void SetJobValues(IHeaderDictionary setJobIdAction)
     {
       if (jobContext == null) { return; }
 
