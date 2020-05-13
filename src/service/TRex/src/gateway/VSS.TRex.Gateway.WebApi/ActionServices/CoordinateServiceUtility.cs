@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Productivity3D.Productivity3D.Models.ProductionData;
 using VSS.TRex.Common;
-using VSS.TRex.Common.Utilities;
 using VSS.TRex.CoordinateSystems;
 using VSS.TRex.DI;
 using VSS.TRex.Geometry;
@@ -34,7 +33,7 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
       {
         if (machine.lastKnownX != null && machine.lastKnownY != null &&
             machine.lastKnownX != Consts.NullDouble && machine.lastKnownY != Consts.NullDouble)
-          NEECoords.Add(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value));
+          NEECoords.Add(new XYZ(machine.lastKnownX.Value, machine.lastKnownY.Value, 0.0));
       }
 
       if (NEECoords.Count > 0)
@@ -50,8 +49,8 @@ namespace VSS.TRex.Gateway.WebApi.ActionServices
             if (machine.lastKnownX != null && machine.lastKnownY != null &&
                 machine.lastKnownX != Consts.NullDouble && machine.lastKnownY != Consts.NullDouble)
             {
-              machine.lastKnownLatitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer].Y);
-              machine.lastKnownLongitude = MathUtilities.RadiansToDegrees(LLHCoords[coordPointer].X);
+              machine.lastKnownLatitude = LLHCoords[coordPointer].Y;
+              machine.lastKnownLongitude = LLHCoords[coordPointer].X;
             }
             coordPointer++;
           }
