@@ -72,6 +72,10 @@ namespace IntegrationTests.WebApiTests.FileImportTests
         importFile = new ImportFile("api/v6/importedfile");
         importFilename = TestFileResolver.File(GetTestFileNameForImportedFileType(importedFileType, false));
 
+        importFileArray = new[] {
+          "| EventType                             | ProjectUid      | CustomerUid   | Name                                           | ImportedFileType   |",
+          $"| ProjectConfigurationFileResponseModel | {ts.ProjectUid} | {customerUid} | {TestFileResolver.GetFullPath(importFilename)} | {importedFileType} |"};
+
         filesResult = await importFile.SendRequestToFileImportV6(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
         Assert.Equal(firstFilename, filesResult.ProjectConfigFileDescriptor.FileName);
         Assert.Equal(importFile.ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName, filesResult.ProjectConfigFileDescriptor.SiteCollectorFileName);
@@ -107,13 +111,8 @@ namespace IntegrationTests.WebApiTests.FileImportTests
       var filesResult = await importFile.SendRequestToFileImportV6(ts, importFileArray, 1, new ImportOptions(HttpMethod.Post, new[] { $"filename={importFilename}" }));
       Assert.Equal(importFile.ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName, filesResult.ProjectConfigFileDescriptor.FileName);
 
-      _ = await importFile.SendRequestToFileImportV6(ts, importFileArray, 1, new ImportOptions(HttpMethod.Put, new[] { $"filename={importFilename}" }));
-      var expectedResult2 = importFile.ExpectedImportFileDescriptorSingleResult.ImportedFileDescriptor;
-      var importFileList = await importFile.GetImportedFilesFromWebApi<ImportedFileDescriptorListResult>($"api/v6/importedfiles?projectUid={ts.ProjectUid}", customerUid);
-
-      Assert.True(importFileList.ProjectConfigFileDescriptors.Count == 2, "Expected 2 config files but got " + importFileList.ImportedFileDescriptors.Count);
-      Assert.Equal(coordSysFileName, importFileList.ProjectConfigFileDescriptors[0].FileName);
-      Assert.Equal(importFilename, importFileList.ProjectConfigFileDescriptors[1].FileName);
+      filesResult = await importFile.SendRequestToFileImportV6(ts, importFileArray, 1, new ImportOptions(HttpMethod.Put, new[] { $"filename={importFilename}" }));
+      Assert.Equal(importFile.ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor.FileName, filesResult.ProjectConfigFileDescriptor.FileName);
     }
 
     [Theory]

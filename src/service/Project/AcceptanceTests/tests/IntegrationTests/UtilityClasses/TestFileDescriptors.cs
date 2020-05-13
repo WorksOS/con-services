@@ -19,7 +19,7 @@
     public static string TestControlPoints2 = "overpass.office.csv";
     public static string TestGeoid = "NZGD05.ggf";
     public static string TestFeatureCode = "GlobalFeatures.fxl";
-    public static string TestSiteConfiguration = "dimensions.xml";
+    public static string TestSiteConfiguration = "Site.xml";
     public static string TestGcsCalibration = "Mount Pleasant 2000.cfg";
     public static string TestCalibration1 = "BelfastTemp Road.dc";
     public static string TestCalibration2 = "Belfast temporary road.cal";

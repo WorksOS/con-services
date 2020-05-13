@@ -80,7 +80,7 @@ namespace TestUtility
       {
         ExpectedImportFileDescriptorSingleResult.ProjectConfigFileDescriptor = new ProjectConfigurationFileResponseModel {FileName = fileDescriptor.Name};
 
-        uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={DateTime.UtcNow}&fileUpdatedUtc={DateTime.UtcNow}";
+        uri = $"{uriRoot}?projectUid={fileDescriptor.ProjectUid}&importedFileType={fileDescriptor.ImportedFileTypeName}&fileCreatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}&fileUpdatedUtc={DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}";
 
         if (importOptions.HttpMethod == HttpMethod.Delete)
         {
