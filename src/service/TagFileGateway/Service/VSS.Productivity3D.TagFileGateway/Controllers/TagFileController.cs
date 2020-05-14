@@ -12,7 +12,7 @@ using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.Productivity3D.Models.Models;
 using VSS.Productivity3D.TagFileGateway.Common.Abstractions;
-using VSS.Productivity3D.TagFileGateway.Common.Models.Executors;
+using VSS.Productivity3D.TagFileGateway.Common.Executors;
 using VSS.Productivity3D.TagFileGateway.Common.Models.Sns;
 
 namespace VSS.Productivity3D.TagFileGateway.Controllers
@@ -34,12 +34,13 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       [FromServices] IConfigurationStore configStore, 
       [FromServices] IDataCache dataCache, 
       [FromServices] ITagFileForwarder tagFileForwarder,
-      [FromServices] ITransferProxy transferProxy)
+      [FromServices] ITransferProxy transferProxy,
+      [FromServices] IWebRequest webRequest)
     {
       var isDirect = Request.Path.Value.Contains("/direct");
       _logger.LogInformation($"Attempting to process {(isDirect ? "Direct" : "Non-Direct")} tag file {request?.FileName}");
       var result = await RequestExecutorContainer
-        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxy)
+        .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxy, webRequest)
         .ProcessAsync(request);
 
       _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {request?.FileName}");
@@ -69,64 +70,18 @@ namespace VSS.Productivity3D.TagFileGateway.Controllers
       if (payload == null)
         return BadRequest();
 
-      _logger.LogInformation($"Sns message type: {payload.Type}, topic: {payload.TopicArn}");
-      if (payload.Type == SnsPayload.SubscriptionType)
-      {
-        // Request for subscription
-        _logger.LogInformation($"SNS SUBSCRIPTION REQUEST: {payload.Message}, Subscription URL: '{payload.SubscribeURL}'");
-        return Ok();
-      }
-
-      if (payload.IsNotification)
-      {
-        // Got a tag file
-        var tagFile = JsonConvert.DeserializeObject<SnsTagFile>(payload.Message);
-        if (tagFile == null)
-        {
-          _logger.LogWarning($"Could not convert to Tag File Model. JSON: {payload.Message}");
-          return BadRequest();
-        }
-
-        byte[] data;
-        if(!string.IsNullOrEmpty(tagFile.DownloadUrl))
-        {
-          _logger.LogInformation($"Tag file {tagFile.FileName} needs to be downloaded from : {tagFile.DownloadUrl}");
-          var downloadTagFileData = await webRequest.ExecuteRequestAsStreamContent(tagFile.DownloadUrl, HttpMethod.Get);
-          await using var ms = new MemoryStream();
-          await downloadTagFileData.CopyToAsync(ms);
-          data = ms.ToArray();
-          if (data.Length != tagFile.FileSize)
-          {
-            _logger.LogWarning($"Downloaded data length {data.Length} is not equal to expected length {tagFile.FileSize}");
-          }
-          _logger.LogInformation($"Downloaded tag file {tagFile.FileName}, total bytes: {data.Length}");
-        }
-        else
-        {
-          _logger.LogInformation($"Tag file data is included in payload for file {tagFile.FileName}");
-          data = tagFile.Data;
-        }
-
-        var request = new CompactionTagFileRequest
-        {
-          Data = data, FileName = tagFile.FileName, OrgId = tagFile.OrgId
-        };
-
-        _logger.LogInformation($"Attempting to process sns tag file {tagFile?.FileName}");
-        var result = await RequestExecutorContainer
-          .Build<TagFileProcessExecutor>(loggerFactory, configStore, dataCache, tagFileForwarder, transferProxy)
-          .ProcessAsync(request);
-
-        _logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {tagFile?.FileName}");
+      var result = await RequestExecutorContainer.Build<TagFileSnsProcessExecutor>(loggerFactory,
+          configStore,
+          dataCache,
+          tagFileForwarder,
+          transferProxy,
+          webRequest)
+        .ProcessAsync(payload);
 
         if(result != null)
           return Ok();
         // Note sure if we return bad request or not on failed processing - will updated if needed
         return BadRequest();
-      }
-
-      _logger.LogWarning($"Unknown SNS Type: {payload.Type} - not sure how to process");
-      return BadRequest();
     }
   }
 }

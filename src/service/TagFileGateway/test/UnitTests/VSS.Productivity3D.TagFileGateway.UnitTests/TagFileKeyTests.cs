@@ -1,4 +1,4 @@
-﻿using VSS.Productivity3D.TagFileGateway.Common.Models.Executors;
+﻿using VSS.Productivity3D.TagFileGateway.Common.Executors;
 using Xunit;
 using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
