@@ -14,10 +14,27 @@ namespace VSS.MasterData.Proxies
       return headers;
     }
 
-    public static IHeaderDictionary GetCustomHeaders(this IHeaderDictionary headers, bool isInternal = true)
+    public static IHeaderDictionary GetCustomHeaders(this IHeaderDictionary headers)
     {
-      headers.StripHeaders(isInternal);
-      return headers;
+      var customHeaders = new HeaderDictionary();
+
+      if (headers != null)
+      {
+        foreach (var headerKey in headers)
+        {
+          if (HeaderConstants.InternalHeaders.Any(k => k.Contains(headerKey.Key, StringComparison.OrdinalIgnoreCase)))
+          {
+            customHeaders.Add(headerKey);
+          }
+
+          if (HeaderConstants.InternalHeaderPrefix.Any(p => headerKey.Key.StartsWith(p, StringComparison.OrdinalIgnoreCase)))
+          {
+            customHeaders.Add(headerKey);
+          }
+        }
+      }
+
+      return customHeaders;
     }
 
     public static void StripHeaders(this IHeaderDictionary headers, bool isInternal = true)
