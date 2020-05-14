@@ -63,6 +63,7 @@ namespace VSS.Productivity3D.TagFileGateway.Common.Executors
         var result = await Build<TagFileProcessExecutor>().ProcessAsync(request);
         Logger.LogInformation($"Got result {JsonConvert.SerializeObject(result)} for Tag file: {tagFile?.FileName}");
 
+        return result;
       }
 
       Logger.LogWarning($"Unknown SNS Type: {payload.Type} - not sure how to process");
