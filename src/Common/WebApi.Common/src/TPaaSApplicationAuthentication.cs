@@ -120,8 +120,8 @@ namespace VSS.WebApi.Common
     {
       return new HeaderDictionary
       {
-        {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson},
-        {HeaderConstants.X_JWT_ASSERTION, GetApplicationJWT() }
+        { HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson },
+        { HeaderConstants.X_JWT_ASSERTION, GetApplicationJWT() }
       };
     }
 
@@ -134,8 +134,8 @@ namespace VSS.WebApi.Common
     {
       return new HeaderDictionary
       {
-        {HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson},
-        {HeaderConstants.AUTHORIZATION, $"Bearer {GetApplicationBearerToken()}"}
+        { HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson },
+        { HeaderConstants.AUTHORIZATION, $"Bearer {GetApplicationBearerToken()}"}
       };
     }
   }

@@ -52,7 +52,7 @@ namespace VSS.MasterData.Proxies
         {
           foreach (var customHeader in dictionary)
           {
-            if (!x.Headers.TryAddWithoutValidation(customHeader.Key, (IEnumerable<string>)customHeader.Value))
+            if (!x.Headers.TryAddWithoutValidation(customHeader.Key, customHeader.Value[0]))
             {
               _log.LogWarning($"Can't add header {customHeader.Key}");
             }
@@ -75,7 +75,7 @@ namespace VSS.MasterData.Proxies
 
       if (method == HttpMethod.Post || method == HttpMethod.Put)
       {
-        return _httpClient.PostAsync(endpoint, requestStream, method, null, timeout,
+        return _httpClient.PostAsync(endpoint, requestStream, method, customHeaders, timeout,
           x => ApplyHeaders(customHeaders, x), _log);
       }
 

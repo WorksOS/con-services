@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
 using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
@@ -25,9 +23,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
   /// </summary>
   public class DataRepository : IDataRepository
   {
-    private ILogger _log;
-    private IConfigurationStore _configStore;
-
     // We could use the ProjectSvc ICustomerProxy to then call IAccountClient, just go straight to client
     private readonly ICwsAccountClient _cwsAccountClient;
 
@@ -41,16 +36,18 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
 
     private IHeaderDictionary _mergedCustomHeaders;
 
-    public DataRepository(ILogger logger, IConfigurationStore configStore, ITPaaSApplicationAuthentication authorization,
-      ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
-      IHeaderDictionary requestCustomHeaders )
+    public DataRepository(ITPaaSApplicationAuthentication authorization, ICwsAccountClient cwsAccountClient, IProjectInternalProxy projectProxy, IDeviceInternalProxy deviceProxy,
+      IHeaderDictionary requestCustomHeaders)
     {
-      _log = logger;
-      _configStore = configStore;
       _cwsAccountClient = cwsAccountClient;
       _projectProxy = projectProxy;
       _deviceProxy = deviceProxy;
-      _mergedCustomHeaders = (IHeaderDictionary)authorization.CustomHeaders().MergeDifference(requestCustomHeaders);
+      _mergedCustomHeaders = requestCustomHeaders;
+
+      foreach (var header in authorization.CustomHeaders())
+      {
+        _mergedCustomHeaders.Add(header);
+      }
     }
 
     #region account

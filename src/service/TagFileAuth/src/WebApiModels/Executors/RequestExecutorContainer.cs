@@ -23,7 +23,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
   /// </summary>
   public abstract class RequestExecutorContainer
   {
-
     protected ILogger log;
     private IConfigurationStore configStore;
     private ITPaaSApplicationAuthentication authorization;
@@ -80,7 +79,7 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors
       where TExecutor : RequestExecutorContainer, new()
     {
       var executor = new TExecutor() { log = logger, configStore = configStore, authorization = authorization, cwsAccountClient = cwsAccountClient, projectProxy = projectProxy, deviceProxy = deviceProxy, requestCustomHeaders = requestCustomHeaders };
-      dataRepository = new DataRepository(logger, configStore, authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
+      dataRepository = new DataRepository(authorization, cwsAccountClient, projectProxy, deviceProxy, requestCustomHeaders);
       return executor;
     }
   }
