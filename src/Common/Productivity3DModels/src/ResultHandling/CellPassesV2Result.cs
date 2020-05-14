@@ -285,7 +285,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The time the cell pass was recorded that contributed the CCV value.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public DateTime CcvTime  { get; set; }
+      public DateTime? CcvTime  { get; set; }
 
       /// <summary>
       /// The number of 'half passes' counted in the layer. A pass made by certain machine types (eg: CTCT GCS Quattro four wheel landfill sheepsfoot compactor) are counted as half passes 
