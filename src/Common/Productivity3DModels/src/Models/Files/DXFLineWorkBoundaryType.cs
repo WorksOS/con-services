@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Files.DXF
+﻿namespace VSS.Productivity3D.Models.Models.Files
 {
   public enum DXFLineWorkBoundaryType
   {

@@ -1,4 +1,5 @@
-﻿using VSS.TRex.Geometry;
+﻿using VSS.Productivity3D.Models.Models.Files;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Files.DXF
 {

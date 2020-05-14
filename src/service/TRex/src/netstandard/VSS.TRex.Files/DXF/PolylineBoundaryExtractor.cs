@@ -1,22 +1,23 @@
-﻿using VSS.Visionlink.Interfaces.Events.MasterData.Models;
+﻿using VSS.Productivity3D.Models.Models.Files;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Files.DXF
 {
   /// <summary>
   /// Provides simple semantics for reading a DXF file and extracting all the closed poly lines from it
   /// </summary>
-  public class PolyLineExtractor
+  public class PolyLineBoundaryExtractor
   {
     private readonly DXFReader _reader;
 
     public PolyLineBoundaries Boundaries;
 
-    public PolyLineExtractor(DXFReader reader)
+    public PolyLineBoundaryExtractor(DXFReader reader)
     {
       _reader = reader;
     }
 
-    public DXFUtilitiesResult Extract(string baseName, DxfUnitsType units, int maxBoundariesToProcess)
+    public DXFUtilitiesResult Extract(string baseName, DxfUnitsType units, uint maxBoundariesToProcess)
     {
       bool atEOF;
       var result = DXFUtilitiesResult.OK;

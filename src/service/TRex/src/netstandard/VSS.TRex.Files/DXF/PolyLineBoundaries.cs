@@ -8,10 +8,10 @@ namespace VSS.TRex.Files.DXF
     public DxfUnitsType Units;
     public List<PolyLineBoundary> Boundaries;
 
-    public PolyLineBoundaries(DxfUnitsType units, int maxBoundariesToProcess)
+    public PolyLineBoundaries(DxfUnitsType units, uint maxBoundariesToProcess)
     {
       Units = units;
-      Boundaries = new List<PolyLineBoundary>(maxBoundariesToProcess);
+      Boundaries = new List<PolyLineBoundary>((int)maxBoundariesToProcess);
     }
   }
 }
