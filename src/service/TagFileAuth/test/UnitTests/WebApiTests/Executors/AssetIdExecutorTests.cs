@@ -15,7 +15,6 @@ namespace WebApiTests.Executors
   [TestClass]
   public class AssetIdExecutorTests : ExecutorBaseTests
   {
-
     [TestMethod]
     public void GetLogger()
     {
@@ -70,7 +69,7 @@ namespace WebApiTests.Executors
       var logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
       deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<HeaderDictionary>())).ReturnsAsync(deviceDataToBeReturned);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
+      var dataRepository = new DataRepository(authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.AreEqual(serialNumberExpected, device.SerialNumber);
@@ -83,7 +82,7 @@ namespace WebApiTests.Executors
       var logger = loggerFactory.CreateLogger<AssetIdExecutorTests>();
       deviceProxy.Setup(d => d.GetDevice(serialNumberRequested, It.IsAny<HeaderDictionary>())).ReturnsAsync((DeviceData)null);
 
-      var dataRepository = new DataRepository(logger, ConfigStore, authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
+      var dataRepository = new DataRepository(authorization.Object, cwsAccountClient.Object, projectProxy.Object, deviceProxy.Object, requestCustomHeaders);
 
       var device = await dataRepository.GetDevice(serialNumberRequested);
       Assert.IsNull(device);
@@ -105,6 +104,5 @@ namespace WebApiTests.Executors
       Assert.AreEqual(0, result.Code);
       Assert.AreEqual("success", result.Message);
     }
-
   }
 }
