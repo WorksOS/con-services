@@ -536,7 +536,7 @@ namespace VSS.Productivity3D.WebApi.Compaction.Controllers
     /// </summary>
     protected async Task<Filter.Abstractions.Models.Filter> GetFilterDescriptor(Guid projectUid, Guid filterUid)
     {
-      var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders(true));
+      var filterDescriptor = await FilterServiceProxy.GetFilter(projectUid.ToString(), filterUid.ToString(), Request.Headers.GetCustomHeaders());
 
       return filterDescriptor == null
         ? null

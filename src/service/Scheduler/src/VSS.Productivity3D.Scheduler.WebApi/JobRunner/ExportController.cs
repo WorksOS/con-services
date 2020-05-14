@@ -41,7 +41,6 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     /// Schedule an export
     /// </summary>
     /// <param name="request">Http request details of how to get the export data</param>
-    /// <returns></returns>
     [Route("internal/v1/background")] // double up the url with the intention of splitting this later
     [Route("internal/v1/export")]//hide from TPaaS using different base url in route ('internal' instead of 'api')
     [HttpPost]
@@ -49,7 +48,7 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
     {
       log.LogInformation($"StartExport: Url {request?.Url}");
 
-      JobRequest jobRequest = new JobRequest() { JobUid = Guid.Parse("c3cbb048-05c1-4961-a799-70434cb2f162"), SetupParameters = request, RunParameters = Request.Headers.GetCustomHeaders(true) };
+      JobRequest jobRequest = new JobRequest() { JobUid = Guid.Parse("c3cbb048-05c1-4961-a799-70434cb2f162"), SetupParameters = request, RunParameters = Request.Headers.GetCustomHeaders() };
 
       log.LogInformation($"{nameof(StartExport)}: {JsonConvert.SerializeObject(request)}");
       jobRequest.Validate();
@@ -122,8 +121,8 @@ namespace VSS.Productivity3D.Scheduler.WebAPI.ExportJobs
 
       // Change behavior so it's not a breaking change for the UI.
 
-      if (details != null && 
-        status.Equals(Hangfire.States.DeletedState.StateName, StringComparison.OrdinalIgnoreCase) && 
+      if (details != null &&
+        status.Equals(Hangfire.States.DeletedState.StateName, StringComparison.OrdinalIgnoreCase) &&
         details.Result.Code != ContractExecutionStatesEnum.ExecutedSuccessfully)
       {
         status = Hangfire.States.FailedState.StateName;

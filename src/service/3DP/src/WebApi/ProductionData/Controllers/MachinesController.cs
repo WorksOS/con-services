@@ -43,7 +43,7 @@ namespace VSS.Productivity3D.WebApi.ProductionData.Controllers
     private readonly IConfigurationStore _configStore;
     private readonly ITRexCompactionDataProxy _trexCompactionDataProxy;
     private readonly IDeviceProxy _deviceProxy;
-    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders(true);
+    private IHeaderDictionary CustomHeaders => Request.Headers.GetCustomHeaders();
     private string CustomerUid => ((RaptorPrincipal) Request.HttpContext.User).CustomerUid;
 
     /// <summary>
