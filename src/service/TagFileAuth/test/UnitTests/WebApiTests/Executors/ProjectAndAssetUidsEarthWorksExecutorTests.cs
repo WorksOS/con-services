@@ -31,8 +31,6 @@ namespace WebApiTests.Executors
     private string radioSerial = "radSer45";
     private string ec520Serial = "ecSer";
     private DeviceData deviceData;
-    private IHeaderDictionary _customHeaders;
-
 
     [TestInitialize]
     public override void InitTest()

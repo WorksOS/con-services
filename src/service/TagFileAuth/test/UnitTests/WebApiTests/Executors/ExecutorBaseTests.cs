@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,6 +7,7 @@ using Moq;
 using Serilog;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Abstractions.Http;
 using VSS.ConfigurationStore;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.TagFileAuth.Models;
@@ -51,6 +51,12 @@ namespace WebApiTests.Executors
       requestCustomHeaders = new HeaderDictionary();
       loggerFactory = ServiceProvider.GetRequiredService<ILoggerFactory>();
       authorization = new Mock<ITPaaSApplicationAuthentication>();
+
+      authorization.Setup(x => x.CustomHeaders()).Returns(new HeaderDictionary
+      {
+        { HeaderConstants.CONTENT_TYPE, ContentTypeConstants.ApplicationJson },
+        { HeaderConstants.AUTHORIZATION, "Bearer TOKEN" }
+      });
     }
   }
 }
