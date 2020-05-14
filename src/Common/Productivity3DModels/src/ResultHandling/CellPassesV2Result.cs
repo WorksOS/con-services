@@ -78,7 +78,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The time is expressed un UTC.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public DateTime Time { get; set; }
+      public DateTime? Time { get; set; }
 
       /// <summary>
       /// A bit field stored used to hold the GPSMode recorded by the machine at the time the cell was passed over. The LSB four bits in the byte are used for this purpose.
@@ -209,7 +209,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The date of the most recent map reset event prior to the time the cell pass is recorded.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public DateTime MapResetPriorDate { get; set; }
+      public DateTime? MapResetPriorDate { get; set; }
 
       /// <summary>
       /// The positioning technology used to collect the implement (drum, blade etc) position. The current values are GPS or UTS (Universal Total Station)
@@ -318,7 +318,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The time at which the last cell pass ccntributed to this layer was recorded.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public DateTime LastLayerPassTime { get; set; }
+      public DateTime? LastLayerPassTime { get; set; }
 
       /// <summary>
       /// The elevation of the last cell pass contributed to the layer.
@@ -350,7 +350,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The time the cell pass that contributed the material temperature value
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public DateTime MaterialTemperatureTime { get; set; }
+      public DateTime? MaterialTemperatureTime { get; set; }
 
       /// <summary>
       /// The maximum elevation recorded across all cell passes contributed to the layer.
@@ -382,7 +382,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The time the cell pass was recorded that contributed the CCV value.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public DateTime MdpTime { get; set; }
+      public DateTime? MdpTime { get; set; }
 
       /// <summary>
       /// The lowest elevation value recorded across all cell passes contributed to the layer.
