@@ -251,7 +251,7 @@
     <WarningsAsErrors />
     <PlatformTarget>x64</PlatformTarget>
     <NoWarn>1701;1702;1591</NoWarn>
-    <DocumentationFile>C:\AzureDevOps\con-services\src\service\MockProjectWebApi\src.xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
