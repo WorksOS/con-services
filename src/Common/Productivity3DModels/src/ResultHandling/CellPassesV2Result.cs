@@ -105,37 +105,37 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The target CCV. In 10ths of units.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public short TargetCcv { get; set; }
+      public short? TargetCcv { get; set; }
 
       /// <summary>
       /// The target MDP. In 10ths of units.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public short TargetMdp { get; set; }
+      public short? TargetMdp { get; set; }
 
       /// <summary>
       /// The target pass count to attain before material is considered to be compacted sufficiently.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public ushort TargetPassCount { get; set; }
+      public ushort? TargetPassCount { get; set; }
 
       /// <summary>
       /// Target lift thickness for each layer. Value is expressed in meters.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter), 3.4e+38)]
-      public float TargetThickness { get; set; }
+      public float? TargetThickness { get; set; }
 
       /// <summary>
       /// The upper bound of the asphalt temperature mat when being rolled. Values above this cause a warning to be issued on the machine. Expressed in degrees Celcius.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter), 4096)]
-      public ushort TempWarningLevelMax { get; set; }
+      public ushort? TempWarningLevelMax { get; set; }
 
       /// <summary>
       /// The lower bound of the asphalt temperature mat when being rolled. Values below this cause a warning to be issued on the machine. Expressed in degrees Celcius.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter), 4096)]
-      public ushort TempWarningLevelMin { get; set; }
+      public ushort? TempWarningLevelMin { get; set; }
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The RMV threshold reported by the machine. Values above this level are interpreted as decoupled (the compactor drum is bouncing)
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public short EventMachineRmvThreshold { get; set; }
+      public short? EventMachineRmvThreshold { get; set; }
 
       /// <summary>
       /// Is the machine implemnent (drum, blade, bucket etc) in contact with the ground when the measurement is made. If not decoupled, a compactor drum is considered to be on the groudn by definition.
@@ -291,28 +291,28 @@ public class CellPassesV2Result : ContractExecutionResult
       /// The number of 'half passes' counted in the layer. A pass made by certain machine types (eg: CTCT GCS Quattro four wheel landfill sheepsfoot compactor) are counted as half passes 
       /// (each axle contributes half of the compactive effort attributed to the machine. All other machine types contribute 'whole passes' (such as drum soil compactors).
       /// </summary>
-      public int FilteredHalfPassCount { get; set; }
+      public int? FilteredHalfPassCount { get; set; }
 
       /// <summary>
       /// The rounded whole pass count for the layer. Residual half pass counts are rouned up (eg: 3 half passes is rounded up to 2 whole passes)
       /// </summary>
-      public int FilteredPassCount { get; set; }
+      public int? FilteredPassCount { get; set; }
 
       /// <summary>
       /// The elevation of the first cell pass recorded in the layer.
       /// </summary>
-      public float FirstPassHeight { get; set; }
+      public float? FirstPassHeight { get; set; }
 
       /// <summary>
       /// The vibratory drum frequency. Value is expressed in 10ths of Hertz.
       /// </summary>
       [JsonConverter(typeof(RaptorNullableConverter))]
-      public ushort Frequency { get; set; }
+      public ushort? Frequency { get; set; }
 
       /// <summary>
       /// The measured elevation of the last cell pass made in the layer. This represents the best known elevation of the top of the material layer at the location of the cell.
       /// </summary>
-      public float Height { get; set; }
+      public float? Height { get; set; }
 
       /// <summary>
       /// The time at which the last cell pass ccntributed to this layer was recorded.
@@ -339,12 +339,12 @@ public class CellPassesV2Result : ContractExecutionResult
       /// <summary>
       /// Elevation of the cell pass that recorded the material temperature for the layer
       /// </summary>
-      public float MaterialTemperatureElev { get; set; }
+      public float? MaterialTemperatureElev { get; set; }
 
       /// <summary>
       /// The ID of the machine that recorded the material temperature for the layer
       /// </summary>
-      public long MaterialTemperatureMachineId { get; set; }
+      public long? MaterialTemperatureMachineId { get; set; }
 
       /// <summary>
       /// The time the cell pass that contributed the material temperature value
