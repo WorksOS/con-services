@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -19,7 +18,6 @@ using VSS.TRex.GridFabric.Affinity;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGrids.GridFabric.ComputeFuncs;
 using VSS.TRex.SubGrids.Interfaces;
-using VSS.TRex.SubGridTrees.Core.Utilities;
 using VSS.TRex.SubGridTrees.Interfaces;
 using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
@@ -31,12 +29,12 @@ namespace VSS.TRex.Tests.CellDatum.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(CellPassesRequest_ApplicationService))]
   public class CellPassesRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting<CellPassesRequestComputeFunc_ApplicationService, CellPassesRequestArgument_ApplicationService, CellPassesResponse>();
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting<CellPassesRequestComputeFunc_ApplicationService, CellPassesRequestArgument_ApplicationService, CellPassesResponse>();
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeSpatialAffinityGridRouting<CellPassesRequestComputeFunc_ClusterCompute, CellPassesRequestArgument_ClusterCompute, CellPassesResponse>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeSpatialAffinityGridRouting<CellPassesRequestComputeFunc_ClusterCompute, CellPassesRequestArgument_ClusterCompute, CellPassesResponse>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
     private static CellPassesRequestArgument_ClusterCompute CreateRequestArgument(ISiteModel siteModel)

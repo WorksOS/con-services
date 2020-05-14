@@ -1,6 +1,7 @@
 ﻿using System;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Geometry;
+using VSS.TRex.Storage.Interfaces;
 
 namespace VSS.TRex.Alignments.Interfaces
 {
@@ -26,5 +27,13 @@ namespace VSS.TRex.Alignments.Interfaces
     /// <param name="alignmentUid"></param>
     /// <returns></returns>
     bool Remove(Guid siteModelUid, Guid alignmentUid);
+
+    /// <summary>
+    /// Remove the list of alignments from the site model persisted storage
+    /// </summary>
+    /// <param name="siteModelUid"></param>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool Remove(Guid siteModelID, IStorageProxy storageProxy);
   }
 }

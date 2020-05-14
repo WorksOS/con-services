@@ -89,7 +89,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
       var project = (await projectRepo.GetProject(shortRaptorProjectId));
-      
+
       log.LogInformation($"Project shortRaptorProjectId: {shortRaptorProjectId} retrieved");
       return project;
     }
@@ -100,10 +100,10 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
     ///    else get overlapping projects in localDB for this CustomerUID
     /// </summary>
     public static async Task<List<ProjectDatabaseModel>> GetIntersectingProjects(
-      string customerUid, double latitude, double longitude, 
+      string customerUid, double latitude, double longitude,
       ILogger log, IServiceExceptionHandler serviceExceptionHandler, IProjectRepository projectRepo)
     {
-      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList();        ;
+      var projects = (await projectRepo.GetIntersectingProjects(customerUid, latitude, longitude)).ToList(); ;
 
       log.LogInformation($"Projects for customerUid: {customerUid} count: {projects.Count}");
       return projects;
@@ -220,12 +220,14 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               ms, customerUid, projectUid.ToString(), coordinateSystemFileName,
               false, null, fileSpaceId, log, serviceExceptionHandler, fileRepo);
           }
+
           //save copy to DataOcean
           var rootFolder = configStore.GetValueString("DATA_OCEAN_ROOT_FOLDER_ID");
           if (string.IsNullOrEmpty(rootFolder))
           {
             serviceExceptionHandler.ThrowServiceException(HttpStatusCode.InternalServerError, 115);
           }
+
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
             await DataOceanHelper.WriteFileToDataOcean(
@@ -233,6 +235,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
               DataOceanFileUtil.DataOceanFileName(coordinateSystemFileName, false, projectUid, null),
               log, serviceExceptionHandler, dataOceanClient, authn, projectUid, configStore);
           }
+
           //save to CWS
           using (var ms = new MemoryStream(coordinateSystemFileContent))
           {
@@ -315,7 +318,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Helpers
       };
       await projectRepo.StoreEvent(deleteProjectEvent);
     }
-    
+
     #endregion rollback
 
   }

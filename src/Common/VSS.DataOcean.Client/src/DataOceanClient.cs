@@ -164,7 +164,7 @@ namespace VSS.DataOcean.Client
       if (result != null)
       {
         var route = $"/api/files/{result.Id}";
-        await _gracefulClient.ExecuteRequest($"{_dataOceanBaseUrl}{route}", null, customHeaders, HttpMethod.Delete);
+        await _gracefulClient.ExecuteRequest(_dataOceanBaseUrl + route, null, customHeaders, HttpMethod.Delete);
         return true;
       }
 

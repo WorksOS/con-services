@@ -1,7 +1,5 @@
 ﻿using System;
-using VSS.TRex.DI;
 using VSS.TRex.SiteModels.Interfaces;
-using VSS.TRex.Storage.Interfaces;
 using VSS.TRex.Storage.Models;
 
 namespace VSS.TRex.Webtools
@@ -14,8 +12,7 @@ namespace VSS.TRex.Webtools
 
     public static ISiteModels SwitchableSiteModelsContext()
     {
-      return SwitchableSiteModelsContexts[(int) switchableMutability] ??
-             (SwitchableSiteModelsContexts[(int) switchableMutability] = new SiteModels.SiteModels());
+      return SwitchableSiteModelsContexts[(int) switchableMutability] ??= new SiteModels.SiteModels();
     }
   }
 }

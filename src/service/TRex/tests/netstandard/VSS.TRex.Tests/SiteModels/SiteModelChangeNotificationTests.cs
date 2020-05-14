@@ -35,7 +35,8 @@ namespace VSS.TRex.Tests.SiteModels
         MachineTargetValuesModified = true,
         MachinesModified = true,
         ProofingRunsModified = true,
-        SurveyedSurfacesModified = true
+        SurveyedSurfacesModified = true,
+        SiteModelMarkedForDeletion = false
       };
 
       siteModels.SiteModelAttributesHaveChanged(_evt);
@@ -131,6 +132,29 @@ namespace VSS.TRex.Tests.SiteModels
     public void Test_SiteModel_ChangeNotification_SurveyedSurfaces()
     {
       TestModAndUnModded(siteModel => siteModel.SurveyedSurfacesLoaded, x => x.SurveyedSurfaces, (evt, state) => evt.SurveyedSurfacesModified = state);
+    }
+
+    [Fact]
+    public void Test_SiteModel_ChangeNotification_SiteModelMarkedForDeletion()
+    {
+      var siteModels = DIContext.Obtain<ISiteModels>();
+
+      // Create the new site model
+      var guid = Guid.NewGuid();
+      var siteModel = siteModels.GetSiteModel(guid, true);
+
+      // Note the sitemodel a marked for deletion
+      var _evt = new SiteModelAttributesChangedEvent
+      {
+        SiteModelID = guid,
+        SiteModelMarkedForDeletion = true
+      };
+
+      siteModels.SiteModelAttributesHaveChanged(_evt);
+      siteModel = siteModels.GetSiteModel(guid, false);
+
+      // Check the site model cannot be retrieved when marked for deletion
+      siteModel.Should().BeNull();
     }
   }
 }

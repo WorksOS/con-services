@@ -51,7 +51,7 @@ namespace VSS.TRex.Tests.GridFabric.Requests
     [Fact]
     public void Execute_Success_Synchronous()
     {
-      IgniteMock.AddClusterComputeSpatialAffinityGridRouting<TestComputeFunc, TestArgument, TestResult>();
+      IgniteMock.Immutable.AddClusterComputeSpatialAffinityGridRouting<TestComputeFunc, TestArgument, TestResult>();
 
       var request = new TestRequest();
       var response = request.Execute(new TestArgument(), new SubGridSpatialAffinityKey());
@@ -61,7 +61,7 @@ namespace VSS.TRex.Tests.GridFabric.Requests
     [Fact]
     public async void Execute_Success_Asynchronous()
     {
-      IgniteMock.AddClusterComputeSpatialAffinityGridRouting<TestComputeFunc, TestArgument, TestResult>();
+      IgniteMock.Immutable.AddClusterComputeSpatialAffinityGridRouting<TestComputeFunc, TestArgument, TestResult>();
 
       var request = new TestRequest();
       var response = await request.ExecuteAsync(new TestArgument(), new SubGridSpatialAffinityKey());

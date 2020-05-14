@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using VSS.Common.Abstractions;
 using VSS.Common.Abstractions.Cache.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.ServiceDiscovery.Enums;
 using VSS.Common.Abstractions.ServiceDiscovery.Interfaces;
-using VSS.ConfigurationStore;
 using VSS.MasterData.Proxies.Interfaces;
 using VSS.TRex.ConnectedSite.Gateway.Abstractions;
 
@@ -29,9 +25,6 @@ namespace VSS.MasterData.Proxies
     public override ApiType Type => ApiType.Public;
     public override string CacheLifeKey => "";
 
-
     public async Task<IL2ConnectedSiteMessage> GetMachineStatus() { throw new NotImplementedException(); }
-
-
   }
 }

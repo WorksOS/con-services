@@ -20,5 +20,7 @@ namespace VSS.TRex.SiteModels.Interfaces
       string name = null, string description = null, DateTime? lastModifiedDate = null,
       int? machineCount = null, int? designCount = null, int? surveyedSurfaceCount = null, 
       int? alignmentCount = null);
+
+    void Remove(Guid siteModelID);
   }
 }

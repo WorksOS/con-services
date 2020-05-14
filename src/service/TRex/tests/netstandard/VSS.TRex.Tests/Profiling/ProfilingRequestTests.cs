@@ -36,20 +36,20 @@ namespace VSS.TRex.Tests.Profiling
     private void AddDesignProfilerGridRouting()
     {
       //This is specific to cell datum i.e. what the cell datum cluster compute will call in the design profiler
-      IgniteMock.AddApplicationGridRouting<CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
+      IgniteMock.Immutable.AddApplicationGridRouting<CalculateDesignElevationPatchComputeFunc, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
     }
 
     private void AddApplicationGridRouting()
     {
-      IgniteMock.AddApplicationGridRouting<ProfileRequestComputeFunc_ApplicationService<ProfileCell>, ProfileRequestArgument_ApplicationService, ProfileRequestResponse<ProfileCell>>();
-      IgniteMock.AddApplicationGridRouting<ProfileRequestComputeFunc_ApplicationService<SummaryVolumeProfileCell>, ProfileRequestArgument_ApplicationService, ProfileRequestResponse<SummaryVolumeProfileCell>>();
+      IgniteMock.Immutable.AddApplicationGridRouting<ProfileRequestComputeFunc_ApplicationService<ProfileCell>, ProfileRequestArgument_ApplicationService, ProfileRequestResponse<ProfileCell>>();
+      IgniteMock.Immutable.AddApplicationGridRouting<ProfileRequestComputeFunc_ApplicationService<SummaryVolumeProfileCell>, ProfileRequestArgument_ApplicationService, ProfileRequestResponse<SummaryVolumeProfileCell>>();
     }
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting<ProfileRequestComputeFunc_ClusterCompute<ProfileCell>, ProfileRequestArgument_ClusterCompute, ProfileRequestResponse<ProfileCell>>();
-      IgniteMock.AddClusterComputeGridRouting<ProfileRequestComputeFunc_ClusterCompute<SummaryVolumeProfileCell>, ProfileRequestArgument_ClusterCompute, ProfileRequestResponse<SummaryVolumeProfileCell>>();
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<ProfileRequestComputeFunc_ClusterCompute<ProfileCell>, ProfileRequestArgument_ClusterCompute, ProfileRequestResponse<ProfileCell>>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<ProfileRequestComputeFunc_ClusterCompute<SummaryVolumeProfileCell>, ProfileRequestArgument_ClusterCompute, ProfileRequestResponse<SummaryVolumeProfileCell>>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
     private void AddRoutings()
@@ -92,6 +92,8 @@ namespace VSS.TRex.Tests.Profiling
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMinMaterialTemperature.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 652);
       siteModel.MachinesTargetValues[bulldozerMachineIndex].TargetMaxMaterialTemperature.PutValueAtDate(Consts.MIN_DATETIME_AS_UTC, 655);
 
+      siteModel.MachinesTargetValues[bulldozerMachineIndex].SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
+
       //Set up cell passes
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass
@@ -108,6 +110,7 @@ namespace VSS.TRex.Tests.Profiling
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       return siteModel;

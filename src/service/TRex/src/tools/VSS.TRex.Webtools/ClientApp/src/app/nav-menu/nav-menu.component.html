@@ -45,6 +45,11 @@
             <span class='fas fa-sort-amount-up'></span> Sandbox
           </a>
         </li>
+        <li class="nav-item" [routerLinkActive]='["link-active"]'>
+          <a [routerLink]='["/delete-project"]' class="nav-link" (click)='collapse()'>
+            <span class='fas fa-sort-amount-up'></span> Delete Project
+          </a>
+        </li>
       </ul>
     </div>
   </nav>

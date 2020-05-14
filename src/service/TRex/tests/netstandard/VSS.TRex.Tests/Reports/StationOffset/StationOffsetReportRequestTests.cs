@@ -27,7 +27,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
   {
     private const float ELEVATION_INCREMENT_1_0 = 1.0f;
 
-    private void AddApplicationGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddApplicationGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
     <IComputeFunc<StationOffsetReportRequestArgument_ApplicationService,
         StationOffsetReportRequestResponse_ApplicationService>, 
       StationOffsetReportRequestArgument_ApplicationService, 
@@ -35,13 +35,13 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
     private void AddClusterComputeGridRouting()
     {
-      IgniteMock.AddClusterComputeGridRouting
+      IgniteMock.Immutable.AddClusterComputeGridRouting
       <IComputeFunc<StationOffsetReportRequestArgument_ClusterCompute,
           StationOffsetReportRequestResponse_ClusterCompute>,
         StationOffsetReportRequestArgument_ClusterCompute,
         StationOffsetReportRequestResponse_ClusterCompute>();
 
-      IgniteMock.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
+      IgniteMock.Immutable.AddClusterComputeGridRouting<SubGridProgressiveResponseRequestComputeFunc, ISubGridProgressiveResponseRequestComputeFuncArgument, bool>();
     }
 
     private StationOffsetReportRequestArgument_ApplicationService SimpleStationOffsetReportRequestArgument_ApplicationService(ISiteModel siteModel, bool withOverrides)
@@ -116,9 +116,12 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       var siteModel = DITAGFileAndSubGridRequestsWithIgniteFixture.NewEmptyModel();
       var bulldozerMachineIndex = siteModel.Machines.Locate("Bulldozer", false).InternalSiteModelMachineIndex;
+
       // vibrationState is needed to get cmv values
       siteModel.MachinesTargetValues[0].VibrationStateEvents.PutValueAtDate(baseTime, VibrationState.On);
       siteModel.MachinesTargetValues[0].AutoVibrationStateEvents.PutValueAtDate(baseTime, AutoVibrationState.Manual);
+
+      siteModel.MachinesTargetValues[0].SaveMachineEventsToPersistentStore(siteModel.PrimaryStorageProxy);
 
       var cellPasses = Enumerable.Range(0, 10).Select(x =>
         new CellPass
@@ -132,6 +135,7 @@ namespace VSS.TRex.Tests.Reports.StationOffset
 
       DITAGFileAndSubGridRequestsFixture.AddSingleCellWithPasses
         (siteModel, SubGridTreeConsts.DefaultIndexOriginOffset, SubGridTreeConsts.DefaultIndexOriginOffset, cellPasses, 1, cellPasses.Length);
+
       DITAGFileAndSubGridRequestsFixture.ConvertSiteModelToImmutable(siteModel);
 
       return siteModel;

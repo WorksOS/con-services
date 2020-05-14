@@ -19,22 +19,22 @@ namespace VSS.MasterData.Proxies
       public T Value { get; private set; }
     }
 
-    private static readonly Dictionary<string, RefCounted<SemaphoreSlim>> SemaphoreSlims
+    private static readonly Dictionary<string, RefCounted<SemaphoreSlim>> _semaphoreSlims
       = new Dictionary<string, RefCounted<SemaphoreSlim>>();
 
     private SemaphoreSlim GetOrCreate(string key)
     {
       RefCounted<SemaphoreSlim> item;
-      lock (SemaphoreSlims)
+      lock (_semaphoreSlims)
       {
-        if (SemaphoreSlims.TryGetValue(key, out item))
+        if (_semaphoreSlims.TryGetValue(key, out item))
         {
           ++item.RefCount;
         }
         else
         {
           item = new RefCounted<SemaphoreSlim>(new SemaphoreSlim(1, 1));
-          SemaphoreSlims[key] = item;
+          _semaphoreSlims[key] = item;
         }
       }
       return item.Value;
@@ -59,12 +59,12 @@ namespace VSS.MasterData.Proxies
       public void Dispose()
       {
         RefCounted<SemaphoreSlim> item;
-        lock (SemaphoreSlims)
+        lock (_semaphoreSlims)
         {
-          item = SemaphoreSlims[Key];
+          item = _semaphoreSlims[Key];
           --item.RefCount;
           if (item.RefCount == 0)
-            SemaphoreSlims.Remove(Key);
+            _semaphoreSlims.Remove(Key);
         }
         item.Value.Release();
       }

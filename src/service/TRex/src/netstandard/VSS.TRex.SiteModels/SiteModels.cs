@@ -31,10 +31,10 @@ namespace VSS.TRex.SiteModels
     private IStorageProxy _PrimaryImmutableStorageProxy;
     private IStorageProxyFactory _StorageProxyFactory;
 
-    private IStorageProxyFactory StorageProxyFactory => _StorageProxyFactory ?? (_StorageProxyFactory = DIContext.Obtain<IStorageProxyFactory>());
+    private IStorageProxyFactory StorageProxyFactory => _StorageProxyFactory ??= DIContext.Obtain<IStorageProxyFactory>();
 
-    public IStorageProxy PrimaryMutableStorageProxy => _PrimaryMutableStorageProxy ?? (_PrimaryMutableStorageProxy = StorageProxyFactory.MutableGridStorage());
-    public IStorageProxy PrimaryImmutableStorageProxy => _PrimaryImmutableStorageProxy ?? (_PrimaryImmutableStorageProxy = StorageProxyFactory.ImmutableGridStorage());
+    public IStorageProxy PrimaryMutableStorageProxy => _PrimaryMutableStorageProxy ??= StorageProxyFactory.MutableGridStorage();
+    public IStorageProxy PrimaryImmutableStorageProxy => _PrimaryImmutableStorageProxy ??= StorageProxyFactory.ImmutableGridStorage();
 
     public IStorageProxy PrimaryStorageProxy(StorageMutability mutability)
     {
@@ -71,11 +71,17 @@ namespace VSS.TRex.SiteModels
 
       if (result.LoadFromPersistentStore() == FileSystemErrorStatus.OK)
       {
+        if (result.IsMarkedForDeletion)
+        {
+          // Ignore this site model as it is in the process of being deleted
+          return null;
+        }
+
         lock (CachedModels)
         {
           // Check if another thread managed to get in before this thread. If so discard
           // the one just created in favor of the one in the dictionary
-          if (CachedModels.TryGetValue(id, out ISiteModel result2))
+          if (CachedModels.TryGetValue(id, out var result2))
             return result2;
 
           CachedModels.Add(id, result);
@@ -91,7 +97,7 @@ namespace VSS.TRex.SiteModels
         {
           // Check if another thread managed to get in before this thread. If so discard
           // the one just created in favor of the one in the dictionary
-          if (CachedModels.TryGetValue(id, out ISiteModel result2))
+          if (CachedModels.TryGetValue(id, out var result2))
             return result2;
 
           Log.LogInformation($"Creating new site model {id} and adding to internal cache");
@@ -157,6 +163,9 @@ namespace VSS.TRex.SiteModels
       // 6. Machines
       // 7. Machines target values
       // 8. Machines design names
+      // 9. Proofing runs
+      // 10. Alignments
+      // 11. Site model marked for deletion
 
       ISiteModel siteModel;
 
@@ -165,6 +174,16 @@ namespace VSS.TRex.SiteModels
       lock (CachedModels)
       {
         CachedModels.TryGetValue(message.SiteModelID, out siteModel);
+
+        if (siteModel != null)
+        {
+          if (message.SiteModelMarkedForDeletion)
+          {
+            // Remove the site model from the cache and exit.
+            CachedModels.Remove(message.SiteModelID);
+            return;
+          }
+        }
 
         // Note: The spatial data grid is highly conserved and never killed in a site model change notification.
         var originFlags =

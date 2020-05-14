@@ -14,7 +14,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(AlignmentDesignStationRangeRequest))]
   public class AlignmentDesignStationRangeRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <AlignmentDesignStationRangeComputeFunc, DesignSubGridRequestArgumentBase, AlignmentDesignStationRangeResponse>();
 
     [Fact]

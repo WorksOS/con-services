@@ -81,10 +81,8 @@ namespace VSS.TRex.Alignments
     {
       try
       {
-        using (var stream = alignments.ToStream())
-        {
-          _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, stream, this);
-        }
+        using var stream = alignments.ToStream();
+        _writeStorageProxy.WriteStreamToPersistentStore(siteModelUid, ALIGNMENTS_STREAM_NAME, FileSystemStreamType.Alignments, stream, this);
 
         _writeStorageProxy.Commit();
 
@@ -136,6 +134,24 @@ namespace VSS.TRex.Alignments
       Store(siteModelUid, alignments);
 
       return result;
+    }
+
+    /// <summary>
+    /// Remove the alignments list for a site model from the persistent store
+    /// </summary>
+    /// <param name="siteModelID"></param>
+    /// <param name="storageProxy"></param>
+    /// <returns></returns>
+    public bool Remove(Guid siteModelID, IStorageProxy storageProxy)
+    {
+      var result = storageProxy.RemoveStreamFromPersistentStore(siteModelID, FileSystemStreamType.Designs, ALIGNMENTS_STREAM_NAME);
+
+      if (result != FileSystemErrorStatus.OK)
+      {
+        Log.LogInformation($"Removing alignments list from project {siteModelID} failed with error {result}");
+      }
+
+      return result == FileSystemErrorStatus.OK;
     }
   }
 }

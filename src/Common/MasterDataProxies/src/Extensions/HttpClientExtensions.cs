@@ -28,7 +28,7 @@ namespace VSS.MasterData.Proxies
         const string defaultContentType = ContentTypeConstants.ApplicationJson;
 
         var contentType = MediaTypeHeaderValue.Parse(defaultContentType);
-        if (customHeaders != null && customHeaders.ContainsKey(HeaderNames.ContentType))
+        if (customHeaders?.ContainsKey(HeaderNames.ContentType) == true)
         {
           if (MediaTypeHeaderValue.TryParse(customHeaders[HeaderNames.ContentType], out var ct))
             contentType = ct;

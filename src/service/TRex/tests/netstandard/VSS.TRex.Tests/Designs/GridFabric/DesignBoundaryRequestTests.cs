@@ -16,7 +16,7 @@ namespace VSS.TRex.Tests.Designs.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(DesignBoundaryRequest))]
   public class DesignBoundaryRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <DesignBoundaryComputeFunc, DesignBoundaryArgument, DesignBoundaryResponse>();
 
     [Fact]

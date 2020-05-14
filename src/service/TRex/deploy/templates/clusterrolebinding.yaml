@@ -1,7 +1,7 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1beta1
 metadata:
-  name: {{ template "trex.fullname" . }}-clusterrolebinding
+  name: {{ template "trex.fullname" . }}-{{ .Values.environment }}-clusterrolebinding
   labels:
     app: {{ template "trex.deployname" . }}
     chart: {{ template "trex.chart" . }}
@@ -11,6 +11,6 @@ subjects:
     namespace: {{ .Values.environment }}
 roleRef:
   kind: ClusterRole
-  name: {{ template "trex.name" . }}-clusterrole
+  name: {{ template "trex.name" . }}-{{ .Values.environment }}-clusterrole
   apiGroup: rbac.authorization.k8s.io
   

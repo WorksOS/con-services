@@ -10,7 +10,6 @@ using VSS.TRex.Cells;
 using VSS.TRex.Designs.GridFabric.Arguments;
 using VSS.TRex.Designs.GridFabric.Responses;
 using VSS.TRex.Designs.Models;
-using VSS.TRex.Designs.TTM;
 using VSS.TRex.Filters;
 using VSS.TRex.SiteModels.Interfaces;
 using VSS.TRex.SubGridTrees.Core.Utilities;
@@ -30,7 +29,7 @@ namespace VSS.TRex.Tests.Analytics.CutFillStatistics.GridFabric
 
     private void AddDesignProfilerGridRouting()
     {
-      IgniteMock.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
+      IgniteMock.Immutable.AddApplicationGridRouting<IComputeFunc<CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>, CalculateDesignElevationPatchArgument, CalculateDesignElevationPatchResponse>();
     }
 
     private CutFillStatisticsArgument SimpleCutFillStatisticsArgument(ISiteModel siteModel, Guid designUid, double offset)

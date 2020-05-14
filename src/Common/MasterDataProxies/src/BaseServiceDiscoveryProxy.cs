@@ -28,16 +28,16 @@ namespace VSS.MasterData.Proxies
   public abstract class BaseServiceDiscoveryProxy : BaseProxy, IServiceDiscoveryProxy
   {
     protected readonly IWebRequest webRequest;
-    private readonly IServiceResolution serviceResolution;
-    private const int DefaultLogMaxchar = 1000;
-    protected readonly int logMaxChar = DefaultLogMaxchar;
+    private readonly IServiceResolution _serviceResolution;
+    private const int _defaultLogMaxchar = 1000;
+    protected readonly int logMaxChar;
 
-    protected BaseServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution) 
+    protected BaseServiceDiscoveryProxy(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger, IDataCache dataCache, IServiceResolution serviceResolution)
       : base(configurationStore, logger, dataCache)
     {
       this.webRequest = webRequest;
-      this.serviceResolution = serviceResolution;
-      logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", DefaultLogMaxchar);
+      _serviceResolution = serviceResolution;
+      logMaxChar = configurationStore.GetValueInt("LOG_MAX_CHAR", _defaultLogMaxchar);
     }
 
     #region Properties
@@ -83,7 +83,7 @@ namespace VSS.MasterData.Proxies
     /// NOTE: Must have a uid or userid for cache key
     /// </summary>
     protected Task<T> GetMasterDataItemServiceDiscovery<T>(string route, string uid, string userId, IDictionary<string, string> customHeaders,
-      IList<KeyValuePair<string, string>> queryParameters = null) 
+      IList<KeyValuePair<string, string>> queryParameters = null)
       where T : class, IMasterDataModel
     {
       return WithMemoryCacheExecute(uid, userId, CacheLifeKey, customHeaders,
@@ -103,7 +103,7 @@ namespace VSS.MasterData.Proxies
     }
 
     protected Task<T> GetMasterDataItemServiceDiscoveryNoCache<T>(string route, IDictionary<string, string> customHeaders,
-      IList<KeyValuePair<string, string>> queryParameters = null) 
+      IList<KeyValuePair<string, string>> queryParameters = null)
       where T : class, IMasterDataModel
     {
         return RequestAndReturnData<T>(customHeaders, HttpMethod.Get, route, queryParameters);
@@ -155,19 +155,19 @@ namespace VSS.MasterData.Proxies
         throw new ArgumentException($"{nameof(ExternalServiceName)} has not been defined, it is required for Remote Services");
 
       var serviceName = IsInsideAuthBoundary
-        ? serviceResolution.GetServiceName(InternalServiceType)
+        ? _serviceResolution.GetServiceName(InternalServiceType)
         : ExternalServiceName;
       return serviceName;
     }
-            
+
     #endregion
 
     protected Task<string> GetUrl(string route, IDictionary<string, string> customHeaders, IList<KeyValuePair<string, string>> queryParameters = null)
     {
       var serviceName = ResolveServiceNameFromHeaders(customHeaders);
-      return (IsInsideAuthBoundary
-        ? serviceResolution.ResolveLocalServiceEndpoint(serviceName, Type, Version, route, queryParameters)
-        : serviceResolution.ResolveRemoteServiceEndpoint(serviceName, Type, Version, route, queryParameters));
+      return IsInsideAuthBoundary
+        ? _serviceResolution.ResolveLocalServiceEndpoint(serviceName, Type, Version, route, queryParameters)
+        : _serviceResolution.ResolveRemoteServiceEndpoint(serviceName, Type, Version, route, queryParameters);
     }
 
     #region Private Methods
@@ -187,7 +187,7 @@ namespace VSS.MasterData.Proxies
 
       // Check to see if we have an override
       var overrideHeader = HeaderConstants.X_VSS_SERVICE_OVERRIDE_PREFIX + serviceName;
-      var header = customHeaders.FirstOrDefault(k => string.Compare(k.Key, overrideHeader, StringComparison.OrdinalIgnoreCase) == 0);
+      var header = customHeaders.FirstOrDefault(k => string.Equals(k.Key, overrideHeader, StringComparison.OrdinalIgnoreCase));
 
       if (string.IsNullOrEmpty(header.Key) || string.IsNullOrEmpty(header.Value))
         return serviceName;
@@ -197,7 +197,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<Stream> RequestAndReturnDataStream(IDictionary<string, string> customHeaders,
-     HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)  
+     HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, string payload = null)
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
@@ -206,12 +206,12 @@ namespace VSS.MasterData.Proxies
 
       var streamPayload = payload != null ? new MemoryStream(Encoding.UTF8.GetBytes(payload)) : null;
       var result = await (await webRequest.ExecuteRequestAsStreamContent(url, method, customHeaders, streamPayload)).ReadAsStreamAsync();
-      BaseProxyHealthCheck.SetStatus(true, this.GetType());
+      BaseProxyHealthCheck.SetStatus(true, GetType());
       return result;
     }
 
     private async Task<TResult> RequestAndReturnData<TResult>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null, int retries = 3) where TResult : class
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null, int retries = 3) where TResult : class
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
@@ -225,7 +225,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task<T> RequestAndReturnResult<T>(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null) where T : ContractExecutionResult
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null) where T : ContractExecutionResult
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
@@ -239,7 +239,7 @@ namespace VSS.MasterData.Proxies
     }
 
     private async Task Request(IDictionary<string, string> customHeaders,
-      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, System.IO.Stream payload = null)
+      HttpMethod method, string route = null, IList<KeyValuePair<string, string>> queryParameters = null, Stream payload = null)
     {
       var url = await GetUrl(route, customHeaders, queryParameters);
 
@@ -248,7 +248,7 @@ namespace VSS.MasterData.Proxies
 
       await webRequest.ExecuteRequest(url, payload: payload, customHeaders: customHeaders, method: method);
     }
-    
+
     #endregion
   }
 }

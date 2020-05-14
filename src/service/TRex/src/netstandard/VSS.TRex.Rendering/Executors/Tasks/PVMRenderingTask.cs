@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Reflection;
 using VSS.TRex.Pipelines.Tasks;
 using VSS.TRex.SubGridTrees.Client.Interfaces;
 
@@ -17,7 +16,7 @@ namespace VSS.TRex.Rendering.Executors.Tasks
   /// </summary>
   public class PVMRenderingTask : PipelinedSubGridTask, IPVMRenderingTask
   {
-    private static readonly ILogger Log = Logging.Logger.CreateLogger(MethodBase.GetCurrentMethod().DeclaringType?.Name);
+    private static readonly ILogger Log = Logging.Logger.CreateLogger<PVMRenderingTask>();
 
     public IPVMTaskAccumulator Accumulator { get; set; }
 

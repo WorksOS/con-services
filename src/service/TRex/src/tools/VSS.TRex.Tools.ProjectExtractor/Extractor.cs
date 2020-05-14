@@ -172,13 +172,13 @@ namespace VSS.TRex.Tools.ProjectExtractor
 
     public void ExtractSiteModelMachineDesignNames() => ExtractSiteModelFile(SiteModelMachineDesignList.MACHINE_DESIGN_LIST_STREAM_NAME, FileSystemStreamType.MachineDesignNames);
 
-    public void ExtractExistenceMap() => ExtractSiteModelFile(SiteModel.kSubGridExistenceMapFileName, FileSystemStreamType.SubGridExistenceMap);
+    public void ExtractExistenceMap() => ExtractSiteModelFile(SiteModel.SubGridExistenceMapFileName, FileSystemStreamType.SubGridExistenceMap);
 
-    public void ExtractSiteModelCoreMetaData() => ExtractSiteModelFile(SiteModel.kSiteModelXMLFileName, FileSystemStreamType.ProductionDataXML);
+    public void ExtractSiteModelCoreMetaData() => ExtractSiteModelFile(SiteModel.SiteModelXMLFileName, FileSystemStreamType.ProductionDataXML);
 
     public void ExtractMachines() => ExtractSiteModelFile(MachinesList.MACHINES_LIST_STREAM_NAME, FileSystemStreamType.Machines);
 
-    public void ExtractCoordinateSystem() => ExtractSiteModelFile(CoordinateSystemConsts.kCoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB);
+    public void ExtractCoordinateSystem() => ExtractSiteModelFile(CoordinateSystemConsts.CoordinateSystemCSIBStorageKeyName, FileSystemStreamType.CoordinateSystemCSIB);
 
     public void ExtractChangeMaps()
     {

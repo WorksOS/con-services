@@ -15,8 +15,10 @@ namespace VSS.TRex.Storage
     public class StorageProxyCache<TK, TV> : IStorageProxyCache<TK, TV>
     {
         private readonly ICache<TK, TV> Cache;
-      
-        public virtual string Name => Cache.Name;
+
+        public bool HasCache => Cache != null;
+
+        public virtual string Name => Cache?.Name ?? "";
 
         public virtual void Commit()
         {

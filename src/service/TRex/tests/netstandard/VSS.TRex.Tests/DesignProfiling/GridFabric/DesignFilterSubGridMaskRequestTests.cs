@@ -15,7 +15,7 @@ namespace VSS.TRex.Tests.DesignProfiling.GridFabric
   [UnitTestCoveredRequest(RequestType = typeof(DesignFilterSubGridMaskRequest))]
   public class DesignFilterSubGridMaskRequestTests : IClassFixture<DITAGFileAndSubGridRequestsWithIgniteFixture>
   {
-    private void AddDesignProfilerGridRouting() => IgniteMock.AddApplicationGridRouting
+    private void AddDesignProfilerGridRouting() => IgniteMock.Immutable.AddApplicationGridRouting
       <DesignFilterSubGridMaskComputeFunc, DesignSubGridFilterMaskArgument, DesignFilterSubGridMaskResponse>();
 
     [Fact]
