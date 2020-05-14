@@ -82,7 +82,7 @@ namespace VSS.Productivity3D.Filter.WebApi
     /// <inheritdoc />
     protected override void ConfigureAdditionalAppSettings(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
     {
-      app.UseFilterMiddleware<TIDAuthentication>();
+      app.UseFilterMiddleware<PreferencesAuthentication>();
       app.UseMvc();
     }
   }
