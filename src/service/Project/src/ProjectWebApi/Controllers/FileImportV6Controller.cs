@@ -104,7 +104,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPost]
     [FlowUpload(Extensions = new[]
     {
-      "svl", "dxf", "ttm", "tif"
+      //dc and cal uploaded through project creation
+      "svl", "dxf", "ttm", "tif", "ggf", "cpz", "csv", "fxl", "xml", "cfg"
     }, Size = 1000000000)]
     public async Task<ImportedFileDescriptorSingleResult> SyncUpload(
       [FromServices] ISchedulerProxy schedulerProxy,
@@ -158,7 +159,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [HttpPut]
     [FlowUpload(Extensions = new[]
     {
-      "svl", "dxf", "ttm", "tif"
+      //dc and cal uploaded through project creation
+      "svl", "dxf", "ttm", "tif", "ggf", "cpz", "csv", "fxl", "xml", "cfg"
     }, Size = 1000000000)]
     public async Task<ScheduleJobResult> BackgroundUpload(
       FlowFile file,
@@ -300,7 +302,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     [ActionName("Upload")]
     [FlowUpload(Extensions = new[]
     {
-      "svl", "dxf", "ttm", "tif"
+      //dc and cal uploaded through project creation
+      "svl", "dxf", "ttm", "tif", "ggf", "cpz", "csv", "fxl", "xml", "cfg"
     }, Size = 1_000_000_000)]
 
     public Task<ImportedFileDescriptorSingleResult> UpsertImportedFileV6(

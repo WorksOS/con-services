@@ -238,12 +238,13 @@ namespace TestUtility
         var currentBytes = bytes.Skip(startByte).Take(currentChunkSize).ToArray();
         var contentType = $"multipart/form-data; boundary={BOUNDARY_START}{boundaryIdentifier}";
 
+        var expectedStatusCode = statusCode != HttpStatusCode.OK ? statusCode : (offset < chunks-1 ? HttpStatusCode.Accepted : HttpStatusCode.OK);
         using (var content = new MemoryStream())
         {
           FormatTheContentDisposition(flowFileUpload, currentBytes, filename,
             $"{BOUNDARY_START + BOUNDARY_BLOCK_DELIMITER}{boundaryIdentifier}", content);
 
-          result = await RestClient.SendHttpClientRequest(uri, httpMethod, MediaTypes.JSON, contentType, customerUid, content, expectedHttpCode: statusCode);
+          result = await RestClient.SendHttpClientRequest(uri, httpMethod, MediaTypes.JSON, contentType, customerUid, content, expectedHttpCode: expectedStatusCode);
         }
       }
 

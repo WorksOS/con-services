@@ -59,7 +59,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Utilities
               importedFileType == ImportedFileType.Geoid && fileExtension == ".ggf" ||
               importedFileType == ImportedFileType.ControlPoints && (fileExtension == ".cpz" || fileExtension == ".csv") ||
               importedFileType == ImportedFileType.AvoidanceZone && (fileExtension == ".svl" || fileExtension == ".dxf") ||
-              importedFileType == ImportedFileType.FeatureCode && (fileExtension == ".fcl" || fileExtension == ".fxl") ||
+              importedFileType == ImportedFileType.FeatureCode && fileExtension == ".fxl" ||
               importedFileType == ImportedFileType.SiteConfiguration && fileExtension == ".xml" ||
               importedFileType == ImportedFileType.GcsCalibration && fileExtension == ".cfg")) 
         {
