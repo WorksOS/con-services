@@ -1,6 +1,5 @@
 ﻿using System;
 using CCSS.CWS.Client;
-using CCSS.CWS.Client.MockClients;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -57,7 +56,7 @@ namespace VSS.MasterData.Project.WebAPI
     /// <inheritdoc />
     public override string ServiceVersion => "v6";
 
-    private static IServiceProvider serviceProvider;
+    private static IServiceProvider _serviceProvider;
 
     /// <inheritdoc />
     protected override void ConfigureAdditionalServices(IServiceCollection services)
@@ -76,7 +75,7 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IFileRepository, FileRepository>();
       services.AddSingleton<IDataOceanClient, DataOceanClient>();
       services.AddTransient<IPegasusClient, PegasusClient>();
-      services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(transfer => TransferProxyMethod);
+      services.AddSingleton<Func<TransferProxyType, ITransferProxy>>(_ => TransferProxyMethod);
       services.AddSingleton<IWebRequest, GracefulWebRequest>();
       services.AddSingleton<ITPaaSApplicationAuthentication, TPaaSApplicationAuthentication>();
       services.AddTransient<ITPaasProxy, TPaasProxy>();
@@ -89,20 +88,13 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddTransient<IProductivity3dV2ProxyNotification, Productivity3dV2ProxyNotification>();
       services.AddTransient<IProductivity3dV2ProxyCompaction, Productivity3dV2ProxyCompaction>();
 
-      // CCSSSCON-216 temporary move to real endpoints when available
-      services.AddCwsClient<ICwsAccountClient, CwsAccountClient, MockCwsAccountClient>(CwsClientMockExtensionMethods.MOCK_ACCOUNT_KEY);
-      services.AddCwsClient<ICwsProjectClient, CwsProjectClient, MockCwsProjectClient>(CwsClientMockExtensionMethods.MOCK_PROJECT_KEY);
-      services.AddCwsClient<ICwsDeviceClient, CwsDeviceClient, MockCwsDeviceClient>(CwsClientMockExtensionMethods.MOCK_DEVICE_KEY);
-      services.AddCwsClient<ICwsDesignClient, CwsDesignClient, MockCwsDesignClient>(CwsClientMockExtensionMethods.MOCK_DESIGN_KEY);
-      services.AddCwsClient<ICwsProfileSettingsClient, CwsProfileSettingsClient, MockCwsProfileSettingsClient>(CwsClientMockExtensionMethods.MOCK_PROFILE_KEY);
+      services.AddTransient<ICwsAccountClient, CwsAccountClient>();
+      services.AddTransient<ICwsProjectClient, CwsProjectClient>();
+      services.AddTransient<ICwsDeviceClient, CwsDeviceClient>();
+      services.AddTransient<ICwsDesignClient, CwsDesignClient>();
+      services.AddTransient<ICwsProfileSettingsClient, CwsProfileSettingsClient>();
 
-      services.AddOpenTracing(builder =>
-      {
-        builder.ConfigureAspNetCore(options =>
-        {
-          options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping");
-        });
-      });
+      services.AddOpenTracing(builder => builder.ConfigureAspNetCore(options => options.Hosting.IgnorePatterns.Add(request => request.Request.Path.ToString() == "/ping")));
 
       services.AddPushServiceClient<INotificationHubClient, NotificationHubClient>();
       services.AddSingleton<CacheInvalidationService>();
@@ -121,15 +113,15 @@ namespace VSS.MasterData.Project.WebAPI
         context.Request.EnableBuffering();
         return next(context);
       });
-      serviceProvider = ServiceProvider;
+      _serviceProvider = ServiceProvider;
     }
 
     private static ITransferProxy TransferProxyMethod(TransferProxyType type)
     {
       return type switch
       {
-        TransferProxyType.DesignImport => new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"),
-        _ => new TransferProxy(serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")
+        TransferProxyType.DesignImport => new TransferProxy(_serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_DESIGNIMPORT_BUCKET_NAME"),
+        _ => new TransferProxy(_serviceProvider.GetRequiredService<IConfigurationStore>(), "AWS_BUCKET_NAME")
       };
     }
   }

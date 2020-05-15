@@ -86,7 +86,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
       var fileEntryTask = TccHelper.GetFileInfoFromTccRepository(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
 
       var fileDescriptor = await TccHelper.CopyFileWithinTccRepository(importedFileTbc,
-        customerUid, project.ProjectUID, FileSpaceId,
+        CustomerUid, project.ProjectUID, FileSpaceId,
         Logger, ServiceExceptionHandler, FileRepo).ConfigureAwait(false);
 
       Stream memStream = null;
@@ -127,7 +127,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           memStream = await TccHelper.GetFileStreamFromTcc(importedFileTbc, Logger, ServiceExceptionHandler, FileRepo);
         }
         await DataOceanHelper.WriteFileToDataOcean(
-          memStream, DataOceanRootFolderId, customerUid, project.ProjectUID, dataOceanFileName,
+          memStream, DataOceanRootFolderId, CustomerUid, project.ProjectUID, dataOceanFileName,
           Logger, ServiceExceptionHandler, DataOceanClient, Authorization, importedFileUid, ConfigStore);
 
         var fileEntry = await fileEntryTask;
@@ -147,7 +147,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           importedFile = await WithServiceExceptionTryExecuteAsync(() =>
             RequestExecutorContainerFactory
               .Build<CreateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-                customerUid, userId, userEmailAddress, customHeaders,
+                CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 persistantTransferProxy: persistantTransferProxy, tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
@@ -176,7 +176,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
           importedFile = await WithServiceExceptionTryExecuteAsync(() =>
             RequestExecutorContainerFactory
               .Build<UpdateImportedFileExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-                customerUid, userId, userEmailAddress, customHeaders,
+                CustomerUid, UserId, UserEmailAddress, customHeaders,
                 productivity3dV2ProxyNotification: Productivity3dV2ProxyNotification, productivity3dV2ProxyCompaction: Productivity3dV2ProxyCompaction,
                 tRexImportFileProxy: tRexImportFileProxy,
                 projectRepo: ProjectRepo, fileRepo: FileRepo, dataOceanClient: DataOceanClient, authn: Authorization, schedulerProxy: schedulerProxy)
@@ -215,7 +215,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
 
       var project = await GetProject(projectId);
 
-      var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(project.ProjectUID, Logger, userId, ProjectRepo)
+      var files = await ImportedFileRequestDatabaseHelper.GetImportedFileList(project.ProjectUID, Logger, UserId, ProjectRepo)
         .ConfigureAwait(false);
 
       var selected = id.HasValue ? files.Where(x => x.LegacyFileId == id.Value) : files;

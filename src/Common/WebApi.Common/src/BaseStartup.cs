@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -36,7 +37,7 @@ namespace VSS.WebApi.Common
 
     protected IConfigurationStore Configuration
     {
-      get { return _configuration ??= new GenericConfiguration(new NullLoggerFactory()); }
+      get { return _configuration ??= new GenericConfiguration(new NullLoggerFactory(), ServiceProvider.GetRequiredService<IConfigurationRoot>()); }
       set => _configuration = value;
     }
 

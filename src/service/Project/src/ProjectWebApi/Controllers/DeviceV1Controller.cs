@@ -11,8 +11,7 @@ using VSS.Productivity3D.Project.Abstractions.Models;
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
-  /// Customer controller v1
-  ///     for the UI to get customer list etc as we have no CustomerSvc yet
+  /// Customer controller v1 for the UI to get customer list etc as we have no CustomerSvc yet
   /// </summary>
   public class DeviceV1Controller : ProjectBaseController
   {
@@ -24,7 +23,7 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     public DeviceV1Controller(ICwsDeviceClient cwsDeviceClient)
     {
       this.cwsDeviceClient = cwsDeviceClient;
-    }   
+    }
 
     /// <summary>
     /// Get a list of device Uid/Id matches for Uids supplied

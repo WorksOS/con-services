@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using VSS.Authentication.JWT;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
-using VSS.Common.Abstractions.Clients.CWS.Models;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Abstractions.Http;
 using VSS.MasterData.Models.Handlers;
@@ -72,7 +71,7 @@ namespace VSS.WebApi.Common
 
         // todoJeannie temporary to look into user info while we test.
         log.LogDebug($"{nameof(Invoke)}: TIDAuth context Headers {JsonConvert.SerializeObject(context.Request.Headers, Formatting.None)}");
-        
+
         string authorization = context.Request.Headers["X-Jwt-Assertion"];
         log.LogDebug($"{nameof(Invoke)}: TIDAuth authorization {JsonConvert.SerializeObject(authorization)}");
 

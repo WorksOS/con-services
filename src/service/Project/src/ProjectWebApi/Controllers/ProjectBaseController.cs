@@ -12,8 +12,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
   {
     protected async Task<ImmutableList<ProjectDatabaseModel>> GetProjectListForCustomer()
     {
-      LogCustomerDetails($"{nameof(GetProjectListForCustomer)} customerUid {customerUid}", "");
-      var projects = (await ProjectRepo.GetProjectsForCustomer(customerUid).ConfigureAwait(false)).ToImmutableList();
+      LogCustomerDetails($"{nameof(GetProjectListForCustomer)} customerUid {CustomerUid}", "");
+      var projects = (await ProjectRepo.GetProjectsForCustomer(CustomerUid).ConfigureAwait(false)).ToImmutableList();
 
       Logger.LogInformation($"Project list contains {projects.Count} projects");
       return projects;

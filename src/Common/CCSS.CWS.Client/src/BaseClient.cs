@@ -26,18 +26,13 @@ namespace CCSS.CWS.Client
     protected BaseClient(IWebRequest webRequest, IConfigurationStore configurationStore, ILoggerFactory logger,
      IDataCache dataCache, IServiceResolution serviceResolution) : base(webRequest, configurationStore, logger,
      dataCache, serviceResolution)
-    {
-    }
+    { }
 
     // NOTE: must have a uid or userId for cache key
     protected Task<TRes> GetData<TRes>(string route, Guid? uid, Guid? userId,
       IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel
-    {
-      var result = GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
+      IDictionary<string, string> customHeaders = null) where TRes : class, IMasterDataModel => GetMasterDataItemServiceDiscovery<TRes>(route, uid?.ToString(), userId?.ToString(),
         customHeaders, parameters);
-      return result;
-    }
 
     protected async Task<TRes> PostData<TReq, TRes>(string route,
       TReq request,
@@ -66,7 +61,7 @@ namespace CCSS.CWS.Client
     }
 
     protected Task UploadData(string uploadUrl, Stream payload,
-      IDictionary<string, string> customHeaders = null) 
+      IDictionary<string, string> customHeaders = null)
     {
       return webRequest.ExecuteRequestAsStreamContent(uploadUrl, HttpMethod.Put, customHeaders, payload);
     }
@@ -100,7 +95,7 @@ namespace CCSS.CWS.Client
     protected async Task UpdateData<TReq>(string route,
       TReq request,
       IList<KeyValuePair<string, string>> parameters = null,
-      IDictionary<string, string> customHeaders = null) where TReq : class 
+      IDictionary<string, string> customHeaders = null) where TReq : class
     {
       var payload = JsonConvert.SerializeObject(request);
 
