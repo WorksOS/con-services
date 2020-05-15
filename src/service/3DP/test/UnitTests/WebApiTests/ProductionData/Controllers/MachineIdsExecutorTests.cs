@@ -54,21 +54,16 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(1, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
-      var assetId = 777;
+      var assetId = NULL_ASSETID;
       var machineName = "MachineName";
       var isJohnDoe = false;
  
       GetTRexMachineIdsMock(new List<MachineStatus>(1) { new MachineStatus(NULL_ASSETID, machineName, isJohnDoe, assetUid: assetUid) }, 
         projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
-      // to assetMatch on VSS assets
-      var assetMatches = new List< KeyValuePair<Guid, long> > { new KeyValuePair<Guid, long>(assetUid, assetId) };
-      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(assetMatches);
-
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, deviceProxy: deviceProxy.Object,
+          trexCompactionDataProxy: tRexProxy.Object, 
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;
@@ -86,7 +81,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(1, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid = Guid.NewGuid();
-      var assetId = 777;
+      var assetId = NULL_ASSETID;
       var machineName = "MachineName";
       var isJohnDoe = true;
 
@@ -206,7 +201,7 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
       var projectIds = new ProjectIDs(1, Guid.NewGuid());
       var customerUid = Guid.NewGuid();
       var assetUid1Good = Guid.NewGuid();
-      var assetId1Good = 777;
+      var assetId1Good = NULL_ASSETID;
       var assetId1Expected = assetId1Good;
       var assetUid2Good = Guid.NewGuid();
       var assetId2Invalid = 0;
@@ -222,17 +217,9 @@ namespace VSS.Productivity3D.WebApiTests.ProductionData.Controllers
         };
       GetTRexMachineIdsMock(machines, projectIds.ProjectUid, configStore, true, false, tRexProxy);
 
-      var assetMatches = new List<KeyValuePair<Guid, long>>
-                         {
-        new KeyValuePair<Guid, long>(assetUid1Good, assetId1Good),
-        new KeyValuePair<Guid, long>(assetUid2Good, assetId2Invalid)
-      };
-      deviceProxy.Setup(x => x.GetMatchingDevices(It.IsAny<List<Guid>>(), It.IsAny<IDictionary<string, string>>()))
-        .ReturnsAsync(assetMatches);
-
       var executor = RequestExecutorContainerFactory
         .Build<GetMachineIdsExecutor>(logger, configStore: configStore.Object,
-          trexCompactionDataProxy: tRexProxy.Object, deviceProxy: deviceProxy.Object,
+          trexCompactionDataProxy: tRexProxy.Object, 
           customHeaders: _customHeaders, customerUid: customerUid.ToString());
 
       var result = await executor.ProcessAsync(projectIds) as MachineExecutionResult;

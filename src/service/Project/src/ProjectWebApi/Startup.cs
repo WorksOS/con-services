@@ -70,7 +70,6 @@ namespace VSS.MasterData.Project.WebAPI
       services.AddScoped<IRequestFactory, RequestFactory>();
       services.AddScoped<IServiceExceptionHandler, ServiceExceptionHandler>();
       services.AddScoped<IProjectRepository, ProjectRepository>();
-      services.AddScoped<IDeviceRepository, DeviceRepository>();
       services.AddTransient<IProjectSettingsRequestHelper, ProjectSettingsRequestHelper>();
       services.AddScoped<IErrorCodesProvider, ProjectErrorCodesProvider>();
       services.AddTransient<IFileRepository, FileRepository>();

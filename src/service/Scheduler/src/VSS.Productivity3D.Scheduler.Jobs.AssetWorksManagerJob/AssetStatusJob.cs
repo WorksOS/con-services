@@ -28,21 +28,19 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
     private readonly IFleetAssetDetailsProxy _assetDetailsProxy;
     private readonly IFleetAssetSummaryProxy _assetSummaryProxy;
     private readonly IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
-    private readonly IDeviceProxy _deviceProxy;
     private readonly ILogger _log;
 
     private List<AssetUpdateSubscriptionModel> _subscriptions;
 
     public AssetStatusJob(IAssetStatusServerHubClient assetStatusServerHubClient,
-      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification,
-      IDeviceProxy _deviceProxy, ILoggerFactory logger)
+      IFleetAssetDetailsProxy assetDetailsProxy, IFleetAssetSummaryProxy assetSummaryProxy, 
+      IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification, ILoggerFactory logger)
     {
       this._assetStatusServerHubClient = assetStatusServerHubClient;
       _log = logger.CreateLogger<AssetStatusJob>();
       this._assetDetailsProxy = assetDetailsProxy;
       this._productivity3dV2ProxyNotification = productivity3dV2ProxyNotification;
       this._assetSummaryProxy = assetSummaryProxy;
-      this._deviceProxy = _deviceProxy;
     }
 
     public Task Setup(object o, object context)
@@ -115,33 +113,18 @@ namespace VSS.Productivity3D.Scheduler.Jobs.AssetStatusJob
     private async Task ProcessAssetEvents(MachineStatus machine, Guid projectUid, Guid customerUid,
       IDictionary<string, string> headers)
     {
-
       AssetAggregateStatus statusEvent = null;
-      var assets = await _deviceProxy.GetMatchingDevices(new List<long>
-      {
-        machine.AssetId,
-      }, headers);
-
-      // Prevent multiple iterations of the IEnumerable
-      var assetList = assets?.ToList();
-      if (assetList != null && assetList.Any())
+      
+      if (machine.AssetUid.HasValue)
       {
         // CCSSCOON-85 it's not possible to match radio types in WM cws/ProfileX
         // var matchingAsset = await _deviceProxy.GetMatching3D2DAssets(new MatchingAssetsDisplayModel() {AssetUID3D = assetList.First().Key.ToString()}, headers);
         //Change that for the actual matched asset. Since we supplied 3d asset get data for the matching 2d asset.
         //if there is no 2d asset we should try using SNM asset
 
-        string uid;
-        //if (matchingAsset == null || matchingAsset.Code != ContractExecutionStatesEnum.ExecutedSuccessfully || string.IsNullOrEmpty(matchingAsset.AssetUID2D))
-          uid = assetList.First().Key.ToString();
-        //else
-        //  uid = matchingAsset.AssetUID2D;
+        var (details, summary) = await GetAssetData(machine.AssetUid.ToString(), headers);
 
-        var (details, summary) = await GetAssetData(uid, headers);
-
-        var assetUid = Guid.Parse(uid);
-
-        statusEvent = GenerateEvent(customerUid, projectUid, assetUid, machine, details, summary);
+        statusEvent = GenerateEvent(customerUid, projectUid, machine.AssetUid, machine, details, summary);
       }
       else
       {

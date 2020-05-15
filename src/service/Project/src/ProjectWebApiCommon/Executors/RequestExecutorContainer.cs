@@ -81,11 +81,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     protected IProjectRepository projectRepo;
 
     /// <summary>
-    /// Repository factory used extensively for device
-    /// </summary>
-    protected IDeviceRepository deviceRepo;
-
-    /// <summary>
     /// Repository factory used for accessing files in TCC (at present)
     /// </summary>
     protected IFileRepository fileRepo;
@@ -178,7 +173,7 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       IProductivity3dV2ProxyNotification productivity3dV2ProxyNotification = null, 
       IProductivity3dV2ProxyCompaction productivity3dV2ProxyCompaction = null,
       ITransferProxy persistantTransferProxy = null, IFilterServiceProxy filterServiceProxy = null,
-      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null, IDeviceRepository deviceRepo = null,
+      ITRexImportFileProxy tRexImportFileProxy = null, IProjectRepository projectRepo = null,
       IFileRepository fileRepo = null, IHttpContextAccessor httpContextAccessor = null,
       IDataOceanClient dataOceanClient = null, ITPaaSApplicationAuthentication authn = null,
       ISchedulerProxy schedulerProxy = null, IPegasusClient pegasusClient = null,
@@ -199,7 +194,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
       this.filterServiceProxy = filterServiceProxy;
       this.tRexImportFileProxy = tRexImportFileProxy;
       this.projectRepo = projectRepo;
-      this.deviceRepo = deviceRepo;
       this.fileRepo = fileRepo;    
       this.httpContextAccessor = httpContextAccessor;
       this.dataOceanClient = dataOceanClient;
@@ -224,11 +218,11 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
     ///   Builds this instance for specified executor type.
     /// </summary>
     public static TExecutor Build<TExecutor>(ILoggerFactory logger, IConfigurationStore configStore, IServiceExceptionHandler serviceExceptionHandler, 
-      IProjectRepository projectRepo, DeviceRepository deviceRepo)
+      IProjectRepository projectRepo)
       where TExecutor : RequestExecutorContainer, new()
     {
       return new TExecutor { log = logger.CreateLogger<TExecutor>(), configStore = configStore, serviceExceptionHandler = serviceExceptionHandler, 
-        projectRepo = projectRepo, deviceRepo = deviceRepo};
+        projectRepo = projectRepo};
     }
 
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +7,6 @@ using System.Threading.Tasks;
 using VSS.Common.Abstractions.Clients.CWS.Interfaces;
 using VSS.Common.Abstractions.Configuration;
 using VSS.Common.Exceptions;
-using VSS.MasterData.Proxies;
 using VSS.Productivity3D.Project.Abstractions.Interfaces;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
@@ -256,7 +254,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
     #region device
 
     // Need to get cws: DeviceTRN, AccountTrn, DeviceType, deviceName, Status ("ACTIVE" etal?), serialNumber
-    // and shortRaptorAssetId(localDB)
     public async Task<DeviceData> GetDevice(string serialNumber)
     {
       if (string.IsNullOrEmpty(serialNumber))
@@ -264,22 +261,6 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Models.Models
       try
       {
         return await _deviceProxy.GetDevice(serialNumber, _mergedCustomHeaders);
-      }
-      catch (Exception e)
-      {
-        throw new ServiceException(HttpStatusCode.InternalServerError,
-          TagFileProcessingErrorResult.CreateTagFileProcessingErrorResult(false,
-            ContractExecutionStatesEnum.InternalProcessingError, 17, "device", e.Message));
-      }
-    }
-
-    public async Task<DeviceData> GetDevice(int shortRaptorAssetId)
-    {
-      if (shortRaptorAssetId < 1)
-        return null;
-      try
-      {
-        return await _deviceProxy.GetDevice(shortRaptorAssetId, _mergedCustomHeaders);
       }
       catch (Exception e)
       {

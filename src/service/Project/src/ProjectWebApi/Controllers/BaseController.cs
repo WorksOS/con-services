@@ -41,7 +41,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     private IProductivity3dV2ProxyNotification _productivity3dV2ProxyNotification;
     private IProductivity3dV2ProxyCompaction _productivity3dV2ProxyCompaction;
     private IProjectRepository _projectRepo;
-    private IDeviceRepository _deviceRepo;
     private IFileRepository _fileRepo;
     private IDataOceanClient _dataOceanClient;
     private ITPaaSApplicationAuthentication _authorization;
@@ -64,7 +63,6 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     protected IProductivity3dV2ProxyNotification Productivity3dV2ProxyNotification => _productivity3dV2ProxyNotification ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyNotification>();
     protected IProductivity3dV2ProxyCompaction Productivity3dV2ProxyCompaction => _productivity3dV2ProxyCompaction ??= HttpContext.RequestServices.GetService<IProductivity3dV2ProxyCompaction>();
     protected IProjectRepository ProjectRepo => _projectRepo ??= HttpContext.RequestServices.GetService<IProjectRepository>();
-    protected IDeviceRepository DeviceRepo => _deviceRepo ??= HttpContext.RequestServices.GetService<IDeviceRepository>();
     protected IFileRepository FileRepo => _fileRepo ??= HttpContext.RequestServices.GetService<IFileRepository>();
     protected IDataOceanClient DataOceanClient => _dataOceanClient ??= HttpContext.RequestServices.GetService<IDataOceanClient>();
     protected ICwsProjectClient CwsProjectClient => _cwsProjectClient ??= HttpContext.RequestServices.GetService<ICwsProjectClient>();

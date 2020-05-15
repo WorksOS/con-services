@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using VSS.Common.Exceptions;
 using VSS.Productivity3D.TagFileAuth.Models;
 using VSS.Productivity3D.TagFileAuth.Models.ResultsHandling;
 using VSS.Productivity3D.TagFileAuth.WebAPI.Models.Executors;
@@ -35,13 +37,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     public async Task<GetProjectIdResult> GetProjectId([FromBody]GetProjectIdRequest request)
     {
       Logger.LogDebug($"{nameof(GetProjectId)}: request: {JsonConvert.SerializeObject(request)}");
-      request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectIdExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
-      var result = await executor.ProcessAsync(request) as GetProjectIdResult;
-
-      Logger.LogResult(nameof(GetProjectId), request, result);      
-      return result;
+      //We no longer support Raptor assetIds
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        GetProjectIdResult.CreateGetProjectIdResult(false, -1,
+          ContractExecutionStatesEnum.InternalProcessingError, 53));
     }
 
     /// <summary>
@@ -77,13 +77,11 @@ namespace VSS.Productivity3D.TagFileAuth.WebAPI.Controllers
     public async Task<GetProjectBoundariesAtDateResult> PostProjectBoundaries([FromBody]GetProjectBoundariesAtDateRequest request)
     {
       Logger.LogDebug($"{nameof(PostProjectBoundaries)}: {JsonConvert.SerializeObject(request)}");
-      request.Validate();
 
-      var executor = RequestExecutorContainer.Build<ProjectBoundariesAtDateExecutor>(Logger, ConfigStore, Authorization, CwsAccountClient, ProjectProxy, DeviceProxy, RequestCustomHeaders);
-      var result = await executor.ProcessAsync(request) as GetProjectBoundariesAtDateResult;
-
-      Logger.LogResult(nameof(PostProjectBoundaries), request, result);
-      return result;
+      //We no longer support Raptor assetIds
+      throw new ServiceException(HttpStatusCode.BadRequest,
+        GetProjectIdResult.CreateGetProjectIdResult(false, -1,
+          ContractExecutionStatesEnum.InternalProcessingError, 53));
     }
   }
 }

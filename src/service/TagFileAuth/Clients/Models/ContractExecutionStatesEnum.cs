@@ -62,6 +62,7 @@ namespace VSS.Productivity3D.TagFileAuth.Models
       DynamicAddwithOffset("Manual Import: intersecting projects found, but not the one requested", 50);
       DynamicAddwithOffset("Must contain a EC520 serial number", 51);
       DynamicAddwithOffset("Asset found, but has no valid subscriptions", 52);
+      DynamicAddwithOffset("Raptor asset ids no longer supported", 53);
 
       // these error numbers come from calls to projectService
       DynamicAddwithOffset("Unable to locate device by serialNumber in cws", 100);
