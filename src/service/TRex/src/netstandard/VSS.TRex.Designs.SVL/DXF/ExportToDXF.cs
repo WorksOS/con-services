@@ -4,6 +4,7 @@ using System.Linq;
 using VSS.TRex.Common;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.Designs.SVL.Utilities;
+using VSS.TRex.Geometry;
 
 namespace VSS.TRex.Designs.SVL.DXF
 {
@@ -176,7 +177,7 @@ namespace VSS.TRex.Designs.SVL.DXF
         DXF.Entities.Add(new DXFTextEntity("B",
           kAlignmentCenterLineColor,
           X, Y, Consts.NullDouble,
-          $"{CurrentStation / DXFUtils.DistToMeters(Units):F2}",
+          $"{CurrentStation / UnitUtils.DistToMeters(Units):F2}",
           Orientation - (Math.PI / 2),
           2,
           "Arial",
