@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -39,10 +40,13 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
     protected override async Task<ContractExecutionResult> ProcessAsyncEx<T>(T item)
     {
       var request = item as DXFBoundariesRequest;
-//      var siteModel = GetSiteModel(request.ProjectUid);
+      //      var siteModel = GetSiteModel(request.ProjectUid);
 
-//      if (siteModel == null)
-//        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Unknown site model {request.ProjectUid}"));
+      //      if (siteModel == null)
+      //        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Unknown site model {request.ProjectUid}"));
+
+      if (!File.Exists(request.FileName))
+        throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.ValidationError, $"File {request.FileName} does not exist"));
 
       var result = DXFFileUtilities.RequestBoundariesFromLineWork(request.FileName, request.FileUnits, request.MaxBoundaries, out var boundaries);
 

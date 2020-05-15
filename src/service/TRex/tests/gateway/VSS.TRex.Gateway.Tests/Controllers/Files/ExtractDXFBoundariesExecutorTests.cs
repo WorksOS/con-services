@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using VSS.Common.Abstractions.Configuration;
+using VSS.Common.Exceptions;
 using VSS.MasterData.Models.Handlers;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.Productivity3D.Models.Models.Files;
@@ -20,6 +23,7 @@ using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
+using Xunit.Sdk;
 
 namespace VSS.TRex.Gateway.Tests.Controllers.Files
 {
@@ -42,9 +46,23 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     }
 
     [Fact]
-    public async void TwoBoundaries_UnderLimit()
+    public async void FailWithFileNotExist()
     {
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", "Southern Motorway 55 point polygon.dxf"), DxfUnitsType.Meters, 10);
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", "does-not-exist.dxf"), DxfUnitsType.Meters, 10);
+      var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
+      executor.Should().NotBeNull();
+      
+      Func<Task> act = async () => _ = await executor.ProcessAsync<DXFBoundariesRequest>(request);
+      act.Should().Throw<ServiceException>().WithMessage("File*does not exist");
+    }
+
+    [Theory]
+    [InlineData("Southern Motorway 55 point polygon.dxf", DxfUnitsType.Meters, 1, 1001)]
+    [InlineData("avoidMeBoundary.dxf", DxfUnitsType.Meters, 1, 12)]
+    [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 7, 4)]
+    public async void TwoBoundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount)
+    {
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, 10);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 
@@ -55,11 +73,13 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
 
       if (result is DXFBoundaryResult boundary)
       {
-        boundary.Boundaries.Count.Should().Be(1);
-        boundary.Boundaries[0].Fence.Count.Should().Be(55);
+        boundary.Boundaries.Count.Should().Be(expectedBoundaryCount);
+        boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
       }
       else
+      {
         false.Should().BeTrue(); // fail the test
+      }
     }
   }
 }
