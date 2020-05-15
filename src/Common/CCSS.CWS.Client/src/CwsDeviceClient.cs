@@ -83,6 +83,7 @@ namespace CCSS.CWS.Client
     /// <summary>
     /// used by TFA: projectIdExecutor; ProjectBoundariesAtDateExec; ProjectAndAssetUidsExecutor; ProjectAndAssetUidsEarthWorksExecutor
     ///                 response fields: ProjectTRN
+    /// Requires TPaaS application token.
     /// </summary>
     public async Task<ProjectListResponseModel> GetProjectsForDevice(Guid deviceUid, IDictionary<string, string> customHeaders = null)
     {

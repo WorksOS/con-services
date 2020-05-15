@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
 using VSS.MasterData.Project.WebAPI.Common.Utilities;
@@ -13,7 +12,7 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
   /// <summary>
-  /// The executor which gets the Device details from a) cws and b) localDB
+  /// The executor which gets the Device details from cws 
   /// </summary>
   public class GetProjectsForDeviceExecutor : RequestExecutorContainer
   {
@@ -37,24 +36,8 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
         var projectDataListResult = new ProjectDataListResult();
         foreach (var projectCws in projectsFromCws.Projects)
         {
-          var project = await projectRepo.GetProjectOnly(projectCws.projectId);
-
-          // use WorksOS data rather than cws as it is the source of truth
-          if (project != null)
-          {
-            if (string.Compare(project.CustomerUID, projectCws.accountId, StringComparison.OrdinalIgnoreCase) != 0)
-            {
-              var message= $"Project accountId differs between WorksOS and WorksManager: projectId: {project.ProjectUID} WorksOS customer: {project.CustomerUID}  CWS account: {projectCws.accountId}";
-              log.LogError($"GetProjectsForDeviceExecutor: {message}");
-              return new ProjectDataListResult(106, message: message, projectDataListResult.ProjectDescriptors);
-            }
-           
-            projectDataListResult.ProjectDescriptors.Add(AutoMapperUtility.Automapper.Map<ProjectData>(project));
-          }
-          else
-          {
-            log.LogInformation($"GetProjectsForDeviceExecutor: A project from cws is missing from our localDB. cwsProject: {JsonConvert.SerializeObject(projectCws)}");
-          }
+          //TODO: CWS need to return the project boundary - only project id, name and account id currently returned
+          projectDataListResult.ProjectDescriptors.Add(AutoMapperUtility.Automapper.Map<ProjectData>(projectCws));
         }
 
         return projectDataListResult;

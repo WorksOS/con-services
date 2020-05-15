@@ -8,7 +8,7 @@ using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
 namespace VSS.MasterData.Project.WebAPI.Controllers
 {
   /// <summary>
-  /// Customer controller v1
+  /// Device controller v1
   ///     for the UI to get customer list etc as we have no CustomerSvc yet
   /// </summary>
   public class DeviceInternalV1Controller : ProjectBaseController
@@ -48,32 +48,8 @@ namespace VSS.MasterData.Project.WebAPI.Controllers
     }
 
     /// <summary>
-    /// Obsolete (CCSSSCON-314) but leave in place for now - just in case 
-    /// Gets device by shortRaptorAssetId, results include Uid and serialNumber
-    ///  called by TFA ProjectBoundariesAtDateExecutor, ProjectIdExecutor
-    ///  Only returns 1 ACTIVE account, else error code
-    /// </summary>
-    [HttpGet("internal/v1/device/shortRaptorAssetId")]
-    public async Task<DeviceDescriptorSingleResult> GetDevice([FromQuery] int shortRaptorAssetId)
-    {
-      Logger.LogInformation($"{nameof(GetDevice)} shortRaptorAssetId: {shortRaptorAssetId}");
-
-      var shortRaptorId = new ShortRaptorId(shortRaptorAssetId);
-      shortRaptorId.Validate();
-
-      var deviceDataResult = await WithServiceExceptionTryExecuteAsync(() =>
-        RequestExecutorContainerFactory
-          .Build<GetDeviceByShortRaptorIdExecutor>(LoggerFactory, ConfigStore, ServiceExceptionHandler,
-            headers: customHeaders,
-            deviceRepo: DeviceRepo, cwsDeviceClient: CwsDeviceClient)
-          .ProcessAsync(shortRaptorId)) as DeviceDescriptorSingleResult;
-
-      return deviceDataResult;
-    }
-
-    /// <summary>
     /// Gets a list of projects which a device is associated with.
-    ///    Get the list from cws, and only include ones which we have locally also.
+    ///    Get the list from cws.
     ///  called by TFA ProjectBoundariesAtDateExecutor, ProjectAndAssetUidsExecutor, ProjectAndAssetUidsEarthWorksExecutor, ProjectIdExecutor
     /// </summary>
     [HttpGet("internal/v1/device/{deviceUid}/projects")]

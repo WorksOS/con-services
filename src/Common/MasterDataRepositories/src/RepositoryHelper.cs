@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using VSS.Common.Abstractions.Clients.CWS.Models;
 
 namespace VSS.MasterData.Repositories
 {
   public class RepositoryHelper
   {
+    private static string POLYGON = "POLYGON";
+
     public static string WKTToSpatial(string geometryWKT)
     {
       return string.IsNullOrEmpty(geometryWKT) ? "null" : $"ST_GeomFromText('{geometryWKT}')";
@@ -13,52 +16,20 @@ namespace VSS.MasterData.Repositories
 
     public static string GetPolygonWKT(string boundary)
     {
-      const string polygonStr = "POLYGON";
-      var boundaryWkt = string.Empty;
-
-      if (!string.IsNullOrEmpty(boundary))
-      {
-        // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
-        if (!boundary.Contains(polygonStr))
-        {
-          boundary =
-            boundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
-          boundary =
-            string.Concat(polygonStr + "((", boundary, "))");
-        }
-        //Polygon must start and end with the same point
-
-        boundaryWkt = boundary.ParseGeometryData().ClosePolygonIfRequired()
-          .ToPolygonWKT();
-      }
-
-      return boundaryWkt;
+      return GetPoints(boundary)?.ToPolygonWKT();
     }
 
     /// <summary>
     /// Map a 3dp project wkt boundary to the format required for cws Project API
     /// </summary>
-    /// <param name="boundary"></param>
-    /// <returns></returns>
     public static ProjectBoundary MapProjectBoundary(string boundary)
     {
-      if (string.IsNullOrEmpty(boundary))
+      var boundaryPoints = GetPoints(boundary);
+      if (boundaryPoints == null)
         return null;
 
-      // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
-      const string polygonStr = "POLYGON";
-      if (!boundary.Contains(polygonStr))
-        {
-          boundary =
-            boundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
-          boundary =
-            string.Concat(polygonStr + "((", boundary, "))");
-        }
-        //Polygon must start and end with the same point
-
-        var boundaryWkt = boundary.ParseGeometryData().ClosePolygonIfRequired();
       var pointsAsDoubleList = new List<double[,]>();
-      foreach (var point in boundaryWkt)
+      foreach (var point in boundaryPoints)
       {       
         pointsAsDoubleList.Add(item: new double[,] { { point.X, point.Y } });
       }
@@ -68,6 +39,38 @@ namespace VSS.MasterData.Repositories
       cwsProjectBoundary.coordinates = pointsAsDoubleList;     
 
       return cwsProjectBoundary;
+    }
+
+    private static List<Point> GetPoints(string boundary)
+    {
+      if (!string.IsNullOrEmpty(boundary))
+      {
+        // Check whether the ProjectBoundary is in WKT format. Convert to the WKT format if it is not. 
+        if (!boundary.Contains(POLYGON))
+        {
+          boundary =
+            boundary.Replace(",", " ").Replace(";", ",").TrimEnd(',');
+          boundary =
+            string.Concat(POLYGON + "((", boundary, "))");
+        }
+        //Polygon must start and end with the same point
+        return boundary.ParseGeometryData().ClosePolygonIfRequired();
+      }
+
+      return null;
+    }
+
+    /// <summary>
+    /// Maps a CWS project boundary to a 3dpm project WKT boundary
+    /// </summary>
+    public static string ProjectBoundaryToWKT(ProjectBoundary boundary)
+    {
+      //Should always be a boundary but just in case
+      if (boundary == null || boundary.coordinates.Count == 0)
+        return null;
+
+      // CWS boundary is always closed ?
+      return boundary.coordinates.ToPolygonWKT();
     }
   }
 
@@ -96,6 +99,21 @@ namespace VSS.MasterData.Repositories
     public static string ToPolygonWKT(this List<Point> s)
     {
       var internalString = s.Select(p => p.WKTSubstring).Aggregate((i, j) => $"{i},{j}");
+      return $"POLYGON(({internalString}))";
+    }
+
+    public static string ToPolygonWKT(this List<double[,]> list)
+    {
+      // Always just a single 2D array in the list which is the CWS polygon coordinates
+      var coords = list[0];
+      var rowCount = coords.GetLength(0);
+      var wktCoords = new List<string>();
+      for (var i = 0; i < rowCount; i++)
+      {
+        wktCoords.Add($"{coords[i, 0]} {coords[i, 1]}");
+      }
+     
+      var internalString = wktCoords.Aggregate((i, j) => $"{i},{j}");
       return $"POLYGON(({internalString}))";
     }
 

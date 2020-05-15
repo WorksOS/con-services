@@ -7,10 +7,8 @@ using Newtonsoft.Json;
 using VSS.Common.Abstractions.Clients.CWS.Enums;
 using VSS.MasterData.Models.ResultHandling.Abstractions;
 using VSS.MasterData.Project.WebAPI.Common.Models;
-using VSS.MasterData.Project.WebAPI.Common.Utilities;
 using VSS.Productivity3D.Project.Abstractions.Models;
 using VSS.Productivity3D.Project.Abstractions.Models.ResultsHandling;
-using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.MasterData.Project.WebAPI.Common.Executors
 {
@@ -40,19 +38,6 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         deviceData = new DeviceData() {DeviceUID = deviceResponseModel.Id, DeviceName = deviceResponseModel.DeviceName, SerialNumber = deviceResponseModel.SerialNumber};
 
-        // store deviceUid and a shortRaptorAssetId will be assigned. Raptor may be obsolete, but this for now will allow various tests to pass
-        await deviceRepo.StoreEvent(AutoMapperUtility.Automapper.Map<CreateDeviceEvent>(deviceData));
-
-        var deviceFromRepo = await deviceRepo.GetDevice(deviceResponseModel.Id);
-        if (deviceFromRepo == null)
-        {
-          var message = "Unable to locate device in localDB";
-          log.LogInformation($"GetDeviceBySerialExecutor: {message} deviceData: {JsonConvert.SerializeObject(deviceData)}");
-          return new DeviceDescriptorSingleResult(code: 101, message: message, deviceData);
-        }
-
-        deviceData.ShortRaptorAssetId = deviceFromRepo.ShortRaptorAssetID;
-
         // now get the customerId and 2xstatus
         // Note that this step may not be needed in future if/when WM can return these fields in cwsDeviceClient.GetDeviceBySerialNumber()
         var deviceAccountListDataResult = await cwsDeviceClient.GetAccountsForDevice(new Guid(deviceData.DeviceUID), customHeaders);
@@ -74,9 +59,9 @@ namespace VSS.MasterData.Project.WebAPI.Common.Executors
 
         var deviceCustomer = deviceAccountListDataResult.Accounts
           .FirstOrDefault(da => string.Compare(da.RelationStatus.ToString(), RelationStatusEnum.Active.ToString(), StringComparison.InvariantCultureIgnoreCase) == 0);
-        deviceData.CustomerUID = deviceCustomer.Id;
-        deviceData.RelationStatus = deviceCustomer.RelationStatus;
-        deviceData.TccDeviceStatus = deviceCustomer.TccDeviceStatus;
+        deviceData.CustomerUID = deviceCustomer?.Id;
+        deviceData.RelationStatus = deviceCustomer?.RelationStatus ?? RelationStatusEnum.Unknown;
+        deviceData.TccDeviceStatus = deviceCustomer?.TccDeviceStatus ?? TCCDeviceStatusEnum.Unknown;
         log.LogInformation($"GetDeviceBySerialExecutor: deviceData {JsonConvert.SerializeObject(deviceData)}");
         return new DeviceDescriptorSingleResult(deviceData); 
       }
