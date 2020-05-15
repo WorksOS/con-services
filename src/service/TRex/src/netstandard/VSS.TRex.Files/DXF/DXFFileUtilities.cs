@@ -8,7 +8,7 @@ namespace VSS.TRex.Files.DXF
     public static DXFUtilitiesResult RequestBoundariesFromLineWork(StreamReader dxfFileStream, string baseName, DxfUnitsType units, uint maxBoundariesToProcess, out PolyLineBoundaries boundaries)
     {
       boundaries = null;
-      var reader = new DXFReader(dxfFileStream);
+      var reader = new DXFReader(dxfFileStream, units);
 
       if (!reader.FindEntitiesSection())
       {

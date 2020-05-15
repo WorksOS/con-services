@@ -35,12 +35,14 @@ namespace VSS.Productivity3D.Models.Models.Files
     {
     }
 
-    public DXFBoundariesRequest(/*Guid projectUid, */ string csib, ImportedFileType fileType, string fileName)
+    public DXFBoundariesRequest(/*Guid projectUid, */ string csib, ImportedFileType fileType, string fileName, DxfUnitsType fileUnits, uint maxBoundaries)
     {
       //ProjectUid = projectUid;
       CSIB = csib;
       FileType = fileType;
       FileName = fileName;
+      FileUnits = fileUnits;
+      MaxBoundaries = maxBoundaries;
     }
 
     public void Validate()

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
+using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 
 namespace VSS.TRex.Files.DXF
 {
@@ -45,6 +47,7 @@ namespace VSS.TRex.Files.DXF
     private static byte[] ASCIIDXFRecordTypeLookUp = new byte [ASCIIDXFRecordsMax + 1];
 
     public double DXFImportConvFactor;
+    public DxfUnitsType Units;
 
     static DXFReader()
     {
@@ -504,7 +507,7 @@ namespace VSS.TRex.Files.DXF
 
       do
       {
-        if (ReadDXFRecord(out rec))
+        if (!ReadDXFRecord(out rec))
           return;
 
         ProcessNonVertexRecord();
@@ -599,12 +602,21 @@ namespace VSS.TRex.Files.DXF
           break;
       }
 
-      return !loadError && (!polylineIsClosed && closedPolylinesOnly);
+      return !loadError && (polylineIsClosed || !closedPolylinesOnly);
     }
 
-    public DXFReader(StreamReader dxfFile)
+    public DXFReader(StreamReader dxfFile, DxfUnitsType units)
     {
       _dxfFile = dxfFile;
+      Units = units;
+
+      DXFImportConvFactor = units switch
+      {
+        DxfUnitsType.Meters => UnitUtils.DistToMeters(DistanceUnitsType.Meters),
+        DxfUnitsType.UsSurveyFeet => UnitUtils.DistToMeters(DistanceUnitsType.US_feet),
+        DxfUnitsType.ImperialFeet => UnitUtils.DistToMeters(DistanceUnitsType.Feet),
+        _ => 1.0
+      };
     }
   }
 }

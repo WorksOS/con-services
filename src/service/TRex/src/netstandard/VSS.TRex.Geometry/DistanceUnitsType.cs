@@ -1,4 +1,4 @@
-﻿namespace VSS.TRex.Designs.SVL.DXF
+﻿namespace VSS.TRex.Geometry
 {
   public enum DistanceUnitsType
 
