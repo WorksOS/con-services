@@ -60,7 +60,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     [InlineData("Southern Motorway 55 point polygon.dxf", DxfUnitsType.Meters, 1, 1001)]
     [InlineData("avoidMeBoundary.dxf", DxfUnitsType.Meters, 1, 12)]
     [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 7, 4)]
-    public async void TwoBoundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount)
+    public async void Boundaries_UnderLimit(string fileName, DxfUnitsType units, int expectedBoundaryCount, int firstBoundaryVertexCount)
     {
       var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, 10);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
@@ -74,6 +74,32 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       if (result is DXFBoundaryResult boundary)
       {
         boundary.Boundaries.Count.Should().Be(expectedBoundaryCount);
+        boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
+      }
+      else
+      {
+        false.Should().BeTrue(); // fail the test
+      }
+    }
+
+    [Theory]
+    [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 4)]
+    public async void Boundaries_OverLimit(string fileName, DxfUnitsType units, int firstBoundaryVertexCount)
+    {
+      const int limit = 5;
+
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, limit);
+      var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
+      executor.Should().NotBeNull();
+
+      var result = await executor.ProcessAsync<DXFBoundariesRequest>(request);
+      result.Should().NotBeNull();
+      result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
+      result.Message.Should().Be("Success");
+
+      if (result is DXFBoundaryResult boundary)
+      {
+        boundary.Boundaries.Count.Should().Be(limit);
         boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
       }
       else
