@@ -38,8 +38,8 @@ namespace VSS.TRex.Files.DXF
     private StreamReader _dxfFile;
     private int _dxfLine;
 
-    private bool _haveFoundEntitiesSection = false;
-    private bool _reuseRecord = false;
+    private bool _haveFoundEntitiesSection;
+    private bool _reuseRecord;
     private DXFRecord _lastRecord;
 
     private static byte[] ASCIIDXFRecordTypeLookUp = new byte [ASCIIDXFRecordsMax + 1];
@@ -68,9 +68,7 @@ namespace VSS.TRex.Files.DXF
                  (rectype >= 370 && rectype <= 379) ||
                  (rectype >= 380 && rectype <= 389) ||
                  (rectype >= 400 && rectype <= 409) ||
-                 (rectype >= 1060 && rectype <= 239) ||
-                 (rectype >= 210 && rectype <= 1071) ||
-                 (rectype >= 1010 && rectype <= 1059))
+                 (rectype >= 1060 && rectype <= 1070))
         {
           ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_Integer;
         }
@@ -87,9 +85,8 @@ namespace VSS.TRex.Files.DXF
         {
           ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_String;
         }
-
-        if ((rectype >= 140 && rectype <= 147) ||
-            (rectype >= 170 && rectype <= 178))
+        else if ((rectype >= 140 && rectype <= 147) ||
+                 (rectype >= 170 && rectype <= 178))
         {
           ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_Ignore;
         }
@@ -105,29 +102,31 @@ namespace VSS.TRex.Files.DXF
       bool ReadingTextEntity = false)
     {
       DXFrec = new DXFRecord();
+      string line = "";
 
       try
       {
-        DXFrec.recType = Convert.ToUInt16(_dxfFile.ReadLine());
+        var recTypeString = _dxfFile.ReadLine();
+        DXFrec.recType = Convert.ToUInt16(recTypeString);
 
         if (_dxfFile.EndOfStream)
           return false; // may be ASCII but not DXF format
         DXFline++;
 
-        DXFrec.recType = Convert.ToUInt16(_dxfFile.ReadLine());
         if (DXFrec.recType <= ASCIIDXFRecordsMax)
         {
+          line = _dxfFile.ReadLine();
           switch (ASCIIDXFRecordTypeLookUp[DXFrec.recType])
           {
             case ASCIIDXFRecordType_Integer:
-              DXFrec.i = Convert.ToUInt16(_dxfFile.ReadLine());
+              DXFrec.i = Convert.ToInt32(line);
               break;
             case ASCIIDXFRecordType_Real:
-              DXFrec.r = Convert.ToDouble(_dxfFile.ReadLine());
+              DXFrec.r = Convert.ToDouble(line);
               break;
             case ASCIIDXFRecordType_String:
             {
-              DXFrec.s = _dxfFile.ReadLine();
+              DXFrec.s = line;
 
               // We do not want to remove leading or trailing spaces from
               // the text in DXF text entities (TEXT and MTEXT). These
@@ -146,11 +145,11 @@ namespace VSS.TRex.Files.DXF
             }
 
             case ASCIIDXFRecordType_Ignore:
-              _dxfFile.ReadLine();
+              //_dxfFile.ReadLine();
               break;
 
             default:
-              _dxfFile.ReadLine(); // Ignore unknown record type - carry on reading
+              //_dxfFile.ReadLine(); // Ignore unknown record type - carry on reading
               break;
           }
 
@@ -159,7 +158,7 @@ namespace VSS.TRex.Files.DXF
 
         return true;
       }
-      catch
+      catch (Exception e)
       {
         return false;
       }
@@ -185,47 +184,51 @@ namespace VSS.TRex.Files.DXF
       }
     }
 
-    public bool FindSection(string Name0, string Name2, string Name3)
+    public bool FindSection(string name0, string name2)
     {
-      bool ExitCondition;
-      var Result = false;
       var TestString = "";
-      DXFRecord rec;
+      var rec = new DXFRecord();
 
-      do
+      try
       {
-        // Scan for a section start
-        do
+        var _haveFoundSection = false;
+        while (!_haveFoundSection)
         {
-          if (!ReadDXFRecord(out rec))
-            return false;
+          // Scan for a section start
+          var foundSectionStart = false;
+          while (!foundSectionStart)
+          {
+            if (!ReadDXFRecord(out rec))
+              return false;
 
-          if (rec.recType != 0)
-            continue;
+            if (rec.recType != 0)
+              continue;
 
-          TestString = rec.s.ToUpper();
-        } while (!((TestString == Name0) || (TestString == "ENDSEC") || (TestString == "SECTION")));
+            TestString = rec.s.ToUpper();
+            foundSectionStart = TestString.CompareTo(name0) == 0 || TestString == "ENDSEC" || TestString == "SECTION";
+          } //while (!(TestString.CompareTo(Name0) == 0 || TestString == "ENDSEC" || TestString == "SECTION"));
 
-        if (TestString != "ENDSEC") // empty section
-        {
-          if (!ReadDXFRecord(out rec))
-            return false;
-          TestString = rec.s.ToUpper();
-        }
+          if (TestString != "ENDSEC") // empty section
+          {
+            if (!ReadDXFRecord(out rec))
+              return false;
+            TestString = rec.s.ToUpper();
+          }
 
-        ExitCondition = rec.recType == 2 && TestString == Name3;
-        if (ExitCondition && (Name3 == "ENTITIES"))
-          _haveFoundEntitiesSection = true;
-      } while (!(((rec.recType == 2) && (TestString == Name2)) || ExitCondition));
+          _haveFoundSection = rec.recType == 2 && TestString.CompareTo(name2) == 0;
+        } 
 
-      if (ExitCondition)
-        return false;
-      return true;
+        return true;
+      }
+      catch (Exception e)
+      {
+        throw e;
+      }
     }
 
     public bool FindEntitiesSection()
     {
-      return _haveFoundEntitiesSection || FindSection("SECTION", "ENTITIES", "EOF");
+      return _haveFoundEntitiesSection || (_haveFoundEntitiesSection = FindSection("SECTION", "ENTITIES"));
     }
 
     public bool GetStartOfNextEntity(out DXFRecord DXFRec)
@@ -250,12 +253,11 @@ namespace VSS.TRex.Files.DXF
 
     ////////////////////////////////////////////////////////////////////
 
-    public void ReadPolyline(out bool LoadError,
-      bool LWPolyline,
-      PolyLineBoundary Entity,
+    public void ReadPolyline(out bool loadError,
+      bool lwPolyline,
+      PolyLineBoundary entity,
       out bool polylineIsClosed)
     {
-
       const double Epsylon = 0.000001;
 
       int FetchIndex;
@@ -277,8 +279,7 @@ namespace VSS.TRex.Files.DXF
       double DefaultPolylineHeight;
       //ExtendedAttrName : String;
 
-      List<DXFRecord> PolylineRecords = new List<DXFRecord>();
-      int ArraySize;
+      var PolylineRecords = new List<DXFRecord>();
 
       // This function allows us to reread the first few record in the polyline.
       bool Get_DXF_record(out DXFRecord Rec)
@@ -298,7 +299,7 @@ namespace VSS.TRex.Files.DXF
         //  Load all vertices in the polyline 
         FirstPoint = true;
 
-        while ((rec.s == "VERTEX") || (LWPolyline && (VertexNum < NVertices)))
+        while ((rec.s == "VERTEX") || (lwPolyline && (VertexNum < NVertices)))
         {
           nextbulge = 0; // Default to straight line 
           VertexFlags = 0;
@@ -336,7 +337,7 @@ namespace VSS.TRex.Files.DXF
                 VertexFlags = (ushort) rec.i;
                 break;
             }
-          } while (!(rec.recType == 0 || (LWPolyline && Rec10Count == 2)));
+          } while (!(rec.recType == 0 || (lwPolyline && Rec10Count == 2)));
 
           // If we are reading in a 2D polyline, then the heights of all the
           // vertices in the polyline should be set to the elevation read in from
@@ -352,7 +353,7 @@ namespace VSS.TRex.Files.DXF
           //if (extruded && !PolylineIs3D)
           //  AdjustForExtrusion(pt.x, pt.y, pt.z, Extrusion);
 
-          if (LWPolyline)
+          if (lwPolyline)
           {
             FetchIndex--; // Reprocess the last record
             VertexNum++;
@@ -373,7 +374,7 @@ namespace VSS.TRex.Files.DXF
             if (!IsDuplicateVertex)
             {
               // Add the vertex to the fence
-              Entity.Boundary.Points.Add(new FencePoint(pt.X, pt.Y));
+              entity.Boundary.Points.Add(new FencePoint(pt.X, pt.Y));
             }
 
             bulge = nextbulge;
@@ -482,7 +483,7 @@ namespace VSS.TRex.Files.DXF
                (!PolylineIs3D || (Math.Abs(pt_start.Z - pt_end.Z) < Epsylon));
       }
 
-      LoadError = true; // { Assume fault }
+      loadError = true; // { Assume fault }
       PaperSpace = false;
       // Todo extruded = false;
       bulge = 0;
@@ -500,7 +501,6 @@ namespace VSS.TRex.Files.DXF
       // LWPOLYLINE entities.  In this case we have to read the entire entity looking
       // for extrusion records before we add point to the DQM model.
       FetchIndex = 0;
-      ArraySize = 1;
 
       do
       {
@@ -514,7 +514,7 @@ namespace VSS.TRex.Files.DXF
       } while (rec.recType != 0); // Start of next entity 
 
       polylineIsClosed = (PolylineFlags & kPolylineIsClosed) == kPolylineIsClosed;
-      PolylineIs3D = !LWPolyline &&
+      PolylineIs3D = !lwPolyline &&
                      (((PolylineFlags & kPolylineIs3D) == kPolylineIs3D) ||
                       ((PolylineFlags & kPolylineIsPolyfaceMesh) == kPolylineIsPolyfaceMesh));
 
@@ -522,7 +522,7 @@ namespace VSS.TRex.Files.DXF
 
       NumArrayEntries = FetchIndex;
 
-      if (LWPolyline)
+      if (lwPolyline)
         _reuseRecord = true; // load_entities needs to read this record 
 
       //--------------------------------------------
@@ -534,15 +534,15 @@ namespace VSS.TRex.Files.DXF
           return;
 
         ProcessNonVertexRecord();
-      } while (!((rec.recType == 0) || (LWPolyline && (rec.recType == 10)))); // Start of first vertex 
+      } while (!((rec.recType == 0) || (lwPolyline && (rec.recType == 10)))); // Start of first vertex 
 
       //--------------------------------------------
 
-      if (LWPolyline)
+      if (lwPolyline)
         FetchIndex--; // Reprocess the last record
 
-// Check whether the polyline is closed if the internal flag indicates it is not...
-      polylineIsClosed = polylineIsClosed || (LWPolyline && IsPolyLineClosed());
+     // Check whether the polyline is closed if the internal flag indicates it is not...
+      polylineIsClosed = polylineIsClosed || (lwPolyline && IsPolyLineClosed());
 
       if (!PaperSpace)
       {
@@ -552,7 +552,7 @@ namespace VSS.TRex.Files.DXF
         }
         else // It's a polyline of some form
         {
-          if (!LWPolyline &&
+          if (!lwPolyline &&
               (CurveSmoothing == kQuadraticBSplineSmoothing) ||
               (CurveSmoothing == kCubicBSplineSmoothing))
           {
@@ -565,20 +565,20 @@ namespace VSS.TRex.Files.DXF
       else
       {
         //  Scan past SEQEND for standard 3D polylines
-        if (!LWPolyline)
+        if (!lwPolyline)
           while ((rec.recType != 0) || (rec.s != "SEQEND"))
             if (!ReadDXFRecord(out rec))
               return;
       }
 
-      LoadError = false;
+      loadError = false;
     }
 
 
     public bool GetBoundaryFromPolyLineEntity(bool closedPolylinesOnly, out bool atEOF, out PolyLineBoundary boundary)
     {
-      bool loadError = false;
-      bool polylineIsClosed = false;
+      var loadError = false;
+      var polylineIsClosed = false;
 
       atEOF = GetStartOfNextEntity(out var DXFRec);
       boundary = null;

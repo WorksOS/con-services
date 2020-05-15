@@ -7,7 +7,7 @@ using VSS.Productivity3D.Models.Models.Files;
 
 namespace VSS.TRex.Gateway.Common.ResultHandling
 {
-  public class DXFBoundaryResultItem
+  public class DXFBoundaryResultItem : ContractExecutionResult
   {
     /// <summary>
     /// Boundary as list of points.
@@ -22,6 +22,8 @@ namespace VSS.TRex.Gateway.Common.ResultHandling
     /// Override constructor with parameters.
     /// </summary>
     /// <param name="fence"></param>
+    /// <param name="type"></param>
+    /// <param name="name"></param>
     public DXFBoundaryResultItem(List<WGSPoint> fence, DXFLineWorkBoundaryType type, string name)
     {
       Fence = fence;
@@ -37,7 +39,7 @@ namespace VSS.TRex.Gateway.Common.ResultHandling
     /// <summary>
     /// Override constructor with parameters.
     /// </summary>
-    public DXFBoundaryResult(List<DXFBoundaryResultItem> boundaries)
+    public DXFBoundaryResult(int code, string message, List<DXFBoundaryResultItem> boundaries) : base(code, message)
     {
       Boundaries = boundaries;
     }

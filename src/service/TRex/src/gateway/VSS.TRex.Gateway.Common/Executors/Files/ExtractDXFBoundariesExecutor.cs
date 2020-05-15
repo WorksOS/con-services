@@ -81,8 +81,9 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
       }
 
       // Construct response
-      return new DXFBoundaryResult(boundaries.Boundaries.Select(x => 
-        new DXFBoundaryResultItem(x.Boundary.Points.Select(pt => 
+      return new DXFBoundaryResult(ContractExecutionStatesEnum.ExecutedSuccessfully, "Success",
+        boundaries.Boundaries.Select(x =>
+        new DXFBoundaryResultItem(x.Boundary.Points.Select(pt =>
           new WGSPoint(pt.X, pt.Y)).ToList(), x.Type, x.Name)).ToList());
     }
 
