@@ -18,7 +18,7 @@ namespace VSS.TRex.Files.DXF
       var extractor = new PolyLineBoundaryExtractor(reader);
       var result = extractor.Extract(baseName, units, maxBoundariesToProcess);
 
-      if (result == DXFUtilitiesResult.OK)
+      if (result == DXFUtilitiesResult.Ok)
         boundaries = extractor.Boundaries;
 
       return result;

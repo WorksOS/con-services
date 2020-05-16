@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using VSS.TRex.Common;
 using VSS.TRex.Geometry;
@@ -37,14 +36,14 @@ namespace VSS.TRex.Files.DXF
     private const byte ASCIIDXFRecordType_String = 2;
     private const byte ASCIIDXFRecordType_Ignore = 3;
 
-    private StreamReader _dxfFile;
+    private readonly StreamReader _dxfFile;
     private int _dxfLine;
 
     private bool _haveFoundEntitiesSection;
     private bool _reuseRecord;
     private DXFRecord _lastRecord;
 
-    private static byte[] ASCIIDXFRecordTypeLookUp = new byte [ASCIIDXFRecordsMax + 1];
+    private static readonly byte[] ASCIIDXFRecordTypeLookUp = new byte [ASCIIDXFRecordsMax + 1];
 
     public double DXFImportConvFactor;
     public DxfUnitsType Units;
@@ -56,133 +55,120 @@ namespace VSS.TRex.Files.DXF
 
     private static void InitialiseDXFRecordLookUpTable()
     {
-      for (int rectype = 0; rectype <= ASCIIDXFRecordsMax; rectype++)
+      for (var type = 0; type <= ASCIIDXFRecordsMax; type++)
       {
-        if ((rectype >= 10 && rectype <= 59) ||
-            (rectype >= 210 && rectype <= 239) ||
-            (rectype >= 1010 && rectype <= 1059))
+        if ((type >= 10 && type <= 59) ||
+            (type >= 210 && type <= 239) ||
+            (type >= 1010 && type <= 1059))
         {
-          ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_Real;
+          ASCIIDXFRecordTypeLookUp[type] = ASCIIDXFRecordType_Real;
         }
-        else if ((rectype >= 60 && rectype <= 79) ||
-                 (rectype >= 90 && rectype <= 99) ||
-                 (rectype >= 270 && rectype <= 279) ||
-                 (rectype >= 280 && rectype <= 289) ||
-                 (rectype >= 370 && rectype <= 379) ||
-                 (rectype >= 380 && rectype <= 389) ||
-                 (rectype >= 400 && rectype <= 409) ||
-                 (rectype >= 1060 && rectype <= 1070))
+        else if ((type >= 60 && type <= 79) ||
+                 (type >= 90 && type <= 99) ||
+                 (type >= 270 && type <= 279) ||
+                 (type >= 280 && type <= 289) ||
+                 (type >= 370 && type <= 379) ||
+                 (type >= 380 && type <= 389) ||
+                 (type >= 400 && type <= 409) ||
+                 (type >= 1060 && type <= 1070))
         {
-          ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_Integer;
+          ASCIIDXFRecordTypeLookUp[type] = ASCIIDXFRecordType_Integer;
         }
-        else if ((rectype >= 0 && rectype <= 9) ||
-                 (rectype == 100 || rectype == 102 || rectype == 105) ||
-                 (rectype >= 300 && rectype <= 309) ||
-                 (rectype >= 310 && rectype <= 319) ||
-                 (rectype >= 320 && rectype <= 329) ||
-                 (rectype >= 330 && rectype <= 369) ||
-                 (rectype >= 400 && rectype <= 409) ||
-                 (rectype >= 410 && rectype <= 419) ||
-                 (rectype == 999) ||
-                 (rectype >= 1000 && rectype <= 1009))
+        else if ((type >= 0 && type <= 9) ||
+                 (type == 100 || type == 102 || type == 105) ||
+                 (type >= 300 && type <= 309) ||
+                 (type >= 310 && type <= 319) ||
+                 (type >= 320 && type <= 329) ||
+                 (type >= 330 && type <= 369) ||
+                 (type >= 400 && type <= 409) ||
+                 (type >= 410 && type <= 419) ||
+                 (type == 999) ||
+                 (type >= 1000 && type <= 1009))
         {
-          ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_String;
+          ASCIIDXFRecordTypeLookUp[type] = ASCIIDXFRecordType_String;
         }
-        else if ((rectype >= 140 && rectype <= 147) ||
-                 (rectype >= 170 && rectype <= 178))
+        else if ((type >= 140 && type <= 147) ||
+                 (type >= 170 && type <= 178))
         {
-          ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_Ignore;
+          ASCIIDXFRecordTypeLookUp[type] = ASCIIDXFRecordType_Ignore;
         }
         else
         {
-          ASCIIDXFRecordTypeLookUp[rectype] = ASCIIDXFRecordType_Ignore;
+          ASCIIDXFRecordTypeLookUp[type] = ASCIIDXFRecordType_Ignore;
         }
       }
     }
 
-    public bool Read_ASCII_DXF_Record(out DXFRecord DXFrec,
-      ref int DXFline,
-      bool ReadingTextEntity = false)
+    public bool Read_ASCII_DXF_Record(out DXFRecord rec,
+      ref int lineNumber,
+      bool readingTextEntity = false)
     {
-      DXFrec = new DXFRecord();
-      string line = "";
+      rec = new DXFRecord();
 
-      try
+      var recTypeString = _dxfFile.ReadLine();
+      rec.recType = Convert.ToUInt16(recTypeString);
+
+      if (_dxfFile.EndOfStream)
+        return false; // may be ASCII but not DXF format
+      lineNumber++;
+
+      if (rec.recType <= ASCIIDXFRecordsMax)
       {
-        var recTypeString = _dxfFile.ReadLine();
-        DXFrec.recType = Convert.ToUInt16(recTypeString);
+        var line = _dxfFile.ReadLine();
+        if (string.IsNullOrEmpty(line))
+          return false;
 
-        if (_dxfFile.EndOfStream)
-          return false; // may be ASCII but not DXF format
-        DXFline++;
-
-        if (DXFrec.recType <= ASCIIDXFRecordsMax)
+        switch (ASCIIDXFRecordTypeLookUp[rec.recType])
         {
-          line = _dxfFile.ReadLine();
-          switch (ASCIIDXFRecordTypeLookUp[DXFrec.recType])
+          case ASCIIDXFRecordType_Integer:
+            rec.i = Convert.ToInt32(line);
+            break;
+          case ASCIIDXFRecordType_Real:
+            rec.r = Convert.ToDouble(line);
+            break;
+          case ASCIIDXFRecordType_String:
           {
-            case ASCIIDXFRecordType_Integer:
-              DXFrec.i = Convert.ToInt32(line);
-              break;
-            case ASCIIDXFRecordType_Real:
-              DXFrec.r = Convert.ToDouble(line);
-              break;
-            case ASCIIDXFRecordType_String:
+            rec.s = line;
+
+            // We do not want to remove leading or trailing spaces from
+            // the text in DXF text entities (TEXT and M TEXT). These
+            // group codes 1 (for TEXT) and 1&3 (for M TEXT). If the caller
+            // has advised it is reading a DXF text entity we no do not
+            // strip the spaces from the string value.
+            if (readingTextEntity)
             {
-              DXFrec.s = line;
-
-              // We do not want to remove leading or trailing spaces from
-              // the text in DXF text entities (TEXT and MTEXT). These
-              // group codes 1 (for TEXT) and 1&3 (for MTEXT). If the caller
-              // has advised it is reading a DXF text entity we no do not
-              // strip the spaces from the string value.
-              if (ReadingTextEntity)
-              {
-                if (DXFrec.recType != 1 && DXFrec.recType != 3)
-                  DXFrec.s = DXFrec.s.Trim();
-              }
-              else
-                DXFrec.s = DXFrec.s.Trim();
-
-              break;
+              if (rec.recType != 1 && rec.recType != 3)
+                rec.s = rec.s.Trim();
             }
+            else
+              rec.s = rec.s.Trim();
 
-            case ASCIIDXFRecordType_Ignore:
-              //_dxfFile.ReadLine();
-              break;
-
-            default:
-              //_dxfFile.ReadLine(); // Ignore unknown record type - carry on reading
-              break;
+            break;
           }
-
-          DXFline++;
         }
 
-        return true;
+        lineNumber++;
       }
-      catch (Exception e)
-      {
-        return false;
-      }
+
+      return true;
     }
 
-    public bool ReadDXFRecord(out DXFRecord DXFrec)
+    public bool ReadDXFRecord(out DXFRecord rec)
     {
       if (_reuseRecord)
       {
-        DXFrec = _lastRecord;
+        rec = _lastRecord;
         _reuseRecord = false;
         return true;
       }
       else
       {
-        //If FDXFFileIsBinary then
-        //Result := Read_Binary_DXF_Record(FBinary_DXFFile, FDXFFileIsPostR13c3, DXFRec, FDXFLine)
+        //If DXFFileIsBinary then
+        //Result := Read_Binary_DXF_Record(out rec, ref _dxfLine)
         //else
-        var Result = Read_ASCII_DXF_Record(out DXFrec, ref _dxfLine);
+        var Result = Read_ASCII_DXF_Record(out rec, ref _dxfLine);
 
-        _lastRecord = DXFrec;
+        _lastRecord = rec;
         return Result;
       }
     }
@@ -192,41 +178,36 @@ namespace VSS.TRex.Files.DXF
       var TestString = "";
       var rec = new DXFRecord();
 
-      try
+      var _haveFoundSection = false;
+      while (!_haveFoundSection)
       {
-        var _haveFoundSection = false;
-        while (!_haveFoundSection)
+        // Scan for a section start
+        var foundSectionStart = false;
+        while (!foundSectionStart)
         {
-          // Scan for a section start
-          var foundSectionStart = false;
-          while (!foundSectionStart)
-          {
-            if (!ReadDXFRecord(out rec))
-              return false;
+          if (!ReadDXFRecord(out rec))
+            return false;
 
-            if (rec.recType != 0)
-              continue;
+          if (rec.recType != 0)
+            continue;
 
-            TestString = rec.s.ToUpper();
-            foundSectionStart = TestString.CompareTo(name0) == 0 || TestString == "ENDSEC" || TestString == "SECTION";
-          } //while (!(TestString.CompareTo(Name0) == 0 || TestString == "ENDSEC" || TestString == "SECTION"));
+          TestString = rec.s.ToUpper();
+          // ReSharper disable once StringLiteralTypo
+          foundSectionStart = string.Compare(TestString, name0, StringComparison.InvariantCulture) == 0 || TestString == "ENDSEC" || TestString == "SECTION";
+        }
 
-          if (TestString != "ENDSEC") // empty section
-          {
-            if (!ReadDXFRecord(out rec))
-              return false;
-            TestString = rec.s.ToUpper();
-          }
+        // ReSharper disable once StringLiteralTypo
+        if (TestString != "ENDSEC") // empty section
+        {
+          if (!ReadDXFRecord(out rec))
+            return false;
+          TestString = rec.s.ToUpper();
+        }
 
-          _haveFoundSection = rec.recType == 2 && TestString.CompareTo(name2) == 0;
-        } 
-
-        return true;
+        _haveFoundSection = rec.recType == 2 && string.Compare(TestString, name2, StringComparison.InvariantCulture) == 0;
       }
-      catch (Exception e)
-      {
-        throw e;
-      }
+
+      return true;
     }
 
     public bool FindEntitiesSection()
@@ -234,17 +215,19 @@ namespace VSS.TRex.Files.DXF
       return _haveFoundEntitiesSection || (_haveFoundEntitiesSection = FindSection("SECTION", "ENTITIES"));
     }
 
-    public bool GetStartOfNextEntity(out DXFRecord DXFRec)
+    public bool GetStartOfNextEntity(out DXFRecord rec)
     {
       do
       {
-        if (!ReadDXFRecord(out DXFRec))
+        if (!ReadDXFRecord(out rec))
           return false;
-      } while (DXFRec.recType != 0);
+      } while (rec.recType != 0);
 
-      return DXFRec.s == "ENDSEC";
+      // ReSharper disable once StringLiteralTypo
+      return rec.s == "ENDSEC";
     }
 
+    /* Todo: Extrusion not supported
     public bool CheckExtrusionRecord(DXFRecord rec)
     {
       // Returns True if the record is a non default extrusion record
@@ -253,65 +236,64 @@ namespace VSS.TRex.Files.DXF
              ((rec.recType == 220) && (rec.r != 0.0)) ||
              ((rec.recType == 230) && (rec.r != 1.0));
     }
+    */
 
     ////////////////////////////////////////////////////////////////////
 
-    public void ReadPolyline(out bool loadError,
-      bool lwPolyline,
+    public void ReadPolyLine(out bool loadError,
+      bool lwPolyLine,
       PolyLineBoundary entity,
-      out bool polylineIsClosed)
+      out bool polyLineIsClosed)
     {
-      const double Epsylon = 0.000001;
+      const double EPSILON = 0.000001;
 
       int FetchIndex;
       int NumArrayEntries;
       DXFRecord rec;
-      XYZ lastpt = XYZ.Null, pt;
+      XYZ lastPt = XYZ.Null, pt;
       bool PaperSpace;
       // Todo: Extrusion is not taken into account
       // bool extruded;
-      int VertexFlags, PolylineFlags;
-      double bulge, nextbulge;
-      bool FirstPoint;
+      int PolyLineFlags;
+//      double bulge;
       int NVertices;
       int VertexNum;
-      int Rec10Count;
       int CurveSmoothing;
-      XYZ Extrusion;
-      bool PolylineIs3D;
-      double DefaultPolylineHeight;
+      // Todo extrusion not supported XYZ Extrusion;
+      bool PolyLineIs3D;
+      double DefaultPolyLineHeight;
       //ExtendedAttrName : String;
 
-      var PolylineRecords = new List<DXFRecord>();
+      var PolyLineRecords = new List<DXFRecord>();
 
-      // This function allows us to reread the first few record in the polyline.
-      bool Get_DXF_record(out DXFRecord Rec)
+      // This function allows us to reread the first few record in the poly line.
+      bool GetDXFRecord(out DXFRecord record)
       {
         if (FetchIndex < NumArrayEntries)
         {
-          Rec = PolylineRecords[FetchIndex];
+          record = PolyLineRecords[FetchIndex];
           FetchIndex++;
           return true;
         }
 
-        return ReadDXFRecord(out Rec);
+        return ReadDXFRecord(out record);
       }
 
-      void LoadSimplePolyline()
+      void LoadSimplePolyLine()
       {
-        //  Load all vertices in the polyline 
-        FirstPoint = true;
+        //  Load all vertices in the poly line 
+        var FirstPoint = true;
 
-        while ((rec.s == "VERTEX") || (lwPolyline && (VertexNum < NVertices)))
+        while ((rec.s == "VERTEX") || (lwPolyLine && (VertexNum < NVertices)))
         {
-          nextbulge = 0; // Default to straight line 
-          VertexFlags = 0;
-          Rec10Count = 0;
+//          double nextBulge = 0;
+          var VertexFlags = 0;
+          var Rec10Count = 0;
           pt.Z = Consts.NullDouble;
 
           do
           {
-            if (!Get_DXF_record(out rec))
+            if (!GetDXFRecord(out rec))
               return;
 
             switch (rec.recType)
@@ -327,36 +309,37 @@ namespace VSS.TRex.Files.DXF
                 break;
 
               case 30:
-                if (PolylineIs3D)
+                if (PolyLineIs3D)
                   pt.Z = rec.r * DXFImportConvFactor;
                 break;
 
-              case 42:
-                nextbulge = rec.r;
-                break;
+//              case 42:
+//                nextBulge = rec.r;
+//                break;
+
 //              case 62 : ; //SetPen (pen,rec.i);
 //                break;
               case 70:
                 VertexFlags = (ushort) rec.i;
                 break;
             }
-          } while (!(rec.recType == 0 || (lwPolyline && Rec10Count == 2)));
+          } while (!(rec.recType == 0 || (lwPolyLine && Rec10Count == 2)));
 
-          // If we are reading in a 2D polyline, then the heights of all the
-          // vertices in the polyline should be set to the elevation read in from
-          // the 38 field in the POLYLINE entity (ie: any elevation read in for
-          // the vertex is discarded. This also applies to LWPOLYLINE entities.
-          // Note: This could have been achieved by initialising
+          // If we are reading in a 2D poly line, then the heights of all the
+          // vertices in the poly line should be set to the elevation read in from
+          // the 38 field in the POLY LINE entity (ie: any elevation read in for
+          // the vertex is discarded. This also applies to LW POLY LINE entities.
+          // Note: This could have been achieved by initializing
           // the value of pt.z before the repeat loop, but this explicit
           // behaviour is more evident as to its purpose.
-          if (!PolylineIs3D)
-            pt.Z = DefaultPolylineHeight;
+          if (!PolyLineIs3D)
+            pt.Z = DefaultPolyLineHeight;
 
           // Todo: Extrusion is not taken into account
-          //if (extruded && !PolylineIs3D)
+          //if (extruded && !PolyLineIs3D)
           //  AdjustForExtrusion(pt.x, pt.y, pt.z, Extrusion);
 
-          if (lwPolyline)
+          if (lwPolyLine)
           {
             FetchIndex--; // Reprocess the last record
             VertexNum++;
@@ -368,9 +351,9 @@ namespace VSS.TRex.Files.DXF
             if (FirstPoint)
               IsDuplicateVertex = false;
             else
-              IsDuplicateVertex = (Math.Abs(pt.X - lastpt.X) < Epsylon) &&
-                                  (Math.Abs(pt.Y - lastpt.Y) < Epsylon) &&
-                                  (!PolylineIs3D || (Math.Abs(pt.Z - lastpt.Z) < Epsylon));
+              IsDuplicateVertex = (Math.Abs(pt.X - lastPt.X) < EPSILON) &&
+                                  (Math.Abs(pt.Y - lastPt.Y) < EPSILON) &&
+                                  (!PolyLineIs3D || (Math.Abs(pt.Z - lastPt.Z) < EPSILON));
 
             // Determine if the vertex we have just read in is the same as the previous vertex.
             // If it is, then don't create entities for it
@@ -380,12 +363,12 @@ namespace VSS.TRex.Files.DXF
               entity.Boundary.Points.Add(new FencePoint(pt.X, pt.Y));
             }
 
-            bulge = nextbulge;
+//            bulge = nextBulge;
 
             if (!IsDuplicateVertex)
             {
               FirstPoint = false;
-              lastpt = pt;
+              lastPt = pt;
             }
           }
         }
@@ -396,27 +379,27 @@ namespace VSS.TRex.Files.DXF
         switch (rec.recType)
         {
           case 8:
-            ; //load := SetCurrentLayer (rec.s,pen);
+            //load := SetCurrentLayer (rec.s,pen);
             break;
 
-          // 30 record is height for all vertices in a 2D polyline
+          // 30 record is height for all vertices in a 2D poly line
           case 30:
-            DefaultPolylineHeight = rec.r * DXFImportConvFactor;
+            DefaultPolyLineHeight = rec.r * DXFImportConvFactor;
             break;
 
-          // 38 record is height for all vertices in a lightweight polyline
+          // 38 record is height for all vertices in a lightweight poly line
           case 38:
-            DefaultPolylineHeight = rec.r * DXFImportConvFactor;
+            DefaultPolyLineHeight = rec.r * DXFImportConvFactor;
             break;
 
           case 62:
-            ; //SetPen (pen,rec.i);
+            //SetPen (pen,rec.i);
             break;
           case 67:
             PaperSpace = rec.i != 0;
             break;
           case 70:
-            PolylineFlags = rec.i;
+            PolyLineFlags = rec.i;
             break;
           case 75:
             /*Curves and smooth surface type (optional; default = 0); integer codes, not bit-coded:
@@ -430,6 +413,7 @@ namespace VSS.TRex.Files.DXF
             NVertices = rec.i;
             break;
 
+          /* Todo: Extrusion not supported
           case 210:
             Extrusion.X = rec.r;
             break;
@@ -439,6 +423,7 @@ namespace VSS.TRex.Files.DXF
           case 230:
             Extrusion.Z = rec.r;
             break;
+            */
         }
       }
 
@@ -451,57 +436,57 @@ namespace VSS.TRex.Files.DXF
         var SavedFetchIndex = FetchIndex;
 
         // Start vertex...
-        pt_start.X = PolylineRecords[FetchIndex].r * DXFImportConvFactor;
-        pt_start.Y = PolylineRecords[FetchIndex + 1].r * DXFImportConvFactor;
+        pt_start.X = PolyLineRecords[FetchIndex].r * DXFImportConvFactor;
+        pt_start.Y = PolyLineRecords[FetchIndex + 1].r * DXFImportConvFactor;
 
-        if (PolylineIs3D)
-          pt_start.Z = PolylineRecords[FetchIndex + 2].r * DXFImportConvFactor;
+        if (PolyLineIs3D)
+          pt_start.Z = PolyLineRecords[FetchIndex + 2].r * DXFImportConvFactor;
         else
           pt_start.Z = Consts.NullDouble;
 
         do
         {
-          if (!Get_DXF_record(out rec))
+          if (!GetDXFRecord(out rec))
             return false;
         } while (rec.recType != 0);
 
         // End vertex...
-        if (PolylineIs3D)
+        if (PolyLineIs3D)
         {
-          pt_end.Z = PolylineRecords[FetchIndex - 2].r * DXFImportConvFactor;
-          pt_end.Y = PolylineRecords[FetchIndex - 3].r * DXFImportConvFactor;
-          pt_end.X = PolylineRecords[FetchIndex - 4].r * DXFImportConvFactor;
+          pt_end.Z = PolyLineRecords[FetchIndex - 2].r * DXFImportConvFactor;
+          pt_end.Y = PolyLineRecords[FetchIndex - 3].r * DXFImportConvFactor;
+          pt_end.X = PolyLineRecords[FetchIndex - 4].r * DXFImportConvFactor;
         }
         else
         {
-          pt_end.Y = PolylineRecords[FetchIndex - 2].r * DXFImportConvFactor;
-          pt_end.X = PolylineRecords[FetchIndex - 3].r * DXFImportConvFactor;
+          pt_end.Y = PolyLineRecords[FetchIndex - 2].r * DXFImportConvFactor;
+          pt_end.X = PolyLineRecords[FetchIndex - 3].r * DXFImportConvFactor;
           pt_end.Z = Consts.NullDouble;
         }
 
         FetchIndex = SavedFetchIndex;
 
-        return (Math.Abs(pt_start.X - pt_end.X) < Epsylon) &&
-               (Math.Abs(pt_start.Y - pt_end.Y) < Epsylon) &&
-               (!PolylineIs3D || (Math.Abs(pt_start.Z - pt_end.Z) < Epsylon));
+        return (Math.Abs(pt_start.X - pt_end.X) < EPSILON) &&
+               (Math.Abs(pt_start.Y - pt_end.Y) < EPSILON) &&
+               (!PolyLineIs3D || (Math.Abs(pt_start.Z - pt_end.Z) < EPSILON));
       }
 
-      loadError = true; // { Assume fault }
+      loadError = true; 
       PaperSpace = false;
       // Todo extruded = false;
-      bulge = 0;
+//      bulge = 0;
       NVertices = 0;
       VertexNum = 0;
-      PolylineFlags = 0;
-      DefaultPolylineHeight = Consts.NullDouble;
+      PolyLineFlags = 0;
+      DefaultPolyLineHeight = Consts.NullDouble;
       CurveSmoothing = 0;
       // Todo Extrusion = DefaultExtrusion;
       pt = XYZ.Null;
-      polylineIsClosed = false;
+      polyLineIsClosed = false;
 
       //--------------------------------------------
-      // This is a bit grubby, but in my defence we had to handle extrusions for
-      // LWPOLYLINE entities.  In this case we have to read the entire entity looking
+      // This is a bit grubby, but in my defense we had to handle extrusions for
+      // LW POLY LINE entities.  In this case we have to read the entire entity looking
       // for extrusion records before we add point to the DQM model.
       FetchIndex = 0;
 
@@ -512,63 +497,64 @@ namespace VSS.TRex.Files.DXF
 
         ProcessNonVertexRecord();
 
-        PolylineRecords.Add(rec);
+        PolyLineRecords.Add(rec);
         FetchIndex++;
       } while (rec.recType != 0); // Start of next entity 
 
-      polylineIsClosed = (PolylineFlags & kPolylineIsClosed) == kPolylineIsClosed;
-      PolylineIs3D = !lwPolyline &&
-                     (((PolylineFlags & kPolylineIs3D) == kPolylineIs3D) ||
-                      ((PolylineFlags & kPolylineIsPolyfaceMesh) == kPolylineIsPolyfaceMesh));
+      polyLineIsClosed = (PolyLineFlags & kPolylineIsClosed) == kPolylineIsClosed;
+      PolyLineIs3D = !lwPolyLine &&
+                     (((PolyLineFlags & kPolylineIs3D) == kPolylineIs3D) ||
+                      ((PolyLineFlags & kPolylineIsPolyfaceMesh) == kPolylineIsPolyfaceMesh));
 
       // Todo: extruded = CheckExtrusionRecord(Extrusion);
 
       NumArrayEntries = FetchIndex;
 
-      if (lwPolyline)
+      if (lwPolyLine)
         _reuseRecord = true; // load_entities needs to read this record 
 
       //--------------------------------------------
-      // Read Polyline header values 
+      // Read poly line header values 
       FetchIndex = 0; // Reprocess the records that have already been read.
       do
       {
-        if (!Get_DXF_record(out rec))
+        if (!GetDXFRecord(out rec))
           return;
 
         ProcessNonVertexRecord();
-      } while (!((rec.recType == 0) || (lwPolyline && (rec.recType == 10)))); // Start of first vertex 
+      } while (!((rec.recType == 0) || (lwPolyLine && (rec.recType == 10)))); // Start of first vertex 
 
       //--------------------------------------------
 
-      if (lwPolyline)
+      if (lwPolyLine)
         FetchIndex--; // Reprocess the last record
 
-     // Check whether the polyline is closed if the internal flag indicates it is not...
-      polylineIsClosed = polylineIsClosed || (lwPolyline && IsPolyLineClosed());
+      // Check whether the poly line is closed if the internal flag indicates it is not...
+      polyLineIsClosed = polyLineIsClosed || (lwPolyLine && IsPolyLineClosed());
 
       if (!PaperSpace)
       {
-        if ((PolylineFlags & kPolylineIsPolyfaceMesh) == kPolylineIsPolyfaceMesh)
+        if ((PolyLineFlags & kPolylineIsPolyfaceMesh) == kPolylineIsPolyfaceMesh)
         {
-          // We no longer load polyface meshes as background linework...
+          // We no longer load poly face meshes as background line work...
         }
-        else // It's a polyline of some form
+        else // It's a poly line of some form
         {
-          if (!lwPolyline &&
+          if (!lwPolyLine &&
               (CurveSmoothing == kQuadraticBSplineSmoothing) ||
               (CurveSmoothing == kCubicBSplineSmoothing))
           {
-            // Spline fit polylines are not supported here (see ldentity.pas)
+            // Spline fit poly lines are not supported here
           }
           else
-            LoadSimplePolyline();
+            LoadSimplePolyLine();
         }
       }
       else
       {
-        //  Scan past SEQEND for standard 3D polylines
-        if (!lwPolyline)
+        // ReSharper disable once StringLiteralTypo
+        //  Scan past SEQ END for standard 3D poly lines
+        if (!lwPolyLine)
           while ((rec.recType != 0) || (rec.s != "SEQEND"))
             if (!ReadDXFRecord(out rec))
               return;
@@ -578,15 +564,15 @@ namespace VSS.TRex.Files.DXF
     }
 
 
-    public bool GetBoundaryFromPolyLineEntity(bool closedPolylinesOnly, out bool atEOF, out PolyLineBoundary boundary)
+    public bool GetBoundaryFromPolyLineEntity(bool closedPolyLinesOnly, out bool atEof, out PolyLineBoundary boundary)
     {
       var loadError = false;
-      var polylineIsClosed = false;
+      var polyLineIsClosed = false;
 
-      atEOF = GetStartOfNextEntity(out var DXFRec);
+      atEof = GetStartOfNextEntity(out var DXFRec);
       boundary = null;
 
-      if (atEOF)
+      if (atEof)
         return false;
 
       boundary = new PolyLineBoundary();
@@ -594,15 +580,17 @@ namespace VSS.TRex.Files.DXF
       var testString = DXFRec.s.ToUpper();
       switch (testString)
       {
+        // ReSharper disable once StringLiteralTypo
         case "POLYLINE":
-          ReadPolyline(out loadError, false, boundary, out polylineIsClosed);
+          ReadPolyLine(out loadError, false, boundary, out polyLineIsClosed);
           break;
+        // ReSharper disable once StringLiteralTypo
         case "LWPOLYLINE":
-          ReadPolyline(out loadError, true, boundary, out polylineIsClosed);
+          ReadPolyLine(out loadError, true, boundary, out polyLineIsClosed);
           break;
       }
 
-      return !loadError && (polylineIsClosed || !closedPolylinesOnly);
+      return !loadError && (polyLineIsClosed || !closedPolyLinesOnly);
     }
 
     public DXFReader(StreamReader dxfFile, DxfUnitsType units)

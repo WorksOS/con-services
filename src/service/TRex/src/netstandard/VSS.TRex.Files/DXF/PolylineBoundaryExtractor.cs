@@ -20,7 +20,6 @@ namespace VSS.TRex.Files.DXF
     public DXFUtilitiesResult Extract(string baseName, DxfUnitsType units, uint maxBoundariesToProcess)
     {
       bool atEOF;
-      var result = DXFUtilitiesResult.OK;
 
       Boundaries = new PolyLineBoundaries(units, maxBoundariesToProcess);
 
@@ -39,10 +38,10 @@ namespace VSS.TRex.Files.DXF
             Boundaries.Boundaries.Add(boundary);
           }
         }
-      } while (Boundaries.Boundaries.Count < maxBoundariesToProcess && result == DXFUtilitiesResult.OK && !atEOF);
+      } while (Boundaries.Boundaries.Count < maxBoundariesToProcess && !atEOF);
 
       // Determine units in file
-      return DXFUtilitiesResult.OK;
+      return DXFUtilitiesResult.Ok;
     }
   }
 }

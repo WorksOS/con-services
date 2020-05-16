@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +19,6 @@ using VSS.TRex.Tests.TestFixtures;
 using VSS.TRex.Types;
 using VSS.Visionlink.Interfaces.Events.MasterData.Models;
 using Xunit;
-using Xunit.Sdk;
 
 namespace VSS.TRex.Gateway.Tests.Controllers.Files
 {
@@ -33,7 +28,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     {
       // Mock the coordinate conversion service
       var mockCoordinateService = new Mock<IConvertCoordinates>();
-      mockCoordinateService.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns((string CSIB, XYZ[] coordinates) => Task.FromResult((RequestErrorStatus.OK, coordinates)));
+      mockCoordinateService.Setup(x => x.NEEToLLH(It.IsAny<string>(), It.IsAny<XYZ[]>())).Returns((string csib, XYZ[] coordinates) => Task.FromResult((RequestErrorStatus.OK, coordinates)));
 
       DIBuilder.Continue().Add(x => x.AddSingleton(mockCoordinateService.Object)).Complete();
     }
@@ -46,13 +41,13 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     }
 
     [Fact]
-    public async void FailWithFileNotExist()
+    public void FailWithFileNotExist()
     {
       var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", "does-not-exist.dxf"), DxfUnitsType.Meters, 10);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
       
-      Func<Task> act = async () => _ = await executor.ProcessAsync<DXFBoundariesRequest>(request);
+      Func<Task> act = async () => await executor.ProcessAsync(request);
       act.Should().Throw<ServiceException>().WithMessage("File*does not exist");
     }
 
@@ -66,7 +61,7 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 
-      var result = await executor.ProcessAsync<DXFBoundariesRequest>(request);
+      var result = await executor.ProcessAsync(request);
       result.Should().NotBeNull();
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.Message.Should().Be("Success");
@@ -86,20 +81,20 @@ namespace VSS.TRex.Gateway.Tests.Controllers.Files
     [InlineData("Southern Motorway Site Boundaries.dxf", DxfUnitsType.Meters, 4)]
     public async void Boundaries_OverLimit(string fileName, DxfUnitsType units, int firstBoundaryVertexCount)
     {
-      const int limit = 5;
+      const int LIMIT = 5;
 
-      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, limit);
+      var request = new DXFBoundariesRequest("", ImportedFileType.SiteBoundary, Path.Combine("TestData", fileName), units, LIMIT);
       var executor = new ExtractDXFBoundariesExecutor(DIContext.Obtain<IConfigurationStore>(), DIContext.Obtain<ILoggerFactory>(), DIContext.Obtain<IServiceExceptionHandler>());
       executor.Should().NotBeNull();
 
-      var result = await executor.ProcessAsync<DXFBoundariesRequest>(request);
+      var result = await executor.ProcessAsync(request);
       result.Should().NotBeNull();
       result.Code.Should().Be(ContractExecutionStatesEnum.ExecutedSuccessfully);
       result.Message.Should().Be("Success");
 
       if (result is DXFBoundaryResult boundary)
       {
-        boundary.Boundaries.Count.Should().Be(limit);
+        boundary.Boundaries.Count.Should().Be(LIMIT);
         boundary.Boundaries[0].Fence.Count.Should().Be(firstBoundaryVertexCount);
       }
       else

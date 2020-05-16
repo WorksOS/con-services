@@ -50,7 +50,7 @@ namespace VSS.TRex.Gateway.Common.Executors.Files
 
       var result = DXFFileUtilities.RequestBoundariesFromLineWork(request.FileName, request.FileUnits, request.MaxBoundaries, out var boundaries);
 
-      if (result != DXFUtilitiesResult.OK)
+      if (result != DXFUtilitiesResult.Ok)
         throw new ServiceException(HttpStatusCode.BadRequest, new ContractExecutionResult(ContractExecutionStatesEnum.InternalProcessingError, $"Error processing file: {result}"));
 
       if (boundaries == null)

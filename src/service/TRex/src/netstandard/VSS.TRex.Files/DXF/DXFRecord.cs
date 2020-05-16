@@ -1,10 +1,10 @@
 ﻿namespace VSS.TRex.Files.DXF
 {
-  public struct DXFRecord
+  public class DXFRecord
   {
     public ushort recType;
     public int i;
     public double r;
-    public string s;
+    public string s = string.Empty;
   }
 }

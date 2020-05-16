@@ -3,7 +3,7 @@
   public enum DXFUtilitiesResult
   {
     UnknownError,
-    OK,
+    Ok,
     NoEntitiesSectionFound
   }
 }
