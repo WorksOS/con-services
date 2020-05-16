@@ -115,8 +115,6 @@ namespace VSS.TRex.Files.DXF
       if (rec.recType <= ASCIIDXFRecordsMax)
       {
         var line = _dxfFile.ReadLine();
-        if (string.IsNullOrEmpty(line))
-          return false;
 
         switch (ASCIIDXFRecordTypeLookUp[rec.recType])
         {
