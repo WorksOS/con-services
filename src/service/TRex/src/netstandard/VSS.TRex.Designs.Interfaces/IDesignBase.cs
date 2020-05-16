@@ -23,15 +23,15 @@ namespace VSS.TRex.Designs.Interfaces
     void GetExtents(out double x1, out double y1, out double x2, out double y2);
     void GetHeightRange(out double z1, out double z2);
 
-    bool InterpolateHeight(ref int Hint,
-      double X, double Y,
-      double Offset,
-      out double Z);
+    bool InterpolateHeight(ref int hint,
+      double x, double y,
+      double offset,
+      out double z);
 
-    bool InterpolateHeights(float[,] Patch, // The receiver of the patch of elevations
-      double OriginX, double OriginY,
-      double CellSize,
-      double Offset);
+    bool InterpolateHeights(float[,] patch, // The receiver of the patch of elevations
+      double originX, double originY,
+      double cellSize,
+      double offset);
 
     bool ComputeFilterPatch(double startStn, double endStn, double leftOffset, double rightOffset,
       SubGridTreeBitmapSubGridBits mask,
@@ -42,10 +42,10 @@ namespace VSS.TRex.Designs.Interfaces
 
     void WindLock();
     void UnWindLock();
-    bool HasElevationDataForSubGridPatch(double X, double Y);
-    bool HasElevationDataForSubGridPatch(int SubGridX, int SubGridY);
-    bool HasFiltrationDataForSubGridPatch(double X, double Y);
-    bool HasFiltrationDataForSubGridPatch(int SubGridX, int SubGridY);
+    bool HasElevationDataForSubGridPatch(double x, double y);
+    bool HasElevationDataForSubGridPatch(int subGridX, int subGridY);
+    bool HasFiltrationDataForSubGridPatch(double x, double y);
+    bool HasFiltrationDataForSubGridPatch(int subGridX, int subGridY);
     ISubGridTreeBitMask SubGridOverlayIndex();
     void AcquireExclusiveInterlock();
     void ReleaseExclusiveInterlock();

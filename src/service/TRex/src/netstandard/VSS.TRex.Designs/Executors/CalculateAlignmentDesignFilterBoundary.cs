@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
+using VSS.TRex.Common.Exceptions;
 using VSS.TRex.Designs.Interfaces;
 using VSS.TRex.Designs.Models;
 using VSS.TRex.DI;
@@ -16,28 +17,33 @@ namespace VSS.TRex.Designs.Executors
     /// Performs execution business logic for this executor
     /// </summary>
     /// <returns></returns>
-    public Fence Execute(Guid projectUID, Guid referenceDesignUID, double startStation, double endStation, double leftOffset, double rightOffset)
+    public Fence Execute(Guid projectUid, Guid referenceDesignUid, double startStation, double endStation, double leftOffset, double rightOffset)
     {
       try
       {
-        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUID, false);
-        var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUID, projectUID, siteModel.CellSize, out var lockResult);
+        var siteModel = DIContext.Obtain<ISiteModels>().GetSiteModel(projectUid, false);
+        var design = DIContext.Obtain<IDesignFiles>()?.Lock(referenceDesignUid, projectUid, siteModel.CellSize, out var lockResult);
 
         if (design == null)
         {
-          Log.LogWarning($"Failed to read file for design {referenceDesignUID}");
+          Log.LogWarning($"Failed to read file for design {referenceDesignUid}");
           return null;
         }
 
-        var result = (design as SVLAlignmentDesign).DetermineFilterBoundary(startStation, endStation, leftOffset, rightOffset, out var fence);
-
-        if (result != DesignProfilerRequestResult.OK)
+        if (design is SVLAlignmentDesign svlDesign)
         {
-          Log.LogWarning($"Failed to compute filter boundary with error {result}");
-          return null;
+          var result = svlDesign.DetermineFilterBoundary(startStation, endStation, leftOffset, rightOffset, out var fence);
+
+          if (result != DesignProfilerRequestResult.OK)
+          {
+            Log.LogWarning($"Failed to compute filter boundary with error {result}");
+            return null;
+          }
+
+          return fence;
         }
 
-        return fence;
+        throw new TRexException($"Design {design.FileName} is not an alignment design");
       }
       catch (Exception E)
       {

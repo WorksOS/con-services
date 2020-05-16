@@ -23,7 +23,7 @@ namespace VSS.TRex.Designs.SVL.DXF
       var StartPt = Data.Vertices.First();
       var vertices = new AddVertexCallback();
 
-      for (int I = 0; I < Data.Vertices.Count; I++)
+      for (var I = 0; I < Data.Vertices.Count; I++)
       {
         var EndPt = Data.Vertices[I];
 

@@ -39,7 +39,8 @@ namespace VSS.TRex.Designs
 
     private struct Corner
     {
-      public int X, Y;
+      public readonly int X;
+      public readonly int Y;
 
       public Corner(int x, int y)
       {
@@ -48,7 +49,7 @@ namespace VSS.TRex.Designs
       }
     }
 
-    private static Corner[] Corners =
+    private static readonly Corner[] Corners =
     {
       new Corner(0, 0),
       new Corner(SubGridTreeConsts.SubGridTreeDimension - 1, 0),
@@ -60,16 +61,14 @@ namespace VSS.TRex.Designs
       SubGridTreeBitmapSubGridBits mask, SubGridTreeBitmapSubGridBits patch, 
       double originX, double originY, double cellSize, double offset)
     {
-      double leftOffsetValue = -leftOffset;
-      double rightOffsetValue = rightOffset;
+      var leftOffsetValue = -leftOffset;
+      var rightOffsetValue = rightOffset;
 
       if (leftOffsetValue > rightOffsetValue)
         MinMax.Swap(ref leftOffsetValue, ref rightOffsetValue);
 
-      //  {$IFDEF DEBUG}
       //   SIGLogMessage.PublishNoODS(Self, Format('Constructing filter patch for Stn:%.3f-%.3f, Ofs:%.3f-%.3f, originX:%.3f, originY:%.3f',
-      //   [startStn, endStn, LeftOffsetValue, RightOffsetValue, originX, originY]), slmcDebug);
-      //   {$ENDIF}
+      //   [startStn, endStn, LeftOffsetValue, RightOffsetValue, originX, originY]));
 
       if (data == null)
       {
@@ -82,15 +81,15 @@ namespace VSS.TRex.Designs
       // Check the corners of the sub grid. If all are out of the offset range then assume
       // none of the cells are applicable. All four corners need to be on the same side of the
       // alignment in terms of offset to fail the sub grid.
-      int cornersOutOfOffsetRange = 0;
-      int cornersOutOfOffsetRangeSign = 0;
+      var cornersOutOfOffsetRange = 0;
+      var cornersOutOfOffsetRangeSign = 0;
 
-      double originXPlusHalfCellSize = originX + cellSize / 2;
-      double originYPlusHalfCellSize = originY + cellSize / 2;
+      var originXPlusHalfCellSize = originX + cellSize / 2;
+      var originYPlusHalfCellSize = originY + cellSize / 2;
 
-      for (int i = 0; i < Corners.Length; i++)
+      for (var i = 0; i < Corners.Length; i++)
       {
-        data.ComputeStnOfs(originXPlusHalfCellSize + Corners[i].X * cellSize, originYPlusHalfCellSize + Corners[i].Y * cellSize, out double stn, out double ofs);
+        data.ComputeStnOfs(originXPlusHalfCellSize + Corners[i].X * cellSize, originYPlusHalfCellSize + Corners[i].Y * cellSize, out var stn, out var ofs);
 
         if (!(stn != Consts.NullDouble && ofs != Consts.NullDouble && Range.InRange(stn, startStn, endStn)))
         {
@@ -110,40 +109,36 @@ namespace VSS.TRex.Designs
       if (cornersOutOfOffsetRange == Corners.Length)
       {
         // Return success with the empty patch
-        //{$IFDEF DEBUG}
-        //SIGLogMessage.PublishNoODS(Self, 'All corners of patch exceed stn:ofs boundary', slmcDebug);
-        //{$ENDIF}
+        //SIGLogMessage.PublishNoODS(Self, 'All corners of patch exceed stn:ofs boundary');
         return true;
       }
 
       // Iterate across the cells in the mask computing and checking the stn:ofs of
       // each point using the previously successful element as a hint for the next
       // computation
-      for (int i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
+      for (var i = 0; i < SubGridTreeConsts.SubGridTreeDimension; i++)
       {
-        for (int j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
+        for (var j = 0; j < SubGridTreeConsts.SubGridTreeDimension; j++)
         {
-          if (mask.BitSet(i, j))
-          {
-            // Force element to be nil for all calculation until we resolve the issue
-            // of an in appropriate element 'capturing' the focus and then being used to
-            // calculate inappropriate offsets due to it's station range covering the
-            // points being computed.
+          if (!mask.BitSet(i, j)) 
+            continue;
 
-            NFFStationedLineworkEntity element = null;
+          // Force element to be nil for all calculation until we resolve the issue
+          // of an in appropriate element 'capturing' the focus and then being used to
+          // calculate inappropriate offsets due to it's station range covering the
+          // points being computed.
 
-            data.ComputeStnOfs(originXPlusHalfCellSize + i * cellSize, originYPlusHalfCellSize + j * cellSize,
-              out double stn, out double ofs, ref element);
+          NFFStationedLineworkEntity element = null;
 
-            if (stn != Consts.NullDouble && ofs != Consts.NullDouble)
-              patch.SetBitValue(i, j, Range.InRange(stn, startStn, endStn) && Range.InRange(ofs, leftOffsetValue, rightOffsetValue));
-          }
+          data.ComputeStnOfs(originXPlusHalfCellSize + i * cellSize, originYPlusHalfCellSize + j * cellSize,
+            out var stn, out var ofs, ref element);
+
+          if (stn != Consts.NullDouble && ofs != Consts.NullDouble)
+            patch.SetBitValue(i, j, Range.InRange(stn, startStn, endStn) && Range.InRange(ofs, leftOffsetValue, rightOffsetValue));
         }
       }
 
-      //  {$IFDEF DEBUG}
-      //  SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [patch.CountBits]), slmcDebug);
-      //  {$ENDIF}
+      //  SIGLogMessage.PublishNoODS(Self, Format('Filter patch construction successful with %d bits', [patch.CountBits]));
 
       return true;
     }
@@ -172,33 +167,33 @@ namespace VSS.TRex.Designs
       z2 = Consts.NullDouble;
     }
 
-    public override bool HasElevationDataForSubGridPatch(double X, double Y)
+    public override bool HasElevationDataForSubGridPatch(double x, double y)
     {
       return false;
     }
 
-    public override bool HasElevationDataForSubGridPatch(int SubGridX, int SubGridY)
+    public override bool HasElevationDataForSubGridPatch(int subGridX, int subGridY)
     {
       return false;
     }
 
-    public override bool HasFiltrationDataForSubGridPatch(double X, double Y)
+    public override bool HasFiltrationDataForSubGridPatch(double x, double y)
     {
       return false;
     }
 
-    public override bool HasFiltrationDataForSubGridPatch(int SubGridX, int SubGridY)
+    public override bool HasFiltrationDataForSubGridPatch(int subGridX, int subGridY)
     {
       return false;
     }
 
-    public override bool InterpolateHeight(ref int Hint, double X, double Y, double Offset, out double Z)
+    public override bool InterpolateHeight(ref int hint, double x, double y, double offset, out double z)
     {
-      Z = Consts.NullDouble;
+      z = Consts.NullDouble;
       return false;
     }
 
-    public override bool InterpolateHeights(float[,] Patch, double OriginX, double OriginY, double CellSize, double Offset)
+    public override bool InterpolateHeights(float[,] patch, double originX, double originY, double cellSize, double offset)
     {
       return false;
     }
@@ -212,7 +207,7 @@ namespace VSS.TRex.Designs
       {
         result = DesignLoadResult.NoAlignmentsFound;
 
-        for (int i = 0; i < NFFFile.GuidanceAlignments.Count; i++)
+        for (var i = 0; i < NFFFile.GuidanceAlignments.Count; i++)
         {
           if (NFFFile.GuidanceAlignments[i].IsMasterAlignment())
           {
@@ -250,10 +245,7 @@ namespace VSS.TRex.Designs
     public override async Task<DesignLoadResult> LoadFromStorage(Guid siteModelUid, string fileName, string localPath, bool loadIndices = false)
     {
       var isDownloaded = await S3FileTransfer.ReadFile(siteModelUid, fileName, localPath);
-      if (!isDownloaded)
-        return DesignLoadResult.UnknownFailure;
-
-      return DesignLoadResult.Success;
+      return !isDownloaded ? DesignLoadResult.UnknownFailure : DesignLoadResult.Success;
     }
 
     public (double StartStation, double EndStation) GetStationRange()
@@ -263,9 +255,10 @@ namespace VSS.TRex.Designs
 
     public DesignProfilerRequestResult DetermineFilterBoundary(double startStation, double endStation, double leftOffset, double rightOffset, out Fence fence)
     {
+      // ReSharper disable once IdentifierTypo
       var determinator = new SVLAlignmentBoundaryDeterminator(data, startStation, endStation, leftOffset, rightOffset);
 
-      determinator.DetermineBoundary(out DesignProfilerRequestResult calcResult, out fence);
+      determinator.DetermineBoundary(out var calcResult, out fence);
 
       return calcResult;
     }

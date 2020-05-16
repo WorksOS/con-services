@@ -41,6 +41,7 @@ namespace VSS.TRex.Designs
     /// Loads the Alignment from an Alignment file, along with the sub grid existence map file if it exists (created otherwise)
     /// </summary>
     /// <param name="localPathAndFileName"></param>
+    /// <param name="saveIndexFiles"></param>
     /// <returns></returns>
     public override DesignLoadResult LoadFromFile(string localPathAndFileName, bool saveIndexFiles = true)
     {
@@ -126,32 +127,32 @@ namespace VSS.TRex.Designs
     /// <summary>
     /// Interpolates a single spot height from the design, using the optimized spatial index
     /// </summary>
-    /// <param name="Hint"></param>
-    /// <param name="X"></param>
-    /// <param name="Y"></param>
-    /// <param name="Offset"></param>
-    /// <param name="Z"></param>
+    /// <param name="hint"></param>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="offset"></param>
+    /// <param name="z"></param>
     /// <returns></returns>
-    public override bool InterpolateHeight(ref int Hint,
-      double X, double Y,
-      double Offset,
-      out double Z)
+    public override bool InterpolateHeight(ref int hint,
+      double x, double y,
+      double offset,
+      out double z)
     {
       // todo when SDK available if appropriate
-      Z = Common.Consts.NullReal;
+      z = Consts.NullReal;
       return false;
     }
 
     /// <summary>
     /// Interpolates heights from the design for all the cells in a sub grid
     /// </summary>
-    /// <param name="Patch"></param>
-    /// <param name="OriginX"></param>
-    /// <param name="OriginY"></param>
-    /// <param name="CellSize"></param>
-    /// <param name="Offset"></param>
+    /// <param name="patch"></param>
+    /// <param name="originX"></param>
+    /// <param name="originY"></param>
+    /// <param name="cellSize"></param>
+    /// <param name="offset"></param>
     /// <returns></returns>
-    public override bool InterpolateHeights(float[,] Patch, double OriginX, double OriginY, double CellSize, double Offset)
+    public override bool InterpolateHeights(float[,] patch, double originX, double originY, double cellSize, double offset)
     {
       // todo when SDK available
       return false;
@@ -170,17 +171,17 @@ namespace VSS.TRex.Designs
     }
 
 
-    public override bool HasElevationDataForSubGridPatch(double X, double Y)
+    public override bool HasElevationDataForSubGridPatch(double x, double y)
     {
       // todo when SDK available
       return false;
     }
 
-    public override bool HasElevationDataForSubGridPatch(int SubGridX, int SubGridY) => false;
+    public override bool HasElevationDataForSubGridPatch(int subGridX, int subGridY) => false;
 
-    public override bool HasFiltrationDataForSubGridPatch(double X, double Y) => false;
+    public override bool HasFiltrationDataForSubGridPatch(double x, double y) => false;
 
-    public override bool HasFiltrationDataForSubGridPatch(int SubGridX, int SubGridY) => false;
+    public override bool HasFiltrationDataForSubGridPatch(int subGridX, int subGridY) => false;
 
     /// <summary>
     /// Computes the requested geometric profile over the design and returns the result
@@ -214,6 +215,5 @@ namespace VSS.TRex.Designs
     {
       return S3FileTransfer.RemoveFileFromBucket(siteModelUid, fileName);
     }
-
   }
 }
