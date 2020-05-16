@@ -55,6 +55,9 @@ namespace VSS.TRex.Files.DXF
       InitialiseDXFRecordLookUpTable();
     }
 
+    /// <summary>
+    /// Initialises the maps of record numbers to value types in ASCII DXF files
+    /// </summary>
     private static void InitialiseDXFRecordLookUpTable()
     {
       for (var type = 0; type <= ASCIIDXFRecordsMax; type++)
@@ -101,7 +104,14 @@ namespace VSS.TRex.Files.DXF
       }
     }
 
-    public bool Read_ASCII_DXF_Record(out DXFRecord rec,
+    /// <summary>
+    /// Read a single DXF record from an ASCII DXF file consisting of the record type and value
+    /// </summary>
+    /// <param name="rec"></param>
+    /// <param name="lineNumber"></param>
+    /// <param name="readingTextEntity"></param>
+    /// <returns></returns>
+    public bool ReadASCIIDXFRecord(out DXFRecord rec,
       ref int lineNumber,
       bool readingTextEntity = false)
     {
@@ -153,6 +163,11 @@ namespace VSS.TRex.Files.DXF
       return true;
     }
 
+    /// <summary>
+    /// Reads the next record from the DXF file
+    /// </summary>
+    /// <param name="rec"></param>
+    /// <returns></returns>
     public bool ReadDXFRecord(out DXFRecord rec)
     {
       if (_reuseRecord)
@@ -166,13 +181,19 @@ namespace VSS.TRex.Files.DXF
         //If DXFFileIsBinary then
         //Result := Read_Binary_DXF_Record(out rec, ref _dxfLine)
         //else
-        var Result = Read_ASCII_DXF_Record(out rec, ref _dxfLine);
+        var Result = ReadASCIIDXFRecord(out rec, ref _dxfLine);
 
         _lastRecord = rec;
         return Result;
       }
     }
 
+    /// <summary>
+    /// Locates a named section in a DXF file to begin reading records from
+    /// </summary>
+    /// <param name="name0"></param>
+    /// <param name="name2"></param>
+    /// <returns></returns>
     public bool FindSection(string name0, string name2)
     {
       var TestString = "";
@@ -210,12 +231,16 @@ namespace VSS.TRex.Files.DXF
       return true;
     }
 
+    /// <summary>
+    /// Locates the section in the DXF file that contain entities such as poly lines
+    /// </summary>
+    /// <returns></returns>
     public bool FindEntitiesSection()
     {
       return _haveFoundEntitiesSection || (_haveFoundEntitiesSection = FindSection("SECTION", "ENTITIES"));
     }
 
-    public bool GetStartOfNextEntity(out DXFRecord rec)
+    private bool GetStartOfNextEntity(out DXFRecord rec)
     {
       do
       {
@@ -228,7 +253,7 @@ namespace VSS.TRex.Files.DXF
     }
 
     /* Todo: Extrusion not supported
-    public bool CheckExtrusionRecord(DXFRecord rec)
+    private bool CheckExtrusionRecord(DXFRecord rec)
     {
       // Returns True if the record is a non default extrusion record
 
@@ -238,8 +263,13 @@ namespace VSS.TRex.Files.DXF
     }
     */
 
-    ////////////////////////////////////////////////////////////////////
-
+    /// <summary>
+    /// Reads the entirety of a polyline from the DXF file
+    /// </summary>
+    /// <param name="loadError"></param>
+    /// <param name="lwPolyLine"></param>
+    /// <param name="entity"></param>
+    /// <param name="polyLineIsClosed"></param>
     public void ReadPolyLine(out bool loadError,
       bool lwPolyLine,
       PolyLineBoundary entity,
@@ -438,8 +468,6 @@ namespace VSS.TRex.Files.DXF
         }
       }
 
-
-      //----------------------------------------------------------------------------
       bool IsPolyLineClosed()
       {
         XYZ pt_start, pt_end;
@@ -498,7 +526,7 @@ namespace VSS.TRex.Files.DXF
       //--------------------------------------------
       // This is a bit grubby, but in my defense we had to handle extrusions for
       // LW POLY LINE entities.  In this case we have to read the entire entity looking
-      // for extrusion records before we add point to the DQM model.
+      // for extrusion records before we use the point.
       FetchIndex = 0;
 
       do
@@ -534,7 +562,6 @@ namespace VSS.TRex.Files.DXF
 
         ProcessNonVertexRecord();
       } while (!((rec.recType == 0) || (lwPolyLine && (rec.recType == 10)))); // Start of first vertex 
-
       //--------------------------------------------
 
       if (lwPolyLine)
@@ -574,7 +601,14 @@ namespace VSS.TRex.Files.DXF
       loadError = false;
     }
 
-
+    /// <summary>
+    /// Reads a poly line from the DXF file and construct a boundary from the geometry and extended attributes
+    /// defining the boundary type and name
+    /// </summary>
+    /// <param name="closedPolyLinesOnly"></param>
+    /// <param name="atEof"></param>
+    /// <param name="boundary"></param>
+    /// <returns></returns>
     public bool GetBoundaryFromPolyLineEntity(bool closedPolyLinesOnly, out bool atEof, out PolyLineBoundary boundary)
     {
       var loadError = false;
@@ -604,6 +638,11 @@ namespace VSS.TRex.Files.DXF
       return !loadError && (polyLineIsClosed || !closedPolyLinesOnly);
     }
 
+    /// <summary>
+    /// Construct a DXFReader given a stream reader representing teh DXF file content and the units to use
+    /// </summary>
+    /// <param name="dxfFile"></param>
+    /// <param name="units"></param>
     public DXFReader(StreamReader dxfFile, DxfUnitsType units)
     {
       _dxfFile = dxfFile;
